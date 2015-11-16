@@ -1,0 +1,36 @@
+{
+  "name": "uwazi",
+  "version": "0.0.1",
+  "description": "uwazi docs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huridocs/uwazidocs"
+  },
+  "author": "huridocs",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/huridocs/uwazidocs/issues"
+  },
+  "dependencies": {
+    "ejs": "^2.3.4",
+    "express": "^4.13.3",
+    "node-jsx": "^0.13.3",
+    "react": "^0.14.2"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-jasmine-node-coverage": "^0.4.1",
+    "grunt-karma": "^0.12.1",
+    "jasmine-core": "^2.3.4",
+    "jasmine-node": "^1.14.5",
+    "karma": "^0.13.15",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "phantomjs": "^1.9.18"
+  }
+}
