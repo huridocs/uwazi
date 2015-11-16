@@ -7,7 +7,7 @@ var ReactApp = React.createFactory(require('./js/react_welcome.js'));
 
 app.get('/', function (req, res) {
   var reactHtml = React.renderToString(ReactApp({}));
-  res.render('welcome.ejs', {reactOutput: reactHtml});
+  res.render(__dirname+'/views/welcome.ejs', {reactOutput: reactHtml});
 });
 
 var server = app.listen(3000, function () {
