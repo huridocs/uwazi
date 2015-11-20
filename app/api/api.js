@@ -6,7 +6,6 @@ module.exports = function(app) {
   app.use(bodyParser.json());
 
   app.post('/api/login', function(req, res) {
-    console.log('juan');
     var user = req.body.username+req.body.password;
 
     fetch('http://127.0.0.1:5984/uwazi/_design/users/_view/users/?key="'+user+'"')
