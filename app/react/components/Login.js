@@ -44,7 +44,7 @@ class Login extends Component {
 
     var _this = this;
 
-    return fetch('/login', {method:'POST',
+    return fetch('/api/login', {method:'POST',
                  headers: {
                    'Accept': 'application/json',
                    'Content-Type': 'application/json'
