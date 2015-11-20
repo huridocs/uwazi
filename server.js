@@ -7,12 +7,14 @@ require.extensions['.scss'] = function() {
 };
 
 var express = require('express');
+var path = require('path');
 const app = express();
 
+app.use(express.static(path.resolve(__dirname, 'dist')));
 require('./app/react/server.js')(app);
 require('./app/api/api.js')(app);
 
-const port = process.env.PORT ? 3000 : process.env.PORT;
+const port = 3000;
 app.listen(port, 'localhost', function onStart(err) {
   if (err) {
     console.log(err);
