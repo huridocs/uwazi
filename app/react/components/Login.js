@@ -8,11 +8,11 @@ class Login extends Component {
     this.state = {username:'', password:'', succeed: true};
   }
 
-	render() {
-		return (
-			<div>
-				<Helmet title="Login" />
-				<h1>Login</h1>
+  render() {
+    return (
+      <div>
+        <Helmet title="Login" />
+        <h1>Login</h1>
         <p>
         {(() => {
           if(!this.state.succeed){
@@ -27,9 +27,9 @@ class Login extends Component {
           <input type="password" name="password" value={ this.state.password } onChange={ this.password_change }/>
           <button type="submit">Login</button>
         </form>
-			</div>
-		)
-	}
+      </div>
+    )
+  }
 
   user_change = (e) => {
     this.setState({username:e.target.value});
@@ -50,12 +50,8 @@ class Login extends Component {
                    'Content-Type': 'application/json'
                  },
                  body: JSON.stringify(this.state)})
-    .then(function(response) {
-      response.json()
-      .then(function(response) {
-        _this.setState({succeed:response.success})
-      });
-    });
+    .then((response) => _this.setState({succeed: response.status === 200})
+  );
   }
 }
 
