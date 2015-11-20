@@ -1,7 +1,7 @@
-var bodyParser = require('body-parser');
-var fetch = require('isomorphic-fetch');
+import bodyParser from 'body-parser'
+import fetch from 'isomorphic-fetch'
 
-module.exports = function(app) {
+export default app => {
 
   app.use(bodyParser.json());
 

@@ -1,11 +1,10 @@
-var path = require('path');
-var Router = require('./Router');
-var express = require('express');
+import path from 'path'
+import Router from './Router'
+import express from 'express'
 
-module.exports = function(app) {
+export default app => {
 
   app.use(express.static(path.resolve(__dirname, 'dist')));
-
   app.get('*', Router);
 
 }

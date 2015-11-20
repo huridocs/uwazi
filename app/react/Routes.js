@@ -7,10 +7,10 @@ import Login from './components/Login'
 import NoMatch from './components/NoMatch'
 
 export default (
-	<Route path='/' component={App}>
-		<IndexRoute component={Home} />
-		<Route path='users' component={Users} />
-		<Route path='login' component={Login} />
-		<Route path="*" component={NoMatch} />
-	</Route>
+  <Route path='/' component={App}>
+    <IndexRoute component={Home} />
+    <Route path='users' component={Users} />
+    <Route path='login' component={Login} />
+    <Route path="*" component={NoMatch} />
+  </Route>
 );
