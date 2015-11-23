@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
+import {events} from '../utils/index'
 
 class Login extends Component {
 
@@ -42,8 +43,6 @@ class Login extends Component {
   handle_submit = (e) => {
     e.preventDefault();
 
-    var _this = this;
-
     return fetch('/api/login', {method:'POST',
                  headers: {
                    'Accept': 'application/json',
@@ -51,8 +50,11 @@ class Login extends Component {
                  },
                  credentials: 'same-origin',
                  body: JSON.stringify(this.state)})
-    .then((response) => _this.setState({succeed: response.status === 200})
-  );
+      .then((response) => {
+        this.setState({succeed: response.status === 200})
+        events.emit('login');
+      }
+    );
   }
 }
 

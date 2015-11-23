@@ -28,6 +28,7 @@
     "express-session": "^1.12.1",
     "history": "^1.12.5",
     "isomorphic-fetch": "^2.2.0",
+    "jvent": "^0.2.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "react": "^0.14.1",

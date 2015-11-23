@@ -11,8 +11,8 @@ var path = require('path');
 const app = express();
 
 app.use(express.static(path.resolve(__dirname, 'dist')));
-require('./app/react/server.js')(app);
 require('./app/api/api.js')(app);
+require('./app/react/server.js')(app);
 
 const port = 3000;
 app.listen(port, function onStart(err) {

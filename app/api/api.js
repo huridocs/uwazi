@@ -7,7 +7,6 @@ import session from 'express-session'
 
 passport.use('local', new LocalStrategy(
   function(username, password, done){
-    console.log('strat');
     var user = username+password;
     fetch('http://127.0.0.1:5984/uwazi/_design/users/_view/users/?key="'+user+'"')
     .then(response => response.json())
@@ -38,7 +37,15 @@ export default app => {
   app.post('/api/login',
   passport.authenticate('local'),
   function(req, res) {
-    console.log('res');
     res.json({success: true})
   });
+
+  app.get('/api/user', function(req, res){
+    res.json(req.user)
+  })
+
+  app.get('/logout', function(req, res){
+    req.session.destroy();
+    res.redirect('/');
+  })
 }

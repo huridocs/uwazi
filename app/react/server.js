@@ -1,6 +1,6 @@
 import Router from './Router'
 
 export default app => {
-  app.get('*', Router);
 
+  app.get(/^\/(?!api(\/|$)).*$/, Router);
 }

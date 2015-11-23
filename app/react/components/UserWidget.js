@@ -1,0 +1,45 @@
+import React, { Component, PropTypes } from 'react'
+import { Link } from 'react-router'
+import Helmet from 'react-helmet'
+import {events} from '../utils/index'
+
+class UserWidget extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {username:false};
+    this.fetchUser();
+    events.on('login', this.fetchUser);
+  }
+
+  fetchUser = () => {
+    return fetch('/api/user', {method:'GET',
+                 headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+                 },
+                 credentials: 'same-origin'})
+    .then((response) => response.json())
+    .then((response) => this.setState({username: response.username}))
+  }
+
+  render() {
+    return (
+      <div>
+        {(() => {
+          if(this.state.username){
+            return <div>
+                    <p>{this.state.username}</p>
+                    <a href='/logout'>Logout</a>
+                  </div>
+          }
+          else {
+            return <Link to='/login'>Login</Link>
+          }
+        })()}
+      </div>
+    )
+  }
+}
+
+export default UserWidget;
