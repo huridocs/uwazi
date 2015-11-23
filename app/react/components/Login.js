@@ -49,6 +49,7 @@ class Login extends Component {
                    'Accept': 'application/json',
                    'Content-Type': 'application/json'
                  },
+                 credentials: 'same-origin',
                  body: JSON.stringify(this.state)})
     .then((response) => _this.setState({succeed: response.status === 200})
   );
