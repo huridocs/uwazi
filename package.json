@@ -44,6 +44,7 @@
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
     "node-sass": "^3.3.3",
+    "react-transform-hmr": "^1.0.1",
     "sass-loader": "^3.0.0",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.2"
