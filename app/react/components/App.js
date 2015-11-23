@@ -16,14 +16,28 @@ class App extends Component {
             {'name': 'description', 'content': 'My super dooper dope app'}
           ]}
         />
-        <UserWidget/>
-        <nav>
-          <ul>
-            <li><Link to='/'>Home</Link></li>
-            <li><Link to='/users'>Users</Link></li>
-          </ul>
-        </nav>
-        <div className='route-content'>
+
+        <nav className="nav navbar-nav navbar-default navbar-fixed-top">
+          <div className="container-fluid">
+           <div className="navbar-header">
+             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+               <span className="sr-only">Toggle navigation</span>
+               <span className="icon-bar"></span>
+               <span className="icon-bar"></span>
+               <span className="icon-bar"></span>
+             </button>
+             <li><Link to='/' className="navbar-brand">Uwazidocs</Link></li>
+           </div>
+           <div id="navbar" className="navbar-collapse collapse">
+             <ul className="nav navbar-nav">
+              <li><Link to='/'>Home</Link></li>
+              <li><Link to='/users'>Users</Link></li>
+             </ul>
+             <UserWidget/>
+           </div>
+       </div>
+     </nav>
+        <div className='container'>
           {this.props.children}
         </div>
       </div>

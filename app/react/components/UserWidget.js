@@ -28,13 +28,15 @@ class UserWidget extends Component {
       <div>
         {(() => {
           if(this.state.username){
-            return <div>
-                    <p>{this.state.username}</p>
-                    <a href='/logout'>Logout</a>
-                  </div>
+            return <ul className="nav navbar-nav navbar-right">
+                      <li className="glyphicon glyphicon-user navbar-text"> {this.state.username}</li>
+                      <li><a href="/logout">Logout</a></li>
+                    </ul>
           }
           else {
-            return <Link to='/login'>Login</Link>
+            return <ul className="nav navbar-nav navbar-right">
+                     <li><Link to='/login'>Login</Link></li>
+                   </ul>
           }
         })()}
       </div>

@@ -11,23 +11,27 @@ class Login extends Component {
 
   render() {
     return (
-      <div>
+      <div className="row">
         <Helmet title="Login" />
         <h1>Login</h1>
-        <p>
+        <div className="col-xs-4 col-xs-offset-4">
         {(() => {
           if(!this.state.succeed){
-            return 'invalid password or username'
+            return <p className="alert alert-warning">invalid password or username</p>
           }
         })()}
-        </p>
-        <form method="post" onSubmit={ this.handle_submit }>
-          <label>username</label>
-          <input type="text" name="username" value={ this.state.username } onChange={ this.user_change }/>
-          <label>password</label>
-          <input type="password" name="password" value={ this.state.password } onChange={ this.password_change }/>
-          <button type="submit">Login</button>
-        </form>
+          <form onSubmit={ this.handle_submit }>
+            <div className="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="text" className="form-control" name="username" value={ this.state.username } onChange={ this.user_change }/>
+            </div>
+            <div className="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password"  className="form-control" name="password" value={ this.state.password } onChange={ this.password_change }/>
+            </div>
+            <button type="submit" className="btn btn-default btn-primary">Submit</button>
+          </form>
+        </div>
       </div>
     )
   }
