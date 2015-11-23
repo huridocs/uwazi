@@ -15,7 +15,7 @@ require('./app/react/server.js')(app);
 require('./app/api/api.js')(app);
 
 const port = 3000;
-app.listen(port, 'localhost', function onStart(err) {
+app.listen(port, function onStart(err) {
   if (err) {
     console.log(err);
   }
