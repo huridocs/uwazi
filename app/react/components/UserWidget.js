@@ -21,7 +21,10 @@ class UserWidget extends Component {
                  },
                  credentials: 'same-origin'})
     .then((response) => response.json())
-    .then((response) => this.setState({username: response.username}))
+    .then((response) => {
+      console.log('res:', response);
+      this.setState({username: response.username})
+    })
   }
 
   render() {
