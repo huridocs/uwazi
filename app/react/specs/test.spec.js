@@ -1,6 +1,7 @@
-var React = require('react/addons');
-var TestUtils = React.addons.TestUtils;
-//var Component = require('../components/UserWidget.js');
+import React, { Component, PropTypes } from 'react'
+import TestUtils from 'react-addons-test-utils'
+import UserWidget from '../components/UserWidget.js'
+
 
 describe('Component', () => {
 

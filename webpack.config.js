@@ -27,19 +27,7 @@ module.exports = {
       include: path.join(__dirname, 'app'),
       query: {
         stage: 0,
-        cacheDirectory: true,
-        plugins: ['react-transform'],
-        extra: {
-          'react-transform': {
-            transforms: [{
-              transform: 'react-transform-hmr',
-              // If you use React Native, pass "react-native" instead:
-              imports: ['react'],
-              // This is important for Webpack HMR:
-              locals: ['module']
-            }]
-          }
-        }
+        cacheDirectory: true
       }
     }, {
       test: /\.scss$/,

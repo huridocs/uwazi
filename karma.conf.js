@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var path = require('path');
 
 module.exports = function (config) {
   config.set({
@@ -16,14 +17,20 @@ module.exports = function (config) {
     },
     reporters: [ 'dots', 'coverage' ], //report results in this format
     webpack: { //kind of a copy of your webpack config
-      //devtool: 'inline-source-map', //just do inline source maps instead of the default
+      devtool: 'inline-source-map', //just do inline source maps instead of the default
       module: {
         loaders: [
-          { test: /\.js$/,  loader: 'babel-loader' }
+          { test: /\.js$/,
+            loader: 'babel-loader',
+            query: {
+              stage: 0,
+              cacheDirectory: true
+            }
+          }
         ],
         postLoaders: [ { //delays coverage til after tests are run, fixing transpiled source coverage error
             test: /\.js$/,
-            exclude: /(test|node_modules|bower_components)\//,
+            exclude: /(spec|node_modules|bower_components)\//,
             loader: 'istanbul-instrumenter' } ]
       }
     },
