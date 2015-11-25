@@ -3,13 +3,13 @@ var path = require('path');
 
 module.exports = function (config) {
   config.set({
-    browsers: [ 'Chrome' ], //run in Chrome
+    browsers: [ 'Firefox' ], // Chrome, PhantomJS
     singleRun: false, //just run once by default
     frameworks: [ 'jasmine' ], //use the mocha test framework
     files: [
       'tests.webpack.js' //just load this file
     ],
-    plugins: [ 'karma-chrome-launcher', 'karma-jasmine',
+    plugins: [ 'karma-firefox-launcher', 'karma-jasmine',
       'karma-sourcemap-loader', 'karma-webpack', 'karma-coverage'
     ],
     preprocessors: {
@@ -26,6 +26,15 @@ module.exports = function (config) {
               stage: 0,
               cacheDirectory: true
             }
+          },
+          {
+            test: /\.scss$/,
+            loaders: ['style', 'css?sourceMap', 'sass?sourceMap'],
+            include: path.join(__dirname, 'app')
+          },  {
+            test: /\.(jpe?g|png|eot|woff|ttf|gif|svg)(\?.*)?$/i,
+            loader: 'file-loader',
+            include: path.join(__dirname, 'app')
           }
         ],
         postLoaders: [ { //delays coverage til after tests are run, fixing transpiled source coverage error
