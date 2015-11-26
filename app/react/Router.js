@@ -23,7 +23,7 @@ if (isClient) {
 
 function renderComponentWithRoot(Component, componentProps, initialData) {
 	const componentHtml = renderToStaticMarkup(
-		<Provider initialData={initialData}> 
+		<Provider initialData={initialData}>
 			<Component {...componentProps} />
 		</Provider>
 	);

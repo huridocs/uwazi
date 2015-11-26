@@ -17,7 +17,7 @@ module.exports = function (config) {
     },
     reporters: [ 'dots', 'coverage' ], //report results in this format
     webpack: { //kind of a copy of your webpack config
-      devtool: 'inline-source-map', //just do inline source maps instead of the default
+      devtool: 'eval', //just do inline source maps instead of the default
       module: {
         loaders: [
           { test: /\.js$/,

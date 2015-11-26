@@ -8,13 +8,15 @@ class UserWidget extends Component {
 
   constructor(props) {
     super(props);
+    this.fetch = props.fetch || fetch;
     this.state = {username:false};
     this.fetchUser();
     events.on('login', this.fetchUser);
   }
 
   fetchUser = () => {
-    return fetch('/api/user', {method:'GET',
+    console.log('fetch');
+    this.fetch('/api/user', {method:'GET',
                  headers: {
                    'Accept': 'application/json',
                    'Content-Type': 'application/json'
