@@ -10,8 +10,8 @@ import {events} from '../utils/index'
 describe('Component', () => {
 
   let component;
+
   let fetch_mock = function(){
-    console.log('FETCH MOCKED !');
       let res = new window.Response('{"username":"Iron Man"}', {
           status: 200,
           headers: {
@@ -20,13 +20,21 @@ describe('Component', () => {
       });
 
       let promise_mock = Promise.resolve(res);
-      console.log(promise_mock);
       return promise_mock;
   };
 
+  let fetch_rejected = () => {return Promise.reject()};
+
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<UserWidget fetch={fetch_mock}/>);
+    spyOn(events, 'on');
+    component = TestUtils.renderIntoDocument(<UserWidget fetch={fetch_rejected}/>);
   })
+
+  describe('on instance', () => {
+    it('should subscribe to login event with fetchUser', () => {
+      expect(events.on).toHaveBeenCalledWith('login', component.fetchUser);
+    });
+  });
 
   it('should render the login link', () => {
     let loginLink = TestUtils.findRenderedDOMComponentWithTag(component, 'a');
@@ -48,13 +56,17 @@ describe('Component', () => {
     });
   })
 
-  describe('when a login event is triggered', () => {
+  describe('when fething user', () => {
     beforeEach(() => {
-      events.emit('login');
+      component = TestUtils.renderIntoDocument(<UserWidget fetch={fetch_mock}/>);
     })
 
-    fit('should request the user and render its name', () => {
-      expect(ReactDOM.findDOMNode(component).textContent).toMatch('Iron Man');
+    it('should set the username on the state and render it', (done) => {
+      component.fetchUser()
+      .then(() => {
+        expect(ReactDOM.findDOMNode(component).textContent).toMatch('Iron Man');
+        done();
+      });
     })
   });
 

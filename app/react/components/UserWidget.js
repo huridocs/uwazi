@@ -15,8 +15,7 @@ class UserWidget extends Component {
   }
 
   fetchUser = () => {
-    console.log('fetch');
-    this.fetch('/api/user', {method:'GET',
+    return this.fetch('/api/user', {method:'GET',
                  headers: {
                    'Accept': 'application/json',
                    'Content-Type': 'application/json'
@@ -24,7 +23,6 @@ class UserWidget extends Component {
                  credentials: 'same-origin'})
     .then((response) => response.json())
     .then((response) => {
-      console.log('res:', response);
       this.setState({username: response.username})
     })
   }
