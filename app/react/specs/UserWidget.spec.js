@@ -6,12 +6,12 @@ import { Link } from 'react-router'
 import UserWidget from '../components/UserWidget.js'
 import {events} from '../utils/index'
 
-describe('Component', () => {
+describe('UserWidget', () => {
 
   let component;
 
   let fetch_mock = function(){
-      let res = new window.Response('{"username":"Iron Man"}', {
+      let res = new window.Response('{"username":"Scarecrow"}', {
           status: 200,
           headers: {
             'Content-type': 'application/json'
@@ -42,7 +42,7 @@ describe('Component', () => {
 
   describe('When the user is loged in', () => {
     beforeEach(() => {
-      component.setState({username: 'Thor'});
+      component.setState({username: 'Jocker'});
     })
 
     it('should render the lout link', () => {
@@ -51,7 +51,7 @@ describe('Component', () => {
     });
 
     it('should render the username', () => {
-      expect(ReactDOM.findDOMNode(component).textContent).toMatch('Thor');
+      expect(ReactDOM.findDOMNode(component).textContent).toMatch('Jocker');
     });
   })
 
@@ -63,7 +63,7 @@ describe('Component', () => {
     it('should set the username on the state and render it', (done) => {
       component.fetchUser()
       .then(() => {
-        expect(ReactDOM.findDOMNode(component).textContent).toMatch('Iron Man');
+        expect(ReactDOM.findDOMNode(component).textContent).toMatch('Scarecrow');
         done();
       });
     })
