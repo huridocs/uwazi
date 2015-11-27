@@ -18,11 +18,13 @@ class Login extends Component {
   }
 
   user_change = (e) => {
-    this.setState({username:e.target.value});
+    this.state.credentials.username = e.target.value;
+    this.setState(this.state);
   }
 
   password_change = (e) => {
-    this.setState({password:e.target.value});
+    this.state.credentials.password = e.target.value;
+    this.setState(this.state);
   }
 
   submit = (e) => {

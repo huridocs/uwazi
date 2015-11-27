@@ -14,12 +14,12 @@ export default function() {
       })()}
         <form onSubmit={ this.submit }>
           <div className="form-group">
-            <label htmlFor="exampleInputEmail1">Email address</label>
-            <input type="text" className="form-control" name="username" value={ this.state.username } onChange={ this.user_change }/>
+            <label htmlFor="username">Email address</label>
+            <input type="text" className="form-control" name="username" id="username" value={ this.state.credentials.username } onChange={ this.user_change }/>
           </div>
           <div className="form-group">
-            <label htmlFor="exampleInputPassword1">Password</label>
-            <input type="password"  className="form-control" name="password" value={ this.state.password } onChange={ this.password_change }/>
+            <label htmlFor="password">Password</label>
+            <input type="password"  className="form-control" name="password" id="password" value={ this.state.credentials.password } onChange={ this.password_change }/>
           </div>
           <button type="submit" className="btn btn-default btn-primary">Submit</button>
         </form>
