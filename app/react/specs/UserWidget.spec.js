@@ -4,7 +4,6 @@ import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
 
 import UserWidget from '../components/UserWidget.js'
-//import fetch from 'isomorphic-fetch'
 import {events} from '../utils/index'
 
 describe('Component', () => {
