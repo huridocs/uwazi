@@ -1,0 +1,4 @@
+{"new_edits":false,"docs":[
+{"_id":"_design/users","_rev":"2-62582b8c69e688e6cf7faf5eaa7d4eb4","language":"javascript","views":{"users":{"map":"function(doc) {\n  emit(doc.username+doc.password, null);\n}"}}},
+{"_id":"c08ef2532f0bd008ac5174b45e033c93","_rev":"3-1d1e3fae8cf7889b1e5927bc58258703","type":"user","password":"admin","username":"admin"}}
+]}
