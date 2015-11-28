@@ -1,12 +1,38 @@
+import fetch from 'isomorphic-fetch'
 import React, { Component } from 'react'
-import { Link } from 'react-router'
+
+import {events} from '../utils/index'
+
 import Helmet from 'react-helmet'
-import './scss/App.scss'
 import UserWidget from './UserWidget'
+import { Link } from 'react-router'
+import './scss/App.scss'
 
 class App extends Component {
 
-  render() {
+  constructor(props) {
+    super(props);
+    this.fetch = props.fetch || fetch;
+    this.state = {};
+    this.fetchUser();
+    events.on('login', this.fetchUser);
+  }
+
+  fetchUser = () => {
+    return this.fetch('/api/user', {method:'GET',
+                 headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+                 },
+                 credentials: 'same-origin'})
+    .then((response) => response.json())
+    .then((response) => {
+      this.setState({user: response})
+    })
+  }
+
+
+  render = () => {
     return (
       <div>
         <Helmet
@@ -33,7 +59,7 @@ class App extends Component {
               <li><Link to='/'>Home</Link></li>
               <li><Link to='/users'>Users</Link></li>
              </ul>
-             <UserWidget/>
+              <UserWidget user={ this.state.user } />
            </div>
        </div>
      </nav>
