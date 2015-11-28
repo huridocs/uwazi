@@ -20,7 +20,7 @@ describe('users routes', () => {
       expect(args[0]).toBe('/api/users');
     });
 
-    it('should update user matching id and revision', (done) => {
+    it('should update user matching id and revision preserving all the other properties not sended like username', (done) => {
       let app = jasmine.createSpyObj('app', ['post']);
       users_routes(app);
       let users_post = app.post.calls.mostRecent().args[1];
@@ -30,7 +30,7 @@ describe('users routes', () => {
       fetch('http://127.0.0.1:5984/uwazi_development/c08ef2532f0bd008ac5174b45e033c93')
       .then(response => response.json())
       .then(user => {
-        let req = {body:{"_id":"c08ef2532f0bd008ac5174b45e033c93", "_rev":user._rev, "password":"new_password"}};
+        let req = {body:{"_id":user._id, "_rev":user._rev, "password":"new_password"}};
         users_post(req, res);
       })
 
