@@ -13,7 +13,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.fetch = props.fetch || fetch;
-    this.state = {};
+    this.state = {user: {}};
     this.fetchUser();
     events.on('login', this.fetchUser);
   }
@@ -31,6 +31,11 @@ class App extends Component {
     })
   }
 
+  renderChildren = () => {
+    return React.Children.map(this.props.children, (child, index) => {
+      return React.cloneElement(child, {user: this.state.user});
+    });
+  }
 
   render = () => {
     return (
@@ -64,7 +69,7 @@ class App extends Component {
        </div>
      </nav>
         <div className='container'>
-          {this.props.children}
+          {this.renderChildren()}
         </div>
       </div>
     )

@@ -26,7 +26,7 @@ describe('App', () => {
 
   beforeEach(() => {
     spyOn(events, 'on');
-    component = TestUtils.renderIntoDocument(<UserWidget fetch={fetch_rejected}/>);
+    component = TestUtils.renderIntoDocument(<App fetch={fetch_rejected}/>);
   })
 
   describe('on instance', () => {
@@ -37,7 +37,7 @@ describe('App', () => {
 
   describe('when fething user', () => {
     beforeEach(() => {
-      component = TestUtils.renderIntoDocument(<UserWidget fetch={fetch_mock}/>);
+      component = TestUtils.renderIntoDocument(<App fetch={fetch_mock}/>);
     })
 
     it('should set the username on the state and render it', (done) => {

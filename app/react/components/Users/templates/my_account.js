@@ -5,7 +5,7 @@ export default function() {
   return(
     <div className="row">
       <Helmet title="My account" />
-      <h1>My account</h1>
+      <h1>{this.props.user.username}</h1>
       <hr/>
       <h2>Update password</h2>
       <div className="col-xs-4">

@@ -15,7 +15,8 @@ describe('MyAccount', () => {
 
   function instantiate_component(res){
     fetch_mock = jasmine.createSpy('fetch_mock').and.returnValue(Promise.resolve(res));
-    component = TestUtils.renderIntoDocument(<MyAccount fetch={fetch_mock}/>);
+    let user = {_id: 1234, _rev: 001, username: 'SelinaKyle'};
+    component = TestUtils.renderIntoDocument(<MyAccount fetch={fetch_mock} user={user}/>);
   }
 
   beforeEach(() => instantiate_component(res));
