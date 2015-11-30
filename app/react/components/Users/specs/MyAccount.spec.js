@@ -49,14 +49,13 @@ describe('MyAccount', () => {
       });
     });
 
-    // describe('when passwords do not match', () => {
-    //   it('should set error true', () => {
-    //     expect(component.state.error).toBe(false);
-    //     component.setState({password: 'cat woman', repeat_password: 'dog woman'});
-    //     component.submit(new Event('submit'));
-    //     expect(component.state.feedback.message).toBe('Passwords should match');
-    //   });
-    // });
+    describe('when passwords do not match', () => {
+      it('should set error true', () => {
+        component.setState({password: 'cat woman', repeat_password: 'dog woman'});
+        component.submit(new Event('submit'));
+        expect(component.state.feedback.message).toBe('Passwords should match');
+      });
+    });
 
   });
 });

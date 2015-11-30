@@ -7,21 +7,23 @@ import Alert from '../Alert.js'
 
 describe('MyAccount', () => {
 
-  let component, message, type;
-
-  function instantiate_component(res){
-
-  }
-
-  beforeEach(() => {
-    message = 'Some feedback for the user'
-    type = 'info'
-    component = TestUtils.renderIntoDocument(<Alert message={message} type={type}/>);
-  });
+  let component;
+  let message = 'Some feedback for the user';
+  let type = 'info';
 
   describe('render()', () => {
+
     it('should render the message', () => {
+      component = TestUtils.renderIntoDocument(<Alert message={message} type={type}/>);
       expect(ReactDOM.findDOMNode(component).textContent).toMatch(message);
+    });
+
+    describe('when there is no message', function(){
+      it('should render an empty div', () => {
+        message = undefined;
+        component = TestUtils.renderIntoDocument(<Alert message={message} type={type}/>);
+        expect(ReactDOM.findDOMNode(component).innerHTML).toMatch('');
+      });
     });
   });
 });
