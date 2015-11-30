@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="75">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="b12c17be-bdf8-4e7b-bbf6-36f94e21a401" />
+  <pipelines group="defaultGroup">
+    <pipeline name="master">
+      <materials>
+        <git url="https://github.com/huridocs/uwazidocs.git" />
+      </materials>
+      <stage name="install_dependencies">
+        <jobs>
+          <job name="npm">
+            <tasks>
+              <exec command="rm">
+                <arg>-fR</arg>
+                <arg>node_modules</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="npm">
+                <arg>install</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="server_test">
+        <jobs>
+          <job name="test">
+            <tasks>
+              <exec command="node">
+                <arg>api_test.js</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="client_test">
+        <environmentvariables>
+          <variable name="DISPLAY">
+            <value>:99</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="test">
+            <tasks>
+              <exec command="echo">
+                <arg>'client test placeholder'</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="deploy">
+        <jobs>
+          <job name="deploy">
+            <tasks>
+              <exec command="webpack">
+                <runif status="passed" />
+              </exec>
+              <exec command="rm">
+                <arg>-fr</arg>
+                <arg>/home/deploys/dev</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="cp">
+                <arg>-fR</arg>
+                <arg>./</arg>
+                <arg>/home/deploys/dev</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="forever">
+                <arg>stop</arg>
+                <arg>/home/deploys/dev/server.js</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sh" workingdir="utils">
+                <arg>restore.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="forever">
+                <arg>start</arg>
+                <arg>/home/deploys/dev/server.js</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </pipelines>
+  <agents>
+    <agent hostname="uwazi" ipaddress="213.167.241.120" uuid="8d0f0656-ed3f-4120-bab2-ac54e5a820be" />
+  </agents>
+</cruise>
