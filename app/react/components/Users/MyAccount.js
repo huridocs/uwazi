@@ -34,7 +34,7 @@ class MyAccount extends Component {
 
     let user = this.props.user;
     user.password = this.state.password;
-    return this.fetch('/api/users', {method:'PUT',
+    return this.fetch('/api/users', {method:'POST',
                  headers: {
                    'Accept': 'application/json',
                    'Content-Type': 'application/json'
@@ -43,7 +43,6 @@ class MyAccount extends Component {
                  body: JSON.stringify(user)})
       .then((response) => {
         this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}})
-        events.emit('login');
       }
     );
   }
