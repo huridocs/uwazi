@@ -9,7 +9,7 @@ class UserWidget extends Component {
     return (
       <div>
         {(() => {
-          if(this.props.user){
+          if(this.props.user.username){
             return <ul className="nav navbar-nav navbar-right">
                       <li><Link className="glyphicon glyphicon-user" to='/my_account'> {this.props.user.username}</Link></li>
                       <li><a href="/logout">Logout</a></li>

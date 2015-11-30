@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
+import Alert from '../../Elements/Alert'
 
 export default function() {
   return(
@@ -9,11 +10,7 @@ export default function() {
       <hr/>
       <h2>Update password</h2>
       <div className="col-xs-4">
-      {(() => {
-        if(this.state.error){
-          return <p className="alert alert-warning">Passwords should match</p>
-        }
-      })()}
+        <Alert message={this.state.feedback.message} type={this.state.feedback.type} />
         <form onSubmit={ this.submit }>
           <div className="form-group">
             <label htmlFor="password">New password</label>

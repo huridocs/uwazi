@@ -7,21 +7,8 @@ class MyAccount extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {error: false};
+    this.state = {feedback: {}};
     this.fetch = props.fetch || fetch;
-  }
-
-  fetchUser = () => {
-    return this.fetch('/api/user', {method:'GET',
-                 headers: {
-                   'Accept': 'application/json',
-                   'Content-Type': 'application/json'
-                 },
-                 credentials: 'same-origin'})
-    .then((response) => response.json())
-    .then((response) => {
-      this.setState({username: response.username})
-    })
   }
 
   render = () => {
@@ -38,21 +25,27 @@ class MyAccount extends Component {
   }
 
   submit = (e) => {
-    this.setState({error: this.state.password !== this.state.repeat_password})
-    // e.preventDefault();
-    //
-    // return this.fetch('/api/login', {method:'POST',
-    //              headers: {
-    //                'Accept': 'application/json',
-    //                'Content-Type': 'application/json'
-    //              },
-    //              credentials: 'same-origin',
-    //              body: JSON.stringify(this.state.credentials)})
-    //   .then((response) => {
-    //     this.setState({error: response.status !== 200})
-    //     events.emit('login');
-    //   }
-    // );
+    e.preventDefault();
+
+    if(this.state.password !== this.state.repeat_password) {
+      this.setState({feedback: {message: 'Passwords should match', type: 'warning'}})
+      return;
+    }
+
+    let user = this.props.user;
+    user.password = this.state.password;
+    return this.fetch('/api/users', {method:'PUT',
+                 headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+                 },
+                 credentials: 'same-origin',
+                 body: JSON.stringify(user)})
+      .then((response) => {
+        this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}})
+        events.emit('login');
+      }
+    );
   }
 }
 

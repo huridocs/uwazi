@@ -11,7 +11,8 @@ describe('UserWidget', () => {
   let component;
 
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<UserWidget/>);
+    let user = {};
+    component = TestUtils.renderIntoDocument(<UserWidget user={user}/>);
   })
 
   it('should render the login link', () => {
