@@ -1,15 +1,15 @@
 import fetch from 'isomorphic-fetch';
+import {db_url} from '../config/database.js'
 
 export default app => {
 
   app.post('/api/users', (req, res) => {
 
-    fetch('http://127.0.0.1:5984/uwazi_development/'+req.body._id)
+    fetch(db_url+'/'+req.body._id)
     .then(response => response.json())
     .then(user => Object.assign(user, req.body))
     .then(user => {
-      fetch('http://127.0.0.1:5984/uwazi_development/'+user._id,
-      {
+      fetch(db_url+'/'+user._id, {
         method:'PUT',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         credentials: 'same-origin',

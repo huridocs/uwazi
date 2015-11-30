@@ -2,6 +2,7 @@ import users_routes from '../routes.js'
 import database from '../../utils/database.js'
 import fixtures from './fixtures.js'
 import fetch from 'isomorphic-fetch'
+import {db_url} from '../../config/database.js'
 
 describe('users routes', () => {
 
@@ -27,7 +28,7 @@ describe('users routes', () => {
 
       let res = {json: function(){}};
 
-      fetch('http://127.0.0.1:5984/uwazi_development/c08ef2532f0bd008ac5174b45e033c93')
+      fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c93')
       .then(response => response.json())
       .then(user => {
         let req = {body:{"_id":user._id, "_rev":user._rev, "password":"new_password"}};
@@ -37,7 +38,7 @@ describe('users routes', () => {
       spyOn(res, 'json').and.callFake((response) => {
         expect(response).toBe('');
 
-        fetch('http://127.0.0.1:5984/uwazi_development/c08ef2532f0bd008ac5174b45e033c93')
+        fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c93')
         .then(response => response.json())
         .then(user => {
           expect(user.password).toBe('new_password');
