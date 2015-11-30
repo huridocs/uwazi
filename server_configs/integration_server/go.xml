@@ -44,8 +44,9 @@
         <jobs>
           <job name="test">
             <tasks>
-              <exec command="echo">
-                <arg>'client test placeholder'</arg>
+              <exec command="./node_modules/karma/bin/karma">
+                <arg>start</arg>
+                <arg>karma_ci.conf.js</arg>
                 <runif status="passed" />
               </exec>
             </tasks>
