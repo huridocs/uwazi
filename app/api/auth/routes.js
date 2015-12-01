@@ -17,7 +17,7 @@ export default app => {
   });
 
   app.get('/api/user', function(req, res){
-    res.json(req.user)
+    res.json(req.user || {})
   });
 
   app.get('/logout', function(req, res){
