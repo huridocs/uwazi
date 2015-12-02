@@ -9,6 +9,7 @@ import Login from './components/Users/Login'
 import MyAccount from './components/Users/MyAccount'
 
 import Users from './components/Users'
+import FormExample from './components/Form/FormExample'
 
 export default (
   <Route path='/' component={App}>
@@ -16,6 +17,7 @@ export default (
     <Route path='users' component={Users} />
     <Route path='login' component={Login} />
     <Route path='my_account' component={MyAccount} />
+    <Route path='form' component={FormExample} />
     <Route path="*" component={NoMatch} />
   </Route>
 );
