@@ -17,7 +17,7 @@ class CleanPlugin {
 
 module.exports = {
 	entry: [
-		path.join(__dirname, 'app/index.js')
+		path.join(__dirname, 'app/react/index.js')
 	],
 	output: {
 		path: path.join(__dirname, '/dist/'),
@@ -43,7 +43,7 @@ module.exports = {
 		loaders: [{
 			test: /\.js?$/,
 			loader: 'babel-loader',
-			include: path.join(__dirname, 'app'),
+			include: path.join(__dirname, 'app/react'),
 			query: {
 				stage: 0
 			}

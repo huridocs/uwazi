@@ -7,8 +7,10 @@ require.extensions['.scss'] = function() {
 
 var express = require('express');
 var path = require('path');
+var compression = require('compression');
 const app = express();
 
+app.use(compression());
 app.use(express.static(path.resolve(__dirname, 'dist')));
 app.use(express.static(path.resolve(__dirname, 'bootstrap')));
 require('./app/api/api.js')(app);
