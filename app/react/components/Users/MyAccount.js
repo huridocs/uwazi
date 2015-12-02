@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react'
-import {events} from '../../utils/index'
 import template from './templates/my_account.js'
 import fetch from 'isomorphic-fetch'
 

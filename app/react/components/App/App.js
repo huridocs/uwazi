@@ -1,12 +1,12 @@
 import fetch from 'isomorphic-fetch'
 import React, { Component } from 'react'
 
-import {events} from '../utils/index'
+import {events} from '../../utils/index'
 
 import Helmet from 'react-helmet'
-import UserWidget from './UserWidget'
+import UserWidget from '../Users/UserWidget'
 import { Link } from 'react-router'
-import './scss/App.scss'
+import '../scss/App.scss'
 
 class App extends Component {
 

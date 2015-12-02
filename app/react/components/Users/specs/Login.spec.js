@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom'
 import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
 
-import Login from '../components/Login.js'
-import {events} from '../utils/index'
+import Login from '../Login.js'
+import {events} from '../../../utils/index'
 
 describe('Login', () => {
 

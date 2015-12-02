@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom'
 import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
 
-import UserWidget from '../components/UserWidget.js'
-import {events} from '../utils/index'
+import UserWidget from '../UserWidget.js'
 
 describe('UserWidget', () => {
 
