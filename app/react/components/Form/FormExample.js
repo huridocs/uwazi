@@ -1,21 +1,15 @@
 import React, { Component, PropTypes } from 'react'
 import ConfigInputField from './configFields/ConfigInputField.js'
-import ConfigSelectField from './configFields/ConfigSelectField.js'
 
 class FormExample extends Component {
 
   constructor (props) {
     super(props);
-    this.state = {fields: [{type:'text', label:'Email'}, {type:'select', label:'Select'}]};
+    this.state = {fields: [{type:'text', label:'Short text', required: true}, {type:'select', label:'Dropdown', required: false}]};
   }
 
   addInput = () => {
-    this.state.fields.push({type:'text', label:'Email'});
-    this.setState(this.state);
-  }
-
-  addSelect = () => {
-    this.state.fields.push({type:'select', label:'Select'});
+    this.state.fields.push({type:'text', label:'Short text', required: false});
     this.setState(this.state);
   }
 
@@ -24,24 +18,25 @@ class FormExample extends Component {
     this.setState(this.state);
   }
 
+  update = (index, field) => {
+    this.state.fields[index] = field;
+    this.setState(this.state);
+  }
+
   render = () => {
     return (
       <div>
-        <h1>Form Creator apah!</h1>
+        <h1>Form Creator!</h1>
         <div className="row">
           <div className="col-xs-2">
-            <a className="btn btn-primary" onClick={this.addInput}>Add input field</a>
-            <br/><br/>
-            <a className="btn btn-primary" onClick={this.addSelect}>Add select field</a>
+            <a className="btn btn-primary glyphicon glyphicon-plus" onClick={this.addInput}> Add field</a>
           </div>
           <div className="col-xs-8">
             <form className="form-horizontal">
-              <fieldset>
                 {this.state.fields.map((field, index) => {
-                  if(field.type == 'text') { return <ConfigInputField remove={this.remove.bind(this,index)} field={field} key={index}></ConfigInputField> }
-                  if(field.type == 'select') { return <ConfigSelectField remove={this.remove.bind(this,index)} field={field} key={index}></ConfigSelectField> }
+                  return <ConfigInputField remove={this.remove.bind(this,index)} update={this.update.bind(this,index)} field={field} key={index} />
                 })}
-              </fieldset>
+              <button type="submit" className="btn btn-default">Test validation!</button>
             </form>
           </div>
         </div>
