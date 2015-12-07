@@ -15,6 +15,12 @@ let database =  {
       credentials: 'same-origin',
       body: JSON.stringify(fixture)
     })
+    .then((response) => response.json())
+    .then((response) => {
+      if(response[0] && response[0].error){
+        throw JSON.stringify(response);
+      }
+    });
   }
 
 }
