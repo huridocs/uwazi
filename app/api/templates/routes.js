@@ -19,4 +19,17 @@ export default app => {
 
   });
 
+  app.get('/api/templates', (req, res) => {
+    fetch(db_url+'/_design/templates/_view/all', {
+      method:'GET',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then((response) => {
+      res.json(response)
+    });
+
+  });
+
 }
