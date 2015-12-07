@@ -5,12 +5,17 @@ class FormExample extends Component {
 
   constructor (props) {
     super(props);
-    this.state = {fields: [{type:'text', label:'Short text', required: true}, {type:'select', label:'Dropdown', required: false}]};
+    this.state = {fields: [{type:'input', label:'Short text', required: true}, {type:'select', label:'Dropdown', required: false}]};
   }
 
   addInput = () => {
-    this.state.fields.push({type:'text', label:'Short text', required: false});
+    this.state.fields.push({type:'input', label:'Short text', required: false});
     this.setState(this.state);
+  }
+
+  save = (e) => {
+    e.preventDefault();
+    console.log(this.state);
   }
 
   remove = (index) => {
@@ -32,11 +37,11 @@ class FormExample extends Component {
             <a className="btn btn-primary glyphicon glyphicon-plus" onClick={this.addInput}> Add field</a>
           </div>
           <div className="col-xs-8">
-            <form className="form-horizontal">
+            <form className="form-horizontal" onSubmit={this.save}>
                 {this.state.fields.map((field, index) => {
                   return <ConfigInputField remove={this.remove.bind(this,index)} update={this.update.bind(this,index)} field={field} key={index} />
                 })}
-              <button type="submit" className="btn btn-default">Test validation!</button>
+              <button type="submit" className="btn btn-default">Save !</button>
             </form>
           </div>
         </div>

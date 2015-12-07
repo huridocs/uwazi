@@ -7,7 +7,13 @@ class InputField extends Component {
       <div className="form-group col-xs-9">
         <label htmlFor="label" className="col-xs-2 control-label">{this.props.label}</label>
         <div className="col-xs-10">
-          <input type="text" ref={(ref) => this.input = ref} defaultValue={this.props.defaultValue} className="form-control" id="label" placeholder="placeholder"/>
+          <input type="text"
+            className="form-control"
+            id="label"
+            ref={(ref) => this.input = ref}
+            defaultValue={this.props.defaultValue}
+            placeholder="placeholder"
+          />
         </div>
       </div>
     )

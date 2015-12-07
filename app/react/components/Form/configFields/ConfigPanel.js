@@ -1,8 +1,10 @@
 import React, { Component, PropTypes } from 'react'
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
+
 import InputField from '../fields/InputField'
 import SelectField from '../fields/SelectField'
+import CheckBoxField from '../fields/CheckBoxField'
 
 class ConfigPanel extends Component {
 
@@ -17,17 +19,19 @@ class ConfigPanel extends Component {
 
   save = (e) => {
     e.preventDefault();
-    this.toggleModal()
+    this.toggleModal();
     this.props.field.label = this.label.input.value;
     this.props.field.type = this.type.input.value;
+    this.props.field.required = this.required.value();
     this.props.update(this.props.field);
   }
 
   render = () => {
 
     let typeOptions = [
-      {label: 'Short text', value: 'text'},
-      {label: 'Options dropdown', value: 'select'}
+      {label: 'Short text', value: 'input'},
+      {label: 'Options dropdown', value: 'select'},
+      {label: 'Check Box', value: 'checkbox'}
     ];
 
     return (
@@ -42,14 +46,17 @@ class ConfigPanel extends Component {
             <Modal.Header>
               <Modal.Title>Modal heading</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
-              <form onSubmit={this.save} className="form-horizontal">
 
+            <Modal.Body>
+
+              <form onSubmit={this.save} className="form-horizontal">
                 <SelectField label="Type" ref={(ref) => {this.type = ref}} defaultValue={this.props.field.type} options={typeOptions} />
                 <InputField label="Label" ref={(ref) => {this.label = ref}} defaultValue={this.props.field.label}/>
-
+                <CheckBoxField label="Required" ref={(ref) => {this.required = ref}} defaultValue={this.props.field.required}/>
               </form>
+
             </Modal.Body>
+
             <Modal.Footer>
               <Button onClick={this.save} bsStyle="primary">Save</Button>
               <Button onClick={this.toggleModal}>Cancel</Button>
