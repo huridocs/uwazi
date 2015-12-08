@@ -1,4 +1,7 @@
 {"new_edits":false,"docs":[
+{"_id":"_design/templates","_rev":"1-5b4f9f0dc75f71ee91d2252eac4cd3b6","language":"javascript","views":{"templates":{"map":"function(doc) {\nif(doc.type === 'template')\t\n  emit(doc._id, doc);\n}"}}},
 {"_id":"_design/users","_rev":"1-438b8df862307f443e9480fd155cdaa2","language":"javascript","views":{"users":{"map":"function(doc) {\n  emit(doc.username+doc.password, null);\n}"}}},
-{"_id":"c08ef2532f0bd008ac5174b45e033c93","_rev":"3-1d1e3fae8cf7889b1e5927bc58258703","type":"user","password":"admin","username":"admin"}}
+{"_id":"c08ef2532f0bd008ac5174b45e033c93","_rev":"3-1d1e3fae8cf7889b1e5927bc58258703","type":"user","password":"admin","username":"admin"},
+{"_id":"fac6cbbb5392698603da286ffa010496","_rev":"1-d5ee622c92a870301481555eb4b44ee3","type":"template","name":"test"},
+{"_id":"fac6cbbb5392698603da286ffa028663","_rev":"2-f18e47fe06218f9d4213036000c52d8e","fields":[{"type":"input","label":"Short text","required":true},{"type":"select","label":"Dropdown","required":false}],"type":"template","name":"template 1"}}
 ]}
