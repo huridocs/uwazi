@@ -34,4 +34,17 @@ export default app => {
 
   });
 
+  app.delete('/api/templates', (req, res) => {
+
+    fetch(db_url+'/'+req.body._id+'?rev='+req.body._rev, {
+      method:'DELETE',
+      credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then((response) => {
+      res.json(response)
+    });
+
+  });
+
 }

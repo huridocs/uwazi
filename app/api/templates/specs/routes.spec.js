@@ -9,7 +9,7 @@ describe('users routes', () => {
   let app;
 
   beforeEach((done) => {
-    app = jasmine.createSpyObj('app', ['get', 'post']);
+    app = jasmine.createSpyObj('app', ['get', 'post', 'delete']);
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
@@ -40,6 +40,45 @@ describe('users routes', () => {
     });
   });
 
+  describe("DELETE", () => {
+
+    it("should listen /api/templates", () => {
+      template_routes(app);
+      let args = app.delete.calls.mostRecent().args;
+      expect(args[0]).toBe('/api/templates');
+    });
+
+    it("should delete a template", (done) => {
+
+      template_routes(app);
+      let templates_delete = app.delete.calls.mostRecent().args[1];
+
+      let res = {json: function(){}};
+
+      fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c93')
+      .then(response => response.json())
+      .then(template => {
+        let req = {body:{"_id":template._id, "_rev":template._rev}};
+        templates_delete(req, res);
+      })
+
+      spyOn(res, 'json').and.callFake((response) => {
+
+        fetch(db_url+'/_design/templates/_view/all')
+        .then(response => response.json())
+        .then(couchdb_response => {
+          let docs = couchdb_response.rows;
+          expect(docs.length).toBe(0);
+          done();
+        })
+        .catch(done.fail);
+
+      });
+
+    });
+
+  });
+
   describe('POST', () => {
     it('should listen /api/templates', () => {
       template_routes(app);
@@ -55,7 +94,7 @@ describe('users routes', () => {
       let req = {body:{name:'template_test',  "data":"test_data"}};
 
       spyOn(res, 'json').and.callFake((response) => {
-        expect(response).toBe('');
+        // expect(response).toBe('');
 
         fetch(db_url+'/_design/templates/_view/all')
         .then(response => response.json())
