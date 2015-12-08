@@ -13,13 +13,15 @@ export default app => {
       credentials: 'same-origin',
       body: JSON.stringify(req.body)
     })
+    .then((response) => response.json())
     .then((response) => {
-      res.json('')
+      res.json(response);
     });
 
   });
 
   app.get('/api/templates', (req, res) => {
+
     fetch(db_url+'/_design/templates/_view/all', {
       method:'GET',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },

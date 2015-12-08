@@ -63,6 +63,7 @@ class App extends Component {
              <ul className="nav navbar-nav">
               <li><Link to='/'>Home</Link></li>
               <li><Link to='/users'>Users</Link></li>
+              <li><Link to='/template'>templates</Link></li>
              </ul>
               <UserWidget user={ this.state.user } />
            </div>

@@ -12,5 +12,6 @@ export default app => {
   //module routes
   require('./auth/routes.js')(app);
   require('./users/routes.js')(app);
+  require('./templates/routes.js')(app);
 
 }

@@ -54,8 +54,13 @@ function handleRoute(res, renderProps) {
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(response) {
-    const wholeHtml = renderComponentWithRoot(RoutingContext, renderProps, response);
-    res.status(200).send(wholeHtml);
+    try {
+      const wholeHtml = renderComponentWithRoot(RoutingContext, renderProps, response);
+      res.status(200).send(wholeHtml);
+    }
+    catch(error){
+      console.trace(error);
+    }
   }
 
   if (routeProps.requestState) {
