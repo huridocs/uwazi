@@ -1,14 +1,16 @@
 import fetch from 'isomorphic-fetch'
 import React, { Component, PropTypes } from 'react'
+import { Link } from 'react-router'
 
 class TemplatesList extends Component {
 
-  renderTemplates() {
+  renderTemplates = () => {
     if (this.props.templates) {
       return (
         <ul>
           {this.props.templates.map(template => {
-            return <li key={template.id}>{template.value.name}</li>;
+            let template_url = '/template/edit/'+template.id;
+            return <li key={template.id}><Link to={template_url}>{template.value.name}</Link></li>;
           })}
         </ul>
       )
@@ -19,7 +21,23 @@ class TemplatesList extends Component {
     }
   }
 
-  render() {
+  loadTemplate = (template_id) => {
+    // e.preventDefault();
+    // return this.fetch('/api/login', {method:'POST',
+    //              headers: {
+    //                'Accept': 'application/json',
+    //                'Content-Type': 'application/json'
+    //              },
+    //              credentials: 'same-origin',
+    //              body: JSON.stringify(this.state.credentials)})
+    //   .then((response) => {
+    //     this.setState({error: response.status !== 200})
+    //     events.emit('login');
+    //   }
+    // );
+  }
+
+  render = () => {
     return (
       <div>
         <h4>Users</h4>

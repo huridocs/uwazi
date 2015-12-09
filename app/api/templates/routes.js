@@ -22,7 +22,14 @@ export default app => {
 
   app.get('/api/templates', (req, res) => {
 
-    fetch(db_url+'/_design/templates/_view/all', {
+    let id = '';
+    if(req.query && req.query._id){
+      id = '?key="'+req.query._id+'"';
+    }
+
+    console.log(db_url+'/_design/templates/_view/all'+id);
+
+    fetch(db_url+'/_design/templates/_view/all'+id, {
       method:'GET',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
       credentials: 'same-origin'

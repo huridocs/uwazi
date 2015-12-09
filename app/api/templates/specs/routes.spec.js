@@ -38,6 +38,25 @@ describe('users routes', () => {
 
       templates_get(req, res);
     });
+
+    describe("when passing id", () => {
+      it("should return matching template", (done) => {
+        template_routes(app);
+        let templates_get = app.get.calls.mostRecent().args[1];
+
+        let res = {json: function(){}};
+        let req = {body:{_id:'c08ef2532f0bd008ac5174b45e033c94'}};
+
+        spyOn(res, 'json').and.callFake((response) => {
+          let docs = response.rows;
+          expect(docs[0].value.name).toBe('template_test2');
+          done();
+        });
+
+        templates_get(req, res);
+      });
+    });
+
   });
 
   describe("DELETE", () => {
@@ -68,7 +87,8 @@ describe('users routes', () => {
         .then(response => response.json())
         .then(couchdb_response => {
           let docs = couchdb_response.rows;
-          expect(docs.length).toBe(0);
+          expect(docs.length).toBe(1);
+          expect(docs[0].value.name).toBe('template_test2');
           done();
         })
         .catch(done.fail);
@@ -101,8 +121,8 @@ describe('users routes', () => {
         .then(couchdb_response => {
           let docs = couchdb_response.rows;
 
-          expect(docs[1].value.name).toBe('template_test');
-          expect(docs[1].value.data).toBe('test_data');
+          expect(docs[2].value.name).toBe('template_test');
+          expect(docs[2].value.data).toBe('test_data');
           done();
         })
         .catch(done.fail);

@@ -10,6 +10,7 @@ import MyAccount from './components/Users/MyAccount'
 
 import Users from './components/Users'
 import FormCreator from './components/Form/FormCreator'
+import EditTemplate from './components/Form/EditTemplate'
 
 export default (
   <Route path='/' component={App}>
@@ -18,6 +19,7 @@ export default (
     <Route path='login' component={Login} />
     <Route path='my_account' component={MyAccount} />
     <Route path='template' component={FormCreator} />
+    <Route path='template/edit/:templateId' component={FormCreator} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

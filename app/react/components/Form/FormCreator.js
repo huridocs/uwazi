@@ -17,9 +17,19 @@ class FormCreator extends Component {
       });
   }
 
+  static requestTemplate(templateId) {
+    return fetch('http://localhost:3000/api/templates?_id='+templateId)
+      .then((response) => response.json())
+      .then((response) => {
+        return response.rows[0];
+      })
+  }
+
   constructor (props, context) {
     super(props, context);
     this.fetch = props.fetch || fetch;
+
+    this.templateId = props.params.templateId;
 
     if (!context.getInitialData(this)) {
       FormCreator.requestState()
@@ -29,9 +39,20 @@ class FormCreator extends Component {
     }
 
     this.state = {
-      template: {name:'template name', fields: [{type:'input', label:'Short text', required: true}, {type:'select', label:'Dropdown', required: false}]},
+      template: {name:'template name', fields: [{type:'input', label:'Short textsss', required: true}, {type:'select', label:'Dropdown', required: false}]},
       templates: context.getInitialData(this)
-    };
+    }
+  }
+
+  componentDidUpdate = () => {
+    if (this.props.params.templateId !== this.templateId) {
+      this.templateId = this.props.params.templateId;
+      FormCreator.requestTemplate(this.props.params.templateId)
+      .then(template => {
+        template.value.fields = template.value.fields || [];
+        this.setState({ template: template.value });
+      });
+    }
   }
 
   addInput = () => {
@@ -65,6 +86,8 @@ class FormCreator extends Component {
   }
 
   render = () => {
+
+
     return (
       <div>
         <h1>Form Creator!</h1>
