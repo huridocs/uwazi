@@ -27,8 +27,6 @@ export default app => {
       id = '?key="'+req.query._id+'"';
     }
 
-    console.log(db_url+'/_design/templates/_view/all'+id);
-
     fetch(db_url+'/_design/templates/_view/all'+id, {
       method:'GET',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },

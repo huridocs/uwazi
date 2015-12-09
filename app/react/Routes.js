@@ -10,7 +10,6 @@ import MyAccount from './components/Users/MyAccount'
 
 import Users from './components/Users'
 import FormCreator from './components/Form/FormCreator'
-import EditTemplate from './components/Form/EditTemplate'
 
 export default (
   <Route path='/' component={App}>

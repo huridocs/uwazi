@@ -44,14 +44,19 @@ class FormCreator extends Component {
     }
   }
 
-  componentDidUpdate = () => {
-    if (this.props.params.templateId !== this.templateId) {
-      this.templateId = this.props.params.templateId;
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.params.templateId && this.props.params.templateId !== nextProps.params.tempalteId) {
+
       FormCreator.requestTemplate(this.props.params.templateId)
       .then(template => {
         template.value.fields = template.value.fields || [];
         this.setState({ template: template.value });
       });
+
+    }
+
+    if(!nextProps.params.templateId){
+      this.setState({ template: {name:'template name', fields: [{type:'input', label:'Short textsss', required: true}, {type:'select', label:'Dropdown', required: false}]}});
     }
   }
 
@@ -86,8 +91,6 @@ class FormCreator extends Component {
   }
 
   render = () => {
-
-
     return (
       <div>
         <h1>Form Creator!</h1>
