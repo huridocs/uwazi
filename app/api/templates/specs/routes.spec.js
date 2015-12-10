@@ -106,7 +106,7 @@ describe('users routes', () => {
       expect(args[0]).toBe('/api/templates');
     });
 
-    fit('should create a template', (done) => {
+    it('should create a template', (done) => {
       template_routes(app);
       let templates_post = app.post.calls.mostRecent().args[1];
 
