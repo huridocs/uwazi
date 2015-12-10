@@ -27,7 +27,7 @@
     "es6-promise": "^3.0.2",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
-    "history": "^1.12.5",
+    "history": "1.13.x",
     "isomorphic-fetch": "^2.2.0",
     "jvent": "^0.2.0",
     "passport": "^0.3.2",
