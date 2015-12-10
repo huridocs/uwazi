@@ -45,7 +45,7 @@ describe('users routes', () => {
         let templates_get = app.get.calls.mostRecent().args[1];
 
         let res = {json: function(){}};
-        let req = {body:{_id:'c08ef2532f0bd008ac5174b45e033c94'}};
+        let req = {query:{_id:'c08ef2532f0bd008ac5174b45e033c94'}};
 
         spyOn(res, 'json').and.callFake((response) => {
           let docs = response.rows;
@@ -130,7 +130,37 @@ describe('users routes', () => {
       });
 
       templates_post(req, res);
+    });
 
+    describe("when passing _id and _rev", () => {
+      it("edit an existing one", (done) => {
+        template_routes(app);
+        let templates_post = app.post.calls.mostRecent().args[1];
+
+        let res = {json: function(){}};
+
+        fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c94')
+        .then(response => response.json())
+        .then(template => {
+          let req = {body:{_id: template._id, _rev: template._rev, name:'changed name'}};
+          templates_post(req, res);
+        })
+        .catch(done.fail)
+
+        spyOn(res, 'json').and.callFake((response) => {
+          // expect(response).toBe('');
+
+          fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c94')
+          .then(response => response.json())
+          .then(template => {
+            expect(template.name).toBe('changed name');
+            done();
+          })
+          .catch(done.fail);
+
+        });
+
+      });
     });
   });
 });

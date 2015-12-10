@@ -45,9 +45,10 @@ class FormCreator extends Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    if (nextProps.params.templateId && this.props.params.templateId !== nextProps.params.tempalteId) {
 
-      FormCreator.requestTemplate(this.props.params.templateId)
+    if (nextProps.params.templateId && this.props.params != nextProps.params) {
+
+      FormCreator.requestTemplate(nextProps.params.templateId)
       .then(template => {
         template.value.fields = template.value.fields || [];
         this.setState({ template: template.value });
@@ -73,7 +74,7 @@ class FormCreator extends Component {
                    'Content-Type': 'application/json'
                  },
                  credentials: 'same-origin',
-                 body: JSON.stringify(this.state)})
+                 body: JSON.stringify(this.state.template)})
       .then((response) => {
         this.setState({error: response.status !== 200})
       }
