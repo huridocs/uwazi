@@ -8,9 +8,9 @@ class TemplatesList extends Component {
     if (this.props.templates) {
       return (
         <ul>
-          {this.props.templates.map(template => {
+          {this.props.templates.map((template, index) => {
             let template_url = '/template/edit/'+template.id;
-            return <li key={template.id}><Link to={template_url}>{template.value.name}</Link></li>;
+            return <li key={template.id}><Link to={template_url}>{template.value.name}</Link> <a href="#" onClick={this.delete.bind(this, template)}>Delete</a></li>;
           })}
         </ul>
       )
@@ -21,20 +21,16 @@ class TemplatesList extends Component {
     }
   }
 
-  loadTemplate = (template_id) => {
-    // e.preventDefault();
-    // return this.fetch('/api/login', {method:'POST',
-    //              headers: {
-    //                'Accept': 'application/json',
-    //                'Content-Type': 'application/json'
-    //              },
-    //              credentials: 'same-origin',
-    //              body: JSON.stringify(this.state.credentials)})
-    //   .then((response) => {
-    //     this.setState({error: response.status !== 200})
-    //     events.emit('login');
-    //   }
-    // );
+  delete = (template, event) => {
+    event.preventDefault();
+    return fetch('/api/templates', {method:'DELETE',
+                 headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+                 },
+                 credentials: 'same-origin',
+                 body: JSON.stringify(template.value)})
+      .then((response) => { });
   }
 
   render = () => {
