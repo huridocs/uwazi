@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch';
+import request from '../utils/JSONRequest.js';
 import {db_url} from '../config/database.js'
 
 export default app => {
@@ -7,13 +7,7 @@ export default app => {
 
     req.body.type = 'template';
 
-    fetch(db_url, {
-      method:'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify(req.body)
-    })
-    .then((response) => response.json())
+    request.post(db_url, req.body)
     .then((response) => {
       res.json(response);
     });
@@ -27,25 +21,20 @@ export default app => {
       id = '?key="'+req.query._id+'"';
     }
 
-    fetch(db_url+'/_design/templates/_view/all'+id, {
-      method:'GET',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      credentials: 'same-origin'
-    })
-    .then(response => response.json())
+    let url = db_url+'/_design/templates/_view/all'+id;
+
+    request.get(url)
     .then((response) => {
-      res.json(response)
+      res.json(response);
     });
 
   });
 
   app.delete('/api/templates', (req, res) => {
 
-    fetch(db_url+'/'+req.body._id+'?rev='+req.body._rev, {
-      method:'DELETE',
-      credentials: 'same-origin'
-    })
-    .then(response => response.json())
+    let url = db_url+'/'+req.body._id+'?rev='+req.body._rev;
+
+    request.delete(url)
     .then((response) => {
       res.json(response)
     });
