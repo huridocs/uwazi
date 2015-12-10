@@ -106,12 +106,12 @@ describe('users routes', () => {
       expect(args[0]).toBe('/api/templates');
     });
 
-    it('should create a template', (done) => {
+    fit('should create a template', (done) => {
       template_routes(app);
       let templates_post = app.post.calls.mostRecent().args[1];
 
       let res = {json: function(){}};
-      let req = {body:{name:'template_test',  "data":"test_data"}};
+      let req = {body:{name:'created_template'}};
 
       spyOn(res, 'json').and.callFake((response) => {
         // expect(response).toBe('');
@@ -119,10 +119,11 @@ describe('users routes', () => {
         fetch(db_url+'/_design/templates/_view/all')
         .then(response => response.json())
         .then(couchdb_response => {
-          let docs = couchdb_response.rows;
+          let new_doc = couchdb_response.rows.find((template) => {
+            return template.value.name == 'created_template';
+          });
 
-          expect(docs[2].value.name).toBe('template_test');
-          expect(docs[2].value.data).toBe('test_data');
+          expect(new_doc.value.name).toBe('created_template');
           done();
         })
         .catch(done.fail);
