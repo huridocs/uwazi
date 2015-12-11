@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch';
+import 'isomorphic-fetch';
 
 let _fetch = (url, data, method) => {
 

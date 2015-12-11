@@ -9,8 +9,12 @@ module.exports = function (config) {
     files: [
       'tests.webpack.js' //just load this file
     ],
-    plugins: [ 'karma-firefox-launcher', 'karma-jasmine',
-      'karma-sourcemap-loader', 'karma-webpack', 'karma-coverage'
+    plugins: [
+      'karma-firefox-launcher',
+      'karma-jasmine',
+      'karma-sourcemap-loader',
+      'karma-webpack',
+      'karma-coverage'
     ],
     preprocessors: {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ] //preprocess with webpack and our sourcemap loader

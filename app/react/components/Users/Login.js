@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import {events} from '../../utils/index'
 import template from './templates/login.js'
-import fetch from '../../../shared/JSONRequest'
+import api from '../../../shared/JSONRequest'
 
 class Login extends Component {
 
@@ -9,7 +9,6 @@ class Login extends Component {
     super(props);
     this.state = {error: false};
     this.state.credentials = {username:'', password:''}
-    this.fetch = props.fetch || fetch;
   }
 
   render = () => {
@@ -30,7 +29,7 @@ class Login extends Component {
   submit = (e) => {
     e.preventDefault();
 
-    return this.fetch.post('/api/login', this.state.credentials)
+    return api.post('http://localhost:3000/api/login', this.state.credentials)
       .then((response) => {
         this.setState({error: response.status !== 200})
         events.emit('login');
