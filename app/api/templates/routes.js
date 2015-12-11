@@ -1,4 +1,4 @@
-import request from '../utils/JSONRequest.js';
+import request from '../../shared/JSONRequest.js';
 import {db_url} from '../config/database.js'
 
 export default app => {
@@ -9,7 +9,7 @@ export default app => {
 
     request.post(db_url, req.body)
     .then((response) => {
-      res.json(response);
+      res.json();
     });
 
   });
@@ -25,7 +25,7 @@ export default app => {
 
     request.get(url)
     .then((response) => {
-      res.json(response);
+      res.json(response.json);
     });
 
   });
@@ -36,7 +36,7 @@ export default app => {
 
     request.delete(url)
     .then((response) => {
-      res.json(response)
+      res.json()
     });
 
   });

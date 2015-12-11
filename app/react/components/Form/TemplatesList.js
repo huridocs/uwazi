@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch'
+import request from '../../../shared/JSONRequest'
 import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 
@@ -23,14 +23,8 @@ class TemplatesList extends Component {
 
   delete = (template, event) => {
     event.preventDefault();
-    return fetch('/api/templates', {method:'DELETE',
-                 headers: {
-                   'Accept': 'application/json',
-                   'Content-Type': 'application/json'
-                 },
-                 credentials: 'same-origin',
-                 body: JSON.stringify(template.value)})
-      .then((response) => { });
+    return request.delete('/api/templates', template.value)
+    .then((response) => { });
   }
 
   render = () => {
