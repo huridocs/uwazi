@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import {events} from '../../utils/index'
 import template from './templates/login.js'
-import api from '../../../shared/JSONRequest'
+import api from '../../utils/api'
 
 class Login extends Component {
 
@@ -29,7 +29,7 @@ class Login extends Component {
   submit = (e) => {
     e.preventDefault();
 
-    return api.post('http://localhost:3000/api/login', this.state.credentials)
+    return api.post('login', this.state.credentials)
       .then((response) => {
         this.setState({error: response.status !== 200})
         events.emit('login');
