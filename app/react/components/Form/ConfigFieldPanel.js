@@ -36,6 +36,7 @@ class ConfigFieldPanel extends Component {
 
     let typeOptions = [
       {label: 'Short text', value: 'input'},
+      {label: 'Large text', value: 'textarea'},
       {label: 'Options dropdown', value: 'select'},
       {label: 'Check Box', value: 'checkbox'}
     ];
