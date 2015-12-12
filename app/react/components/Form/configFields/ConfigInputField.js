@@ -8,7 +8,7 @@ class ConfigInputField extends Component {
     return (
       <div className="row">
         <Field config={this.props.field}/>
-        <ConfigFieldPanel remove={this.props.remove} field={this.props.field} update={this.props.update}></ConfigFieldPanel>
+        <ConfigFieldPanel remove={this.props.remove} field={this.props.field} save={this.props.save}></ConfigFieldPanel>
       </div>
     )
   }

@@ -103,7 +103,7 @@ class FormCreator extends Component {
           <div className="col-xs-8">
             <form className="form-horizontal" onSubmit={this.save}>
                 {this.state.template.fields.map((field, index) => {
-                  return <ConfigInputField remove={this.remove.bind(this,index)} update={this.update.bind(this,index)} field={field} key={index} />
+                  return <ConfigInputField remove={this.remove.bind(this,index)} save={this.update.bind(this,index)} field={field} key={index} />
                 })}
               <button type="submit" className="btn btn-default">Save !</button>
             </form>

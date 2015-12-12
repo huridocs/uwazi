@@ -9,7 +9,7 @@ describe('ConfigFieldForm', () => {
   let component;
 
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<ConfigFieldPanel/>);
+    component = TestUtils.renderIntoDocument(<ConfigFieldPanel field={{}} />);
   });
 
   describe('on instance', () => {
@@ -41,7 +41,7 @@ describe('ConfigFieldForm', () => {
         done();
       };
 
-      component = TestUtils.renderIntoDocument(<ConfigFieldPanel save={save_function}/>);
+      component = TestUtils.renderIntoDocument(<ConfigFieldPanel save={save_function} field={{}}/>);
       spyOn(component, 'toggleModal');
       component.fields = {property1: {value: () => 1}, property2: {value: () => 2}};
 
