@@ -2,6 +2,10 @@ import React, { Component, PropTypes } from 'react'
 
 class InputField extends Component {
 
+  value = () => {
+    return this.field.value
+  }
+
   render = () => {
     return (
       <div className="form-group col-xs-9">
@@ -10,7 +14,7 @@ class InputField extends Component {
           <input type="text"
             className="form-control"
             id="label"
-            ref={(ref) => this.input = ref}
+            ref={(ref) => this.field = ref}
             defaultValue={this.props.defaultValue}
             placeholder="placeholder"
           />
