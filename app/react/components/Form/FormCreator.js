@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
-import fetch from 'isomorphic-fetch'
+import api from '../../utils/api'
 
 class FormCreator extends Component {
 
@@ -9,55 +9,68 @@ class FormCreator extends Component {
     getInitialData: PropTypes.func
   }
 
-  static requestState() {
-    return fetch('http://localhost:3000/api/templates')
-      .then((response) => response.json())
-      .then((response) => {
-        return response.rows;
-      });
+  static defaultTemplate = {
+    name:'template name',
+    fields: [
+      {type:'input', label:'Short textsss', required: true},
+      {type:'select', label:'Dropdown', required: false}
+    ]
+  };
+
+
+  static requestState(params) {
+    return Promise.all([
+      api.get('templates'),
+      FormCreator.requestTemplate(params.templateId)
+    ])
+    .then(responses => {
+      return {
+        templates: responses[0].json.rows,
+        template: responses[1]
+      };
+    })
   }
 
   static requestTemplate(templateId) {
-    return fetch('http://localhost:3000/api/templates?_id='+templateId)
-      .then((response) => response.json())
-      .then((response) => {
-        return response.rows[0];
-      })
+    if(templateId){
+      return api.get('templates?_id='+templateId)
+      .then((response) => response.json.rows[0].value);
+    }
+    return Promise.resolve(FormCreator.defaultTemplate)
   }
 
   constructor (props, context) {
     super(props, context);
-    this.fetch = props.fetch || fetch;
 
     this.templateId = props.params.templateId;
 
     if (!context.getInitialData(this)) {
-      FormCreator.requestState()
-      .then(templates => {
-        this.setState({ templates: templates });
-      });
+      FormCreator.requestState(props.params)
+      .then(state => { this.setState(state); });
     }
 
-    this.state = {
-      template: {name:'template name', fields: [{type:'input', label:'Short textsss', required: true}, {type:'select', label:'Dropdown', required: false}]},
-      templates: context.getInitialData(this)
+    this.state = context.getInitialData(this);
+
+    if(!this.state){
+      this.state = {
+        template: {fields:[]},
+        templates: []
+      }
     }
+
   }
 
   componentWillReceiveProps = (nextProps) => {
-
     if (nextProps.params.templateId && this.props.params != nextProps.params) {
-
       FormCreator.requestTemplate(nextProps.params.templateId)
       .then(template => {
-        template.value.fields = template.value.fields || [];
-        this.setState({ template: template.value });
+        template.fields = template.fields || [];
+        this.setState({ template: template });
       });
-
     }
 
     if(!nextProps.params.templateId){
-      this.setState({ template: {name:'template name', fields: [{type:'input', label:'Short textsss', required: true}, {type:'select', label:'Dropdown', required: false}]}});
+      this.setState({ template: FormCreator.defaultTemplate });
     }
   }
 
@@ -68,17 +81,8 @@ class FormCreator extends Component {
 
   save = (e) => {
     e.preventDefault();
-    return this.fetch('/api/templates', {method:'POST',
-                 headers: {
-                   'Accept': 'application/json',
-                   'Content-Type': 'application/json'
-                 },
-                 credentials: 'same-origin',
-                 body: JSON.stringify(this.state.template)})
-      .then((response) => {
-        this.setState({error: response.status !== 200})
-      }
-    );
+    return api.post('templates', this.state.template)
+    .then((response) => this.setStatus({}));
   }
 
   remove = (index) => {
@@ -98,13 +102,13 @@ class FormCreator extends Component {
         <div className="row">
           <div className="col-xs-2">
             <a className="btn btn-primary glyphicon glyphicon-plus" onClick={this.addInput}> Add field</a>
-            <TemplatesList templates={this.state.templates}/>
+            <TemplatesList templates={this.state.templates || []}/>
           </div>
           <div className="col-xs-8">
             <form className="form-horizontal" onSubmit={this.save}>
-                {this.state.template.fields.map((field, index) => {
-                  return <ConfigInputField remove={this.remove.bind(this,index)} save={this.update.bind(this,index)} field={field} key={index} />
-                })}
+              {this.state.template.fields.map((field, index) => {
+                return <ConfigInputField remove={this.remove.bind(this,index)} save={this.update.bind(this,index)} field={field} key={index} />
+              })}
               <button type="submit" className="btn btn-default">Save !</button>
             </form>
           </div>
