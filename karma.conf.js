@@ -16,6 +16,7 @@ module.exports = function (config) {
       'karma-webpack',
       'karma-coverage'
     ],
+    browserNoActivityTimeout: 1000000,
     preprocessors: {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ] //preprocess with webpack and our sourcemap loader
     },
