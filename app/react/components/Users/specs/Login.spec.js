@@ -15,7 +15,7 @@ describe('Login', () => {
 
   beforeEach(() => {
     component = TestUtils.renderIntoDocument(<Login/>);
-    
+
     backend.restore();
     backend.mock('http://localhost:3000/api/login', JSON.stringify({}));
   });
