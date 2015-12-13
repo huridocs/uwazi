@@ -23,7 +23,7 @@ describe('JSONRequest', () => {
     });
 
     describe('when response is greater than 399', () => {
-      fit("should throw an error", (done) => {
+      it("should throw an error", (done) => {
         backend.reMock('http://localhost:3000/api/test', 'POST', {status:400});
 
         request.post('http://localhost:3000/api/test')
@@ -50,7 +50,7 @@ describe('JSONRequest', () => {
     });
 
     describe('when response is greater than 399', () => {
-      fit("should throw an error", (done) => {
+      it("should throw an error", (done) => {
         backend.reMock('http://localhost:3000/api/test', 'GET', {status:500});
 
         request.get('http://localhost:3000/api/test')
@@ -78,7 +78,7 @@ describe('JSONRequest', () => {
     });
 
     describe('when response is greater than 399', () => {
-      fit("should throw an error", (done) => {
+      it("should throw an error", (done) => {
         backend.reMock('http://localhost:3000/api/test', 'DELETE', {status:404});
 
         request.delete('http://localhost:3000/api/test')
