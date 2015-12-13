@@ -2,8 +2,23 @@ import React, { Component, PropTypes } from 'react'
 
 class InputField extends Component {
 
+  constructor(props) {
+    super(props),
+    this.state = {value: props.value};
+  }
+
   value = () => {
     return this.field.value
+  }
+
+  handleChange = () => {
+    this.setState({value: this.value()});
+  }
+
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.value !== this.props.value){
+      this.setState({value:this.props.value});
+    }
   }
 
   render = () => {
@@ -16,6 +31,8 @@ class InputField extends Component {
             id="label"
             ref={(ref) => this.field = ref}
             defaultValue={this.props.defaultValue}
+            value={this.state.value}
+            onChange={this.handleChange}
             placeholder="placeholder"
           />
         </div>

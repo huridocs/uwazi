@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
+import InputField from './fields/InputField.js'
 import api from '../../utils/api'
 
 class FormCreator extends Component {
@@ -81,8 +82,9 @@ class FormCreator extends Component {
 
   save = (e) => {
     e.preventDefault();
+    this.state.template.name = this.inputName.value();
     return api.post('templates', this.state.template)
-    .then((response) => this.setStatus({}));
+    .then((response) => this.setState({}));
   }
 
   remove = (index) => {
@@ -105,6 +107,7 @@ class FormCreator extends Component {
             <TemplatesList templates={this.state.templates || []}/>
           </div>
           <div className="col-xs-8">
+            <InputField label="Template name" value={this.state.template.name} ref={(ref) => this.inputName = ref}/>
             <form className="form-horizontal" onSubmit={this.save}>
               {this.state.template.fields.map((field, index) => {
                 return <ConfigInputField remove={this.remove.bind(this,index)} save={this.update.bind(this,index)} field={field} key={index} />
