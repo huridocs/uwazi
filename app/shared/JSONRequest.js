@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 
-let _fetch = (url, data, method) => {
+let _fetch = (url, data = {}, method) => {
 
   let response;
 
@@ -11,6 +11,10 @@ let _fetch = (url, data, method) => {
     body: JSON.stringify(data)
   })
   .then((res) => {
+    if (res.status > 399){
+      throw res;
+    }
+
     response = res;
     return res.json()
   })
