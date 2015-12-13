@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 
-let _fetch = (url, data = {}, method) => {
+let _fetch = (url, data, method) => {
 
   let response;
 
