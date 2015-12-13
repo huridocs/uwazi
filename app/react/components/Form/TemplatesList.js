@@ -53,7 +53,7 @@ class TemplatesList extends Component {
   render = () => {
     return (
       <div>
-        <h4>Users</h4>
+        <h4>Templates</h4>
         {this.renderTemplates()}
       </div>
     )
