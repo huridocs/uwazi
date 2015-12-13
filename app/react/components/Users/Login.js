@@ -30,11 +30,13 @@ class Login extends Component {
     e.preventDefault();
 
     return api.post('login', this.state.credentials)
-      .then((response) => {
-        this.setState({error: response.status !== 200})
-        events.emit('login');
-      }
-    );
+    .then((response) => {
+      this.setState({error: false})
+      events.emit('login');
+    })
+    .catch(() => {
+      this.setState({error: true})
+    });
   }
 }
 
