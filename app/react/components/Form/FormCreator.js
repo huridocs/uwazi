@@ -21,15 +21,20 @@ class FormCreator extends Component {
 
   static requestState(params) {
     return Promise.all([
-      api.get('templates'),
+      FormCreator.requestTemplates(),
       FormCreator.requestTemplate(params.templateId)
     ])
     .then(responses => {
       return {
-        templates: responses[0].json.rows,
+        templates: responses[0],
         template: responses[1]
       };
     })
+  }
+
+  static requestTemplates(){
+    return api.get('templates')
+    .then((response) => response.json.rows)
   }
 
   static requestTemplate(templateId) {
@@ -84,7 +89,12 @@ class FormCreator extends Component {
     e.preventDefault();
     this.state.template.name = this.inputName.value();
     return api.post('templates', this.state.template)
-    .then((response) => this.setState({}));
+    .then((response) => {
+      return FormCreator.requestTemplates();
+    })
+    .then((templates) => {
+      this.setState({templates:templates});
+    })
   }
 
   remove = (index) => {
@@ -104,7 +114,7 @@ class FormCreator extends Component {
         <div className="row">
           <div className="col-xs-2">
             <a className="btn btn-primary glyphicon glyphicon-plus" onClick={this.addInput}> Add field</a>
-            <TemplatesList templates={this.state.templates || []}/>
+            <TemplatesList templates={this.state.templates || []} active={this.state.template}/>
           </div>
           <div className="col-xs-8">
             <InputField label="Template name" value={this.state.template.name} ref={(ref) => this.inputName = ref}/>

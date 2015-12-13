@@ -4,13 +4,33 @@ import { Link } from 'react-router'
 
 class TemplatesList extends Component {
 
+  constructor (props) {
+    super(props);
+    this.state = {templates: props.templates};
+  }
+
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.templates !== this.props.templates){
+      this.setState({templates:this.props.templates});
+    }
+  }
+
   renderTemplates = () => {
-    if (this.props.templates) {
+    if (this.state.templates) {
       return (
-        <ul>
-          {this.props.templates.map((template, index) => {
+        <ul className="list-group">
+          {this.state.templates.map((template, index) => {
+            let className = "list-group-item";
+            if(this.props.active && template.id == this.props.active._id){
+              className = "list-group-item active";
+            }
             let template_url = '/template/edit/'+template.id;
-            return <li key={template.id}><Link to={template_url}>{template.value.name}</Link> <a href="#" onClick={this.delete.bind(this, template)}>Delete</a></li>;
+            return (
+                <Link className={className} key={template.id} to={template_url}>
+                <span className="glyphicon glyphicon-remove" onClick={this.delete.bind(this, template, index)}></span>
+                 &nbsp;&nbsp;&nbsp;{template.value.name}
+                </Link>
+          );
           })}
         </ul>
       )
@@ -21,10 +41,13 @@ class TemplatesList extends Component {
     }
   }
 
-  delete = (template, event) => {
+  delete = (template, index, event) => {
     event.preventDefault();
     return request.delete('/api/templates', template.value)
-    .then((response) => { });
+    .then((response) => {
+      this.state.templates.splice(index, 1);
+      this.setState({templates: this.state.templates });
+    });
   }
 
   render = () => {
