@@ -3,24 +3,39 @@ import ReactDOM from 'react-dom'
 import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
 
-import CheckBoxField from '../CheckBoxField.js'
+import InputField from '../InputField.js'
 
-describe('CheckBoxField', () => {
+describe('InputField', () => {
 
   let component;
 
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<CheckBoxField/>);
+    component = TestUtils.renderIntoDocument(<InputField value='test_value'/>);
+  });
+
+  describe('on instance', () => {
+    it('should set value passed as input value', () => {
+      expect(component.value()).toBe('test_value');
+    });
+  });
+
+  describe('handleChange', () => {
+    it('should set field value on state', () => {
+      component.field.value = 'Bane';
+      component.handleChange();
+      expect(component.state.value).toBe('Bane');
+    });
   });
 
   describe('value()', () => {
-    it('should return the checkbox value', () => {
-      component.field.checked = true;
-      expect(component.value()).toBe(true);
+    it('should return the input value', () => {
+      component.field.value = 'Bane';
+      expect(component.value()).toBe('Bane');
 
-      component.field.checked = false;
-      expect(component.value()).toBe(false);
+      component.field.value = 'Deadshot';
+      expect(component.value()).toBe('Deadshot');
     });
   });
+
 
 });
