@@ -38,7 +38,8 @@ class ConfigFieldPanel extends Component {
       {label: 'Short text', value: 'input'},
       {label: 'Large text', value: 'textarea'},
       {label: 'Options dropdown', value: 'select'},
-      {label: 'Check Box', value: 'checkbox'}
+      {label: 'Check Box', value: 'checkbox'},
+      {label: 'Date', value: 'date'}
     ];
 
     return (
