@@ -9,7 +9,10 @@ export default app => {
 
     request.post(db_url, req.body)
     .then((response) => {
-      res.json();
+      res.json(response.json);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
     });
 
   });
@@ -26,6 +29,9 @@ export default app => {
     request.get(url)
     .then((response) => {
       res.json(response.json);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
     });
 
   });
@@ -36,7 +42,10 @@ export default app => {
 
     request.delete(url)
     .then((response) => {
-      res.json()
+      res.json(response.json)
+    })
+    .catch((error) => {
+      res.json({error: error.json});
     });
 
   });

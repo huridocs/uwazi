@@ -24,14 +24,15 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it("should throw an error", (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'POST', {status:400});
+        backend.reMock('http://localhost:3000/api/test', 'POST', {status:400, body: JSON.stringify({error:'error!'})});
 
         request.post('http://localhost:3000/api/test')
         .then((response) => {
           done.fail('should have thrown an error');
         })
-        .catch((error) => {
-          expect(error.status).toBe(400);
+        .catch((response) => {
+          expect(response.json.error).toBe('error!');
+          expect(response.status).toBe(400);
           done();
         });
       });
@@ -51,14 +52,15 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it("should throw an error", (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'GET', {status:500});
+        backend.reMock('http://localhost:3000/api/test', 'GET', {status:500, body: JSON.stringify({error:'error!'})});
 
         request.get('http://localhost:3000/api/test')
         .then((response) => {
           done.fail('should have thrown an error');
         })
-        .catch((error) => {
-          expect(error.status).toBe(500);
+        .catch((response) => {
+          expect(response.json.error).toBe('error!');
+          expect(response.status).toBe(500);
           done();
         });
       });
@@ -79,14 +81,15 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it("should throw an error", (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'DELETE', {status:404});
+        backend.reMock('http://localhost:3000/api/test', 'DELETE', {status:404, body: JSON.stringify({error:'error!'})});
 
         request.delete('http://localhost:3000/api/test')
         .then((response) => {
           done.fail('should have thrown an error');
         })
-        .catch((error) => {
-          expect(error.status).toBe(404);
+        .catch((response) => {
+          expect(response.status).toBe(404);
+          expect(response.json.error).toBe('error!');
           done();
         });
       });

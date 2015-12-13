@@ -57,6 +57,25 @@ describe('users routes', () => {
       });
     });
 
+    describe("when there is a db error", () => {
+      it("return the error in the response", (done) => {
+        template_routes(app);
+        let templates_get = app.get.calls.mostRecent().args[1];
+
+        let res = {json: function(){}};
+        let req = {query:{_id:'non_existent_id'}};
+
+        spyOn(res, 'json').and.callFake((response) => {
+          let error = response.error;
+          expect(error.error).toBe('not_found');
+          done();
+        });
+
+        database.reset_testing_database()
+        .then(() => templates_get(req, res));
+      });
+    });
+
   });
 
   describe("DELETE", () => {
@@ -87,14 +106,34 @@ describe('users routes', () => {
         .then(response => response.json())
         .then(couchdb_response => {
           let docs = couchdb_response.rows;
+
           expect(docs.length).toBe(1);
           expect(docs[0].value.name).toBe('template_test2');
+          expect(response.ok).toBe(true);
           done();
         })
         .catch(done.fail);
 
       });
 
+    });
+
+    describe("when there is a db error", () => {
+      it("return the error in the response", (done) => {
+        template_routes(app);
+        let templates_delete = app.delete.calls.mostRecent().args[1];
+
+        let res = {json: function(){}};
+        let req = {body:{"_id":'c08ef2532f0bd008ac5174b45e033c93', "_rev":'bad_rev'}};
+
+        spyOn(res, 'json').and.callFake((response) => {
+          let error = response.error;
+          expect(error.error).toBe('bad_request');
+          done();
+        });
+
+        templates_delete(req, res)
+      });
     });
 
   });
@@ -114,20 +153,19 @@ describe('users routes', () => {
       let req = {body:{name:'created_template'}};
 
       spyOn(res, 'json').and.callFake((response) => {
-        // expect(response).toBe('');
-
         fetch(db_url+'/_design/templates/_view/all')
         .then(response => response.json())
         .then(couchdb_response => {
+
           let new_doc = couchdb_response.rows.find((template) => {
             return template.value.name == 'created_template';
           });
 
           expect(new_doc.value.name).toBe('created_template');
+          expect(new_doc.value._rev).toBe(response.rev);
           done();
         })
         .catch(done.fail);
-
       });
 
       templates_post(req, res);
@@ -161,6 +199,24 @@ describe('users routes', () => {
 
         });
 
+      });
+    });
+
+    describe("when there is a db error", () => {
+      it("return the error in the response", (done) => {
+        template_routes(app);
+        let templates_post = app.post.calls.mostRecent().args[1];
+
+        let res = {json: function(){}};
+        let req = {body:{"_id":'c08ef2532f0bd008ac5174b45e033c93', "_rev":'bad_rev'}};
+
+        spyOn(res, 'json').and.callFake((response) => {
+          let error = response.error;
+          expect(error.error).toBe('bad_request');
+          done();
+        });
+
+        templates_post(req, res)
       });
     });
   });

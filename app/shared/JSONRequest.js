@@ -11,18 +11,20 @@ let _fetch = (url, data = {}, method) => {
     body: JSON.stringify(data)
   })
   .then((res) => {
-    if (res.status > 399){
-      throw res;
-    }
-
     response = res;
     return res.json()
   })
   .then((json) => {
-    return {
+    let procesed_response = {
       json: json,
       status: response.status
+    };
+
+    if (response.status > 399){
+      throw procesed_response;
     }
+
+    return procesed_response;
   });
 }
 
