@@ -153,6 +153,7 @@ describe('users routes', () => {
       let req = {body:{name:'created_template'}};
 
       spyOn(res, 'json').and.callFake((response) => {
+
         fetch(db_url+'/_design/templates/_view/all')
         .then(response => response.json())
         .then(couchdb_response => {
