@@ -37,7 +37,7 @@ describe('TemplatesController', () => {
     describe('when no context.initialData', () => {
       beforeEach((done) => {
         let params = {templateKey: 'template1'};
-        component = TestUtils.renderIntoDocument(<Provider><TemplatesController params={params}/></Provider>);
+        TestUtils.renderIntoDocument(<Provider><TemplatesController ref={(ref) => component = ref} params={params}/></Provider>);
         //wait until the requestState is resolved
         TemplatesController.requestState().then(done)
       });
