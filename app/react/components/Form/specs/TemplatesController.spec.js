@@ -3,7 +3,6 @@ import TemplatesController from '../TemplatesController';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
-import Provider from '../../../Provider'
 
 describe('TemplatesController', () => {
 
@@ -31,39 +30,6 @@ describe('TemplatesController', () => {
   });
 
   describe('on instance', () => {
-
-    let component;
-
-    describe('when no context.initialData', () => {
-      beforeEach((done) => {
-        let params = {templateKey: 'template1'};
-        TestUtils.renderIntoDocument(<Provider><TemplatesController ref={(ref) => component = ref} params={params}/></Provider>);
-        //wait until the requestState is resolved
-        TemplatesController.requestState().then(done)
-      });
-
-      it('should request for initialState and set it on the state', () => {
-        expect(component.state.templates).toEqual(templatesResponse);
-        expect(component.state.template).toEqual(templatesResponse[0]);
-      });
-    });
-
-    describe('when context.getInitialData', () => {
-
-      let initialData = {templates:[{key:'template3'}, {key:'template4'}], template:{key:'template4'}}
-
-      window.__initialData__ = initialData;
-
-      beforeEach(() => {
-        let params = {templateKey: 'template1'};
-        TestUtils.renderIntoDocument(<Provider><TemplatesController ref={(ref) => component = ref} params={params}/></Provider>);
-      });
-
-      it('should use the context.initialData instead of requesting it', () => {
-        expect(component.state.templates).toEqual(initialData.templates);
-        expect(component.state.template).toEqual(initialData.template);
-      });
-    });
 
   });
 });

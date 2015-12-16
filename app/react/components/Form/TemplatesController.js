@@ -3,8 +3,6 @@ import api from '../../utils/api'
 
 class TemplatesController extends Component {
 
-  static contextTypes = { getInitialData: PropTypes.func }
-
   static requestState(templateKey){
     return api.get('templates')
     .then((response) => {
@@ -15,18 +13,6 @@ class TemplatesController extends Component {
         template: templates.find(template => template.key == templateKey)
       };
     })
-  }
-
-  constructor(props, context){
-    super(props);
-
-    TemplatesController.requestState(props.params.templateKey)
-    .then((response) => {
-      this.setState(response);
-    });
-
-    this.state = context.getInitialData(this);
-
   }
 
   render = () => {

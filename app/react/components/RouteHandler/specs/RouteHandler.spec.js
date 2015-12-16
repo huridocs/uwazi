@@ -3,7 +3,6 @@ import RouteHandler from '../RouteHandler';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
-import Provider from '../../../Provider'
 
 describe('RouteHandler', () => {
 
