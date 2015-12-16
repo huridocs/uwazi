@@ -18,7 +18,7 @@ describe('TemplatesController', () => {
   describe('static requestState', () => {
     it('should request templates and find template based on the key passed', (done) => {
       let key = 'template1';
-      TemplatesController.requestState(key)
+      TemplatesController.requestState({templateKey:key})
       .then((response) => {
         expect(response.templates).toEqual(templatesResponse);
         expect(response.template).toEqual(templatesResponse[0]);
@@ -26,10 +26,6 @@ describe('TemplatesController', () => {
       })
       .catch(done.fail)
     });
-
   });
 
-  describe('on instance', () => {
-
-  });
 });

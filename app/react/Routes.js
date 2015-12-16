@@ -9,7 +9,7 @@ import Login from './components/Users/Login'
 import MyAccount from './components/Users/MyAccount'
 
 import Users from './components/Users'
-import FormCreator from './components/Form/FormCreator'
+import TemplatesController from './components/Form/TemplatesController'
 
 export default (
   <Route path='/' component={App}>
@@ -17,8 +17,8 @@ export default (
     <Route path='users' component={Users} />
     <Route path='login' component={Login} />
     <Route path='my_account' component={MyAccount} />
-    <Route path='template' component={FormCreator} />
-    <Route path='template/edit/:templateId' component={FormCreator} />
+    <Route path='template' component={TemplatesController} />
+    <Route path='template/edit/:templateId' component={TemplatesController} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

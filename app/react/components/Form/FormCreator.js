@@ -16,59 +16,48 @@ class FormCreator extends RouteHandler {
   };
 
 
-  static requestState(params) {
-    return Promise.all([
-      FormCreator.requestTemplates(),
-      FormCreator.requestTemplate(params.templateId)
-    ])
-    .then(responses => {
-      return {
-        templates: responses[0],
-        template: responses[1]
-      };
-    })
-  }
-
-  static requestTemplates(){
-    return api.get('templates')
-    .then((response) => response.json.rows)
-  }
-
-  static requestTemplate(templateId) {
-    if(templateId){
-      return api.get('templates?_id='+templateId)
-      .then((response) => response.json.rows[0].value);
-    }
-    return Promise.resolve(FormCreator.defaultTemplate)
-  }
-
   constructor (props) {
     super(props);
 
-    this.templateId = props.params.templateId;
+    // this.templateId = props.params.templateId;
 
-    if(!this.state){
-      this.state = {
-        template: {fields:[]},
-        templates: []
-      }
+    this.state = {
+      templates:[],
+      template: this.defaultTemplate()
     }
 
   }
 
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.params.templateId && this.props.params != nextProps.params) {
-      FormCreator.requestTemplate(nextProps.params.templateId)
-      .then(template => {
-        template.fields = template.fields || [];
-        this.setState({ template: template });
-      });
+  defaultTemplate(){
+    return {name:'', fields:[]};
+  }
+
+  componentWillReceiveProps = (props) => {
+
+    let template = this.defaultTemplate();
+    if(props.templateId) {
+      template = props.templates.find(template => template.key == props.templateId).value;
     }
 
-    if(!nextProps.params.templateId){
-      this.setState({ template: FormCreator.defaultTemplate });
-    }
+    this.setState({
+      templates: props.templates,
+      template: template
+    });
   }
+
+  // componentWillReceiveProps = (nextProps) => {
+  //   if (nextProps.params.templateId && this.props.params != nextProps.params) {
+  //     FormCreator.requestTemplate(nextProps.params.templateId)
+  //     .then(template => {
+  //       template.fields = template.fields || [];
+  //       this.setState({ template: template });
+  //     });
+  //   }
+  //
+  //   if(!nextProps.params.templateId){
+  //     this.setState({ template: FormCreator.defaultTemplate });
+  //   }
+  // }
 
   addInput = () => {
     this.state.template.fields.push({type:'input', label:'Short text', required: false});
@@ -78,13 +67,7 @@ class FormCreator extends RouteHandler {
   save = (e) => {
     e.preventDefault();
     this.state.template.name = this.inputName.value();
-    return api.post('templates', this.state.template)
-    .then((response) => {
-      return FormCreator.requestTemplates();
-    })
-    .then((templates) => {
-      this.setState({templates:templates});
-    })
+    this.props.save(this.state.template);
   }
 
   remove = (index) => {

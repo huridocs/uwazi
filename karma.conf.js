@@ -40,6 +40,11 @@ module.exports = function (config) {
             test: /\.(jpe?g|png|eot|woff|ttf|gif|svg)(\?.*)?$/i,
             loader: 'file-loader',
             include: path.join(__dirname, 'app')
+          },
+          {
+            test: /\.css$/,
+            loader: "style-loader!css-loader",
+            include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
           }
         ],
         postLoaders: [ { //delays coverage til after tests are run, fixing transpiled source coverage error

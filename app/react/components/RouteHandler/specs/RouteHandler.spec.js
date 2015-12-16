@@ -43,7 +43,6 @@ describe('RouteHandler', () => {
     let initialData = {batmanGadgets:['batimovil', 'batarang']};
 
     describe('when window.__initialData__ is set', () => {
-
       beforeEach(() => {
         window.__initialData__ = initialData;
         component = TestUtils.renderIntoDocument(<TestController/>);

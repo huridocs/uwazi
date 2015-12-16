@@ -18,9 +18,11 @@ class RouteHandler extends Component {
     if(isClient) {
       this.client();
     }
+
   }
 
-  client = () => {
+  client () {
+
     if(!window.__initialData__){
       this.constructor.requestState(this.props.params)
       .then((response) => {
