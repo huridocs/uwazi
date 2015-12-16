@@ -14,18 +14,15 @@ import { isClient, getPropsFromRoute } from './utils'
 
 if (isClient) {
   ReactDOM.render(
-    <Provider>
-      <Router history={createHistory()}>{Routes}</Router>
-    </Provider>,
+      <Router history={createHistory()}>{Routes}</Router>,
     document.getElementById('root')
   );
 }
 
 function renderComponentWithRoot(Component, componentProps, initialData) {
+  componentProps.initialData = initialData
   const componentHtml = renderToStaticMarkup(
-    <Provider initialData={initialData}>
-      <Component {...componentProps} />
-    </Provider>
+    <Component {...componentProps} />
   );
 
   const head = Helmet.rewind();

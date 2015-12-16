@@ -3,12 +3,9 @@ import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
 import InputField from './fields/InputField.js'
 import api from '../../utils/api'
+import RouteHandler from '../RouteHandler/RouteHandler.js'
 
-class FormCreator extends Component {
-
-  static contextTypes = {
-    getInitialData: PropTypes.func
-  }
+class FormCreator extends RouteHandler {
 
   static defaultTemplate = {
     name:'template name',
@@ -45,17 +42,10 @@ class FormCreator extends Component {
     return Promise.resolve(FormCreator.defaultTemplate)
   }
 
-  constructor (props, context) {
-    super(props, context);
+  constructor (props) {
+    super(props);
 
     this.templateId = props.params.templateId;
-
-    if (!context.getInitialData(this)) {
-      FormCreator.requestState(props.params)
-      .then(state => { this.setState(state); });
-    }
-
-    this.state = context.getInitialData(this);
 
     if(!this.state){
       this.state = {
