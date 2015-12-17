@@ -7,6 +7,7 @@ import Helmet from 'react-helmet'
 import UserWidget from '../Users/UserWidget'
 import { Link } from 'react-router'
 import '../scss/App.scss'
+import Upload from '../Upload/Upload'
 
 class App extends Component {
 
@@ -64,7 +65,9 @@ class App extends Component {
               <li><Link to='/'>Home</Link></li>
               <li><Link to='/users'>Users</Link></li>
               <li><Link to='/template'>templates</Link></li>
+              <li><Link to='/upload'>Library</Link></li>
              </ul>
+              <Upload/>
               <UserWidget user={ this.state.user } />
            </div>
        </div>

@@ -10,6 +10,7 @@ import MyAccount from './components/Users/MyAccount'
 
 import Users from './components/Users'
 import TemplatesController from './components/Form/TemplatesController'
+import Upload from './components/Upload/Upload'
 
 export default (
   <Route path='/' component={App}>
@@ -17,6 +18,7 @@ export default (
     <Route path='users' component={Users} />
     <Route path='login' component={Login} />
     <Route path='my_account' component={MyAccount} />
+    <Route path='upload' component={Upload} />
     <Route path='template' component={TemplatesController} />
     <Route path='template/edit/:templateId' component={TemplatesController} />
     <Route path="*" component={NoMatch} />

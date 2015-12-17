@@ -14,4 +14,12 @@ export default app => {
   require('./users/routes.js')(app);
   require('./templates/routes.js')(app);
 
+  app.post('/api/upload', (req, res) => {
+    // console.log(req);
+    // if(req.files) {
+    //   console.log(request.files);
+    //  }
+     res.json({});
+  });
+
 }
