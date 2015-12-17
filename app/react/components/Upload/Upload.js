@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import request from 'superagent';
-import '../scss/upload.scss';
+import './scss/upload.scss';
+import { Link } from 'react-router'
 
 class Upload extends Component {
 
@@ -41,16 +42,25 @@ class Upload extends Component {
       position:'absolute'
     };
 
+    let show = {};
+    if(this.state.progress > 0){
+      show = {
+        display: 'inherit'
+      }
+    }
+
     return (
-      <ul className="nav navbar-nav">
+      <ul className="nav navbar-nav navbar-upload">
         <li>
           <button className="btn btn-primary" onClick={this.triggerUpload}>Upload</button>
           <input style={hide} onChange={this.upload} type='file' ref={(ref) => this.input = ref}/>
         </li>
         <li>
-          <div className="upload-bar">
-            <div className="progress-bar" style={progressWidth}></div>
-          </div>
+          <Link to='/library'>
+            <div className="navbar-upload-bar" style={show}>
+              <div className="navbar-upload-bar-progress" style={progressWidth}></div>
+            </div>
+          </Link>
         </li>
       </ul>
     )

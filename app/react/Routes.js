@@ -18,7 +18,7 @@ export default (
     <Route path='users' component={Users} />
     <Route path='login' component={Login} />
     <Route path='my_account' component={MyAccount} />
-    <Route path='upload' component={Upload} />
+    <Route path='library' component={Upload} />
     <Route path='template' component={TemplatesController} />
     <Route path='template/edit/:templateId' component={TemplatesController} />
     <Route path="*" component={NoMatch} />
