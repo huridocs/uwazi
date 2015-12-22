@@ -7,28 +7,29 @@ import {db_url} from '../../config/database.js'
 
 describe('documents', () => {
 
+  let app, res;
+
   beforeEach((done) => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
     .catch(done.fail);
+
+    app = jasmine.createSpyObj('app', ['post', 'get']);
+    res = {json: function(){}};
   });
 
   describe('POST', () => {
 
     it('should listen /api/documents', () => {
-      let app = jasmine.createSpyObj('app', ['post']);
       documents(app);
       let args = app.post.calls.mostRecent().args;
       expect(args[0]).toBe('/api/documents');
     });
 
     it('should create a new document', (done) => {
-      let app = jasmine.createSpyObj('app', ['post']);
       documents(app);
       let documentsPost = app.post.calls.mostRecent().args[1];
-
-      let res = {json: function(){}};
       let req = {body:{title: 'Batman begins'}};
 
       spyOn(res, 'json').and.callFake((response) => {
@@ -39,8 +40,7 @@ describe('documents', () => {
           expect(response.id).toBeDefined();
           expect(response.rev).toBeDefined();
 
-          expect(documents.json.rows[0].value.title).toBe('Batman begins');
-          expect(documents.json.rows[0].value.type).toBe('document');
+          expect(documents.json.rows.find(doc => doc.title = 'Batman begins')).toBeDefined();
           done();
         })
         .catch(done.fail);
@@ -48,4 +48,24 @@ describe('documents', () => {
       documentsPost(req, res);
     });
   });
+
+  describe('GET', () => {
+    it('should listen /api/documents', () => {
+      documents(app);
+      let args = app.get.calls.mostRecent().args;
+      expect(args[0]).toBe('/api/documents');
+    });
+
+    it('should return a list of documents', (done) => {
+      documents(app);
+      let documentsGet = app.get.calls.mostRecent().args[1];
+
+      spyOn(res, 'json').and.callFake((response) => {
+        expect(response.rows.length).toBe(2);
+        done();
+      });
+
+      documentsGet({}, res);
+    });
+  })
 });
