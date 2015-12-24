@@ -3,22 +3,22 @@ import { isClient } from '../../utils'
 
 class RouteHandler extends Component {
 
+  static contextTypes = { getInitialData: PropTypes.func }
+
   static requestState(){
     return Promise.resolve({});
   }
 
-  constructor(props){
+  constructor(props, context){
     super(props);
-
-    if(props.initialData){
-      this.state = this.props.initialData;
+    if(context.getInitialData){
+      this.state = context.getInitialData();
     }
 
     // this if is not tested, it is here only for server side rendering to work correctly
     if(isClient) {
       this.client();
     }
-
   }
 
   client () {
