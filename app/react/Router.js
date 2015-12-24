@@ -7,6 +7,7 @@ import { createHistory } from 'history'
 import { Router, match, RoutingContext } from 'react-router'
 import Helmet from 'react-helmet'
 import Routes from './Routes'
+import Provider from './Provider'
 import Root from './components/App/Root'
 import NoMatch from './components/App/NoMatch'
 import { isClient, getPropsFromRoute } from './utils'
@@ -19,9 +20,11 @@ if (isClient) {
 }
 
 function renderComponentWithRoot(Component, componentProps, initialData) {
-  componentProps.initialData = initialData
+
   const componentHtml = renderToStaticMarkup(
-    <Component {...componentProps} />
+    <Provider initialData={initialData}>
+      <Component {...componentProps} />
+    </Provider>
   );
 
   const head = Helmet.rewind();

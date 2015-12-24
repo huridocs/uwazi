@@ -13,6 +13,7 @@ export default app => {
   require('./auth/routes.js')(app);
   require('./users/routes.js')(app);
   require('./templates/routes.js')(app);
+  require('./documents/routes.js')(app);
 
   app.post('/api/upload', (req, res) => {
     // console.log(req);

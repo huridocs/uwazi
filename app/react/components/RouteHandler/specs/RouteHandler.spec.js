@@ -3,6 +3,7 @@ import RouteHandler from '../RouteHandler';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
+import Provider from '../../../Provider'
 
 describe('RouteHandler', () => {
 
@@ -89,7 +90,7 @@ describe('RouteHandler', () => {
     beforeEach(() => {
       window.__initialData__ = undefined;
       // window = undefined;
-      component = TestUtils.renderIntoDocument(<TestController initialData={initialData}/>);
+      TestUtils.renderIntoDocument(<Provider initialData={initialData} ><TestController ref={(ref) => component = ref} /></Provider>);
     });
 
     it("should use props.initialData to set state", () => {

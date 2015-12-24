@@ -16,7 +16,7 @@ export default app => {
     request.get(db_url + '/_design/documents/_view/all')
     .then(response => {
         res.json(response.json);
-    })
+    });
 
   });
 

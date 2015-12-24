@@ -11,8 +11,7 @@ class TemplatesController extends RouteHandler {
       let templates = response.json.rows;
       return {
         templates:templates,
-        // template: templates.find(template => template.key == params.templateKey)
-        // template: templates[0].value
+        template: templates.find(template => template.key == params.templateKey)
       };
     })
   }
