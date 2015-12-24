@@ -3,12 +3,16 @@ import database from '../../utils/database.js'
 import fixtures from './fixtures.js'
 import fetch from 'isomorphic-fetch'
 import {db_url} from '../../config/database.js'
+import request from '../../../shared/JSONRequest'
+import instrumentRoutes from '../../utils/instrumentRoutes'
 
-describe('users routes', () => {
+describe('templates routes', () => {
 
   let app;
+  let routes;
 
   beforeEach((done) => {
+    routes = instrumentRoutes(template_routes);
     app = jasmine.createSpyObj('app', ['get', 'post', 'delete']);
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -17,62 +21,47 @@ describe('users routes', () => {
   });
 
   describe("GET", () => {
-    it("should listen /api/templates", function () {
-      template_routes(app);
-      let args = app.get.calls.mostRecent().args;
-      expect(args[0]).toBe('/api/templates');
-    });
-
     it("should return all templates by default", (done) => {
-      template_routes(app);
-      let templates_get = app.get.calls.mostRecent().args[1];
 
-      let res = {json: function(){}};
-      let req = {};
-
-      spyOn(res, 'json').and.callFake((response) => {
+      routes.get('/api/templates')
+      .then((response) => {
         let docs = response.rows;
         expect(docs[0].value.name).toBe('template_test');
         done();
-      });
+      })
+      .catch(done.fail);
 
-      templates_get(req, res);
     });
 
     describe("when passing id", () => {
       it("should return matching template", (done) => {
-        template_routes(app);
-        let templates_get = app.get.calls.mostRecent().args[1];
+        let request = {query:{_id:'c08ef2532f0bd008ac5174b45e033c94'}};
 
-        let res = {json: function(){}};
-        let req = {query:{_id:'c08ef2532f0bd008ac5174b45e033c94'}};
-
-        spyOn(res, 'json').and.callFake((response) => {
+        routes.get('/api/templates', request)
+        .then((response) => {
           let docs = response.rows;
           expect(docs[0].value.name).toBe('template_test2');
           done();
-        });
+        })
+        .catch(done.fail);
 
-        templates_get(req, res);
       });
     });
 
     describe("when there is a db error", () => {
       it("return the error in the response", (done) => {
-        template_routes(app);
-        let templates_get = app.get.calls.mostRecent().args[1];
 
-        let res = {json: function(){}};
-        let req = {query:{_id:'non_existent_id'}};
+        let request = {query:{_id:'non_existent_id'}};
 
-        spyOn(res, 'json').and.callFake((response) => {
+        database.reset_testing_database()
+        .then(() => routes.get('/api/templates', request))
+        .then((response) => {
           let error = response.error;
           expect(error.error).toBe('not_found');
           done();
-        });
+        })
+        .catch(done.fail);
 
-        database.reset_testing_database()
-        .then(() => templates_get(req, res));
       });
     });
 
@@ -80,144 +69,103 @@ describe('users routes', () => {
 
   describe("DELETE", () => {
 
-    it("should listen /api/templates", () => {
-      template_routes(app);
-      let args = app.delete.calls.mostRecent().args;
-      expect(args[0]).toBe('/api/templates');
-    });
-
     it("should delete a template", (done) => {
 
-      template_routes(app);
-      let templates_delete = app.delete.calls.mostRecent().args[1];
-
-      let res = {json: function(){}};
-
-      fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c93')
-      .then(response => response.json())
+      request.get(db_url+'/c08ef2532f0bd008ac5174b45e033c93')
       .then(template => {
-        let req = {body:{"_id":template._id, "_rev":template._rev}};
-        templates_delete(req, res);
+        let request = {body:{"_id":template.json._id, "_rev":template.json._rev}};
+        return routes.delete('/api/templates', request);
       })
-
-      spyOn(res, 'json').and.callFake((response) => {
-
-        fetch(db_url+'/_design/templates/_view/all')
-        .then(response => response.json())
-        .then(couchdb_response => {
-          let docs = couchdb_response.rows;
-
-          expect(docs.length).toBe(1);
-          expect(docs[0].value.name).toBe('template_test2');
-          expect(response.ok).toBe(true);
-          done();
-        })
-        .catch(done.fail);
-
-      });
+      .then((response) => {
+        expect(response.ok).toBe(true);
+        return request.get(db_url+'/_design/templates/_view/all');
+      })
+      .then((response) => {
+        let docs = response.json.rows;
+        expect(docs.length).toBe(1);
+        expect(docs[0].value.name).toBe('template_test2');
+        done();
+      })
+      .catch(done.fail);
 
     });
 
     describe("when there is a db error", () => {
       it("return the error in the response", (done) => {
-        template_routes(app);
-        let templates_delete = app.delete.calls.mostRecent().args[1];
+        let request = {body:{"_id":'c08ef2532f0bd008ac5174b45e033c93', "_rev":'bad_rev'}};
 
-        let res = {json: function(){}};
-        let req = {body:{"_id":'c08ef2532f0bd008ac5174b45e033c93', "_rev":'bad_rev'}};
-
-        spyOn(res, 'json').and.callFake((response) => {
-          let error = response.error;
-          expect(error.error).toBe('bad_request');
+        routes.delete('/api/templates', request)
+        .then((response) => {
+          expect(response.error.error).toBe('bad_request');
           done();
-        });
+        })
+        .catch(done.fail);
 
-        templates_delete(req, res)
       });
     });
 
   });
 
   describe('POST', () => {
-    it('should listen /api/templates', () => {
-      template_routes(app);
-      let args = app.post.calls.mostRecent().args;
-      expect(args[0]).toBe('/api/templates');
-    });
 
     it('should create a template', (done) => {
-      template_routes(app);
-      let templates_post = app.post.calls.mostRecent().args[1];
 
-      let res = {json: function(){}};
       let req = {body:{name:'created_template'}};
+      let postResponse;
 
-      spyOn(res, 'json').and.callFake((response) => {
+      routes.post('/api/templates', req)
+      .then((response) => {
+        postResponse = response;
+        return request.get(db_url+'/_design/templates/_view/all')
+      })
+      .then((response) => {
+        let new_doc = response.json.rows.find((template) => {
+          return template.value.name == 'created_template';
+        });
 
-        fetch(db_url+'/_design/templates/_view/all')
-        .then(response => response.json())
-        .then(couchdb_response => {
+        expect(new_doc.value.name).toBe('created_template');
+        expect(new_doc.value._rev).toBe(postResponse.rev);
+        done();
+      })
+      .catch(done.fail);
 
-          let new_doc = couchdb_response.rows.find((template) => {
-            return template.value.name == 'created_template';
-          });
-
-          expect(new_doc.value.name).toBe('created_template');
-          expect(new_doc.value._rev).toBe(response.rev);
-          done();
-        })
-        .catch(done.fail);
-      });
-
-      templates_post(req, res);
     });
 
     describe("when passing _id and _rev", () => {
       it("edit an existing one", (done) => {
-        template_routes(app);
-        let templates_post = app.post.calls.mostRecent().args[1];
 
-        let res = {json: function(){}};
-
-        fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c94')
-        .then(response => response.json())
-        .then(template => {
+        request.get(db_url+'/c08ef2532f0bd008ac5174b45e033c94')
+        .then((response) => {
+          let template = response.json;
           let req = {body:{_id: template._id, _rev: template._rev, name:'changed name'}};
-          templates_post(req, res);
+          return routes.post('/api/templates', req)
+        })
+        .then((response) => {
+          return request.get(db_url+'/c08ef2532f0bd008ac5174b45e033c94')
+        })
+        .then((response) => {
+          let template = response.json;
+          expect(template.name).toBe('changed name');
+          done();
         })
         .catch(done.fail)
-
-        spyOn(res, 'json').and.callFake((response) => {
-          // expect(response).toBe('');
-
-          fetch(db_url+'/c08ef2532f0bd008ac5174b45e033c94')
-          .then(response => response.json())
-          .then(template => {
-            expect(template.name).toBe('changed name');
-            done();
-          })
-          .catch(done.fail);
-
-        });
 
       });
     });
 
     describe("when there is a db error", () => {
       it("return the error in the response", (done) => {
-        template_routes(app);
-        let templates_post = app.post.calls.mostRecent().args[1];
 
-        let res = {json: function(){}};
         let req = {body:{"_id":'c08ef2532f0bd008ac5174b45e033c93', "_rev":'bad_rev'}};
 
-        spyOn(res, 'json').and.callFake((response) => {
+        routes.post('/api/templates', req)
+        .then((response) => {
           let error = response.error;
           expect(error.error).toBe('bad_request');
           done();
-        });
+        })
+        .catch(done.fail);
 
-        templates_post(req, res)
       });
     });
   });

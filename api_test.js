@@ -1,6 +1,7 @@
 require('babel-core/register')({stage: 0}); //babel polyfill ES6
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
+var reporters = require('jasmine-reporters');
 
 var db_config = require('./app/api/config/database.js');
 db_config.db_url = db_config.development;
@@ -12,5 +13,11 @@ jasmine.loadConfig({
         'shared/**/*[sS]pec.js'
     ]
 });
+
+jasmine.addReporter(new reporters.TerminalReporter({
+  verbosity: 2,
+  color: true,
+  showStack: true
+}));
 
 jasmine.execute();
