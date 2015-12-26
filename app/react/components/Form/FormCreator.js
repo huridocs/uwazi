@@ -3,9 +3,9 @@ import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
 import InputField from './fields/InputField.js'
 import api from '../../utils/api'
-import RouteHandler from '../RouteHandler/RouteHandler.js'
+import RouteHandler from '../../core/RouteHandler.js'
 
-class FormCreator extends RouteHandler {
+class FormCreator extends Component {
 
   static defaultTemplate = {
     name:'template name',
@@ -16,13 +16,11 @@ class FormCreator extends RouteHandler {
   };
 
 
-  constructor (props) {
-    super(props);
-
-    // this.templateId = props.params.templateId;
+  constructor (props, context) {
+    super(props, context);
 
     this.state = {
-      templates:[],
+      templates: props.templates,
       template: this.defaultTemplate()
     }
 

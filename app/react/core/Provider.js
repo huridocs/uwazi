@@ -1,10 +1,15 @@
 import React, { Component, PropTypes, Children } from 'react'
-import { isClient } from './utils'
+import { isClient } from '../utils'
 
 class Provider extends Component {
 
   static childContextTypes = {
     getInitialData: PropTypes.func
+  }
+
+  constructor(props){
+    super(props)
+    this.data = isClient && window.__initialData__ ? window.__initialData__ : props.initialData;
   }
 
   getChildContext() {
@@ -14,7 +19,9 @@ class Provider extends Component {
   }
 
   getInitialData() {
-      return this.props.initialData;
+      let data = this.data;
+      this.data = undefined;
+      return data;
   }
 
   render() {

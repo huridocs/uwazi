@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import api from '../../utils/api'
 import FormCreator from './FormCreator'
-import RouteHandler from '../RouteHandler/RouteHandler'
+import RouteHandler from '../../core/RouteHandler'
 
 class TemplatesController extends RouteHandler {
 
@@ -16,9 +16,8 @@ class TemplatesController extends RouteHandler {
     })
   }
 
-  constructor(props){
-    super(props);
-    this.state = {}
+  constructor(props, context){
+    super(props, context);
   }
 
   // no tests

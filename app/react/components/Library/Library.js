@@ -1,9 +1,13 @@
 import React, { Component, PropTypes } from 'react'
 import request from 'superagent';
 import api from '../../utils/api'
-import RouteHandler from '../RouteHandler/RouteHandler'
+import RouteHandler from '../../core/RouteHandler'
 
 class Library extends RouteHandler {
+
+  static emptyState(){
+    return {documents: []};
+  }
 
   static requestState(){
     return api.get('documents')
