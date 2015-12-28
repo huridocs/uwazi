@@ -13,9 +13,16 @@ let executeRoute = (method, routePath, req = {}, app, middlewares) => {
     //   }
     // }, jasmine.DEFAULT_TIMEOUT_INTERVAL - 20)
 
-    let res = {json: function(){}};
+    let statusCode;
+    let res = {
+      json: function(){},
+      status: function(code){
+        statusCode = code;
+      }
+    };
+
     spyOn(res, 'json').and.callFake((response) => {
-      // clearTimeout(spyCheck);
+      if(statusCode) response.status = statusCode;
       resolve(response);
     });
 

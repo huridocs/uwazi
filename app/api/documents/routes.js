@@ -4,12 +4,21 @@ import {db_url} from '../config/database.js'
 export default app => {
 
   app.post('/api/documents', (req, res) => {
+
+    if(!req.user){
+      res.status(401);
+      res.json({error: 'Unauthorized'});
+      return;
+    }
+
     let document = req.body;
     document.type = 'document';
+    document.user = req.user;
     request.post(db_url, document)
     .then((response) => {
       res.json(response.json);
-    });
+    })
+    .catch(console.log);
   });
 
   app.get('/api/documents', (req, res) => {

@@ -65,6 +65,24 @@ describe("routesMock", () => {
     .catch(done.fail);
   });
 
+  it('should put the status in the response', (done) => {
+    let testingRoute = app => {
+      app.get('/test/route', (req, res) => {
+        res.status(404);
+        res.json({response:'get'})
+      });
+    }
+
+    route = instrumentRoutes(testingRoute)
+
+    route.get('/test/route', {request:'request'})
+    .then((response) => {
+      expect(response.status).toBe(404);
+      done();
+    })
+    .catch(done.fail);
+  });
+
   describe('when routepath do not match', () => {
     it('should throw an error', (done) => {
       route.get('/unexistent/route')

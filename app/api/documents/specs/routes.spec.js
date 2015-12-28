@@ -15,11 +15,22 @@ describe('documents', () => {
     .then(() => database.import(fixtures))
     .then(done)
     .catch(done.fail);
-
     routes = instrumentRoutes(documents_routes);
   });
 
   describe('POST', () => {
+
+    describe('not logged in', () => {
+      it('should return unauthorized error', (done) => {
+        let req = {body:{title: 'Batman starts'}};
+        routes.post('/api/documents', req)
+        .then((response) => {
+          expect(response.status).toBe(401);
+          done()
+        })
+        .catch(done.fail);
+      });
+    });
 
     it('should create a new document', (done) => {
       let req = {body:{title: 'Batman begins'}, user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}};
@@ -29,10 +40,10 @@ describe('documents', () => {
         expect(response.ok).toBe(true);
         expect(response.id).toBeDefined();
         expect(response.rev).toBeDefined();
-        return request.get(db_url+'/_design/documents/_view/all')
+        return request.get(db_url+'/'+response.id)
       })
-      .then((documents) => {
-        expect(documents.json.rows.find(doc => doc.title = 'Batman begins')).toBeDefined();
+      .then((doc) => {
+        expect(doc.json.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
         done();
       })
       .catch(done.fail);
