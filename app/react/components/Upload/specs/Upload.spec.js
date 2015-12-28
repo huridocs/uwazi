@@ -5,13 +5,11 @@ import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 
 import superagent from 'superagent';
-import superagentMock from 'superagent-mocker';
 
 describe('Upload', () => {
 
   let component;
   let file = new File([], 'fighting__crime--101.pdf');
-  let mock = superagentMock(superagent);
 
   beforeEach(() => {
     backend.restore();
