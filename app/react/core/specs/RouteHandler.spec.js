@@ -71,16 +71,20 @@ describe('RouteHandler', () => {
         TestUtils.renderIntoDocument(<Provider><TestController params={params} ref={(ref) => component = ref} /></Provider>);
       });
 
-      it('should request for initialState and set it on the state', () => {
+      it('should request for initialState and set it on the state', (done) => {
         TestController.requestState().then(() => {
             expect(component.state.initialData).toBe('data');
+            done();
         })
+        .catch(done.fail);
       });
 
-      it("should send props.params to requestState", () => {
+      it("should send props.params to requestState", (done) => {
         TestController.requestState().then(() => {
             expect(TestController.requestState).toHaveBeenCalledWith(params);
+            done();
         })
+        .catch(done.fail);
       });
 
       it('should set the empty state', function(){

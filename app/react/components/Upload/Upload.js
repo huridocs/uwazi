@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react'
-import request from 'superagent';
+import superagent from 'superagent';
+import api from '../../utils/api'
+import {APIURL} from '../../config.js'
 import './scss/upload.scss';
 import { Link } from 'react-router'
 
@@ -13,17 +15,45 @@ class Upload extends Component {
   }
 
   upload = () => {
+    this.setState({progress:0});
+
+    if(this.input.files.length == 0) {
+      return;
+    }
+
     let file = this.input.files[0];
-    request.post('http://localhost:3000/api/upload')
-    .set("Content-Type", "application/octet-stream")
-    .send(file)
+    this.createDocument(file)
+    .then((response) => {
+      this.uploadFile(file, response.json);
+    });
+  }
+
+  createDocument = (file) => {
+    return api.post('documents', {title: this.extractTitle(file)});
+  }
+
+  uploadFile = (file, doc) => {
+    let uploadRequest = superagent.post(APIURL + 'upload')
+    .field('document', doc.id)
+    .attach('file', file, file.name)
     .on('progress', (data) => {
       this.setState({progress:data.percent})
     })
-    .end((err, res) => {
-        console.log(err);
-        console.log(res);
+
+    uploadRequest.end((err, res) => {
+
     })
+    return uploadRequest;
+  }
+
+  extractTitle(file) {
+    let title = file.name
+      .replace(/\.[^/.]+$/, "") //remove file extension
+      .replace(/_/g, ' ')
+      .replace(/-/g, ' ')
+      .replace(/  /g, ' ');
+
+    return title.charAt(0).toUpperCase() + title.slice(1);
   }
 
   triggerUpload = (e) => {

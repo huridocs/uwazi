@@ -28,15 +28,17 @@ class Library extends RouteHandler {
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
+            <th>File</th>
           </tr>
         </thead>
         <tbody>
           {this.state.documents.map((document, index) => {
             return <tr key={index}>
-                    <td>1</td>
+                    <td>{index + 1}</td>
                     <td>{document.value.title}</td>
                     <td>{document.value.author}</td>
                     <td>{document.value.category}</td>
+                    <td><a href={document.value.filepath}>{document.value.filename}</a></td>
                   </tr>
           })}
         </tbody>

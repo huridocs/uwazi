@@ -4,7 +4,7 @@ import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 
-describe('TemplatesController', () => {
+describe('LibraryController', () => {
 
   let documents = [{key:'secret documents'}, {key:'real batman id'}];
   let component;

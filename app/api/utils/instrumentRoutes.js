@@ -1,4 +1,4 @@
-let executeRoute = (method, routePath, req = {}, app) => {
+let executeRoute = (method, routePath, req = {}, app, middlewares) => {
   let args = app[method].calls.mostRecent().args;
 
   return new Promise((resolve, reject) => {
@@ -20,14 +20,14 @@ let executeRoute = (method, routePath, req = {}, app) => {
     });
 
 
-    if(!args[1]){
+    if(!args[1+middlewares]){
       return reject('route function has not been defined !');
     }
 
-    args[1](req, res);
+    args[1+middlewares](req, res);
   });
 }
-export default (route) => {
+export default (route, middlewares = 0) => {
 
   let app = jasmine.createSpyObj('app', ['get', 'post', 'delete']);
   route(app);
@@ -35,15 +35,15 @@ export default (route) => {
   let instrumentedRoute = {
 
     get: (routePath, req) => {
-      return executeRoute('get', routePath, req, app);
+      return executeRoute('get', routePath, req, app, middlewares);
     },
 
     delete: (routePath, req) => {
-      return executeRoute('delete', routePath, req, app);
+      return executeRoute('delete', routePath, req, app, middlewares);
     },
 
     post: (routePath, req) => {
-      return executeRoute('post', routePath, req, app);
+      return executeRoute('post', routePath, req, app, middlewares);
     }
 
   };

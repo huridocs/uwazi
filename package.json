@@ -31,6 +31,7 @@
     "history": "^1.17.0",
     "isomorphic-fetch": "^2.2.0",
     "jvent": "^0.2.0",
+    "multer": "^1.1.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "react": "^0.14.1",
@@ -50,6 +51,7 @@
     "extract-text-webpack-plugin": "^0.8.2",
     "fetch-mock": "3.0.3",
     "file-loader": "^0.8.4",
+    "form-data": "^0.2.0",
     "istanbul-instrumenter-loader": "^0.1.3",
     "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
@@ -68,6 +70,7 @@
     "react-transform-hmr": "^1.0.1",
     "sass-loader": "^3.0.0",
     "style-loader": "^0.13.0",
+    "superagent-mocker": "^0.3.0",
     "webpack": "^1.12.2",
     "whatwg-fetch": "^0.10.1"
   }
