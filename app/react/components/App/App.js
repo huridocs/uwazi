@@ -17,8 +17,7 @@ class App extends Component {
   constructor(props, context) {
     super(props);
     this.fetch = props.fetch || fetch;
-    let user = context.getUser() || {};
-    this.state = {user: user};
+    this.state = {user: context.getUser()};
     events.on('login', this.fetchUser);
   }
 
@@ -42,6 +41,11 @@ class App extends Component {
   }
 
   render = () => {
+
+    let upload;
+    if(this.state.user){
+      upload = <Upload/>
+    }
 
     return (
       <div>
@@ -71,7 +75,7 @@ class App extends Component {
               <li><Link to='/template'>templates</Link></li>
               <li><Link to='/library'>Library</Link></li>
              </ul>
-              <Upload/>
+              {upload}
               <UserWidget user={ this.state.user } />
            </div>
        </div>

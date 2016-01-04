@@ -10,7 +10,7 @@ describe('UserWidget', () => {
   let component;
 
   beforeEach(() => {
-    let user = {};
+    let user = undefined;
     component = TestUtils.renderIntoDocument(<UserWidget user={user}/>);
   })
 

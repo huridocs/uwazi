@@ -4,6 +4,7 @@ import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
 
 import App from '../App.js'
+import Provider from '../../../core/Provider.js'
 import {events} from '../../../utils/index'
 
 describe('App', () => {
@@ -26,7 +27,7 @@ describe('App', () => {
 
   beforeEach(() => {
     spyOn(events, 'on');
-    component = TestUtils.renderIntoDocument(<App fetch={fetch_rejected}/>);
+    TestUtils.renderIntoDocument(<Provider><App ref={(ref) => component = ref} fetch={fetch_rejected}/></Provider>);
   })
 
   describe('on instance', () => {
@@ -37,7 +38,7 @@ describe('App', () => {
 
   describe('when fething user', () => {
     beforeEach(() => {
-      component = TestUtils.renderIntoDocument(<App fetch={fetch_mock}/>);
+      TestUtils.renderIntoDocument(<Provider><App ref={(ref) => component = ref} fetch={fetch_mock}/></Provider>);
     })
 
     it('should set the username on the state and render it', (done) => {
