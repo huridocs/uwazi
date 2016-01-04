@@ -4,18 +4,25 @@ import { isClient } from '../utils'
 class Provider extends Component {
 
   static childContextTypes = {
-    getInitialData: PropTypes.func
+    getInitialData: PropTypes.func,
+    getUser: PropTypes.func
   }
 
   constructor(props){
     super(props)
     this.data = isClient && window.__initialData__ ? window.__initialData__ : props.initialData;
+    this.user = isClient && window.__user__ ? window.__user__ : props.user;
   }
 
   getChildContext() {
     return {
-      getInitialData: ::this.getInitialData
+      getInitialData: ::this.getInitialData,
+      getUser: ::this.getUser
     };
+  }
+
+  getUser() {
+    return this.user;
   }
 
   getInitialData() {
