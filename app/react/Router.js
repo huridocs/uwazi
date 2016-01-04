@@ -21,10 +21,10 @@ if (isClient) {
   );
 }
 
-function renderComponentWithRoot(Component, componentProps, initialData) {
-
+function renderComponentWithRoot(Component, componentProps, initialData, user) {
+  
   const componentHtml = renderToStaticMarkup(
-    <Provider initialData={initialData}>
+    <Provider initialData={initialData} user={user}>
       <Component {...componentProps} />
     </Provider>
   );
@@ -32,7 +32,7 @@ function renderComponentWithRoot(Component, componentProps, initialData) {
   const head = Helmet.rewind();
 
   return '<!doctype html>\n' + renderToStaticMarkup(
-    <Root content={componentHtml} initialData={initialData} head={head} />
+    <Root content={componentHtml} initialData={initialData} head={head} user={user}/>
   );
 }
 
@@ -49,14 +49,14 @@ function handleRedirect(res, redirectLocation) {
   res.redirect(302, redirectLocation.pathname + redirectLocation.search);
 }
 
-function handleRoute(res, renderProps) {
+function handleRoute(res, renderProps, req) {
 
   const isDeveloping = process.env.NODE_ENV !== 'production';
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(response) {
     try {
-      const wholeHtml = renderComponentWithRoot(RoutingContext, renderProps, response);
+      const wholeHtml = renderComponentWithRoot(RoutingContext, renderProps, response, req.user);
       res.status(200).send(wholeHtml);
     }
     catch(error){
@@ -72,13 +72,14 @@ function handleRoute(res, renderProps) {
 }
 
 function ServerRouter(req, res) {
+
   match({ routes: Routes, location: req.url }, (error, redirectLocation, renderProps) => {
     if (error) {
       handleError(error);
     } else if (res, redirectLocation) {
       handleRedirect(res, redirectLocation)
     } else if (renderProps) {
-      handleRoute(res, renderProps);
+      handleRoute(res, renderProps, req);
     } else {
       handle404(res);
     }

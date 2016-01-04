@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { Router, match, RoutingContext, RouteContext } from 'react-router'
 
 import {events} from '../../utils/index'
@@ -12,11 +12,13 @@ import Upload from '../Upload/Upload'
 
 class App extends Component {
 
-  constructor(props) {
+  static contextTypes = {getUser: PropTypes.func }
+
+  constructor(props, context) {
     super(props);
     this.fetch = props.fetch || fetch;
-    this.state = {user: {}};
-    this.fetchUser();
+    let user = context.getUser() || {};
+    this.state = {user: user};
     events.on('login', this.fetchUser);
   }
 
@@ -40,7 +42,7 @@ class App extends Component {
   }
 
   render = () => {
-    
+
     return (
       <div>
         <Helmet

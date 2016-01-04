@@ -3,12 +3,18 @@ import React, { Component } from 'react'
 class Root extends Component {
 
   renderInitialData() {
+    let innerHtml = ''
     if (this.props.initialData) {
-      let innerHtml = `window.__initialData__ = ${JSON.stringify(this.props.initialData)}`;
-      return (
-        <script dangerouslySetInnerHTML={{__html: innerHtml}} />
-      );
+      innerHtml += `window.__initialData__ = ${JSON.stringify(this.props.initialData)};`;
     }
+
+    if (this.props.user) {
+      innerHtml += `window.__user__ = ${JSON.stringify(this.props.user)};`;
+    }
+
+    return (
+      <script dangerouslySetInnerHTML={{__html: innerHtml}} />
+    );
   }
 
   render() {

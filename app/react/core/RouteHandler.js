@@ -3,7 +3,7 @@ import { isClient } from '../utils'
 
 class RouteHandler extends Component {
 
-  static contextTypes = { getInitialData: PropTypes.func }
+  static contextTypes = { getInitialData: PropTypes.func, getUser: PropTypes.func }
 
   static requestState(){
     return Promise.resolve({});
