@@ -16,7 +16,10 @@ export default app => {
     document.user = req.user;
     request.post(db_url, document)
     .then((response) => {
-      res.json(response.json);
+      return request.get(db_url + '/_design/documents/_view/all?key="'+response.json.id+'"');
+    })
+    .then((response) => {
+      res.json(response.json.rows[0]);
     })
     .catch(console.log);
   });

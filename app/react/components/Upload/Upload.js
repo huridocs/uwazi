@@ -4,6 +4,8 @@ import api from '../../utils/api'
 import {APIURL} from '../../config.js'
 import './scss/upload.scss';
 import { Link } from 'react-router'
+import {events} from '../../utils/index'
+import ProgressBar from '../Elements/ProgressBar'
 
 class Upload extends Component {
 
@@ -33,11 +35,17 @@ class Upload extends Component {
   }
 
   uploadFile = (file, doc) => {
+    events.emit('newDocument', doc);
+
     let uploadRequest = superagent.post(APIURL + 'upload')
     .field('document', doc.id)
     .attach('file', file, file.name)
     .on('progress', (data) => {
+      events.emit('uploadProgress', doc.id, data.percent);
       this.setState({progress:data.percent})
+    })
+    .on('end', () => {
+      events.emit('uploadEnd', doc.id);
     })
 
     uploadRequest.end((err, res) => {
@@ -63,21 +71,10 @@ class Upload extends Component {
 
   render = () => {
 
-    let progressWidth = {
-      width: this.state.progress+'%'
-    };
-
     let hide = {
       top:'-10000px',
       position:'absolute'
     };
-
-    let show = {};
-    if(this.state.progress > 0){
-      show = {
-        display: 'inherit'
-      }
-    }
 
     return (
       <ul className="nav navbar-nav navbar-upload">
@@ -87,9 +84,7 @@ class Upload extends Component {
         </li>
         <li>
           <Link to='/library'>
-            <div className="navbar-upload-bar" style={show}>
-              <div className="navbar-upload-bar-progress" style={progressWidth}></div>
-            </div>
+            <ProgressBar progress={this.state.progress}/>
           </Link>
         </li>
       </ul>

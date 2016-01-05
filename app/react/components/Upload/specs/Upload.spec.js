@@ -3,6 +3,7 @@ import Upload from '../Upload';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
+import {events} from '../../../utils/index'
 
 import superagent from 'superagent';
 
@@ -14,7 +15,7 @@ describe('Upload', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL+'documents', 'POST', {body: JSON.stringify({ok: true, id: "1234", rev: "567"})})
+    .mock(APIURL+'documents', 'POST', {body: JSON.stringify({ok: true, id: '1234', rev: '567'})})
   });
 
   beforeEach(() => {
@@ -43,16 +44,50 @@ describe('Upload', () => {
   describe('uploadFile()', () => {
 
     it('should upload the file with the document id', () => {
-      let uploadRequest = component.uploadFile(file, {ok: true, id: "1234", rev: "567"})
-      expect(uploadRequest._formData.get('document')).toBe("1234");
+      let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
+      expect(uploadRequest._formData.get('document')).toBe('1234');
       expect(uploadRequest._formData.get('file')).toEqual(file);
     });
 
-    it('should update the status with the progress', () => {
-      let uploadRequest = component.uploadFile(file, {ok: true, id: "1234", rev: "567"})
-      uploadRequest._callbacks.progress[0]({percent: 51});
-      expect(component.state.progress).toBe(51);
+    it('should trigger the an event with the document info', function(done){
+      let info = {ok: true, id: '1234', rev: '567'}
+      events.on('newDocument', (docInfo) => {
+        expect(docInfo).toEqual(info);
+        done();
+      })
+      component.uploadFile(file, info);
     });
+
+    describe('on progress', () => {
+      it('should update the status with the progress', () => {
+        let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
+        uploadRequest._callbacks.progress[0]({percent: 51});
+        expect(component.state.progress).toBe(51);
+      });
+
+      it('should emit an event with the progress and the doc id', (done) => {
+        events.on('uploadProgress', (id, percent) => {
+          expect(percent).toBe(51);
+          expect(id).toBe('1234');
+          done();
+        })
+
+        let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
+        uploadRequest._callbacks.progress[0]({percent: 51});
+      });
+    })
+
+    describe('on complete', () => {
+      it('should emit an event', () => {
+        events.on('uploadEnd', (id) => {
+          expect(id).toBe('1234');
+          done();
+        })
+
+        let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
+        uploadRequest._callbacks.end[0]();
+      });
+    })
   });
 
 });

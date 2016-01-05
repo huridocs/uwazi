@@ -3,6 +3,7 @@ import Library from '../Library';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
+import {events} from '../../../utils/index'
 
 describe('LibraryController', () => {
 
@@ -12,7 +13,7 @@ describe('LibraryController', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})});
+    .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})})
   });
 
   describe('static requestState', () => {

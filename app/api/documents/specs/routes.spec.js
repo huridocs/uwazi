@@ -32,18 +32,14 @@ describe('documents', () => {
       });
     });
 
-    it('should create a new document', (done) => {
+    it('should create a new document with use user', (done) => {
       let req = {body:{title: 'Batman begins'}, user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}};
 
       routes.post('/api/documents', req)
       .then((response) => {
-        expect(response.ok).toBe(true);
         expect(response.id).toBeDefined();
-        expect(response.rev).toBeDefined();
-        return request.get(db_url+'/'+response.id)
-      })
-      .then((doc) => {
-        expect(doc.json.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
+        expect(response.value.title).toBe('Batman begins');
+        expect(response.value.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
         done();
       })
       .catch(done.fail);
