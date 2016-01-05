@@ -37,10 +37,9 @@ describe('documents', () => {
 
       routes.post('/api/documents', req)
       .then((response) => {
-        expect(response._id).toBeDefined();
-        expect(response._rev).toBeDefined();
-        expect(response.title).toBe('Batman begins');
-        expect(response.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
+        expect(response.id).toBeDefined();
+        expect(response.value.title).toBe('Batman begins');
+        expect(response.value.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
         done();
       })
       .catch(done.fail);
