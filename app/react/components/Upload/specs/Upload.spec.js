@@ -66,7 +66,7 @@ describe('Upload', () => {
       });
 
       it('should emit an event with the progress and the doc id', (done) => {
-        events.on('uploadProgress', (percent, id) => {
+        events.on('uploadProgress', (id, percent) => {
           expect(percent).toBe(51);
           expect(id).toBe('1234');
           done();
@@ -74,6 +74,18 @@ describe('Upload', () => {
 
         let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
         uploadRequest._callbacks.progress[0]({percent: 51});
+      });
+    })
+
+    describe('on complete', () => {
+      it('should emit an event', () => {
+        events.on('uploadEnd', (id) => {
+          expect(id).toBe('1234');
+          done();
+        })
+
+        let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
+        uploadRequest._callbacks.end[0]();
       });
     })
   });

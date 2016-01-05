@@ -7,21 +7,14 @@ import './scss/progress_bar.scss';
 
 class ProgressBar extends Component {
 
-  constructor (props) {
-    super(props);
-    this.state = {
-      progress: 0
-    }
-  }
-
   render() {
 
     let progressWidth = {
-      width: this.state.progress+'%'
+      width: this.props.progress+'%'
     };
 
     let show = {};
-    if(this.state.progress > 0){
+    if(this.props.progress > 0){
       show = {
         display: 'inherit'
       }
