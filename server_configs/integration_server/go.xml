@@ -57,6 +57,12 @@
         <jobs>
           <job name="deploy">
             <tasks>
+              <exec command="cp">
+                <arg>-f</arg>
+                <arg>app/react/ci_config.js</arg>
+                <arg>app/react/config.js</arg>
+                <runif status="passed" />
+              </exec>
               <exec command="webpack">
                 <runif status="passed" />
               </exec>
@@ -71,9 +77,7 @@
                 <arg>/home/deploys/dev</arg>
                 <runif status="passed" />
               </exec>
-              <exec command="forever">
-                <arg>stop</arg>
-                <arg>/home/deploys/dev/server.js</arg>
+              <exec command="stop_uwazi_dev.sh">
                 <runif status="passed" />
               </exec>
               <exec command="sh" workingdir="utils">
