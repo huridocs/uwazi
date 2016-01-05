@@ -3,4 +3,5 @@ node_modules
 coverage
 /dist
 npm-debug
-uploads
+uploads/*
+!uploads/index.html
