@@ -16,6 +16,9 @@ export default app => {
     document.user = req.user;
     request.post(db_url, document)
     .then((response) => {
+      return request.get(db_url+'/'+response.json.id);
+    })
+    .then((response) => {
       res.json(response.json);
     })
     .catch(console.log);
