@@ -3,7 +3,7 @@ import {db_url} from '../config/database.js'
 import multer from 'multer'
 
 export default app => {
-  var upload = multer({ dest: 'uploads/' });
+  var upload = multer({ dest: __dirname+'/../../../uploads/' });
 
   app.post('/api/upload', upload.any(), (req, res) => {
     request.get(db_url + '/' + req.body.document)
