@@ -9,8 +9,7 @@ export default app => {
     request.get(db_url + '/' + req.body.document)
     .then((response) => {
       let doc = response.json;
-      doc.filepath = req.files[0].path;
-      doc.filename = req.files[0].originalname;
+      doc.file = req.files[0];
 
       return request.post(db_url, doc);
     })

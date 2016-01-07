@@ -40,8 +40,7 @@ describe('upload routes', () => {
         return request.get(db_url+'/8202c463d6158af8065022d9b5014ccb');
       })
       .then((doc) => {
-        expect(doc.json.filepath).toBe('uploads/f2082bf51b6ef839690485d7153e847a');
-        expect(doc.json.filename).toBe('gadgets-01.pdf');
+        expect(doc.json.file).toEqual(file);
         done()
       })
       .catch(done.fail);
