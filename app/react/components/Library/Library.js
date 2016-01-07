@@ -14,7 +14,7 @@ class Library extends RouteHandler {
   }
 
   updateList = (doc) => {
-    this.state.documents.push(doc);
+    this.state.documents.unshift(doc);
     this.setState({documents: this.state.documents});
   }
 

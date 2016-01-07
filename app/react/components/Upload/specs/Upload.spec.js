@@ -43,6 +43,12 @@ describe('Upload', () => {
 
   describe('uploadFile()', () => {
 
+    beforeEach(() => {
+      events.removeAllListeners('newDocument');
+      events.removeAllListeners('uploadProgress');
+      events.removeAllListeners('uploadEnd');
+    })
+
     it('should upload the file with the document id', () => {
       let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
       expect(uploadRequest._formData.get('document')).toBe('1234');

@@ -4,6 +4,7 @@ import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import {events} from '../../../utils/index'
+import Provider from '../../../core/Provider'
 
 describe('LibraryController', () => {
 
@@ -30,5 +31,19 @@ describe('LibraryController', () => {
       .catch(done.fail)
     });
   });
+
+  describe('when the user begins a document upload', () => {
+
+    beforeEach(() => {
+      TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+    });
+
+    it('should add the document first of the list', () => {
+      component.setState({documents: [{value: {title: 'Enigma answers'}}]})
+      let doc = {value: {title: 'Robin secret diary'}};
+      events.emit('newDocument', doc);
+      expect(component.state.documents[0]).toBe(doc);
+    });
+  })
 
 });
