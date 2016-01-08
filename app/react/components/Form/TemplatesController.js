@@ -5,13 +5,13 @@ import RouteHandler from '../../core/RouteHandler'
 
 class TemplatesController extends RouteHandler {
 
-  static requestState(params){
+  static requestState(params = {}){
     return api.get('templates')
     .then((response) => {
       let templates = response.json.rows;
       return {
         templates:templates,
-        template: templates.find(template => template.key == params.templateKey)
+        template: templates.find(template => template.id == params.templateKey)
       };
     })
   }
@@ -20,11 +20,10 @@ class TemplatesController extends RouteHandler {
     super(props, context);
   }
 
-  // no tests
   saveForm = (template) => {
     return api.post('templates', template)
     .then((response) => {
-      return TemplatesController.requestState();
+      return TemplatesController.requestState({templateKey:response.json.id});
     })
     .then((state) => {
       this.setState(state);
