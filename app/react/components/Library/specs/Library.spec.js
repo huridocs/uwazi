@@ -17,6 +17,7 @@ describe('LibraryController', () => {
     backend
     .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})})
     .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templates})});
+
   });
 
   describe('static requestState', () => {
@@ -58,7 +59,29 @@ describe('LibraryController', () => {
       events.emit('uploadEnd', 'id_1', {filename: 'as1hd123ha', originalname: 'Engima answers'});
       expect(component.state.documents[0].progress).not.toBeDefined();
       expect(component.state.documents[0].value.file).toEqual({filename: 'as1hd123ha', originalname: 'Engima answers'});
-    })
+    });
   })
+
+  describe('when editing a document', () => {
+
+    beforeEach(() => {
+      TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+      component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
+    });
+
+    describe("editDocument()", () => {
+      it('should set on state the document being edited', () => {
+        component.editDocument({id:1});
+        expect(component.state.documentBeingEdited).toEqual({id:1});
+      });
+    });
+
+    describe("cancelEdit()", () => {
+      it('should set on state the document being edited to undefined', () => {
+        component.cancelEdit();
+        expect(component.state.documentBeingEdited).not.toBeDefined();
+      });
+    });
+  });
 
 });

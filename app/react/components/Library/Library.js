@@ -76,8 +76,12 @@ class Library extends RouteHandler {
   }
   //
 
-  showForm = () => {
-    this.setState({showForm:true});
+  editDocument = (document) => {
+    this.setState({documentBeingEdited: document});
+  }
+
+  cancelEdit = () => {
+    this.setState({documentBeingEdited: undefined});
   }
 
   docFileValue = (doc) => {
@@ -116,7 +120,7 @@ class Library extends RouteHandler {
             <tbody>
               {this.state.documents.map((doc, index) => {
 
-                return <tr onClick={this.showForm} key={index}>
+                return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
                         <td>{index + 1}</td>
                         <td>{doc.value.title}</td>
                         <td>{doc.value.author}</td>
@@ -131,11 +135,12 @@ class Library extends RouteHandler {
 
 
           {(() => {
-            if(this.state.showForm){
+            if(this.state.documentBeingEdited){
               return (
                 <div>
                   <SelectField label="Template" ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
                   <Form fields={this.state.template.fields} />
+                  <button onClick={this.cancelEdit}>Cancel</button>
                 </div>
               )
             }
