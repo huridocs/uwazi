@@ -110,6 +110,29 @@ describe('templates routes', () => {
 
     it('should create a template', (done) => {
 
+      let req = {body:{name:'created_template', fields:[{label:'fieldLabel'}]}};
+      let postResponse;
+
+      routes.post('/api/templates', req)
+      .then((response) => {
+        postResponse = response;
+        return request.get(db_url+'/_design/templates/_view/all')
+      })
+      .then((response) => {
+        let new_doc = response.json.rows.find((template) => {
+          return template.value.name == 'created_template';
+        });
+
+        expect(new_doc.value.name).toBe('created_template');
+        expect(new_doc.value.fields).toEqual([{label:'fieldLabel'}]);
+        expect(new_doc.value._rev).toBe(postResponse.rev);
+        done();
+      })
+      .catch(done.fail);
+
+    });
+
+    it("should set a default value of [] to fields property if its missing", (done) => {
       let req = {body:{name:'created_template'}};
       let postResponse;
 
@@ -124,11 +147,11 @@ describe('templates routes', () => {
         });
 
         expect(new_doc.value.name).toBe('created_template');
+        expect(new_doc.value.fields).toEqual([]);
         expect(new_doc.value._rev).toBe(postResponse.rev);
         done();
       })
       .catch(done.fail);
-
     });
 
     describe("when passing _id and _rev", () => {
