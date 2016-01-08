@@ -14,7 +14,7 @@ export default app => {
       return request.post(db_url, doc);
     })
     .then((response) => {
-      res.json(response.json);
+      res.json(req.files[0]);
     })
     .catch(console.log)
   });

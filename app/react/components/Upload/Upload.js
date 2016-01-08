@@ -38,19 +38,17 @@ class Upload extends Component {
     events.emit('newDocument', doc);
 
     let uploadRequest = superagent.post(APIURL + 'upload')
+    .set('Accept', 'application/json')
     .field('document', doc.id)
     .attach('file', file, file.name)
     .on('progress', (data) => {
       events.emit('uploadProgress', doc.id, data.percent);
       this.setState({progress:data.percent})
     })
-    .on('end', () => {
-      events.emit('uploadEnd', doc.id);
+    .on('response', (res) => {
+      events.emit('uploadEnd', doc.id, res.body);
     })
-
-    uploadRequest.end((err, res) => {
-
-    })
+    .end()
     return uploadRequest;
   }
 

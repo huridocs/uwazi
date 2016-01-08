@@ -32,18 +32,33 @@ describe('LibraryController', () => {
     });
   });
 
-  describe('when the user begins a document upload', () => {
+  describe('when a new document is uploaded', () => {
+    let doc = {id: 'id_1', value: {title: 'Robin secret diary'}};;
 
     beforeEach(() => {
       TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+      component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
     });
 
     it('should add the document first of the list', () => {
-      component.setState({documents: [{value: {title: 'Enigma answers'}}]})
-      let doc = {value: {title: 'Robin secret diary'}};
       events.emit('newDocument', doc);
       expect(component.state.documents[0]).toBe(doc);
     });
+
+    it('should set the progress to the doc', () => {
+      events.emit('newDocument', doc);
+      events.emit('uploadProgress', 'id_1', 20);
+      expect(component.state.documents[0].progress).toBe(20);
+    })
+
+    it('when it ends should set file to the doc', () => {
+      let fileData = {filename: 'as1hd123ha', originalname: 'Engima answers'};
+      events.emit('newDocument', doc);
+      events.emit('uploadProgress', 'id_1', 20);
+      events.emit('uploadEnd', 'id_1', {filename: 'as1hd123ha', originalname: 'Engima answers'});
+      expect(component.state.documents[0].progress).not.toBeDefined();
+      expect(component.state.documents[0].value.file).toEqual({filename: 'as1hd123ha', originalname: 'Engima answers'});
+    })
   })
 
 });

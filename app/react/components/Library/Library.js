@@ -4,17 +4,46 @@ import api from '../../utils/api'
 import RouteHandler from '../../core/RouteHandler'
 import {events} from '../../utils'
 import SelectField from '../Form/fields/SelectField'
+import ProgressBar from '../Elements/ProgressBar'
 import Form from '../Form/Form'
 
 class Library extends RouteHandler {
 
-  constructor(props, context){
-    super(props, context);
-    events.on('newDocument', this.updateList);
+  componentDidMount = () => {
+    events.on('newDocument', this.newDoc);
+    events.on('uploadProgress', this.uploadProgress);
+    events.on('uploadEnd', this.uploadEnd);
   }
 
-  updateList = (doc) => {
+  componentWillUnmount = () => {
+    events.off('newDocument', this.newDoc);
+    events.off('uploadProgress', this.uploadProgress);
+    events.off('uploadEnd', this.uploadEnd);
+  }
+
+  newDoc = (doc) => {
     this.state.documents.unshift(doc);
+    this.setState({documents: this.state.documents});
+  }
+
+  uploadProgress = (id, percent) => {
+    for(let doc of this.state.documents) {
+      if(doc.id === id){
+        doc.progress = percent;
+        break;
+      }
+    }
+    this.setState({documents: this.state.documents});
+  }
+
+  uploadEnd = (id, file) => {
+    for(let doc of this.state.documents) {
+      if(doc.id === id){
+        doc.progress = undefined;
+        doc.value.file = file;
+        break;
+      }
+    }
     this.setState({documents: this.state.documents});
   }
 
@@ -51,6 +80,18 @@ class Library extends RouteHandler {
     this.setState({showForm:true});
   }
 
+  docFileValue = (doc) => {
+    if(doc.progress) {
+      return (<ProgressBar progress={doc.progress}/>);
+    }
+
+    if(doc.value.file) {
+      return (<a href={doc.value.file.filename}>{doc.value.file.originalname}</a>);
+    }
+
+    return (<span>File not found</span>);
+  }
+
   render = () => {
 
     //
@@ -74,12 +115,13 @@ class Library extends RouteHandler {
             </thead>
             <tbody>
               {this.state.documents.map((doc, index) => {
+
                 return <tr onClick={this.showForm} key={index}>
                         <td>{index + 1}</td>
                         <td>{doc.value.title}</td>
                         <td>{doc.value.author}</td>
                         <td>{doc.value.category}</td>
-                        <td><a href={doc.value.filepath}>{doc.value.filename}</a></td>
+                        <td>{this.docFileValue(doc)}</td>
                       </tr>
               })}
             </tbody>

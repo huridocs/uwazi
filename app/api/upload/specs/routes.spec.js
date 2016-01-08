@@ -37,6 +37,7 @@ describe('upload routes', () => {
     it('should update the document with the file path', (done) => {
       routes.post('/api/upload', req)
       .then((response) => {
+        expect(response).toEqual(file);
         return request.get(db_url+'/8202c463d6158af8065022d9b5014ccb');
       })
       .then((doc) => {

@@ -16,6 +16,7 @@ describe('Upload', () => {
     backend.restore();
     backend
     .mock(APIURL+'documents', 'POST', {body: JSON.stringify({ok: true, id: '1234', rev: '567'})})
+    .mock(APIURL+'upload', 'POST', {body: JSON.stringify({ok: true, id: '1234', rev: '567'})});
   });
 
   beforeEach(() => {
@@ -84,14 +85,15 @@ describe('Upload', () => {
     })
 
     describe('on complete', () => {
-      it('should emit an event', () => {
-        events.on('uploadEnd', (id) => {
+      it('should emit an event', (done) => {
+        events.on('uploadEnd', (id, file) => {
           expect(id).toBe('1234');
+          expect(file).toBe('fileData');
           done();
         })
 
         let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
-        uploadRequest._callbacks.end[0]();
+        uploadRequest._callbacks.response[0]({body: 'fileData'});
       });
     })
   });
