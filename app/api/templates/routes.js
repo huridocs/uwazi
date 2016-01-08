@@ -6,6 +6,7 @@ export default app => {
   app.post('/api/templates', (req, res) => {
 
     req.body.type = 'template';
+    req.body.fields = req.body.fields || [];
 
     request.post(db_url, req.body)
     .then((response) => {
