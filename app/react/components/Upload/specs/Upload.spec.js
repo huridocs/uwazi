@@ -95,6 +95,17 @@ describe('Upload', () => {
         let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
         uploadRequest._callbacks.response[0]({body: 'fileData'});
       });
+
+      it('should set reset progress', (done) => {
+        component.setState({progress: 100});
+        events.on('uploadEnd', (id, file) => {
+          expect(component.state.progress).toBe(0);
+          done();
+        })
+
+        let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
+        uploadRequest._callbacks.response[0]({body: 'fileData'});
+      });
     })
   });
 

@@ -46,6 +46,8 @@ class Upload extends Component {
       this.setState({progress:data.percent})
     })
     .on('response', (res) => {
+      this.setState({progress: 0});
+      this.input.value = ''; //can't test
       events.emit('uploadEnd', doc.id, res.body);
     })
     .end()
