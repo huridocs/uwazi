@@ -12,7 +12,7 @@ class SelectField extends Component {
       <div className="form-group col-xs-9">
         <label htmlFor="select" className="col-sm-2 control-label">{this.props.label}</label>
         <div className="col-xs-10">
-          <select className="form-control" id="select" onChange={this.props.onChange} defaultValue={this.props.defaultValue} ref={(ref) => {this.field = ref}}>
+          <select className="form-control" id="select" onChange={this.props.onChange} value={this.props.value} defaultValue={this.props.defaultValue} ref={(ref) => {this.field = ref}}>
             {selectOptions.map((data, index) => {
               return <option key={index} value={data.value}>{data.label}</option>
             })}

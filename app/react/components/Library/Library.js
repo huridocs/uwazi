@@ -59,7 +59,7 @@ class Library extends RouteHandler {
     .then((responses) => {
       let documents = responses[0].json.rows;
       let templates = responses[1].json.rows;
-      return {documents: documents, templates: templates, template: templates[0].value};
+      return {documents: documents, templates: templates};
     });
   }
 
@@ -77,11 +77,25 @@ class Library extends RouteHandler {
   //
 
   editDocument = (document) => {
-    this.setState({documentBeingEdited: document});
+    let template = this.state.templates.find((template) => {
+      return template.id == document.value.template;
+    });
+
+    if(!template){
+      template = this.state.templates[0];
+    }
+
+    this.setState({documentBeingEdited: document, template: template.value});
   }
 
   cancelEdit = () => {
     this.setState({documentBeingEdited: undefined});
+  }
+
+  saveDocument = () => {
+    let document = this.state.documentBeingEdited.value;
+    document.template = this.templateField.value();
+    return api.post('documents', document);
   }
 
   docFileValue = (doc) => {
@@ -138,9 +152,10 @@ class Library extends RouteHandler {
             if(this.state.documentBeingEdited){
               return (
                 <div>
-                  <SelectField label="Template" ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
+                  <SelectField label="Template" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
                   <Form fields={this.state.template.fields} />
                   <button onClick={this.cancelEdit}>Cancel</button>
+                  <button onClick={this.saveDocument}>Save</button>
                 </div>
               )
             }

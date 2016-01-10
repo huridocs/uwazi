@@ -16,8 +16,8 @@ describe('LibraryController', () => {
     backend.restore();
     backend
     .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})})
-    .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templates})});
-
+    .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templates})})
+    .mock(APIURL+'documents', 'POST', {});
   });
 
   describe('static requestState', () => {
@@ -26,7 +26,6 @@ describe('LibraryController', () => {
       .then((response) => {
         expect(response.documents).toEqual(documents);
         expect(response.templates).toEqual(templates);
-        expect(response.template).toEqual(templates[0].value);
         done();
       })
       .catch(done.fail)
@@ -71,9 +70,25 @@ describe('LibraryController', () => {
 
     describe("editDocument()", () => {
       it('should set on state the document being edited', () => {
-        component.editDocument({id:1});
-        expect(component.state.documentBeingEdited).toEqual({id:1});
+        component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
+        component.editDocument({value:{id:1}});
+        expect(component.state.documentBeingEdited).toEqual({value:{id:1}});
       });
+
+      it('should set on state the template document have', () => {
+        component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
+        component.editDocument({value:{id:1, template:'2'}});
+        expect(component.state.template).toEqual({name:'template2', fields:[]});
+      });
+
+      describe("when document does not have a template", () => {
+        it('should set the first template as the default', () => {
+          component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
+          component.editDocument({value:{id:1}});
+          expect(component.state.template).toEqual({name:'template1', fields:[]});
+        });
+      });
+
     });
 
     describe("cancelEdit()", () => {
@@ -82,6 +97,29 @@ describe('LibraryController', () => {
         expect(component.state.documentBeingEdited).not.toBeDefined();
       });
     });
+
+    describe("saveDocument()", () => {
+      it('should save the template used', (done) => {
+
+        component.setState({documentBeingEdited: {value:{id:1, title:'the dark knight'}}})
+        component.templateField.value = () => {
+          return 'template_id';
+        };
+
+
+        backend.reset();
+        component.saveDocument()
+        .then((response) => {
+          let calls = backend.calls(APIURL+'documents');
+          expect(calls[0][1].method).toBe('POST');
+          expect(calls[0][1].body).toEqual(JSON.stringify({id:1, title:'the dark knight', template:'template_id'}));
+          done();
+        })
+        .catch(done.fail);
+
+      });
+    });
+
   });
 
 });
