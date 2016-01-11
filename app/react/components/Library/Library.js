@@ -95,6 +95,7 @@ class Library extends RouteHandler {
   saveDocument = () => {
     let document = this.state.documentBeingEdited.value;
     document.template = this.templateField.value();
+    document.metadata = this.form.value();
     return api.post('documents', document);
   }
 
@@ -153,7 +154,7 @@ class Library extends RouteHandler {
               return (
                 <div>
                   <SelectField label="Template" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
-                  <Form fields={this.state.template.fields} />
+                  <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
                   <button onClick={this.cancelEdit}>Cancel</button>
                   <button onClick={this.saveDocument}>Save</button>
                 </div>

@@ -6,6 +6,8 @@ class Form extends Component {
   constructor(props) {
     super(props),
     this.fields = {};
+    this.state = {};
+    this.state.values = this.props.values || {};
   }
 
   value = () => {
@@ -26,6 +28,7 @@ class Form extends Component {
     return (
       <form>
         {this.props.fields.map((field, index) => {
+          field.value = this.state.values[field.name];
           return <Field config={field} key={index} ref={(ref) => this.fields[field.name] = ref }/>
         })}
       </form>

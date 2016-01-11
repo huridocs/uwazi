@@ -2,9 +2,19 @@ import React, { Component, PropTypes } from 'react'
 
 class TextareaField extends Component {
 
-  // value = () => {
-  //   return this.field.value
-  // }
+  value = () => {
+    return this.field.value
+  }
+
+  handleChange = () => {
+    this.setState({value: this.value()});
+  }
+
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.value !== this.props.value){
+      this.setState({value:this.props.value});
+    }
+  }
 
   render = () => {
     return (
@@ -15,6 +25,8 @@ class TextareaField extends Component {
             className="form-control"
             rows="3"
 
+            onChange={this.handleChange}
+            value={this.props.value}
             defaultValue={this.props.defaultValue}
             ref={(ref) => this.field = ref}
           ></textarea>

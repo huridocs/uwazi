@@ -42,4 +42,14 @@ describe('Form', () => {
     });
   });
 
+  describe("when passing values", () => {
+    it("should fill the fields", () => {
+      let values = {input1:'bruce'};
+      component = TestUtils.renderIntoDocument(<Form fields={fields} values={values}/>);
+
+      let value = component.value();
+      expect(value.input1).toBe('bruce');
+    });
+  });
+
 });
