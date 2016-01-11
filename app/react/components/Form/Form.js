@@ -3,30 +3,30 @@ import Field from './fields/Field'
 
 class Form extends Component {
 
-  // constructor(props) {
-  //   super(props),
-  //   this.state = {value: props.value};
-  // }
+  constructor(props) {
+    super(props),
+    this.fields = {};
+  }
 
-  // value = () => {
-  //   return this.field.value
-  // }
+  value = () => {
+    let values = {};
+
+    Object.keys(this.fields).forEach((fieldName) => {
+      values[fieldName] = this.fields[fieldName].value();
+    });
+
+    return values;
+  }
 
   handleChange = () => {
     this.setState({value: this.value()});
   }
 
-  // componentDidUpdate = (prevProps) => {
-  //   if(prevProps.value !== this.props.value){
-  //     this.setState({value:this.props.value});
-  //   }
-  // }
-
   render = () => {
     return (
       <form>
         {this.props.fields.map((field, index) => {
-          return <Field config={field} key={index}/>
+          return <Field config={field} key={index} ref={(ref) => this.fields[field.name] = ref }/>
         })}
       </form>
     )

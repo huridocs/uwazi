@@ -11,21 +11,34 @@ describe('Form', () => {
 
   let fields = [{
     type:'input',
-    label:'Input'
+    label:'Input',
+    name:'input1'
   },
   {
     type:'checkbox',
-    label:'Input 2'
+    label:'Input 2',
+    name:'input2'
   }];
+
+  let inputs;
 
   beforeEach(() => {
     component = TestUtils.renderIntoDocument(<Form fields={fields}/>);
+    inputs = TestUtils.scryRenderedDOMComponentsWithTag(component, 'input');
   });
 
   describe('on instance', () => {
     it('should render the form based on the fields', () => {
-      let inputs = TestUtils.scryRenderedDOMComponentsWithTag(component, 'input');
       expect(inputs.length).toBe(2);
+    });
+  });
+
+  describe('value()', () => {
+    it('should return a key value map', () => {
+      inputs[0].value = 'test';
+      inputs[1].checked = true;
+      let value = component.value();
+      expect(value).toEqual({input1:'test', input2:true});
     });
   });
 

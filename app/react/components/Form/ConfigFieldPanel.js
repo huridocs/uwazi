@@ -60,6 +60,7 @@ class ConfigFieldPanel extends Component {
               <form onSubmit={this.save} className="form-horizontal">
                 <SelectField label="Type" ref={(ref) => {this.fields.type = ref}} defaultValue={this.props.field.type} options={typeOptions} />
                 <InputField label="Label" ref={(ref) => {this.fields.label = ref}} defaultValue={this.props.field.label}/>
+                <InputField label="Name" ref={(ref) => {this.fields.name = ref}} defaultValue={this.props.field.name}/>
                 <CheckBoxField label="Required" ref={(ref) => {this.fields.required = ref}} defaultValue={this.props.field.required}/>
               </form>
 
