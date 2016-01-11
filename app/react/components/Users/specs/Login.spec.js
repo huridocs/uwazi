@@ -14,7 +14,8 @@ describe('Login', () => {
   let component, fetch_mock;
 
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<Login/>);
+    let historyMock = {pushState: () => {}};
+    component = TestUtils.renderIntoDocument(<Login history={historyMock}/>);
 
     backend.restore();
     backend.mock('http://localhost:3000/api/login', JSON.stringify({}));
@@ -78,6 +79,16 @@ describe('Login', () => {
         component.submit(new Event('submit'))
         .then(() => {
           expect(event_emitted).toBe(true);
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should go to home', (done) => {
+        spyOn(component.props.history, 'pushState');
+        component.submit(new Event('submit'))
+        .then(() => {
+          expect(component.props.history.pushState).toHaveBeenCalledWith('/');
           done();
         })
         .catch(done.fail);

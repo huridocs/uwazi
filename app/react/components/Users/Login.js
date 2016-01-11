@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import {events} from '../../utils/index'
 import template from './templates/login.js'
 import api from '../../utils/api'
+import { Router } from 'react-router'
+
 
 class Login extends Component {
 
@@ -33,6 +35,7 @@ class Login extends Component {
     .then((response) => {
       this.setState({error: false})
       events.emit('login');
+      this.props.history.pushState('/');
     })
     .catch(() => {
       this.setState({error: true})
