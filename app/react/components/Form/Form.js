@@ -14,14 +14,18 @@ class Form extends Component {
     let values = {};
 
     Object.keys(this.fields).forEach((fieldName) => {
-      values[fieldName] = this.fields[fieldName].value();
+      if(this.fields[fieldName]){
+        values[fieldName] = this.fields[fieldName].value();
+      }
     });
 
     return values;
   }
 
-  handleChange = () => {
-    this.setState({value: this.value()});
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.values !== this.props.values){
+      this.setState({values:this.props.values});
+    }
   }
 
   render = () => {
