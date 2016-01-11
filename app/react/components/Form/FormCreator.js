@@ -18,12 +18,10 @@ class FormCreator extends Component {
 
   constructor (props, context) {
     super(props, context);
-
     this.state = {
       templates: props.templates,
       template: this.defaultTemplate()
     }
-
   }
 
   defaultTemplate(){
@@ -42,20 +40,6 @@ class FormCreator extends Component {
       template: template
     });
   }
-
-  // componentWillReceiveProps = (nextProps) => {
-  //   if (nextProps.params.templateId && this.props.params != nextProps.params) {
-  //     FormCreator.requestTemplate(nextProps.params.templateId)
-  //     .then(template => {
-  //       template.fields = template.fields || [];
-  //       this.setState({ template: template });
-  //     });
-  //   }
-  //
-  //   if(!nextProps.params.templateId){
-  //     this.setState({ template: FormCreator.defaultTemplate });
-  //   }
-  // }
 
   addInput = () => {
     this.state.template.fields.push({type:'input', label:'Short text', required: false});

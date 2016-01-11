@@ -38,4 +38,20 @@ describe('SelectField', () => {
     });
   });
 
+  describe('handleChange', () => {
+    it('should set field value on state', () => {
+      component.field.value = '2';
+      component.handleChange();
+      expect(component.state.value).toBe('2');
+    });
+  });
+
+  describe('componentDidUpdate()', () => {
+    it('should set state.value with new props.value', () => {
+      //render the component again using reactDom forces the component to update itself
+      ReactDOM.render(<SelectField value='3'/>, ReactDOM.findDOMNode(component).parentNode);
+      expect(component.state.value).toBe('3');
+    })
+  });
+
 });

@@ -77,13 +77,13 @@ class Library extends RouteHandler {
   //
 
   editDocument = (document) => {
+    if(!document.value.template){
+      document.value.template = this.state.templates[0].id;
+    }
+
     let template = this.state.templates.find((template) => {
       return template.id == document.value.template;
     });
-
-    if(!template){
-      template = this.state.templates[0];
-    }
 
     this.setState({documentBeingEdited: document, template: template.value});
   }

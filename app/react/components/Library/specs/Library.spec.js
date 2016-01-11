@@ -72,7 +72,7 @@ describe('LibraryController', () => {
       it('should set on state the document being edited', () => {
         component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
         component.editDocument({value:{id:1}});
-        expect(component.state.documentBeingEdited).toEqual({value:{id:1}});
+        expect(component.state.documentBeingEdited).toEqual({value:{id:1, template:'1'}});
       });
 
       it('should set on state the template document have', () => {
@@ -86,6 +86,7 @@ describe('LibraryController', () => {
           component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
           component.editDocument({value:{id:1}});
           expect(component.state.template).toEqual({name:'template1', fields:[]});
+          expect(component.state.documentBeingEdited.value.template).toBe('1');
         });
       });
 
