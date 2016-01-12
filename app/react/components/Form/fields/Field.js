@@ -12,6 +12,7 @@ class Field extends Component {
     this.props.config.ref = (field) => {
       this.field = field;
     }
+
     return React.createElement(fieldType, this.props.config);
   }
 

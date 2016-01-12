@@ -107,13 +107,16 @@ describe('LibraryController', () => {
           return 'template_id';
         };
 
+        component.form.value = () => {
+          return {key:'value'};
+        };
 
         backend.reset();
         component.saveDocument()
         .then((response) => {
           let calls = backend.calls(APIURL+'documents');
           expect(calls[0][1].method).toBe('POST');
-          expect(calls[0][1].body).toEqual(JSON.stringify({id:1, title:'the dark knight', template:'template_id'}));
+          expect(calls[0][1].body).toEqual(JSON.stringify({id:1, title:'the dark knight', template:'template_id', metadata:{key:'value'}}));
           done();
         })
         .catch(done.fail);

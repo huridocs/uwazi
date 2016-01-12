@@ -23,4 +23,20 @@ describe('CheckBoxField', () => {
     });
   });
 
+  describe('on instance', () => {
+    it('should set value passed as input value', () => {
+      let value = true;
+      component = TestUtils.renderIntoDocument(<CheckBoxField value={value}/>);
+      expect(component.value()).toBe(true);
+    });
+  });
+
+  describe('handleChange', () => {
+    it('should set field value on state', () => {
+      component.field.checked = true;
+      component.handleChange();
+      expect(component.state.value).toBe(true);
+    });
+  });
+
 });

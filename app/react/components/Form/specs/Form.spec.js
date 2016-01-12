@@ -40,6 +40,24 @@ describe('Form', () => {
       let value = component.value();
       expect(value).toEqual({input1:'test', input2:true});
     });
+
+    describe('when a field is null', () => {
+      it('should ignore it and not fail', () => {
+        component.fields['input2'] = null;
+        let value = component.value();
+        expect(value).toEqual({input1:''});
+      });
+    });
+  });
+
+  describe("when passing values", () => {
+    it("should fill the fields", () => {
+      let values = {input1:'bruce'};
+      component = TestUtils.renderIntoDocument(<Form fields={fields} values={values}/>);
+
+      let value = component.value();
+      expect(value.input1).toBe('bruce');
+    });
   });
 
 });
