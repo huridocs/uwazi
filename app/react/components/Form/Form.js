@@ -8,7 +8,7 @@ class Form extends Component {
     this.fields = {};
     this.state = {};
     this.state.values = this.props.values || {};
-  }
+  };
 
   value = () => {
     let values = {};
@@ -20,13 +20,13 @@ class Form extends Component {
     });
 
     return values;
-  }
+  };
 
   componentDidUpdate = (prevProps) => {
     if(prevProps.values !== this.props.values){
       this.setState({values:this.props.values});
     }
-  }
+  };
 
   render = () => {
     return (
@@ -37,7 +37,7 @@ class Form extends Component {
         })}
       </form>
     )
-  }
+  };
 
 }
 export default Form;

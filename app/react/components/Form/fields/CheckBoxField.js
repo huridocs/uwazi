@@ -5,15 +5,15 @@ class CheckBoxField extends Component {
   constructor(props) {
     super(props),
     this.state = {value: props.value};
-  }
+  };
 
   handleChange = () => {
     this.setState({value: this.value()});
-  }
+  };
 
   value = () => {
     return this.field.checked;
-  }
+  };
 
   render = () => {
     return (
@@ -34,6 +34,6 @@ class CheckBoxField extends Component {
       </div>
 
     )
-  }
+  };
 }
 export default CheckBoxField;

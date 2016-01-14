@@ -8,20 +8,20 @@ class MyAccount extends Component {
     super(props);
     this.state = {feedback: {}};
     this.fetch = props.fetch || fetch;
-  }
+  };
 
   render = () => {
     this.render = template.bind(this);
     return this.render();
-  }
+  };
 
   password_change = (e) => {
     this.setState({password: e.target.value});
-  }
+  };
 
   repeat_password_change = (e) => {
     this.setState({repeat_password: e.target.value});
-  }
+  };
 
   submit = (e) => {
     e.preventDefault();
@@ -44,7 +44,7 @@ class MyAccount extends Component {
         this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}})
       }
     );
-  }
+  };
 }
 
 export default MyAccount;

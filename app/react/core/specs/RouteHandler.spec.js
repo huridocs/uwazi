@@ -13,13 +13,13 @@ describe('RouteHandler', () => {
 
     static emptyState() {
       return {message: 'requesting data'};
-    }
+    };
 
     static requestState () {
       return Promise.resolve({initialData:'data'});
-    }
+    };
 
-    render = () => {return <div/>}
+    render = () => {return <div/>};
   }
 
   beforeEach(() => {

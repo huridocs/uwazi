@@ -22,11 +22,11 @@ class FormCreator extends Component {
       templates: props.templates,
       template: this.defaultTemplate()
     }
-  }
+  };
 
   defaultTemplate(){
     return {name:'', fields:[]};
-  }
+  };
 
   componentWillReceiveProps = (props) => {
 
@@ -39,28 +39,28 @@ class FormCreator extends Component {
       templates: props.templates,
       template: template
     });
-  }
+  };
 
   addInput = () => {
     this.state.template.fields.push({type:'input', label:'Short text', required: false});
     this.setState(this.state);
-  }
+  };
 
   save = (e) => {
     e.preventDefault();
     this.state.template.name = this.inputName.value();
     this.props.save(this.state.template);
-  }
+  };
 
   remove = (index) => {
     this.state.template.fields.splice(index, 1);
     this.setState(this.state);
-  }
+  };
 
   update = (index, field) => {
     this.state.template.fields[index] = field;
     this.setState(this.state);
-  }
+  };
 
   render = () => {
     return (
@@ -83,7 +83,7 @@ class FormCreator extends Component {
         </div>
       </div>
     )
-  }
+  };
 
 }
 

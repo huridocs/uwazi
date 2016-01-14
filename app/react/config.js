@@ -1,3 +1,1 @@
-export default {
-  APIURL: 'http://localhost:3000/api/'
-}
+export var APIURL = 'http://localhost:3000/api/'

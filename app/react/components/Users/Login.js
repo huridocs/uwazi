@@ -16,17 +16,17 @@ class Login extends Component {
   render = () => {
     this.render = template.bind(this);
     return this.render();
-  }
+  };
 
   user_change = (e) => {
     this.state.credentials.username = e.target.value;
     this.setState(this.state);
-  }
+  };
 
   password_change = (e) => {
     this.state.credentials.password = e.target.value;
     this.setState(this.state);
-  }
+  };
 
   submit = (e) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ class Login extends Component {
     .catch(() => {
       this.setState({error: true})
     });
-  }
+  };
 }
 
 export default Login;

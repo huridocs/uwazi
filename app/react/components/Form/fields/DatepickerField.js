@@ -4,9 +4,9 @@
 //
 // class DatepickerField extends Component {
 //
-//   // value = () => {
-//   //   return this.field.value
-//   // }
+//   value = () => {
+//     return this.field.value
+//   };
 //
 //   render = () => {
 //     return (
@@ -17,7 +17,7 @@
 //         </div>
 //       </div>
 //     )
-//   }
+//   };
 //
 // }
 // export default DatepickerField;

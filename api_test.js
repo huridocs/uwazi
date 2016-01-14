@@ -1,4 +1,4 @@
-require('babel-core/register')({stage: 0}); //babel polyfill ES6
+require('babel-core/register')(); //babel polyfill ES6
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
 var reporters = require('jasmine-reporters');

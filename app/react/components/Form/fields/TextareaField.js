@@ -4,17 +4,17 @@ class TextareaField extends Component {
 
   value = () => {
     return this.field.value
-  }
+  };
 
   handleChange = () => {
     this.setState({value: this.value()});
-  }
+  };
 
   componentDidUpdate = (prevProps) => {
     if(prevProps.value !== this.props.value){
       this.setState({value:this.props.value});
     }
-  }
+  };
 
   render = () => {
     return (
@@ -33,7 +33,7 @@ class TextareaField extends Component {
         </div>
       </div>
     )
-  }
+  };
 
 }
 export default TextareaField;

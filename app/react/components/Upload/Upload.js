@@ -28,11 +28,11 @@ class Upload extends Component {
     .then((response) => {
       this.uploadFile(file, response.json);
     });
-  }
+  };
 
   createDocument = (file) => {
     return api.post('documents', {title: this.extractTitle(file)});
-  }
+  };
 
   uploadFile = (file, doc) => {
     events.emit('newDocument', doc);
@@ -52,7 +52,7 @@ class Upload extends Component {
     })
     .end()
     return uploadRequest;
-  }
+  };
 
   extractTitle(file) {
     let title = file.name
@@ -62,12 +62,12 @@ class Upload extends Component {
       .replace(/  /g, ' ');
 
     return title.charAt(0).toUpperCase() + title.slice(1);
-  }
+  };
 
   triggerUpload = (e) => {
     e.preventDefault();
     this.input.click();
-  }
+  };
 
   render = () => {
 
@@ -89,7 +89,7 @@ class Upload extends Component {
         </li>
       </ul>
     )
-  }
+  };
 
 }
 

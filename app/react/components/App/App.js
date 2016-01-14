@@ -12,7 +12,7 @@ import Upload from '../Upload/Upload'
 
 class App extends Component {
 
-  static contextTypes = {getUser: PropTypes.func }
+  static contextTypes = {getUser: PropTypes.func };
 
   constructor(props, context) {
     super(props);
@@ -32,13 +32,13 @@ class App extends Component {
     .then((response) => {
       this.setState({user: response})
     })
-  }
+  };
 
   renderChildren = () => {
     return React.Children.map(this.props.children, (child, index) => {
       return React.cloneElement(child, {user: this.state.user});
     });
-  }
+  };
 
   render = () => {
 
@@ -85,7 +85,7 @@ class App extends Component {
         </div>
       </div>
     )
-  }
+  };
 }
 
 export default App;

@@ -22,7 +22,6 @@ module.exports = {
       loader: 'babel-loader',
       include: path.join(__dirname, 'app'),
       query: {
-        stage: 0,
         cacheDirectory: true
       }
     },

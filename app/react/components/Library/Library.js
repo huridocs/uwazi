@@ -13,18 +13,18 @@ class Library extends RouteHandler {
     events.on('newDocument', this.newDoc);
     events.on('uploadProgress', this.uploadProgress);
     events.on('uploadEnd', this.uploadEnd);
-  }
+  };
 
   componentWillUnmount = () => {
     events.off('newDocument', this.newDoc);
     events.off('uploadProgress', this.uploadProgress);
     events.off('uploadEnd', this.uploadEnd);
-  }
+  };
 
   newDoc = (doc) => {
     this.state.documents.unshift(doc);
     this.setState({documents: this.state.documents});
-  }
+  };
 
   uploadProgress = (id, percent) => {
     for(let doc of this.state.documents) {
@@ -34,7 +34,7 @@ class Library extends RouteHandler {
       }
     }
     this.setState({documents: this.state.documents});
-  }
+  };
 
   uploadEnd = (id, file) => {
     for(let doc of this.state.documents) {
@@ -45,11 +45,11 @@ class Library extends RouteHandler {
       }
     }
     this.setState({documents: this.state.documents});
-  }
+  };
 
   static emptyState(){
     return {documents: [], templates:[], template:{fields:[]}, showForm:false};
-  }
+  };
 
   static requestState(){
     return Promise.all([
@@ -61,9 +61,8 @@ class Library extends RouteHandler {
       let templates = responses[1].json.rows;
       return {documents: documents, templates: templates};
     });
-  }
+  };
 
-  //
   templateChanged = () => {
     let template = this.state.templates.find((template) => {
       return template.id == this.templateField.value();
@@ -73,8 +72,7 @@ class Library extends RouteHandler {
 
     template.value.fields = template.value.fields || [];
     this.setState({template:template.value});
-  }
-  //
+  };
 
   editDocument = (document) => {
     if(!document.value.template){
@@ -86,18 +84,18 @@ class Library extends RouteHandler {
     });
 
     this.setState({documentBeingEdited: document, template: template.value});
-  }
+  };
 
   cancelEdit = () => {
     this.setState({documentBeingEdited: undefined});
-  }
+  };
 
   saveDocument = () => {
     let document = this.state.documentBeingEdited.value;
     document.template = this.templateField.value();
     document.metadata = this.form.value();
     return api.post('documents', document);
-  }
+  };
 
   docFileValue = (doc) => {
     if(doc.progress) {
@@ -109,15 +107,13 @@ class Library extends RouteHandler {
     }
 
     return (<span>File not found</span>);
-  }
+  };
 
   render = () => {
 
-    //
     let options = this.state.templates.map((template) => {
       return {value:template.id, label: template.value.name};
     });
-    //
 
     return (
       <div className="row">
@@ -165,7 +161,7 @@ class Library extends RouteHandler {
         </div>
       </div>
     )
-  }
+  };
 
 }
 

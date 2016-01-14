@@ -6,7 +6,7 @@ class Provider extends Component {
   static childContextTypes = {
     getInitialData: PropTypes.func,
     getUser: PropTypes.func
-  }
+  };
 
   constructor(props){
     super(props)
@@ -19,22 +19,22 @@ class Provider extends Component {
       getInitialData: ::this.getInitialData,
       getUser: ::this.getUser
     };
-  }
+  };
 
   getUser() {
     return this.user;
-  }
+  };
 
   getInitialData() {
       let data = this.data;
       this.data = undefined;
       return data;
-  }
+  };
 
   render() {
     let { children } = this.props;
     return Children.only(children);
-  }
+  };
 }
 
 export default Provider;

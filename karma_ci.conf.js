@@ -23,7 +23,6 @@ module.exports = function (config) {
           { test: /\.js$/,
             loader: 'babel-loader',
             query: {
-              stage: 0,
               cacheDirectory: true
             }
           },

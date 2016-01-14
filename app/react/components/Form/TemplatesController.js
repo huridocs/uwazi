@@ -14,11 +14,11 @@ class TemplatesController extends RouteHandler {
         template: templates.find(template => template.id == params.templateKey)
       };
     })
-  }
+  };
 
   constructor(props, context){
     super(props, context);
-  }
+  };
 
   saveForm = (template) => {
     return api.post('templates', template)
@@ -28,7 +28,7 @@ class TemplatesController extends RouteHandler {
     .then((state) => {
       this.setState(state);
     });
-  }
+  };
 
 
   render = () => {
@@ -37,7 +37,7 @@ class TemplatesController extends RouteHandler {
         <FormCreator save={this.saveForm} templates={this.state.templates} templateId={this.props.params.templateId}/>
       </div>
     )
-  }
+  };
 
 }
 

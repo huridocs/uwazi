@@ -13,19 +13,19 @@ describe('Provider', () => {
 
   class TestController extends Component {
 
-    static contextTypes = { getInitialData: PropTypes.func, getUser: PropTypes.func }
+    static contextTypes = { getInitialData: PropTypes.func, getUser: PropTypes.func };
 
     constructor(props, context) {
       super(props, context);
       this.state = {};
       this.context = context;
-    }
+    };
 
     static requestState () {
       return Promise.resolve({initialData:'data'});
-    }
+    };
 
-    render = () => {return <div/>}
+    render = () => {return <div/>};
   }
 
   afterEach(() => {

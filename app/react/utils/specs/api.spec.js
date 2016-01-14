@@ -1,19 +1,18 @@
 import api from '../api.js'
 import backend from 'fetch-mock'
-import config from '../../config.js'
+import {APIURL} from '../../config.js'
 
 describe('Login', () => {
 
   let component, fetch_mock;
 
   beforeEach(() => {
-    config.APIURL = 'http://test_url/api/'
 
     backend.restore();
     backend
-    .mock('http://test_url/api/test_get', 'GET', JSON.stringify({method: 'GET'}))
-    .mock('http://test_url/api/test_post', 'POST', JSON.stringify({method: 'POST'}))
-    .mock('http://test_url/api/test_delete', 'DELETE',JSON.stringify({method: 'DELETE'}));
+    .mock(APIURL+'test_get', 'GET', JSON.stringify({method: 'GET'}))
+    .mock(APIURL+'test_post', 'POST', JSON.stringify({method: 'POST'}))
+    .mock(APIURL+'test_delete', 'DELETE',JSON.stringify({method: 'DELETE'}));
   });
 
   describe("GET", () => {

@@ -7,13 +7,13 @@ class TemplatesList extends Component {
   constructor (props) {
     super(props);
     this.state = {templates: props.templates};
-  }
+  };
 
   componentDidUpdate = (prevProps) => {
     if(prevProps.templates !== this.props.templates){
       this.setState({templates:this.props.templates});
     }
-  }
+  };
 
   renderTemplates = () => {
     if (this.state.templates) {
@@ -39,7 +39,7 @@ class TemplatesList extends Component {
         <p>Fetching...</p>
       );
     }
-  }
+  };
 
   delete = (template, index, event) => {
     event.preventDefault();
@@ -48,7 +48,7 @@ class TemplatesList extends Component {
       this.state.templates.splice(index, 1);
       this.setState({templates: this.state.templates });
     });
-  }
+  };
 
   render = () => {
     return (
@@ -57,7 +57,7 @@ class TemplatesList extends Component {
         {this.renderTemplates()}
       </div>
     )
-  }
+  };
 }
 
 export default TemplatesList;

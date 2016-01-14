@@ -5,21 +5,21 @@ class InputField extends Component {
   constructor(props) {
     super(props),
     this.state = {value: props.value};
-  }
+  };
 
   value = () => {
     return this.field.value
-  }
+  };
 
   handleChange = () => {
     this.setState({value: this.value()});
-  }
+  };
 
   componentDidUpdate = (prevProps) => {
     if(prevProps.value !== this.props.value){
       this.setState({value:this.props.value});
     }
-  }
+  };
 
   render = () => {
     return (
@@ -38,7 +38,7 @@ class InputField extends Component {
         </div>
       </div>
     )
-  }
+  };
 
 }
 export default InputField;

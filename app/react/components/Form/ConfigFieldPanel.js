@@ -12,11 +12,11 @@ class ConfigFieldPanel extends Component {
     super(props)
     this.state = {showModal: false};
     this.fields = {};
-  }
+  };
 
   toggleModal = () => {
     this.setState({showModal: !this.state.showModal});
-  }
+  };
 
   save = (e) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ class ConfigFieldPanel extends Component {
     });
 
     this.props.save(values);
-  }
+  };
 
   render = () => {
 
@@ -73,7 +73,7 @@ class ConfigFieldPanel extends Component {
           </Modal>
         </div>
     )
-  }
+  };
 
 
 }

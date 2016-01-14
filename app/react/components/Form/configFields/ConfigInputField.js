@@ -11,7 +11,7 @@ class ConfigInputField extends Component {
         <ConfigFieldPanel remove={this.props.remove} field={this.props.field} save={this.props.save}></ConfigFieldPanel>
       </div>
     )
-  }
+  };
 
 }
 export default ConfigInputField;

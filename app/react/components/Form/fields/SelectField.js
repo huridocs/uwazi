@@ -5,24 +5,24 @@ class SelectField extends Component {
   constructor(props) {
     super(props),
     this.state = {value: props.value};
-  }
+  };
 
   value = () => {
     return this.field.value;
-  }
+  };
 
   handleChange = () => {
     this.setState({value:this.value()});
     if(this.props.onChange){
       this.props.onChange();
     }
-  }
+  };
 
   componentDidUpdate = (prevProps) => {
     if(prevProps.value !== this.props.value){
       this.setState({value:this.props.value});
     }
-  }
+  };
 
   render = () => {
 
@@ -39,7 +39,7 @@ class SelectField extends Component {
         </div>
       </div>
     )
-  }
+  };
 
 }
 export default SelectField;

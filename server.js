@@ -1,5 +1,5 @@
 require('es6-promise').polyfill(); // Required in some browsers
-require('babel-core/register')({stage: 0}); //babel polyfill ES6
+require('babel-core/register')(); //babel polyfill ES6
 
 require.extensions['.scss'] = function() { return; };
 require.extensions['.css'] = function() { return; };
