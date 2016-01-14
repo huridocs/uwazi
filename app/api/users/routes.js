@@ -4,7 +4,6 @@ import {db_url} from '../config/database.js'
 export default app => {
 
   app.post('/api/users', (req, res) => {
-
     fetch(db_url+'/'+req.body._id)
     .then(response => response.json())
     .then(user => Object.assign(user, req.body))

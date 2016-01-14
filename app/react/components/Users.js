@@ -6,7 +6,7 @@ class Users extends Component {
 
   static contextTypes = {
     getInitialData: PropTypes.func
-  }
+  };
 
   static requestState() {
     return fetch('http://jsonplaceholder.typicode.com/users')
@@ -30,7 +30,7 @@ class Users extends Component {
     this.state = {
       users: context.getInitialData(this)
     }
-  }
+  };
 
   renderUsers() {
     if (this.state.users) {
@@ -46,7 +46,7 @@ class Users extends Component {
         <p>Fetching...</p>
       );
     }
-  }
+  };
 
   render() {
     return (
@@ -61,7 +61,7 @@ class Users extends Component {
         {this.renderUsers()}
       </div>
     )
-  }
+  };
 }
 
 export default Users;
