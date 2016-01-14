@@ -2,6 +2,11 @@ import React, { Component, PropTypes } from 'react'
 
 class TextareaField extends Component {
 
+  constructor(props) {
+    super(props),
+    this.state = {value: props.value};
+  }
+
   value = () => {
     return this.field.value
   };
@@ -12,7 +17,7 @@ class TextareaField extends Component {
 
   componentDidUpdate = (prevProps) => {
     if(prevProps.value !== this.props.value){
-      this.setState({value:this.props.value});
+      this.setState({value:this.props.value || ''});
     }
   };
 
@@ -26,7 +31,7 @@ class TextareaField extends Component {
             rows="3"
 
             onChange={this.handleChange}
-            value={this.props.value}
+            value={this.state.value}
             defaultValue={this.props.defaultValue}
             ref={(ref) => this.field = ref}
           ></textarea>

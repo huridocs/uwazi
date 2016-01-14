@@ -6,8 +6,6 @@ class Form extends Component {
   constructor(props) {
     super(props),
     this.fields = {};
-    this.state = {};
-    this.state.values = this.props.values || {};
   };
 
   value = () => {
@@ -22,22 +20,20 @@ class Form extends Component {
     return values;
   };
 
-  componentDidUpdate = (prevProps) => {
-    if(prevProps.values !== this.props.values){
-      this.setState({values:this.props.values});
-    }
-  };
-
   render = () => {
+
     return (
       <form>
-        {this.props.fields.map((field, index) => {
-          field.value = this.state.values[field.name];
-          return <Field config={field} key={index} ref={(ref) => this.fields[field.name] = ref }/>
+        {this.props.fields.map((fieldConfig, index) => {
+          fieldConfig.value = this.props.values[fieldConfig.name];
+          return <Field config={fieldConfig} key={index} ref={(ref) => this.fields[fieldConfig.name] = ref }/>
         })}
       </form>
     )
   };
 
 }
+
+Form.defaultProps = {values:{}};
+
 export default Form;

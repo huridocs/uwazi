@@ -43,6 +43,14 @@ describe('TextareaField', () => {
       ReactDOM.render(<TextareaField value='deadshot'/>, ReactDOM.findDOMNode(component).parentNode);
       expect(component.state.value).toBe('deadshot');
     })
+
+    describe('when value is undefined', () => {
+      it('should set value as blank', () => {
+        let value;
+        ReactDOM.render(<TextareaField value={value}/>, ReactDOM.findDOMNode(component).parentNode);
+        expect(component.state.value).toBe('');
+      });
+    });
   });
 
 });
