@@ -28,7 +28,7 @@ module.exports = {
     {
       test: /\.scss$/,
       loaders: ['style', 'css?sourceMap', 'sass?sourceMap'],
-      include: path.join(__dirname, 'app')
+      include: [path.join(__dirname, 'app'),path.join(__dirname, 'node_modules')]
     },
     {
       test: /\.css$/,
@@ -36,9 +36,9 @@ module.exports = {
       include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
     },
     {
-      test: /\.(jpe?g|png|eot|woff|ttf|gif|svg)(\?.*)?$/i,
+      test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
       loader: 'file-loader',
-      include: path.join(__dirname, 'app')
+      include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
     }]
   }
 };

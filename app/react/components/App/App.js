@@ -7,7 +7,8 @@ import {events} from '../../utils/index'
 import Helmet from 'react-helmet'
 import UserWidget from '../Users/UserWidget'
 import { Link } from 'react-router'
-import '../scss/App.scss'
+import './scss/App.scss'
+import 'font-awesome/css/font-awesome.css'
 import Upload from '../Upload/Upload'
 
 class App extends Component {
@@ -58,30 +59,38 @@ class App extends Component {
         />
 
         <nav className="nav navbar-nav navbar-default navbar-fixed-top">
+          <div className="navbar-header">
+            <Link to='/' className="navbar-brand">UwaziDocs</Link>
+          </div>
           <div className="container-fluid">
-           <div className="navbar-header">
-             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-               <span className="sr-only">Toggle navigation</span>
-               <span className="icon-bar"></span>
-               <span className="icon-bar"></span>
-               <span className="icon-bar"></span>
-             </button>
-             <li><Link to='/' className="navbar-brand">Uwazidocs</Link></li>
-           </div>
            <div id="navbar" className="navbar-collapse collapse">
-             <ul className="nav navbar-nav">
-              <li><Link to='/'>Home</Link></li>
-              <li><Link to='/users'>Users</Link></li>
-              <li><Link to='/template'>templates</Link></li>
-              <li><Link to='/library'>Library</Link></li>
-             </ul>
+
+             <form className="navbar-form navbar-left">
+              <div className="form-group">
+                <input type="text" placeholder="Search" className="form-control" />
+              </div>
+              <button type="submit" className="btn btn-sm"><i className="fa fa-search"></i></button>
+            </form>
+
               {upload}
               <UserWidget user={ this.state.user } />
            </div>
        </div>
      </nav>
-        <div className='container'>
-          {this.renderChildren()}
+        <div className='container-fluid contents-wrapper'>
+          <div className="row">
+            <div className="col-xs-2 sidebar">
+              <ul className="nav nav-sidebar">
+                <li><Link to='/'><i className="fa fa-home"></i>Home</Link></li>
+                <li><Link to='/users'><i className="fa fa-users"></i>Users</Link></li>
+                <li><Link to='/template'><i className="fa fa-tag"></i>Metadata templates</Link></li>
+                <li><Link to='/library'><i className="fa fa-cloud-upload"></i>Upload</Link></li>
+              </ul>
+            </div>
+            <div className="col-xs-offset-2 col-xs-10 contents">
+              {this.renderChildren()}
+            </div>
+          </div>
         </div>
       </div>
     )

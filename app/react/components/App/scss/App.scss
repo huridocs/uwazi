@@ -1,0 +1,68 @@
+html, body {
+  height: 100%;
+}
+
+
+.contents {
+  padding-left: 35px;
+  padding-top: 20px;
+}
+
+.sidebar {
+  background-color: rgb(233, 233, 233);
+  color: #989495;
+  position: fixed;
+  top: 20px;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: block;
+  padding: 40px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  border-right: 1px solid #eee;
+  font-size: 1.1em;
+
+  li {
+    i {
+      margin-right: 5px;
+    }
+    a {
+      color: #4C4C4C
+    }
+  }
+}
+
+.contents-wrapper {
+  padding-top: 40px;
+}
+
+.navbar-default .navbar-brand {
+  color: rgb(100, 161, 163);
+  font-size: 2em;
+}
+
+.navbar-default {
+  background-color: rgb(89, 89, 89);
+}
+
+.navbar-form {
+
+  input {
+    background-color: transparent;
+    border: 1px solid rgb(138, 138, 138);
+    width: 200px;
+    color: rgb(180, 180, 180);
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2em;
+    padding: 0 0 0 10px;
+    i {
+      color: rgb(138, 138, 138);
+    }
+  }
+}
