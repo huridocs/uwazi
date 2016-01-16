@@ -80,10 +80,10 @@ class Upload extends Component {
       <ul className="nav navbar-nav navbar-upload">
         <li>
           <button className="btn btn-primary" onClick={this.triggerUpload}>Upload</button>
-          <input style={hide} onChange={this.upload} type='file' ref={(ref) => this.input = ref}/>
+          <input style={hide} onChange={this.upload} type="file" ref={(ref) => this.input = ref} accept="application/pdf"/>
         </li>
         <li>
-          <Link to='/library'>
+          <Link to="/library">
             <ProgressBar progress={this.state.progress}/>
           </Link>
         </li>
