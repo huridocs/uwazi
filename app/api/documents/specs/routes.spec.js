@@ -54,5 +54,22 @@ describe('documents', () => {
         done();
       })
     });
+
+    describe("when passing id", () => {
+      it('should return matching document', (done) => {
+        let request = {query:{_id:'8202c463d6158af8065022d9b5014ccb'}};
+
+        routes.get('/api/documents', request)
+        .then((response) => {
+          let docs = response.rows;
+          expect(docs.length).toBe(1);
+          expect(docs[0].value.title).toBe('Penguin almost done');
+          done();
+        })
+        .catch(done.fail);
+
+      });
+    });
+
   })
 });

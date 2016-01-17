@@ -25,9 +25,17 @@ export default app => {
   });
 
   app.get('/api/documents', (req, res) => {
-    request.get(db_url + '/_design/documents/_view/all')
+
+    let id = '';
+    if(req.query && req.query._id){
+      id = '?key="'+req.query._id+'"';
+    }
+
+    let url = db_url+'/_design/documents/_view/all'+id;
+
+    request.get(url)
     .then(response => {
-        res.json(response.json);
+      res.json(response.json);
     });
 
   });
