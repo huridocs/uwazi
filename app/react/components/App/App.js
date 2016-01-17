@@ -66,7 +66,7 @@ class App extends Component {
           titleTemplate='Uwazi - %s'
           meta={[
             {'char-set': 'utf-8'},
-            {'name': 'description', 'content': 'My super dooper dope app'}
+            {'name': 'description', 'content': 'Uwazi docs'}
           ]}
         />
 
