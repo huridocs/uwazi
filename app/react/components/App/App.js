@@ -18,7 +18,7 @@ class App extends Component {
   constructor(props, context) {
     super(props);
     this.fetch = props.fetch || fetch;
-    this.state = {user: context.getUser()};
+    this.state = {user: context.getUser(), showsidebar: true};
     events.on('login', this.fetchUser);
   }
 
@@ -41,11 +41,23 @@ class App extends Component {
     });
   };
 
+  toggleSidebar = () => {
+    this.setState({showsidebar: !this.state.showsidebar});
+  };
+
   render = () => {
 
     let upload;
     if(this.state.user){
       upload = <Upload/>
+    }
+
+    let sidebarClass = 'col-xs-4 col-sm-3 col-lg-2 sidebar';
+    let contentsClass = 'col-xs-offset-4 col-sm-offset-3 col-lg-offset-2 col-xs-8 col-sm-9 col-lg-10 contents';
+
+    if(!this.state.showsidebar) {
+      sidebarClass += ' sidebar-hidden';
+      contentsClass = 'col-xs-12 contents no-sidebar';
     }
 
     return (
@@ -79,15 +91,16 @@ class App extends Component {
      </nav>
         <div className='container-fluid contents-wrapper'>
           <div className="row">
-            <div className="col-xs-2 sidebar">
+            <div className={sidebarClass}>
               <ul className="nav nav-sidebar">
-                <li><Link to='/'><i className="fa fa-home"></i>Home</Link></li>
-                <li><Link to='/users'><i className="fa fa-users"></i>Users</Link></li>
-                <li><Link to='/template'><i className="fa fa-tag"></i>Metadata templates</Link></li>
-                <li><Link to='/library'><i className="fa fa-cloud-upload"></i>Upload</Link></li>
+                <li><a onClick={this.toggleSidebar}><i className="fa fa-align-justify"></i></a></li>
+                <li><Link to='/'><i className="fa fa-home"></i><span>Home</span></Link></li>
+                <li><Link to='/users'><i className="fa fa-users"></i><span>Users</span></Link></li>
+                <li><Link to='/template'><i className="fa fa-tag"></i><span>Metadata</span> templates</Link></li>
+                <li><Link to='/library'><i className="fa fa-cloud-upload"></i><span>Upload</span></Link></li>
               </ul>
             </div>
-            <div className="col-xs-offset-2 col-xs-10 contents">
+            <div className={contentsClass}>
               {this.renderChildren()}
             </div>
           </div>
