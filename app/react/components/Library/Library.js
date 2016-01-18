@@ -131,7 +131,6 @@ class Library extends RouteHandler {
 
                   let documentViewUrl = '/document/'+doc.id;
                   return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
-                            <td><i className="fa fa-check"></i></td>
                             <td><RoundedProgressBar progress={doc.progress}/></td>
                             <td>{doc.value.title}</td>
                             <td>
