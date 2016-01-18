@@ -6,6 +6,7 @@ import {events} from '../../utils'
 import SelectField from '../Form/fields/SelectField'
 import ProgressBar from '../Elements/ProgressBar'
 import Form from '../Form/Form'
+import Helmet from 'react-helmet'
 import { Link } from 'react-router'
 
 class Library extends RouteHandler {
@@ -117,52 +118,53 @@ class Library extends RouteHandler {
     });
 
     return (
-      <div className="row">
-        <div className="col-md-7">
-          <table className="table table-striped table-hover ">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Category</th>
-                <th>File</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.documents.map((doc, index) => {
+      <div>
+        <Helmet title='Upload' />
+        <h1>Uploaded documents</h1>
+        <div className="row">
+          <div className="col-md-7">
+            <table className="table table-striped table-hover ">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Category</th>
+                  <th>File</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.documents.map((doc, index) => {
 
-                let documentViewUrl = '/document/'+doc.id;
-                return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
-                        <td>{index + 1}</td>
-                        <td>{doc.value.title}</td>
-                        <td>{doc.value.author}</td>
-                        <td>{doc.value.category}</td>
-                        <td>
-                          {this.docFileValue(doc)}
-                          <Link to={documentViewUrl} className="navbar-brand">View</Link>
-                        </td>
-                      </tr>
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div className="col-md-5">
-
-
-          {(() => {
-            if(this.state.documentBeingEdited){
-              return (
-                <div>
-                  <SelectField label="Template" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
-                  <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
-                  <button onClick={this.cancelEdit}>Cancel</button>
-                  <button onClick={this.saveDocument}>Save</button>
-                </div>
-              )
-            }
-          })()}
-
+                  let documentViewUrl = '/document/'+doc.id;
+                  return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
+                          <td>{index + 1}</td>
+                          <td>{doc.value.title}</td>
+                          <td>{doc.value.author}</td>
+                          <td>{doc.value.category}</td>
+                          <td>
+                            {this.docFileValue(doc)}
+                            <Link to={documentViewUrl} className="navbar-brand">View</Link>
+                          </td>
+                        </tr>
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="col-md-5">
+            {(() => {
+              if(this.state.documentBeingEdited){
+                return (
+                  <div>
+                    <SelectField label="Template" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
+                    <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
+                    <button onClick={this.cancelEdit}>Cancel</button>
+                    <button onClick={this.saveDocument}>Save</button>
+                  </div>
+                )
+              }
+            })()}
+          </div>
         </div>
       </div>
     )
