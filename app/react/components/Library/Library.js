@@ -6,6 +6,7 @@ import {events} from '../../utils'
 import SelectField from '../Form/fields/SelectField'
 import ProgressBar from '../Elements/ProgressBar'
 import Form from '../Form/Form'
+import { Link } from 'react-router'
 
 class Library extends RouteHandler {
 
@@ -131,12 +132,16 @@ class Library extends RouteHandler {
             <tbody>
               {this.state.documents.map((doc, index) => {
 
+                let documentViewUrl = '/document/'+doc.id;
                 return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
                         <td>{index + 1}</td>
                         <td>{doc.value.title}</td>
                         <td>{doc.value.author}</td>
                         <td>{doc.value.category}</td>
-                        <td>{this.docFileValue(doc)}</td>
+                        <td>
+                          {this.docFileValue(doc)}
+                          <Link to={documentViewUrl} className="navbar-brand">View</Link>
+                        </td>
                       </tr>
               })}
             </tbody>
