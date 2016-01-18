@@ -23,9 +23,9 @@ class InputField extends Component {
 
   render = () => {
     return (
-      <div className="form-group col-xs-9">
-        <label htmlFor="label" className="col-xs-2 control-label">{this.props.label}</label>
-        <div className="col-xs-10">
+      <div className="form-group">
+        <label htmlFor="label">{this.props.label}</label>
+        <div>
           <input type="text"
             className="form-control"
             id="label"

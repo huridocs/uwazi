@@ -1,0 +1,16 @@
+table.upload-documents {
+  > tbody {
+    > tr {
+      > td {
+        font-size: 18px;
+        line-height: 18px;
+        padding: 20px 0;
+
+        .fa {
+          font-size: 20px;
+          color: #989495;
+        }
+      }
+    }
+  }
+}

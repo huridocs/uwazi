@@ -4,10 +4,12 @@ import api from '../../utils/api'
 import RouteHandler from '../../core/RouteHandler'
 import {events} from '../../utils'
 import SelectField from '../Form/fields/SelectField'
-import ProgressBar from '../Elements/ProgressBar'
+import TextareaField from '../Form/fields/TextareaField'
+import RoundedProgressBar from '../Elements/RoundedProgressBar'
 import Form from '../Form/Form'
 import Helmet from 'react-helmet'
 import { Link } from 'react-router'
+import './scss/upload.scss'
 
 class Library extends RouteHandler {
 
@@ -95,6 +97,7 @@ class Library extends RouteHandler {
   saveDocument = () => {
     let document = this.state.documentBeingEdited.value;
     document.template = this.templateField.value();
+    document.title = this.titleField.value();
     document.metadata = this.form.value();
     return api.post('documents', document);
   };
@@ -120,47 +123,41 @@ class Library extends RouteHandler {
     return (
       <div>
         <Helmet title='Upload' />
-        <h1>Uploaded documents</h1>
-        <div className="row">
-          <div className="col-md-7">
-            <table className="table table-striped table-hover ">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Category</th>
-                  <th>File</th>
-                </tr>
-              </thead>
+        <div className="row two-panel-layout">
+          <div className="col-md-8 two-panel-layout-left">
+            <table className="table table-hover upload-documents">
               <tbody>
                 {this.state.documents.map((doc, index) => {
 
                   let documentViewUrl = '/document/'+doc.id;
                   return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
-                          <td>{index + 1}</td>
-                          <td>{doc.value.title}</td>
-                          <td>{doc.value.author}</td>
-                          <td>{doc.value.category}</td>
-                          <td>
-                            {this.docFileValue(doc)}
-                            <Link to={documentViewUrl} className="navbar-brand">View</Link>
-                          </td>
-                        </tr>
+                            <td><i className="fa fa-check"></i></td>
+                            <td><RoundedProgressBar progress={doc.progress}/></td>
+                            <td>{doc.value.title}</td>
+                            <td>
+                              <Link to={documentViewUrl}>View</Link>
+                            </td>
+                          </tr>
                 })}
               </tbody>
             </table>
           </div>
-          <div className="col-md-5">
+          <div className="col-md-4 two-panel-layout-right">
             {(() => {
               if(this.state.documentBeingEdited){
                 return (
                   <div>
-                    <SelectField label="Template" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
+                    <TextareaField label="Title" value={this.state.documentBeingEdited.value.title} ref={(ref) => {this.titleField = ref}} options={options} />
+                    <SelectField label="Document type" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
                     <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
-                    <button onClick={this.cancelEdit}>Cancel</button>
-                    <button onClick={this.saveDocument}>Save</button>
+                    <button className="btn btn-default" onClick={this.cancelEdit}>Cancel</button>
+                    &nbsp;
+                    <button className="btn btn-primary" onClick={this.saveDocument}>Save</button>
                   </div>
+                )
+              }else{
+                return (
+                  <h4 className="text-center">Select a document.</h4>
                 )
               }
             })()}

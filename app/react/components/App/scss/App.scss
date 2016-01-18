@@ -4,10 +4,9 @@ html, body {
   height: 100%;
 }
 
-
 .contents {
   padding-left: 35px;
-  padding-top: 20px;
+  padding-right: 0;
   transition: margin 0.3s;
 
   &.no-sidebar {
@@ -16,7 +15,7 @@ html, body {
 }
 
 .sidebar {
-  background-color: rgb(233, 233, 233);
+  background-color: $backGroundColor2;
   color: #989495;
   position: fixed;
   top: 20px;
@@ -51,6 +50,7 @@ html, body {
 
 .contents-wrapper {
   padding-top: 40px;
+  padding-right: 0;
 }
 
 .navbar-default .navbar-brand {
@@ -59,7 +59,7 @@ html, body {
 }
 
 .navbar-default {
-  background-color: $backGroundDark;
+  background-color: $backGroundColor1;
 }
 
 .navbar-form {
@@ -79,5 +79,21 @@ html, body {
     i {
       color: rgb(138, 138, 138);
     }
+  }
+}
+
+.two-panel-layout {
+  display: table;
+  width: 100%;
+
+  &-right, &-left {
+    display: table-cell;
+    float: none;
+    transition: width 0.3s;
+  }
+
+  &-right {
+    background-color: $backGroundColor2;
+    border-left: 2px solid $backGroundColor1;
   }
 }
