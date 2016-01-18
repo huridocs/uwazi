@@ -124,13 +124,16 @@ class Library extends RouteHandler {
       <div>
         <Helmet title='Upload' />
         <div className="row two-panel-layout">
-          <div className="col-md-8 two-panel-layout-left">
+          <div className="col-md-8 two-panel-layout-left no-padding">
             <table className="table table-hover upload-documents">
               <tbody>
                 {this.state.documents.map((doc, index) => {
-
+                  let selected = "";
+                  if(this.state.documentBeingEdited === doc){
+                    selected = "selected";
+                  }
                   let documentViewUrl = '/document/'+doc.id;
-                  return <tr onClick={this.editDocument.bind(this, doc)} key={index}>
+                  return <tr className={selected} onClick={this.editDocument.bind(this, doc)} key={index}>
                             <td><RoundedProgressBar progress={doc.progress}/></td>
                             <td>{doc.value.title}</td>
                             <td>
@@ -138,13 +141,6 @@ class Library extends RouteHandler {
                             </td>
                           </tr>
                 })}
-                <tr>
-                  <td><RoundedProgressBar progress="75"/></td>
-                  <td>Some Title</td>
-                  <td>
-                    Asd
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
