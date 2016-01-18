@@ -80,7 +80,7 @@ describe('Upload', () => {
         })
 
         let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'})
-        uploadRequest._callbacks.progress[0]({percent: 51});
+        uploadRequest._callbacks.progress[0]({percent: 51.02});
       });
     })
 
