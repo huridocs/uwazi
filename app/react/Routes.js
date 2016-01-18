@@ -10,6 +10,7 @@ import MyAccount from './components/Users/MyAccount'
 
 import Users from './components/Users'
 import TemplatesController from './components/Form/TemplatesController'
+import ViewerController from './components/Viewer/ViewerController'
 import Library from './components/Library/Library'
 
 export default (
@@ -21,6 +22,7 @@ export default (
     <Route path='upload' component={Library} />
     <Route path='template' component={TemplatesController} />
     <Route path='template/edit/:templateId' component={TemplatesController} />
+    <Route path='document/:documentId' component={ViewerController} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

@@ -21,9 +21,9 @@ describe('upload routes', () => {
             originalname: 'gadgets-01.pdf',
             encoding: '7bit',
             mimetype: 'application/octet-stream',
-            destination: 'uploads/',
-            filename: 'f2082bf51b6ef839690485d7153e847a',
-            path: 'uploads/f2082bf51b6ef839690485d7153e847a',
+            destination: __dirname+'/uploads/',
+            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+            path: __dirname+'/uploads/f2082bf51b6ef839690485d7153e847a.pdf',
             size: 171411271}
     req = {headers: {}, body: {document: '8202c463d6158af8065022d9b5014ccb'}, files: [file]};
 
