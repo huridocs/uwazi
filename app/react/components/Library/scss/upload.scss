@@ -3,12 +3,13 @@ table.upload-documents {
     > tr {
       > td {
         font-size: 18px;
-        line-height: 18px;
-        padding: 20px 0;
+        line-height: 40px;
+        height: 40px;
 
         .fa {
           font-size: 20px;
           color: #989495;
+          padding-left: 10px;
         }
       }
     }

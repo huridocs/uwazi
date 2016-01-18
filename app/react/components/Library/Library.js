@@ -138,6 +138,13 @@ class Library extends RouteHandler {
                             </td>
                           </tr>
                 })}
+                <tr>
+                  <td><RoundedProgressBar progress="75"/></td>
+                  <td>Some Title</td>
+                  <td>
+                    Asd
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
