@@ -17,10 +17,10 @@ class ViewerController extends RouteHandler {
 
   constructor(props, context){
     super(props, context);
+    this.state = {value:{pages:[], css:[]}};
   };
 
   render = () => {
-    console.log(this.state);
     let pageStyles = {height:'1120px', width: '792px'}
     return (
       <div>

@@ -7,7 +7,7 @@ import Provider from '../../../core/Provider'
 
 describe('ViewerController', () => {
 
-  let documentResponse = [{key:'template1', id:'1', value:{}}];
+  let documentResponse = [{key:'template1', id:'1', value:{pages:[], css:[]}}];
 
   let component;
 
@@ -21,7 +21,7 @@ describe('ViewerController', () => {
   });
 
   describe('static requestState', () => {
-    it('should request templates and find template based on the key passed', (done) => {
+    it('should request for the document with id passed', (done) => {
       let id = 1;
       ViewerController.requestState({documentId:id})
       .then((response) => {
