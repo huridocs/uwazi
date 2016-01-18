@@ -97,7 +97,7 @@ class App extends Component {
                 <li><Link to='/'><i className="fa fa-home"></i><span>Home</span></Link></li>
                 <li><Link to='/users'><i className="fa fa-users"></i><span>Users</span></Link></li>
                 <li><Link to='/template'><i className="fa fa-tag"></i><span>Metadata</span> templates</Link></li>
-                <li><Link to='/library'><i className="fa fa-cloud-upload"></i><span>Upload</span></Link></li>
+                <li><Link to='/upload'><i className="fa fa-cloud-upload"></i><span>Upload</span></Link></li>
               </ul>
             </div>
             <div className={contentsClass}>
