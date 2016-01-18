@@ -1,9 +1,19 @@
 import request from '../../shared/JSONRequest.js';
 import {db_url} from '../config/database.js'
 import multer from 'multer'
+import extractPDF from './PDFExtractor'
+
+let storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, __dirname+'/../../../uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now()+'.pdf');
+  }
+});
 
 export default app => {
-  var upload = multer({ dest: __dirname+'/../../../uploads/' });
+  var upload = multer({ storage: storage});
 
   app.post('/api/upload', upload.any(), (req, res) => {
     request.get(db_url + '/' + req.body.document)
@@ -15,6 +25,26 @@ export default app => {
     })
     .then((response) => {
       res.json(req.files[0]);
+
+      let file = req.files[0].destination+req.files[0].filename;
+
+      return Promise.all([
+        extractPDF(file),
+        request.get(db_url + '/' + req.body.document)
+      ]);
+    })
+    .then((response) => {
+
+      let extractedPdf = response[0];
+      let document = response[1].json;
+
+      document.pages = extractedPdf.pages;
+      document.css = extractedPdf.css;
+
+      return request.post(db_url, document);
+    })
+    .then(() => {
+      console.log('SUCCESS !!!!!!');
     })
     .catch(console.log)
   });

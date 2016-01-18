@@ -17,7 +17,7 @@ describe('ViewerController', () => {
     TestUtils.renderIntoDocument(<Provider initialData={initialData}><ViewerController params={params} ref={(ref) => component = ref} /></Provider>);
     backend.restore();
     backend
-    .mock(APIURL+'documents?id=1', 'GET', {body: JSON.stringify({rows:documentResponse})});
+    .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})});
   });
 
   describe('static requestState', () => {
