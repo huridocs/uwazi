@@ -1,0 +1,46 @@
+$size: 40px;
+$barWidth: 10px;
+$innerSize: $size - $barWidth;
+$color: #41ADE5;
+
+.rounded-progress-bar {
+  position: relative;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  background-color: #fafafa;
+
+  &:after{
+    content: attr(data-percent) "%";
+    display: block;
+    border-radius: 50%;
+    width: $innerSize;
+    height: $innerSize;
+    top: $barWidth / 2 - 1;
+    left: $barWidth / 2 - 1.5;
+    line-height: $innerSize;
+    background-color: #fafafa;
+    position: absolute;
+    text-align: center;
+    font-size: $innerSize / 3;
+  }
+
+  $step: 1; // step of % for created classes
+  $loops: 100;
+  $increment: (360 / $loops);
+  $half: round($loops / 2);
+
+  @for $i from 0 through $loops {
+    &[data-percent="#{$i*$step}"] {
+      @if $i < 50 {
+      $nextdeg: 90deg + ( $increment * $i );
+      background-image: linear-gradient(90deg, #fff 50%, transparent 50%, transparent), linear-gradient($nextdeg, $color 50%, #fff 50%, #fff);
+      }
+      @else {
+      $nextdeg: -90deg + ( $increment * ( $i - $half ) );
+      background-image: linear-gradient($nextdeg, #41ADE5 50%, transparent 50%, transparent), linear-gradient(270deg, #41ADE5 50%, #fff 50%, #fff);
+      }
+    }
+  }
+}

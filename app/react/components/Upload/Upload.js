@@ -42,7 +42,7 @@ class Upload extends Component {
     .field('document', doc.id)
     .attach('file', file, file.name)
     .on('progress', (data) => {
-      events.emit('uploadProgress', doc.id, data.percent);
+      events.emit('uploadProgress', doc.id, Math.floor(data.percent));
       this.setState({progress:data.percent})
     })
     .on('response', (res) => {

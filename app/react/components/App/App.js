@@ -93,7 +93,7 @@ class App extends Component {
           <div className="row">
             <div className={sidebarClass}>
               <ul className="nav nav-sidebar">
-                <li><a onClick={this.toggleSidebar}><i className="fa fa-align-justify"></i></a></li>
+                <li><a onClick={this.toggleSidebar}><i className="fa fa-bars"></i></a></li>
                 <li><Link to='/'><i className="fa fa-home"></i><span>Home</span></Link></li>
                 <li><Link to='/users'><i className="fa fa-users"></i><span>Users</span></Link></li>
                 <li><Link to='/template'><i className="fa fa-tag"></i><span>Metadata</span> templates</Link></li>

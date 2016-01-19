@@ -1,0 +1,24 @@
+@import "../../App/scss/Vars.scss";
+
+table.upload-documents {
+  > tbody {
+    > tr {
+      > td {
+        font-size: 18px;
+        line-height: 40px;
+        height: 40px;
+
+        .fa {
+          font-size: 20px;
+          color: #989495;
+          padding-left: 10px;
+        }
+      }
+    }
+
+    .selected td{
+      background-color: #f5f5f5;
+      border-bottom: 4px solid $backGroundColor1;
+    }
+  }
+}
