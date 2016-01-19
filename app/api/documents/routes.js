@@ -27,11 +27,12 @@ export default app => {
   app.get('/api/documents', (req, res) => {
 
     let id = '';
+    let url = db_url+'/_design/documents/_view/list';
+
     if(req.query && req.query._id){
       id = '?key="'+req.query._id+'"';
+      url = db_url+'/_design/documents/_view/all'+id;
     }
-
-    let url = db_url+'/_design/documents/_view/all'+id;
 
     request.get(url)
     .then(response => {

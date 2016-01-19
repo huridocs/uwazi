@@ -47,10 +47,11 @@ describe('documents', () => {
   });
 
   describe('GET', () => {
-    it('should return a list of documents', (done) => {
+    it('should return a list of documents returned from the list view', (done) => {
       routes.get('/api/documents')
       .then((response) => {
         expect(response.rows.length).toBe(2);
+        expect(response.rows[0].value).toEqual({title:'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
         done();
       })
     });
