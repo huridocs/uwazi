@@ -7,7 +7,15 @@ export default (file) => {
 
     let destination = '/tmp/'+Date.now()+'/';
     let converter = new pdftohtml(file);
-    converter.add_options(['--dest-dir '+destination, '--split-pages 1', '--embed-css 0', '--page-filename %d.page', '--css-filename custom.css']);
+    converter.add_options([
+      '--dest-dir '+destination,
+      '--split-pages 1',
+      '--embed-css 0',
+      '--page-filename %d.page',
+      '--css-filename custom.css',
+      '--hdpi 96',
+      '--vdpi 96',
+      '--bg-format jpg']);
 
     converter.convert()
     .then(() => {
