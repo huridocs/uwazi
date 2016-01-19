@@ -46,7 +46,7 @@
     "react-dom": "^0.14.1",
     "react-helmet": "^2.1.1",
     "react-router": "^1.0.3",
-    "superagent": "^1.6.1",
+    "superagent": "1.6.1",
     "pdftohtmljs": "https://github.com/daneryl/pdftohtmljs.git"
   },
   "devDependencies": {
