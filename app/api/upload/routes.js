@@ -34,19 +34,18 @@ export default app => {
       ]);
     })
     .then((response) => {
-
       let extractedPdf = response[0];
       let document = response[1].json;
 
       document.pages = extractedPdf.pages;
       document.css = extractedPdf.css;
+      document.processed = true;
 
       return request.post(db_url, document);
     })
-    .then(() => {
-      console.log('SUCCESS !!!!!!');
+    .catch((err) => {
+      console.log(err);
     })
-    .catch(console.log)
   });
 
 }

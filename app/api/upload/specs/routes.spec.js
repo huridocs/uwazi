@@ -34,6 +34,23 @@ describe('upload routes', () => {
   });
 
   describe('POST', () => {
+
+    //temporary test for the conversion, probably this will go on another
+    it('should process the document after upload', (done) => {
+      routes.post('/api/upload', req)
+      .then((response) => {
+        setTimeout(() => {
+          request.get(db_url+'/8202c463d6158af8065022d9b5014ccb')
+          .then((doc) => {
+            expect(doc.json.pages.length).toBe(1);
+            expect(doc.json.processed).toBe(true);
+            done()
+          })
+        }, 500)
+      })
+      .catch(done.fail);
+    });
+
     it('should update the document with the file path', (done) => {
       routes.post('/api/upload', req)
       .then((response) => {
@@ -45,7 +62,8 @@ describe('upload routes', () => {
         done()
       })
       .catch(done.fail);
-
     });
+
+
   });
 });
