@@ -3,7 +3,6 @@ import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
 import InputField from './fields/InputField.js'
 import api from '../../utils/api'
-import RouteHandler from '../../core/RouteHandler.js'
 
 class FormCreator extends Component {
 

@@ -1,22 +1,20 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
-import App from './components/App/App'
-import NoMatch from './components/App/NoMatch'
-import Home from './components/App/Home'
+import App from './controllers/App/App'
+import NoMatch from './controllers/App/NoMatch'
+import Home from './controllers/App/Home'
 
-import Login from './components/Users/Login'
-import MyAccount from './components/Users/MyAccount'
+import Login from './controllers/Users/Login'
+import MyAccount from './controllers/Users/MyAccount'
 
-import Users from './components/Users'
-import TemplatesController from './components/Form/TemplatesController'
-import ViewerController from './components/Viewer/ViewerController'
-import Library from './components/Library/Library'
+import TemplatesController from './controllers/Templates/TemplatesController'
+import ViewerController from './controllers/Viewer/ViewerController'
+import Library from './controllers/Library/Library'
 
 export default (
   <Route path='/' component={App}>
     <IndexRoute component={Home} />
-    <Route path='users' component={Users} />
     <Route path='login' component={Login} />
     <Route path='my_account' component={MyAccount} />
     <Route path='upload' component={Library} />

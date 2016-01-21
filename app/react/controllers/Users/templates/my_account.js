@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
-import Alert from '../../Elements/Alert'
+import Alert from '../../../components/Elements/Alert'
 
 export default function() {
   return(

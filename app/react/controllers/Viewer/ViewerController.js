@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import api from '../../utils/api'
-import RouteHandler from '../../core/RouteHandler'
+import RouteHandler from '../App/RouteHandler'
 
 class ViewerController extends RouteHandler {
 

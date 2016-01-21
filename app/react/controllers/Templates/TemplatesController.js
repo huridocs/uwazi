@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import api from '../../utils/api'
-import FormCreator from './FormCreator'
-import RouteHandler from '../../core/RouteHandler'
+import FormCreator from '../../components/Form/FormCreator'
+import RouteHandler from '../App/RouteHandler'
 
 class TemplatesController extends RouteHandler {
 

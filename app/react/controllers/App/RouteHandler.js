@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { isClient } from '../utils'
+import { isClient } from '../../utils'
 
 class RouteHandler extends Component {
 
