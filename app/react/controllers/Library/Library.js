@@ -90,6 +90,16 @@ class Library extends RouteHandler {
     this.setState({documentBeingEdited: document, template: template.value});
   };
 
+  deleteDocument = (doc) => {
+    return api.delete('documents', {_id:doc.value._id, _rev:doc.value._rev})
+    .then(() => {
+      return api.get('documents');
+    })
+    .then((response) => {
+      this.setState({documents: response.json.rows});
+    });
+  };
+
   cancelEdit = () => {
     this.setState({documentBeingEdited: undefined});
   };
@@ -147,7 +157,7 @@ class Library extends RouteHandler {
                                 }
                               })()}
                             </td>
-                            <td><button className="btn btn-transparent"><i className="fa fa-trash"></i></button></td>
+                            <td><button onClick={this.deleteDocument.bind(this, doc)}className="btn btn-transparent"><i className="fa fa-trash"></i></button></td>
                           </tr>
                 })}
               </tbody>

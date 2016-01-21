@@ -8,7 +8,7 @@ import Provider from '../../App/Provider'
 
 describe('LibraryController', () => {
 
-  let documents = [{key:'secret documents'}, {key:'real batman id'}];
+  let documents = [{key:'secret documents', value:{}}, {key:'real batman id', value:{}}];
   let templates = [{value: {name:'batarang', fields:[]}}, {value: {name:'batmovil'}}];
   let component;
 
@@ -26,6 +26,31 @@ describe('LibraryController', () => {
       .then((response) => {
         expect(response.documents).toEqual(documents);
         expect(response.templates).toEqual(templates);
+        done();
+      })
+      .catch(done.fail)
+    });
+  });
+
+  describe('deleteDocument', () => {
+    beforeEach(() => {
+      backend.restore();
+      backend
+      .mock(APIURL+'documents', 'DELETE', {body: {test:'test'}})
+      .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})});
+      TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+    });
+
+    it('shoult request to delete the document', (done) => {
+      component.deleteDocument({value: {_id:'documentId', _rev:'rev', another:'another'}})
+      .then((response) => {
+
+        let calls = backend.calls(APIURL+'documents');
+        expect(calls[1][1].method).toBe('DELETE');
+        expect(calls[1][1].body).toEqual(JSON.stringify({_id:'documentId', _rev:'rev'}));
+
+        expect(calls[0][1].method).toBe('GET');
+        expect(component.state.documents).toEqual(documents);
         done();
       })
       .catch(done.fail)
@@ -68,7 +93,7 @@ describe('LibraryController', () => {
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
     });
 
-    describe("editDocument()", () => {
+    describe('editDocument()', () => {
       it('should set on state the document being edited', () => {
         component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
         component.editDocument({value:{id:1}});
