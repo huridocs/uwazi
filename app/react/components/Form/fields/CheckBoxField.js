@@ -18,7 +18,7 @@ class CheckBoxField extends Component {
   render = () => {
     return (
 
-      <div className="form-group col-xs-9">
+      <div className="form-group">
         <div className="checkbox">
           <label>
             <input

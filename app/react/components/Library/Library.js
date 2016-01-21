@@ -130,15 +130,24 @@ class Library extends RouteHandler {
                 {this.state.documents.map((doc, index) => {
                   let selected = "";
                   if(this.state.documentBeingEdited === doc){
-                    selected = "selected";
+                    selected = "upload-documents-selected";
                   }
-                  let documentViewUrl = '/document/'+doc.id;
+
                   return <tr className={selected} onClick={this.editDocument.bind(this, doc)} key={index}>
                             <td><RoundedProgressBar progress={doc.progress}/></td>
                             <td>{doc.value.title}</td>
-                            <td>
-                              <Link to={documentViewUrl}>View</Link>
+                            <td className="view">
+                              {(() => {
+                                if(doc.value.processed) {
+                                  let documentViewUrl = '/document/'+doc.id;
+                                  return (<Link to={documentViewUrl}>View document</Link>)
+                                }
+                                else {
+                                  return (<span>Processing document</span>)
+                                }
+                              })()}
                             </td>
+                            <td><button className="btn btn-transparent"><i className="fa fa-trash"></i></button></td>
                           </tr>
                 })}
               </tbody>
@@ -155,6 +164,12 @@ class Library extends RouteHandler {
                     <button className="btn btn-default" onClick={this.cancelEdit}>Cancel</button>
                     &nbsp;
                     <button className="btn btn-primary" onClick={this.saveDocument}>Save</button>
+                    &nbsp;
+                    {(() => {
+                      if(this.state.documentBeingEdited.value.processed) {
+                        <button className="btn btn-primary">Move to library</button>
+                      }
+                    })()}
                   </div>
                 )
               }else{

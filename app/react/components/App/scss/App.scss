@@ -47,7 +47,7 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
       margin-right: 5px;
     }
     a {
-      color: #4C4C4C;
+      color: $hardFontColor;
     }
   }
 }
@@ -70,20 +70,21 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
 
   input {
     background-color: transparent;
-    border: 1px solid rgb(138, 138, 138);
+    border: 1px solid $softFontColor;
     width: 200px;
-    color: rgb(180, 180, 180);
+    color: $softFontColor;
   }
 
-  button {
-    background-color: transparent;
-    border: none;
-    font-size: 1.2em;
-    padding: 0 0 0 10px;
-    i {
-      color: rgb(138, 138, 138);
-    }
+  .fa {
+    color: $softFontColor;
   }
+}
+
+.btn.btn-transparent {
+  background-color: transparent;
+  border: none;
+  font-size: 1.2em;
+  padding: 0 0.5em;
 }
 
 .two-panel-layout {

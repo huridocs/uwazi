@@ -81,7 +81,7 @@ class App extends Component {
               <div className="form-group">
                 <input type="text" placeholder="Search" className="form-control" />
               </div>
-              <button type="submit" className="btn btn-sm"><i className="fa fa-search"></i></button>
+              <button type="submit" className="btn btn-sm btn-transparent"><i className="fa fa-search"></i></button>
             </form>
 
               {upload}

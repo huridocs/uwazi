@@ -1,24 +1,29 @@
 @import "../../App/scss/Vars.scss";
 
-table.upload-documents {
+.upload-documents {
   > tbody {
     > tr {
       > td {
-        font-size: 18px;
+        font-size: 16px;
         line-height: 40px;
         height: 40px;
 
-        .fa {
-          font-size: 20px;
-          color: #989495;
-          padding-left: 10px;
+        &:last-child {
+          text-align: center;
+          font-size: 1em;
         }
       }
     }
+  }
 
-    .selected td{
-      background-color: #f5f5f5;
-      border-bottom: 4px solid $backGroundColor1;
-    }
+  &-selected td{
+    background-color: $backGroundColor2;
+    border-bottom: 4px solid $backGroundColor1;
+  }
+
+  .fa {
+    font-size: 20px;
+    color: $hardFontColor;
+    padding-left: 10px;
   }
 }
