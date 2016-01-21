@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
-import {APIURL} from '../../config.js'
+import {APIURL} from '../../../config.js'
 import RouteHandler from '../RouteHandler';
 import Provider from '../Provider'
 

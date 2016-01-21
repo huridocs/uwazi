@@ -3,7 +3,7 @@ import ViewerController from '../ViewerController';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
-import Provider from '../../../core/Provider'
+import Provider from '../../App/Provider'
 
 describe('ViewerController', () => {
 

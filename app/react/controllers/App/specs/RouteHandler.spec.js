@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import RouteHandler from '../RouteHandler';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
-import {APIURL} from '../../config.js'
+import {APIURL} from '../../../config.js'
 import Provider from '../Provider'
 
 describe('RouteHandler', () => {
@@ -16,7 +16,7 @@ describe('RouteHandler', () => {
     };
 
     static requestState () {
-      return Promise.resolve({initialData:'data'});
+      return Promise.resolve({initialData: 'data'});
     };
 
     render = () => {return <div/>};
