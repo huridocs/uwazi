@@ -11,7 +11,7 @@ import Helmet from 'react-helmet'
 import { Link } from 'react-router'
 import './scss/upload.scss'
 
-class Library extends RouteHandler {
+class Uploads extends RouteHandler {
 
   componentDidMount = () => {
     events.on('newDocument', this.newDoc);
@@ -186,4 +186,4 @@ class Library extends RouteHandler {
 
 }
 
-export default Library;
+export default Uploads;

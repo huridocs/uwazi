@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react'
-import Library from '../Library';
+import Uploads from '../Uploads';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import {events} from '../../../utils/index'
 import Provider from '../../App/Provider'
 
-describe('LibraryController', () => {
+describe('UploadsController', () => {
 
   let documents = [{key:'secret documents'}, {key:'real batman id'}];
   let templates = [{value: {name:'batarang', fields:[]}}, {value: {name:'batmovil'}}];
@@ -22,7 +22,7 @@ describe('LibraryController', () => {
 
   describe('static requestState', () => {
     it('should request documents and templates', (done) => {
-      Library.requestState()
+      Uploads.requestState()
       .then((response) => {
         expect(response.documents).toEqual(documents);
         expect(response.templates).toEqual(templates);
@@ -36,7 +36,7 @@ describe('LibraryController', () => {
     let doc = {id: 'id_1', value: {title: 'Robin secret diary'}};;
 
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
     });
 
@@ -64,7 +64,7 @@ describe('LibraryController', () => {
   describe('when editing a document', () => {
 
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
     });
 

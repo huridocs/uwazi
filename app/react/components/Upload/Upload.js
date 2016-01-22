@@ -83,7 +83,7 @@ class Upload extends Component {
           <input style={hide} onChange={this.upload} type="file" ref={(ref) => this.input = ref} accept="application/pdf"/>
         </li>
         <li>
-          <Link to="/library">
+          <Link to="/uploads">
             <ProgressBar progress={this.state.progress}/>
           </Link>
         </li>
