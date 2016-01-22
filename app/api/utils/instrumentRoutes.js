@@ -1,17 +1,11 @@
 let executeRoute = (method, routePath, req = {}, app, middlewares) => {
-  let args = app[method].calls.mostRecent().args;
+let args = app[method].calls.allArgs().find((a) => {return a[0] == routePath});
 
   return new Promise((resolve, reject) => {
 
-    if(routePath != args[0]){
-      reject('Route '+method.toUpperCase()+' '+routePath+' its not defined');
+    if(!args){
+      reject('Route '+method.toUpperCase()+' '+routePath+' is not defined');
     }
-
-    // let spyCheck = setTimeout(() => {
-    //   if(!res.json.calls.count()){
-    //     reject('res.json() never been called');
-    //   }
-    // }, jasmine.DEFAULT_TIMEOUT_INTERVAL - 20)
 
     let statusCode;
     let res = {

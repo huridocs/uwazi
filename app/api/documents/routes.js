@@ -38,7 +38,16 @@ export default app => {
     .then(response => {
       res.json(response.json);
     });
+  });
 
+  app.get('/api/uploads', (req, res) => {
+
+    let url = db_url+'/_design/documents/_view/uploads?key="'+req.user._id+'"';
+
+    request.get(url)
+    .then(response => {
+      res.json(response.json);
+    });
   });
 
   app.delete('/api/documents', (req, res) => {

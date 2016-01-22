@@ -87,7 +87,7 @@ describe("routesMock", () => {
     it('should throw an error', (done) => {
       route.get('/unexistent/route')
       .catch((error) => {
-        expect(error).toBe('Route GET /unexistent/route its not defined');
+        expect(error).toBe('Route GET /unexistent/route is not defined');
         done();
       });
     });
