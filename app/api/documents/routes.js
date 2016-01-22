@@ -42,7 +42,7 @@ export default app => {
 
   app.get('/api/uploads', (req, res) => {
 
-    let url = db_url+'/_design/documents/_view/uploads?key="'+req.user._id+'"';
+    let url = db_url+'/_design/documents/_view/uploads';
 
     request.get(url)
     .then(response => {

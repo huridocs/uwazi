@@ -57,7 +57,7 @@ class Uploads extends RouteHandler {
 
   static requestState(){
     return Promise.all([
-      api.get('documents'),
+      api.get('uploads'),
       api.get('templates')
     ])
     .then((responses) => {

@@ -16,6 +16,7 @@ describe('UploadsController', () => {
     backend.restore();
     backend
     .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})})
+    .mock(APIURL+'uploads', 'GET', {body: JSON.stringify({rows:documents})})
     .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templates})})
     .mock(APIURL+'documents', 'POST', {});
   });
@@ -38,7 +39,7 @@ describe('UploadsController', () => {
       backend
       .mock(APIURL+'documents', 'DELETE', {body: {test:'test'}})
       .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})});
-      TestUtils.renderIntoDocument(<Provider><Library ref={(ref) => {component = ref}}/></Provider>);
+      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
     });
 
     it('shoult request to delete the document', (done) => {
@@ -46,10 +47,9 @@ describe('UploadsController', () => {
       .then((response) => {
 
         let calls = backend.calls(APIURL+'documents');
-        expect(calls[1][1].method).toBe('DELETE');
-        expect(calls[1][1].body).toEqual(JSON.stringify({_id:'documentId', _rev:'rev'}));
+        expect(calls[0][1].method).toBe('DELETE');
+        expect(calls[0][1].body).toEqual(JSON.stringify({_id:'documentId', _rev:'rev'}));
 
-        expect(calls[0][1].method).toBe('GET');
         expect(component.state.documents).toEqual(documents);
         done();
       })
