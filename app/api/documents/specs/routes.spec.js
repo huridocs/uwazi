@@ -73,4 +73,43 @@ describe('documents', () => {
     });
 
   })
+
+  describe("DELETE", () => {
+
+    it("should delete a document", (done) => {
+
+      request.get(db_url+'/8202c463d6158af8065022d9b5014ccb')
+      .then(template => {
+        let request = {body:{"_id":template.json._id, "_rev":template.json._rev}};
+        return routes.delete('/api/documents', request);
+      })
+      .then((response) => {
+        expect(response.ok).toBe(true);
+        return request.get(db_url+'/_design/documents/_view/all');
+      })
+      .then((response) => {
+        let docs = response.json.rows;
+        expect(docs.length).toBe(1);
+        expect(docs[0].value.title).toBe('Batman finishes');
+        done();
+      })
+      .catch(done.fail);
+
+    });
+
+    describe("when there is a db error", () => {
+      it("return the error in the response", (done) => {
+        let request = {body:{"_id":'8202c463d6158af8065022d9b5014ccb', "_rev":'bad_rev'}};
+
+        routes.delete('/api/documents', request)
+        .then((response) => {
+          expect(response.error.error).toBe('bad_request');
+          done();
+        })
+        .catch(done.fail);
+
+      });
+    });
+
+  });
 });

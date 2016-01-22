@@ -41,4 +41,18 @@ export default app => {
 
   });
 
+  app.delete('/api/documents', (req, res) => {
+
+    let url = db_url+'/'+req.body._id+'?rev='+req.body._rev;
+
+    request.delete(url)
+    .then((response) => {
+      res.json(response.json)
+    })
+    .catch((error) => {
+      res.json({error: error.json});
+    });
+
+  });
+
 }

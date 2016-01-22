@@ -80,7 +80,7 @@ class Upload extends Component {
       <ul className="nav navbar-nav navbar-upload">
         <li>
           <button className="btn btn-primary" onClick={this.triggerUpload}>Upload</button>
-          <input style={hide} onChange={this.upload} type="file" ref={(ref) => this.input = ref} accept="application/pdf"/>
+          <input style={hide} onChange={this.upload} type="file" ref={(ref) => this.input = ref} accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
         </li>
         <li>
           <Link to="/uploads">
