@@ -37,7 +37,8 @@ export default app => {
     request.get(url)
     .then(response => {
       res.json(response.json);
-    });
+    })
+    .catch(console.log);
   });
 
   app.get('/api/uploads', (req, res) => {
@@ -47,7 +48,8 @@ export default app => {
     request.get(url)
     .then(response => {
       res.json(response.json);
-    });
+    })
+    .catch(console.log);
   });
 
   app.delete('/api/documents', (req, res) => {

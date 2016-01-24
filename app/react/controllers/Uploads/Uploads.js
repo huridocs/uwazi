@@ -173,11 +173,11 @@ class Uploads extends RouteHandler {
                     <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
                     <button className="btn btn-default" onClick={this.cancelEdit}>Cancel</button>
                     &nbsp;
-                    <button className="btn btn-primary" onClick={this.saveDocument}>Save</button>
+                    <button className="btn btn-primary" onClick={this.saveDocument}><i className="fa fa-floppy-o"></i> Save</button>
                     &nbsp;
                     {(() => {
                       if(this.state.documentBeingEdited.value.processed) {
-                        <button className="btn btn-primary">Move to library</button>
+                        return (<button className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
                       }
                     })()}
                   </div>
