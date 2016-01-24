@@ -1,7 +1,4 @@
-import fetch from 'isomorphic-fetch'
-import React, { Component, PropTypes } from 'react'
-import { Link } from 'react-router'
-import Helmet from 'react-helmet'
+import React, { Component } from 'react'
 
 class Alert extends Component {
 

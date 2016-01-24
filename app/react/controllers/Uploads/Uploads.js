@@ -7,6 +7,7 @@ import SelectField from '../../components/Form/fields/SelectField'
 import TextareaField from '../../components/Form/fields/TextareaField'
 import RoundedProgressBar from '../../components/Elements/RoundedProgressBar'
 import Form from '../../components/Form/Form'
+import Feedback from '../../components/Elements/Feedback'
 import Helmet from 'react-helmet'
 import { Link } from 'react-router'
 import './scss/upload.scss'
@@ -87,7 +88,7 @@ class Uploads extends RouteHandler {
       return template.id == document.value.template;
     });
 
-    this.setState({documentBeingEdited: document, template: template.value});
+    this.setState({documentBeingEdited: document, template: template.value, documentSaved: false});
   };
 
   deleteDocument = (doc) => {
@@ -109,7 +110,20 @@ class Uploads extends RouteHandler {
     document.template = this.templateField.value();
     document.title = this.titleField.value();
     document.metadata = this.form.value();
-    return api.post('documents', document);
+    return api.post('documents', document)
+    .then(() => {
+      this.setState({documentSaved: true});
+    });
+  };
+
+  moveToLibrary = () => {
+    let doc = this.state.documentBeingEdited.value;
+    doc.published = true;
+    return api.post('documents', doc)
+    .then(() => {
+      this.state.documents.splice(this.state.documents.indexOf(doc), 1);
+      this.setState({documents: this.state.documents, documentBeingEdited: undefined});
+    });
   };
 
   docFileValue = (doc) => {
@@ -177,9 +191,15 @@ class Uploads extends RouteHandler {
                     &nbsp;
                     {(() => {
                       if(this.state.documentBeingEdited.value.processed) {
-                        return (<button className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
+                        return (<button onClick={this.moveToLibrary} className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
                       }
                     })()}
+                    {(() => {
+                      if(this.state.documentSaved) {
+                        return (<Feedback type="success">Changes saved!</Feedback>)
+                      }
+                    })()}
+
                   </div>
                 )
               }else{

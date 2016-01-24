@@ -1,0 +1,24 @@
+@import "../../../controllers/App/scss/Vars.scss";
+
+.feedback {
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  font-size: 0.8em;
+  padding: 1em;
+  font-style: italic;
+
+  .fa {
+    color: $hardFontColor;
+  }
+
+  &-success {
+    color: green;
+  }
+
+  &-error {
+    color: red;
+  }
+
+
+}

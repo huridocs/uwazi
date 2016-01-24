@@ -41,7 +41,7 @@ class Library extends RouteHandler {
                     selected = "upload-documents-selected";
                   }
 
-                  return <tr className={selected} onClick={this.editDocument.bind(this, doc)} key={index}>
+                  return <tr className={selected} key={index}>
                           <td><RoundedProgressBar progress={doc.progress}/></td>
                           <td>{doc.value.title}</td>
                           <td className="view">
@@ -55,7 +55,6 @@ class Library extends RouteHandler {
                               }
                             })()}
                           </td>
-                          <td><button onClick={this.deleteDocument.bind(this, doc)}className="btn btn-transparent"><i className="fa fa-trash"></i></button></td>
                          </tr>
                 })}
               </tbody>
