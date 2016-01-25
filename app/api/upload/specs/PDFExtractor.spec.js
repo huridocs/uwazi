@@ -35,4 +35,20 @@ describe("PDFExtractor", () => {
     .catch(done.fail)
   });
 
+  it('should extract full plain text', (done) => {
+    extractPDF(__dirname+'/test_document.pdf')
+    .then((document) => {
+      let fullText = document.fullText;
+
+      let lines = fullText.split(/\f/);
+
+      expect(lines[0]).toBe('Page 1\n\n');
+      expect(lines[1]).toBe('Page 2\n\n');
+      expect(lines[2]).toBe('Page 3\n\n');
+
+      done();
+    })
+    .catch(done.fail)
+  });
+
 });
