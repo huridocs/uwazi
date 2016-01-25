@@ -1,6 +1,23 @@
 import request from '../../shared/JSONRequest.js'
 import {db_url} from '../config/database.js'
 
+let get_original_document = (id) => {
+
+  return new Promise((resolve, reject) => {
+    if(!id){
+      return resolve({});
+    }
+
+    request.get(db_url + '/_design/documents/_view/all?key="'+id+'"')
+    .then((response) => {
+      let doc = response.json.rows[0];
+      resolve(doc.value);
+    });
+
+  });
+
+}
+
 export default app => {
 
   app.post('/api/documents', (req, res) => {
@@ -14,7 +31,12 @@ export default app => {
     let document = req.body;
     document.type = 'document';
     document.user = req.user;
-    request.post(db_url, document)
+
+    get_original_document(req.body._id)
+    .then((originalDoc) => {
+      let doc = Object.assign(originalDoc, document);
+      return request.post(db_url, doc);
+    })
     .then((response) => {
       return request.get(db_url + '/_design/documents/_view/all?key="'+response.json.id+'"');
     })

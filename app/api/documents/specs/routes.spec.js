@@ -44,6 +44,29 @@ describe('documents', () => {
       })
       .catch(done.fail);
     });
+
+    describe("when updating a document", () => {
+      it("should be able to do partial document updates", (done) => {
+
+        let request = {query:{_id:'8202c463d6158af8065022d9b5014ccb'}};
+        routes.get('/api/documents', request)
+        .then((response) => {
+          let doc = response.rows[0];
+          let req = {body:{_id:doc.value._id, _rev: doc.value._rev, test:'test'}, user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}};
+          return routes.post('/api/documents', req)
+        })
+        .then((doc) => {
+          return routes.get('/api/documents', request)
+        })
+        .then((response) => {
+          expect(response.rows[0].value.test).toBe('test');
+          expect(response.rows[0].value.title).toBe('Penguin almost done');
+          done();
+        })
+        .catch(done.fail);
+
+      });
+    });
   });
 
   describe('GET', () => {
