@@ -25,7 +25,7 @@ export default (file) => {
     exec(extractTextCommand, function(error, stdout, stderr) {
 
       if(error) {
-        reject(stderr);
+        // reject(stderr);
       }
 
       converter.convert()
