@@ -43,6 +43,7 @@ describe('upload routes', () => {
           request.get(db_url+'/8202c463d6158af8065022d9b5014ccb')
           .then((doc) => {
             expect(doc.json.pages.length).toBe(1);
+            expect(doc.json.fullText).toMatch(/Test file/);
             expect(doc.json.processed).toBe(true);
             done()
           })
