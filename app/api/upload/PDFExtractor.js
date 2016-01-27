@@ -1,6 +1,6 @@
 import pdftohtml from 'pdftohtmljs'
 import fs from 'fs'
-import {exec} from 'child_process'
+import {spawn} from 'child_process'
 
 
 
@@ -22,11 +22,13 @@ export default (file) => {
       '--vdpi 96',
       '--bg-format jpg']);
 
-    exec(extractTextCommand, function(error, stdout, stderr) {
-
-      if(error) {
-        reject(stderr);
+    let docsplit = spawn('docsplit', ['text', '-o', destination, file]);
+    docsplit.on('close', (code) => {
+      //
+      if (code !== 0) {
+        reject(code);
       }
+      //
 
       converter.convert()
       .then(() => {
@@ -36,7 +38,7 @@ export default (file) => {
         resolve(pages);
       });
 
-    });
+    })
 
   });
 
