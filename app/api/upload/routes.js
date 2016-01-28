@@ -39,6 +39,7 @@ export default app => {
       let document = response[1].json;
 
       document.pages = extractedPdf.pages;
+      document.fullText = extractedPdf.fullText;
       document.css = extractedPdf.css;
       document.processed = true;
 

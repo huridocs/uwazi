@@ -1,5 +1,8 @@
 import pdftohtml from 'pdftohtmljs'
 import fs from 'fs'
+import {spawn} from 'child_process'
+
+
 
 export default (file) => {
 
@@ -7,6 +10,8 @@ export default (file) => {
 
     let destination = '/tmp/'+Date.now()+'/';
     let converter = new pdftohtml(file);
+    let extractTextCommand = 'docsplit text -o '+destination+' '+file;
+
     converter.add_options([
       '--dest-dir '+destination,
       '--split-pages 1',
@@ -17,13 +22,23 @@ export default (file) => {
       '--vdpi 96',
       '--bg-format jpg']);
 
-    converter.convert()
-    .then(() => {
-      return readFiles(destination);
+    let docsplit = spawn('docsplit', ['text', '-o', destination, file]);
+    docsplit.on('close', (code) => {
+      //
+      if (code !== 0) {
+        reject(code);
+      }
+      //
+
+      converter.convert()
+      .then(() => {
+        return readFiles(destination);
+      })
+      .then((pages) => {
+        resolve(pages);
+      });
+
     })
-    .then((pages) => {
-      resolve(pages);
-    });
 
   });
 
@@ -35,6 +50,7 @@ function readFiles(dirname) {
 
     let pages = {};
     let css = {};
+    let fullText = '';
 
     fs.readdir(dirname, function(err, filenames) {
       if (err) { return reject(err); }
@@ -47,6 +63,10 @@ function readFiles(dirname) {
 
           if(filename.split('.')[1] == 'page'){
             pages[filename.split('.')[0]] = content;
+          }
+
+          if(filename.split('.')[1] == 'txt'){
+            fullText = content;
           }
 
           if(filename.match(/\.css/)){
@@ -68,7 +88,7 @@ function readFiles(dirname) {
 
             let sortedCSS = [css['base'], css['fancy'], css['custom']];
 
-            resolve({pages:sortedPages, css: sortedCSS});
+            resolve({pages:sortedPages, css: sortedCSS, fullText: fullText});
           }
         });
       });
