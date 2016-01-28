@@ -44,6 +44,32 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
     font-size: 2em;
   }
 
+  @media #{$xs} {
+    .navbar-collapse {
+      max-height: 0;
+      transition: max-height 0.25s ease-out;
+      display: block;
+      border-color: black;
+
+      li {
+        transition: opacity 0.25s ease-out;
+        z-index: -10000;
+        opacity: 0;
+      }
+
+      &.in {
+        max-height: 340px;
+        transition: max-height 0.25s ease-in;
+
+        li {
+          transition: opacity 0.25s ease-in;
+          z-index: 0;
+          opacity: 1;
+        }
+      }
+    }
+  }
+
   .navbar-nav {
     li {
       a {

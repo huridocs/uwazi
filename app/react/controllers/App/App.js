@@ -18,7 +18,7 @@ class App extends Component {
   constructor(props, context) {
     super(props);
     this.fetch = props.fetch || fetch;
-    this.state = {user: context.getUser(), showsidebar: false};
+    this.state = {user: context.getUser(), showmenu: false};
     events.on('login', this.fetchUser);
   }
 
@@ -41,16 +41,16 @@ class App extends Component {
     });
   };
 
-  toggleSidebar = () => {
-    this.setState({showsidebar: !this.state.showsidebar});
+  toggleMenu = () => {
+    this.setState({showmenu: !this.state.showmenu});
   };
 
   render = () => {
 
-    let sidebarClass = 'sidebar sidebar-show';
+    let menuClass = 'navbar-collapse collapse';
 
-    if(!this.state.showsidebar) {
-      sidebarClass = 'sidebar sidebar-hidden';
+    if(this.state.showmenu) {
+      menuClass += ' in';
     }
 
     return (
@@ -67,9 +67,9 @@ class App extends Component {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link to='/' className="navbar-brand">UwaziDocs</Link>
-              <button href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
+              <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
             </div>
-            <div id="navbar" className="navbar-collapse collapse">
+            <div id="navbar" className={menuClass}>
               <Menu className="nav navbar-nav navbar-right" user={this.state.user}/>
             </div>
          </div>
