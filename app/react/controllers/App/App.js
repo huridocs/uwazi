@@ -5,7 +5,6 @@ import { Router, match, RoutingContext, RouteContext } from 'react-router'
 import {events} from '../../utils/index'
 
 import Helmet from 'react-helmet'
-import UserWidget from '../Users/UserWidget'
 import { Link } from 'react-router'
 import 'bootstrap/dist/css/bootstrap.css'
 import './scss/App.scss'
@@ -64,28 +63,19 @@ class App extends Component {
           ]}
         />
 
-        <nav className="nav navbar-nav navbar-default navbar-fixed-top">
-          <div className="navbar-header">
-            <Link to='/' className="navbar-brand">UwaziDocs</Link>
-          </div>
+        <nav className="nav  navbar-default navbar-fixed-top">
           <div className="container-fluid">
-           <div id="navbar" className="">
-            <UserWidget user={ this.state.user } />
-            <ul className="nav navbar-nav navbar-right">
-              <li><a className="toggleidebar" href="#" onClick={this.toggleSidebar}><i className="fa fa-bars"></i></a></li>
-            </ul>
-           </div>
-       </div>
-     </nav>
+            <div className="navbar-header">
+              <Link to='/' className="navbar-brand">UwaziDocs</Link>
+              <button href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
+            </div>
+            <div id="navbar" className="navbar-collapse collapse">
+              <Menu className="nav navbar-nav navbar-right" user={this.state.user}/>
+            </div>
+         </div>
+       </nav>
         <div className='container-fluid contents-wrapper'>
-          <div className="row">
-            <div className={sidebarClass}>
-              <Menu className="nav nav-sidebar"/>
-            </div>
-            <div className="contents">
-              {this.renderChildren()}
-            </div>
-          </div>
+            {this.renderChildren()}
         </div>
       </div>
     )

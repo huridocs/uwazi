@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
+import '../scss/login.scss'
 
 export default function() {
   return(
-    <div className="row">
+    <div className="row login">
+      <div className="login-background" />
       <Helmet title="Login" />
-      <h1>Login</h1>
-      <div className="col-xs-4 col-xs-offset-4">
+      <div className="well col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
       {(() => {
         if(this.state.error){
           return <p className="alert alert-warning">Invalid password or username</p>

@@ -37,7 +37,7 @@ module.exports = {
     },
     {
       test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
-      loader: 'file-loader',
+      loaders: ['url-loader', 'img'],
       include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
     }]
   }

@@ -5,92 +5,13 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
   height: 100%;
 }
 
-.contents {
-  padding-left: 35px;
-  padding-right: 0;
-  transition: margin 0.3s;
-  width: 80%;
-  margin-left: 20%;
-
-  @media #{$sm} {
-    width: 70%;
-    margin-left: 30%;
-  }
-
-  @media #{$xs} {
-    width: 100%;
-    margin-left: 0%;
-  }
-}
-
 .no-padding {
   padding: 0 !important;
-}
-
-.navbar-nav > li > a.toggleidebar {
-  padding-top: 8px;
-  padding-bottom: 9px;
-  display: none;
-
-  @media #{$xs} {display: block;}
-
-  .fa{
-    border: 1px solid white;
-    padding: 6px;
-  }
-}
-
-.sidebar {
-  background-color: $backGroundColor2;
-  color: #989495;
-  position: fixed;
-  top: 20px;
-  bottom: 0;
-  left: 0;
-  z-index: 1000;
-  display: block;
-  padding: 40px 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  border-right: 4px solid $backGroundColor3;
-  font-size: 1.1em;
-  transition: width 0.3s;
-  width: 20%;
-
-  @media #{$sm} {
-    width: 30%;
-  }
-
-  @media #{$xs} {
-    width: 0;
-    &.sidebar-show {
-      width: 50%;
-      box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  li {
-    i {
-      margin-right: 5px;
-    }
-    a {
-      color: $hardFontColor;
-    }
-  }
 }
 
 .contents-wrapper {
   padding-top: 40px;
   padding-right: 0;
-}
-
-.navbar-default .navbar-brand {
-  color: $brandColor;
-  font-size: 2em;
-}
-
-.navbar-default {
-  background-color: $backGroundColor1;
 }
 
 .navbar-form {
@@ -114,26 +35,20 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
   padding: 0 0.5em;
 }
 
+.navbar-default {
 
-.navbar-nav > li {
-    float: left;
-}
+  background-color: $backGroundColor1;
 
-.navbar-nav > li > a {
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
+  .navbar-brand {
+    color: $brandColor;
+    font-size: 2em;
+  }
 
-.navbar-right {
-    float: right !important;
-    margin-right: -15px;
-}
-
-.navbar-nav {
-    float: left;
-    margin: 0;
-}
-
-.navbar-header {
-    float: left;
+  .navbar-nav {
+    li {
+      a {
+        color: #ddd;
+      }
+    }
+  }
 }
