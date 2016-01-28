@@ -9,7 +9,7 @@ import UserWidget from '../Users/UserWidget'
 import { Link } from 'react-router'
 import './scss/App.scss'
 import 'font-awesome/css/font-awesome.css'
-import Upload from '../../components/Upload/Upload'
+import Menu from './Menu.js'
 
 class App extends Component {
 
@@ -18,7 +18,7 @@ class App extends Component {
   constructor(props, context) {
     super(props);
     this.fetch = props.fetch || fetch;
-    this.state = {user: context.getUser(), showsidebar: true};
+    this.state = {user: context.getUser(), showsidebar: false};
     events.on('login', this.fetchUser);
   }
 
@@ -47,17 +47,10 @@ class App extends Component {
 
   render = () => {
 
-    let upload;
-    if(this.state.user){
-      upload = <Upload/>
-    }
-
-    let sidebarClass = 'col-xs-4 col-sm-3 col-lg-2 sidebar';
-    let contentsClass = 'col-xs-offset-4 col-sm-offset-3 col-lg-offset-2 col-xs-8 col-sm-9 col-lg-10 contents';
+    let sidebarClass = 'sidebar sidebar-show';
 
     if(!this.state.showsidebar) {
-      sidebarClass += ' sidebar-hidden';
-      contentsClass = 'col-xs-12 contents no-sidebar';
+      sidebarClass = 'sidebar sidebar-hidden';
     }
 
     return (
@@ -75,32 +68,20 @@ class App extends Component {
             <Link to='/' className="navbar-brand">UwaziDocs</Link>
           </div>
           <div className="container-fluid">
-           <div id="navbar" className="navbar-collapse collapse">
-
-             <form className="navbar-form navbar-left">
-              <div className="form-group">
-                <input type="text" placeholder="Search" className="form-control" />
-              </div>
-              <button type="submit" className="btn btn-sm btn-transparent"><i className="fa fa-search"></i></button>
-            </form>
-
-              {upload}
-              <UserWidget user={ this.state.user } />
+           <div id="navbar" className="">
+            <UserWidget user={ this.state.user } />
+            <ul className="nav navbar-nav navbar-right">
+              <li><a className="toggleidebar" href="#" onClick={this.toggleSidebar}><i className="fa fa-bars"></i></a></li>
+            </ul>
            </div>
        </div>
      </nav>
         <div className='container-fluid contents-wrapper'>
           <div className="row">
             <div className={sidebarClass}>
-              <ul className="nav nav-sidebar">
-                <li><a onClick={this.toggleSidebar}><i className="fa fa-bars"></i></a></li>
-                <li><Link to='/'><i className="fa fa-home"></i><span>Home</span></Link></li>
-                <li><Link to='/template'><i className="fa fa-tag"></i><span>Metadata</span> templates</Link></li>
-                <li><Link to='/library'><i className="fa fa-book"></i><span>Library</span></Link></li>
-                <li><Link to='/uploads'><i className="fa fa-cloud-upload"></i><span>Uploads</span></Link></li>
-              </ul>
+              <Menu className="nav nav-sidebar"/>
             </div>
-            <div className={contentsClass}>
+            <div className="contents">
               {this.renderChildren()}
             </div>
           </div>

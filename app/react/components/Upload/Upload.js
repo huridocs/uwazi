@@ -5,7 +5,6 @@ import {APIURL} from '../../config.js'
 import './scss/upload.scss';
 import { Link } from 'react-router'
 import {events} from '../../utils/index'
-import ProgressBar from '../Elements/ProgressBar'
 
 class Upload extends Component {
 
@@ -71,23 +70,11 @@ class Upload extends Component {
 
   render = () => {
 
-    let hide = {
-      top:'-10000px',
-      position:'absolute'
-    };
-
     return (
-      <ul className="nav navbar-nav navbar-upload">
-        <li>
-          <button className="btn btn-primary" onClick={this.triggerUpload}>Upload</button>
-          <input style={hide} onChange={this.upload} type="file" ref={(ref) => this.input = ref} accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
-        </li>
-        <li>
-          <Link to="/uploads">
-            <ProgressBar progress={this.state.progress}/>
-          </Link>
-        </li>
-      </ul>
+      <div className="upload-component">
+      <div className="upload-component_button" onClick={this.triggerUpload}><i className="fa fa-cloud-upload"></i> Upload</div>
+      <input className="upload-component_input" onChange={this.upload} type="file" ref={(ref) => this.input = ref} accept="application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+      </div>
     )
   };
 

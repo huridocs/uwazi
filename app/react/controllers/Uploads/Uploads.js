@@ -9,6 +9,7 @@ import RoundedProgressBar from '../../components/Elements/RoundedProgressBar'
 import Form from '../../components/Form/Form'
 import Feedback from '../../components/Elements/Feedback'
 import Helmet from 'react-helmet'
+import Upload from '../../components/Upload/Upload'
 import { Link } from 'react-router'
 import './scss/upload.scss'
 
@@ -149,6 +150,7 @@ class Uploads extends RouteHandler {
         <Helmet title='Upload' />
         <div className="row two-panel-layout">
           <div className="col-md-8 two-panel-layout-left no-padding">
+            <Upload/>
             <table className="table table-hover upload-documents">
               <tbody>
                 {this.state.documents.map((doc, index) => {

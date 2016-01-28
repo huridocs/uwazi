@@ -27,6 +27,7 @@ class Root extends Component {
           {head.title.toComponent()}
           {head.meta.toComponent()}
           {head.link.toComponent()}
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link rel="stylesheet" href="/dist/css/bootstrap.css" />
         </head>
         <body>

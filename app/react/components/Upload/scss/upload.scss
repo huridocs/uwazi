@@ -1,8 +1,24 @@
-.navbar {
-  &-upload {
+@import "../../../controllers/App/scss/Vars.scss";
+
+.upload-component {
+
+  width: 100%;
+  text-align: center;
+
+  &_button {
+    border: 5px dashed $brandColor;
+    padding: 50px;
+    margin: 50px;
+    border-radius: 15%;
+    background: transparent;
+    font-size: 2em;
+    display: inline-block;
+    color: $hardFontColor;
     cursor: pointer;
-    button {
-      margin-top: 2px;
-    }
+  }
+
+  &_input {
+    position: absolute;
+    top: -1000000px;
   }
 }
