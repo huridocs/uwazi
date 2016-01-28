@@ -11,7 +11,6 @@ const app = express();
 
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, 'dist')));
-app.use(express.static(path.resolve(__dirname, 'bootstrap')));
 
 require('./app/api/api.js')(app);
 require('./app/react/server.js')(app);
