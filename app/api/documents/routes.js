@@ -1,5 +1,6 @@
 import request from '../../shared/JSONRequest.js'
 import {db_url} from '../config/database.js'
+import elastic from './elastic'
 
 let get_original_document = (id) => {
 
@@ -42,6 +43,48 @@ export default app => {
     })
     .then((response) => {
       res.json(response.json.rows[0]);
+    })
+    .catch(console.log);
+  });
+
+  app.get('/api/documents/search', (req, res) => {
+
+    let searchTerm = req.query.searchTerm || '';
+
+    let query = {
+      "multi_match" : {
+        "query":      searchTerm,
+        "type":       "phrase_prefix",
+        "fields":     [ "doc.fullText", "doc.metadata.*", "doc.title" ]
+      }
+    };
+
+    if(!searchTerm){
+      query = {match_all:{}};
+    }
+
+    let elasticQuery = {
+      "_source": {
+        "include": [ "doc.title", "doc.processed"]
+      },
+      "from" : 0,
+      "size" : 100,
+      "query": query,
+      "filter": {
+        "term":  { "doc.processed": true }
+      }
+    }
+
+    elastic.search({index:'uwazi', body:elasticQuery})
+    .then(response => {
+
+      let results = response.hits.hits.map((hit) => {
+        let result = hit._source.doc;
+        result._id = hit._id;
+        return result;
+      });
+
+      res.json(results);
     })
     .catch(console.log);
   });

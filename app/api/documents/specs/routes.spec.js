@@ -4,6 +4,7 @@ import fixtures from './fixtures.js'
 import request from '../../../shared/JSONRequest.js'
 import {db_url} from '../../config/database.js'
 import instrumentRoutes from '../../utils/instrumentRoutes'
+import elastic from '../elastic'
 
 
 describe('documents', () => {
@@ -94,6 +95,104 @@ describe('documents', () => {
         .catch(done.fail);
 
       });
+    });
+
+    describe('/api/documents/search', () => {
+      it('should do a multimatch query to elastic and transform the results to be application format compatible', (done) => {
+
+        spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => {
+          resolve({
+            "took": 7,
+            "timed_out": false,
+            "_shards": {
+              "total": 5,
+              "successful": 5,
+              "failed": 0
+            },
+            "hits": {
+              "total": 1,
+              "max_score": 0.05050901,
+              "hits": [
+                {
+                  "_index": "uwazi",
+                  "_type": "logs",
+                  "_id": "id1",
+                  "_score": 0.05050901,
+                  "_source": {
+                    "doc": {
+                      "processed": true,
+                      "title": "first match"
+                    }
+                  }
+                },
+                {
+                  "_index": "uwazi",
+                  "_type": "logs",
+                  "_id": "id2",
+                  "_score": 0.05050901,
+                  "_source": {
+                    "doc": {
+                      "processed": true,
+                      "title": "second match"
+                    }
+                  }
+                }
+              ]
+            }
+          });
+        }));
+
+        let request = {query:{searchTerm:'test'}};
+        let elasticQuery = {
+          "_source": {
+            "include": [ "doc.title", "doc.processed"]
+          },
+          "from" : 0,
+          "size" : 100,
+          "query": {
+            "multi_match" : {
+              "query":      "test",
+              "type":       "phrase_prefix",
+              "fields":     [ "doc.fullText", "doc.metadata.*", "doc.title" ]
+            }
+          },
+          "filter": {
+            "term":  { "doc.processed": true }
+          }
+        }
+
+        routes.get('/api/documents/search', request)
+        .then((response) => {
+          expect(elastic.search).toHaveBeenCalledWith({index:'uwazi', body:elasticQuery});
+          expect(response).toEqual([{_id:'id1', title:'first match', processed: true},{_id:'id2', title:'second match', processed: true}]);
+          done();
+        })
+        .catch(done.fail);
+
+      });
+
+      describe('when searchTerm is blank', () => {
+
+        it('should do a match_all query to elastic', (done) => {
+
+          spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => { resolve({hits:{hits:[]}}); }));
+
+          let request = {query:{searchTerm:''}};
+
+          routes.get('/api/documents/search', request)
+          .then((response) => {
+            let args = elastic.search.calls.argsFor(0)[0];
+
+            expect(args.index).toBe('uwazi');
+            expect(args.body.query).toEqual({match_all:{}});
+
+            done();
+          })
+          .catch(done.fail);
+
+        });
+      });
+
     });
 
   })
