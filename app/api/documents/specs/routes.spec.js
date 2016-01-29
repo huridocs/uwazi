@@ -157,7 +157,7 @@ describe('documents', () => {
             }
           },
           "filter": {
-            "term":  { "doc.processed": true }
+            "term":  { "doc.published": true }
           }
         }
 

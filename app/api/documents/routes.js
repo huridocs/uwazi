@@ -71,7 +71,7 @@ export default app => {
       "size" : 100,
       "query": query,
       "filter": {
-        "term":  { "doc.processed": true }
+        "term":  { "doc.published": true }
       }
     }
 
