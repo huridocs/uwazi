@@ -19,10 +19,20 @@ class Library extends RouteHandler {
   };
 
   static requestState(){
-    return api.get('documents')
+    return api.get('documents/search')
     .then((response) => {
-      let documents = response.json.rows;
+      let documents = response.json;
       return {documents: documents};
+    });
+  };
+
+  search = (e) => {
+    e.preventDefault();
+
+    return api.get('documents/search?searchTerm='+this.searchField.value)
+    .then((response) => {
+      let documents = response.json;
+      this.setState({documents: documents});
     });
   };
 
@@ -33,6 +43,10 @@ class Library extends RouteHandler {
         <Helmet title='Upload' />
         <div className="row two-panel-layout">
           <div className="col-md-8 two-panel-layout-left no-padding">
+            <form onSubmit={this.search}>
+            <input placeholder="Search" ref={(ref) => this.searchField = ref}/>
+            <button type='submit'>search</button>
+            </form>
             <table className="table table-hover upload-documents">
               <tbody>
                 {this.state.documents.map((doc, index) => {
@@ -43,11 +57,11 @@ class Library extends RouteHandler {
 
                   return <tr className={selected} key={index}>
                           <td><RoundedProgressBar progress={doc.progress}/></td>
-                          <td>{doc.value.title}</td>
+                          <td>{doc.title}</td>
                           <td className="view">
                             {(() => {
-                              if(doc.value.processed) {
-                                let documentViewUrl = '/document/'+doc.id;
+                              if(doc.processed) {
+                                let documentViewUrl = '/document/'+doc._id;
                                 return (<Link to={documentViewUrl}>View document</Link>)
                               }
                               else {

@@ -48,7 +48,8 @@
     "react-dom": "^0.14.1",
     "react-helmet": "^2.1.1",
     "react-router": "^1.0.3",
-    "superagent": "1.6.1"
+    "superagent": "1.6.1",
+    "elasticsearch": "9.0.2"
   },
   "devDependencies": {
     "babel-loader": "^6.2.1",
