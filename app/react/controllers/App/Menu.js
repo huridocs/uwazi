@@ -10,12 +10,12 @@ class Menu extends Component {
         <li><Link to='/library'><span>Library</span></Link></li>
         {(() => {
           if(this.props.user){
-            return    [<li><Link to='/template'>Metadata</Link></li>,
-                      <li><Link to='/uploads'><span>Uploads</span></Link></li>,
-                      <li><Link to='/my_account'> {this.props.user.username}</Link></li>]
+            return    [<li key="0"><Link to='/template'>Metadata</Link></li>,
+                      <li key="1"><Link to='/uploads'><span>Uploads</span></Link></li>,
+                      <li key="2"><Link to='/my_account'> {this.props.user.username}</Link></li>]
           }
           else {
-            return [<li><Link to='/login'>Login</Link></li>]
+            return [<li key="3"><Link to='/login'>Login</Link></li>]
           }
         })()}
       </ul>
