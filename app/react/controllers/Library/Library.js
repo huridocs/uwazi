@@ -40,13 +40,17 @@ class Library extends RouteHandler {
 
     return (
       <div>
-        <Helmet title='Upload' />
+        <Helmet title='Library' />
         <div className="row two-panel-layout">
           <div className="col-md-8 two-panel-layout-left no-padding">
-            <form onSubmit={this.search}>
-            <input placeholder="Search" ref={(ref) => this.searchField = ref}/>
-            <button type='submit'>search</button>
+            <form className="search-form form-inline" onSubmit={this.search}>
+              <div className="form-group">
+                <input className="form-control" placeholder="Search" ref={(ref) => this.searchField = ref}/>
+                &nbsp;
+                <button className="btn btn-default" type='submit'>Search</button>
+              </div>
             </form>
+
             <table className="table table-hover upload-documents">
               <tbody>
                 {this.state.documents.map((doc, index) => {
