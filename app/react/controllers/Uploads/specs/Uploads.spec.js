@@ -5,6 +5,7 @@ import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import {events} from '../../../utils/index'
 import Provider from '../../App/Provider'
+import api from '../../../utils/singleton_api'
 
 describe('UploadsController', () => {
 
@@ -23,7 +24,7 @@ describe('UploadsController', () => {
 
   describe('static requestState', () => {
     it('should request documents and templates', (done) => {
-      Uploads.requestState()
+      Uploads.requestState(null, api)
       .then((response) => {
         expect(response.documents).toEqual(documents);
         expect(response.templates).toEqual(templates);

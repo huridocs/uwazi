@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import request from 'superagent';
-import api from '../../utils/api'
+import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import {events} from '../../utils'
 import SelectField from '../../components/Form/fields/SelectField'
@@ -57,7 +57,7 @@ class Uploads extends RouteHandler {
     return {documents: [], templates:[], template:{fields:[]}, showForm:false};
   };
 
-  static requestState(){
+  static requestState(params = {}, api){
     return Promise.all([
       api.get('uploads'),
       api.get('templates')

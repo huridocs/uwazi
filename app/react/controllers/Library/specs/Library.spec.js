@@ -4,6 +4,7 @@ import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import {events} from '../../../utils/index'
+import  api from '../../../utils/singleton_api'
 import Provider from '../../App/Provider'
 
 describe('LibraryController', () => {
@@ -24,7 +25,7 @@ describe('LibraryController', () => {
 
   describe('static requestState()', () => {
     it('should request documents and templates', (done) => {
-      Library.requestState()
+      Library.requestState(null, api)
       .then((response) => {
         expect(response.documents).toEqual(documents);
         done();

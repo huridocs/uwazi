@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { isClient } from '../../utils'
+import api from '../../utils/singleton_api'
 
 class RouteHandler extends Component {
 
@@ -19,7 +20,7 @@ class RouteHandler extends Component {
 
     if(!this.state){
       this.state = this.constructor.emptyState();
-      this.constructor.requestState(this.props.params)
+      this.constructor.requestState(this.props.params, api)
       .then((response) => {
         this.setState(response);
       });

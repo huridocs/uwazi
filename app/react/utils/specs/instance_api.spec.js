@@ -1,12 +1,15 @@
-import api from '../api.js'
+import instance_api from '../instance_api.js'
 import backend from 'fetch-mock'
 import {APIURL} from '../../config.js'
 
 describe('Login', () => {
 
-  let component, fetch_mock;
+  let fetch_mock;
+  let api;
 
   beforeEach(() => {
+
+    api = instance_api();
 
     backend.restore();
     backend
@@ -14,6 +17,7 @@ describe('Login', () => {
     .mock(APIURL+'test_post', 'POST', JSON.stringify({method: 'POST'}))
     .mock(APIURL+'test_delete', 'DELETE',JSON.stringify({method: 'DELETE'}));
   });
+
 
   describe("GET", () => {
     it("should prefix url with config api url", (done) => {
@@ -25,6 +29,24 @@ describe('Login', () => {
       })
       .catch(done.fail);
     });
+
+    describe('when passing a cookie', () => {
+      it('send the Cookie in the headers', (done) => {
+
+        api = instance_api('cookie');
+        api.get('test_get', {data:'get'})
+        .then((response) => {
+
+          let headers = backend.calls().matched[0][1].headers;
+          expect(headers.Cookie).toBe('cookie');
+
+          done();
+        })
+        .catch(done.fail);
+
+      });
+    });
+
   });
 
   describe("POST", () => {

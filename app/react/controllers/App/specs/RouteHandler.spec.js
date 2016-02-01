@@ -3,6 +3,7 @@ import RouteHandler from '../RouteHandler';
 import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
+import api from '../../../utils/singleton_api'
 import Provider from '../Provider'
 
 describe('RouteHandler', () => {
@@ -81,7 +82,7 @@ describe('RouteHandler', () => {
 
       it("should send props.params to requestState", (done) => {
         TestController.requestState().then(() => {
-            expect(TestController.requestState).toHaveBeenCalledWith(params);
+            expect(TestController.requestState).toHaveBeenCalledWith(params, api);
             done();
         })
         .catch(done.fail);

@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react'
-import api from '../../utils/api'
+import api from '../../utils/singleton_api'
 import FormCreator from '../../components/Form/FormCreator'
 import RouteHandler from '../App/RouteHandler'
 
 class TemplatesController extends RouteHandler {
 
-  static requestState(params = {}){
+  static requestState(params = {}, api){
     return api.get('templates')
     .then((response) => {
       let templates = response.json.rows;
@@ -23,7 +23,7 @@ class TemplatesController extends RouteHandler {
   saveForm = (template) => {
     return api.post('templates', template)
     .then((response) => {
-      return TemplatesController.requestState({templateKey:response.json.id});
+      return TemplatesController.requestState({templateKey:response.json.id}, api);
     })
     .then((state) => {
       this.setState(state);

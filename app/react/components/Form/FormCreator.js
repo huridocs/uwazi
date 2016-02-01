@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
 import InputField from './fields/InputField.js'
-import api from '../../utils/api'
+import api from '../../utils/singleton_api'
 
 class FormCreator extends Component {
 

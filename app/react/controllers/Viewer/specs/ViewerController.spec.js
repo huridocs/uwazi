@@ -4,6 +4,7 @@ import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import Provider from '../../App/Provider'
+import api from '../../../utils/singleton_api'
 
 describe('ViewerController', () => {
 
@@ -23,7 +24,7 @@ describe('ViewerController', () => {
   describe('static requestState', () => {
     it('should request for the document with id passed', (done) => {
       let id = 1;
-      ViewerController.requestState({documentId:id})
+      ViewerController.requestState({documentId:id}, api)
       .then((response) => {
         expect(response).toEqual(documentResponse[0]);
         done();

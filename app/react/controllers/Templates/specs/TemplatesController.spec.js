@@ -4,11 +4,11 @@ import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import Provider from '../../App/Provider'
+import api from '../../../utils/singleton_api'
 
 describe('TemplatesController', () => {
 
   let templatesResponse = [{key:'template1', id:'1', value:{}}, {key:'template2', id:'2', value:{}}];
-
   let component;
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('TemplatesController', () => {
   describe('static requestState', () => {
     it('should request templates and find template based on the key passed', (done) => {
       let id = '1';
-      TemplatesController.requestState({templateKey:id})
+      TemplatesController.requestState({templateKey:id}, api)
       .then((response) => {
         expect(response.templates).toEqual(templatesResponse);
         expect(response.template).toEqual(templatesResponse[0]);

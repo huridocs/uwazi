@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react'
-import api from '../../utils/api'
+import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 
 class ViewerController extends RouteHandler {
 
-  static requestState(params = {}){
+  static requestState(params = {}, api){
     return api.get('documents?_id='+params.documentId)
     .then((response) => {
       return response.json.rows[0];

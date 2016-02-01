@@ -11,6 +11,7 @@ import Provider from './controllers/App/Provider'
 import Root from './controllers/App/Root'
 import NoMatch from './controllers/App/NoMatch'
 import { isClient, getPropsFromRoute } from './utils'
+import instance_api from './utils/instance_api'
 
 if (isClient) {
   ReactDOM.render(
@@ -64,8 +65,14 @@ function handleRoute(res, renderProps, req) {
     }
   }
 
+  let cookie;
+
+  if(req.cookies){
+    cookie = serialize(req.cookies);
+  }
+
   if (routeProps.requestState) {
-    routeProps.requestState(renderProps.params).then(renderPage);
+    routeProps.requestState(renderProps.params, instance_api(cookie)).then(renderPage);
   } else {
     renderPage();
   }
@@ -84,6 +91,15 @@ function ServerRouter(req, res) {
       handle404(res);
     }
   });
+}
+
+let serialize = (obj) => {
+  var str = [];
+  for(var p in obj)
+    if (obj.hasOwnProperty(p)) {
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    }
+  return str.join("&");
 }
 
 export default ServerRouter;

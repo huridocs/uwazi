@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import request from 'superagent';
-import api from '../../utils/api'
+import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import {events} from '../../utils'
 import SelectField from '../../components/Form/fields/SelectField'
@@ -18,7 +18,7 @@ class Library extends RouteHandler {
     return {documents: []};
   };
 
-  static requestState(){
+  static requestState(params = {}, api){
     return api.get('documents/search')
     .then((response) => {
       let documents = response.json;
