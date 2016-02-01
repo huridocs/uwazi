@@ -1,3 +1,8 @@
 .search-form {
   margin: 26px 0 16px 16px;
+
+  .form-control {
+    width: inherit;
+    display: inline-block;
+  }
 }
