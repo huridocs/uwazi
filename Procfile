@@ -1,4 +1,4 @@
-web: nodemon server.js
-web: elasticsearch
-worker: logstash agent -f logstash.conf
-worker: webpack --watch
+server: nodemon server.js
+elasticsearch: elasticsearch
+logstash: logstash agent -f logstash.conf
+webpack: webpack --watch
