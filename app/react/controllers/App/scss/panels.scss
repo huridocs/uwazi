@@ -1,0 +1,31 @@
+.panels-layout {
+  height: 100%;
+  position: relative;
+
+  &__panel {
+    height: 100%;
+    overflow: hidden;
+    transition: width 0.2s;
+
+    @media #{$xs} {
+      width: 0%;
+      padding: 0;
+      border: 0;
+
+      &.active {
+        width: 100%;
+        padding: 15px;
+      };
+    }
+  }
+
+  &__panel:not(:first-child) {
+    background-color: $backGroundColor2;
+    border-left: 4px solid $backGroundColor1;
+
+    @media #{$xs} {
+      border-left: 0;
+    }
+
+  }
+}

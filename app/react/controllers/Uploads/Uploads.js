@@ -145,11 +145,23 @@ class Uploads extends RouteHandler {
       return {value:template.id, label: template.value.name};
     });
 
+    let listClass = "col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding";
+    let metadataClass = "col-xs-12 col-sm-5 col-md-4 panels-layout__panel";
+
+    if(this.state.documentBeingEdited){
+      metadataClass += " active";
+    }
+    else
+    {
+      listClass += " active";
+    }
+
+
     return (
       <div>
         <Helmet title='Upload' />
-        <div className="row two-panel-layout">
-          <div className="col-md-8 two-panel-layout-left no-padding">
+        <div className="row panels-layout">
+          <div className={listClass}>
             <Upload/>
             <table className="table table-hover upload-documents">
               <tbody>
@@ -179,7 +191,7 @@ class Uploads extends RouteHandler {
               </tbody>
             </table>
           </div>
-          <div className="col-md-4 two-panel-layout-right">
+          <div className={metadataClass}>
             {(() => {
               if(this.state.documentBeingEdited){
                 return (

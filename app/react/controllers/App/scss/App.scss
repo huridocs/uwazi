@@ -1,5 +1,5 @@
 @import "Vars.scss";
-@import "two_panel.scss";
+@import "panels.scss";
 
 html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .contents, .contents>div {
   height: 100%;
@@ -10,8 +10,7 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
 }
 
 .contents-wrapper {
-  padding-top: 40px;
-  padding-right: 0;
+  padding-top: 50px;
 }
 
 .navbar-form {
@@ -50,6 +49,7 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
       transition: max-height 0.25s ease-out;
       display: block;
       border-color: black;
+      overflow: hidden;
 
       li {
         transition: opacity 0.25s ease-out;
@@ -77,4 +77,8 @@ html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .content
       }
     }
   }
+}
+
+.navbar-toggle {
+  padding: 6px 10px;
 }
