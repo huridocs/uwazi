@@ -41,9 +41,9 @@ class App extends Component {
     });
   };
 
-  toggleMenu = () => {
-    this.setState({showmenu: !this.state.showmenu});
-  };
+  toggleMenu = () => {this.setState({showmenu: !this.state.showmenu});};
+
+  closeMenu = () => {this.setState({showmenu: false});};
 
   render = () => {
 
@@ -69,12 +69,12 @@ class App extends Component {
               <Link to='/' className="navbar-brand">UwaziDocs</Link>
               <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
             </div>
-            <div id="navbar" className={menuClass}>
+            <div onClick={this.closeMenu} id="navbar" className={menuClass}>
               <Menu className="nav navbar-nav navbar-right" user={this.state.user}/>
             </div>
          </div>
        </nav>
-        <div className='container-fluid contents-wrapper'>
+        <div  onClick={this.closeMenu} className='container-fluid contents-wrapper'>
             {this.renderChildren()}
         </div>
       </div>
