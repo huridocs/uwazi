@@ -212,7 +212,7 @@ describe('documents', () => {
       })
       .then((response) => {
         let docs = response.json.rows;
-        expect(docs.length).toBe(2);
+        expect(docs.length).toBe(3);
         expect(docs[0].value.title).toBe('Batman finishes');
         done();
       })
@@ -238,10 +238,10 @@ describe('documents', () => {
 
   describe('/uploads', () => {
     it('should return a list of documents not published of the current user', (done) => {
-      routes.get('/api/uploads', {user: {"_id": "c08ef2532f0bd008ac5174b45e033c93"}})
+      routes.get('/api/uploads', {user: {"_id": "c08ef2532f0bd008ac5174b45e033c94"}})
       .then((response) => {
         expect(response.rows.length).toBe(1);
-        expect(response.rows[0].value).toEqual({title:'Right there', _id: 'd0298a48d1221c5ceb53c4879301507f'});
+        expect(response.rows[0].value).toEqual({title:'unpublished', _id: 'd0298a48d1221c5ceb53c4879301508f'});
         done();
       })
       .catch(done.fail);

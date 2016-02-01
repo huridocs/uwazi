@@ -108,7 +108,13 @@ export default app => {
 
   app.get('/api/uploads', (req, res) => {
 
-    let url = db_url+'/_design/documents/_view/uploads';
+    if(!req.user){
+      res.status(401);
+      res.json({error: 'Unauthorized'});
+      return;
+    }
+
+    let url = db_url+'/_design/documents/_view/uploads?key="'+req.user._id+'"';
 
     request.get(url)
     .then(response => {
