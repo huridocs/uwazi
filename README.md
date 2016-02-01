@@ -17,3 +17,9 @@
       - install ruby `sudo apt-get install ruby-full`
       - `gem install docsplit`
       - install non optional dependencies for docsplit -> [https://documentcloud.github.io/docsplit/](https://documentcloud.github.io/docsplit/)
+
+#Development
+
+- launch application: `foreman start`, the app will be available after few seconds on localhost:3000
+- test api: `node test_api.js`
+- test react: `karma start`
