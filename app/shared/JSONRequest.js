@@ -1,12 +1,15 @@
 import 'isomorphic-fetch';
 
-let _fetch = (url, data, method) => {
+let _fetch = (url, data, method, cookie) => {
 
   let response;
 
+  let headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
+  headers.Cookie = cookie;
+
   return fetch(url, {
     method: method,
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    headers: headers,
     credentials: 'same-origin',
     body: JSON.stringify(data)
   })
@@ -33,8 +36,8 @@ export default {
     return _fetch(url, data, 'POST');
   },
 
-  get: (url, data) => {
-    return _fetch(url, data, 'GET');
+  get: (url, data, cookie) => {
+    return _fetch(url, data, 'GET', cookie);
   },
 
   delete: (url, data) => {

@@ -50,6 +50,20 @@ describe('JSONRequest', () => {
       .catch(done.fail);
     });
 
+    describe('when passing a cookie', () => {
+      it('should send the cookie in the headers', (done) => {
+        request.get('http://localhost:3000/api/test', {}, 'cookie')
+        .then((response) => {
+
+          let headers = backend.calls().matched[0][1].headers;
+          expect(headers.Cookie).toBe('cookie');
+
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
     describe('when response is greater than 399', () => {
       it("should throw an error", (done) => {
         backend.reMock('http://localhost:3000/api/test', 'GET', {status:500, body: JSON.stringify({error:'error!'})});
