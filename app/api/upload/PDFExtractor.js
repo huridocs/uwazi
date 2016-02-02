@@ -18,6 +18,7 @@ export default (file) => {
       '--embed-css 0',
       '--page-filename %d.page',
       '--css-filename custom.css',
+      '--optimize-text 1',
       '--hdpi 96',
       '--vdpi 96',
       '--bg-format jpg']);
