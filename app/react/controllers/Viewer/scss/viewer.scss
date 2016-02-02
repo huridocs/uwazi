@@ -1,0 +1,36 @@
+@import "../../App/scss/Vars.scss";
+
+.viewer {
+
+  @media (max-width: 825px) {
+    zoom: 0.9;
+  }
+
+  @media (max-width: 730px) {
+    zoom: 0.8;
+  }
+
+  @media (max-width: 640px) {
+    zoom: 0.7;
+  }
+
+  @media (max-width: 580px) {
+    zoom: 0.6;
+  }
+
+  @media (max-width: 500px) {
+    zoom: 0.5;
+  }
+
+  @media (max-width: 375px) {
+    zoom: 0.45;
+  }
+
+  @media (max-width: 320px) {
+    zoom: 0.37;
+  }
+
+  &__pages {
+
+  }
+}

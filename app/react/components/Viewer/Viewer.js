@@ -1,31 +1,25 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import api from '../../utils/singleton_api'
-import RouteHandler from '../App/RouteHandler'
-import './scss/viewer.scss'
 
-class ViewerController extends RouteHandler {
-
-  static requestState(params = {}, api){
-    return api.get('documents?_id='+params.documentId)
-    .then((response) => {
-      return response.json.rows[0];
-    });
-  };
-
-  static emptyState(){
-    return {value:{pages:[], css:[]}};
-  };
+class Viewer extends Component {
 
   constructor(props, context){
     super(props, context);
     this.state = {value:{pages:[], css:[]}};
   };
 
+  requestDocument = () => {
+    return api.get('documents?_id='+this.props.documentId)
+    .then((response) => {
+      this.setState(response.json.rows[0]);
+    });
+  };
+
   render = () => {
     let pageStyles = {height:'1120px', width: '792px'}
     return (
-      <div className="viewer">
-        <div className="viewer__pages">
+      <div>
+        <div>
           {this.state.value.pages.map((page, index) => {
             let html = {__html: page}
             let id = 'pf'+index;
@@ -42,4 +36,4 @@ class ViewerController extends RouteHandler {
 
 }
 
-export default ViewerController;
+export default Viewer;

@@ -42,7 +42,7 @@ class Library extends RouteHandler {
       <div>
         <Helmet title='Library' />
         <div className="row panels-layout">
-          <div className="col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding">
+          <div className="col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding active">
             <form className="search-form form-inline" onSubmit={this.search}>
               <div className="form-group">
                 <input className="form-control" placeholder="Search" ref={(ref) => this.searchField = ref}/>
