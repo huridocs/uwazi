@@ -223,7 +223,7 @@ class Uploads extends RouteHandler {
               }
             })()}
           </div>
-          <div class="panels-layout__panel">
+          <div className="panels-layout__panel">
           </div>
         </div>
       </div>

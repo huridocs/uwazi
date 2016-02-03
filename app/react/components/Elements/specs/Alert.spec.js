@@ -11,19 +11,36 @@ describe('MyAccount', () => {
   let message = 'Some feedback for the user';
   let type = 'info';
 
-  describe('render()', () => {
+  class TestComponent extends Component {
 
-    it('should render the message', () => {
-      component = TestUtils.renderIntoDocument(<Alert message={message} type={type}/>);
-      expect(ReactDOM.findDOMNode(component).textContent).toMatch(message);
-    });
+    constructor(props){
+      super(props)
+      this.state = {message: 'Finaly, you are up!', type: 'success'}
+    };
 
-    describe('when there is no message', function(){
-      it('should render an empty div', () => {
-        message = undefined;
-        component = TestUtils.renderIntoDocument(<Alert message={message} type={type}/>);
-        expect(ReactDOM.findDOMNode(component).innerHTML).toMatch('');
-      });
+    render = () => {return <Alert ref={(ref) => {this.alert = ref}} message={this.state.message} type={this.state.type}/>};
+  }
+
+  describe('show', () => {
+    it('should be true when the component has a message', () => {
+      component = TestUtils.renderIntoDocument(<TestComponent/>);
+      expect(component.alert.state.show).toBe(true);
     });
   });
+
+  describe('hide()', () => {
+    it('should set show to false', () => {
+      expect(component.alert.state.show).toBe(true);
+      component.alert.hide();
+      expect(component.alert.state.show).toBe(false);
+    })
+  })
+
+  describe('hide()', () => {
+    it('should set show to false', () => {
+      component.alert.setState({show: false});
+      component.alert.show();
+      expect(component.alert.state.show).toBe(true);
+    })
+  })
 });

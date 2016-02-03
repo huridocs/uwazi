@@ -1,0 +1,27 @@
+@import "../../../controllers/App/scss/Vars.scss";
+
+.alert-wrapper {
+  text-align: center;
+}
+
+.alert {
+  border-radius: 0;
+  border: 0;
+  display: inline-block;
+  font-size: 1.5em;
+  width: auto;
+
+  span {
+    margin-right: 20px
+  }
+
+  &-close {
+    cursor: pointer;
+    color: $hardFontColor;
+    opacity: 1;
+
+    &:hover {
+      color: $softFontColor;
+    }
+  }
+}

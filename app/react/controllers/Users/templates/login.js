@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
 import '../scss/login.scss'
+import Alert from '../../../components/Elements/Alert.js'
 
 export default function() {
   return(
@@ -10,7 +11,7 @@ export default function() {
       <div className="well col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
       {(() => {
         if(this.state.error){
-          return <p className="alert alert-warning">Invalid password or username</p>
+          return <Alert type="warning" message="Invalid password or username"/>
         }
       })()}
         <form onSubmit={ this.submit }>
