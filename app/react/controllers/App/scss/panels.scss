@@ -1,27 +1,49 @@
 .panels-layout {
-  height: 100%;
-  position: relative;
+
+  overflow: hidden;
+  min-height: 100%;
 
   &__panel {
-    height: 100%;
-    overflow: hidden;
     transition: width 0.2s;
 
+    &:after {
+      display: block;
+      position: absolute;
+      height: 100000%;
+      content: "";
+      width: 100%;
+    }
+
     @media #{$xs} {
-      width: 0%;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      width: 0;
+      height: 0;
       padding: 0;
       border: 0;
+      overflow: hidden;
 
       &.active {
         width: 100%;
+        height: auto;
         padding: 15px;
       };
+
+      &:after {
+        display: none;
+      }
     }
   }
 
   &__panel:not(:first-child) {
     background-color: $backGroundColor2;
     border-left: 4px solid $backGroundColor1;
+
+    &:after {
+      background-color: $backGroundColor2;
+      border-left: 4px solid $backGroundColor1;
+      left: -3px;
+    }
 
     @media #{$xs} {
       border-left: 0;

@@ -195,7 +195,7 @@ class Uploads extends RouteHandler {
             {(() => {
               if(this.state.documentBeingEdited){
                 return (
-                  <div>
+                  <div className="metadata">
                     <TextareaField label="Title" value={this.state.documentBeingEdited.value.title} ref={(ref) => {this.titleField = ref}} options={options} />
                     <SelectField label="Document type" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
                     <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
@@ -222,8 +222,6 @@ class Uploads extends RouteHandler {
                 )
               }
             })()}
-          </div>
-          <div className="panels-layout__panel">
           </div>
         </div>
       </div>
