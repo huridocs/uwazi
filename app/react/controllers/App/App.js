@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './scss/App.scss'
 import 'font-awesome/css/font-awesome.css'
 import Menu from './Menu.js'
+import Alerts from './Alerts.js'
 
 class App extends Component {
 
