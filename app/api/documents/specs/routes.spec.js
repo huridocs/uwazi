@@ -38,9 +38,11 @@ describe('documents', () => {
 
       routes.post('/api/documents', req)
       .then((response) => {
-        expect(response.id).toBeDefined();
-        expect(response.value.title).toBe('Batman begins');
-        expect(response.value.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
+        return routes.get('/api/documents', {query:{_id:response.id}});
+      })
+      .then((response) => {
+        expect(response.rows[0].value.title).toBe('Batman begins');
+        expect(response.rows[0].value.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
         done();
       })
       .catch(done.fail);
@@ -57,6 +59,7 @@ describe('documents', () => {
           return routes.post('/api/documents', req)
         })
         .then((doc) => {
+          expect(doc.id).toBe('8202c463d6158af8065022d9b5014ccb');
           return routes.get('/api/documents', request)
         })
         .then((response) => {
