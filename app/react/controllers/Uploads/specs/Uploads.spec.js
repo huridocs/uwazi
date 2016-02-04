@@ -107,12 +107,6 @@ describe('UploadsController', () => {
         expect(component.state.template).toEqual({name:'template2', fields:[]});
       });
 
-      it('should set saved to false', () => {
-        component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
-        component.editDocument({value:{id:1, template:'2'}});
-        expect(component.state.documentSaved).toBe(false);
-      });
-
       describe("when document does not have a template", () => {
         it('should set the first template as the default', () => {
           component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
@@ -149,7 +143,6 @@ describe('UploadsController', () => {
           let calls = backend.calls(APIURL+'documents');
           expect(calls[0][1].method).toBe('POST');
           expect(calls[0][1].body).toEqual(JSON.stringify({id:1, title:'the dark knight', template:'template_id', metadata:{key:'value'}}));
-          expect(component.state.documentSaved).toBe(true);
           done();
         })
         .catch(done.fail);

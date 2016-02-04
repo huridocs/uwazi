@@ -8,8 +8,13 @@
   border-radius: 0;
   border: 0;
   display: inline-block;
-  font-size: 1.5em;
+  font-size: 1em;
   width: auto;
+  color: $hardFontColor;
+  padding: 5px 15px;
+  font-weight: 600;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+  margin-bottom: 5px;
 
   span {
     margin-right: 20px

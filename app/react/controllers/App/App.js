@@ -77,6 +77,7 @@ class App extends Component {
        </nav>
         <div  onClick={this.closeMenu} className='container-fluid contents-wrapper'>
             {this.renderChildren()}
+            <Alerts/>
         </div>
       </div>
     )

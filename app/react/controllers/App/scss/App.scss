@@ -1,7 +1,7 @@
 @import "Vars.scss";
 @import "panels.scss";
 
-html, body, #root, #root>div, .contents-wrapper, .contents-wrapper>div, .contents, .contents>div {
+html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>div:first-child {
   height: 100%;
 }
 

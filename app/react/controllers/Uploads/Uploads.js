@@ -7,7 +7,6 @@ import SelectField from '../../components/Form/fields/SelectField'
 import TextareaField from '../../components/Form/fields/TextareaField'
 import RoundedProgressBar from '../../components/Elements/RoundedProgressBar'
 import Form from '../../components/Form/Form'
-import Feedback from '../../components/Elements/Feedback'
 import Helmet from 'react-helmet'
 import Upload from '../../components/Upload/Upload'
 import { Link } from 'react-router'
@@ -89,7 +88,7 @@ class Uploads extends RouteHandler {
       return template.id == document.value.template;
     });
 
-    this.setState({documentBeingEdited: document, template: template.value, documentSaved: false});
+    this.setState({documentBeingEdited: document, template: template.value});
   };
 
   deleteDocument = (doc) => {
@@ -113,7 +112,7 @@ class Uploads extends RouteHandler {
     document.metadata = this.form.value();
     return api.post('documents', document)
     .then(() => {
-      this.setState({documentSaved: true});
+      events.emit('alert', 'success', 'Document updated.');
     });
   };
 
@@ -124,6 +123,7 @@ class Uploads extends RouteHandler {
     .then(() => {
       this.state.documents.splice(this.state.documents.indexOf(doc), 1);
       this.setState({documents: this.state.documents, documentBeingEdited: undefined});
+      events.emit('alert', 'success', 'Document moved to library.');
     });
   };
 
@@ -208,12 +208,6 @@ class Uploads extends RouteHandler {
                         return (<button onClick={this.moveToLibrary} className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
                       }
                     })()}
-                    {(() => {
-                      if(this.state.documentSaved) {
-                        return (<Feedback type="success">Changes saved!</Feedback>)
-                      }
-                    })()}
-
                   </div>
                 )
               }else{
