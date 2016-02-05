@@ -18,21 +18,30 @@ class TemplatesList extends Component {
   renderTemplates = () => {
     if (this.state.templates) {
       return (
-        <ul className="list-group">
+        <table className="table table-hover">
+          <tbody>
           {this.state.templates.map((template, index) => {
-            let className = "list-group-item";
+            let className = "";
             if(this.props.active && template.id == this.props.active._id){
-              className = "list-group-item active";
+              className = "active";
             }
             let template_url = '/template/edit/'+template.id;
             return (
-                <Link className={className} key={template.id} to={template_url}>
-                <span className="glyphicon glyphicon-remove" onClick={this.delete.bind(this, template, index)}></span>
-                 &nbsp;&nbsp;&nbsp;{template.value.name}
-                </Link>
+
+                <tr key={template.id}>
+                  <td>
+                    <Link className={className} to={template_url}>
+                      {template.value.name}
+                    </Link>
+                  </td>
+                  <td>
+                    <a href="#" className="fa fa-trash" onClick={this.delete.bind(this, template, index)}></a>
+                  </td>
+                </tr>
           );
           })}
-        </ul>
+          </tbody>
+        </table>
       )
     } else {
       return (
@@ -53,7 +62,7 @@ class TemplatesList extends Component {
   render = () => {
     return (
       <div>
-        <h4>Templates</h4>
+        <h4>Templates list</h4>
         {this.renderTemplates()}
       </div>
     )

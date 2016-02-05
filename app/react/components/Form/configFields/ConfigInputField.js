@@ -6,9 +6,9 @@ class ConfigInputField extends Component {
 
   render = () => {
     return (
-      <div className="row">
-        <Field config={this.props.field}/>
-        <ConfigFieldPanel remove={this.props.remove} field={this.props.field} save={this.props.save}></ConfigFieldPanel>
+      <div className="row config-field">
+        <div className="col-xs-9"><Field config={this.props.field}/></div>
+        <div className="col-xs-3 config-field_buttons"><ConfigFieldPanel remove={this.props.remove} field={this.props.field} save={this.props.save}></ConfigFieldPanel></div>
       </div>
     )
   };

@@ -3,6 +3,7 @@ import ConfigInputField from './configFields/ConfigInputField.js'
 import TemplatesList from './TemplatesList.js'
 import InputField from './fields/InputField.js'
 import api from '../../utils/singleton_api'
+import './scss/formcreator.scss'
 
 class FormCreator extends Component {
 
@@ -42,6 +43,7 @@ class FormCreator extends Component {
 
   addInput = () => {
     this.state.template.fields.push({type:'input', label:'Short text', required: false});
+    console.log('here!');
     this.setState(this.state);
   };
 
@@ -64,19 +66,20 @@ class FormCreator extends Component {
   render = () => {
     return (
       <div>
-        <h1>Form Creator!</h1>
         <div className="row">
-          <div className="col-xs-2">
-            <a className="btn btn-primary glyphicon glyphicon-plus" onClick={this.addInput}> Add field</a>
+          <div className="col-xs-4">
             <TemplatesList templates={this.state.templates || []} active={this.state.template}/>
           </div>
-          <div className="col-xs-8">
-            <InputField label="Template name" value={this.state.template.name} ref={(ref) => this.inputName = ref}/>
-            <form className="form-horizontal" onSubmit={this.save}>
+          <div className="col-xs-offset-1 col-xs-6">
+            <h4>Template name</h4>
+            <InputField value={this.state.template.name} ref={(ref) => this.inputName = ref}/>
+            <form onSubmit={this.save}>
               {this.state.template.fields.map((field, index) => {
                 return <ConfigInputField remove={this.remove.bind(this,index)} save={this.update.bind(this,index)} field={field} key={index} />
               })}
-              <button type="submit" className="btn btn-default">Save !</button>
+              <a className="btn btn-default" onClick={this.addInput}>Add field</a>
+              &nbsp;
+              <button type="submit" className="btn btn-default">Save</button>
             </form>
           </div>
         </div>

@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import api from '../../utils/singleton_api'
 import FormCreator from '../../components/Form/FormCreator'
 import RouteHandler from '../App/RouteHandler'
+import Helmet from 'react-helmet'
+import './scss/templates.scss'
 
 class TemplatesController extends RouteHandler {
 
@@ -14,10 +16,6 @@ class TemplatesController extends RouteHandler {
         template: templates.find(template => template.id == params.templateKey)
       };
     })
-  };
-
-  constructor(props, context){
-    super(props, context);
   };
 
   saveForm = (template) => {
@@ -33,7 +31,8 @@ class TemplatesController extends RouteHandler {
 
   render = () => {
     return (
-      <div>
+      <div className="metadata-templates">
+        <Helmet title='Upload' />
         <FormCreator save={this.saveForm} templates={this.state.templates} templateId={this.props.params.templateId}/>
       </div>
     )

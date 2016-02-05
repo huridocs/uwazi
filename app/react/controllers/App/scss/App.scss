@@ -82,3 +82,7 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
 .navbar-toggle {
   padding: 6px 10px;
 }
+
+.form-control, .btn {
+  border-radius: 0;
+}

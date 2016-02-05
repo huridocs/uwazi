@@ -43,12 +43,13 @@ class ConfigFieldPanel extends Component {
     ];
 
     return (
-        <div className="btn-group col-xs-2">
-          <button type="button" className="btn btn-danger" aria-label="Remove"  onClick={this.props.remove}>
-            <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
-          </button>
-          <button type="button" className="btn btn-default" aria-label="Config" onClick={this.toggleModal}>
+        <div>
+          <button type="button" className="btn btn-xs btn-default" aria-label="Config" onClick={this.toggleModal}>
             <span className="glyphicon glyphicon-cog" aria-hidden="true"></span>
+          </button>
+          &nbsp;
+          <button type="button" className="btn btn-xs btn-danger" aria-label="Remove"  onClick={this.props.remove}>
+            <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
           </button>
           <Modal show={this.state.showModal}>
             <Modal.Header>
@@ -57,7 +58,7 @@ class ConfigFieldPanel extends Component {
 
             <Modal.Body>
 
-              <form onSubmit={this.save} className="form-horizontal">
+              <form onSubmit={this.save} >
                 <SelectField label="Type" ref={(ref) => {this.fields.type = ref}} defaultValue={this.props.field.type} options={typeOptions} />
                 <InputField label="Label" ref={(ref) => {this.fields.label = ref}} defaultValue={this.props.field.label}/>
                 <InputField label="Name" ref={(ref) => {this.fields.name = ref}} defaultValue={this.props.field.name}/>

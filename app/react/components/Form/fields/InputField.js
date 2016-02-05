@@ -24,7 +24,11 @@ class InputField extends Component {
   render = () => {
     return (
       <div className="form-group">
-        <label htmlFor="label">{this.props.label}</label>
+        {(()=>{
+          if(this.props.label){
+            return <label htmlFor="label">{this.props.label}</label>
+          }
+        })()}
         <div>
           <input type="text"
             className="form-control"
