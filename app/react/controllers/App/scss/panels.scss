@@ -5,14 +5,7 @@
 
   &__panel {
     transition: width 0.2s;
-
-    &:after {
-      display: block;
-      position: absolute;
-      height: 100000%;
-      content: "";
-      width: 100%;
-    }
+    min-height: 100%;
 
     @media #{$xs} {
       margin-bottom: 0;
@@ -39,14 +32,18 @@
     background-color: $backGroundColor2;
     border-left: 4px solid $backGroundColor1;
 
-    &:after {
-      background-color: $backGroundColor2;
-      border-left: 4px solid $backGroundColor1;
-      left: -4px;
-    }
+    height: 100%;
+    position: fixed;
+    right: 0;
+    padding-bottom: 50px;
+    overflow-y: scroll;
 
     @media #{$xs} {
       border-left: 0;
+      overflow-y: hidden;;
+      &.active {
+        overflow-y: scroll;
+      }
     }
 
   }
