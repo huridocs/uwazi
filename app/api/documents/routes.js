@@ -2,23 +2,6 @@ import request from '../../shared/JSONRequest.js'
 import {db_url} from '../config/database.js'
 import elastic from './elastic'
 
-let get_original_document = (id) => {
-
-  return new Promise((resolve, reject) => {
-    if(!id){
-      return resolve({});
-    }
-
-    request.get(db_url + '/_design/documents/_view/all?key="'+id+'"')
-    .then((response) => {
-      let doc = response.json.rows[0];
-      resolve(doc.value);
-    });
-
-  });
-
-}
-
 export default app => {
 
   app.post('/api/documents', (req, res) => {
@@ -33,18 +16,17 @@ export default app => {
     document.type = 'document';
     document.user = req.user;
 
-    get_original_document(req.body._id)
-    .then((originalDoc) => {
-      let doc = Object.assign(originalDoc, document);
-      return request.post(db_url, doc);
-    })
+    let url = db_url;
+    if(document._id){
+      url = db_url + '/_design/documents/_update/partialUpdate/'+document._id;
+    }
+
+    request.post(url, document)
     .then((response) => {
-      return request.get(db_url + '/_design/documents/_view/all?key="'+response.json.id+'"');
-    })
-    .then((response) => {
-      res.json(response.json.rows[0]);
+      res.json(response.json);
     })
     .catch(console.log);
+
   });
 
   app.get('/api/documents/search', (req, res) => {
