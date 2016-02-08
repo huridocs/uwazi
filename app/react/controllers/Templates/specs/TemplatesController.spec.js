@@ -12,9 +12,8 @@ describe('TemplatesController', () => {
   let component;
 
   beforeEach(() => {
-    let initialData = {};
     let params = {};
-    TestUtils.renderIntoDocument(<Provider initialData={initialData}><TemplatesController params={params} ref={(ref) => component = ref} /></Provider>);
+    TestUtils.renderIntoDocument(<Provider><TemplatesController params={params} ref={(ref) => component = ref} /></Provider>);
     backend.restore();
     backend
     .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templatesResponse})})
@@ -24,7 +23,7 @@ describe('TemplatesController', () => {
   describe('static requestState', () => {
     it('should request templates and find template based on the key passed', (done) => {
       let id = '1';
-      TemplatesController.requestState({templateKey:id}, api)
+      TemplatesController.requestState({templateId:id}, api)
       .then((response) => {
         expect(response.templates).toEqual(templatesResponse);
         expect(response.template).toEqual(templatesResponse[0]);

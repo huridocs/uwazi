@@ -20,30 +20,28 @@ class FormCreator extends Component {
     super(props, context);
     this.state = {
       templates: props.templates,
-      template: this.defaultTemplate()
+      template: this.findTemplate(props)
     }
   };
 
   defaultTemplate(){
-    return {name:'', fields:[]};
+    return {value: {name:'', fields:[]}};
   };
 
   componentWillReceiveProps = (props) => {
-
-    let template = this.defaultTemplate();
-    if(props.templateId) {
-      template = props.templates.find(template => template.key == props.templateId).value;
-    }
-
     this.setState({
       templates: props.templates,
-      template: template
+      template: this.findTemplate(props)
     });
+  };
+
+  findTemplate = (props) => {
+    let template = props.templates.find(template => template.id == props.templateId) || this.defaultTemplate();
+    return template.value;
   };
 
   addInput = () => {
     this.state.template.fields.push({type:'input', label:'Short text', required: false});
-    console.log('here!');
     this.setState(this.state);
   };
 

@@ -13,15 +13,19 @@ class TemplatesController extends RouteHandler {
       let templates = response.json.rows;
       return {
         templates:templates,
-        template: templates.find(template => template.id == params.templateKey)
+        template: templates.find(template => template.id == params.templateId)
       };
     })
+  };
+
+  static emptyState(){
+    return {templates: [], template:{}};
   };
 
   saveForm = (template) => {
     return api.post('templates', template)
     .then((response) => {
-      return TemplatesController.requestState({templateKey:response.json.id}, api);
+      return TemplatesController.requestState({templateId:response.json.id}, api);
     })
     .then((state) => {
       this.setState(state);
