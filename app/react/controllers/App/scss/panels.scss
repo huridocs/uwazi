@@ -36,15 +36,40 @@
     position: fixed;
     right: 0;
     padding-bottom: 50px;
-    overflow-y: scroll;
 
-    @media #{$xs} {
-      border-left: 0;
-      overflow-y: hidden;;
-      &.active {
-        overflow-y: scroll;
+    .panel-content {
+      overflow-y: auto;
+      @media #{$xs} {
+        overflow-y: hidden;
       }
     }
 
+    @media #{$xs} {
+      border-left: 0;
+
+      &.active .panel-content{
+        overflow-y: auto;
+      }
+    }
+
+  }
+
+  .panel-top-bar {
+    height: 50px;
+    line-height: 50px;
+    width: 100%;
+    background-color: white;
+    border-bottom: 1px solid $backGroundColor3;
+    padding: 0 15px;
+    display: none;
+
+    @media #{$xs} {
+      display: block;
+    }
+
+    .btn {
+      border: none;
+      font-size: 2em;
+    }
   }
 }

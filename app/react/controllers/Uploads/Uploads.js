@@ -146,7 +146,7 @@ class Uploads extends RouteHandler {
     });
 
     let listClass = "col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding";
-    let metadataClass = "col-xs-12 col-sm-5 col-md-4 panels-layout__panel";
+    let metadataClass = "col-xs-12 col-sm-5 col-md-4 panels-layout__panel no-padding";
 
     if(this.state.documentBeingEdited){
       metadataClass += " active";
@@ -192,30 +192,34 @@ class Uploads extends RouteHandler {
             </table>
           </div>
           <div className={metadataClass}>
-            {(() => {
-              if(this.state.documentBeingEdited){
-                return (
-                  <div className="metadata">
-                    <TextareaField label="Title" value={this.state.documentBeingEdited.value.title} ref={(ref) => {this.titleField = ref}} options={options} />
-                    <SelectField label="Document type" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
-                    <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
-                    <button className="btn btn-default" onClick={this.cancelEdit}>Cancel</button>
-                    &nbsp;
-                    <button className="btn btn-primary" onClick={this.saveDocument}><i className="fa fa-floppy-o"></i> Save</button>
-                    &nbsp;
-                    {(() => {
-                      if(this.state.documentBeingEdited.value.processed) {
-                        return (<button onClick={this.moveToLibrary} className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
-                      }
-                    })()}
-                  </div>
-                )
-              }else{
-                return (
-                  <h4 className="text-center">Select a document.</h4>
-                )
-              }
-            })()}
+            <div className="panel-top-bar">
+              <button  onClick={this.cancelEdit} className="btn btn-default fa fa-angle-left" ></button>
+            </div>
+            <div className="panel-content">
+              {(() => {
+                if(this.state.documentBeingEdited){
+                  return (
+                    <div className="metadata">
+                      <TextareaField label="Title" value={this.state.documentBeingEdited.value.title} ref={(ref) => {this.titleField = ref}} options={options} />
+                      <SelectField label="Document type" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
+                      <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
+                      &nbsp;
+                      <button className="btn btn-primary" onClick={this.saveDocument}><i className="fa fa-floppy-o"></i> Save</button>
+                      &nbsp;
+                      {(() => {
+                        if(this.state.documentBeingEdited.value.processed) {
+                          return (<button onClick={this.moveToLibrary} className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
+                        }
+                      })()}
+                    </div>
+                  )
+                }else{
+                  return (
+                    <h4 className="text-center">Select a document.</h4>
+                  )
+                }
+              })()}
+            </div>
           </div>
         </div>
       </div>
