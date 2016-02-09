@@ -145,8 +145,8 @@ class Uploads extends RouteHandler {
       return {value:template.id, label: template.value.name};
     });
 
-    let listClass = "col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding";
-    let metadataClass = "col-xs-12 col-sm-5 col-md-4 panels-layout__panel no-padding";
+    let listClass = "col-xs-12 col-sm-7 col-md-7 panels-layout__panel no-padding";
+    let metadataClass = "col-xs-12 col-sm-5 col-md-5 panels-layout__panel no-padding";
 
     if(this.state.documentBeingEdited){
       metadataClass += " active";
@@ -174,18 +174,6 @@ class Uploads extends RouteHandler {
                   return <tr className={selected} onClick={this.editDocument.bind(this, doc)} key={index}>
                             <td><RoundedProgressBar progress={doc.progress}/></td>
                             <td>{doc.value.title}</td>
-                            <td className="view">
-                              {(() => {
-                                if(doc.value.processed) {
-                                  let documentViewUrl = '/document/'+doc.id;
-                                  return (<Link to={documentViewUrl}>View document</Link>)
-                                }
-                                else {
-                                  return (<span>Processing document</span>)
-                                }
-                              })()}
-                            </td>
-                            <td><button onClick={this.deleteDocument.bind(this, doc)}className="btn btn-transparent"><i className="fa fa-trash"></i></button></td>
                           </tr>
                 })}
               </tbody>
@@ -204,13 +192,22 @@ class Uploads extends RouteHandler {
                       <SelectField label="Document type" value={this.state.documentBeingEdited.value.template} ref={(ref) => {this.templateField = ref}} options={options} onChange={this.templateChanged} />
                       <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}  ref={(ref) => this.form = ref }/>
                       &nbsp;
-                      <button className="btn btn-primary" onClick={this.saveDocument}><i className="fa fa-floppy-o"></i> Save</button>
+                      <button className="btn btn-sm btn-default" onClick={this.saveDocument}><i className="fa fa-floppy-o"></i> Save</button>
                       &nbsp;
                       {(() => {
                         if(this.state.documentBeingEdited.value.processed) {
-                          return (<button onClick={this.moveToLibrary} className="btn btn-primary"><i className="fa fa-folder-open-o"></i> Move to library</button>)
+                          return (<button onClick={this.moveToLibrary} className="btn btn-sm btn-default"><i className="fa fa-folder-open-o"></i> Move to library</button>)
                         }
                       })()}
+                      &nbsp;
+                      {(() => {
+                        if(this.state.documentBeingEdited.value.processed) {
+                          let documentViewUrl = '/document/'+this.state.documentBeingEdited.id;
+                          return (<Link className="btn btn-sm btn-default" to={documentViewUrl}><i className="fa fa-external-link"></i> View document</Link>)
+                        }
+                      })()}
+                      &nbsp;
+                      <button onClick={this.deleteDocument.bind(this, this.state.documentBeingEdited)}className="btn btn-sm btn-default"><i className="fa fa-trash"></i> Delete</button>
                     </div>
                   )
                 }else{

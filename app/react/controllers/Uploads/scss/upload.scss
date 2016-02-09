@@ -8,14 +8,8 @@
   > tbody {
     > tr {
       > td {
-        font-size: 16px;
         line-height: 40px;
         height: 40px;
-
-        &:last-child {
-          text-align: center;
-          font-size: 1em;
-        }
       }
     }
   }
