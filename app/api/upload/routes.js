@@ -5,7 +5,7 @@ import extractPDF from './PDFExtractor'
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, __dirname+'/../../../uploads/')
+    cb(null, __dirname+'/../../../uploaded_documents/')
   },
   filename: function (req, file, cb) {
     console.log(file);
