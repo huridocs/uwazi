@@ -19,7 +19,6 @@
       &.active {
         width: 100%;
         height: auto;
-        padding: 15px;
       };
 
       &:after {
@@ -35,10 +34,12 @@
     height: 100%;
     position: fixed;
     right: 0;
-    padding-bottom: 50px;
 
     .panel-content {
-      overflow-y: auto;
+      overflow-y: scroll;
+      height: 100%;
+      padding-bottom: 100px;
+
       @media #{$xs} {
         overflow-y: hidden;
       }
@@ -48,7 +49,7 @@
       border-left: 0;
 
       &.active .panel-content{
-        overflow-y: auto;
+        overflow-y: scroll;
       }
     }
 
