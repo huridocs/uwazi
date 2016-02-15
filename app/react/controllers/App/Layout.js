@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './scss/App.scss'
 import 'font-awesome/css/font-awesome.css'
 import Menu from './Menu.js'
-import Home from './Home.js'
+import Library from '../Library/Library.js'
 
 class Layout extends Component {
 
@@ -23,7 +23,7 @@ class Layout extends Component {
       });
     }
 
-    return (<Home user={this.props.user} />);
+    return (<Library user={this.props.user} />);
   };
 
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};

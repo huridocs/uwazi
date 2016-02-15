@@ -25,6 +25,10 @@
         zoom: $zoom;
       }
     }
+
+    > div {
+      border-bottom: 2px solid $softFontColor;
+    }
   }
 
   .navbar-default {
@@ -40,7 +44,6 @@
   &__pages {
     .pf {
       box-shadow: none;
-      border-bottom: 2px solid $softFontColor;
     }
   }
 }

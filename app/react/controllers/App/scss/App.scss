@@ -36,7 +36,9 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
 
 .navbar-default {
 
-  background-color: $backGroundColor1;
+  background-color: white;
+  color: $hardFontColor;
+  border-bottom: 1px solid $backGroundColor1;
 
   .navbar-brand {
     color: $brandColor;
@@ -70,12 +72,8 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
     }
   }
 
-  .navbar-nav {
-    li {
-      a {
-        color: #ddd;
-      }
-    }
+  .navbar-nav li a {
+    color: $hardFontColor;
   }
 }
 
@@ -84,5 +82,9 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
 }
 
 .form-control, .btn {
-  border-radius: 0;
+  border-radius: 3px;
+}
+
+.btn-primary {
+  background-color: $primary;
 }

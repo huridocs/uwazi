@@ -39,6 +39,23 @@ class ViewerController extends RouteHandler {
               <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
             </div>
             <div onClick={this.closeMenu} id="navbar" className={menuClass}>
+              <ul className="nav navbar-nav">
+                <li>
+                  <a href="#" className=""><i className="fa fa-angle-left"></i> GO BACK</a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="fa fa-bookmark-o"></i></a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="fa fa-search"></i></a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="glyphicon glyphicon-text-size"></i></a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="fa fa-cloud-download"></i></a>
+                </li>
+              </ul>
               <Menu className="nav navbar-nav navbar-right" user={this.props.user}/>
             </div>
          </div>
@@ -53,7 +70,6 @@ class ViewerController extends RouteHandler {
               })}
             </div>
             <div className="col-xs-12 col-sm-4 panels-layout__panel no-padding">
-              <h1>Metadata</h1>
             </div>
           </div>
             {this.state.value.css.map((css, index) => {

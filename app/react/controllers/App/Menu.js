@@ -6,8 +6,7 @@ class Menu extends Component {
   render = () => {
     return (
       <ul className={this.props.className}>
-        <li><Link to='/'><span>Home</span></Link></li>
-        <li><Link to='/library'><span>Library</span></Link></li>
+        <li><Link to='/'><span>Library</span></Link></li>
         {(() => {
           if(this.props.user){
             return    [<li key="0"><Link to='/template'>Metadata</Link></li>,

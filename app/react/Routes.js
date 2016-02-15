@@ -19,7 +19,6 @@ export default (
     <IndexRoute component={Layout} />
     <Route path='/' component={Layout}>
       <Route path='my_account' component={MyAccount} />
-      <Route path='library' component={Library} />
       <Route path='uploads' component={Uploads} />
       <Route path='template' component={TemplatesController} />
       <Route path='template/edit/:templateId' component={TemplatesController} />

@@ -1,19 +1,24 @@
+@import "../../App/scss/Vars.scss";
+
 .login {
 
-  &-background{
-    background-image: url('./img/login-min.jpg');
-    -webkit-filter: blur(5px);
-    -moz-filter: blur(5px);
-    -o-filter: blur(5px);
-    -ms-filter: blur(5px);
-    filter: blur(5px);
-    background-size: cover;
-    position: absolute;
-    width: 100%;
-    height: 100%;
+  padding-top: 100px;
+
+  form {
+    label {
+      color: $softFontColor;
+    }
   }
 
-  .well {
-    margin-top: 40px;
+  .form-control{
+    height: 50px;
+    line-height: 40px;
+    padding: 5px 10px;
+    border: 3px solid $primary;
+    font-size: 1.3em;
+  }
+
+  .btn {
+    width: 100%;
   }
 }
