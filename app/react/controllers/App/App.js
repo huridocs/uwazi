@@ -17,7 +17,7 @@ class App extends Component {
   static contextTypes = {getUser: PropTypes.func };
 
   constructor(props, context) {
-    super(props);
+    super(props, context);
     this.fetch = props.fetch || fetch;
     this.state = {user: context.getUser(), showmenu: false};
     events.on('login', this.fetchUser);
@@ -42,17 +42,8 @@ class App extends Component {
     });
   };
 
-  toggleMenu = () => {this.setState({showmenu: !this.state.showmenu});};
-
-  closeMenu = () => {this.setState({showmenu: false});};
 
   render = () => {
-
-    let menuClass = 'navbar-collapse collapse';
-
-    if(this.state.showmenu) {
-      menuClass += ' in';
-    }
 
     return (
       <div>
@@ -63,22 +54,8 @@ class App extends Component {
             {'name': 'description', 'content': 'Uwazi docs'}
           ]}
         />
-
-        <nav className="nav  navbar-default navbar-fixed-top">
-          <div className="container-fluid">
-            <div className="navbar-header">
-              <Link to='/' className="navbar-brand">UwaziDocs</Link>
-              <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
-            </div>
-            <div onClick={this.closeMenu} id="navbar" className={menuClass}>
-              <Menu className="nav navbar-nav navbar-right" user={this.state.user}/>
-            </div>
-         </div>
-       </nav>
-        <div  onClick={this.closeMenu} className='container-fluid contents-wrapper'>
-            {this.renderChildren()}
-            <Alerts/>
-        </div>
+        <Alerts/>
+        {this.renderChildren()}
       </div>
     )
   };

@@ -1,7 +1,10 @@
 import React, { Component, PropTypes } from 'react'
+import { Link } from 'react-router'
+import Menu from '../App/Menu.js'
 import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import './scss/viewer.scss'
+
 
 class ViewerController extends RouteHandler {
 
@@ -13,30 +16,51 @@ class ViewerController extends RouteHandler {
   };
 
   static emptyState(){
-    return {value:{pages:[], css:[]}};
+    return {value:{pages:[], css:[]}, showmenu: false};
   };
 
-  constructor(props, context){
-    super(props, context);
-    //this.state = {value:{pages:[], css:[]}};
-  };
+  toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
+
+  closeMenu = () => {this.setState({showmenu: false})};
 
   render = () => {
+    let menuClass = 'navbar-collapse collapse';
 
-    let pageStyles = {height:'1120px', width: '792px'}
+    if(this.state.showmenu) {
+      menuClass += ' in';
+    }
+
     return (
       <div className="viewer">
-        <div className="viewer__pages">
-          {this.state.value.pages.map((page, index) => {
-            let html = {__html: page}
-            let id = 'pf'+index;
-            return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
-          })}
+        <nav className="nav  navbar-default navbar-fixed-top">
+          <div className="container-fluid">
+            <div className="navbar-header">
+              <Link to='/' className="navbar-brand">UwaziDocs</Link>
+              <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
+            </div>
+            <div onClick={this.closeMenu} id="navbar" className={menuClass}>
+              <Menu className="nav navbar-nav navbar-right" user={this.props.user}/>
+            </div>
+         </div>
+        </nav>
+        <div className='container-fluid contents-wrapper'>
+          <div className="row panels-layout viewer__pages">
+            <div className="col-xs-12 col-sm-8 panels-layout__panel pages no-padding active">
+              {this.state.value.pages.map((page, index) => {
+                let html = {__html: page}
+                let id = 'pf'+index;
+                return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
+              })}
+            </div>
+            <div className="col-xs-12 col-sm-4 panels-layout__panel no-padding">
+              <h1>Metadata</h1>
+            </div>
+          </div>
+            {this.state.value.css.map((css, index) => {
+              let html = {__html: css}
+              return <style type="text/css" key={index} dangerouslySetInnerHTML={html}></style>
+            })}
         </div>
-          {this.state.value.css.map((css, index) => {
-            let html = {__html: css}
-            return <style type="text/css" key={index} dangerouslySetInnerHTML={html}></style>
-          })}
       </div>
     )
   };
