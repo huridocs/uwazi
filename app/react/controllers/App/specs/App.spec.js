@@ -4,12 +4,14 @@ import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
 
 import App from '../App.js'
+import Layout from '../Layout.js'
 import Provider from '../Provider.js'
 import {events} from '../../../utils/index'
 
 describe('App', () => {
 
   let component;
+  let layout;
 
   let fetch_mock = function(){
       let res = new window.Response('{"username":"Scarecrow"}', {
@@ -38,13 +40,13 @@ describe('App', () => {
 
   describe('when fething user', () => {
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><App ref={(ref) => component = ref} fetch={fetch_mock}/></Provider>);
+      TestUtils.renderIntoDocument(<Provider><App ref={(ref) => component = ref} fetch={fetch_mock}><Layout ref={(ref) => layout = ref}/></App></Provider>);
     })
 
-    it('should set the username on the state and render it', (done) => {
+    it('should pass it to its children as property', (done) => {
       component.fetchUser()
       .then(() => {
-        expect(ReactDOM.findDOMNode(component).textContent).toMatch('Scarecrow');
+        expect(layout.props.user).toEqual({ username: 'Scarecrow' });
         done();
       });
     })
