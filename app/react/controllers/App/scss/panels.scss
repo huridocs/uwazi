@@ -7,38 +7,14 @@
     transition: width 0.2s;
     min-height: 100%;
 
-    @media #{$xs} {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      width: 0;
-      height: 0;
-      padding: 0;
-      border: 0;
-      overflow: hidden;
-
-      &.active {
-        width: 100%;
-        height: auto;
-      };
-
-      &:after {
-        display: none;
-      }
-    }
-  }
-
-  &__panel:not(:first-child) {
-    background-color: $backGroundColor2;
-    border-left: 4px solid $backGroundColor1;
-
     height: 100%;
     position: fixed;
-    right: 0;
+
 
     .panel-content {
-      overflow-y: scroll;
+      overflow-y: auto;
       height: 100%;
-      padding-bottom: 100px;
+      padding-bottom: 50px;
 
       @media #{$xs} {
         overflow-y: hidden;
@@ -49,10 +25,39 @@
       border-left: 0;
 
       &.active .panel-content{
-        overflow-y: scroll;
+        overflow-y: auto;
       }
     }
 
+    @media #{$xs} {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      width: 0;
+      height: 0;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      width: 0;
+
+      &.active {
+        width: 100%;
+      };
+    }
+  }
+
+  &__panel:not(:first-child) {
+    background-color: $backGroundColor2;
+    border-left: 4px solid $backGroundColor1;
+    right: 0;
+
+    @media #{$xs} {
+      width: 0;
+      border: 0;
+
+      &.active {
+        width: 100%;
+      };
+    }
   }
 
   .panel-top-bar {
@@ -71,6 +76,12 @@
     .btn {
       border: none;
       font-size: 2em;
+    }
+  }
+
+  .panel-top-bar + .panel-content {
+    @media #{$xs} {
+      padding-bottom: 100px;
     }
   }
 }

@@ -162,22 +162,24 @@ class Uploads extends RouteHandler {
         <Helmet title='Upload' />
         <div className="row panels-layout">
           <div className={listClass}>
-            <Upload/>
-            <table className="table table-hover upload-documents">
-              <tbody>
-                {this.state.documents.map((doc, index) => {
-                  let selected = "";
-                  if(this.state.documentBeingEdited === doc){
-                    selected = "upload-documents-selected";
-                  }
+            <div className="panel-content">
+              <Upload/>
+              <table className="table table-hover upload-documents">
+                <tbody>
+                  {this.state.documents.map((doc, index) => {
+                    let selected = "";
+                    if(this.state.documentBeingEdited === doc){
+                      selected = "upload-documents-selected";
+                    }
 
-                  return <tr className={selected} onClick={this.editDocument.bind(this, doc)} key={index}>
-                            <td><RoundedProgressBar progress={doc.progress}/></td>
-                            <td>{doc.value.title}</td>
-                          </tr>
-                })}
-              </tbody>
-            </table>
+                    return <tr className={selected} onClick={this.editDocument.bind(this, doc)} key={index}>
+                              <td><RoundedProgressBar progress={doc.progress}/></td>
+                              <td>{doc.value.title}</td>
+                            </tr>
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
           <div className={metadataClass}>
             <div className="panel-top-bar">
