@@ -4,6 +4,7 @@ import Menu from '../App/Menu.js'
 import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import './scss/viewer.scss'
+import LogoIcon from '../../components/Logo/LogoIcon.js'
 
 
 class ViewerController extends RouteHandler {
@@ -35,7 +36,7 @@ class ViewerController extends RouteHandler {
         <nav className="nav  navbar-default navbar-fixed-top">
           <div className="container-fluid">
             <div className="navbar-header">
-              <Link to='/' className="navbar-brand">UwaziDocs</Link>
+              <Link to='/' className="navbar-brand"><LogoIcon/></Link>
               <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
             </div>
             <div onClick={this.closeMenu} id="navbar" className={menuClass}>

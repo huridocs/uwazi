@@ -8,6 +8,7 @@ import './scss/App.scss'
 import 'font-awesome/css/font-awesome.css'
 import Menu from './Menu.js'
 import Library from '../Library/Library.js'
+import LogoIcon from '../../components/Logo/LogoIcon.js'
 
 class Layout extends Component {
 
@@ -44,7 +45,7 @@ class Layout extends Component {
         <nav className="nav  navbar-default navbar-fixed-top">
           <div className="container-fluid">
             <div className="navbar-header">
-              <Link to='/' className="navbar-brand">UwaziDocs</Link>
+              <Link to='/' className="navbar-brand"><LogoIcon/></Link>
               <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
             </div>
             <div onClick={this.closeMenu} id="navbar" className={menuClass}>

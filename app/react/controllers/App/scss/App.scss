@@ -5,6 +5,10 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
   height: 100%;
 }
 
+.logo-icon {
+  fill: #06968F;
+}
+
 .no-padding {
   padding: 0 !important;
 }
@@ -38,11 +42,12 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
 
   background-color: white;
   color: $hardFontColor;
-  border-bottom: 1px solid $backGroundColor1;
+  box-shadow: 0px 2px 2px 0px rgba(153, 153, 153, 0.5);
 
   .navbar-brand {
     color: $brandColor;
     font-size: 2em;
+    padding: 10px 15px;
   }
 
   @media #{$xs} {
@@ -78,7 +83,10 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
 }
 
 .navbar-toggle {
-  padding: 6px 10px;
+  font-size: 1.5em;
+  padding: 9px 15px;
+  border: 0;
+  margin: 1px 5px
 }
 
 .form-control, .btn {
