@@ -42,7 +42,7 @@ class ViewerController extends RouteHandler {
             <div onClick={this.closeMenu} id="navbar" className={menuClass}>
               <ul className="nav navbar-nav">
                 <li>
-                  <a href="#" className=""><i className="fa fa-angle-left"></i> GO BACK</a>
+                  <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i> GO BACK</a>
                 </li>
                 <li>
                   <a href="#" className=""><i className="fa fa-bookmark-o"></i></a>
