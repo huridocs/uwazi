@@ -15,7 +15,8 @@ describe('ViewerController', () => {
   beforeEach(() => {
     let initialData = {};
     let params = {};
-    TestUtils.renderIntoDocument(<Provider><ViewerController params={params} ref={(ref) => component = ref} /></Provider>);
+    let history = {};
+    TestUtils.renderIntoDocument(<Provider><ViewerController history={history} params={params} ref={(ref) => component = ref} /></Provider>);
     backend.restore();
     backend
     .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})});
