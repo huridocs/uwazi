@@ -63,14 +63,18 @@ class ViewerController extends RouteHandler {
         </nav>
         <div className='container-fluid contents-wrapper'>
           <div className="row panels-layout viewer__pages">
-            <div className="col-xs-12 col-sm-8 panels-layout__panel pages no-padding active">
-              {this.state.value.pages.map((page, index) => {
-                let html = {__html: page}
-                let id = 'pf'+index;
-                return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
-              })}
+            <div className="col-xs-12 col-sm-8 panels-layout__panel no-padding active">
+              <div className="panel-content pages">
+                {this.state.value.pages.map((page, index) => {
+                  let html = {__html: page}
+                  let id = 'pf'+index;
+                  return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
+                })}
+              </div>
             </div>
             <div className="col-xs-12 col-sm-4 panels-layout__panel no-padding">
+              <div className="panel-content">
+              </div>
             </div>
           </div>
             {this.state.value.css.map((css, index) => {
