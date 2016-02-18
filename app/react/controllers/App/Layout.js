@@ -40,8 +40,13 @@ class Layout extends Component {
       menuClass += ' in';
     }
 
+    let bodyClass = 'library';
+    if(this.props.children) {
+      bodyClass = this.props.children.props.route.path;
+    }
+
     return (
-      <div>
+      <div className={bodyClass}>
         <nav className="nav  navbar-default navbar-fixed-top">
           <div className="container-fluid">
             <div className="navbar-header">

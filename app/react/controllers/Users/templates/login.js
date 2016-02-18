@@ -5,7 +5,7 @@ import Alert from '../../../components/Elements/Alert.js'
 
 export default function() {
   return(
-    <div className="row login">
+    <div className="row">
       <div className="login-background" />
       <Helmet title="Login" />
       <div className="form-container col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
