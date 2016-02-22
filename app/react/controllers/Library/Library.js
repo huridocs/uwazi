@@ -10,6 +10,7 @@ import Form from '../../components/Form/Form'
 import Helmet from 'react-helmet'
 import { Link } from 'react-router'
 import './scss/library.scss'
+import Alert from '../../components/Elements/Alert'
 
 class Library extends RouteHandler {
 
