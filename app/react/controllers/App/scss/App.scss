@@ -57,22 +57,17 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
       display: block;
       border-color: black;
       overflow: hidden;
+      background-color: $backGroundColor2;
 
       li {
-        transition: opacity 0.25s ease-out;
-        z-index: -10000;
-        opacity: 0;
+        width: 50%;
+        float: left;
+        padding-left: 10px;
       }
 
       &.in {
         max-height: 340px;
         transition: max-height 0.25s ease-in;
-
-        li {
-          transition: opacity 0.25s ease-in;
-          z-index: 0;
-          opacity: 1;
-        }
       }
     }
   }
@@ -80,13 +75,23 @@ html, body, #root, #root>div, .contents-wrapper, .contents, .contents-wrapper>di
   .navbar-nav li a {
     color: $hardFontColor;
   }
-}
 
-.navbar-toggle {
-  font-size: 1.5em;
-  padding: 9px 15px;
-  border: 0;
-  margin: 1px 5px
+  .navbar-toggle {
+    font-size: 1.5em;
+    padding: 9px 10px;
+    border: 0;
+    margin: 1px 5px;
+    border-radius: 0;
+
+    &.active {
+      border-bottom: 6px solid $successColor;
+      padding-bottom: 3px;
+    }
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
 }
 
 .form-control, .btn {

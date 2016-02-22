@@ -7,23 +7,55 @@
 .alert {
   border-radius: 0;
   border: 0;
-  display: inline-block;
+  display: table;
   font-size: 1em;
   width: auto;
   color: $hardFontColor;
-  padding: 5px 15px;
   font-weight: 600;
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
   margin-bottom: 5px;
+  background-color: white;
+  border-radius: 3px;
+  margin-top: 20px;
+  padding: 0;
+  margin: auto;
 
   span {
-    margin-right: 20px
+    display: table-cell;
+  }
+
+  &-message {
+    padding: 15px 10px;
+  }
+
+  &-icon {
+    padding: 0 20px;
+    color: white;
+  }
+
+  &-success .alert-icon {
+    background-color: $successColor;
+  }
+
+  &-info .alert-icon {
+    background-color: $infoColor;
+  }
+
+  &-warning .alert-icon {
+    background-color: $warningColor;
+  }
+
+  &-danger .alert-icon {
+    background-color: $dangerColor;
   }
 
   &-close {
     cursor: pointer;
     color: $hardFontColor;
     opacity: 1;
+    padding: 0 15px;
+    display: table-cell;
+    vertical-align: middle;
 
     &:hover {
       color: $softFontColor;

@@ -43,9 +43,40 @@
     color: $hardFontColor;
   }
 
+  .navbar-tools {
+    @media #{$xs} {
+      display: none;
+    }
+  }
+
   &__pages {
     .pf {
       box-shadow: none;
+    }
+  }
+
+  .go-back {
+    border: 3px solid rgb(80, 140, 184);
+    border-radius: 3px;
+    line-height: 35px;
+    padding: 0 10px;
+    margin-top: 7px;
+    display: block;
+    float: left;
+    color: $hardFontColor;
+
+    .fa {
+      font-size: 1.3em;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    span {
+      @media #{$xs} {
+        display: none;
+      }
     }
   }
 
@@ -58,12 +89,31 @@
     .fa {
       font-size: 1.3em;
     }
+  }
 
-    &.go-back {
-      border: 3px solid $backGroundColor3;
-      line-height: 35px;
-      padding: 0 10px;
-      margin-top: 7px;
+  .panel-tools {
+    display: none;
+    width: 100%;
+    font-size: 1.4em;
+    padding: 0;
+
+    @media #{$xs} {
+      display: table;
+    }
+
+    li {
+      display: table-cell;
+      text-align: center;
+
+      a {
+        color: $hardFontColor;
+        display: block;
+        padding: 10px 0;
+
+        &:hover{
+          background-color: $backGroundColor3;
+        }
+      }
     }
   }
 

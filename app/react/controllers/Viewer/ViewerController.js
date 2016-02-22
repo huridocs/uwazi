@@ -18,10 +18,11 @@ class ViewerController extends RouteHandler {
   };
 
   static emptyState(){
-    return {value:{pages:[], css:[]}, showmenu: false, textSelected: false, textSelectedTop: 0};
+    return {value:{pages:[], css:[]}, showmenu: false, showpanel:false, textSelected: false, textSelectedTop: 0};
   };
 
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
+  togglePanel = () => {this.setState({showpanel: !this.state.showpanel})};
 
   closeMenu = () => {this.setState({showmenu: false})};
 
@@ -34,7 +35,7 @@ class ViewerController extends RouteHandler {
 
     this.setState({textSelected: true, textSelectedTop: range.getClientRects()[0].top + this.pagesContainer.scrollTop-60});
   };
-  
+
   openModal = () => {
     this.setState({textSelected: false, openModal:true});
   };
@@ -52,9 +53,24 @@ class ViewerController extends RouteHandler {
 
   render = () => {
     let menuClass = 'navbar-collapse collapse';
+    let menuToggleClass = "navbar-toggle ";
 
     if(this.state.showmenu) {
       menuClass += ' in';
+      menuToggleClass += "active";
+    }
+
+    let viewerClass = "col-xs-12 col-sm-8 panels-layout__panel no-padding ";
+
+    let panelClass = "col-xs-12 col-sm-4 panels-layout__panel no-padding "
+    let panelToggleClass = "navbar-toggle ";
+
+    if(this.state.showpanel) {
+      panelClass += 'active';
+      panelToggleClass += 'active';
+    }
+    else {
+      viewerClass += 'active';
     }
 
     let display = "none";
@@ -90,33 +106,32 @@ class ViewerController extends RouteHandler {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link to='/' className="navbar-brand"><LogoIcon/></Link>
-              <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
+              <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
+              <button onClick={this.toggleMenu} href="" type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
+              <button onClick={this.togglePanel} href="" type="button" className={panelToggleClass}><i className="fa fa-cog"/></button>
             </div>
+            <ul className="nav navbar-nav navbar-tools">
+              <li>
+                <a href="#" className=""><i className="fa fa-bookmark-o"></i></a>
+              </li>
+              <li>
+                <a href="#" className=""><i className="fa fa-search"></i></a>
+              </li>
+              <li>
+                <a href="#" className=""><i className="glyphicon glyphicon-text-size"></i></a>
+              </li>
+              <li>
+                <a href="#" className=""><i className="fa fa-cloud-download"></i></a>
+              </li>
+            </ul>
             <div onClick={this.closeMenu} id="navbar" className={menuClass}>
-              <ul className="nav navbar-nav">
-                <li>
-                  <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i> GO BACK</a>
-                </li>
-                <li>
-                  <a href="#" className=""><i className="fa fa-bookmark-o"></i></a>
-                </li>
-                <li>
-                  <a href="#" className=""><i className="fa fa-search"></i></a>
-                </li>
-                <li>
-                  <a href="#" className=""><i className="glyphicon glyphicon-text-size"></i></a>
-                </li>
-                <li>
-                  <a href="#" className=""><i className="fa fa-cloud-download"></i></a>
-                </li>
-              </ul>
               <Menu className="nav navbar-nav navbar-right" user={this.props.user}/>
             </div>
          </div>
         </nav>
         <div className='container-fluid contents-wrapper'>
           <div className="row panels-layout viewer__pages">
-            <div className="col-xs-12 col-sm-8 panels-layout__panel no-padding active">
+            <div className={viewerClass}>
               <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
                 <a href="#" style={textSelectionLinkStyles} onClick={this.openModal}>text selected</a>
 
@@ -135,8 +150,22 @@ class ViewerController extends RouteHandler {
                 </div>
               </div>
             </div>
-            <div className="col-xs-12 col-sm-4 panels-layout__panel no-padding">
+            <div className={panelClass}>
               <div className="panel-content">
+              <ul className="panel-tools">
+                <li>
+                  <a href="#" className=""><i className="fa fa-bookmark-o"></i></a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="fa fa-search"></i></a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="glyphicon glyphicon-text-size"></i></a>
+                </li>
+                <li>
+                  <a href="#" className=""><i className="fa fa-cloud-download"></i></a>
+                </li>
+              </ul>
               </div>
             </div>
           </div>
