@@ -35,9 +35,11 @@ class Layout extends Component {
   render = () => {
 
     let menuClass = 'navbar-collapse collapse';
+    let menuToggleClass = "navbar-toggle ";
 
     if(this.state.showmenu) {
       menuClass += ' in';
+      menuToggleClass += 'active';
     }
 
     let bodyClass = 'library';
@@ -51,7 +53,7 @@ class Layout extends Component {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link to='/' className="navbar-brand"><LogoIcon/></Link>
-              <button onClick={this.toggleMenu} href="" type="button" className="navbar-toggle"><i className="fa fa-bars"/></button>
+              <button onClick={this.toggleMenu} href="" type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
             </div>
             <div onClick={this.closeMenu} id="navbar" className={menuClass}>
               <Menu className="nav navbar-nav navbar-right" user={this.props.user}/>
