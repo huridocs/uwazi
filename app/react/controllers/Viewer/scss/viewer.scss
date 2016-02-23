@@ -48,7 +48,7 @@
   }
 
   .go-back {
-    border: 3px solid rgb(80, 140, 184);
+    border: 3px solid $infoColor;
     border-radius: 3px;
     line-height: 35px;
     padding: 0 10px;
@@ -108,5 +108,50 @@
       }
     }
   }
+}
 
+// document metadata, probably to become a new component
+
+.document-metadata {
+  padding: 0 10px;
+
+  h1 {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
+  h2 {
+    text-transform: uppercase;
+    color: white;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: normal;
+  }
+
+  .toc {
+    background-color: $successColor;
+  }
+
+  .metadata {
+    background-color: $infoColor;
+  }
+
+  >ul {
+    padding-left: 10px;
+    list-style: none;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  td {
+    padding: 5px 10px 5px 10px;
+    vertical-align: top;
+    color: $hardFontColor;
+  }
+
+  td:first-child {
+    width: 20%;
+  }
 }
