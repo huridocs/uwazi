@@ -2,7 +2,15 @@
 
 .viewer {
 
+  .panel-content {
+    position: relative;
+  }
+
   .pages {
+
+    span.reference {
+      background-color: yellow;
+    }
 
     @for $i from 8 through 100 {
       $pageWidth: 792px;
