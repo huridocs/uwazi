@@ -5,7 +5,9 @@ import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import './scss/viewer.scss'
 import LogoIcon from '../../components/Logo/LogoIcon.js'
+
 import wrap from 'wrap-range-text'
+import TextRange from 'batarange'
 
 
 class ViewerController extends RouteHandler {
@@ -18,7 +20,7 @@ class ViewerController extends RouteHandler {
   };
 
   static emptyState(){
-    return {value:{pages:[], css:[]}, showmenu: false, showpanel:false, textSelected: false, textSelectedTop: 0};
+    return {value:{pages:[], css:[]}, showmenu: false, showpanel:false, showReferenceLink: false, textSelectedTop: 0};
   };
 
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
@@ -28,16 +30,18 @@ class ViewerController extends RouteHandler {
 
   textSelection = () => {
     if(window.getSelection().toString() === ''){
-      return this.setState({textSelected: false, openModal: false});
+      return this.setState({showReferenceLink: false, openModal: false});
     }
 
     let range = window.getSelection().getRangeAt(0);
 
-    this.setState({textSelected: true, textSelectedTop: range.getClientRects()[0].top + this.pagesContainer.scrollTop-60});
+    let top = range.getClientRects()[0].top + this.pagesContainer.scrollTop-60
+
+    this.setState({showReferenceLink: true, textSelectedTop: top});
   };
 
   openModal = () => {
-    this.setState({textSelected: false, openModal:true});
+    this.setState({showReferenceLink: false, openModal:true});
   };
 
   closeModal = () => {
@@ -45,10 +49,11 @@ class ViewerController extends RouteHandler {
   };
 
   createRef = () => {
-    let wrapper = document.createElement('span');
-    wrapper.classList.add('reference');
-    wrap(wrapper, this.range);
-    this.closeModal();
+    //let range = TextRange.getSelected(this.contentContainer);
+    //let wrapper = document.createElement('span');
+    //wrapper.classList.add('reference');
+    //wrap(wrapper, this.range);
+    //this.closeModal();
   };
 
   render = () => {
@@ -74,7 +79,7 @@ class ViewerController extends RouteHandler {
     }
 
     let display = "none";
-    if(this.state.textSelected){
+    if(this.state.showReferenceLink){
       display = "block";
     };
 
@@ -141,7 +146,7 @@ class ViewerController extends RouteHandler {
                   <a href="#" onClick={this.createRef}>OK</a>
                 </div>
 
-                <div className="pages" onMouseUp={this.textSelection}>
+                <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection}>
                   {this.state.value.pages.map((page, index) => {
                     let html = {__html: page}
                     let id = 'pf'+index;

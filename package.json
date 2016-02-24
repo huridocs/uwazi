@@ -21,6 +21,7 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors"
   },
   "dependencies": {
+    "batarange": "0.1.0",
     "app-module-path": "^1.0.5",
     "babel-core": "^6.4.0",
     "babel-plugin-add-module-exports": "^0.1.2",

@@ -6,7 +6,7 @@ import {APIURL} from '../../../config.js'
 import Provider from '../../App/Provider'
 import api from '../../../utils/singleton_api'
 
-describe('ViewerController', () => {
+fdescribe('ViewerController', () => {
 
   let documentResponse = [{key:'template1', id:'1', value:{pages:[], css:[]}}];
 
@@ -33,5 +33,63 @@ describe('ViewerController', () => {
       .catch(done.fail)
     });
   });
+
+  describe('openModal()', () => {
+    it('should setState openModal to true and showReferenceLink to false', () => {
+      component.openModal();
+
+      expect(component.state.openModal).toBe(true);
+      expect(component.state.showReferenceLink).toBe(false);
+    });
+  });
+
+  describe('closeModal()', () => {
+    it('should setState openModal to false', () => {
+      component.closeModal();
+
+      expect(component.state.openModal).toBe(false);
+    });
+  });
+
+  describe('textSelection()', () => {
+
+    describe('when no text selected', () => {
+      it('should set showReferenceLink and openModal to false', () => {
+        stubSelection();
+        component.textSelection();
+
+        expect(component.state.openModal).toBe(false);
+        expect(component.state.showReferenceLink).toBe(false);
+      });
+    });
+
+    describe('when text selected', function(){
+      it('should showReferenceLink and set the top position of the text - 60', function(){
+        stubSelection('selectedText');
+        component.textSelection();
+
+        expect(component.state.showReferenceLink).toBe(true);
+        expect(component.state.textSelectedTop).toBe(40);
+      });
+    });
+
+  });
+
+  let stubSelection = (selection = '') => {
+    window.getSelection = () => {
+      return {
+        toString: () => {
+          return selection;
+        },
+        getRangeAt: () => {
+          return {
+            getClientRects: () => {
+              return [{top:100}];
+            }
+          }
+        }
+      }
+    }
+  }
 
 });
