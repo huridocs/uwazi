@@ -169,11 +169,11 @@ class ViewerController extends RouteHandler {
                         </label>
                       </div>
                       <div className="form-group">
-                        <label for="linktitle">Link title</label>
+                        <label htmlFor="linktitle">Link title</label>
                         <input type="text" className="form-control" id="linktitle" />
                       </div>
                       <div className="form-group">
-                        <label for="linktype">Link type</label>
+                        <label htmlFor="linktype">Link type</label>
                         <select className="form-control" id="linktype">
                           <option>Normal link</option>
                         </select>
