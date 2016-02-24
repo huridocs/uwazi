@@ -4,9 +4,11 @@
 
   .panel-content {
     position: relative;
+    -webkit-overflow-scrolling: touch;
   }
 
   .pages {
+
 
     span.reference {
       background-color: yellow;
