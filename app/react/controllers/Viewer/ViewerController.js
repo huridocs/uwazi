@@ -86,9 +86,7 @@ class ViewerController extends RouteHandler {
     };
 
     let textSelectionLinkStyles = {
-      position:"absolute",
       display: display,
-      'zIndex': "9999",
       top: this.state.textSelectedTop
     };
 
@@ -98,13 +96,8 @@ class ViewerController extends RouteHandler {
     };
 
     let modalStyles = {
-      position:"absolute",
       display: displayModal,
-      'zIndex': "9999",
       top: this.state.textSelectedTop,
-      background:'red',
-      width: '100%',
-      height: '50px'
     };
 
     return (
@@ -140,12 +133,31 @@ class ViewerController extends RouteHandler {
           <div className="row panels-layout viewer__pages">
             <div className={viewerClass}>
               <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
-                <a href="#" style={textSelectionLinkStyles} onClick={this.openModal}>text selected</a>
+                <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
 
-                <div style={modalStyles}>
-                  <a href="#" onClick={this.closeModal}>close</a>
-                  <br/>MODAL !!
-                  <a href="#" onClick={this.createRef}>OK</a>
+                <div className="ref-modal" style={modalStyles}>
+                  <a className="ref-modal-close" href="#" onClick={this.closeModal}><i className="fa fa-close"></i></a>
+                  <div className="row">
+                    <div className="col-sm-6">
+                      <form>
+                        <div>
+                          <input type="text" placeholder="Search document to link" />
+                        </div>
+                        &nbsp;
+                        <button type="submit" className="btn btn-primary"><i className="fa fa-search"></i> </button>
+                      </form>
+                      <ul className="ref-modal-documents">
+                        <li>Constitutive act of the african union</li>
+                        <li>African Charter of Human Rights</li>
+                        <li>African Charter of Human Rights and people's rights</li>
+                        <li>African Charter of Human Rights and Welfare of the Child</li>
+                        <li>Amended SADC Teatry</li>
+                      </ul>
+                    </div>
+                    <div className="col-sm-6">
+                      <a className="btn btn-primary" href="#" onClick={this.createRef}><i className="fa fa-link"></i> Create reference</a>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection}>

@@ -116,6 +116,84 @@
       }
     }
   }
+
+  .ref-button {
+    position:absolute;
+    z-index: 10;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    box-shadow: 0 0px 6px rgba(0, 0, 0, 1);
+    font-size: 1.6em;
+    color: white;
+    text-align: center;
+    line-height: 38px;
+    right: 20px;
+  }
+
+  .ref-modal {
+    position: absolute;
+    z-index: 10;
+    width: 95%;
+    margin-left: 2.5%;
+    background-color: $backGroundColor4;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+    border-radius: 6px;
+
+    form {
+      display: table;
+
+      input[type="text"] {
+        background-color: $backGroundColor4;
+        border: 2px solid $infoColor;
+        line-height: 20px;
+        padding: 5px;
+        width: 100%;
+        color: white;
+      }
+
+      div {
+        width: 100%;
+      }
+
+      > * {
+        display: table-cell;
+      }
+    }
+
+    &-close {
+      position: absolute;
+      top: 0;
+      right: 7px;
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    &-documents {
+
+      background-color: rgb(67, 67, 67);
+      padding: 5px;
+      overflow-y: scroll;
+      margin-top: 10px;
+      height: 150px;
+
+      li {
+
+        border-bottom: 1px solid rgb(53, 53, 53);
+        color: white;
+        list-style: none;
+        padding: 5px;
+
+        &:hover {
+          background-color: rgb(53, 53, 53);
+        }
+      }
+    }
+  }
 }
 
 // document metadata, probably to become a new component
