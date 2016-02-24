@@ -140,18 +140,38 @@
     background-color: $backGroundColor4;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-    border-radius: 6px;
 
-    form {
+    &-title {
+      text-transform: uppercase;
+      color: white;
+      margin-bottom: 5px;
+    }
+
+    label, .link-to-label {
+      color: white;
+      text-transform: uppercase;
+      font-weight: normal;
+    }
+
+    input, select {
+      background-color: $backGroundColor4;
+      color: white;
+    }
+
+    .radio-inline {
+      @media (min-width: 768px) and  (max-width: 1067px) {
+        margin-left: 0px;
+      }
+    }
+
+    &-search {
       display: table;
 
       input[type="text"] {
-        background-color: $backGroundColor4;
         border: 2px solid $infoColor;
         line-height: 20px;
         padding: 5px;
         width: 100%;
-        color: white;
       }
 
       div {
@@ -179,7 +199,12 @@
       padding: 5px;
       overflow-y: scroll;
       margin-top: 10px;
-      height: 150px;
+      margin-bottom: 0;
+      height: 193px;
+
+      @media #{$xs} {
+        margin-bottom: 10px;
+      }
 
       li {
 
