@@ -5,8 +5,9 @@ import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import Provider from '../../App/Provider'
 import api from '../../../utils/singleton_api'
+import TextRange from 'batarange'
 
-fdescribe('ViewerController', () => {
+describe('ViewerController', () => {
 
   let documentResponse = [{key:'template1', id:'1', value:{pages:[], css:[]}}];
 
@@ -19,7 +20,8 @@ fdescribe('ViewerController', () => {
     TestUtils.renderIntoDocument(<Provider><ViewerController history={history} params={params} ref={(ref) => component = ref} /></Provider>);
     backend.restore();
     backend
-    .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})});
+    .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})})
+    .mock(APIURL+'references', 'POST', {body: JSON.stringify({})});
   });
 
   describe('static requestState', () => {
@@ -70,6 +72,18 @@ fdescribe('ViewerController', () => {
 
         expect(component.state.showReferenceLink).toBe(true);
         expect(component.state.textSelectedTop).toBe(40);
+      });
+    });
+
+    describe('createReference', () => {
+      it('should save the range reference', () => {
+        TextRange.getSelected = () => { return {range:'range'}; }
+        component.state.value.id = 'documentId';
+
+        component.createReference();
+
+        expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
+        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
       });
     });
 
