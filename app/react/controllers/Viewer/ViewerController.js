@@ -50,12 +50,14 @@ class ViewerController extends RouteHandler {
   createReference = () => {
     let reference = TextRange.getSelected(this.contentContainer);
     reference.sourceDocument = this.state.value.id;
-    return api.post('references', reference);
+    return api.post('references', reference)
+    .then(() => {
+      this.closeModal();
+    });
 
     //let wrapper = document.createElement('span');
     //wrapper.classList.add('reference');
     //wrap(wrapper, this.range);
-    //this.closeModal();
   };
 
   render = () => {
@@ -160,7 +162,7 @@ class ViewerController extends RouteHandler {
                   </div>
                 </div>
 
-                <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection}>
+                <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection} onTouchEnd={this.textSelection}>
                   {this.state.value.pages.map((page, index) => {
                     let html = {__html: page}
                     let id = 'pf'+index;

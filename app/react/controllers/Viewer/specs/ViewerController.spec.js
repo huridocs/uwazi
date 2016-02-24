@@ -76,14 +76,31 @@ describe('ViewerController', () => {
     });
 
     describe('createReference', () => {
-      it('should save the range reference', () => {
+
+      beforeEach(() => {
+        spyOn(component, 'closeModal');
         TextRange.getSelected = () => { return {range:'range'}; }
         component.state.value.id = 'documentId';
+      });
 
-        component.createReference();
+      it('should save the range reference', (done) => {
+        component.createReference()
+        .then(() => {
+          expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
+          expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
+          expect(component.closeModal).toHaveBeenCalled();
+          done();
+        });
+      });
 
-        expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
+      it('should wrap the selected text after savinf the reference with a span', (done) => {
+        component.createReference()
+        .then(() => {
+          //expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
+          //expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
+          //expect(component.closeModal).toHaveBeenCalled();
+          done();
+        });
       });
     });
 
