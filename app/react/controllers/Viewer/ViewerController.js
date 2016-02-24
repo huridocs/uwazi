@@ -29,14 +29,13 @@ class ViewerController extends RouteHandler {
   closeMenu = () => {this.setState({showmenu: false})};
 
   textSelection = () => {
+    //extract direct reference to window from here ?
     if(window.getSelection().toString() === ''){
       return this.setState({showReferenceLink: false, openModal: false});
     }
 
     let range = window.getSelection().getRangeAt(0);
-
     let top = range.getClientRects()[0].top + this.pagesContainer.scrollTop-60
-
     this.setState({showReferenceLink: true, textSelectedTop: top});
   };
 
@@ -48,8 +47,11 @@ class ViewerController extends RouteHandler {
     this.setState({openModal:false});
   };
 
-  createRef = () => {
-    //let range = TextRange.getSelected(this.contentContainer);
+  createReference = () => {
+    let reference = TextRange.getSelected(this.contentContainer);
+    reference.sourceDocument = this.state.value.id;
+    return api.post('references', reference);
+
     //let wrapper = document.createElement('span');
     //wrapper.classList.add('reference');
     //wrap(wrapper, this.range);
