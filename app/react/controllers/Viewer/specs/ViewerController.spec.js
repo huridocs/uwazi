@@ -94,11 +94,23 @@ describe('ViewerController', () => {
       });
 
       it('should wrap the selected text after savinf the reference with a span', (done) => {
+
+        component.state.value.pages = ['page 1'];
+        component.setState(component.state);
+
+        let range = document.createRange();
+        let page1 = component.contentContainer.childNodes[0].childNodes[0];
+
+        range.setStart(page1, 1);
+        range.setEnd(page1, 3);
+
+        TextRange.restore = function(){
+          return range;
+        }
+
         component.createReference()
         .then(() => {
-          //expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
-          //expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
-          //expect(component.closeModal).toHaveBeenCalled();
+          expect(component.contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference">ag</span>e 1');
           done();
         });
       });

@@ -51,14 +51,15 @@ class ViewerController extends RouteHandler {
   createReference = () => {
     let reference = TextRange.getSelected(this.contentContainer);
     reference.sourceDocument = this.state.value.id;
+
     return api.post('references', reference)
     .then(() => {
+      let wrapper = document.createElement('span');
+      wrapper.classList.add('reference');
+      wrap(wrapper, TextRange.restore(reference, this.contentContainer));
       this.closeModal();
     });
 
-    //let wrapper = document.createElement('span');
-    //wrapper.classList.add('reference');
-    //wrap(wrapper, this.range);
   };
 
   render = () => {
