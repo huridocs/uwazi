@@ -155,7 +155,7 @@ class ViewerController extends RouteHandler {
                       </ul>
                     </div>
                     <div className="col-sm-6">
-                      <a className="btn btn-primary" href="#" onClick={this.createRef}><i className="fa fa-link"></i> Create reference</a>
+                      <a className="btn btn-primary" href="#" onClick={this.createReference}><i className="fa fa-link"></i> Create reference</a>
                     </div>
                   </div>
                 </div>
