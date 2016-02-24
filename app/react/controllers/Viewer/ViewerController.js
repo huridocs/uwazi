@@ -138,10 +138,11 @@ class ViewerController extends RouteHandler {
                 <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
 
                 <div className="ref-modal" style={modalStyles}>
+                  <div className="ref-modal-title">Create document reference</div>
                   <a className="ref-modal-close" href="#" onClick={this.closeModal}><i className="fa fa-close"></i></a>
                   <div className="row">
                     <div className="col-sm-6">
-                      <form>
+                      <form className="ref-modal-search">
                         <div>
                           <input type="text" placeholder="Search document to link" />
                         </div>
@@ -157,6 +158,27 @@ class ViewerController extends RouteHandler {
                       </ul>
                     </div>
                     <div className="col-sm-6">
+                    <form className="ref-modal-link">
+                      <div className="form-group">
+                        <div className="link-to-label">Link to</div>
+                        <label className="radio-inline">
+                          <input type="radio" name="linkto" value="entire" /> Entire document
+                        </label>
+                        <label className="radio-inline">
+                          <input type="radio" name="linkto" value="part" /> Part of document
+                        </label>
+                      </div>
+                      <div className="form-group">
+                        <label for="linktitle">Link title</label>
+                        <input type="text" className="form-control" id="linktitle" />
+                      </div>
+                      <div className="form-group">
+                        <label for="linktype">Link type</label>
+                        <select className="form-control" id="linktype">
+                          <option>Normal link</option>
+                        </select>
+                      </div>
+                      </form>
                       <a className="btn btn-primary" href="#" onClick={this.createReference}><i className="fa fa-link"></i> Create reference</a>
                     </div>
                   </div>
