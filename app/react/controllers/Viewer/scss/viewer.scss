@@ -5,10 +5,10 @@
   .panel-content {
     position: relative;
     -webkit-overflow-scrolling: touch;
+    -webkit-text-size-adjust: none;
   }
 
   .pages {
-
 
     span.reference {
       background-color: yellow;
@@ -22,7 +22,7 @@
       $width: $i * 25px;
 
       @if($width < $mobileWidth) {
-        $pagesContainerWidthpercentage: 0.9;
+        $pagesContainerWidthpercentage: 0.8;
       }
 
       $zoom: ($width * $pagesContainerWidthpercentage) / $pageWidth;
@@ -33,6 +33,7 @@
 
       @media (min-width: $width - 50px) and (max-width: $width) {
         zoom: $zoom;
+        -webkit-text-size-adjust: $zoom * 100%;
       }
     }
 
@@ -220,51 +221,5 @@
         }
       }
     }
-  }
-}
-
-// document metadata, probably to become a new component
-
-.document-metadata {
-  padding: 0 10px;
-
-  h1 {
-    font-size: 1.4em;
-    font-weight: bold;
-  }
-
-  h2 {
-    text-transform: uppercase;
-    color: white;
-    padding: 10px;
-    font-size: 1em;
-    font-weight: normal;
-  }
-
-  .toc {
-    background-color: $successColor;
-  }
-
-  .metadata {
-    background-color: $infoColor;
-  }
-
-  >ul {
-    padding-left: 10px;
-    list-style: none;
-  }
-
-  table {
-    width: 100%;
-  }
-
-  td {
-    padding: 5px 10px 5px 10px;
-    vertical-align: top;
-    color: $hardFontColor;
-  }
-
-  td:first-child {
-    width: 20%;
   }
 }
