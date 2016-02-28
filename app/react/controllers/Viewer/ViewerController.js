@@ -37,6 +37,7 @@ class ViewerController extends RouteHandler {
     let range = window.getSelection().getRangeAt(0);
     let top = range.getClientRects()[0].top + this.pagesContainer.scrollTop-60
     this.setState({showReferenceLink: true, textSelectedTop: top});
+    this.selection = range;
   };
 
   openModal = () => {
@@ -48,7 +49,7 @@ class ViewerController extends RouteHandler {
   };
 
   createReference = () => {
-    let reference = TextRange.getSelected(this.contentContainer);
+    let reference = TextRange.serialize(this.selection, this.contentContainer);
     reference.sourceDocument = this.state.value.id;
 
     return api.post('references', reference)
@@ -58,7 +59,6 @@ class ViewerController extends RouteHandler {
       wrap(wrapper, TextRange.restore(reference, this.contentContainer));
       this.closeModal();
     });
-
   };
 
   render = () => {

@@ -73,19 +73,28 @@ describe('ViewerController', () => {
         expect(component.state.showReferenceLink).toBe(true);
         expect(component.state.textSelectedTop).toBe(40);
       });
+
+      it('should save the selection in component.selection', () => {
+        stubSelection('selectedText');
+        component.textSelection();
+
+        expect(component.selection.range).toBe('range');
+      });
     });
 
     describe('createReference', () => {
 
       beforeEach(() => {
+        spyOn(TextRange, 'serialize').and.returnValue({range:'range'});
         spyOn(component, 'closeModal');
-        TextRange.getSelected = () => { return {range:'range'}; }
+        component.selection = 'range';
         component.state.value.id = 'documentId';
       });
 
       it('should save the range reference', (done) => {
         component.createReference()
         .then(() => {
+          expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
           expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
           expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
           expect(component.closeModal).toHaveBeenCalled();
@@ -126,6 +135,7 @@ describe('ViewerController', () => {
         },
         getRangeAt: () => {
           return {
+            range: 'range',
             getClientRects: () => {
               return [{top:100}];
             }
