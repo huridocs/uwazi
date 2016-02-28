@@ -51,7 +51,7 @@ class ViewerController extends RouteHandler {
 
   createReference = () => {
     let reference = TextRange.serialize(this.selection, this.contentContainer);
-    reference.sourceDocument = this.state.value.id;
+    reference.sourceDocument = this.state.value._id;
 
     return api.post('references', reference)
     .then(() => {

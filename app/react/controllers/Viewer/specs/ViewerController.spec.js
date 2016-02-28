@@ -88,7 +88,7 @@ describe('ViewerController', () => {
         spyOn(TextRange, 'serialize').and.returnValue({range:'range'});
         spyOn(component, 'closeModal');
         component.selection = 'range';
-        component.state.value.id = 'documentId';
+        component.state.value._id = 'documentId';
       });
 
       it('should save the range reference', (done) => {
