@@ -216,7 +216,7 @@
         list-style: none;
         padding: 5px;
 
-        &:hover {
+        &:hover, &.selected {
           background-color: rgb(53, 53, 53);
         }
       }

@@ -10,6 +10,7 @@ import {events} from '../../utils/index'
 
 import wrap from 'wrap-range-text'
 import TextRange from 'batarange'
+import ReferenceForm from '../../components/ReferenceForm/ReferenceForm'
 
 
 class ViewerController extends RouteHandler {
@@ -22,7 +23,14 @@ class ViewerController extends RouteHandler {
   };
 
   static emptyState(){
-    return {value:{pages:[], css:[]}, showmenu: false, showpanel:false, showReferenceLink: false, textSelectedTop: 0};
+    return {
+      value:{pages:[], css:[]},
+      showmenu: false,
+      showpanel:false,
+      showReferenceLink: false,
+      textSelectedTop: 0,
+      documents: []
+    };
   };
 
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
@@ -33,7 +41,8 @@ class ViewerController extends RouteHandler {
   textSelection = () => {
     //extract direct reference to window from here ?
     if(window.getSelection().toString() === ''){
-      return this.setState({showReferenceLink: false, openModal: false});
+      this.modal.hide();
+      return this.setState({showReferenceLink: false});
     }
 
     let range = window.getSelection().getRangeAt(0);
@@ -43,16 +52,20 @@ class ViewerController extends RouteHandler {
   };
 
   openModal = () => {
-    this.setState({showReferenceLink: false, openModal:true});
+    this.modal.search();
+    this.modal.show();
+    this.setState({showReferenceLink: false});
   };
 
   closeModal = () => {
-    this.setState({openModal:false});
+    this.modal.hide();
   };
 
   createReference = () => {
     let reference = TextRange.serialize(this.selection, this.contentContainer);
     reference.sourceDocument = this.state.value._id;
+
+    Object.assign(reference, this.modal.value());
 
     return api.post('references', reference)
     .then(() => {
@@ -65,6 +78,9 @@ class ViewerController extends RouteHandler {
   };
 
   render = () => {
+    if(!this.state.documents){
+      this.state.documents = [];
+    }
     let menuClass = 'navbar-collapse collapse';
     let menuToggleClass = "navbar-toggle ";
 
@@ -103,7 +119,7 @@ class ViewerController extends RouteHandler {
 
     let modalStyles = {
       display: displayModal,
-      top: this.state.textSelectedTop,
+      top: this.state.textSelectedTop
     };
 
     return (
@@ -141,52 +157,7 @@ class ViewerController extends RouteHandler {
               <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
                 <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
 
-                <div className="ref-modal" style={modalStyles}>
-                  <div className="ref-modal-title">Create document reference</div>
-                  <a className="ref-modal-close" href="#" onClick={this.closeModal}><i className="fa fa-close"></i></a>
-                  <div className="row">
-                    <div className="col-sm-6">
-                      <form className="ref-modal-search">
-                        <div>
-                          <input type="text" placeholder="Search document to link" />
-                        </div>
-                        &nbsp;
-                        <button type="submit" className="btn btn-primary"><i className="fa fa-search"></i> </button>
-                      </form>
-                      <ul className="ref-modal-documents">
-                        <li>Constitutive act of the african union</li>
-                        <li>African Charter of Human Rights</li>
-                        <li>African Charter of Human Rights and people's rights</li>
-                        <li>African Charter of Human Rights and Welfare of the Child</li>
-                        <li>Amended SADC Teatry</li>
-                      </ul>
-                    </div>
-                    <div className="col-sm-6">
-                    <form className="ref-modal-link">
-                      <div className="form-group">
-                        <div className="link-to-label">Link to</div>
-                        <label className="radio-inline">
-                          <input type="radio" name="linkto" value="entire" /> Entire document
-                        </label>
-                        <label className="radio-inline">
-                          <input type="radio" name="linkto" value="part" /> Part of document
-                        </label>
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="linktitle">Link title</label>
-                        <input type="text" className="form-control" id="linktitle" />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="linktype">Link type</label>
-                        <select className="form-control" id="linktype">
-                          <option>Normal link</option>
-                        </select>
-                      </div>
-                      </form>
-                      <a className="btn btn-primary" href="#" onClick={this.createReference}><i className="fa fa-link"></i> Create reference</a>
-                    </div>
-                  </div>
-                </div>
+                <ReferenceForm onSubmit={this.createReference} ref={(ref) => this.modal = ref}/>
 
                 <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection} onTouchEnd={this.textSelection}>
                   {this.state.value.pages.map((page, index) => {

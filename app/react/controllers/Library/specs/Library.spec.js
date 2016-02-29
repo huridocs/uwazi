@@ -10,14 +10,14 @@ import Provider from '../../App/Provider'
 describe('LibraryController', () => {
 
   let documents = [{key:'secret documents', value:{}}, {key:'real batman id', value:{}}];
-  let seearchDocuments = [{key:'doc1', value:{}}, {key:'doc2', value:{}}];
+  let searchDocuments = [{key:'doc1', value:{}}, {key:'doc2', value:{}}];
   let component;
 
   beforeEach(() => {
     backend.restore();
     backend
     .mock(APIURL+'documents/search', 'GET', {body: JSON.stringify(documents)})
-    .mock(APIURL+'documents/search?searchTerm=searchTerm', 'GET', {body: JSON.stringify(seearchDocuments)})
+    .mock(APIURL+'documents/search?searchTerm=searchTerm', 'GET', {body: JSON.stringify(searchDocuments)})
 
     let params = {};
     TestUtils.renderIntoDocument(<Provider><Library params={params} ref={(ref) => component = ref} /></Provider>);
@@ -40,7 +40,7 @@ describe('LibraryController', () => {
 
       component.search({preventDefault:() => {}})
       .then(() => {
-        expect(component.state.documents).toEqual(seearchDocuments);
+        expect(component.state.documents).toEqual(searchDocuments);
         done();
       })
       .catch(done.fail)

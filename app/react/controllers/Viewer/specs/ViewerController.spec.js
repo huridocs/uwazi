@@ -38,19 +38,22 @@ describe('ViewerController', () => {
   });
 
   describe('openModal()', () => {
-    it('should setState openModal to true and showReferenceLink to false', () => {
+    it('should show the modal and change showReferenceLink state to false', () => {
+      spyOn(component.modal, 'search');
+      spyOn(component.modal, 'show');
       component.openModal();
 
-      expect(component.state.openModal).toBe(true);
+      expect(component.modal.show).toHaveBeenCalled();
+      expect(component.modal.search).toHaveBeenCalled();
       expect(component.state.showReferenceLink).toBe(false);
     });
   });
 
   describe('closeModal()', () => {
-    it('should setState openModal to false', () => {
+    it('should hide the modal', () => {
+      spyOn(component.modal, 'hide');
       component.closeModal();
-
-      expect(component.state.openModal).toBe(false);
+      expect(component.modal.hide).toHaveBeenCalled();
     });
   });
 
@@ -58,10 +61,11 @@ describe('ViewerController', () => {
 
     describe('when no text selected', () => {
       it('should set showReferenceLink and openModal to false', () => {
+        spyOn(component.modal, 'hide');
         stubSelection();
         component.textSelection();
 
-        expect(component.state.openModal).toBe(false);
+      expect(component.modal.hide).toHaveBeenCalled();
         expect(component.state.showReferenceLink).toBe(false);
       });
     });
@@ -94,11 +98,12 @@ describe('ViewerController', () => {
     });
 
     it('should save the range reference', (done) => {
+      spyOn(component.modal, 'value').and.returnValue({title:'test'});
       component.createReference()
       .then(() => {
         expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
         expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
+        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId', title: 'test'}));
         expect(component.closeModal).toHaveBeenCalled();
         done();
       });
