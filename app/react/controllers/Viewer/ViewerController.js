@@ -112,15 +112,9 @@ class ViewerController extends RouteHandler {
       top: this.state.textSelectedTop
     };
 
-    let displayModal = "none";
-    if(this.state.openModal){
-      displayModal = "block";
-    };
-
-    let modalStyles = {
-      display: displayModal,
-      top: this.state.textSelectedTop
-    };
+    //let modalStyles = {
+      //top: this.state.textSelectedTop
+    //};
 
     return (
       <div className="viewer">

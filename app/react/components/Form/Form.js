@@ -4,7 +4,7 @@ import Field from './fields/Field'
 class Form extends Component {
 
   constructor(props) {
-    super(props),
+    super(props);
     this.fields = {};
   };
 
