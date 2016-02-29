@@ -6,6 +6,7 @@ import {APIURL} from '../../../config.js'
 import Provider from '../../App/Provider'
 import api from '../../../utils/singleton_api'
 import TextRange from 'batarange'
+import {events} from '../../../utils/index'
 
 describe('ViewerController', () => {
 
@@ -81,50 +82,65 @@ describe('ViewerController', () => {
         expect(component.selection.range).toBe('range');
       });
     });
+  });
 
-    describe('createReference', () => {
+  describe('createReference', () => {
 
-      beforeEach(() => {
-        spyOn(TextRange, 'serialize').and.returnValue({range:'range'});
-        spyOn(component, 'closeModal');
-        component.selection = 'range';
-        component.state.value._id = 'documentId';
-      });
+    beforeEach(() => {
+      spyOn(TextRange, 'serialize').and.returnValue({range:'range'});
+      spyOn(component, 'closeModal');
+      component.selection = 'range';
+      component.state.value._id = 'documentId';
+    });
 
-      it('should save the range reference', (done) => {
-        component.createReference()
-        .then(() => {
-          expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
-          expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
-          expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
-          expect(component.closeModal).toHaveBeenCalled();
-          done();
-        });
-      });
-
-      it('should wrap the selected text after savinf the reference with a span', (done) => {
-
-        component.state.value.pages = ['page 1'];
-        component.setState(component.state);
-
-        let range = document.createRange();
-        let page1 = component.contentContainer.childNodes[0].childNodes[0];
-
-        range.setStart(page1, 1);
-        range.setEnd(page1, 3);
-
-        TextRange.restore = function(){
-          return range;
-        }
-
-        component.createReference()
-        .then(() => {
-          expect(component.contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference">ag</span>e 1');
-          done();
-        });
+    it('should save the range reference', (done) => {
+      component.createReference()
+      .then(() => {
+        expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
+        expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
+        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId'}));
+        expect(component.closeModal).toHaveBeenCalled();
+        done();
       });
     });
 
+    it('should emit a success alert', (done) => {
+
+      let eventType, eventMessage;
+      events.on('alert', (type, message) => {
+        eventType = type;
+        eventMessage = message;
+      });
+
+      component.createReference()
+      .then(() => {
+        expect(eventType).toBe('success');
+        expect(eventMessage).toBe('Reference created.');
+        done();
+      });
+    });
+
+    it('should wrap the selected text after savinf the reference with a span', (done) => {
+
+      component.state.value.pages = ['page 1'];
+      component.setState(component.state);
+
+      let range = document.createRange();
+      let page1 = component.contentContainer.childNodes[0].childNodes[0];
+
+      range.setStart(page1, 1);
+      range.setEnd(page1, 3);
+
+      TextRange.restore = function(){
+        return range;
+      }
+
+      component.createReference()
+      .then(() => {
+        expect(component.contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference">ag</span>e 1');
+        done();
+      });
+    });
   });
 
   let stubSelection = (selection = '') => {

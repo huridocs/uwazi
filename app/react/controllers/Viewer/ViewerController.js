@@ -6,6 +6,7 @@ import RouteHandler from '../App/RouteHandler'
 import './scss/viewer.scss'
 import LogoIcon from '../../components/Logo/LogoIcon.js'
 import DocumentMetadata from '../../components/DocumentMetadata/DocumentMetadata.js'
+import {events} from '../../utils/index'
 
 import wrap from 'wrap-range-text'
 import TextRange from 'batarange'
@@ -58,6 +59,7 @@ class ViewerController extends RouteHandler {
       let wrapper = document.createElement('span');
       wrapper.classList.add('reference');
       wrap(wrapper, TextRange.restore(reference, this.contentContainer));
+      events.emit('alert', 'success', 'Reference created.');
       this.closeModal();
     });
   };
