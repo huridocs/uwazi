@@ -5,7 +5,6 @@ export default app => {
 
   app.post('/api/references', (req, res) => {
     req.body.type = 'reference';
-    req.body.fields = req.body.fields || [];
 
     request.post(db_url, req.body)
     .then((response) => {
