@@ -41,14 +41,36 @@ class ViewerController extends RouteHandler {
     };
   };
 
-  componentDidMount = () => {
+  // refactor/test this
+  componentDidUpdate = () => {
+    if(!this.state.references || this.referencesPainted) return;
+
     this.state.references.forEach((reference) => {
       let range = TextRange.restore(reference.value.sourceRange, this.contentContainer)
       let wrapper = document.createElement('span');
+      wrapper.setAttribute('title', reference.value.title);
       wrapper.classList.add('reference');
       wrap(wrapper, range);
     });
+
+    this.referencesPainted = true;
+
   };
+
+  componentDidMount = () => {
+    if(!this.state.references || this.referencesPainted) return;
+
+    this.state.references.forEach((reference) => {
+      let range = TextRange.restore(reference.value.sourceRange, this.contentContainer)
+      let wrapper = document.createElement('span');
+      wrapper.setAttribute('title', reference.value.title);
+      wrapper.classList.add('reference');
+      wrap(wrapper, range);
+    });
+
+    this.referencesPainted = true;
+  };
+  //
 
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
   togglePanel = () => {this.setState({showpanel: !this.state.showpanel})};
