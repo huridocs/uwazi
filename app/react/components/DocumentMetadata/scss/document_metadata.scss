@@ -10,18 +10,39 @@
 
   h2 {
     text-transform: uppercase;
-    color: white;
     padding: 10px;
     font-size: 1em;
     font-weight: normal;
+    cursor: pointer;
+    position: relative;
+
+    &::after {
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: 2em;
+      content: "-";
+      border-bottom: 4px solid black;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 39px;
+      width: 40px;
+      text-align: center;
+      line-height: 28px;
+    }
+
+    &.folded::after {
+      content: "\F107";
+    }
   }
 
   .toc {
-    background-color: $successColor;
+    color: $successColor;
+    border-bottom: 4px solid $successColor;
   }
 
   .metadata {
-    background-color: $infoColor;
+    color: $infoColor;
+    border-bottom: 4px solid $infoColor;
   }
 
   >ul {
