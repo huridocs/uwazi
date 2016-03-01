@@ -48,6 +48,10 @@ class ReferenceForm extends Component {
     this.setState({documentSelected: documentId});
   };
 
+  onClose = () => {
+    this.props.onClose();
+  };
+
   render = () => {
 
     let className = 'ref-modal';
@@ -59,7 +63,7 @@ class ReferenceForm extends Component {
     return (
       <div className={className} ref={(ref) => this.modalElement = ref}>
         <div className="ref-modal-title">Create document reference</div>
-        <a className="ref-modal-close" href="#" onClick={this.hide}><i className="fa fa-close"></i></a>
+        <a className="ref-modal-close" href="#" onClick={this.onClose}><i className="fa fa-close"></i></a>
         <div className="row">
           <div className="col-sm-6">
             <form onSubmit={this.search} className="ref-modal-search">

@@ -39,6 +39,9 @@ class ViewerController extends RouteHandler {
   closeMenu = () => {this.setState({showmenu: false})};
 
   textSelection = () => {
+
+    this.unwrapFakeSelection();
+
     //extract direct reference to window from here ?
     if(window.getSelection().toString() === ''){
       this.modal.hide();
@@ -46,6 +49,13 @@ class ViewerController extends RouteHandler {
     }
 
     let range = window.getSelection().getRangeAt(0);
+
+    //
+      let wrapper = document.createElement('span');
+      wrapper.classList.add('fake-selection');
+      this.fakeSelection = wrap(wrapper, this.range);
+    //
+
     let top = range.getClientRects()[0].top + this.pagesContainer.scrollTop-60
     this.setState({showReferenceLink: true, textSelectedTop: top});
     this.selection = range;
@@ -57,8 +67,16 @@ class ViewerController extends RouteHandler {
     this.setState({showReferenceLink: false});
   };
 
+  unwrapFakeSelection = () => {
+    if(this.fakeSelection) {
+      this.fakeSelection.unwrap();
+      this.fakeSelection = undefined;
+    }
+  };
+
   closeModal = () => {
     this.modal.hide();
+    this.unwrapFakeSelection();
   };
 
   createReference = () => {
@@ -151,7 +169,7 @@ class ViewerController extends RouteHandler {
               <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
                 <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
 
-                <ReferenceForm onSubmit={this.createReference} ref={(ref) => this.modal = ref}/>
+                <ReferenceForm onClose={this.closeModal} onSubmit={this.createReference} ref={(ref) => this.modal = ref}/>
 
                 <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection} onTouchEnd={this.textSelection}>
                   {this.state.value.pages.map((page, index) => {
