@@ -10,7 +10,8 @@ import {events} from '../../../utils/index'
 
 describe('ViewerController', () => {
 
-  let documentResponse = [{key:'template1', id:'1', value:{pages:[], css:[]}}];
+  let documentResponse = [{key:'doc1', id:'1', value:{pages:[], css:[], template: 1}}];
+  let templateResponse = [{}];
 
   let component;
 
@@ -22,15 +23,16 @@ describe('ViewerController', () => {
     backend.restore();
     backend
     .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})})
+    .mock(APIURL+'templates?key=1', 'GET', {body: JSON.stringify({rows:templateResponse})})
     .mock(APIURL+'references', 'POST', {body: JSON.stringify({})});
   });
 
   describe('static requestState', () => {
-    it('should request for the document with id passed', (done) => {
+    it('should request the document and the template', (done) => {
       let id = 1;
       ViewerController.requestState({documentId:id}, api)
       .then((response) => {
-        expect(response).toEqual(documentResponse[0]);
+        expect(response).toEqual({value: documentResponse[0].value, template: templateResponse[0]});
         done();
       })
       .catch(done.fail)

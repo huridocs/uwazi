@@ -16,15 +16,21 @@ import ReferenceForm from '../../components/ReferenceForm/ReferenceForm'
 class ViewerController extends RouteHandler {
 
   static requestState(params = {}, api){
+    var document;
     return api.get('documents?_id='+params.documentId)
     .then((response) => {
-      return response.json.rows[0];
+      document = response.json.rows[0];
+      return api.get('templates?key='+document.value.template);
+    })
+    .then((response) => {
+      return {value: document.value, template: response.json.rows[0]};
     });
   };
 
   static emptyState(){
     return {
-      value:{pages:[], css:[]},
+      value:{pages:[], css:[], metadata: {}},
+      template: {value: {}},
       showmenu: false,
       showpanel:false,
       showReferenceLink: false,
@@ -133,7 +139,6 @@ class ViewerController extends RouteHandler {
     //let modalStyles = {
       //top: this.state.textSelectedTop
     //};
-
     return (
       <div className="viewer">
         <nav className="nav  navbar-default navbar-fixed-top">
@@ -196,7 +201,7 @@ class ViewerController extends RouteHandler {
                     <a href="#" className=""><i className="fa fa-cloud-download"></i></a>
                   </li>
                 </ul>
-                <DocumentMetadata metadata={this.state.value.metadata} template={this.state.value.template}/>
+                <DocumentMetadata metadata={this.state.value.metadata} template={this.state.template}/>
               </div>
             </div>
           </div>
