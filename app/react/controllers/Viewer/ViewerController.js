@@ -12,18 +12,21 @@ import wrap from 'wrap-range-text'
 import TextRange from 'batarange'
 import ReferenceForm from '../../components/ReferenceForm/ReferenceForm'
 
-
 class ViewerController extends RouteHandler {
 
   static requestState(params = {}, api){
-    var document;
-    return api.get('documents?_id='+params.documentId)
-    .then((response) => {
-      document = response.json.rows[0];
+    var document, references;
+    return Promise.all([
+      api.get('documents?_id='+params.documentId),
+      api.get('references?sourceDocument='+params.documentId)
+    ])
+    .then((responses) => {
+      document = responses[0].json.rows[0];
+      references = responses[1].json.rows;
       return api.get('templates?key='+document.value.template);
     })
     .then((response) => {
-      return {value: document.value, template: response.json.rows[0]};
+      return {value: document.value, references: references,  template: response.json.rows[0]};
     });
   };
 
@@ -34,10 +37,40 @@ class ViewerController extends RouteHandler {
       showmenu: false,
       showpanel:false,
       showReferenceLink: false,
-      textSelectedTop: 0,
-      documents: []
+      textSelectedTop: 0
     };
   };
+
+  // refactor/test this
+  componentDidUpdate = () => {
+    if(!this.state.references || this.referencesPainted) return;
+
+    this.state.references.forEach((reference) => {
+      let range = TextRange.restore(reference.value.sourceRange, this.contentContainer)
+      let wrapper = document.createElement('span');
+      wrapper.setAttribute('title', reference.value.title);
+      wrapper.classList.add('reference');
+      wrap(wrapper, range);
+    });
+
+    this.referencesPainted = true;
+
+  };
+
+  componentDidMount = () => {
+    if(!this.state.references || this.referencesPainted) return;
+
+    this.state.references.forEach((reference) => {
+      let range = TextRange.restore(reference.value.sourceRange, this.contentContainer)
+      let wrapper = document.createElement('span');
+      wrapper.setAttribute('title', reference.value.title);
+      wrapper.classList.add('reference');
+      wrap(wrapper, range);
+    });
+
+    this.referencesPainted = true;
+  };
+  //
 
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
   togglePanel = () => {this.setState({showpanel: !this.state.showpanel})};
@@ -55,16 +88,16 @@ class ViewerController extends RouteHandler {
     }
 
     let range = window.getSelection().getRangeAt(0);
+    this.selection = TextRange.serialize(range, this.contentContainer);
 
     //
       let wrapper = document.createElement('span');
       wrapper.classList.add('fake-selection');
-      this.fakeSelection = wrap(wrapper, this.range);
+      this.fakeSelection = wrap(wrapper, range);
     //
 
     let top = range.getClientRects()[0].top + this.pagesContainer.scrollTop-60
     this.setState({showReferenceLink: true, textSelectedTop: top});
-    this.selection = range;
   };
 
   openModal = () => {
@@ -88,22 +121,22 @@ class ViewerController extends RouteHandler {
   createReference = () => {
     let reference = this.modal.value();
     reference.sourceDocument = this.state.value._id;
-    reference.sourceRange = TextRange.serialize(this.selection, this.contentContainer);
+    reference.sourceRange = this.selection;
 
     return api.post('references', reference)
     .then(() => {
       let wrapper = document.createElement('span');
       wrapper.classList.add('reference');
-      wrap(wrapper, TextRange.restore(reference, this.contentContainer));
-      events.emit('alert', 'success', 'Reference created.');
+
       this.closeModal();
+      wrap(wrapper, TextRange.restore(reference.sourceRange, this.contentContainer));
+
+      events.emit('alert', 'success', 'Reference created.');
     });
   };
 
   render = () => {
-    if(!this.state.documents){
-      this.state.documents = [];
-    }
+
     let menuClass = 'navbar-collapse collapse';
     let menuToggleClass = "navbar-toggle ";
 

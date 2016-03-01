@@ -13,6 +13,24 @@ export default app => {
     .catch((error) => {
       res.json({error: error.json});
     });
+  });
+
+  app.get('/api/references', (req, res) => {
+
+    let id = '';
+    if(req.query && req.query.sourceDocument){
+      id = '?key="'+req.query.sourceDocument+'"';
+    }
+
+    let url = db_url+'/_design/references/_view/by_source_document'+id;
+
+    request.get(url)
+    .then((response) => {
+      res.json(response.json);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
+    });
 
   });
 
