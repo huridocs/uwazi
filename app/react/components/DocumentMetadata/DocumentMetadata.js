@@ -3,7 +3,17 @@ import './scss/document_metadata.scss'
 
 class DocumentMetadata extends Component {
 
+  getField = (key) => {
+    return this.props.template.value.fields.find((field) => {
+      return field.name == key;
+    })
+  };
+
   render() {
+
+    let metadata = this.props.metadata || {};
+    let fields = this.props.template.value.fields;
+
     return (
       <div className="document-metadata">
         <h1>003/12 Peter Joseph Chacha v The United Republic ofTanzania</h1>
@@ -22,26 +32,12 @@ class DocumentMetadata extends Component {
         <h2 className="metadata">Document properties (metadata)</h2>
         <table>
           <tbody>
-            <tr>
-              <td>Country</td>
-              <td>Kenya</td>
-            </tr>
-            <tr>
-              <td>Date</td>
-              <td>09/10/2015</td>
-            </tr>
-            <tr>
-              <td>Language</td>
-              <td>EN - ES</td>
-            </tr>
-            <tr>
-              <td>Type</td>
-              <td>Decission</td>
-            </tr>
-            <tr>
-              <td>Mechanism</td>
-              <td>African Comittee of Experts on the Rights and Welfare of the Child</td>
-            </tr>
+            {Object.keys(metadata).map((key) => {
+              return (<tr key={key}>
+                        <td>{this.getField(key).label}</td>
+                        <td>{this.props.metadata[key]}</td>
+                      </tr>)
+            })}
           </tbody>
         </table>
       </div>

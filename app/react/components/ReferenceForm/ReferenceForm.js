@@ -11,7 +11,7 @@ class ReferenceForm extends Component {
   submit = (e) => {
     e.preventDefault();
     this.props.onSubmit();
-  }
+  };
 
   value = () => {
     let value = {
@@ -20,7 +20,7 @@ class ReferenceForm extends Component {
     };
 
     return value;
-  }
+  };
 
   search = (e) => {
     if(e){ e.preventDefault(); }
