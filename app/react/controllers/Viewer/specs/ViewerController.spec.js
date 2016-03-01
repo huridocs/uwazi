@@ -24,15 +24,16 @@ describe('ViewerController', () => {
     backend
     .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})})
     .mock(APIURL+'templates?key=1', 'GET', {body: JSON.stringify({rows:templateResponse})})
+    .mock(APIURL+'references?sourceDocument=1', 'GET', {body: JSON.stringify({rows:[{title:1}]})})
     .mock(APIURL+'references', 'POST', {body: JSON.stringify({})});
   });
 
   describe('static requestState', () => {
-    it('should request the document and the template', (done) => {
+    it('should request the document, the references and the template', (done) => {
       let id = 1;
       ViewerController.requestState({documentId:id}, api)
       .then((response) => {
-        expect(response).toEqual({value: documentResponse[0].value, template: templateResponse[0]});
+        expect(response).toEqual({value: documentResponse[0].value, references: [{title:1}], template: templateResponse[0]});
         done();
       })
       .catch(done.fail)
@@ -107,9 +108,13 @@ describe('ViewerController', () => {
 
       it('should save the selection in component.selection', () => {
         stubSelection('selectedText');
+
+        spyOn(TextRange, 'serialize').and.returnValue('serialized');
+
         component.textSelection();
 
-        expect(component.selection.range).toBe('range');
+        //expect(TextRange.serialize).toHaveBeenCalledWith(range, component.contentContainer);
+        expect(component.selection).toBe('serialized');
       });
     });
   });
@@ -117,9 +122,8 @@ describe('ViewerController', () => {
   describe('createReference', () => {
 
     beforeEach(() => {
-      spyOn(TextRange, 'serialize').and.returnValue({range:'range'});
       spyOn(component, 'closeModal');
-      component.selection = 'range';
+      component.selection = {range: 'range'};
       component.state.value._id = 'documentId';
     });
 
@@ -127,7 +131,6 @@ describe('ViewerController', () => {
       spyOn(component.modal, 'value').and.returnValue({title:'test'});
       component.createReference()
       .then(() => {
-        expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
         expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
         expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({title: 'test', sourceDocument:'documentId', sourceRange: {range: 'range'}}));
         expect(component.closeModal).toHaveBeenCalled();
