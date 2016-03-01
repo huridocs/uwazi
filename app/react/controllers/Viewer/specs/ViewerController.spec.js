@@ -57,17 +57,41 @@ describe('ViewerController', () => {
       component.closeModal();
       expect(component.modal.hide).toHaveBeenCalled();
     });
+
+    it('should unwrapFakeSelection', () => {
+      spyOn(component, 'unwrapFakeSelection');
+      component.closeModal();
+      expect(component.unwrapFakeSelection).toHaveBeenCalled();
+    });
   });
 
   describe('textSelection()', () => {
 
+    it('should wrap the selected with a class fake-selection span', () => {
+
+      spyOn(component, 'unwrapFakeSelection').and.callThrough();
+
+      stubSelection('selected text');
+
+      component.textSelection();
+      expect(component.unwrapFakeSelection).toHaveBeenCalled();
+      expect(component.contentContainer.childNodes[0].innerHTML).toBe('p<span class="fake-selection">ag</span>e 1');
+
+      stubSelection('', {});
+
+      component.unwrapFakeSelection();
+      expect(component.contentContainer.childNodes[0].innerHTML).toBe('page 1');
+
+    });
+
     describe('when no text selected', () => {
+
       it('should set showReferenceLink and openModal to false', () => {
         spyOn(component.modal, 'hide');
         stubSelection();
         component.textSelection();
 
-      expect(component.modal.hide).toHaveBeenCalled();
+        expect(component.modal.hide).toHaveBeenCalled();
         expect(component.state.showReferenceLink).toBe(false);
       });
     });
@@ -105,7 +129,7 @@ describe('ViewerController', () => {
       .then(() => {
         expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
         expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId', title: 'test'}));
+        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({title: 'test', sourceDocument:'documentId', sourceRange: {range: 'range'}}));
         expect(component.closeModal).toHaveBeenCalled();
         done();
       });
@@ -127,7 +151,7 @@ describe('ViewerController', () => {
       });
     });
 
-    it('should wrap the selected text after savinf the reference with a span', (done) => {
+    it('should wrap the selected text after saving the reference with a span', (done) => {
 
       component.state.value.pages = ['page 1'];
       component.setState(component.state);
@@ -150,19 +174,31 @@ describe('ViewerController', () => {
     });
   });
 
-  let stubSelection = (selection = '') => {
+  let stubSelection = (selection = '', range) => {
+    component.state.value.pages = ['page 1'];
+    component.setState(component.state);
+
+    if(!range){
+      var range = document.createRange();
+      let page1 = component.contentContainer.childNodes[0].childNodes[0];
+
+      range.setStart(page1, 1);
+      range.setEnd(page1, 3);
+    }
+
+
+    range.range = 'range';
+    range.getClientRects = () => {
+      return [{top:100}];
+    }
+
     window.getSelection = () => {
       return {
         toString: () => {
           return selection;
         },
         getRangeAt: () => {
-          return {
-            range: 'range',
-            getClientRects: () => {
-              return [{top:100}];
-            }
-          }
+          return range;
         }
       }
     }

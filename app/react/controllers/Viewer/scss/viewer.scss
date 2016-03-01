@@ -10,6 +10,10 @@
 
   .pages {
 
+    span.fake-selection {
+      background-color: rgba(127, 255, 255, 0.4);
+    }
+
     span.reference {
       background-color: yellow;
     }
