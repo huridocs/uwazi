@@ -12,7 +12,6 @@ import wrap from 'wrap-range-text'
 import TextRange from 'batarange'
 import ReferenceForm from '../../components/ReferenceForm/ReferenceForm'
 
-
 class ViewerController extends RouteHandler {
 
   static requestState(params = {}, api){
@@ -94,7 +93,7 @@ class ViewerController extends RouteHandler {
     .then(() => {
       let wrapper = document.createElement('span');
       wrapper.classList.add('reference');
-      wrap(wrapper, TextRange.restore(reference, this.contentContainer));
+      wrap(wrapper, TextRange.restore(reference.sourceRange, this.contentContainer));
       events.emit('alert', 'success', 'Reference created.');
       this.closeModal();
     });

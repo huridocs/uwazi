@@ -46,4 +46,24 @@ describe('references routes', () => {
     });
 
   });
+
+  describe("GET", () => {
+
+    it("should return references by sourceDocument", (done) => {
+
+      let request = {query:{sourceDocument:'source1'}};
+
+      routes.get('/api/references', request)
+      .then((response) => {
+        let docs = response.rows;
+        expect(docs.length).toBe(2);
+        expect(docs[0].value.title).toBe('reference1');
+        expect(docs[1].value.title).toBe('reference3');
+        done();
+      })
+      .catch(done.fail);
+
+    });
+
+  });
 });
