@@ -104,7 +104,7 @@ describe('ViewerController', () => {
         expect(component.state.showReferenceLink).toBe(true);
         expect(component.state.textSelectedTop).toBe(40);
       });
- 
+
       it('should save the selection in component.selection', () => {
         stubSelection('selectedText');
         component.textSelection();
