@@ -98,16 +98,19 @@ describe('ViewerController', () => {
 
     describe('when text selected', function(){
       it('should showReferenceLink and set the top position of the text - 60', function(){
-        component.state.value.pages = ['page 1'];
-        component.setState(component.state);
-
         stubSelection('selectedText');
         component.textSelection();
 
         expect(component.state.showReferenceLink).toBe(true);
         expect(component.state.textSelectedTop).toBe(40);
       });
+ 
+      it('should save the selection in component.selection', () => {
+        stubSelection('selectedText');
+        component.textSelection();
 
+        expect(component.selection.range).toBe('range');
+      });
     });
   });
 
@@ -126,7 +129,7 @@ describe('ViewerController', () => {
       .then(() => {
         expect(TextRange.serialize).toHaveBeenCalledWith('range', component.contentContainer);
         expect(backend.calls().matched[0][0]).toBe(APIURL+'references');
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({range: 'range', sourceDocument:'documentId', title: 'test'}));
+        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({title: 'test', sourceDocument:'documentId', sourceRange: {range: 'range'}}));
         expect(component.closeModal).toHaveBeenCalled();
         done();
       });
