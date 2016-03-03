@@ -54,6 +54,19 @@ class ViewerController extends RouteHandler {
     });
   };
 
+  componentWillReceiveProps = (nextProps) => {
+
+    if(nextProps.params.documentId == this.props.params.documentId){
+      return false;
+    }
+
+    this.setState(ViewerController.emptyState());
+    return ViewerController.requestState(nextProps.params, api)
+    .then((state) => {
+      this.setState(state);
+    });
+  };
+
   render = () => {
 
     let menuClass = 'navbar-collapse collapse';

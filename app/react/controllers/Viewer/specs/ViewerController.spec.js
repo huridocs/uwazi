@@ -11,20 +11,23 @@ import {events} from '../../../utils/index'
 describe('ViewerController', () => {
 
   let documentResponse = [{key:'doc1', id:'1', value:{pages:[], css:[], template: 1}}];
-  let templateResponse = [{}];
+  let newDocument = [{key:'doc2', id:'1', value:{ doc: 'doc2', pages:[], css:[], template: 1}}];
+  let templateResponse = [{value:{}}];
 
   let component;
 
   beforeEach(() => {
     let initialData = {};
-    let params = {};
+    let params = {documentId: '1'};
     let history = {};
     TestUtils.renderIntoDocument(<Provider><ViewerController history={history} params={params} ref={(ref) => component = ref} /></Provider>);
     backend.restore();
     backend
     .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})})
+    .mock(APIURL+'documents?_id=newId', 'GET', {body: JSON.stringify({rows: newDocument})})
     .mock(APIURL+'templates?key=1', 'GET', {body: JSON.stringify({rows:templateResponse})})
     .mock(APIURL+'references?sourceDocument=1', 'GET', {body: JSON.stringify({rows:[{title:1}]})})
+    .mock(APIURL+'references?sourceDocument=newId', 'GET', {body: JSON.stringify( { rows:[ {value:{title:'new'}} ] })})
     .mock(APIURL+'references', 'POST', {body: JSON.stringify({})});
   });
 
@@ -37,6 +40,28 @@ describe('ViewerController', () => {
         done();
       })
       .catch(done.fail)
+    });
+  });
+
+  describe('componentWillReceiveProps', () => {
+    describe('when new documentId is sent', () => {
+      it('should request the new state', (done) => {
+        spyOn(component, 'setState').and.callThrough();
+        component.componentWillReceiveProps({params:{documentId: 'newId'}})
+        .then(() => {
+          expect(component.state.value.doc).toBe('doc2');
+          done();
+        })
+        .catch(done.fail);
+
+        expect(component.setState).toHaveBeenCalledWith(ViewerController.emptyState());
+      });
+    });
+
+    describe('when documentId is the same', () => {
+      it('should return false', () => {
+        expect(component.componentWillReceiveProps({params:{documentId:'1'}})).toBe(false);
+      });
     });
   });
 
@@ -90,4 +115,4 @@ describe('ViewerController', () => {
 
   });
 
-});
+  });

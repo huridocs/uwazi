@@ -16,6 +16,7 @@
 
     span.reference {
       background-color: yellow;
+      cursor: pointer;
     }
 
     @for $i from 8 through 100 {
