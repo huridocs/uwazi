@@ -3,8 +3,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { createHistory } from 'history'
-import { Router, match, RoutingContext } from 'react-router'
+import { browserHistory } from 'react-router'
+import { Router, match, RouterContext } from 'react-router'
 import Helmet from 'react-helmet'
 import Routes from './Routes'
 import Provider from './controllers/App/Provider'
@@ -16,7 +16,7 @@ import instance_api from './utils/instance_api'
 if (isClient) {
   ReactDOM.render(
     <Provider>
-      <Router history={createHistory()}>{Routes}</Router>
+      <Router history={browserHistory}>{Routes}</Router>
     </Provider>,
     document.getElementById('root')
   );
@@ -57,7 +57,7 @@ function handleRoute(res, renderProps, req) {
 
   function renderPage(response) {
     try {
-      const wholeHtml = renderComponentWithRoot(RoutingContext, renderProps, response, req.user);
+      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, response, req.user);
       res.status(200).send(wholeHtml);
     }
     catch(error){
