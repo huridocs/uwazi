@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import wrap from 'wrap-range-text'
 import ReferenceForm from '../ReferenceForm/ReferenceForm'
 import TextRange from 'batarange'
+import { browserHistory } from 'react-router'
 
 class Document extends Component {
 
@@ -16,8 +17,19 @@ class Document extends Component {
     }
   }
 
-  textSelectionHandler = () => {
+  //
+  handleClick = (e) => {
 
+    let ref = e.target.getAttribute('ref');
+    if(ref){
+      let reference = this.props.references.find(reference => reference.value._id == ref);
+      browserHistory.push('/document/'+reference.value.targetDocument);
+    }
+
+  }
+  //
+
+  textSelectionHandler = () => {
     this.unwrapFakeSelection();
 
     if(window.getSelection().toString() === ''){
@@ -46,12 +58,18 @@ class Document extends Component {
   }
 
   componentDidMount = () => {
-    this.renderReferences();
-  };
+      this.renderReferences();
+  }
 
   componentDidUpdate = () => {
-    this.renderReferences();
-  };
+      this.renderReferences();
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if(nextProps.references != this.props.references) {
+      this.referencesAlreadyRendered = false;
+    }
+  }
 
   renderReferences = () => {
     if(this.props.references && !this.referencesAlreadyRendered){
@@ -69,7 +87,13 @@ class Document extends Component {
     if(reference.title){
       wrapper.setAttribute('title', reference.title);
     }
+
     wrapper.classList.add('reference');
+
+    if(reference._id){
+      wrapper.setAttribute('ref', reference._id);
+    }
+
     wrap(wrapper, range);
   }
 
@@ -98,8 +122,7 @@ class Document extends Component {
     };
 
     let textSelectionLinkStyles = {
-      display: display,
-      //top: this.state.textSelectedTop
+      display: display
     };
 
     return (
@@ -107,10 +130,9 @@ class Document extends Component {
         <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
         <ReferenceForm ref={(ref) => this.modal = ref} onClose={this.closeModal} onSubmit={this.createReference}/>
 
-        <div ref={(ref) => this.contentContainer = ref} className="pages" onMouseUp={this.textSelectionHandler} onTouchEnd={this.textSelectionHandler}>
+        <div ref={(ref) => this.contentContainer = ref} onClick={this.handleClick} className="pages" onMouseUp={this.textSelectionHandler} onTouchEnd={this.textSelectionHandler}>
           {this.props.document.pages.map((page, index) => {
             let html = {__html: page}
-            //let id = 'pf'+index;
             let id = index;
             return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
           })}

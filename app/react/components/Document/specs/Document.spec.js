@@ -146,7 +146,7 @@ describe('Document', () => {
       };
 
       component.wrapReference(reference);
-      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference" title="referenceTitle">age</span>1');
+      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span ref="referenceId" class="reference" title="referenceTitle">age</span>1');
     });
   });
 
@@ -200,6 +200,14 @@ describe('Document', () => {
 
       expect(component.modal.hide).toHaveBeenCalled();
       expect(component.unwrapFakeSelection).toHaveBeenCalled();
+    });
+  });
+
+  describe('componentWillReceiveProps', () => {
+    it('should set referencesAlreadyRendered to false when new references sent', () => {
+      component.referencesAlreadyRendered = true;
+      component.componentWillReceiveProps({references: 'new references'});
+      expect(component.referencesAlreadyRendered).toBe(false);
     });
   });
 
