@@ -10,7 +10,7 @@ import {events} from '../../utils/index'
 
 import wrap from 'wrap-range-text'
 import TextRange from 'batarange'
-import ReferenceForm from '../../components/ReferenceForm/ReferenceForm'
+import Document from '../../components/Document/Document'
 
 class ViewerController extends RouteHandler {
 
@@ -41,96 +41,15 @@ class ViewerController extends RouteHandler {
     };
   };
 
-  // refactor/test this
-  componentDidUpdate = () => {
-    if(!this.state.references || this.referencesPainted) return;
-
-    this.state.references.forEach((reference) => {
-      let range = TextRange.restore(reference.value.sourceRange, this.contentContainer)
-      let wrapper = document.createElement('span');
-      wrapper.setAttribute('title', reference.value.title);
-      wrapper.classList.add('reference');
-      wrap(wrapper, range);
-    });
-
-    this.referencesPainted = true;
-
-  };
-
-  componentDidMount = () => {
-    if(!this.state.references || this.referencesPainted) return;
-
-    this.state.references.forEach((reference) => {
-      let range = TextRange.restore(reference.value.sourceRange, this.contentContainer)
-      let wrapper = document.createElement('span');
-      wrapper.setAttribute('title', reference.value.title);
-      wrapper.classList.add('reference');
-      wrap(wrapper, range);
-    });
-
-    this.referencesPainted = true;
-  };
-  //
-
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
   togglePanel = () => {this.setState({showpanel: !this.state.showpanel})};
-
   closeMenu = () => {this.setState({showmenu: false})};
 
-  textSelection = () => {
-
-    this.unwrapFakeSelection();
-
-    //extract direct reference to window from here ?
-    if(window.getSelection().toString() === ''){
-      this.modal.hide();
-      return this.setState({showReferenceLink: false});
-    }
-
-    let range = window.getSelection().getRangeAt(0);
-    this.selection = TextRange.serialize(range, this.contentContainer);
-
-    //
-      let wrapper = document.createElement('span');
-      wrapper.classList.add('fake-selection');
-      this.fakeSelection = wrap(wrapper, range);
-    //
-
-    let top = range.getClientRects()[0].top + this.pagesContainer.scrollTop-60
-    this.setState({showReferenceLink: true, textSelectedTop: top});
-  };
-
-  openModal = () => {
-    this.modal.search();
-    this.modal.show();
-    this.setState({showReferenceLink: false});
-  };
-
-  unwrapFakeSelection = () => {
-    if(this.fakeSelection) {
-      this.fakeSelection.unwrap();
-      this.fakeSelection = undefined;
-    }
-  };
-
-  closeModal = () => {
-    this.modal.hide();
-    this.unwrapFakeSelection();
-  };
-
-  createReference = () => {
-    let reference = this.modal.value();
-    reference.sourceDocument = this.state.value._id;
-    reference.sourceRange = this.selection;
-
+  saveReference = (reference) => {
     return api.post('references', reference)
     .then(() => {
-      let wrapper = document.createElement('span');
-      wrapper.classList.add('reference');
-
-      this.closeModal();
-      wrap(wrapper, TextRange.restore(reference.sourceRange, this.contentContainer));
-
+      this.document.wrapReference(reference);
+      this.document.closeModal();
       events.emit('alert', 'success', 'Reference created.');
     });
   };
@@ -206,15 +125,13 @@ class ViewerController extends RouteHandler {
               <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
                 <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
 
-                <ReferenceForm onClose={this.closeModal} onSubmit={this.createReference} ref={(ref) => this.modal = ref}/>
+                <Document
+                  ref={(ref) => this.document = ref}
+                  onCreateReference={this.saveReference}
+                  document={this.state.value}
+                  references={this.state.references}
+                />
 
-                <div className="pages" ref={(ref) => this.contentContainer = ref} onMouseUp={this.textSelection} onTouchEnd={this.textSelection}>
-                  {this.state.value.pages.map((page, index) => {
-                    let html = {__html: page}
-                    let id = 'pf'+index;
-                    return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
-                  })}
-                </div>
               </div>
             </div>
             <div className={panelClass}>
@@ -237,10 +154,6 @@ class ViewerController extends RouteHandler {
               </div>
             </div>
           </div>
-            {this.state.value.css.map((css, index) => {
-              let html = {__html: css}
-              return <style type="text/css" key={index} dangerouslySetInnerHTML={html}></style>
-            })}
         </div>
       </div>
     )
