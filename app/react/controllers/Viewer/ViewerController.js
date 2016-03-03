@@ -33,6 +33,7 @@ class ViewerController extends RouteHandler {
   static emptyState(){
     return {
       value:{pages:[], css:[], metadata: {}},
+      references: [],
       template: {value: {}},
       showmenu: false,
       showpanel:false,
@@ -47,8 +48,9 @@ class ViewerController extends RouteHandler {
 
   saveReference = (reference) => {
     return api.post('references', reference)
-    .then(() => {
-      this.document.wrapReference(reference);
+    .then((response) => {
+      reference._id = response.json.id;
+      this.document.addReference({value: reference});
       this.document.closeModal();
       events.emit('alert', 'success', 'Reference created.');
     });

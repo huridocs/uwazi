@@ -24,7 +24,8 @@ describe('Document', () => {
   ];
 
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<Document document={doc}/>);
+    let references = [];
+    component = TestUtils.renderIntoDocument(<Document document={doc} references={references}/>);
     contentContainer = TestUtils.findRenderedDOMComponentWithClass(component, 'pages');
   });
 
@@ -176,6 +177,16 @@ describe('Document', () => {
 
     });
 
+  });
+
+  describe('addReference()', () => {
+    it('should add the reference to props.references and render it', () => {
+      spyOn(component, 'wrapReference');
+      component.addReference({value:{_id:'id'}});
+
+      expect(component.props.references).toEqual([{value:{_id:'id'}}]);
+      expect(component.wrapReference).toHaveBeenCalledWith({_id:'id'});
+    });
   });
 
   describe('openModal', () => {

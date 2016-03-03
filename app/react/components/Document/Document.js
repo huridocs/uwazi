@@ -81,6 +81,11 @@ class Document extends Component {
     }
   }
 
+  addReference = (reference) => {
+    this.props.references.push(reference);
+    this.wrapReference(reference.value);
+  }
+
   wrapReference = (reference) => {
     let range = TextRange.restore(reference.sourceRange, this.contentContainer)
     let wrapper = document.createElement('span');

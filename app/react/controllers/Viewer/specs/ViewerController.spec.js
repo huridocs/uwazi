@@ -28,7 +28,7 @@ describe('ViewerController', () => {
     .mock(APIURL+'templates?key=1', 'GET', {body: JSON.stringify({rows:templateResponse})})
     .mock(APIURL+'references?sourceDocument=1', 'GET', {body: JSON.stringify({rows:[{title:1}]})})
     .mock(APIURL+'references?sourceDocument=newId', 'GET', {body: JSON.stringify( { rows:[ {value:{title:'new'}} ] })})
-    .mock(APIURL+'references', 'POST', {body: JSON.stringify({})});
+    .mock(APIURL+'references', 'POST', {body: JSON.stringify({id:'newReferenceId'})});
   });
 
   describe('static requestState', () => {
@@ -76,14 +76,16 @@ describe('ViewerController', () => {
     });
 
     describe('on success', () => {
-      it('should render the reference on the document', (done) => {
-        spyOn(component.document, 'wrapReference');
+      it('should add the reference on the document', (done) => {
+        spyOn(component.document, 'addReference');
 
         component.saveReference({reference: 'reference'})
         .then(() => {
-          expect(component.document.wrapReference).toHaveBeenCalledWith({reference:'reference'});
+          expect(component.document.addReference).toHaveBeenCalledWith({value: {_id:'newReferenceId', reference:'reference'}});
           done();
-        });
+        })
+        .catch(done.fail);
+
       });
 
       it('should close document modal', () => {
@@ -109,7 +111,8 @@ describe('ViewerController', () => {
           expect(eventType).toBe('success');
           expect(eventMessage).toBe('Reference created.');
           done();
-        });
+        })
+        .catch(done.fail);
       });
     });
 
