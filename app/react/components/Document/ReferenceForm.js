@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import api from '../../utils/singleton_api'
+import './scss/reference_form.scss'
 
 class ReferenceForm extends Component {
 

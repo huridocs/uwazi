@@ -151,7 +151,7 @@ class Document extends Component {
   renderUI = () => {
     if(this.state.targetDocument){
       return (
-        <div>
+        <div className="reference-banner">
           <p>you are coming from</p>
           <p>{this.props.document.title}</p>
           <p>you are referencing to</p>

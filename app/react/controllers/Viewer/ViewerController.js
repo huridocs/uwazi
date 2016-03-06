@@ -102,9 +102,6 @@ class ViewerController extends RouteHandler {
       top: this.state.textSelectedTop
     };
 
-    //let modalStyles = {
-      //top: this.state.textSelectedTop
-    //};
     return (
       <div className="viewer">
         <nav className="nav  navbar-default navbar-fixed-top">
@@ -112,8 +109,8 @@ class ViewerController extends RouteHandler {
             <div className="navbar-header">
               <Link to='/' className="navbar-brand"><LogoIcon/></Link>
               <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
-              <button onClick={this.toggleMenu} href="" type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
-              <button onClick={this.togglePanel} href="" type="button" className={panelToggleClass}><i className="fa fa-cog"/></button>
+              <button onClick={this.toggleMenu} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
+              <button onClick={this.togglePanel} type="button" className={panelToggleClass}><i className="fa fa-cog"/></button>
             </div>
             <ul className="nav navbar-nav navbar-tools">
               <li>
@@ -138,7 +135,6 @@ class ViewerController extends RouteHandler {
           <div className="row panels-layout viewer__pages">
             <div className={viewerClass}>
               <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
-                <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
 
                 <Document
                   ref={(ref) => this.document = ref}
