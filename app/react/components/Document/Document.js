@@ -3,6 +3,7 @@ import wrap from 'wrap-range-text'
 import ReferenceForm from './ReferenceForm'
 import TextRange from 'batarange'
 import { browserHistory } from 'react-router'
+import api from '../../utils/singleton_api'
 
 class Document extends Component {
 
@@ -33,9 +34,10 @@ class Document extends Component {
     this.unwrapFakeSelection();
 
     if(window.getSelection().toString() === ''){
-      this.modal.hide();
-      return this.setState({showReferenceLink: false});
+      this.closeModal();
+      return this.setState({textIsSelected: false});
     }
+
     this.onTextSelected();
   }
 
@@ -43,26 +45,51 @@ class Document extends Component {
     let range = window.getSelection().getRangeAt(0);
     this.serializedRange = TextRange.serialize(range, this.contentContainer);
     this.simulateSelection(range);
-    this.setState({showReferenceLink: true});
+    this.setState({textIsSelected: true});
   }
 
   createReference = () => {
-    this.props.onCreateReference(this.getReference());
+    this.props.onCreateReference(this.reference);
   }
 
-  getReference = () => {
-    let reference = this.modal.value();
+  createPartSelection = () => {
+    this.setState({targetDocument: undefined, textIsSelected: false});
+    this.referencesAlreadyRendered = false;
+
+    this.reference.targetRange = this.serializedRange;
+    this.createReference();
+  }
+
+  referenceFormSubmit = (reference) => {
     reference.sourceDocument = this.props.document._id;
     reference.sourceRange = this.serializedRange;
-    return reference;
+    this.reference = reference;
+
+    if(!this.modal.state.selectPart){
+      return this.createReference();
+    }
+
+    return this.loadTargetDocument();
+  }
+
+  loadTargetDocument = () => {
+    let promise = api.get('documents?_id='+this.modal.state.documentSelected)
+    .then((response) => {
+      let document = response.json.rows[0].value;
+      this.setState({targetDocument: document});
+    });
+
+    this.setState({targetDocument: {pages:[], css:[]}});
+
+    return promise;
   }
 
   componentDidMount = () => {
-      this.renderReferences();
+    this.renderReferences();
   }
 
   componentDidUpdate = () => {
-      this.renderReferences();
+    this.renderReferences();
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -111,18 +138,34 @@ class Document extends Component {
   openModal = () => {
     this.modal.show();
     this.modal.search();
-    this.setState({showReferenceLink: false});
+    this.setState({textIsSelected: false});
   }
 
   closeModal = () => {
     this.unwrapFakeSelection();
-    this.modal.hide();
+    if(this.modal){
+      this.modal.hide();
+    }
   }
 
-  render = () => {
+  renderUI = () => {
+    if(this.state.targetDocument){
+      return (
+        <div>
+          <p>you are coming from</p>
+          <p>{this.props.document.title}</p>
+          <p>you are referencing to</p>
+          <p>origin text selection</p>
+          <button onClick={this.createPartSelection} className="btn btn-primary">
+            <i className="fa fa-link"></i>&nbsp;
+            Create reference
+          </button>
+        </div>
+      );
+    }
 
     let display = 'none';
-    if(this.state.showReferenceLink){
+    if(this.state.textIsSelected){
       display = 'block';
     };
 
@@ -133,17 +176,27 @@ class Document extends Component {
     return (
       <div>
         <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
-        <ReferenceForm ref={(ref) => this.modal = ref} onClose={this.closeModal} onSubmit={this.createReference}/>
+        <ReferenceForm ref={(ref) => this.modal = ref} onClose={this.closeModal} onSubmit={this.referenceFormSubmit}/>
+      </div>
+    );
+  }
 
+  render = () => {
+
+    let document = this.state.targetDocument || this.props.document;
+
+    return (
+      <div>
+        {this.renderUI()}
         <div ref={(ref) => this.contentContainer = ref} onClick={this.handleClick} className="pages" onMouseUp={this.textSelectionHandler} onTouchEnd={this.textSelectionHandler}>
-          {this.props.document.pages.map((page, index) => {
+          {document.pages.map((page, index) => {
             let html = {__html: page}
             let id = index;
             return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
           })}
         </div>
 
-        {this.props.document.css.map((css, index) => {
+        {document.css.map((css, index) => {
           let html = {__html: css}
           return <style type="text/css" key={index} dangerouslySetInnerHTML={html}></style>
         })}

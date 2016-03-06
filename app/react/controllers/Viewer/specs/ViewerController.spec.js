@@ -68,7 +68,7 @@ describe('ViewerController', () => {
   describe('saveReference', () => {
 
     it('should save the reference', () => {
-      spyOn(component.document, 'getReference').and.returnValue({reference:'reference'});
+      component.document.reference = {reference:'reference'};
 
       component.document.createReference();
       expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({reference:'reference'}));

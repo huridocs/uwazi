@@ -9,8 +9,9 @@ class ReferenceForm extends Component {
   }
 
   submit = (e) => {
-    e.preventDefault();
-    this.props.onSubmit();
+    if(e){ e.preventDefault(); }
+
+    this.props.onSubmit(this.value());
   };
 
   value = () => {
@@ -52,6 +53,14 @@ class ReferenceForm extends Component {
     this.props.onClose();
   };
 
+  selectPart = () => {
+    this.setState({selectPart: true});
+  };
+
+  selectEntire = () => {
+    this.setState({selectPart: false});
+  };
+
   render = () => {
 
     let className = 'ref-modal';
@@ -88,10 +97,10 @@ class ReferenceForm extends Component {
           <form onSubmit={this.submit} className="ref-modal-link">
             <div className="form-group">
               <div className="link-to-label">Link to</div>
-              <label className="radio-inline">
-                <input type="radio" name="linkto" value="entire" /> Entire document
+              <label className="radio-inline" onClick={this.selectEntire}>
+                <input type="radio" name="linkto" value="entire" defaultChecked="checked" /> Entire document
               </label>
-              <label className="radio-inline">
+              <label className="radio-inline" onClick={this.selectPart}>
                 <input type="radio" name="linkto" value="part" /> Part of document
               </label>
             </div>
@@ -106,7 +115,10 @@ class ReferenceForm extends Component {
               </select>
             </div>
             </form>
-            <button onClick={this.submit} className="btn btn-primary"><i className="fa fa-link"></i> Create reference</button>
+            <button onClick={this.submit} className="btn btn-primary">
+              <i className="fa fa-link"></i>&nbsp;
+              {this.state.selectPart ? 'Select text' : 'Create reference'}
+            </button>
           </div>
         </div>
       </div>

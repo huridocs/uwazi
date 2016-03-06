@@ -11,6 +11,7 @@ describe('ReferenceForm', () => {
 
   let documents = [{key:'secret documents', value:{}}, {key:'real batman id', value:{}}];
   let searchDocuments = [{_id:'doc1', value:{}}, {_id:'doc2', value:{}}];
+  let onSubmit;
 
   beforeEach(() => {
     backend.restore();
@@ -18,7 +19,18 @@ describe('ReferenceForm', () => {
     .mock(APIURL+'documents/search', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL+'documents/search?searchTerm=searchTerm', 'GET', {body: JSON.stringify(searchDocuments)})
 
-    component = TestUtils.renderIntoDocument(<ReferenceForm/>);
+    onSubmit = jasmine.createSpy('onSubmit');
+    component = TestUtils.renderIntoDocument(<ReferenceForm onSubmit={onSubmit}/>);
+  });
+
+  describe('submit()', () => {
+    it('should call props.onSubmit passing the value', () => {
+      component.title.value = 'title';
+      component.state.documentSelected = 'documentSelected';
+      component.submit();
+
+      expect(onSubmit).toHaveBeenCalledWith({title:'title', targetDocument: 'documentSelected'});
+    });
   });
 
   describe('on instance', () => {
@@ -49,6 +61,20 @@ describe('ReferenceForm', () => {
       let value = component.value();
       expect(value).toEqual({title:'test title', targetDocument: 'doc1'});
     })
+  });
+
+  describe('selectPart()', () => {
+    it('should set selectPart state to true', () => {
+      component.selectPart();
+      expect(component.state.selectPart).toBe(true);
+    });
+  });
+
+  describe('selectEntire()', () => {
+    it('should set selectPart state to false', () => {
+      component.selectEntire();
+      expect(component.state.selectPart).toBe(false);
+    });
   });
 
   describe('selectDocument()', () => {

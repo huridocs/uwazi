@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import Document from '../Document.js';
 import TestUtils from 'react-addons-test-utils'
+import backend from 'fetch-mock'
+import {APIURL} from '../../../config.js'
 
 describe('Document', () => {
 
@@ -23,9 +25,13 @@ describe('Document', () => {
     {value: {sourceRange: {start: 1, end: 3}}}
   ];
 
+  let onCreateReference;
+
   beforeEach(() => {
     let references = [];
-    component = TestUtils.renderIntoDocument(<Document document={doc} references={references}/>);
+
+    onCreateReference = jasmine.createSpy('onCreateReference');
+    component = TestUtils.renderIntoDocument(<Document onCreateReference={onCreateReference} document={doc} references={references}/>);
     contentContainer = TestUtils.findRenderedDOMComponentWithClass(component, 'pages');
   });
 
@@ -98,11 +104,11 @@ describe('Document', () => {
       expect(contentContainer.childNodes[0].innerHTML).toBe('p<span class="fake-selection">ag</span>e1');
     });
 
-    it('should showReferenceLink', function(){
+    it('should set textIsSelected to true', function(){
       stubSelection('selectedText');
 
       component.onTextSelected();
-      expect(component.state.showReferenceLink).toBe(true);
+      expect(component.state.textIsSelected).toBe(true);
     });
 
     it('should save the serialized range in component.serializedRange', () => {
@@ -127,13 +133,13 @@ describe('Document', () => {
     });
 
     describe('when no text selected', () => {
-      it('should set showReferenceLink false and hide the modal', () => {
+      it('should set textIsSelected false and hide the modal', () => {
         spyOn(component.modal, 'hide');
         stubSelection('');
         component.textSelectionHandler();
 
         expect(component.modal.hide).toHaveBeenCalled();
-        expect(component.state.showReferenceLink).toBe(false);
+        expect(component.state.textIsSelected).toBe(false);
       });
     });
   });
@@ -167,16 +173,119 @@ describe('Document', () => {
     });
 
     it('should execute onCreateReference callback passing reference', () => {
+      let reference = {reference:'reference'};
+      component.reference = reference;
       component.createReference()
 
-      expect(referenceCreated).toEqual({
-        modalValue: 'value',
-        sourceDocument: 'documentId',
-        sourceRange: {range: 'range'}
-      });
-
+      expect(referenceCreated).toEqual(reference);
     });
 
+  });
+
+  describe('referenceFormSubmit()', () => {
+
+    beforeEach(() => {
+
+      let targetDocument = {
+        value: {
+          pages: ['new document page'],
+          css: []
+        }
+      };
+
+      backend.restore();
+      backend
+      .mock(APIURL+'documents?_id=documentSelectedId', 'GET', {body: JSON.stringify({rows:[targetDocument]})});
+    });
+
+    it('should save reference sent to this.reference with source Document and range', () => {
+      spyOn(component, 'createReference');
+      let reference = {};
+      component.props.document._id = 'docId';
+      component.serializedRange = 'range';
+
+      component.referenceFormSubmit(reference);
+
+      expect(component.reference).toBe(reference);
+      expect(reference.sourceDocument).toBe('docId');
+      expect(reference.sourceRange).toBe('range');
+    });
+
+    describe('when reference its to an entire document', () => {
+      it('should createReference', () => {
+        component.modal.state.selectPart = false;
+        spyOn(component, 'createReference');
+
+        component.referenceFormSubmit({});
+
+        expect(component.createReference).toHaveBeenCalled();
+      });
+
+      it('should not loadTargetDocument', () => {
+        spyOn(component, 'createReference');
+        spyOn(component, 'loadTargetDocument');
+
+        component.referenceFormSubmit({});
+
+        expect(component.loadTargetDocument).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should set a blank targetDocument', () => {
+      component.modal.state.selectPart = true;
+      component.referenceFormSubmit({})
+      expect(component.state.targetDocument).toEqual({pages:[], css:[]});
+    });
+
+    describe('when reference its to a part of document', () => {
+      it('should request the target document', (done) => {
+        spyOn(component, 'createReference');
+        component.modal.state.selectPart = true;
+        component.modal.state.documentSelected = 'documentSelectedId';
+
+        component.referenceFormSubmit({})
+        .then(() => {
+          expect(component.createReference).not.toHaveBeenCalled();
+          expect(backend.calls().matched[0][0]).toBe(APIURL+'documents?_id=documentSelectedId');
+          expect(component.contentContainer.childNodes[0].innerHTML).toBe('new document page');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('createPartSelection()', () => {
+    beforeEach(() => {
+      component.state.targetDocument = {pages:[], css:[]};
+      component.state.textIsSelected = true;
+      component.reference = {};
+      component.serializedRange = 'targetRange';
+    });
+
+    it('should add targetRange', () => {
+      component.createPartSelection();
+
+      expect(onCreateReference).toHaveBeenCalledWith({targetRange: 'targetRange'});
+    });
+
+    it('should set targetDocument to undefined', () => {
+      component.createPartSelection();
+
+      expect(component.state.targetDocument).toBe(undefined);
+    });
+
+    it('should set textIsSelected to false', () => {
+      component.createPartSelection();
+
+      expect(component.state.textIsSelected).toBe(false);
+    });
+
+    it('should render the references again on sourceDocument', () => {
+      component.referencesAlreadyRendered = true;
+
+      component.createPartSelection();
+      expect(component.referencesAlreadyRendered).toBe(false);
+    });
   });
 
   describe('addReference()', () => {
@@ -198,7 +307,7 @@ describe('Document', () => {
 
       expect(component.modal.show).toHaveBeenCalled();
       expect(component.modal.search).toHaveBeenCalled();
-      expect(component.state.showReferenceLink).toBe(false);
+      expect(component.state.textIsSelected).toBe(false);
     });
   });
 
@@ -211,6 +320,13 @@ describe('Document', () => {
 
       expect(component.modal.hide).toHaveBeenCalled();
       expect(component.unwrapFakeSelection).toHaveBeenCalled();
+    });
+
+    describe('when component.modal is undefined', () => {
+      it('should not throw any errors', () => {
+        component.modal = undefined;
+        component.closeModal();
+      });
     });
   });
 
