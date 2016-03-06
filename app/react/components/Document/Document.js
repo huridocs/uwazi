@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import wrap from 'wrap-range-text'
-import ReferenceForm from '../ReferenceForm/ReferenceForm'
+import ReferenceForm from './ReferenceForm'
 import TextRange from 'batarange'
 import { browserHistory } from 'react-router'
 
