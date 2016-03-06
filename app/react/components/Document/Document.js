@@ -4,6 +4,7 @@ import ReferenceForm from './ReferenceForm'
 import TextRange from 'batarange'
 import { browserHistory } from 'react-router'
 import api from '../../utils/singleton_api'
+import wrapper from '../../utils/wrapper'
 import './scss/document.scss'
 
 class Document extends Component {
@@ -116,24 +117,25 @@ class Document extends Component {
 
   wrapReference = (reference) => {
     let range = TextRange.restore(reference.sourceRange, this.contentContainer)
-    let wrapper = document.createElement('span');
+
+    let elementWrapper = document.createElement('span');
     if(reference.title){
-      wrapper.setAttribute('title', reference.title);
+      elementWrapper.setAttribute('title', reference.title);
     }
 
-    wrapper.classList.add('reference');
+    elementWrapper.classList.add('reference');
 
     if(reference._id){
-      wrapper.setAttribute('ref', reference._id);
+      elementWrapper.setAttribute('ref', reference._id);
     }
 
-    wrap(wrapper, range);
+    wrapper.wrap(elementWrapper, range)
   }
 
   simulateSelection = (range) => {
-    let wrapper = document.createElement('span');
-    wrapper.classList.add('fake-selection');
-    this.fakeSelection = wrap(wrapper, range);
+    let elementWrapper = document.createElement('span');
+    elementWrapper.classList.add('fake-selection');
+    this.fakeSelection = wrapper.wrap(elementWrapper, range);
   }
 
   toggleModal = () => {

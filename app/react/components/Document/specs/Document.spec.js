@@ -4,6 +4,7 @@ import Document from '../Document.js';
 import TestUtils from 'react-addons-test-utils'
 import backend from 'fetch-mock'
 import {APIURL} from '../../../config.js'
+import wrapper from '../../../utils/wrapper'
 
 describe('Document', () => {
 
@@ -29,6 +30,8 @@ describe('Document', () => {
 
   beforeEach(() => {
     let references = [];
+
+    spyOn(wrapper, 'wrap');
 
     onCreateReference = jasmine.createSpy('onCreateReference');
     component = TestUtils.renderIntoDocument(<Document onCreateReference={onCreateReference} document={doc} references={references}/>);
@@ -87,10 +90,14 @@ describe('Document', () => {
 
   describe('onTextSelected', () => {
     it('should wrap the selection with a class fake-selection span', () => {
-      stubSelection('text');
+      let range = stubSelection('text');
 
       component.onTextSelected();
-      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span class="fake-selection">ag</span>e1');
+
+      let args = wrapper.wrap.calls.mostRecent().args;
+      expect(wrapper.wrap).toHaveBeenCalled();
+      expect(args[0].tagName).toBe('SPAN');
+      expect(args[1]).toEqual(range);
     });
 
     it('should set textIsSelected to true', function(){
@@ -142,7 +149,11 @@ describe('Document', () => {
       };
 
       component.wrapReference(reference);
-      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span ref="referenceId" class="reference" title="referenceTitle">age</span>1');
+
+      let args = wrapper.wrap.calls.mostRecent().args;
+      expect(wrapper.wrap).toHaveBeenCalled();
+      expect(args[0].tagName).toBe('SPAN');
+      expect(args[1]).toEqual(createRange(1, 4));
     });
   });
 
@@ -363,25 +374,43 @@ describe('Document', () => {
   describe('componentDidUpdate', () => {
     it('should render props.references once', () => {
       forceComponentUpdate();
-      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference">ag</span>e1');
+
+      let args = wrapper.wrap.calls.mostRecent().args;
+      expect(wrapper.wrap).toHaveBeenCalled();
+      expect(args[0].tagName).toBe('SPAN');
+      expect(args[1]).toEqual(createRange());
+
+      wrapper.wrap.calls.reset();
       forceComponentUpdate();
-      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference">ag</span>e1');
+      expect(wrapper.wrap).not.toHaveBeenCalled();
     });
   });
+
 
   describe('componentDidMount', () => {
     it('should render props.references', () => {
       component = TestUtils.renderIntoDocument(<Document document={doc} references={references}/>);
       contentContainer = TestUtils.findRenderedDOMComponentWithClass(component, 'pages');
-      expect(contentContainer.childNodes[0].innerHTML).toBe('p<span class="reference">ag</span>e1');
+      let args = wrapper.wrap.calls.mostRecent().args;
+      expect(wrapper.wrap).toHaveBeenCalled();
+      expect(args[0].tagName).toBe('SPAN');
+      expect(args[1]).toEqual(createRange());
+
     });
   });
+
+  let createRange = (start=1, end=3) => {
+    var range = document.createRange();
+    let page1 = contentContainer.childNodes[0].childNodes[0];
+    range.setStart(page1, start);
+    range.setEnd(page1, end);
+    return range;
+  }
 
   let stubSelection = (selectionText = '', range) => {
     if(!range){
       var range = document.createRange();
       let page1 = contentContainer.childNodes[0].childNodes[0];
-
       range.setStart(page1, 1);
       range.setEnd(page1, 3);
     }
@@ -402,6 +431,9 @@ describe('Document', () => {
         }
       }
     }
+
+    return range;
+
   }
 
   let forceComponentUpdate = () => {
