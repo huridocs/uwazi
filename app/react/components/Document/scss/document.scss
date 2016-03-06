@@ -1,0 +1,67 @@
+@import "../../../controllers/App/scss/Vars.scss";
+
+
+.reference-banner {
+
+  width: 100%;
+  background-color: $backGroundColor4;
+  padding: 20px 0 0 20px;
+  display: table;
+
+  &-row {
+    display: table-row;
+
+    div {
+      text-align: left;
+      color: white;
+      padding-bottom: 20px;
+      display: table-cell;
+
+      &:first-child {
+        text-transform: uppercase;
+        text-align: right;
+        width: 25%;
+        padding-right: 20px;
+      }
+    }
+  }
+}
+
+
+.pages {
+  span.fake-selection {
+    background-color: rgba(127, 255, 255, 0.4);
+  }
+
+  span.reference {
+    background-color: yellow;
+    cursor: pointer;
+  }
+
+  @for $i from 8 through 100 {
+    $pageWidth: 792px;
+    $pagesContainerWidthpercentage: 0.6;
+    $mobileWidth: 825px;
+
+    $width: $i * 25px;
+
+    @if($width < $mobileWidth) {
+      $pagesContainerWidthpercentage: 0.8;
+    }
+
+    $zoom: ($width * $pagesContainerWidthpercentage) / $pageWidth;
+
+    @if($zoom >= 1){
+      $zoom: 1
+    }
+
+    @media (min-width: $width - 50px) and (max-width: $width) {
+      zoom: $zoom;
+      -webkit-text-size-adjust: $zoom * 100%;
+    }
+  }
+
+  > div {
+    border-bottom: 2px solid $softFontColor;
+  }
+}

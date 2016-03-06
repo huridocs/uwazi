@@ -54,17 +54,6 @@ describe('Document', () => {
     });
   });
 
-  describe('link button', () => {
-    it('should open the referenceForm', () => {
-      spyOn(component.modal, 'show');
-      let linkButton = TestUtils.findRenderedDOMComponentWithClass(component, 'ref-button');
-
-      TestUtils.Simulate.click(linkButton);
-
-      expect(component.modal.show).toHaveBeenCalled();
-    });
-  });
-
   describe('onMouseUp/onTouchEnd', () => {
     describe('when text selected', () => {
       it('should call onTextSelected', () => {
@@ -299,7 +288,8 @@ describe('Document', () => {
   });
 
   describe('openModal', () => {
-    it('should show modal and hide the referenceLink ', () => {
+    it('should show modal', () => {
+      component.state.textIsSelected = true;
       spyOn(component.modal, 'show');
       spyOn(component.modal, 'search');
 
@@ -307,8 +297,20 @@ describe('Document', () => {
 
       expect(component.modal.show).toHaveBeenCalled();
       expect(component.modal.search).toHaveBeenCalled();
-      expect(component.state.textIsSelected).toBe(false);
     });
+
+    describe('when no text is selected', () => {
+      it('should do nothing', function(){
+        component.state.textIsSelected = false;
+        spyOn(component.modal, 'show');
+        spyOn(component.modal, 'search');
+
+        component.openModal();
+
+        expect(component.modal.show).not.toHaveBeenCalled();
+        expect(component.modal.search).not.toHaveBeenCalled();
+      })
+    })
   });
 
   describe('closeModal', () => {
@@ -320,6 +322,26 @@ describe('Document', () => {
 
       expect(component.modal.hide).toHaveBeenCalled();
       expect(component.unwrapFakeSelection).toHaveBeenCalled();
+    });
+
+    describe('toggleModal', () => {
+      describe('when the modal es opened', () => {
+        it('should close it', () => {
+          spyOn(component, 'closeModal');
+          component.modal.state.show = true;
+          component.toggleModal();
+          expect(component.closeModal).toHaveBeenCalled();
+        });
+      });
+
+      describe('when the modal es closed', () => {
+        it('should open it', () => {
+          spyOn(component, 'openModal');
+          component.modal.state.show = false;
+          component.toggleModal();
+          expect(component.openModal).toHaveBeenCalled();
+        });
+      });
     });
 
     describe('when component.modal is undefined', () => {

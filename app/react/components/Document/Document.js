@@ -4,6 +4,7 @@ import ReferenceForm from './ReferenceForm'
 import TextRange from 'batarange'
 import { browserHistory } from 'react-router'
 import api from '../../utils/singleton_api'
+import './scss/document.scss'
 
 class Document extends Component {
 
@@ -135,10 +136,16 @@ class Document extends Component {
     this.fakeSelection = wrap(wrapper, range);
   }
 
+  toggleModal = () => {
+      this.modal.state.show ? this.closeModal() : this.openModal()
+  }
+
   openModal = () => {
+    if(!this.state.textIsSelected) {
+      return;
+    }
     this.modal.show();
     this.modal.search();
-    this.setState({textIsSelected: false});
   }
 
   closeModal = () => {
@@ -152,30 +159,38 @@ class Document extends Component {
     if(this.state.targetDocument){
       return (
         <div className="reference-banner">
-          <p>you are coming from</p>
-          <p>{this.props.document.title}</p>
-          <p>you are referencing to</p>
-          <p>origin text selection</p>
-          <button onClick={this.createPartSelection} className="btn btn-primary">
-            <i className="fa fa-link"></i>&nbsp;
-            Create reference
-          </button>
+              <div className="reference-banner-row">
+                <div>
+                  You are coming from
+                </div>
+                <div>
+                  {this.props.document.title}
+                </div>
+              </div>
+              <div className="reference-banner-row">
+                <div>
+                  You are referencing to
+                </div>
+                <div>
+                  ...
+                </div>
+              </div>
+              <div className="reference-banner-row">
+                <div>
+                </div>
+                <div>
+                  <button onClick={this.createPartSelection} className="btn btn-primary">
+                    <i className="fa fa-link"></i>&nbsp;
+                    Create reference
+                  </button>
+                </div>
+              </div>
         </div>
       );
     }
 
-    let display = 'none';
-    if(this.state.textIsSelected){
-      display = 'block';
-    };
-
-    let textSelectionLinkStyles = {
-      display: display
-    };
-
     return (
       <div>
-        <div className="ref-button btn-primary" style={textSelectionLinkStyles} onClick={this.openModal}><i className="fa fa-link"></i></div>
         <ReferenceForm ref={(ref) => this.modal = ref} onClose={this.closeModal} onSubmit={this.referenceFormSubmit}/>
       </div>
     );
@@ -188,12 +203,14 @@ class Document extends Component {
     return (
       <div>
         {this.renderUI()}
-        <div ref={(ref) => this.contentContainer = ref} onClick={this.handleClick} className="pages" onMouseUp={this.textSelectionHandler} onTouchEnd={this.textSelectionHandler}>
-          {document.pages.map((page, index) => {
-            let html = {__html: page}
-            let id = index;
-            return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
-          })}
+        <div className="panel-content">
+          <div ref={(ref) => this.contentContainer = ref} onClick={this.handleClick} className="pages" onMouseUp={this.textSelectionHandler} onTouchEnd={this.textSelectionHandler}>
+            {document.pages.map((page, index) => {
+              let html = {__html: page}
+              let id = index;
+              return <div id={id} key={index} dangerouslySetInnerHTML={html} ></div>
+            })}
+          </div>
         </div>
 
         {document.css.map((css, index) => {

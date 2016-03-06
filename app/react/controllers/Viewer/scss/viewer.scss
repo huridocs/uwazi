@@ -8,45 +8,6 @@
     -webkit-text-size-adjust: none;
   }
 
-  .pages {
-
-    span.fake-selection {
-      background-color: rgba(127, 255, 255, 0.4);
-    }
-
-    span.reference {
-      background-color: yellow;
-      cursor: pointer;
-    }
-
-    @for $i from 8 through 100 {
-      $pageWidth: 792px;
-      $pagesContainerWidthpercentage: 0.6;
-      $mobileWidth: 825px;
-
-      $width: $i * 25px;
-
-      @if($width < $mobileWidth) {
-        $pagesContainerWidthpercentage: 0.8;
-      }
-
-      $zoom: ($width * $pagesContainerWidthpercentage) / $pageWidth;
-
-      @if($zoom >= 1){
-        $zoom: 1
-      }
-
-      @media (min-width: $width - 50px) and (max-width: $width) {
-        zoom: $zoom;
-        -webkit-text-size-adjust: $zoom * 100%;
-      }
-    }
-
-    > div {
-      border-bottom: 2px solid $softFontColor;
-    }
-  }
-
   .navbar-default .navbar-nav li a {
     color: $hardFontColor;
   }
@@ -63,7 +24,7 @@
     }
   }
 
-  .go-back {
+  .go-back, .create-ref {
     border: 3px solid $infoColor;
     border-radius: 3px;
     line-height: 35px;
@@ -72,6 +33,7 @@
     display: block;
     float: left;
     color: $hardFontColor;
+    cursor: pointer;
 
     .fa {
       font-size: 1.3em;
@@ -85,6 +47,17 @@
       @media #{$xs} {
         display: none;
       }
+    }
+  }
+
+  .create-ref {
+    border-color: black;
+    margin-left: 10px;
+
+    @media #{$xs} {
+      padding: 0 30px;
+      line-height: 33px;
+      padding-top: 2px;
     }
   }
 

@@ -45,6 +45,7 @@ class ViewerController extends RouteHandler {
   toggleMenu = () => {this.setState({showmenu: !this.state.showmenu})};
   togglePanel = () => {this.setState({showpanel: !this.state.showpanel})};
   closeMenu = () => {this.setState({showmenu: false})};
+  toggleModal = () => {this.document.toggleModal()};
 
   saveReference = (reference) => {
     return api.post('references', reference)
@@ -71,37 +72,6 @@ class ViewerController extends RouteHandler {
 
   render = () => {
 
-    let menuClass = 'navbar-collapse collapse';
-    let menuToggleClass = "navbar-toggle ";
-
-    if(this.state.showmenu) {
-      menuClass += ' in';
-      menuToggleClass += "active";
-    }
-
-    let viewerClass = "col-xs-12 col-sm-8 panels-layout__panel no-padding ";
-
-    let panelClass = "col-xs-12 col-sm-4 panels-layout__panel no-padding "
-    let panelToggleClass = "navbar-toggle ";
-
-    if(this.state.showpanel) {
-      panelClass += 'active';
-      panelToggleClass += 'active';
-    }
-    else {
-      viewerClass += 'active';
-    }
-
-    let display = "none";
-    if(this.state.showReferenceLink){
-      display = "block";
-    };
-
-    let textSelectionLinkStyles = {
-      display: display,
-      top: this.state.textSelectedTop
-    };
-
     return (
       <div className="viewer">
         <nav className="nav  navbar-default navbar-fixed-top">
@@ -109,43 +79,40 @@ class ViewerController extends RouteHandler {
             <div className="navbar-header">
               <Link to='/' className="navbar-brand"><LogoIcon/></Link>
               <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
-              <button onClick={this.toggleMenu} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
-              <button onClick={this.togglePanel} type="button" className={panelToggleClass}><i className="fa fa-cog"/></button>
+              <ul className="nav navbar-nav navbar-tools">
+                <li>
+                  <a><i className="fa fa-bookmark-o"></i></a>
+                </li>
+                <li>
+                  <a><i className="fa fa-search"></i></a>
+                </li>
+                <li>
+                  <a><i className="glyphicon glyphicon-text-size"></i></a>
+                </li>
+                <li>
+                  <a><i className="fa fa-cloud-download"></i></a>
+                </li>
+              </ul>
+              <a className="create-ref" onClick={this.toggleModal}><i className="fa fa-link"></i> Reference</a>
+              <button onClick={this.toggleMenu} type="button" className={"navbar-toggle" + (this.state.showmenu ? " active" : "")}><i className="fa fa-bars"/></button>
+              <button onClick={this.togglePanel} type="button" className={"navbar-toggle" + (this.state.showpanel ? " active" : "")}><i className="fa fa-cog"/></button>
             </div>
-            <ul className="nav navbar-nav navbar-tools">
-              <li>
-                <a href="#" className=""><i className="fa fa-bookmark-o"></i></a>
-              </li>
-              <li>
-                <a href="#" className=""><i className="fa fa-search"></i></a>
-              </li>
-              <li>
-                <a href="#" className=""><i className="glyphicon glyphicon-text-size"></i></a>
-              </li>
-              <li>
-                <a href="#" className=""><i className="fa fa-cloud-download"></i></a>
-              </li>
-            </ul>
-            <div onClick={this.closeMenu} id="navbar" className={menuClass}>
+            <div onClick={this.closeMenu} id="navbar" className={this.state.showmenu ? "navbar-collapse collapse in" : "navbar-collapse collapse" }>
               <Menu className="nav navbar-nav navbar-right" user={this.props.user}/>
             </div>
          </div>
         </nav>
         <div className='container-fluid contents-wrapper'>
           <div className="row panels-layout viewer__pages">
-            <div className={viewerClass}>
-              <div className="panel-content" ref={(ref) => this.pagesContainer = ref}>
-
+            <div className={"col-xs-12 col-sm-8 panels-layout__panel no-padding " + (this.state.showpanel ? "" : "active")}>
                 <Document
                   ref={(ref) => this.document = ref}
                   onCreateReference={this.saveReference}
                   document={this.state.value}
                   references={this.state.references}
                 />
-
-              </div>
             </div>
-            <div className={panelClass}>
+            <div className={"col-xs-12 col-sm-4 panels-layout__panel no-padding " + (this.state.showpanel ? "active" : "")}>
               <div className="panel-content">
                 <ul className="panel-tools">
                   <li>
