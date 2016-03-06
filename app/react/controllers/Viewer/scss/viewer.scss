@@ -126,7 +126,7 @@
   }
 
   .ref-button {
-    position:absolute;
+    position:fixed;
     z-index: 10;
     cursor: pointer;
     width: 35px;
@@ -137,17 +137,21 @@
     color: white;
     text-align: center;
     line-height: 38px;
-    right: 20px;
+    left: 20px;
   }
 
   .ref-modal {
-    position: absolute;
+    position: fixed;
     z-index: 10;
-    width: 95%;
-    margin-left: 2.5%;
+    width: 64%;
     background-color: $backGroundColor4;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+    left:20px;
+
+    @media #{$xs} {
+      width: 95%;
+    }
 
     &-title {
       text-transform: uppercase;
