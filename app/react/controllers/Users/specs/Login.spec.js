@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import TestUtils from 'react-addons-test-utils'
 import { Link } from 'react-router'
+import { browserHistory } from 'react-router'
 
 import Login from '../Login.js'
 import {events} from '../../../utils/index'
@@ -14,8 +15,7 @@ describe('Login', () => {
   let component, fetch_mock;
 
   beforeEach(() => {
-    let historyMock = {pushState: () => {}};
-    component = TestUtils.renderIntoDocument(<Login history={historyMock}/>);
+    component = TestUtils.renderIntoDocument(<Login />);
 
     backend.restore();
     backend.mock('http://localhost:3000/api/login', JSON.stringify({}));
@@ -85,10 +85,10 @@ describe('Login', () => {
       });
 
       it('should go to home', (done) => {
-        spyOn(component.props.history, 'pushState');
+        spyOn(browserHistory, 'push');
         component.submit(new Event('submit'))
         .then(() => {
-          expect(component.props.history.pushState).toHaveBeenCalledWith('/');
+          expect(browserHistory.push).toHaveBeenCalledWith('/');
           done();
         })
         .catch(done.fail);

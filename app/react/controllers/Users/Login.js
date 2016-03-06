@@ -3,6 +3,7 @@ import {events} from '../../utils/index'
 import template from './templates/login.js'
 import api from '../../utils/singleton_api'
 import { Router } from 'react-router'
+import { browserHistory } from 'react-router'
 
 
 class Login extends Component {
@@ -35,7 +36,7 @@ class Login extends Component {
     .then((response) => {
       this.setState({error: false})
       events.emit('login');
-      this.props.history.pushState('/');
+      browserHistory.push('/');
     })
     .catch(() => {
       this.setState({error: true})
