@@ -1,6 +1,7 @@
 import request from '../../shared/JSONRequest.js'
 import {db_url} from '../config/database.js'
 import elastic from './elastic'
+import sanitizeResponse from '../utils/sanitizeResponse'
 
 export default app => {
 
@@ -88,6 +89,22 @@ export default app => {
     .catch(console.log);
   });
 
+  app.get('/api/documents/newest', (req, res) => {
+    request.get(db_url+'/_design/documents/_view/list')
+    .then(response => {
+      res.json(sanitizeResponse(response.json));
+    })
+    .catch(console.log);
+  });
+
+  app.get('/api/documents/relevant', (req, res) => {
+    request.get(db_url+'/_design/documents/_view/list')
+    .then(response => {
+      res.json(sanitizeResponse(response.json));
+    })
+    .catch(console.log);
+  });
+
   app.get('/api/uploads', (req, res) => {
 
     if(!req.user){
@@ -118,5 +135,4 @@ export default app => {
     });
 
   });
-
 }

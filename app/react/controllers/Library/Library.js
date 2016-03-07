@@ -16,14 +16,20 @@ class Library extends RouteHandler {
 
 
   static emptyState(){
-    return {documents: []};
+    return {newest: [], relevant: [], templates: [], search_result: [], show: 'newest'};
   };
 
   static requestState(params = {}, api){
-    return api.get('documents/search')
-    .then((response) => {
-      let documents = response.json;
-      return {documents: documents};
+    return Promise.all([
+      api.get('documents/newest'),
+      api.get('documents/relevant'),
+      api.get('templates')
+    ])
+    .then((responses) => {
+      let newest = responses[0].json.rows;
+      let relevant = responses[1].json.rows;
+      let templates = responses[2].json.rows;
+      return {newest: newest, relevant: relevant, templates: templates};
     });
   };
 
@@ -32,50 +38,55 @@ class Library extends RouteHandler {
 
     return api.get('documents/search?searchTerm='+this.searchField.value)
     .then((response) => {
-      let documents = response.json;
-      this.setState({documents: documents});
+      this.setState({search_result: response.json});
+      this.showSearchResult();
     });
+  };
+
+  showRelevant = () => {
+    this.setState({show: 'relevant'});
+  };
+
+  showNewest = () => {
+    this.setState({show: 'newest'});
+  };
+
+  showSearchResult = () => {
+    this.setState({show: 'search_result'});
   };
 
   render = () => {
 
+    let documents = this.state[this.state.show] || [];
     return (
       <div>
         <Helmet title='Library' />
         <div className="row panels-layout">
           <div className="col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding active">
-            <div className="panel-content">
-              <form className="search-form form-inline" onSubmit={this.search}>
+            <div className="search-form">
+              <h1>Search for documents</h1>
+              <form className="form-inline" onSubmit={this.search}>
                 <div className="form-group">
                   <input className="form-control" placeholder="Search" ref={(ref) => this.searchField = ref}/>
                   &nbsp;
-                  <button className="btn btn-default" type='submit'>Search</button>
+                  <button className="btn btn-primary" type='submit'><i className="fa fa-search"></i> Search</button>
                 </div>
               </form>
-
-              <table className="table table-hover upload-documents">
+            </div>
+            <div className="panel-content">
+              <a href="#" onClick={this.showNewest} className={"tab-button green" + (this.state.show == 'newest' ? " active" : "")} >Recent Documments</a>
+              <a href="#" onClick={this.showRelevant} className={"tab-button pink" + (this.state.show == 'relevant' ? " active" : "")} >Relevant Documments</a>
+              <a href="#" onClick={this.showSearchResult} className={"tab-button blue" + (this.state.show == 'search_result' ? " active" : "")} >Search ({this.state.search_result.length})</a>
+              <table className="table table-hover documents">
                 <tbody>
-                  {this.state.documents.map((doc, index) => {
-                    let selected = "";
-                    if(this.state.documentBeingEdited === doc){
-                      selected = "upload-documents-selected";
-                    }
-
-                    return <tr className={selected} key={index}>
-                            <td><RoundedProgressBar progress={doc.progress}/></td>
-                            <td>{doc.title}</td>
+                  {documents.map((doc, index) => {
+                    let documentViewUrl = '/document/'+doc._id;
+                    return (<tr key={index}>
+                            <td className="document-tittle">{doc.title}</td>
                             <td className="view">
-                              {(() => {
-                                if(doc.processed) {
-                                  let documentViewUrl = '/document/'+doc._id;
-                                  return (<Link to={documentViewUrl}>View document</Link>)
-                                }
-                                else {
-                                  return (<span>Processing document</span>)
-                                }
-                              })()}
+                              <Link to={documentViewUrl}><i className="fa fa-external-link"></i> View</Link>
                             </td>
-                           </tr>
+                           </tr>)
                   })}
                 </tbody>
               </table>
