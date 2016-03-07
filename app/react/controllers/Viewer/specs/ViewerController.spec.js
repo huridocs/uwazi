@@ -10,8 +10,8 @@ import {events} from '../../../utils/index'
 
 describe('ViewerController', () => {
 
-  let documentResponse = [{key:'doc1', id:'1', value:{pages:[], css:[], template: 1}}];
-  let newDocument = [{key:'doc2', id:'1', value:{ doc: 'doc2', pages:[], css:[], template: 1}}];
+  let documentResponse = [{key:'doc1', id:'1', value:{pages:[], css:[], template: 1, file: {}}}];
+  let newDocument = [{key:'doc2', id:'1', value:{ doc: 'doc2', pages:[], css:[], template: 1, file: {}}}];
   let templateResponse = [{value:{}}];
 
   let component;

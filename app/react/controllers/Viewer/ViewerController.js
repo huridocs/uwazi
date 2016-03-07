@@ -32,7 +32,7 @@ class ViewerController extends RouteHandler {
 
   static emptyState(){
     return {
-      value:{pages:[], css:[], metadata: {}},
+      value:{pages:[], css:[], metadata: {}, file: {}},
       references: [],
       template: {value: {}},
       showmenu: false,
@@ -71,7 +71,6 @@ class ViewerController extends RouteHandler {
   };
 
   render = () => {
-
     return (
       <div className="viewer">
         <nav className="nav  navbar-default navbar-fixed-top">
@@ -90,7 +89,7 @@ class ViewerController extends RouteHandler {
                   <a><i className="glyphicon glyphicon-text-size"></i></a>
                 </li>
                 <li>
-                  <a><i className="fa fa-cloud-download"></i></a>
+                  <a href={'/uploaded_documents/' + this.state.value.file.filename} target="_blank"><i className="fa fa-cloud-download"></i></a>
                 </li>
               </ul>
               <a className="create-ref" onClick={this.toggleModal}><i className="fa fa-link"></i> Reference</a>

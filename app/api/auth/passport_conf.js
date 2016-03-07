@@ -20,5 +20,8 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) {
   fetch(db_url+'/'+ id)
   .then(response => response.json())
-  .then(user => done(null, user))
+  .then((user) => {
+    user.password = undefined;
+    done(null, user)
+  })
 });
