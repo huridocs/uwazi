@@ -18,23 +18,36 @@ class Upload extends Component {
   upload = () => {
     this.setState({progress:0});
 
-    if(this.input.files.length == 0) {
+    if(!this.getInputFile()) {
       return;
     }
 
-    let file = this.input.files[0];
-    this.createDocument(file)
+    let file = this.getInputFile();
+    return this.createDocument(file)
     .then((response) => {
       this.uploadFile(file, response.json);
     });
   };
+
+  getInputFile = () => {
+    return this.input.files[0];
+  }
 
   createDocument = (file) => {
     return api.post('documents', {title: this.extractTitle(file)});
   };
 
   uploadFile = (file, doc) => {
-    events.emit('newDocument', doc);
+
+    let document_created = {
+      value: {
+        title: this.extractTitle(file),
+        id:doc.id,
+        rev:doc.rev
+      }
+    };
+
+    events.emit('newDocument', document_created);
 
     let uploadRequest = superagent.post(APIURL + 'upload')
     .set('Accept', 'application/json')

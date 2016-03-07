@@ -29,6 +29,17 @@ describe('Upload', () => {
       component.upload();
       expect(component.state.progress).toBe(0);
     })
+
+    it('should uploadFile passing the recent created document with his id', (done) => {
+      spyOn(component, 'getInputFile').and.returnValue({name:'name'});
+      spyOn(component, 'uploadFile');
+
+      component.upload()
+      .then(() => {
+        expect(component.uploadFile).toHaveBeenCalledWith({name:'name'}, {ok: true, id: '1234', rev: '567'});
+        done();
+      });
+    })
   })
 
   describe('createDocument()', () => {
@@ -57,12 +68,14 @@ describe('Upload', () => {
     });
 
     it('should trigger the an event with the document info', function(done){
-      let info = {ok: true, id: '1234', rev: '567'}
+      let response = {ok: true, id: '1234', rev: '567'}
       events.on('newDocument', (docInfo) => {
-        expect(docInfo).toEqual(info);
+        let expectedDoc = {title:'Fighting crime 101', id: '1234', rev: '567'}
+        expect(docInfo.value).toEqual(expectedDoc);
         done();
-      })
-      component.uploadFile(file, info);
+      });
+
+      component.uploadFile(file, response);
     });
 
     describe('on progress', () => {

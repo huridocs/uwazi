@@ -21,7 +21,7 @@ describe('documents', () => {
 
   describe('POST', () => {
 
-    describe('not logged in', () => {
+    describe('when not logged in', () => {
       it('should return unauthorized error', (done) => {
         let req = {body:{title: 'Batman starts'}};
         routes.post('/api/documents', req)
@@ -34,7 +34,12 @@ describe('documents', () => {
     });
 
     it('should create a new document with use user', (done) => {
-      let req = {body:{title: 'Batman begins'}, user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}};
+      let req = {
+        body:{
+          title: 'Batman begins'
+        },
+        user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}
+      };
 
       routes.post('/api/documents', req)
       .then((response) => {
