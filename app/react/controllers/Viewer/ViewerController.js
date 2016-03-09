@@ -5,6 +5,7 @@ import api from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import './scss/viewer.scss'
 import LogoIcon from '../../components/Logo/LogoIcon.js'
+import Loader from '../../components/Elements/Loader.js'
 import DocumentMetadata from '../../components/DocumentMetadata/DocumentMetadata.js'
 import {events} from '../../utils/index'
 
@@ -104,6 +105,11 @@ class ViewerController extends RouteHandler {
         <div className='container-fluid contents-wrapper'>
           <div className="row panels-layout viewer__pages">
             <div className={"col-xs-12 col-sm-8 panels-layout__panel no-padding " + (this.state.showpanel ? "" : "active")}>
+                {(() => {
+                  if(!this.state.value.pages.length){
+                    return (<Loader/>)
+                  }
+                })()}
                 <Document
                   ref={(ref) => this.document = ref}
                   onCreateReference={this.saveReference}
