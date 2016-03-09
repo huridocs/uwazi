@@ -18,6 +18,7 @@ class Document extends Component {
     if(this.fakeSelection){
       this.fakeSelection.unwrap();
     }
+    this.setState({textIsSelected: false});
   }
 
   //
@@ -32,12 +33,13 @@ class Document extends Component {
   }
   //
 
-  textSelectionHandler = () => {
+  mouseUp = () => {
     this.unwrapFakeSelection();
 
     if(window.getSelection().toString() === ''){
       this.closeModal();
-      return this.setState({textIsSelected: false});
+      this.setState({textIsSelected: false});
+      return;
     }
 
     this.onTextSelected();
@@ -206,7 +208,7 @@ class Document extends Component {
       <div>
         {this.renderUI()}
         <div className="panel-content">
-          <div ref={(ref) => this.contentContainer = ref} onClick={this.handleClick} className="pages" onMouseUp={this.textSelectionHandler} onTouchEnd={this.textSelectionHandler}>
+          <div ref={(ref) => this.contentContainer = ref} onClick={this.handleClick} className="pages" onMouseUp={this.mouseUp} onTouchEnd={this.mouseUp}>
             {document.pages.map((page, index) => {
               let html = {__html: page}
               let id = index;
