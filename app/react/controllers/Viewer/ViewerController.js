@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 import Menu from '../App/Menu.js'
-import api from '../../utils/singleton_api'
+import API from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import './scss/viewer.scss'
 import LogoIcon from '../../components/Logo/LogoIcon.js'
@@ -49,7 +49,7 @@ class ViewerController extends RouteHandler {
   toggleModal = () => {this.document.toggleModal()};
 
   saveReference = (reference) => {
-    return api.post('references', reference)
+    return API.post('references', reference)
     .then((response) => {
       reference._id = response.json.id;
       this.document.addReference({value: reference});
@@ -65,7 +65,7 @@ class ViewerController extends RouteHandler {
     }
 
     this.setState(ViewerController.emptyState());
-    return ViewerController.requestState(nextProps.params, api)
+    return ViewerController.requestState(nextProps.params, API)
     .then((state) => {
       this.setState(state);
     });

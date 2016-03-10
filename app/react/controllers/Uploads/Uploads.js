@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import request from 'superagent';
-import api from '../../utils/singleton_api'
+import API from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import {events} from '../../utils'
 import SelectField from '../../components/Form/fields/SelectField'
@@ -92,9 +92,9 @@ class Uploads extends RouteHandler {
   };
 
   deleteDocument = (doc) => {
-    return api.delete('documents', {_id:doc.value._id, _rev:doc.value._rev})
+    return API.delete('documents', {_id:doc.value._id, _rev:doc.value._rev})
     .then(() => {
-      return api.get('documents');
+      return API.get('documents');
     })
     .then((response) => {
       this.setState({documents: response.json.rows});
@@ -110,7 +110,7 @@ class Uploads extends RouteHandler {
     document.template = this.templateField.value();
     document.title = this.titleField.value();
     document.metadata = this.form.value();
-    return api.post('documents', document)
+    return API.post('documents', document)
     .then(() => {
       events.emit('alert', 'success', 'Document updated.');
     });
@@ -119,7 +119,7 @@ class Uploads extends RouteHandler {
   moveToLibrary = () => {
     let doc = this.state.documentBeingEdited.value;
     doc.published = true;
-    return api.post('documents', doc)
+    return API.post('documents', doc)
     .then(() => {
       this.state.documents.splice(this.state.documents.indexOf(doc), 1);
       this.setState({documents: this.state.documents, documentBeingEdited: undefined});

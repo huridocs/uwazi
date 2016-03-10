@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import request from 'superagent';
-import api from '../../utils/singleton_api'
+import API from '../../utils/singleton_api'
 import RouteHandler from '../App/RouteHandler'
 import {events} from '../../utils'
 import SelectField from '../../components/Form/fields/SelectField'
@@ -13,7 +13,6 @@ import './scss/library.scss'
 import Alert from '../../components/Elements/Alert'
 
 class Library extends RouteHandler {
-
 
   static emptyState(){
     return {newest: [], relevant: [], templates: [], search_result: [], show: 'newest'};
@@ -35,8 +34,7 @@ class Library extends RouteHandler {
 
   search = (e) => {
     e.preventDefault();
-
-    return api.get('documents/search?searchTerm='+this.searchField.value)
+    return API.get('documents/search?searchTerm='+this.searchField.value)
     .then((response) => {
       this.setState({search_result: response.json});
       this.showSearchResult();

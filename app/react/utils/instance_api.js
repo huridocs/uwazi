@@ -1,7 +1,7 @@
 import request from '../../shared/JSONRequest'
 import {APIURL} from '../config.js'
 
-export default (cookie) => {
+export default function(cookie) {
 
   return {
     get: (url, data) => {
