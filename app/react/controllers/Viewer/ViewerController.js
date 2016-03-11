@@ -78,7 +78,7 @@ class ViewerController extends RouteHandler {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link to='/' className="navbar-brand"><LogoIcon/></Link>
-              <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
+              <a href="#" className="go-back" onClick={this.context.router.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
               <ul className="nav navbar-nav navbar-tools">
                 <li>
                   <a><i className="fa fa-bookmark-o"></i></a>

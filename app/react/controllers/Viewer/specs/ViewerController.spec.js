@@ -7,6 +7,7 @@ import Provider from '../../App/Provider'
 import api from '../../../utils/singleton_api'
 import TextRange from 'batarange'
 import {events} from '../../../utils/index'
+import MockProvider from '../../App/specs/MockProvider'
 
 describe('ViewerController', () => {
 
@@ -19,8 +20,9 @@ describe('ViewerController', () => {
   beforeEach(() => {
     let initialData = {};
     let params = {documentId: '1'};
-    let history = {};
-    TestUtils.renderIntoDocument(<Provider><ViewerController history={history} params={params} ref={(ref) => component = ref} /></Provider>);
+    let router = {createHref: function(){}};
+
+    TestUtils.renderIntoDocument(<MockProvider router={router}><ViewerController params={params} ref={(ref) => component = ref} /></MockProvider>);
     backend.restore();
     backend
     .mock(APIURL+'documents?_id=1', 'GET', {body: JSON.stringify({rows:documentResponse})})

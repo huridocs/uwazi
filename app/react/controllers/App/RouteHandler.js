@@ -4,7 +4,7 @@ import api from '../../utils/singleton_api'
 
 class RouteHandler extends Component {
 
-  static contextTypes = { getInitialData: PropTypes.func, getUser: PropTypes.func };
+  static contextTypes = { getInitialData: PropTypes.func, getUser: PropTypes.func, router: React.PropTypes.object };
 
   static requestState(){
     return Promise.resolve({});

@@ -4,7 +4,7 @@ import backend from 'fetch-mock'
 import TestUtils from 'react-addons-test-utils'
 import {APIURL} from '../../../config.js'
 import {events} from '../../../utils/index'
-import Provider from '../../App/Provider'
+import MockProvider from '../../App/specs/MockProvider'
 import api from '../../../utils/singleton_api'
 
 describe('UploadsController', () => {
@@ -12,6 +12,8 @@ describe('UploadsController', () => {
   let documents = [{key:'secret documents', value:{}}, {key:'real batman id', value:{}}];
   let templates = [{value: {name:'batarang', fields:[]}}, {value: {name:'batmovil'}}];
   let component;
+  let router = {};
+  let user = {};
 
   beforeEach(() => {
     backend.restore();
@@ -40,7 +42,7 @@ describe('UploadsController', () => {
       backend
       .mock(APIURL+'documents', 'DELETE', {body: {test:'test'}})
       .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})});
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
+      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => {component = ref}}/></MockProvider>);
     });
 
     it('shoult request to delete the document', (done) => {
@@ -62,7 +64,7 @@ describe('UploadsController', () => {
     let doc = {id: 'id_1', value: {title: 'Robin secret diary'}};;
 
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
+      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => {component = ref}}/></MockProvider>);
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
     });
 
@@ -90,7 +92,7 @@ describe('UploadsController', () => {
   describe('when editing a document', () => {
 
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
+      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => {component = ref}}/></MockProvider>);
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
     });
 
