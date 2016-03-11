@@ -38,12 +38,14 @@ class Upload extends Component {
   };
 
   uploadFile = (file, doc) => {
-
+    
     let document_created = {
+      id: doc.id,
+      rev:doc.rev,
       value: {
         title: this.extractTitle(file),
-        id:doc.id,
-        rev:doc.rev
+        _id:doc.id,
+        _rev:doc.rev
       }
     };
 
