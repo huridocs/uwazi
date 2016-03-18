@@ -1,82 +1,83 @@
-import React, { Component, PropTypes } from 'react'
-import api from '../../utils/singleton_api'
-import './scss/reference_form.scss'
+import React, {Component, PropTypes} from 'react';
+import api from '../../utils/singleton_api';
+import './scss/reference_form.scss';
 
 class ReferenceForm extends Component {
 
-  constructor (props) {
+  constructor(props) {
     super(props);
-    this.state = {documents:[]};
+    this.state = {documents: []};
   }
 
-  submit = (e) => {
-    if(e){ e.preventDefault(); }
-
+  submit(e) {
+    if (e) {
+      e.preventDefault();
+    }
     this.props.onSubmit(this.value());
-  };
+  }
 
-  value = () => {
+  value() {
     let value = {
       title: this.title.value,
       targetDocument: this.state.documentSelected
     };
 
     return value;
-  };
+  }
 
-  search = (e) => {
-    if(e){ e.preventDefault(); }
+  search(e) {
+    if (e) {
+      e.preventDefault();
+    }
 
-    return api.get('documents/search?searchTerm='+this.searchField.value)
+    return api.get('documents/search?searchTerm=' + this.searchField.value)
     .then((response) => {
       let documents = response.json;
       this.setState({documents: documents});
-      if(documents.length){
+      if (documents.length) {
         this.selectDocument(documents[0]._id);
       }
     });
+  }
 
-  };
+  show() {
+    this.setState({show: true});
+  }
 
-  show = () => {
-    this.setState({show:true});
-  };
+  hide() {
+    this.setState({show: false});
+  }
 
-  hide = () => {
-    this.setState({show:false});
-  };
-
-  selectDocument = (documentId) => {
+  selectDocument(documentId) {
     this.setState({documentSelected: documentId});
-  };
+  }
 
-  onClose = () => {
+  onClose() {
     this.props.onClose();
-  };
+  }
 
-  selectPart = () => {
+  selectPart() {
     this.setState({selectPart: true});
-  };
+  }
 
-  selectEntire = () => {
+  selectEntire() {
     this.setState({selectPart: false});
-  };
+  }
 
-  render = () => {
-
+  render() {
     let className = 'ref-modal';
 
-    if(!this.state.show){
-      className +=' hidden';
+    if (!this.state.show) {
+      className += ' hidden';
     }
 
     return (
       <div className={className} ref={(ref) => this.modalElement = ref}>
         <div className="ref-modal-title">Create document reference</div>
-        <a className="ref-modal-close" href="#" onClick={this.onClose}><i className="fa fa-close"></i></a>
+        <a className="ref-modal-close" href="#" onClick={this.onClose.bind(this)}><i className="fa fa-close"></i></a>
         <div className="row">
           <div className="col-sm-6">
-            <form onSubmit={this.search} className="ref-modal-search">
+            <form onSubmit={this.search.bind(this)} className="ref-modal-search">
               <div>
                 <input type="text" ref={(ref) => this.searchField = ref} placeholder="Search document to link" />
               </div>
@@ -85,23 +86,23 @@ class ReferenceForm extends Component {
             </form>
             <ul className="ref-modal-documents">
             {this.state.documents.map((document, index) => {
-              let className = '';
-              if(document._id == this.state.documentSelected){
-                className = 'selected';
+              let selectedClass = '';
+              if (document._id === this.state.documentSelected) {
+                selectedClass = 'selected';
               }
 
-              return <li onClick={this.selectDocument.bind(this, document._id)} className={className} key={index}>{document.title}</li>;
+              return <li onClick={this.selectDocument.bind(this, document._id)} className={selectedClass} key={index}>{document.title}</li>;
             })}
             </ul>
           </div>
           <div className="col-sm-6">
-          <form onSubmit={this.submit} className="ref-modal-link">
+          <form onSubmit={this.submit.bind(this)} className="ref-modal-link">
             <div className="form-group">
               <div className="link-to-label">Link to</div>
-              <label className="radio-inline" onClick={this.selectEntire}>
+              <label className="radio-inline" onClick={this.selectEntire.bind(this)}>
                 <input type="radio" name="linkto" value="entire" defaultChecked="checked" /> Entire document
               </label>
-              <label className="radio-inline" onClick={this.selectPart}>
+              <label className="radio-inline" onClick={this.selectPart.bind(this)}>
                 <input type="radio" name="linkto" value="part" /> Part of document
               </label>
             </div>
@@ -116,16 +117,20 @@ class ReferenceForm extends Component {
               </select>
             </div>
             </form>
-            <button onClick={this.submit} className="btn btn-primary">
+            <button onClick={this.submit.bind(this)} className="btn btn-primary">
               <i className="fa fa-link"></i>&nbsp;
               {this.state.selectPart ? 'Select text' : 'Create reference'}
             </button>
           </div>
         </div>
       </div>
-    )
-  };
-
+    );
+  }
 }
+
+ReferenceForm.propTypes = {
+  onSubmit: PropTypes.func,
+  onClose: PropTypes.func
+};
 
 export default ReferenceForm;

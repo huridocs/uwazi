@@ -1,18 +1,16 @@
-import React from 'react'
-import { Route, IndexRoute, Redirect } from 'react-router'
+import React from 'react';
+import {Route, IndexRoute} from 'react-router';
 
-import App from './controllers/App/App'
-import Layout from './controllers/App/Layout'
-import NoMatch from './controllers/App/NoMatch'
-import Home from './controllers/App/Home'
+import App from './controllers/App/App';
+import Layout from './controllers/App/Layout';
+import NoMatch from './controllers/App/NoMatch';
 
-import Login from './controllers/Users/Login'
-import MyAccount from './controllers/Users/MyAccount'
+import Login from './controllers/Users/Login';
+import MyAccount from './controllers/Users/MyAccount';
 
-import TemplatesController from './controllers/Templates/TemplatesController'
-import ViewerController from './controllers/Viewer/ViewerController'
-import Library from './controllers/Library/Library'
-import Uploads from './controllers/Uploads/Uploads'
+import TemplatesController from './controllers/Templates/TemplatesController';
+import ViewerController from './controllers/Viewer/ViewerController';
+import Uploads from './controllers/Uploads/Uploads';
 
 export default (
   <Route path='/' component={App}>

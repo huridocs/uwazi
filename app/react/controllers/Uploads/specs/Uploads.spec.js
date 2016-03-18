@@ -1,25 +1,24 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react';
 import Uploads from '../Uploads';
-import backend from 'fetch-mock'
-import TestUtils from 'react-addons-test-utils'
-import {APIURL} from '../../../config.js'
-import {events} from '../../../utils/index'
-import Provider from '../../App/Provider'
-import api from '../../../utils/singleton_api'
+import backend from 'fetch-mock';
+import TestUtils from 'react-addons-test-utils';
+import {APIURL} from '../../../config.js';
+import {events} from '../../../utils/index';
+import Provider from '../../App/Provider';
+import api from '../../../utils/singleton_api';
 
 describe('UploadsController', () => {
-
-  let documents = [{key:'secret documents', value:{}}, {key:'real batman id', value:{}}];
-  let templates = [{value: {name:'batarang', fields:[]}}, {value: {name:'batmovil'}}];
+  let documents = [{key: 'secret documents', value: {}}, {key: 'real batman id', value: {}}];
+  let templates = [{value: {name: 'batarang', fields: []}}, {value: {name: 'batmovil'}}];
   let component;
 
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})})
-    .mock(APIURL+'uploads', 'GET', {body: JSON.stringify({rows:documents})})
-    .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templates})})
-    .mock(APIURL+'documents', 'POST', {});
+    .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: documents})})
+    .mock(APIURL + 'uploads', 'GET', {body: JSON.stringify({rows: documents})})
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
+    .mock(APIURL + 'documents', 'POST', {});
   });
 
   describe('static requestState', () => {
@@ -30,7 +29,7 @@ describe('UploadsController', () => {
         expect(response.templates).toEqual(templates);
         done();
       })
-      .catch(done.fail)
+      .catch(done.fail);
     });
   });
 
@@ -38,32 +37,31 @@ describe('UploadsController', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL+'documents', 'DELETE', {body: {test:'test'}})
-      .mock(APIURL+'documents', 'GET', {body: JSON.stringify({rows:documents})});
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
+      .mock(APIURL + 'documents', 'DELETE', {body: {test: 'test'}})
+      .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: documents})});
+      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => component = ref}/></Provider>);
     });
 
     it('shoult request to delete the document', (done) => {
-      component.deleteDocument({value: {_id:'documentId', _rev:'rev', another:'another'}})
-      .then((response) => {
-
-        let calls = backend.calls(APIURL+'documents');
+      component.deleteDocument({value: {_id: 'documentId', _rev: 'rev', another: 'another'}})
+      .then(() => {
+        let calls = backend.calls(APIURL + 'documents');
         expect(calls[0][1].method).toBe('DELETE');
-        expect(calls[0][1].body).toEqual(JSON.stringify({_id:'documentId', _rev:'rev'}));
+        expect(calls[0][1].body).toEqual(JSON.stringify({_id: 'documentId', _rev: 'rev'}));
 
         expect(component.state.documents).toEqual(documents);
         done();
       })
-      .catch(done.fail)
+      .catch(done.fail);
     });
   });
 
   describe('when a new document is uploaded', () => {
-    let doc = {id: 'id_1', value: {title: 'Robin secret diary'}};;
+    let doc = {id: 'id_1', value: {title: 'Robin secret diary'}};
 
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
-      component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
+      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => component = ref}/></Provider>);
+      component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]});
     });
 
     it('should add the document first of the list', () => {
@@ -75,100 +73,99 @@ describe('UploadsController', () => {
       events.emit('newDocument', doc);
       events.emit('uploadProgress', 'id_1', 20);
       expect(component.state.documents[0].progress).toBe(20);
-    })
+    });
 
     it('when it ends should set file to the doc', () => {
-      let fileData = {filename: 'as1hd123ha', originalname: 'Engima answers'};
       events.emit('newDocument', doc);
       events.emit('uploadProgress', 'id_1', 20);
       events.emit('uploadEnd', 'id_1', {filename: 'as1hd123ha', originalname: 'Engima answers'});
-      expect(component.state.documents[0].progress).not.toBeDefined();
+      expect(component.state.documents[0].progress).toBeNull();
       expect(component.state.documents[0].value.file).toEqual({filename: 'as1hd123ha', originalname: 'Engima answers'});
     });
-  })
+  });
 
   describe('when editing a document', () => {
-
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => {component = ref}}/></Provider>);
-      component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]})
+      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => component = ref}/></Provider>);
+      component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]});
     });
 
     describe('editDocument()', () => {
       it('should set on state the document being edited', () => {
-        component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
-        component.editDocument({value:{id:1}});
-        expect(component.state.documentBeingEdited).toEqual({value:{id:1, template:'1'}});
+        component.state.templates = [
+          {id: '1', value: {name: 'template1', fields: []}}, {id: '2', value: {name: 'template2', fields: []}}
+        ];
+        component.editDocument({value: {id: 1}});
+        expect(component.state.documentBeingEdited).toEqual({value: {id: 1, template: '1'}});
       });
 
       it('should set on state the template document have', () => {
-        component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
-        component.editDocument({value:{id:1, template:'2'}});
-        expect(component.state.template).toEqual({name:'template2', fields:[]});
+        component.state.templates = [
+          {id: '1', value: {name: 'template1', fields: []}}, {id: '2', value: {name: 'template2', fields: []}}
+        ];
+        component.editDocument({value: {id: 1, template: '2'}});
+        expect(component.state.template).toEqual({name: 'template2', fields: []});
       });
 
-      describe("when document does not have a template", () => {
+      describe('when document does not have a template', () => {
         it('should set the first template as the default', () => {
-          component.state.templates = [{id:'1', value:{name:'template1', fields:[]}}, {id:'2', value:{name:'template2', fields: []}}];
-          component.editDocument({value:{id:1}});
-          expect(component.state.template).toEqual({name:'template1', fields:[]});
+          component.state.templates = [
+            {id: '1', value: {name: 'template1', fields: []}}, {id: '2', value: {name: 'template2', fields: []}}
+          ];
+          component.editDocument({value: {id: 1}});
+          expect(component.state.template).toEqual({name: 'template1', fields: []});
           expect(component.state.documentBeingEdited.value.template).toBe('1');
         });
       });
-
     });
 
-    describe("cancelEdit()", () => {
+    describe('cancelEdit()', () => {
       it('should set on state the document being edited to undefined', () => {
         component.cancelEdit();
-        expect(component.state.documentBeingEdited).not.toBeDefined();
+        expect(component.state.documentBeingEdited).toBe(null);
       });
     });
 
-    describe("saveDocument()", () => {
+    describe('saveDocument()', () => {
       it('should save the template used', (done) => {
-
-        component.setState({documentBeingEdited: {value:{id:1, title:'the dark knight'}}})
+        component.setState({documentBeingEdited: {value: {id: 1, title: 'the dark knight'}}});
         component.templateField.value = () => {
           return 'template_id';
         };
 
         component.form.value = () => {
-          return {key:'value'};
+          return {key: 'value'};
         };
 
         backend.reset();
         component.saveDocument()
-        .then((response) => {
-          let calls = backend.calls(APIURL+'documents');
+        .then(() => {
+          let calls = backend.calls(APIURL + 'documents');
           expect(calls[0][1].method).toBe('POST');
-          expect(calls[0][1].body).toEqual(JSON.stringify({id:1, title:'the dark knight', template:'template_id', metadata:{key:'value'}}));
+          expect(calls[0][1].body).toEqual(JSON.stringify(
+            {id: 1, title: 'the dark knight', template: 'template_id', metadata: {key: 'value'}}
+          ));
           done();
         })
         .catch(done.fail);
-
       });
     });
 
-    describe("moveToLibrary()", () => {
+    describe('moveToLibrary()', () => {
       it('should save the document as published', (done) => {
-
         component.setState({documentBeingEdited: documents[0], documents: documents});
         backend.reset();
         component.moveToLibrary()
-        .then((response) => {
-          let calls = backend.calls(APIURL+'documents');
+        .then(() => {
+          let calls = backend.calls(APIURL + 'documents');
           expect(calls[0][1].method).toBe('POST');
           expect(JSON.parse(calls[0][1].body).published).toBe(true);
           expect(component.state.documents.length).toBe(1);
-          expect(component.state.documentBeingEdited).not.toBeDefined();
+          expect(component.state.documentBeingEdited).toBe(null);
           done();
         })
         .catch(done.fail);
-
       });
     });
-
   });
-
 });

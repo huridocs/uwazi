@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, {Component, PropTypes} from 'react';
 
 class TextareaField extends Component {
 
@@ -7,21 +7,21 @@ class TextareaField extends Component {
     this.state = {value: props.value};
   }
 
-  value = () => {
-    return this.field.value
-  };
+  value() {
+    return this.field.value;
+  }
 
-  handleChange = () => {
+  handleChange() {
     this.setState({value: this.value()});
-  };
+  }
 
-  componentDidUpdate = (prevProps) => {
-    if(prevProps.value !== this.props.value){
-      this.setState({value:this.props.value || ''});
+  componentDidUpdate(prevProps) {
+    if (prevProps.value !== this.props.value) {
+      this.setState({value: this.props.value || ''});
     }
-  };
+  }
 
-  render = () => {
+  render() {
     return (
       <div className="form-group">
         <label htmlFor="label">{this.props.label}</label>
@@ -37,8 +37,14 @@ class TextareaField extends Component {
           ></textarea>
         </div>
       </div>
-    )
-  };
-
+    );
+  }
 }
+
+TextareaField.propTypes = {
+  label: PropTypes.string,
+  defaultValue: PropTypes.string,
+  value: PropTypes.string
+};
+
 export default TextareaField;

@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import React, {Component, PropTypes} from 'react';
 
 class LogoIcon extends Component {
-
   render() {
     let size = this.props.size || 30;
     return (
@@ -23,8 +22,12 @@ class LogoIcon extends Component {
           </g>
         </g>
       </svg>
-    )
+    );
   }
 }
+
+LogoIcon.propTypes = {
+  size: PropTypes.number
+};
 
 export default LogoIcon;

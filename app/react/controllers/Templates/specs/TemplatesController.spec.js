@@ -1,48 +1,49 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react';
 import TemplatesController from '../TemplatesController';
-import backend from 'fetch-mock'
-import TestUtils from 'react-addons-test-utils'
-import {APIURL} from '../../../config.js'
-import Provider from '../../App/Provider'
-import api from '../../../utils/singleton_api'
+import backend from 'fetch-mock';
+import TestUtils from 'react-addons-test-utils';
+import {APIURL} from '../../../config.js';
+import Provider from '../../App/Provider';
+import api from '../../../utils/singleton_api';
 
 describe('TemplatesController', () => {
-
-  let templatesResponse = [{key:'template1', id:'1', value:{}}, {key:'template2', id:'2', value:{}}];
+  let templatesResponse = [{key: 'template1', id: '1', value: {}}, {key: 'template2', id: '2', value: {}}];
   let component;
 
   beforeEach(() => {
     let params = {};
-    TestUtils.renderIntoDocument(<Provider><TemplatesController params={params} ref={(ref) => component = ref} /></Provider>);
+    TestUtils.renderIntoDocument(
+      <Provider>
+      <TemplatesController params={params} ref={(ref) => component = ref} />
+      </Provider>
+    );
     backend.restore();
     backend
-    .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:templatesResponse})})
-    .mock(APIURL+'templates', 'POST', {body: JSON.stringify({id:'2'})});
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templatesResponse})})
+    .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({id: '2'})});
   });
 
   describe('static requestState', () => {
     it('should request templates and find template based on the key passed', (done) => {
       let id = '1';
-      TemplatesController.requestState({templateId:id}, api)
+      TemplatesController.requestState({templateId: id}, api)
       .then((response) => {
         expect(response.templates).toEqual(templatesResponse);
         expect(response.template).toEqual(templatesResponse[0]);
         done();
       })
-      .catch(done.fail)
+      .catch(done.fail);
     });
   });
 
-  describe("saveForm()", () => {
-    it("should save form and refresh the template list", (done) => {
-
-      component.saveForm({name:'saving template'})
+  describe('saveForm()', () => {
+    it('should save form and refresh the template list', (done) => {
+      component.saveForm({name: 'saving template'})
       .then(() => {
-
-        let calls = backend.calls(APIURL+'templates');
+        let calls = backend.calls(APIURL + 'templates');
 
         expect(calls[0][1].method).toBe('POST');
-        expect(calls[0][1].body).toEqual(JSON.stringify({name:'saving template'}));
+        expect(calls[0][1].body).toEqual(JSON.stringify({name: 'saving template'}));
 
         expect(calls[1][1].method).toBe('GET');
 
@@ -50,9 +51,7 @@ describe('TemplatesController', () => {
 
         done();
       })
-      .catch(done.fail)
-
+      .catch(done.fail);
     });
   });
-
 });

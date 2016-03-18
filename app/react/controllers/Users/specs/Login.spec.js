@@ -1,18 +1,14 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import TestUtils from 'react-addons-test-utils'
-import { Link } from 'react-router'
-import { browserHistory } from 'react-router'
-
-import Login from '../Login.js'
-import {events} from '../../../utils/index'
-
-import backend from 'fetch-mock'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TestUtils from 'react-addons-test-utils';
+import {browserHistory} from 'react-router';
+import Login from '../Login.js';
+import {events} from '../../../utils/index';
+import backend from 'fetch-mock';
 
 
 describe('Login', () => {
-
-  let component, fetch_mock;
+  let component;
 
   beforeEach(() => {
     component = TestUtils.renderIntoDocument(<Login />);
@@ -23,7 +19,7 @@ describe('Login', () => {
 
   describe('on instance', () => {
     it('should set state with blank username and password', () => {
-      expect(component.state.credentials).toEqual({username:'', password:''});
+      expect(component.state.credentials).toEqual({username: '', password: ''});
     });
 
     it('should set state with error false', () => {
@@ -32,7 +28,6 @@ describe('Login', () => {
   });
 
   describe('render', () => {
-
     describe('when there is NOT an error', () => {
       it('should NOT display an error message', () => {
         expect(ReactDOM.findDOMNode(component).textContent).not.toMatch('Invalid password or username');
@@ -49,7 +44,7 @@ describe('Login', () => {
 
   describe('submit()', () => {
     it('should POST to /api/login with username and password', (done) => {
-      component.setState({credentials:{username:'bruce wayne', password:'im batman!'}})
+      component.setState({credentials: {username: 'bruce wayne', password: 'im batman!'}});
 
       component.submit(new Event('submit'))
       .then(() => {
@@ -57,7 +52,6 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
-
     });
 
     describe('on response success', () => {
@@ -73,12 +67,14 @@ describe('Login', () => {
       });
 
       it('should emit login event on success', (done) => {
-        let event_emitted = false;
-        events.on('login', () => {event_emitted = true})
+        let eventEmitted = false;
+        events.on('login', () => {
+          eventEmitted = true;
+        });
 
         component.submit(new Event('submit'))
         .then(() => {
-          expect(event_emitted).toBe(true);
+          expect(eventEmitted).toBe(true);
           done();
         })
         .catch(done.fail);
@@ -96,7 +92,6 @@ describe('Login', () => {
     });
 
     describe('on response failure', () => {
-
       it('should set error true', (done) => {
         backend.reMock('http://localhost:3000/api/login', {body: JSON.stringify({}), status: 401});
 
@@ -108,7 +103,5 @@ describe('Login', () => {
         .catch(done.fail);
       });
     });
-
   });
-
 });

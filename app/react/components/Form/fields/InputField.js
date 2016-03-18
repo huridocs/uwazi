@@ -1,32 +1,32 @@
-import React, { Component, PropTypes } from 'react'
+import React, {Component, PropTypes} from 'react';
 
 class InputField extends Component {
 
   constructor(props) {
     super(props);
     this.state = {value: props.value};
-  };
+  }
 
-  value = () => {
-    return this.field.value
-  };
+  value() {
+    return this.field.value;
+  }
 
-  handleChange = () => {
+  handleChange() {
     this.setState({value: this.value()});
-  };
+  }
 
-  componentDidUpdate = (prevProps) => {
-    if(prevProps.value !== this.props.value){
-      this.setState({value:this.props.value});
+  componentDidUpdate(prevProps) {
+    if (prevProps.value !== this.props.value) {
+      this.setState({value: this.props.value});
     }
-  };
+  }
 
-  render = () => {
+  render() {
     return (
       <div className="form-group">
         {(()=>{
-          if(this.props.label){
-            return <label htmlFor="label">{this.props.label}</label>
+          if (this.props.label) {
+            return <label htmlFor="label">{this.props.label}</label>;
           }
         })()}
         <div>
@@ -41,8 +41,14 @@ class InputField extends Component {
           />
         </div>
       </div>
-    )
-  };
-
+    );
+  }
 }
+
+InputField.propTypes = {
+  label: PropTypes.string,
+  defaultValue: PropTypes.string,
+  value: PropTypes.string
+};
+
 export default InputField;

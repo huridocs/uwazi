@@ -1,46 +1,44 @@
-import React, { Component } from 'react'
-import './scss/document_metadata.scss'
+import React, {Component, PropTypes} from 'react';
+import './scss/document_metadata.scss';
 
 class DocumentMetadata extends Component {
 
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {showToc: true, showMetadata: true};
   }
 
-  getField = (key) => {
+  getField(key) {
     return this.props.template.value.fields.find((field) => {
-      return field.name == key;
-    })
-  };
+      return field.name === key;
+    });
+  }
 
-  toggleToc = () => {
+  toggleToc() {
     this.setState({showToc: !this.state.showToc});
-  };
+  }
 
-  toggleMetdata = () => {
+  toggleMetdata() {
     this.setState({showMetadata: !this.state.showMetadata});
-  };
+  }
 
   render() {
-
     let metadata = this.props.metadata || {};
-    let fields = this.props.template.value.fields;
     let tocCalss = 'foldable ';
     let metadataCalss = 'foldable ';
 
-    if(!this.state.showToc){
+    if (!this.state.showToc) {
       tocCalss += 'folded';
     }
 
-    if(!this.state.showMetadata){
+    if (!this.state.showMetadata) {
       metadataCalss += 'folded';
     }
 
     return (
       <div className="document-metadata">
         <h1>003/12 Peter Joseph Chacha v The United Republic ofTanzania</h1>
-        <h2 onClick={this.toggleToc} className={'toc ' + (this.state.showToc ? '' : 'folded')}>Table of contents</h2>
+        <h2 onClick={this.toggleToc.bind(this)} className={'toc ' + (this.state.showToc ? '' : 'folded')}>Table of contents</h2>
         <ul className={'foldable ' + (this.state.showToc ? '' : 'folded')}>
           <li>
             <a href="#">Summary of alledged facts</a>
@@ -52,21 +50,25 @@ class DocumentMetadata extends Component {
           <li><a href="#">Decission on admissibility</a></li>
           <li><a href="#">The complaint</a></li>
         </ul>
-        <h2 onClick={this.toggleMetdata} className={'metadata ' + (this.state.showMetadata ? '' : 'folded')}>Document properties (metadata)</h2>
+        <h2 onClick={this.toggleMetdata.bind(this)}
+        className={'metadata ' + (this.state.showMetadata ? '' : 'folded')}>
+          Document properties (metadata)
+        </h2>
         <table className={'foldable ' + (this.state.showMetadata ? '' : 'folded')}>
           <tbody>
             {Object.keys(metadata).map((key) => {
-              return (<tr key={key}>
-                        <td>{this.getField(key).label}</td>
-                        <td>{this.props.metadata[key]}</td>
-                      </tr>)
+              return <tr key={key}><td>{this.getField(key).label}</td><td>{this.props.metadata[key]}</td></tr>;
             })}
           </tbody>
         </table>
       </div>
-
-    )
+    );
   }
 }
+
+DocumentMetadata.propTypes = {
+  template: PropTypes.object,
+  metadata: PropTypes.object
+};
 
 export default DocumentMetadata;

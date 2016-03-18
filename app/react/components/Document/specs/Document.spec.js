@@ -1,40 +1,76 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
+import ReactDOM from 'react-dom';
 import Document from '../Document.js';
-import TestUtils from 'react-addons-test-utils'
-import backend from 'fetch-mock'
-import {APIURL} from '../../../config.js'
-import wrapper from '../../../utils/wrapper'
+import TestUtils from 'react-addons-test-utils';
+import backend from 'fetch-mock';
+import {APIURL} from '../../../config.js';
+import wrapper from '../../../utils/wrapper';
 
 describe('Document', () => {
+  let component;
 
-  let submitedValue, component;
-
-  let documents = [{key:'secret documents', value:{}}, {key:'real batman id', value:{}}];
-  let searchDocuments = [{_id:'doc1', value:{}}, {_id:'doc2', value:{}}];
   let contentContainer;
-  let pages = ['page1', 'page2', 'page3'];
-  let css = ['css1', 'css2'];
 
   let doc = {
-    _id:'documentId',
-    pages : ['page1', 'page2', 'page3'],
-    css : ['css1', 'css2']
+    _id: 'documentId',
+    pages: ['page1', 'page2', 'page3'],
+    css: ['css1', 'css2']
   };
 
   let references = [
     {value: {sourceRange: {start: 1, end: 3}}}
   ];
 
+  let createRange = (start = 1, end = 3) => {
+    let range = document.createRange();
+    let page1 = contentContainer.childNodes[0].childNodes[0];
+    range.setStart(page1, start);
+    range.setEnd(page1, end);
+    return range;
+  };
+
+  let stubSelection = (selectionText = '', passedRange) => {
+    let range = passedRange;
+    if (!range) {
+      range = document.createRange();
+      let page1 = contentContainer.childNodes[0].childNodes[0];
+      range.setStart(page1, 1);
+      range.setEnd(page1, 3);
+    }
+
+    range.range = 'range';
+    range.getClientRects = () => {
+      return [{top: 100}];
+    };
+
+    window.getSelection = () => {
+      return {
+        toString: () => {
+          return selectionText;
+        },
+        getRangeAt: () => {
+          return range;
+        }
+      };
+    };
+
+    return range;
+  };
+
+  let forceComponentUpdate = () => {
+    ReactDOM.render(<Document document={doc} references={references}/>, ReactDOM.findDOMNode(component).parentNode);
+  };
+
+
   let onCreateReference;
 
   beforeEach(() => {
-    let references = [];
+    let emptyReferences = [];
 
     spyOn(wrapper, 'wrap');
 
     onCreateReference = jasmine.createSpy('onCreateReference');
-    component = TestUtils.renderIntoDocument(<Document onCreateReference={onCreateReference} document={doc} references={references}/>);
+    component = TestUtils.renderIntoDocument(<Document onCreateReference={onCreateReference} document={doc} references={emptyReferences}/>);
     contentContainer = TestUtils.findRenderedDOMComponentWithClass(component, 'pages');
   });
 
@@ -100,7 +136,7 @@ describe('Document', () => {
       expect(args[1]).toEqual(range);
     });
 
-    it('should set textIsSelected to true', function(){
+    it('should set textIsSelected to true', () => {
       stubSelection('selectedText');
 
       component.onTextSelected();
@@ -111,13 +147,11 @@ describe('Document', () => {
       stubSelection('selectedText');
 
       component.onTextSelected();
-      expect(component.serializedRange).toEqual({start:1, end:3});
+      expect(component.serializedRange).toEqual({start: 1, end: 3});
     });
-
   });
 
   describe('textSelectionHandler', () => {
-
     it('should unwrapFakeSelection', () => {
       stubSelection('selectedText');
       component.onTextSelected();
@@ -145,7 +179,7 @@ describe('Document', () => {
       let reference = {
         _id: 'referenceId',
         sourceRange: {start: 1, end: 4},
-        title:'referenceTitle'
+        title: 'referenceTitle'
       };
 
       component.wrapReference(reference);
@@ -158,8 +192,6 @@ describe('Document', () => {
   });
 
   describe('createReference', () => {
-
-    let onCreateReference;
     let referenceCreated;
 
     beforeEach(() => {
@@ -168,24 +200,21 @@ describe('Document', () => {
       };
 
       component = TestUtils.renderIntoDocument(<Document onCreateReference={onCreateReference} document={doc}/>);
-      spyOn(component.modal, 'value').and.returnValue({modalValue:'value'});
+      spyOn(component.modal, 'value').and.returnValue({modalValue: 'value'});
       component.serializedRange = {range: 'range'};
     });
 
     it('should execute onCreateReference callback passing reference', () => {
-      let reference = {reference:'reference'};
+      let reference = {reference: 'reference'};
       component.reference = reference;
-      component.createReference()
+      component.createReference();
 
       expect(referenceCreated).toEqual(reference);
     });
-
   });
 
   describe('referenceFormSubmit()', () => {
-
     beforeEach(() => {
-
       let targetDocument = {
         value: {
           pages: ['new document page'],
@@ -195,7 +224,7 @@ describe('Document', () => {
 
       backend.restore();
       backend
-      .mock(APIURL+'documents?_id=documentSelectedId', 'GET', {body: JSON.stringify({rows:[targetDocument]})});
+      .mock(APIURL + 'documents?_id=documentSelectedId', 'GET', {body: JSON.stringify({rows: [targetDocument]})});
     });
 
     it('should save reference sent to this.reference with source Document and range', () => {
@@ -233,8 +262,8 @@ describe('Document', () => {
 
     it('should set a blank targetDocument', () => {
       component.modal.state.selectPart = true;
-      component.referenceFormSubmit({})
-      expect(component.state.targetDocument).toEqual({pages:[], css:[]});
+      component.referenceFormSubmit({});
+      expect(component.state.targetDocument).toEqual({pages: [], css: []});
     });
 
     describe('when reference its to a part of document', () => {
@@ -246,7 +275,7 @@ describe('Document', () => {
         component.referenceFormSubmit({})
         .then(() => {
           expect(component.createReference).not.toHaveBeenCalled();
-          expect(backend.calls().matched[0][0]).toBe(APIURL+'documents?_id=documentSelectedId');
+          expect(backend.calls().matched[0][0]).toBe(APIURL + 'documents?_id=documentSelectedId');
           expect(component.contentContainer.childNodes[0].innerHTML).toBe('new document page');
           done();
         });
@@ -256,7 +285,7 @@ describe('Document', () => {
 
   describe('createPartSelection()', () => {
     beforeEach(() => {
-      component.state.targetDocument = {pages:[], css:[]};
+      component.state.targetDocument = {pages: [], css: []};
       component.state.textIsSelected = true;
       component.reference = {};
       component.serializedRange = 'targetRange';
@@ -271,7 +300,7 @@ describe('Document', () => {
     it('should set targetDocument to undefined', () => {
       component.createPartSelection();
 
-      expect(component.state.targetDocument).toBe(undefined);
+      expect(component.state.targetDocument).toBeNull();
     });
 
     it('should set textIsSelected to false', () => {
@@ -291,10 +320,10 @@ describe('Document', () => {
   describe('addReference()', () => {
     it('should add the reference to props.references and render it', () => {
       spyOn(component, 'wrapReference');
-      component.addReference({value:{_id:'id'}});
+      component.addReference({value: {_id: 'id'}});
 
-      expect(component.props.references).toEqual([{value:{_id:'id'}}]);
-      expect(component.wrapReference).toHaveBeenCalledWith({_id:'id'});
+      expect(component.props.references).toEqual([{value: {_id: 'id'}}]);
+      expect(component.wrapReference).toHaveBeenCalledWith({_id: 'id'});
     });
   });
 
@@ -311,7 +340,7 @@ describe('Document', () => {
     });
 
     describe('when no text is selected', () => {
-      it('should do nothing', function(){
+      it('should do nothing', () => {
         component.state.textIsSelected = false;
         spyOn(component.modal, 'show');
         spyOn(component.modal, 'search');
@@ -320,8 +349,8 @@ describe('Document', () => {
 
         expect(component.modal.show).not.toHaveBeenCalled();
         expect(component.modal.search).not.toHaveBeenCalled();
-      })
-    })
+      });
+    });
   });
 
   describe('closeModal', () => {
@@ -357,7 +386,7 @@ describe('Document', () => {
 
     describe('when component.modal is undefined', () => {
       it('should not throw any errors', () => {
-        component.modal = undefined;
+        component.modal = null;
         component.closeModal();
       });
     });
@@ -395,49 +424,6 @@ describe('Document', () => {
       expect(wrapper.wrap).toHaveBeenCalled();
       expect(args[0].tagName).toBe('SPAN');
       expect(args[1]).toEqual(createRange());
-
     });
   });
-
-  let createRange = (start=1, end=3) => {
-    var range = document.createRange();
-    let page1 = contentContainer.childNodes[0].childNodes[0];
-    range.setStart(page1, start);
-    range.setEnd(page1, end);
-    return range;
-  }
-
-  let stubSelection = (selectionText = '', range) => {
-    if(!range){
-      var range = document.createRange();
-      let page1 = contentContainer.childNodes[0].childNodes[0];
-      range.setStart(page1, 1);
-      range.setEnd(page1, 3);
-    }
-
-
-    range.range = 'range';
-    range.getClientRects = () => {
-      return [{top:100}];
-    }
-
-    window.getSelection = () => {
-      return {
-        toString: () => {
-          return selectionText;
-        },
-        getRangeAt: () => {
-          return range;
-        }
-      }
-    }
-
-    return range;
-
-  }
-
-  let forceComponentUpdate = () => {
-    ReactDOM.render(<Document document={doc} references={references}/>, ReactDOM.findDOMNode(component).parentNode);
-  }
-
 });

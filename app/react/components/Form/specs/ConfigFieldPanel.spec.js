@@ -1,11 +1,8 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import TestUtils from 'react-addons-test-utils'
-
-import ConfigFieldPanel from '../ConfigFieldPanel'
+import React from 'react';
+import TestUtils from 'react-addons-test-utils';
+import ConfigFieldPanel from '../ConfigFieldPanel';
 
 describe('ConfigFieldForm', () => {
-
   let component;
 
   beforeEach(() => {
@@ -25,23 +22,22 @@ describe('ConfigFieldForm', () => {
   describe('toggleModel', () => {
     it('toggle showModal state true/false', () => {
       expect(component.state.showModal).toBe(false);
-      component.toggleModal()
+      component.toggleModal();
       expect(component.state.showModal).toBe(true);
-      component.toggleModal()
+      component.toggleModal();
       expect(component.state.showModal).toBe(false);
     });
   });
 
   describe('save', () => {
     it('should toogleModal and call save function with value map of the fields', (done) => {
-
-      let save_function = (values) => {
-        expect(values).toEqual({property1:1, property2:2});
+      let saveFunction = (values) => {
+        expect(values).toEqual({property1: 1, property2: 2});
         expect(component.toggleModal).toHaveBeenCalled();
         done();
       };
 
-      component = TestUtils.renderIntoDocument(<ConfigFieldPanel save={save_function} field={{}}/>);
+      component = TestUtils.renderIntoDocument(<ConfigFieldPanel save={saveFunction} field={{}}/>);
       spyOn(component, 'toggleModal');
       component.fields = {property1: {value: () => 1}, property2: {value: () => 2}};
 
@@ -50,17 +46,13 @@ describe('ConfigFieldForm', () => {
       component.save(event);
     });
 
-    describe("when a field has no value function", () => {
-      it("should throw an error pointing which field is", () => {
-
+    describe('when a field has no value function', () => {
+      it('should throw an error pointing which field is', () => {
         component.fields = {property1: {value: () => 1}, property2: {value: () => 2}, property3: {}};
         let event = {preventDefault: () => {}};
 
-        expect(component.save.bind(component, event)).toThrow('property3 has no value function !');
-
+        expect(component.save.bind(component, event)).toThrow(new Error('property3 has no value function !'));
       });
     });
-
   });
-
 });

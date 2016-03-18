@@ -1,1 +1,1 @@
-import './Router'
+import './Router';

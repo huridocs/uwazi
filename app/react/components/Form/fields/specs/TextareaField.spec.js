@@ -1,12 +1,10 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import TestUtils from 'react-addons-test-utils'
-import { Link } from 'react-router'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TestUtils from 'react-addons-test-utils';
 
-import TextareaField from '../TextareaField.js'
+import TextareaField from '../TextareaField.js';
 
 describe('TextareaField', () => {
-
   let component;
 
   beforeEach(() => {
@@ -42,7 +40,7 @@ describe('TextareaField', () => {
       //render the component again using reactDom forces the component to update itself
       ReactDOM.render(<TextareaField value='deadshot'/>, ReactDOM.findDOMNode(component).parentNode);
       expect(component.state.value).toBe('deadshot');
-    })
+    });
 
     describe('when value is undefined', () => {
       it('should set value as blank', () => {
@@ -52,5 +50,4 @@ describe('TextareaField', () => {
       });
     });
   });
-
 });

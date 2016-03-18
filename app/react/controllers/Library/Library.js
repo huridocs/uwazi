@@ -1,25 +1,17 @@
-import React, { Component, PropTypes } from 'react'
-import request from 'superagent';
-import api from '../../utils/singleton_api'
-import RouteHandler from '../App/RouteHandler'
-import {events} from '../../utils'
-import SelectField from '../../components/Form/fields/SelectField'
-import TextareaField from '../../components/Form/fields/TextareaField'
-import RoundedProgressBar from '../../components/Elements/RoundedProgressBar'
-import Form from '../../components/Form/Form'
-import Helmet from 'react-helmet'
-import { Link } from 'react-router'
-import './scss/library.scss'
-import Alert from '../../components/Elements/Alert'
+import React from 'react';
+import api from '../../utils/singleton_api';
+import RouteHandler from '../App/RouteHandler';
+import Helmet from 'react-helmet';
+import {Link} from 'react-router';
+import './scss/library.scss';
 
 class Library extends RouteHandler {
 
+  static emptyState() {
+    return {newest: [], relevant: [], templates: [], searchResult: [], show: 'newest'};
+  }
 
-  static emptyState(){
-    return {newest: [], relevant: [], templates: [], search_result: [], show: 'newest'};
-  };
-
-  static requestState(params = {}, api){
+  static requestState(params = {}, api) {
     return Promise.all([
       api.get('documents/newest'),
       api.get('documents/relevant'),
@@ -31,32 +23,31 @@ class Library extends RouteHandler {
       let templates = responses[2].json.rows;
       return {newest: newest, relevant: relevant, templates: templates};
     });
-  };
+  }
 
-  search = (e) => {
+  search(e) {
     e.preventDefault();
 
-    return api.get('documents/search?searchTerm='+this.searchField.value)
+    return api.get('documents/search?searchTerm=' + this.searchField.value)
     .then((response) => {
-      this.setState({search_result: response.json});
+      this.setState({searchResult: response.json});
       this.showSearchResult();
     });
-  };
+  }
 
-  showRelevant = () => {
+  showRelevant() {
     this.setState({show: 'relevant'});
-  };
+  }
 
-  showNewest = () => {
+  showNewest() {
     this.setState({show: 'newest'});
-  };
+  }
 
-  showSearchResult = () => {
-    this.setState({show: 'search_result'});
-  };
+  showSearchResult() {
+    this.setState({show: 'searchResult'});
+  }
 
-  render = () => {
-
+  render() {
     let documents = this.state[this.state.show] || [];
     return (
       <div>
@@ -65,7 +56,7 @@ class Library extends RouteHandler {
           <div className="col-xs-12 col-sm-7 col-md-8 panels-layout__panel no-padding active">
             <div className="search-form">
               <h1>Search for documents</h1>
-              <form className="form-inline" onSubmit={this.search}>
+              <form className="form-inline" onSubmit={this.search.bind(this)}>
                 <div className="form-group">
                   <input className="form-control" placeholder="Search" ref={(ref) => this.searchField = ref}/>
                   &nbsp;
@@ -74,19 +65,30 @@ class Library extends RouteHandler {
               </form>
             </div>
             <div className="panel-content">
-              <a href="#" onClick={this.showNewest} className={"tab-button green" + (this.state.show == 'newest' ? " active" : "")} >Recent Documments</a>
-              <a href="#" onClick={this.showRelevant} className={"tab-button pink" + (this.state.show == 'relevant' ? " active" : "")} >Relevant Documments</a>
-              <a href="#" onClick={this.showSearchResult} className={"tab-button blue" + (this.state.show == 'search_result' ? " active" : "")} >Search ({this.state.search_result.length})</a>
+              <a href="#" onClick={this.showNewest.bind(this)}
+                 className={'tab-button green' + (this.state.show === 'newest' ? ' active' : '')} >
+                Recent Documments
+              </a>
+              <a href="#" onClick={this.showRelevant.bind(this)}
+                 className={'tab-button pink' + (this.state.show === 'relevant' ? ' active' : '')} >
+                Relevant Documments
+              </a>
+              <a href="#" onClick={this.showSearchResult.bind(this)}
+                 className={'tab-button blue' + (this.state.show === 'searchResult' ? ' active' : '')} >
+                Search ({this.state.searchResult.length})
+              </a>
               <table className="table table-hover documents">
                 <tbody>
                   {documents.map((doc, index) => {
-                    let documentViewUrl = '/document/'+doc._id;
-                    return (<tr key={index}>
+                    let documentViewUrl = '/document/' + doc._id;
+                    return <tr key={index}>
                             <td className="document-tittle">{doc.title}</td>
                             <td className="view">
-                              <Link to={documentViewUrl}><i className="fa fa-external-link"></i> View</Link>
+                              <Link to={documentViewUrl}><i className="fa fa-external-link"></i>
+                                View
+                              </Link>
                             </td>
-                           </tr>)
+                           </tr>;
                   })}
                 </tbody>
               </table>
@@ -97,8 +99,8 @@ class Library extends RouteHandler {
           </div>
         </div>
       </div>
-    )
-  };
+    );
+  }
 
 }
 

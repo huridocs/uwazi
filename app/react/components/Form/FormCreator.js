@@ -1,67 +1,57 @@
-import React, { Component, PropTypes } from 'react'
-import ConfigInputField from './configFields/ConfigInputField.js'
-import TemplatesList from './TemplatesList.js'
-import InputField from './fields/InputField.js'
-import api from '../../utils/singleton_api'
-import './scss/formcreator.scss'
+import React, {Component, PropTypes} from 'react';
+import ConfigInputField from './configFields/ConfigInputField.js';
+import TemplatesList from './TemplatesList.js';
+import InputField from './fields/InputField.js';
+import './scss/formcreator.scss';
 
 class FormCreator extends Component {
 
-  static defaultTemplate = {
-    name:'template name',
-    fields: [
-      {type:'input', label:'Short textsss', required: true},
-      {type:'select', label:'Dropdown', required: false}
-    ]
-  };
-
-
-  constructor (props, context) {
+  constructor(props, context) {
     super(props, context);
     this.state = {
       templates: props.templates,
       template: this.findTemplate(props)
-    }
-  };
+    };
+  }
 
-  defaultTemplate(){
-    return {value: {name:'', fields:[]}};
-  };
+  defaultTemplate() {
+    return {value: {name: '', fields: []}};
+  }
 
-  componentWillReceiveProps = (props) => {
+  componentWillReceiveProps(props) {
     this.setState({
       templates: props.templates,
       template: this.findTemplate(props)
     });
-  };
+  }
 
-  findTemplate = (props) => {
-    let template = props.templates.find(template => template.id == props.templateId) || this.defaultTemplate();
-    return template.value;
-  };
+  findTemplate(props) {
+    let templateFound = props.templates.find(template => template.id === props.templateId) || this.defaultTemplate();
+    return templateFound.value;
+  }
 
-  addInput = () => {
-    this.state.template.fields.push({type:'input', label:'Short text', required: false});
+  addInput() {
+    this.state.template.fields.push({type: 'input', label: 'Short text', required: false});
     this.setState(this.state);
-  };
+  }
 
-  save = (e) => {
+  save(e) {
     e.preventDefault();
     this.state.template.name = this.inputName.value();
     this.props.save(this.state.template);
-  };
+  }
 
-  remove = (index) => {
+  remove(index) {
     this.state.template.fields.splice(index, 1);
     this.setState(this.state);
-  };
+  }
 
-  update = (index, field) => {
+  update(index, field) {
     this.state.template.fields[index] = field;
     this.setState(this.state);
-  };
+  }
 
-  render = () => {
+  render() {
     return (
       <div>
         <div className="row">
@@ -71,20 +61,24 @@ class FormCreator extends Component {
           <div className="col-xs-offset-1 col-xs-6">
             <h4>Template name</h4>
             <InputField value={this.state.template.name} ref={(ref) => this.inputName = ref}/>
-            <form onSubmit={this.save}>
+            <form onSubmit={this.save.bind(this)}>
               {this.state.template.fields.map((field, index) => {
-                return <ConfigInputField remove={this.remove.bind(this,index)} save={this.update.bind(this,index)} field={field} key={index} />
+                return <ConfigInputField remove={this.remove.bind(this, index)} save={this.update.bind(this, index)} field={field} key={index} />;
               })}
-              <a className="btn btn-default" onClick={this.addInput}>Add field</a>
+              <a className="btn btn-default" onClick={this.addInput.bind(this)}>Add field</a>
               &nbsp;
               <button type="submit" className="btn btn-default">Save</button>
             </form>
           </div>
         </div>
       </div>
-    )
-  };
-
+    );
+  }
 }
+
+FormCreator.propTypes = {
+  save: PropTypes.func,
+  templates: PropTypes.array
+};
 
 export default FormCreator;

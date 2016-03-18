@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import Helmet from 'react-helmet'
+import React, {Component} from 'react';
+import Helmet from 'react-helmet';
 
 class NoMatch extends Component {
 
@@ -9,8 +9,8 @@ class NoMatch extends Component {
         <Helmet title='Not Found' />
         <h2>404</h2> Page was not found
       </div>
-    )
-  };
+    );
+  }
 }
 
 export default NoMatch;

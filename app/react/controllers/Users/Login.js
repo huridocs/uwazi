@@ -1,9 +1,8 @@
-import React, { Component, PropTypes } from 'react'
-import {events} from '../../utils/index'
-import template from './templates/login.js'
-import api from '../../utils/singleton_api'
-import { Router } from 'react-router'
-import { browserHistory } from 'react-router'
+import {Component} from 'react';
+import {events} from '../../utils/index';
+import template from './templates/login.js';
+import api from '../../utils/singleton_api';
+import {browserHistory} from 'react-router';
 
 
 class Login extends Component {
@@ -11,37 +10,37 @@ class Login extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {error: false};
-    this.state.credentials = {username:'', password:''}
+    this.state.credentials = {username: '', password: ''};
   }
 
-  render = () => {
-    this.render = template.bind(this);
-    return this.render();
-  };
-
-  user_change = (e) => {
+  userChange(e) {
     this.state.credentials.username = e.target.value;
     this.setState(this.state);
-  };
+  }
 
-  password_change = (e) => {
+  passwordChange(e) {
     this.state.credentials.password = e.target.value;
     this.setState(this.state);
-  };
+  }
 
-  submit = (e) => {
+  submit(e) {
     e.preventDefault();
 
     return api.post('login', this.state.credentials)
-    .then((response) => {
-      this.setState({error: false})
+    .then(() => {
+      this.setState({error: false});
       events.emit('login');
       browserHistory.push('/');
     })
     .catch(() => {
-      this.setState({error: true})
+      this.setState({error: true});
     });
-  };
+  }
+
+  render() {
+    this.render = template.bind(this);
+    return this.render();
+  }
 }
 
 export default Login;

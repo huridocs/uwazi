@@ -1,12 +1,8 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import TestUtils from 'react-addons-test-utils'
-import { Link } from 'react-router'
-
-import CheckBoxField from '../CheckBoxField.js'
+import React from 'react';
+import TestUtils from 'react-addons-test-utils';
+import CheckBoxField from '../CheckBoxField.js';
 
 describe('CheckBoxField', () => {
-
   let component;
 
   beforeEach(() => {
@@ -38,5 +34,4 @@ describe('CheckBoxField', () => {
       expect(component.state.value).toBe(true);
     });
   });
-
 });

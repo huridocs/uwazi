@@ -1,60 +1,60 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react';
 import RouteHandler from '../RouteHandler';
-import backend from 'fetch-mock'
-import TestUtils from 'react-addons-test-utils'
-import {APIURL} from '../../../config.js'
-import api from '../../../utils/singleton_api'
-import Provider from '../Provider'
+import backend from 'fetch-mock';
+import TestUtils from 'react-addons-test-utils';
+import {APIURL} from '../../../config.js';
+import api from '../../../utils/singleton_api';
+import Provider from '../Provider';
 
 describe('RouteHandler', () => {
-
   let component;
 
   class TestController extends RouteHandler {
 
     static emptyState() {
       return {message: 'requesting data'};
-    };
+    }
 
-    static requestState () {
+    static requestState() {
       return Promise.resolve({initialData: 'data'});
-    };
+    }
 
-    render = () => {return <div/>};
+    render() {
+      return <div/>;
+    }
   }
 
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL+'templates', 'GET', {body: JSON.stringify({rows:[]})});
-    window.__initialData__ = undefined;
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: []})});
+    delete window.__initialData__;
   });
 
   describe('static requestState', () => {
     it('should return a promise with an empty object', (done) => {
-
       RouteHandler.requestState()
       .then((response) => {
         expect(response).toEqual({});
         done();
       })
-      .catch(done.fail)
-
+      .catch(done.fail);
     });
-
   });
 
   describe('on instance', () => {
-
-    let component;
-    let initialData = {batmanGadgets:['batimovil', 'batarang']};
+    let initialData = {batmanGadgets: ['batimovil', 'batarang']};
 
     describe('when getInitialData returns data', () => {
       beforeEach(() => {
-        TestUtils.renderIntoDocument(<Provider initialData={initialData} ><TestController ref={(ref) => component = ref} /></Provider>);
+        TestUtils.renderIntoDocument(
+          <Provider initialData={initialData} >
+          <TestController ref={(ref) => component = ref} />
+          </Provider>
+        );
       });
 
-      it("should not call to requestState", () => {
+      it('should not call to requestState', () => {
         spyOn(TestController, 'requestState');
         expect(TestController.requestState).not.toHaveBeenCalled();
       });
@@ -65,32 +65,36 @@ describe('RouteHandler', () => {
     });
 
     describe('when getInitialData returns no data', () => {
-      let params = {id:'id'};
+      let params = {id: 'id'};
 
       beforeEach(() => {
         spyOn(TestController, 'requestState').and.callThrough();
-        TestUtils.renderIntoDocument(<Provider><TestController params={params} ref={(ref) => component = ref} /></Provider>);
+        TestUtils.renderIntoDocument(
+          <Provider>
+            <TestController params={params} ref={(ref) => component = ref} />
+          </Provider>
+        );
       });
 
       it('should request for initialState and set it on the state', (done) => {
         TestController.requestState().then(() => {
-            expect(component.state.initialData).toBe('data');
-            done();
+          expect(component.state.initialData).toBe('data');
+          done();
         })
         .catch(done.fail);
       });
 
-      it("should send props.params to requestState", (done) => {
+      it('should send props.params to requestState', (done) => {
         TestController.requestState().then(() => {
-            expect(TestController.requestState).toHaveBeenCalledWith(params, api);
-            done();
+          expect(TestController.requestState).toHaveBeenCalledWith(params, api);
+          done();
         })
         .catch(done.fail);
       });
 
-      it('should set the empty state', function(){
+      it('should set the empty state', () => {
         expect(component.state).toEqual({message: 'requesting data'});
-      })
+      });
     });
   });
 });

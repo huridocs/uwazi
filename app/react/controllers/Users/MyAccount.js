@@ -1,6 +1,6 @@
-import React, { Component, PropTypes } from 'react'
-import template from './templates/my_account.js'
-import fetch from 'isomorphic-fetch'
+import {Component, PropTypes} from 'react';
+import template from './templates/my_account.js';
+import fetch from 'isomorphic-fetch';
 
 class MyAccount extends Component {
 
@@ -8,43 +8,48 @@ class MyAccount extends Component {
     super(props);
     this.state = {feedback: {}};
     this.fetch = props.fetch || fetch;
-  };
+  }
 
-  render = () => {
+  render() {
     this.render = template.bind(this);
     return this.render();
-  };
+  }
 
-  password_change = (e) => {
+  passwordChange(e) {
     this.setState({password: e.target.value});
-  };
+  }
 
-  repeat_password_change = (e) => {
-    this.setState({repeat_password: e.target.value});
-  };
+  repeatPasswordChange(e) {
+    this.setState({repeatPassword: e.target.value});
+  }
 
-  submit = (e) => {
+  submit(e) {
     e.preventDefault();
 
-    if(this.state.password !== this.state.repeat_password) {
-      this.setState({feedback: {message: 'Passwords should match', type: 'warning'}})
+    if (this.state.password !== this.state.repeatPassword) {
+      this.setState({feedback: {message: 'Passwords should match', type: 'warning'}});
       return;
     }
 
     let user = this.props.user;
     user.password = this.state.password;
-    return this.fetch('/api/users', {method:'POST',
+    return this.fetch('/api/users', {method: 'POST',
                  headers: {
-                   'Accept': 'application/json',
+                   Accept: 'application/json',
                    'Content-Type': 'application/json'
                  },
                  credentials: 'same-origin',
                  body: JSON.stringify(user)})
-      .then((response) => {
-        this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}})
+      .then(() => {
+        this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}});
       }
     );
-  };
+  }
 }
+
+MyAccount.propTypes = {
+  fetch: PropTypes.func,
+  user: PropTypes.object
+};
 
 export default MyAccount;

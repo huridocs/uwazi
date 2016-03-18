@@ -1,12 +1,9 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import TestUtils from 'react-addons-test-utils'
-import { Link } from 'react-router'
-
-import SelectField from '../SelectField.js'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TestUtils from 'react-addons-test-utils';
+import SelectField from '../SelectField.js';
 
 describe('SelectField', () => {
-
   let component;
   let options = [
     {label: '1', value: '1'},
@@ -25,16 +22,15 @@ describe('SelectField', () => {
 
   describe('onChange()', () => {
     it('should execute onChange callback passed in props', () => {
-      let change_executed = false;
+      let changeExecuted = false;
       let change = () => {
-        change_executed = true;
+        changeExecuted = true;
       };
 
       component = TestUtils.renderIntoDocument(<SelectField defaultValue='2' options={options} onChange={change}/>);
       TestUtils.Simulate.change(component.field);
 
-      expect(change_executed).toBe(true);
-
+      expect(changeExecuted).toBe(true);
     });
   });
 
@@ -51,7 +47,6 @@ describe('SelectField', () => {
       //render the component again using reactDom forces the component to update itself
       ReactDOM.render(<SelectField value='3'/>, ReactDOM.findDOMNode(component).parentNode);
       expect(component.state.value).toBe('3');
-    })
+    });
   });
-
 });

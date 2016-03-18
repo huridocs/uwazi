@@ -1,21 +1,21 @@
-import React, { Component, PropTypes } from 'react'
+import React, {Component, PropTypes} from 'react';
 
 class CheckBoxField extends Component {
 
   constructor(props) {
     super(props);
     this.state = {value: props.value};
-  };
+  }
 
-  handleChange = () => {
+  handleChange() {
     this.setState({value: this.value()});
-  };
+  }
 
-  value = () => {
+  value() {
     return this.field.checked;
-  };
+  }
 
-  render = () => {
+  render() {
     return (
 
       <div className="form-group">
@@ -33,7 +33,14 @@ class CheckBoxField extends Component {
         </div>
       </div>
 
-    )
-  };
+    );
+  }
 }
+
+CheckBoxField.propTypes = {
+  label: PropTypes.string,
+  defaultValue: PropTypes.bool,
+  value: PropTypes.bool
+};
+
 export default CheckBoxField;

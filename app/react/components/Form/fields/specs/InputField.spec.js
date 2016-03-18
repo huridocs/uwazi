@@ -1,12 +1,9 @@
-import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import TestUtils from 'react-addons-test-utils'
-import { Link } from 'react-router'
-
-import InputField from '../InputField.js'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TestUtils from 'react-addons-test-utils';
+import InputField from '../InputField.js';
 
 describe('InputField', () => {
-
   let component;
 
   beforeEach(() => {
@@ -42,7 +39,6 @@ describe('InputField', () => {
       //render the component again using reactDom forces the component to update itself
       ReactDOM.render(<InputField value='deadshot'/>, ReactDOM.findDOMNode(component).parentNode);
       expect(component.state.value).toBe('deadshot');
-    })
+    });
   });
-
 });

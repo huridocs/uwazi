@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, {Component, PropTypes} from 'react';
 
 class Root extends Component {
 
   renderInitialData() {
-    let innerHtml = ''
+    let innerHtml = '';
     if (this.props.initialData) {
       innerHtml += `window.__initialData__ = ${JSON.stringify(this.props.initialData)};`;
     }
@@ -40,5 +40,13 @@ class Root extends Component {
     );
   }
 }
+
+Root.propTypes = {
+  user: PropTypes.object,
+  children: PropTypes.object,
+  initialData: PropTypes.object,
+  head: PropTypes.object,
+  content: PropTypes.object
+};
 
 export default Root;
