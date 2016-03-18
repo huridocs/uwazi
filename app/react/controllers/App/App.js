@@ -1,11 +1,15 @@
-import fetch from 'isomorphic-fetch';
-import React, {Component, PropTypes} from 'react';
-import {events} from '../../utils/index';
-import Helmet from 'react-helmet';
-import 'bootstrap/dist/css/bootstrap.css';
-import './scss/App.scss';
-import 'font-awesome/css/font-awesome.css';
-import Alerts from './Alerts.js';
+import fetch from 'isomorphic-fetch'
+import React, { Component, PropTypes } from 'react'
+import { Router, match, RoutingContext, RouteContext } from 'react-router'
+
+import {events} from '../../utils/index'
+
+import Helmet from 'react-helmet'
+import { Link } from 'react-router'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'font-awesome/css/font-awesome.css'
+import Menu from './Menu.js'
+import Alerts from './Alerts.js'
 
 class App extends Component {
 
