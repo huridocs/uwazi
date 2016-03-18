@@ -66,8 +66,8 @@ describe('Upload', () => {
     it('should trigger the an event with the document info', (done) => {
       let response = {ok: true, id: '1234', rev: '567'};
       events.on('newDocument', (docInfo) => {
-        let expectedDoc = {title: 'Fighting crime 101', id: '1234', rev: '567'};
-        expect(docInfo.value).toEqual(expectedDoc);
+        let expectedDoc = {id: '1234', rev: '567', value: {title: 'Fighting crime 101', _id: '1234', _rev: '567'}};
+        expect(docInfo).toEqual(expectedDoc);
         done();
       });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import api from '../../utils/singleton_api';
+import API from '../../utils/singleton_api';
 import RouteHandler from '../App/RouteHandler';
 import Helmet from 'react-helmet';
 import {Link} from 'react-router';
@@ -28,7 +28,7 @@ class Library extends RouteHandler {
   search(e) {
     e.preventDefault();
 
-    return api.get('documents/search?searchTerm=' + this.searchField.value)
+    return API.get('documents/search?searchTerm=' + this.searchField.value)
     .then((response) => {
       this.setState({searchResult: response.json});
       this.showSearchResult();

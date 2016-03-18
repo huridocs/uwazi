@@ -27,7 +27,8 @@ class RouteHandler extends Component {
 
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
-  getUser: PropTypes.func
+  getUser: PropTypes.func,
+  router: PropTypes.object
 };
 
 RouteHandler.propTypes = {

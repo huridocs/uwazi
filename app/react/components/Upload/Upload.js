@@ -37,15 +37,17 @@ class Upload extends Component {
   }
 
   uploadFile(file, doc) {
-    let documentCreeated = {
+    let documentCreated = {
+      id: doc.id,
+      rev: doc.rev,
       value: {
         title: this.extractTitle(file),
-        id: doc.id,
-        rev: doc.rev
+        _id: doc.id,
+        _rev: doc.rev
       }
     };
 
-    events.emit('newDocument', documentCreeated);
+    events.emit('newDocument', documentCreated);
 
     let uploadRequest = superagent.post(APIURL + 'upload')
     .set('Accept', 'application/json')

@@ -14,7 +14,9 @@ class App extends Component {
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
     this.state = {user: context.getUser(), showmenu: false};
-    events.on('login', this.fetchUser);
+    events.on('login', () => {
+      this.fetchUser();
+    });
   }
 
   fetchUser() {

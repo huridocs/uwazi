@@ -86,10 +86,15 @@ function handleRoute(res, renderProps, req) {
 }
 
 function ServerRouter(req, res) {
+  let userRoutes = ['/uploads', '/my_account'];
+  if (!req.user && userRoutes.includes(req.url)) {
+    res.redirect(302, '/login');
+  }
+
   match({routes: Routes, location: req.url}, (error, redirectLocation, renderProps) => {
     if (error) {
       handleError(error);
-    } else if (res) {
+    } else if (redirectLocation) {
       handleRedirect(res, redirectLocation);
     } else if (renderProps) {
       handleRoute(res, renderProps, req);

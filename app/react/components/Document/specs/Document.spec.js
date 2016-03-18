@@ -364,30 +364,36 @@ describe('Document', () => {
       expect(component.unwrapFakeSelection).toHaveBeenCalled();
     });
 
-    describe('toggleModal', () => {
-      describe('when the modal es opened', () => {
-        it('should close it', () => {
-          spyOn(component, 'closeModal');
-          component.modal.state.show = true;
-          component.toggleModal();
-          expect(component.closeModal).toHaveBeenCalled();
-        });
-      });
-
-      describe('when the modal es closed', () => {
-        it('should open it', () => {
-          spyOn(component, 'openModal');
-          component.modal.state.show = false;
-          component.toggleModal();
-          expect(component.openModal).toHaveBeenCalled();
-        });
-      });
+    it('sets textIsSelected to false', () => {
+      component.setState({textIsSelected: true});
+      component.closeModal();
+      expect(component.state.textIsSelected).toBe(false);
     });
 
     describe('when component.modal is undefined', () => {
       it('should not throw any errors', () => {
         component.modal = null;
         component.closeModal();
+      });
+    });
+  });
+
+  describe('toggleModal', () => {
+    describe('when the modal is open', () => {
+      it('should close it', () => {
+        spyOn(component, 'closeModal');
+        component.modal.state.show = true;
+        component.toggleModal();
+        expect(component.closeModal).toHaveBeenCalled();
+      });
+    });
+
+    describe('when the modal is close', () => {
+      it('should open it', () => {
+        spyOn(component, 'openModal');
+        component.modal.state.show = false;
+        component.toggleModal();
+        expect(component.openModal).toHaveBeenCalled();
       });
     });
   });

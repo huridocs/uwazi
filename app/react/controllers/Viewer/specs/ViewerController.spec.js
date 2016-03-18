@@ -3,9 +3,9 @@ import ViewerController from '../ViewerController';
 import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
-import Provider from '../../App/Provider';
-import api from '../../../utils/singleton_api';
+import API from '../../../utils/singleton_api';
 import {events} from '../../../utils/index';
+import MockProvider from '../../App/specs/MockProvider';
 
 describe('ViewerController', () => {
   let documentResponse = [{key: 'doc1', id: '1', value: {pages: [], css: [], template: 1, file: {}}}];
@@ -16,8 +16,9 @@ describe('ViewerController', () => {
 
   beforeEach(() => {
     let params = {documentId: '1'};
-    let history = {};
-    TestUtils.renderIntoDocument(<Provider><ViewerController history={history} params={params} ref={(ref) => component = ref} /></Provider>);
+    let router = {createHref: function () {}};
+
+    TestUtils.renderIntoDocument(<MockProvider router={router}><ViewerController params={params} ref={(ref) => component = ref} /></MockProvider>);
     backend.restore();
     backend
     .mock(APIURL + 'documents?_id=1', 'GET', {body: JSON.stringify({rows: documentResponse})})
@@ -31,7 +32,7 @@ describe('ViewerController', () => {
   describe('static requestState', () => {
     it('should request the document, the references and the template', (done) => {
       let id = 1;
-      ViewerController.requestState({documentId: id}, api)
+      ViewerController.requestState({documentId: id}, API)
       .then((response) => {
         expect(response).toEqual({value: documentResponse[0].value, references: [{title: 1}], template: templateResponse[0]});
         done();

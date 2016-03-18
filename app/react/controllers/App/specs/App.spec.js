@@ -27,7 +27,6 @@ describe('App', () => {
   };
 
   beforeEach(() => {
-    spyOn(events, 'on');
     TestUtils.renderIntoDocument(<Provider><App ref={(ref) => {
       component = ref;
     }} fetch={fetchRejected}/></Provider>);
@@ -35,7 +34,9 @@ describe('App', () => {
 
   describe('on instance', () => {
     it('should subscribe to login event with fetchUser', () => {
-      expect(events.on).toHaveBeenCalledWith('login', component.fetchUser);
+      spyOn(component, 'fetchUser');
+      events.emit('login');
+      expect(component.fetchUser).toHaveBeenCalled();
     });
   });
 

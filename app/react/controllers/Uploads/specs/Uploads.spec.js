@@ -4,13 +4,15 @@ import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
 import {events} from '../../../utils/index';
-import Provider from '../../App/Provider';
-import api from '../../../utils/singleton_api';
+import API from '../../../utils/singleton_api';
+import MockProvider from '../../App/specs/MockProvider';
 
 describe('UploadsController', () => {
   let documents = [{key: 'secret documents', value: {}}, {key: 'real batman id', value: {}}];
   let templates = [{value: {name: 'batarang', fields: []}}, {value: {name: 'batmovil'}}];
   let component;
+  let router = {};
+  let user = {};
 
   beforeEach(() => {
     backend.restore();
@@ -23,7 +25,7 @@ describe('UploadsController', () => {
 
   describe('static requestState', () => {
     it('should request documents and templates', (done) => {
-      Uploads.requestState(null, api)
+      Uploads.requestState(null, API)
       .then((response) => {
         expect(response.documents).toEqual(documents);
         expect(response.templates).toEqual(templates);
@@ -39,7 +41,7 @@ describe('UploadsController', () => {
       backend
       .mock(APIURL + 'documents', 'DELETE', {body: {test: 'test'}})
       .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: documents})});
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => component = ref}/></Provider>);
+      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => component = ref}/></MockProvider>);
     });
 
     it('shoult request to delete the document', (done) => {
@@ -60,7 +62,7 @@ describe('UploadsController', () => {
     let doc = {id: 'id_1', value: {title: 'Robin secret diary'}};
 
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => component = ref}/></Provider>);
+      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => component = ref}/></MockProvider>);
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]});
     });
 
@@ -86,7 +88,7 @@ describe('UploadsController', () => {
 
   describe('when editing a document', () => {
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><Uploads ref={(ref) => component = ref}/></Provider>);
+      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => component = ref}/></MockProvider>);
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]});
     });
 

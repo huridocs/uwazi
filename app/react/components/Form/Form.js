@@ -36,7 +36,7 @@ Form.defaultProps = {values: {}};
 
 Form.propTypes = {
   values: PropTypes.object,
-  fields: PropTypes.object
+  fields: PropTypes.array
 };
 
 export default Form;

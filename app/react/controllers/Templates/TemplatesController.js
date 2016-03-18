@@ -1,5 +1,5 @@
 import React from 'react';
-import api from '../../utils/singleton_api';
+import API from '../../utils/singleton_api';
 import FormCreator from '../../components/Form/FormCreator';
 import RouteHandler from '../App/RouteHandler';
 import Helmet from 'react-helmet';
@@ -23,9 +23,9 @@ class TemplatesController extends RouteHandler {
   }
 
   saveForm(template) {
-    return api.post('templates', template)
+    return API.post('templates', template)
     .then((response) => {
-      return TemplatesController.requestState({templateId: response.json.id}, api);
+      return TemplatesController.requestState({templateId: response.json.id}, API);
     })
     .then((state) => {
       this.setState(state);

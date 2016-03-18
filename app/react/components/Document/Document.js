@@ -17,6 +17,7 @@ class Document extends Component {
     if (this.fakeSelection) {
       this.fakeSelection.unwrap();
     }
+    this.setState({textIsSelected: false});
   }
 
   //
@@ -34,7 +35,8 @@ class Document extends Component {
 
     if (window.getSelection().toString() === '') {
       this.closeModal();
-      return this.setState({textIsSelected: false});
+      this.setState({textIsSelected: false});
+      return;
     }
 
     this.onTextSelected();
@@ -193,7 +195,7 @@ class Document extends Component {
 
     return (
       <div>
-        <ReferenceForm ref={(ref) => this.modal = ref} onClose={this.closeModal} onSubmit={this.referenceFormSubmit}/>
+        <ReferenceForm ref={(ref) => this.modal = ref} onClose={this.closeModal.bind(this)} onSubmit={this.referenceFormSubmit.bind(this)}/>
       </div>
     );
   }

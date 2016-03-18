@@ -1,12 +1,13 @@
 import React from 'react';
 import {Link} from 'react-router';
 import Menu from '../App/Menu.js';
-import api from '../../utils/singleton_api';
+import API from '../../utils/singleton_api';
 import RouteHandler from '../App/RouteHandler';
 import './scss/viewer.scss';
 import LogoIcon from '../../components/Logo/LogoIcon.js';
 import DocumentMetadata from '../../components/DocumentMetadata/DocumentMetadata.js';
 import {events} from '../../utils/index';
+import Loader from '../../components/Elements/Loader.js';
 
 import Document from '../../components/Document/Document';
 
@@ -59,7 +60,7 @@ class ViewerController extends RouteHandler {
   }
 
   saveReference(reference) {
-    return api.post('references', reference)
+    return API.post('references', reference)
     .then((response) => {
       reference._id = response.json.id;
       this.document.addReference({value: reference});
@@ -74,7 +75,7 @@ class ViewerController extends RouteHandler {
     }
 
     this.setState(ViewerController.emptyState());
-    return ViewerController.requestState(nextProps.params, api)
+    return ViewerController.requestState(nextProps.params, API)
     .then((state) => {
       this.setState(state);
     });
@@ -87,7 +88,7 @@ class ViewerController extends RouteHandler {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link to='/' className="navbar-brand"><LogoIcon/></Link>
-              <a href="#" className="go-back" onClick={this.props.history.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
+              <a href="#" className="go-back" onClick={this.context.router.goBack}><i className="fa fa-angle-left"></i><span> GO BACK</span></a>
               <ul className="nav navbar-nav navbar-tools">
                 <li>
                   <a><i className="fa fa-bookmark-o"></i></a>
@@ -110,7 +111,8 @@ class ViewerController extends RouteHandler {
                 <i className="fa fa-cog"/>
               </button>
             </div>
-            <div onClick={this.closeMenu} id="navbar" className={this.state.showmenu ? 'navbar-collapse collapse in' : 'navbar-collapse collapse' }>
+            <div onClick={this.closeMenu.bind(this)} id="navbar"
+            className={this.state.showmenu ? 'navbar-collapse collapse in' : 'navbar-collapse collapse' }>
               <Menu className="nav navbar-nav navbar-right" user={this.props.user}/>
             </div>
          </div>
@@ -118,6 +120,11 @@ class ViewerController extends RouteHandler {
         <div className='container-fluid contents-wrapper'>
           <div className="row panels-layout viewer__pages">
             <div className={'col-xs-12 col-sm-8 panels-layout__panel no-padding ' + (this.state.showpanel ? '' : 'active')}>
+                {(() => {
+                  if (!this.state.value.pages.length) {
+                    return <Loader/>;
+                  }
+                })()}
                 <Document
                   ref={(ref) => this.document = ref}
                   onCreateReference={this.saveReference.bind(this)}
