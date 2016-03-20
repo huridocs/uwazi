@@ -1,3 +1,10 @@
+.document-viewer {
+	transform: translateX(0%);
+	transition: all 300ms;
+	&.is-active {
+		transform: translateX(-20%);
+	}
+}
 .document-article {
 	padding: 80px 120px;
 	background: $c-white;
@@ -16,7 +23,7 @@
 		text-decoration: none !important;
 		border-bottom: 1px dotted $c-grey;
 		color: $c-black;
-		span {
+		.relation-button {
 			display: block;
 			position: absolute;
 			background: $c-white;
@@ -28,7 +35,7 @@
 			border-radius: 50%;
 			box-shadow: $shadow;
 			border: 1px solid $c-grey;
-			color: $c-grey;
+			color: $c-grey-dark;
 			transform: translateY(-100%) translateX(50%);
 			font-size: $f-size-sm;
 			.fa {
@@ -44,12 +51,15 @@
 				color: orange;
 				border-color: orange;
 			}
+			.relation-dialog {
+				opacity: 1;
+			}
 		}
 	}
 
 	b {
 		font-weight: normal;
-		span {
+		.relation-button {
 			opacity: 0;
 			display: block;
 			position: absolute;
@@ -62,9 +72,10 @@
 			border-radius: 50%;
 			box-shadow: $shadow;
 			border: 1px solid $c-grey;
-			color: $c-grey;
+			color: $c-grey-dark;
 			transform: translateY(-100%) translateX(50%);
 			font-size: $f-size-sm;
+			cursor: pointer;
 		}
 		&.is-active {
 			background: $c-primary-light;
@@ -75,6 +86,93 @@
 				color: $c-success;
 				border-color: $c-success;
 			}
+		}
+		&.is-relation {
+			background: #FFFFC5;
+			color: orange;
+			border-color: orange;
+			span {
+				opacity: 1;
+				background: #FFFFC5;
+				color: orange;
+				border-color: orange;
+			}
+		}
+	}
+}
+
+
+.relation-dialog {
+	position: absolute;
+	right: -30px;
+	transform: translateX(100%) translateY(-30%);
+	background: $c-primary-lighten !important;
+	border: 1px solid $c-grey !important;
+	color: $c-black !important;
+	padding: 5px 10px;
+	opacity: 0;
+	transition: right 300ms, opacity 0ms;
+	width: 33%;
+}
+
+.ref-modal {
+	position: fixed;
+	right: 0;
+	top: 60px;
+	bottom: 0;
+	background: $c-white;
+	border-left: 1px solid $c-grey;
+	width: 400px;
+	padding: 15px;
+	transform: translateX(100%);
+	transition: all 300ms;
+	&.is-active {
+		transform: translateX(0);
+	}
+
+	h1 {
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-size: $f-size-lg;
+	}
+	.item-group {
+		border: 1px solid $c-grey;
+		background: $c-primary-lighten;
+		padding: 4px 0px;
+		margin: 0 0 15px;
+		overflow-y: scroll;
+		height: 80%;
+	}
+	.item {
+		height: auto;
+		margin-bottom: 5px;
+		padding: 15px;
+		border-color: $c-white;
+		&:after {
+			content: '\f00c';
+			font-family: FontAwesome;
+			position: absolute;
+			top: 30%;
+		  left: 42%;
+		  font-size: 40px;
+			color: $c-success;
+			opacity: 0;
+			transition: 300ms all;
+		}
+		&.is-selected {
+			background: $c-primary-lighten;
+			color: $c-primary-light;
+			border: 1px solid $c-primary-light;
+			&:after {
+				opacity: 1;
+				top: -5px;
+			}
+			&:before {
+				display: none;
+			}
+		}
+		.item-name {
+			font-size: $f-size;
 		}
 	}
 }

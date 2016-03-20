@@ -1,12 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 
-import { Link } from 'react-router'
-import 'bootstrap/dist/css/bootstrap.css'
-import './scss/layout.scss'
-import 'font-awesome/css/font-awesome.css'
-import Menu from './Menu.js'
-import Library from '../Library/Library.js'
-import LogoIcon from '../../components/Logo/LogoIcon.js'
+import 'bootstrap/dist/css/bootstrap.css';
+import './scss/layout.scss';
+import 'font-awesome/css/font-awesome.css';
+import Menu from './Menu.js';
+import Library from '../Library/Library.js';
 
 class Layout extends Component {
 
@@ -34,9 +32,8 @@ class Layout extends Component {
   }
 
   render() {
-
     let menuClass = 'col-md-5 col-sm-6';
-    let menuToggleClass = "navbar-toggle ";
+    let menuToggleClass = 'navbar-toggle ';
 
     if (this.state.showmenu) {
       menuClass += ' in';
@@ -69,7 +66,7 @@ class Layout extends Component {
               <div className="input-group">
                 <span className="input-group-btn">
                   <button className="btn btn-default"><i className="fa fa-search"></i><i className="fa fa-close"></i></button></span>
-                <input type="text" placeholder="Search in 39 documents" className="form-control"/>
+                <input type="text" placeholder="Search" className="form-control"/>
                 <div className="search-suggestions">
                   <p> <b>Africa</b> Legal Aid (on behalf of Isaac and Robert Banda) Gambia (The)<i className="fa fa-arrow-left"></i></p>
                   <p>149 96 <b>Africa</b> Sir Dawda K. Jawara Gambia (The)<i className="fa fa-arrow-left"></i></p>
@@ -84,8 +81,8 @@ class Layout extends Component {
           </div>
         </div>
       </header>
-        <div  onClick={this.closeMenu.bind(this)} className='container-fluid contents-wrapper'>
-            {this.renderChildren.bind(this)}
+        <div onClick={this.closeMenu.bind(this)} className='container-fluid contents-wrapper'>
+            {this.renderChildren()}
         </div>
         <footer>
           <div className="container-fluid">

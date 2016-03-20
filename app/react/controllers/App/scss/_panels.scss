@@ -19,12 +19,12 @@
       height: 100%;
       padding-bottom: 50px;
 
-      @media #{$xs} {
+      @include mobile {
         overflow-y: hidden;
       }
     }
 
-    @media #{$xs} {
+    @include mobile {
       border-left: 0;
 
       &.active .panel-content{
@@ -32,7 +32,7 @@
       }
     }
 
-    @media #{$xs} {
+    @include mobile {
       margin-bottom: 0;
       padding-bottom: 0;
       width: 0;
@@ -49,11 +49,9 @@
   }
 
   &__panel:not(:first-child) {
-    background-color: $backGroundColor2;
-    border-left: 4px solid $backGroundColor1;
     right: 0;
 
-    @media #{$xs} {
+    @include mobile {
       width: 0;
       border: 0;
 
@@ -67,12 +65,10 @@
     height: 50px;
     line-height: 50px;
     width: 100%;
-    background-color: white;
-    border-bottom: 1px solid $backGroundColor3;
     padding: 0 15px;
     display: none;
 
-    @media #{$xs} {
+    @include mobile {
       display: block;
     }
 
@@ -83,7 +79,7 @@
   }
 
   .panel-top-bar + .panel-content {
-    @media #{$xs} {
+    @include mobile {
       padding-bottom: 100px;
     }
   }

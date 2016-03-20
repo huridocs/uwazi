@@ -1,50 +1,50 @@
 nav {
-  display: block;
-  position: fixed !important;
-  top: 0;
-  bottom: 0;
-  right: -80%;
-  width: 80%;
-  z-index: 2;
-  background: $c-grey-light;
-  border-left: 1px solid $c-grey;
-  padding: 15px;
+	display: block;
+	position: fixed !important;
+	top: 0;
+	bottom: 0;
+	right: -80%;
+	width: 80%;
+	z-index: 2;
+	background: $c-grey-light;
+	border-left: 1px solid $c-grey;
+	padding: 15px;
 }
 
 nav h1 {
-  font-weight: bold;
-  font-size: $f-size-lg;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 5px 0 30px;
+	font-weight: bold;
+	font-size: $f-size-lg;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin: 5px 0 30px;
 }
 
 nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
 
-  li {
-    font-size: $f-size-lg;
-    line-height: 40px;
-  }
-  li.active {
-    background: $c-white;
-    color: $c-primary;
-    font-weight: bold;
-    margin-left: -5px;
-    padding: 0 5px;
-  }
-  .fa {
-    margin-right: 15px;
-  }
-  .login {
-    margin-top: 370px;
-    color: $c-grey-dark;
-  }
+	li {
+		font-size: $f-size-lg;
+		line-height: 40px;
+	}
+	li.active {
+		background: $c-white;
+		color: $c-primary;
+		font-weight: bold;
+		margin-left: -5px;
+		padding: 0 5px;
+	}
+	.fa {
+		margin-right: 15px;
+	}
+	.login {
+		margin-top: 370px;
+		color: $c-grey-dark;
+	}
 }
 
 .nav>li>a {
-  padding: 5px 10px;
+  padding: 6px 15px;
   margin-top: 5px;
 }

@@ -1,16 +1,17 @@
 footer {
-	background: $c-primary-dark;
-	padding: 15px;
-	color: $c-primary-light;
+  clear: both;
+  background: $c-primary-dark;
+  padding: 15px;
+  color: $c-primary-light;
 
-	h5 {
-		text-transform: uppercase;
-		color: $c-primary;
-	}
-	.fa {
-		margin-right: 10px;
-	}
-	p {
-		margin-left: 23px;
-	}
+  h5 {
+    text-transform: uppercase;
+    color: $c-primary;
+  }
+  .fa {
+    margin-right: 10px;
+  }
+  p {
+    margin-left: 23px;
+  }
 }

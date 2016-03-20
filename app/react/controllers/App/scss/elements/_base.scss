@@ -3,6 +3,8 @@ body {
 	color: $c-black;
 	font-family: $f-regular;
 	font-size: $f-size;
+	position: relative;
+	padding-top: 60px;
 }
 
 label {
