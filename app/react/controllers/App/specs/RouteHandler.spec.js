@@ -5,7 +5,7 @@ import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
 import api from '../../../utils/singleton_api';
 import Provider from '../Provider';
-import TestController from './TestController'
+import TestController from './TestController';
 
 describe('RouteHandler', () => {
   let component;
