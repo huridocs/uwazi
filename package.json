@@ -54,6 +54,9 @@
     "elasticsearch": "9.0.2"
   },
   "devDependencies": {
+    "eslint": "2.3.0",
+    "eslint-plugin-jasmine": "1.6.0",
+    "eslint-plugin-react": "4.2.3",
     "babel-loader": "^6.2.1",
     "babel-plugin-react-transform": "^2.0.0",
     "compression": "^1.6.0",
