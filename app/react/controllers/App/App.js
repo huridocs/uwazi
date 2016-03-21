@@ -54,7 +54,9 @@ class App extends Component {
   }
 
   renderTools() {
-    return this.props.children.type.renderTools();
+    return React.Children.map(this.props.children, (child) => {
+      return child.type.renderTools();
+    });
   }
 
   render() {

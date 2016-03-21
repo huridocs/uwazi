@@ -5,24 +5,10 @@ import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
 import api from '../../../utils/singleton_api';
 import Provider from '../Provider';
+import TestController from './TestController'
 
 describe('RouteHandler', () => {
   let component;
-
-  class TestController extends RouteHandler {
-
-    static emptyState() {
-      return {message: 'requesting data'};
-    }
-
-    static requestState() {
-      return Promise.resolve({initialData: 'data'});
-    }
-
-    render() {
-      return <div/>;
-    }
-  }
 
   beforeEach(() => {
     backend.restore();

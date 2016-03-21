@@ -1,5 +1,5 @@
 import React from 'react';
-import ViewerController from '../ViewerController';
+import Viewer from '../Viewer';
 import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
@@ -7,7 +7,7 @@ import API from '../../../utils/singleton_api';
 import {events} from '../../../utils/index';
 import MockProvider from '../../App/specs/MockProvider';
 
-describe('ViewerController', () => {
+describe('Viewer', () => {
   let documentResponse = [{key: 'doc1', id: '1', value: {pages: [], css: [], template: 1, file: {}}}];
   let newDocument = [{key: 'doc2', id: '1', value: {doc: 'doc2', pages: [], css: [], template: 1, file: {}}}];
   let templateResponse = [{value: {}}];
@@ -18,7 +18,7 @@ describe('ViewerController', () => {
     let params = {documentId: '1'};
     let router = {createHref: function () {}};
 
-    TestUtils.renderIntoDocument(<MockProvider router={router}><ViewerController params={params} ref={(ref) => component = ref} /></MockProvider>);
+    TestUtils.renderIntoDocument(<MockProvider router={router}><Viewer params={params} ref={(ref) => component = ref} /></MockProvider>);
     backend.restore();
     backend
     .mock(APIURL + 'documents?_id=1', 'GET', {body: JSON.stringify({rows: documentResponse})})
@@ -32,7 +32,7 @@ describe('ViewerController', () => {
   describe('static requestState', () => {
     it('should request the document, the references and the template', (done) => {
       let id = 1;
-      ViewerController.requestState({documentId: id}, API)
+      Viewer.requestState({documentId: id}, API)
       .then((response) => {
         expect(response).toEqual({value: documentResponse[0].value, references: [{title: 1}], template: templateResponse[0]});
         done();
@@ -52,7 +52,7 @@ describe('ViewerController', () => {
         })
         .catch(done.fail);
 
-        expect(component.setState).toHaveBeenCalledWith(ViewerController.emptyState());
+        expect(component.setState).toHaveBeenCalledWith(Viewer.emptyState());
       });
     });
 

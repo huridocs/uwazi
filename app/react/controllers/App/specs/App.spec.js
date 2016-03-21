@@ -2,13 +2,13 @@ import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
 import App from '../App.js';
-import Layout from '../Layout.js';
-import Provider from '../Provider.js';
+import MockProvider from './MockProvider.js';
 import {events} from '../../../utils/index';
+import TestController from './TestController';
 
 describe('App', () => {
   let component;
-  let layout;
+  let controller;
 
   let fetchMock = () => {
     let res = new window.Response('{"username":"Scarecrow"}', {
@@ -27,9 +27,11 @@ describe('App', () => {
   };
 
   beforeEach(() => {
-    TestUtils.renderIntoDocument(<Provider><App ref={(ref) => {
-      component = ref;
-    }} fetch={fetchRejected}/></Provider>);
+    TestUtils.renderIntoDocument(<MockProvider>
+      <App ref={(ref) => {
+        component = ref;
+      }} fetch={fetchRejected}/>
+    </MockProvider>);
   });
 
   describe('on instance', () => {
@@ -42,17 +44,18 @@ describe('App', () => {
 
   describe('when fething user', () => {
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<Provider><App ref={(ref) => {
+      TestUtils.renderIntoDocument(<MockProvider><App ref={(ref) => {
         component = ref;
-      }} fetch={fetchMock}><Layout ref={(ref) => {
-        layout = ref;
-      }}/></App></Provider>);
+      }} fetch={fetchMock}>
+      <TestController ref={(ref) => {
+        controller = ref;
+      }}/></App></MockProvider>);
     });
 
     it('should pass it to its children as property', (done) => {
       component.fetchUser()
       .then(() => {
-        expect(layout.props.user).toEqual({username: 'Scarecrow'});
+        expect(controller.props.user).toEqual({username: 'Scarecrow'});
         done();
       });
     });
