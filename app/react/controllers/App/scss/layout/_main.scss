@@ -1,4 +1,13 @@
+html, body, #root, #app {
+  height: 100%;
+}
+
+#root {
+  padding-bottom: 110px;
+}
+
 main {
-	padding: 15px 0;
-	padding: 30px !important;	
+  padding: 15px 0;
+  padding: 30px !important;
+  min-height: 100%;
 }

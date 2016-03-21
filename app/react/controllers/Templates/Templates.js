@@ -5,7 +5,7 @@ import RouteHandler from '../App/RouteHandler';
 import Helmet from 'react-helmet';
 import './scss/templates.scss';
 
-class TemplatesController extends RouteHandler {
+class Templates extends RouteHandler {
 
   static requestState(params = {}, api) {
     return api.get('templates')
@@ -25,7 +25,7 @@ class TemplatesController extends RouteHandler {
   saveForm(template) {
     return API.post('templates', template)
     .then((response) => {
-      return TemplatesController.requestState({templateId: response.json.id}, API);
+      return Templates.requestState({templateId: response.json.id}, API);
     })
     .then((state) => {
       this.setState(state);
@@ -35,17 +35,17 @@ class TemplatesController extends RouteHandler {
 
   render() {
     return (
-      <div className="metadata-templates">
+      <main>
         <Helmet title='Upload' />
         <FormCreator
           save={this.saveForm.bind(this)}
           templates={this.state.templates}
           templateId={this.props.params.templateId}
         />
-      </div>
+      </main>
     );
   }
 
 }
 
-export default TemplatesController;
+export default Templates;

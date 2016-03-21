@@ -11,6 +11,8 @@ class RouteHandler extends Component {
     return {};
   }
 
+  static renderTools() {}
+
   constructor(props, context) {
     super(props);
     this.state = context.getInitialData();

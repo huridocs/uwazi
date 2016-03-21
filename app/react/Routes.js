@@ -2,27 +2,25 @@ import React from 'react';
 import {Route, IndexRoute} from 'react-router';
 
 import App from './controllers/App/App';
-import Layout from './controllers/App/Layout';
 import NoMatch from './controllers/App/NoMatch';
 
 import Login from './controllers/Users/Login';
 import MyAccount from './controllers/Users/MyAccount';
+import Library from './controllers/Library/Library';
 
-import TemplatesController from './controllers/Templates/TemplatesController';
-import ViewerController from './controllers/Viewer/ViewerController';
+import Templates from './controllers/Templates/Templates';
+import Viewer from './controllers/Viewer/Viewer';
 import Uploads from './controllers/Uploads/Uploads';
 
 export default (
   <Route path='/' component={App}>
-    <IndexRoute component={Layout} />
-    <Route path='/' component={Layout}>
-      <Route path='my_account' component={MyAccount} />
-      <Route path='uploads' component={Uploads} />
-      <Route path='template' component={TemplatesController} />
-      <Route path='template/edit/:templateId' component={TemplatesController} />
-      <Route path='login' component={Login} />
-    </Route>
-    <Route path='document/:documentId' component={ViewerController} />
+    <IndexRoute component={Library} />
+    <Route path='my_account' component={MyAccount} />
+    <Route path='uploads' component={Uploads} />
+    <Route path='template' component={Templates} />
+    <Route path='template/edit/:templateId' component={Templates} />
+    <Route path='login' component={Login} />
+    <Route path='document/:documentId' component={Viewer} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

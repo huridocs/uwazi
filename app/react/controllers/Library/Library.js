@@ -4,6 +4,9 @@ import RouteHandler from '../App/RouteHandler';
 import Helmet from 'react-helmet';
 import '../App/scss/elements/_item.scss';
 
+import SearchBar from '../../components/Elements/SearchBar.js';
+import {Link} from 'react-router';
+
 class Library extends RouteHandler {
 
   static emptyState() {
@@ -22,6 +25,10 @@ class Library extends RouteHandler {
       let templates = responses[2].json.rows;
       return {newest: newest, relevant: relevant, templates: templates};
     });
+  }
+
+  static renderTools() {
+    return <SearchBar/>;
   }
 
   search(e) {
@@ -52,7 +59,7 @@ class Library extends RouteHandler {
       <li key={index} className="col-sm-4">
               <div className="item item1">
                 <i className="fa fa-expand"></i>
-                <i className="fa fa-close"></i><span className="item-name">{doc.title}</span>
+                <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{doc.title}</Link>
                 <div className="item-metadata"><span className="label label-default">
                 <i className="fa fa-calendar"></i>March 14</span><span className="label label-default">
                 <i className="fa fa-tag"></i>Decision</span>
@@ -112,12 +119,6 @@ class Library extends RouteHandler {
           <main className="col-xs-12 col-sm-9 panels-layout__panel active">
             <div className="panel-content">
                 <div className="row">
-                  <h1 className="page-title">
-                    All documents for "africa"
-                    <span className="label label-default"><i className="fa fa-close"></i>Filter 1</span>
-                    <span className="label label-default"><i className="fa fa-close"></i>Filter 2</span>
-                    <span className="label label-default"><i className="fa fa-close"></i>Filter 3</span>
-                  </h1>
                   <p id="documents-counter" className="col-sm-5">1-12 of 39 documents</p>
                   <p className="col-sm-7 sort-by">
                     Sort by
@@ -135,7 +136,7 @@ class Library extends RouteHandler {
             <div className="panel-content">
               <div className="search">
                 <div className="search__button--apply__filters">
-                  <a className="btn btn-success btn-block">Apply filters<i className="fa fa-chevron-right"></i></a>
+                  <a className="btn btn-success btn-block"><i className="fa fa-chevron-left"></i>Apply filters</a>
                 </div>
                 <ul className="search__filter search__filter--radiobutton">
                   <li>Document type (Radio button)</li>
@@ -250,5 +251,6 @@ class Library extends RouteHandler {
   }
 
 }
+
 
 export default Library;
