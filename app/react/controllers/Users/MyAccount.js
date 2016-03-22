@@ -1,4 +1,4 @@
-import {Component, PropTypes} from 'react';
+import {PropTypes} from 'react';
 import template from './templates/my_account.js';
 import fetch from 'isomorphic-fetch';
 import RouteHandler from '../App/RouteHandler';

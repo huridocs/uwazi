@@ -1,4 +1,3 @@
-import {Component} from 'react';
 import {events} from '../../utils/index';
 import template from './templates/login.js';
 import api from '../../utils/singleton_api';
