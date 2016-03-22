@@ -1,8 +1,9 @@
 import {Component, PropTypes} from 'react';
 import template from './templates/my_account.js';
 import fetch from 'isomorphic-fetch';
+import RouteHandler from '../App/RouteHandler';
 
-class MyAccount extends Component {
+class MyAccount extends RouteHandler {
 
   constructor(props) {
     super(props);

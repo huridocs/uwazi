@@ -3,9 +3,10 @@ import {events} from '../../utils/index';
 import template from './templates/login.js';
 import api from '../../utils/singleton_api';
 import {browserHistory} from 'react-router';
+import RouteHandler from '../App/RouteHandler';
 
 
-class Login extends Component {
+class Login extends RouteHandler {
 
   constructor(props, context) {
     super(props, context);
