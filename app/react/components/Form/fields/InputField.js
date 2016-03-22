@@ -36,7 +36,7 @@ class InputField extends Component {
             ref={(ref) => this.field = ref}
             defaultValue={this.props.defaultValue}
             value={this.state.value}
-            onChange={this.handleChange}
+            onChange={this.handleChange.bind(this)}
             placeholder="placeholder"
           />
         </div>

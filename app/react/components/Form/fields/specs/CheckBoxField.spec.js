@@ -28,10 +28,13 @@ describe('CheckBoxField', () => {
   });
 
   describe('handleChange', () => {
-    it('should set field value on state', () => {
+    it('should set field value on state', (done) => {
+      component.componentDidUpdate = () => {
+        expect(component.state.value).toBe(true);
+        done();
+      };
       component.field.checked = true;
       component.handleChange();
-      expect(component.state.value).toBe(true);
     });
   });
 });

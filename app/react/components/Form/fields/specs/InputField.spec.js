@@ -17,10 +17,13 @@ describe('InputField', () => {
   });
 
   describe('handleChange', () => {
-    it('should set field value on state', () => {
+    it('should set field value on state', (done) => {
+      component.componentDidUpdate = () => {
+        expect(component.state.value).toBe('Bane');
+        done();
+      };
       component.field.value = 'Bane';
-      component.handleChange();
-      expect(component.state.value).toBe('Bane');
+      TestUtils.Simulate.change(component.field);
     });
   });
 

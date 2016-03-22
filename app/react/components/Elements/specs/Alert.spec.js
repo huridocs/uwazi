@@ -3,7 +3,7 @@ import TestUtils from 'react-addons-test-utils';
 
 import Alert from '../Alert.js';
 
-describe('MyAccount', () => {
+describe('Alert', () => {
   let component;
 
   class TestComponent extends Component {

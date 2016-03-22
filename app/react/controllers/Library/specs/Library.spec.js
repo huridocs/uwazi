@@ -39,9 +39,7 @@ describe('LibraryController', () => {
 
   describe('search()', () => {
     it('should request documents', (done) => {
-      component.searchField = {value: 'searchTerm'};
-
-      component.search({preventDefault: () => {}})
+      component.search('searchTerm')
       .then(() => {
         expect(component.state.searchResult).toEqual(searchDocuments);
         done();
@@ -52,7 +50,7 @@ describe('LibraryController', () => {
     it('should show the search results', (done) => {
       component.searchField = {value: 'searchTerm'};
 
-      component.search({preventDefault: () => {}})
+      component.search('searchTerm')
       .then(() => {
         expect(component.state.show).toEqual('searchResult');
         done();

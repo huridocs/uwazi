@@ -2,6 +2,7 @@ import React from 'react';
 import API from '../../utils/singleton_api';
 import RouteHandler from '../App/RouteHandler';
 import Helmet from 'react-helmet';
+import {events} from '../../utils/index';
 import '../App/scss/elements/_item.scss';
 
 import SearchBar from '../../components/Elements/SearchBar.js';
@@ -31,10 +32,16 @@ class Library extends RouteHandler {
     return <SearchBar/>;
   }
 
-  search(e) {
-    e.preventDefault();
+  componentDidMount() {
+    events.on('search', this.search.bind(this));
+  }
 
-    return API.get('documents/search?searchTerm=' + this.searchField.value)
+  componentWillUnmount() {
+    events.off('search', this.search.bind(this));
+  }
+
+  search(searchTerm) {
+    return API.get('documents/search?searchTerm=' + searchTerm)
     .then((response) => {
       this.setState({searchResult: response.json});
       this.showSearchResult();
