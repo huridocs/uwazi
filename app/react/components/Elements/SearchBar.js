@@ -1,4 +1,4 @@
-import React, {Component, ReactDOM} from 'react';
+import React, {Component} from 'react';
 import {events} from '../../utils/index';
 
 class SearchBar extends Component {
