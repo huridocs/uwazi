@@ -8,9 +8,9 @@ import superagent from 'superagent';
 
 describe('Upload', () => {
   let component;
-  let file = {name:'fighting__crime--101.pdf'};
+  let file = {name: 'fighting__crime--101.pdf'};
 
-  if(typeof File === 'function'){
+  if (typeof File === 'function') {
     file = new File([], 'fighting__crime--101.pdf');
   }
 
