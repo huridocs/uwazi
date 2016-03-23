@@ -65,6 +65,9 @@ class Upload extends Component {
       events.emit('uploadEnd', doc.id, res.body);
     })
     .end();
+
+    // console.log(uploadRequest);
+
     return uploadRequest;
   }
 

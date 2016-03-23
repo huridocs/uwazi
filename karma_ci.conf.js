@@ -3,14 +3,21 @@ var path = require('path');
 
 module.exports = function (config) {
   config.set({
-    browsers: [ 'Firefox' ], // Chrome, PhantomJS
+    browsers: [ 'Firefox', 'Chrome', 'PhantomJS' ], // Chrome, PhantomJS
     singleRun: true, //just run once by default
     frameworks: [ 'jasmine' ], //use the mocha test framework
     files: [
+      './node_modules/phantomjs-polyfill-find/find-polyfill.js',
       'tests.webpack.js' //just load this file
     ],
-    plugins: [ 'karma-firefox-launcher', 'karma-jasmine',
-      'karma-sourcemap-loader', 'karma-webpack', 'karma-coverage'
+    plugins: [
+      'karma-firefox-launcher',
+      'karma-chrome-launcher',
+      'karma-phantomjs-launcher',
+      'karma-jasmine',
+      'karma-sourcemap-loader',
+      'karma-webpack',
+      'karma-coverage'
     ],
     preprocessors: {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ] //preprocess with webpack and our sourcemap loader

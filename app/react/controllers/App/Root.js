@@ -51,7 +51,7 @@ Root.propTypes = {
   children: PropTypes.object,
   initialData: PropTypes.object,
   head: PropTypes.object,
-  content: PropTypes.object
+  content: PropTypes.string
 };
 
 export default Root;

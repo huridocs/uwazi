@@ -4,10 +4,15 @@ import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
 import {events} from '../../../utils/index';
+import superagent from 'superagent';
 
 describe('Upload', () => {
   let component;
-  let file = new File([], 'fighting__crime--101.pdf');
+  let file = {name:'fighting__crime--101.pdf'};
+
+  if(typeof File === 'function'){
+    file = new File([], 'fighting__crime--101.pdf');
+  }
 
   beforeEach(() => {
     backend.restore();
@@ -58,9 +63,16 @@ describe('Upload', () => {
     });
 
     it('should upload the file with the document id', () => {
-      let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'});
-      expect(uploadRequest._formData.get('document')).toBe('1234');
-      expect(uploadRequest._formData.get('file')).toEqual(file);
+      let mockRequest = superagent.post(APIURL + 'upload');
+
+      spyOn(mockRequest, 'field').and.callThrough();
+      spyOn(mockRequest, 'attach').and.callThrough();
+      spyOn(superagent, 'post').and.returnValue(mockRequest);
+
+      component.uploadFile(file, {ok: true, id: '1234', rev: '567'});
+
+      expect(mockRequest.field).toHaveBeenCalledWith('document', '1234');
+      expect(mockRequest.attach).toHaveBeenCalledWith('file', file, file.name);
     });
 
     it('should trigger the an event with the document info', (done) => {
@@ -105,15 +117,13 @@ describe('Upload', () => {
         uploadRequest._callbacks.response[0]({body: 'fileData'});
       });
 
-      it('should set reset progress', (done) => {
+      it('should reset progress', () => {
         component.setState({progress: 100});
-        events.on('uploadEnd', () => {
-          expect(component.state.progress).toBe(0);
-          done();
-        });
 
         let uploadRequest = component.uploadFile(file, {ok: true, id: '1234', rev: '567'});
         uploadRequest._callbacks.response[0]({body: 'fileData'});
+
+        expect(component.state.progress).toBe(0);
       });
     });
   });
