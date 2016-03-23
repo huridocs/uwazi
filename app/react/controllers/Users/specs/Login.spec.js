@@ -5,13 +5,13 @@ import {browserHistory} from 'react-router';
 import Login from '../Login.js';
 import {events} from '../../../utils/index';
 import backend from 'fetch-mock';
-
+import MockProvider from '../../App/specs/MockProvider';
 
 describe('Login', () => {
   let component;
 
   beforeEach(() => {
-    component = TestUtils.renderIntoDocument(<Login />);
+    TestUtils.renderIntoDocument(<MockProvider><Login ref={(ref) => component = ref} /></MockProvider>);
 
     backend.restore();
     backend.mock('http://localhost:3000/api/login', JSON.stringify({}));

@@ -1,5 +1,6 @@
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+import MockProvider from '../../App/specs/MockProvider';
 
 import MyAccount from '../MyAccount.js';
 
@@ -15,7 +16,7 @@ describe('MyAccount', () => {
   function instantiateComponent(response) {
     fetchMock = jasmine.createSpy('fetchMock').and.returnValue(Promise.resolve(response));
     user = {_id: 1234, _rev: 789, username: 'SelinaKyle'};
-    component = TestUtils.renderIntoDocument(<MyAccount fetch={fetchMock} user={user}/>);
+    TestUtils.renderIntoDocument(<MockProvider><MyAccount ref={(ref) => component = ref} fetch={fetchMock} user={user}/></MockProvider>);
   }
 
   beforeEach(() => instantiateComponent(res));

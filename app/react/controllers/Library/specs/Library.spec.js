@@ -4,7 +4,7 @@ import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
 import api from '../../../utils/singleton_api';
-import Provider from '../../App/Provider';
+import MockProvider from '../../App/specs/MockProvider';
 
 describe('LibraryController', () => {
   let documents = [{key: 'secret documents', value: {}}, {key: 'real batman id', value: {}}];
@@ -21,7 +21,7 @@ describe('LibraryController', () => {
     .mock(APIURL + 'documents/search?searchTerm=searchTerm', 'GET', {body: JSON.stringify(searchDocuments)});
 
     let params = {};
-    TestUtils.renderIntoDocument(<Provider><Library params={params} ref={(ref) => component = ref} /></Provider>);
+    TestUtils.renderIntoDocument(<MockProvider><Library params={params} ref={(ref) => component = ref} /></MockProvider>);
   });
 
   describe('static requestState()', () => {

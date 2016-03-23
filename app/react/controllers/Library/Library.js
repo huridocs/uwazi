@@ -10,6 +10,10 @@ import {Link} from 'react-router';
 
 class Library extends RouteHandler {
 
+  constructor(props, context) {
+    super(props, context);
+  }
+
   static emptyState() {
     return {newest: [], relevant: [], templates: [], searchResult: [], show: 'newest'};
   }
@@ -118,7 +122,7 @@ class Library extends RouteHandler {
   }
 
   render() {
-    let documents = this.state[this.state.show] || [];
+    let documents = this.state[this.state.show] || this.state.newest;
     return (
       <div>
         <Helmet title='Library' />
