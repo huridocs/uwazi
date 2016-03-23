@@ -12,6 +12,7 @@ const app = express();
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, 'dist')));
 app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
+app.use('/public', express.static(path.resolve(__dirname, 'public')));
 
 require('./app/api/api.js')(app);
 require('./app/react/server.js')(app);

@@ -33,6 +33,7 @@ class Root extends Component {
           rel="stylesheet"
           type="text/css"
           />
+          <link rel="shortcut icon" href="/public/favicon.ico"/>
         </head>
         <body>
           <div id='root' dangerouslySetInnerHTML={{__html: this.props.content}} />
