@@ -1,10 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import reducer from '../../reducer.js';
 import Field from '../../components/Form/fields/Field';
 
 const mapStateToProps = (state) => {
-  return reducer(state);
+  return {fields: state.fields};
+};
+
+function mapDispatchToProps(dispatch) {
+  return {addField: () => {
+    dispatch({type: 'ADD_FIELD'});
+  }};
 }
 
 class Templates extends Component {
@@ -19,27 +24,25 @@ class Templates extends Component {
 
   static renderTools() {}
 
-  addField() {
-
-  }
-
   render() {
     return (
       <div>
         <h1>form creator !</h1>
         {this.props.fields.map((field, index) => {
-          return <Field config={field} key={index} />
+          return <Field config={field} key={index} />;
         })}
 
-        <button onClick={this.addField.bind(this)}/>
+        <button onClick={this.props.addField}>ADD FIELD</button>
       </div>
     );
   }
 }
 
 Templates.propTypes = {
-}
+  fields: PropTypes.array,
+  addField: PropTypes.func
+};
 
 export default connect(
-  mapStateToProps
+  mapStateToProps, mapDispatchToProps
 )(Templates);
