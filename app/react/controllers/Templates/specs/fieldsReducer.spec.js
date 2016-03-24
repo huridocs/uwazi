@@ -1,26 +1,25 @@
 import fieldsReducer from '../fieldsReducer';
 import Immutable from 'immutable';
-
-let reduce = (state, action) => {
-  return fieldsReducer(Immutable.fromJS(state), action);
-};
+import 'jasmine-immutablejs-matchers';
 
 describe('fieldsReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state []', () => {
       let newState = fieldsReducer();
 
-      expect(newState).toEqual([]);
+      expect(newState).toEqual(Immutable.fromJS([]));
     });
   });
 
   describe('ADD_FIELD', () => {
     it('should add a new field', () => {
-      let state = [];
+      let state = Immutable.fromJS([]);
 
-      let newState = reduce(state, {type: 'ADD_FIELD'});
+      let newState = fieldsReducer(state, {type: 'ADD_FIELD', fieldType: 'fieldType'});
+      let expected = Immutable.fromJS([{fieldType: 'fieldType'}]);
 
-      expect(Immutable.is(newState, Immutable.fromJS([{type: 'input'}]))).toBe(true);
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
     });
   });
 });
