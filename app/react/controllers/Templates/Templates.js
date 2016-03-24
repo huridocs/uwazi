@@ -2,16 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Field from '../../components/Form/fields/Field';
 
-const mapStateToProps = (state) => {
-  return {fields: state.fields};
-};
-
-function mapDispatchToProps(dispatch) {
-  return {addField: () => {
-    dispatch({type: 'ADD_FIELD'});
-  }};
-}
-
 class Templates extends Component {
 
   static requestState() {
@@ -43,6 +33,14 @@ Templates.propTypes = {
   addField: PropTypes.func
 };
 
-export default connect(
-  mapStateToProps, mapDispatchToProps
-)(Templates);
+const mapStateToProps = (state) => {
+  return {fields: state.fields};
+};
+
+function mapDispatchToProps(dispatch) {
+  return {addField: () => {
+    dispatch({type: 'ADD_FIELD'});
+  }};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Templates);

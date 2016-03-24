@@ -21,10 +21,6 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors"
   },
   "dependencies": {
-    "redux": "^3.0.4",
-    "react-redux": "^4.0.0",
-    "batarange": "0.2.0",
-    "crypto-js": "3.1.6",
     "app-module-path": "^1.0.5",
     "babel-core": "^6.4.0",
     "babel-plugin-add-module-exports": "^0.1.2",
@@ -32,14 +28,18 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
+    "batarange": "0.2.0",
     "body-parser": "^1.14.1",
     "bootstrap": "3.3.6",
     "cookie-parser": "^1.4.0",
+    "crypto-js": "3.1.6",
+    "elasticsearch": "9.0.2",
     "es6-promise": "^3.0.2",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
     "font-awesome": "^4.5.0",
     "history": "^1.17.0",
+    "immutable": "^3.7.6",
     "isomorphic-fetch": "^2.2.0",
     "jvent": "^0.2.0",
     "multer": "^1.1.0",
@@ -51,9 +51,10 @@
     "react-datepicker": "^0.18.0",
     "react-dom": "^0.14.1",
     "react-helmet": "^2.1.1",
+    "react-redux": "^4.0.0",
     "react-router": "2.0.0",
-    "superagent": "1.6.1",
-    "elasticsearch": "9.0.2"
+    "redux": "^3.0.4",
+    "superagent": "1.6.1"
   },
   "devDependencies": {
     "babel-loader": "^6.2.1",

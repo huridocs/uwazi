@@ -1,12 +1,6 @@
-const initialState = {
-  fields: [
-    {type: 'input'}
-  ]
-};
+import {combineReducers} from 'redux';
+import fields from './controllers/Templates/fieldsReducer';
 
-export default function reducer(state = initialState, action) {
-  let newState = {fields: state.fields.slice(0)};
-  newState.fields.push({type: 'input'});
-  console.log(state, newState);
-  return newState;
-}
+export default combineReducers({
+  fields
+});
