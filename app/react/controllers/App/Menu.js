@@ -10,7 +10,7 @@ class Menu extends Component {
         {(() => {
           if (this.props.user) {
             return [
-              <li key="0"><Link to='/template' className="btn btn-default"><i className="fa fa-list-alt"></i>Metadata</Link></li>,
+              <li key="0"><Link to='/templates' className="btn btn-default"><i className="fa fa-list-alt"></i>Metadata</Link></li>,
               <li key="1"><Link to='/uploads' className="btn btn-default"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>,
               <li key="2"><Link to='/my_account' className="btn btn-success"><i className="fa fa-user"></i> {this.props.user.username}</Link></li>
             ];

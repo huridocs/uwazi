@@ -5,16 +5,20 @@ import {browserHistory} from 'react-router';
 import {Router, match, RouterContext} from 'react-router';
 import Helmet from 'react-helmet';
 import Routes from './Routes';
-import Provider from './controllers/App/Provider';
+import {Provider} from 'react-redux';
+import CustomProvider from './controllers/App/Provider';
 import Root from './controllers/App/Root';
 import NoMatch from './controllers/App/NoMatch';
 import {isClient, getPropsFromRoute} from './utils';
 import instanceApi from './utils/instance_api';
+import store from './store';
 
 if (isClient) {
   ReactDOM.render(
-    <Provider>
-      <Router history={browserHistory}>{Routes}</Router>
+    <Provider store={store}>
+      <CustomProvider>
+        <Router history={browserHistory}>{Routes}</Router>
+      </CustomProvider>
     </Provider>,
     document.getElementById('root')
   );
@@ -34,8 +38,10 @@ function serialize(obj) {
 
 function renderComponentWithRoot(Component, componentProps, initialData, user) {
   const componentHtml = renderToStaticMarkup(
-    <Provider initialData={initialData} user={user}>
-      <Component {...componentProps} />
+    <Provider store={store}>
+      <CustomProvider initialData={initialData} user={user}>
+        <Component {...componentProps} />
+      </CustomProvider>
     </Provider>
   );
 

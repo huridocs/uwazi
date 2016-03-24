@@ -21,6 +21,8 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors"
   },
   "dependencies": {
+    "redux": "^3.0.4",
+    "react-redux": "^4.0.0",
     "batarange": "0.2.0",
     "crypto-js": "3.1.6",
     "app-module-path": "^1.0.5",

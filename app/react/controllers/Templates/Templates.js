@@ -1,51 +1,45 @@
-import React from 'react';
-import API from '../../utils/singleton_api';
-import FormCreator from '../../components/Form/FormCreator';
-import RouteHandler from '../App/RouteHandler';
-import Helmet from 'react-helmet';
-import './scss/templates.scss';
+import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
+import reducer from '../../reducer.js';
+import Field from '../../components/Form/fields/Field';
 
-class Templates extends RouteHandler {
+const mapStateToProps = (state) => {
+  return reducer(state);
+}
 
-  static requestState(params = {}, api) {
-    return api.get('templates')
-    .then((response) => {
-      let templates = response.json.rows;
-      return {
-        templates: templates,
-        template: templates.find(template => template.id === params.templateId)
-      };
-    });
+class Templates extends Component {
+
+  static requestState() {
+    return Promise.resolve({});
   }
 
   static emptyState() {
-    return {templates: [], template: {}};
+    return {};
   }
 
-  saveForm(template) {
-    return API.post('templates', template)
-    .then((response) => {
-      return Templates.requestState({templateId: response.json.id}, API);
-    })
-    .then((state) => {
-      this.setState(state);
-    });
-  }
+  static renderTools() {}
 
+  addField() {
+
+  }
 
   render() {
     return (
-      <main>
-        <Helmet title='Upload' />
-        <FormCreator
-          save={this.saveForm.bind(this)}
-          templates={this.state.templates}
-          templateId={this.props.params.templateId}
-        />
-      </main>
+      <div>
+        <h1>form creator !</h1>
+        {this.props.fields.map((field, index) => {
+          return <Field config={field} key={index} />
+        })}
+
+        <button onClick={this.addField.bind(this)}/>
+      </div>
     );
   }
-
 }
 
-export default Templates;
+Templates.propTypes = {
+}
+
+export default connect(
+  mapStateToProps
+)(Templates);

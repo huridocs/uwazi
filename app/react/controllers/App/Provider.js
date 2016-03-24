@@ -1,7 +1,7 @@
 import {Component, PropTypes, Children} from 'react';
 import {isClient} from '../../utils';
 
-class Provider extends Component {
+class CustomProvider extends Component {
 
   constructor(props) {
     super(props);
@@ -32,15 +32,15 @@ class Provider extends Component {
   }
 }
 
-Provider.propTypes = {
+CustomProvider.propTypes = {
   user: PropTypes.object,
   children: PropTypes.object,
   initialData: PropTypes.object
 };
 
-Provider.childContextTypes = {
+CustomProvider.childContextTypes = {
   getInitialData: PropTypes.func,
   getUser: PropTypes.func
 };
 
-export default Provider;
+export default CustomProvider;
