@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import Field from '../../components/Form/fields/Field';
+import * as templatesActions from './templatesActions';
 
 class Templates extends Component {
 
@@ -20,14 +22,14 @@ class Templates extends Component {
         <h1>form creator !</h1>
         {this.props.fields.map((field, index) => {
           return (
-                  <div>
-                    <Field config={field} key={index} />
-                    <button onClick={this.props.deleteField.bind(null, index)}>Borrame</button>
-                  </div>
-                );
+            <div key={index}>
+              <Field config={field} />
+              <button onClick={() => this.props.removeField(index)}>Borrame</button>
+            </div>
+          );
         })}
 
-        <button onClick={this.props.addField}>ADD FIELD</button>
+        <button onClick={() => this.props.addField({fieldType: 'input'})}>ADD FIELD</button>
       </div>
     );
   }
@@ -36,7 +38,7 @@ class Templates extends Component {
 Templates.propTypes = {
   fields: PropTypes.array,
   addField: PropTypes.func,
-  deleteField: PropTypes.func
+  removeField: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
@@ -44,14 +46,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return {
-    addField: () => {
-      dispatch({type: 'ADD_FIELD', fieldType: 'input'});
-    },
-    deleteField: (index) => {
-      dispatch({type: 'DELETE_FIELD', index: index});
-    }
-  };
+  return bindActionCreators(templatesActions, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Templates);

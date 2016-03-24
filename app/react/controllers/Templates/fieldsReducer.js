@@ -1,12 +1,13 @@
 import Immutable from 'immutable';
 const initialState = Immutable.fromJS([]);
+import * as types from './actionTypes';
 
 export default function fields(state = initialState, action = {}) {
-  if (action.type === 'ADD_FIELD') {
-    return state.push(Immutable.fromJS({fieldType: action.fieldType, label: action.label}));
+  if (action.type === types.ADD_FIELD) {
+    return state.push(Immutable.fromJS(action.config));
   }
 
-  if (action.type === 'DELETE_FIELD') {
+  if (action.type === types.REMOVE_FIELD) {
     return state.delete(action.index);
   }
 
