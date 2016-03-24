@@ -8,7 +8,7 @@ class Field extends Component {
   }
 
   render() {
-    let fieldType = FieldMap[this.props.config.type];
+    let fieldType = FieldMap[this.props.config.fieldType];
     this.props.config.ref = (field) => {
       this.field = field;
     };

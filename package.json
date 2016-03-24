@@ -54,6 +54,7 @@
     "react-redux": "^4.0.0",
     "react-router": "2.0.0",
     "redux": "^3.0.4",
+    "redux-immutable": "^3.0.6",
     "superagent": "1.6.1"
   },
   "devDependencies": {

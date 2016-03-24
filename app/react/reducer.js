@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import {combineReducers} from 'redux-immutable';
 import fields from './controllers/Templates/fieldsReducer';
 
 export default combineReducers({

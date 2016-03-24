@@ -19,7 +19,12 @@ class Templates extends Component {
       <div>
         <h1>form creator !</h1>
         {this.props.fields.map((field, index) => {
-          return <Field config={field} key={index} />;
+          return (
+                  <div>
+                    <Field config={field} key={index} />
+                    <button onClick={this.props.deleteField.bind(null, index)}>Borrame</button>
+                  </div>
+                );
         })}
 
         <button onClick={this.props.addField}>ADD FIELD</button>
@@ -30,17 +35,23 @@ class Templates extends Component {
 
 Templates.propTypes = {
   fields: PropTypes.array,
-  addField: PropTypes.func
+  addField: PropTypes.func,
+  deleteField: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
-  return {fields: state.fields};
+  return {fields: state.get('fields').toJS()};
 };
 
 function mapDispatchToProps(dispatch) {
-  return {addField: () => {
-    dispatch({type: 'ADD_FIELD'});
-  }};
+  return {
+    addField: () => {
+      dispatch({type: 'ADD_FIELD', fieldType: 'input'});
+    },
+    deleteField: (index) => {
+      dispatch({type: 'DELETE_FIELD', index: index});
+    }
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Templates);
