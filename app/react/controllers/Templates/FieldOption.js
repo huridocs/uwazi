@@ -1,5 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource} from 'react-dnd';
+import {bindActionCreators} from 'redux';
+import * as templatesActions from './templatesActions';
+import {connect} from 'react-redux';
 
 const style = {
   border: '1px dashed gray',
@@ -19,13 +22,11 @@ const boxSource = {
   },
 
   endDrag(props, monitor) {
-    const item = monitor.getItem();
+    // const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      window.alert( // eslint-disable-line no-alert
-        `You dropped ${item.name} into ${dropResult.name}!`
-      );
+      props.addField({fieldType: 'input'});
     }
   }
 };
@@ -53,7 +54,14 @@ FieldOption.propTypes = {
   name: PropTypes.string.isRequired
 };
 
-export default DragSource('FIELD_OPTIONS', boxSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(templatesActions, dispatch);
+}
+
+let dragSource = DragSource('FIELD_OPTIONS', boxSource, (connector, monitor) => ({
+  connectDragSource: connector.dragSource(),
   isDragging: monitor.isDragging()
 }))(FieldOption);
+
+export default connect(null, mapDispatchToProps)(dragSource);

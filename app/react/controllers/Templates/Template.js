@@ -1,4 +1,5 @@
 import React, {PropTypes, Component} from 'react';
+import {connect} from 'react-redux';
 import {DropTarget} from 'react-dnd';
 
 const style = {
@@ -41,6 +42,13 @@ class Template extends Component {
           'Release to drop' :
           'Drag a box here'
         }
+        {this.props.fields.map((field, index) => {
+          return (
+            <div key={index}>
+              {field.fieldType}
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -49,11 +57,18 @@ class Template extends Component {
 Template.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   isOver: PropTypes.bool.isRequired,
-  canDrop: PropTypes.bool.isRequired
+  canDrop: PropTypes.bool.isRequired,
+  fields: PropTypes.array
 };
 
-export default DropTarget('FIELD_OPTIONS', boxTarget, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
+const mapStateToProps = (state) => {
+  return {fields: state.fields.toJS()};
+};
+
+let dropTarget = DropTarget('FIELD_OPTIONS', boxTarget, (connector, monitor) => ({
+  connectDropTarget: connector.dropTarget(),
   isOver: monitor.isOver(),
   canDrop: monitor.canDrop()
 }))(Template);
+
+export default connect(mapStateToProps)(dropTarget);

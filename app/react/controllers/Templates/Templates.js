@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+// import {bindActionCreators} from 'redux';
 // import Field from '../../components/Form/fields/Field';
-import * as templatesActions from './templatesActions';
+// import * as templatesActions from './templatesActions';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import FieldOption from './FieldOption';
@@ -50,12 +49,4 @@ Templates.propTypes = {
   removeField: PropTypes.func
 };
 
-const mapStateToProps = (state) => {
-  return {fields: state.fields.toJS()};
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(templatesActions, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DragDropContext(HTML5Backend)(Templates));
+export default DragDropContext(HTML5Backend)(Templates);
