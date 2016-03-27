@@ -1,2 +1,3 @@
 export const ADD_FIELD = 'ADD_FIELD';
 export const REMOVE_FIELD = 'REMOVE_FIELD';
+export const REORDER_PROPERTY = 'REORDER_PROPERTY';

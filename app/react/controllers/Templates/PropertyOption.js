@@ -12,17 +12,18 @@ const boxSource = {
   },
 
   endDrag(props, monitor) {
+    const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      props.addField({fieldType: 'input'});
+      props.addField({fieldType: 'input', name: item.name}, dropResult.index);
     }
   }
 };
 
-class FieldOption extends Component {
+class PropertyOption extends Component {
   render() {
-    const {isDragging, connectDragSource} = this.props;
+    const {connectDragSource} = this.props;
     const {name} = this.props;
     return (
       connectDragSource(
@@ -34,7 +35,7 @@ class FieldOption extends Component {
   }
 }
 
-FieldOption.propTypes = {
+PropertyOption.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   isDragging: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired
@@ -45,9 +46,9 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(templatesActions, dispatch);
 }
 
-let dragSource = DragSource('FIELD_OPTIONS', boxSource, (connector, monitor) => ({
+let dragSource = DragSource('METADATA_OPTION', boxSource, (connector, monitor) => ({
   connectDragSource: connector.dragSource(),
   isDragging: monitor.isDragging()
-}))(FieldOption);
+}))(PropertyOption);
 
 export default connect(null, mapDispatchToProps)(dragSource);

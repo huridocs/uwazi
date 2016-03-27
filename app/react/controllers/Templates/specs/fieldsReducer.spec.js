@@ -13,11 +13,11 @@ describe('fieldsReducer', () => {
   });
 
   describe('ADD_FIELD', () => {
-    it('should add a new field with the config passed', () => {
-      let state = Immutable.fromJS([]);
+    it('should add a new field with the config passed on the index passed', () => {
+      let state = Immutable.fromJS([{name: '1'}, {name: '2'}]);
 
-      let newState = fieldsReducer(state, {type: types.ADD_FIELD, config: {test: 'test'}});
-      let expected = Immutable.fromJS([{test: 'test'}]);
+      let newState = fieldsReducer(state, {type: types.ADD_FIELD, config: {name: 'test'}, index: 1});
+      let expected = Immutable.fromJS([{name: '1'}, {name: 'test'}, {name: '2'}]);
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);
@@ -30,6 +30,17 @@ describe('fieldsReducer', () => {
 
       let newState = fieldsReducer(state, {type: types.REMOVE_FIELD, index: 0});
       let expected = Immutable.fromJS([{fieldType: 'input', name: 'password'}]);
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('REORDER_PROPERTY', () => {
+    it('should reorder the property based on the origin/target index', () => {
+      let state = Immutable.fromJS([{name: '1'}, {name: '2'}, {name: '3'}]);
+
+      let newState = fieldsReducer(state, {type: types.REORDER_PROPERTY, originIndex: 2, targetIndex: 0});
+      let expected = Immutable.fromJS([{name: '3'}, {name: '1'}, {name: '2'}]);
 
       expect(newState).toEqualImmutable(expected);
     });

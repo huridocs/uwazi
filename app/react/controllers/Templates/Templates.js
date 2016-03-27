@@ -4,8 +4,8 @@ import React, {Component, PropTypes} from 'react';
 // import * as templatesActions from './templatesActions';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import FieldOption from './FieldOption';
-import Template from './Template';
+import PropertyOption from './PropertyOption';
+import MetadataTemplate from './MetadataTemplate';
 import './scss/templates.scss';
 
 class Templates extends Component {
@@ -29,16 +29,16 @@ class Templates extends Component {
     return (
       <div className="row">
         <main className="col-sm-9">
-          <Template />
+          <MetadataTemplate />
         </main>
         <aside className="col-sm-3">
           Field Option
           <ul className="field-options">
-            <li><FieldOption name='Text' /></li>
-            <li><FieldOption name='Checkbox' /></li>
-            <li><FieldOption name='Select' /></li>
-            <li><FieldOption name='List' /></li>
-            <li><FieldOption name='Date' /></li>
+            <li><PropertyOption name='Text' /></li>
+            <li><PropertyOption name='Checkbox' /></li>
+            <li><PropertyOption name='Select' /></li>
+            <li><PropertyOption name='List' /></li>
+            <li><PropertyOption name='Date' /></li>
           </ul>
         </aside>
       </div>
