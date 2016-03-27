@@ -6,6 +6,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import FieldOption from './FieldOption';
 import Template from './Template';
+import './scss/templates.scss';
 
 class Templates extends Component {
 
@@ -26,19 +27,20 @@ class Templates extends Component {
 
   render() {
     return (
-      <div>
-        <h1>form creator !</h1>
-        <div style={{overflow: 'hidden', clear: 'both'}}>
-          <FieldOption name='Text' />
-          <FieldOption name='Checkbox' />
-          <FieldOption name='Select' />
-          <FieldOption name='List' />
-          <FieldOption name='Date' />
-        </div>
-        <div style={{overflow: 'hidden', clear: 'both'}}>
+      <div className="row">
+        <main className="col-sm-9">
           <Template />
-        </div>
-        <button onClick={() => this.createField()}>ADD FIELD</button>
+        </main>
+        <aside className="col-sm-3">
+          Field Option
+          <ul className="field-options">
+            <li><FieldOption name='Text' /></li>
+            <li><FieldOption name='Checkbox' /></li>
+            <li><FieldOption name='Select' /></li>
+            <li><FieldOption name='List' /></li>
+            <li><FieldOption name='Date' /></li>
+          </ul>
+        </aside>
       </div>
     );
   }
