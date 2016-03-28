@@ -18,15 +18,15 @@ const boxTarget = {
 
 class MetadataTemplate extends Component {
   render() {
-    const {canDrop, isOver, connectDropTarget} = this.props;
-    const isActive = canDrop && isOver;
+    const {connectDropTarget} = this.props;
 
     return connectDropTarget(
       <div className="well template">
-      {isActive ?
-        'Release to drop' :
-        'Drag a box here'
-      }
+      {(() => {
+        if (this.props.fields.length === 0) {
+          return <h1>Drag properties here to start</h1>;
+        }
+      })()}
       {this.props.fields.map((field, index) => {
         return <MetadataProperty {...field} key={field.id} index={index}/>;
       })}

@@ -74,11 +74,14 @@ const cardTarget = {
 
 class MetadataProperty extends Component {
   render() {
-    const {name, connectDragSource, isDragging, connectDropTarget} = this.props;
+    const {isOver, name, connectDragSource, isDragging, connectDropTarget} = this.props;
     const opacity = isDragging ? {opacity: 0} : {opacity: 1};
+    let propertyClass = 'field-option well';
+    if (isDragging) { propertyClass += ' dragging';}
+    if (isOver) { propertyClass += ' over';}
 
     return connectDragSource(connectDropTarget(
-      <div className="field-option well" style={opacity}>
+      <div className={propertyClass}>
         {name}
       </div>
     ));
@@ -90,6 +93,7 @@ MetadataProperty.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
+  isOver: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
   name: PropTypes.string.isRequired
 };
@@ -98,8 +102,9 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(templatesActions, dispatch);
 }
 
-let dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], cardTarget, connector => ({
-  connectDropTarget: connector.dropTarget()
+let dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], cardTarget, (connector, monitor) => ({
+  connectDropTarget: connector.dropTarget(),
+  isOver: monitor.isOver()
 }))(MetadataProperty);
 let dragSource = DragSource('METADATA_PROPERTY', cardSource, (connector, monitor) => ({
   connectDragSource: connector.dragSource(),

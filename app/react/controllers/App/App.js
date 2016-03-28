@@ -100,7 +100,9 @@ class App extends Component {
             </div>
           </div>
         </header>
-        {this.renderChildren()}
+        <div className="container-fluid">
+          {this.renderChildren()}
+        </div>
         <footer>
           <div className="container-fluid">
             <div className="row">
