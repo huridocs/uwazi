@@ -69,9 +69,9 @@ function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
-  function renderPage(response) {
+  function renderPage(initialData) {
     try {
-      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, response, req.user);
+      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user);
       res.status(200).send(wholeHtml);
     } catch (error) {
       //console.trace(error);
@@ -85,10 +85,9 @@ function handleRoute(res, renderProps, req) {
   }
 
   if (routeProps.requestState) {
-    routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage);
-  } else {
-    renderPage();
+    return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage);
   }
+  renderPage();
 }
 
 function ServerRouter(req, res) {
