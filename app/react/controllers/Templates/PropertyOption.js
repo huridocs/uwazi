@@ -6,8 +6,11 @@ import {connect} from 'react-redux';
 
 const boxSource = {
   beginDrag(props) {
+    // let index = 99999;
+    // props.addField({fieldType: 'input', name: props.name}, index);
     return {
       name: props.name
+      // index: index
     };
   },
 
@@ -15,7 +18,7 @@ const boxSource = {
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
 
-    if (dropResult) {
+    if (dropResult.name === 'container') {
       props.addField({fieldType: 'input', name: item.name}, dropResult.index);
     }
   }

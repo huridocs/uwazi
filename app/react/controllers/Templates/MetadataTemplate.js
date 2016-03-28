@@ -5,7 +5,7 @@ import MetadataProperty from './MetadataProperty';
 
 const boxTarget = {
   drop() {
-    return {index: 0};
+    return {index: 0, name: 'container'};
   },
 
   canDrop(props) {

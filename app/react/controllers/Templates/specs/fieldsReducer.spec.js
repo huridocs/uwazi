@@ -24,6 +24,18 @@ describe('fieldsReducer', () => {
     });
   });
 
+  describe('ADD_PLACEHOLDER', () => {
+    it('should add a new field with the config passed on the index passed', () => {
+      let state = Immutable.fromJS([{name: '1'}, {name: '2'}]);
+
+      let newState = fieldsReducer(state, {type: types.ADD_PLACEHOLDER, config: {name: 'test'}, index: 1});
+      let expected = Immutable.fromJS([{name: '1'}, {name: 'test'}, {name: '2'}]);
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('DELETE_FIELD', () => {
     it('should delete the specified field', () => {
       let state = Immutable.fromJS([{fieldType: 'input', name: 'email'}, {fieldType: 'input', name: 'password'}]);

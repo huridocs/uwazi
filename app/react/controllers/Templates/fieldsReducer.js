@@ -3,10 +3,7 @@ const initialState = Immutable.fromJS([]);
 import * as types from './actionTypes';
 
 export default function fields(state = initialState, action = {}) {
-  if (action.type === types.ADD_FIELD) {
-    //
-    // action.config.id = Math.random();
-    //
+  if (action.type === types.ADD_FIELD || action.type === types.ADD_PLACEHOLDER) {
     return state.insert(action.index, Immutable.fromJS(action.config));
   }
 
@@ -16,7 +13,6 @@ export default function fields(state = initialState, action = {}) {
 
   if (action.type === types.REORDER_PROPERTY) {
     let newState = state.delete(action.originIndex);
-    // return newState.insert(action.targetIndex, state.get(action.originIndex) || {id: Math.random(), name: 'placeholder'});
     return newState.insert(action.targetIndex, state.get(action.originIndex));
   }
 

@@ -24,6 +24,12 @@ const cardTarget = {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
 
+    if (typeof dragIndex === 'undefined') {
+      let item = monitor.getItem();
+      item.index = 0;
+      return props.addField({name: item.name, inserting: true}, item.index);
+    }
+
     // Don't replace items with themselves
     if (dragIndex === hoverIndex) {
       return;
