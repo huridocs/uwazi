@@ -21,15 +21,15 @@ class MetadataTemplate extends Component {
     const {connectDropTarget} = this.props;
 
     return connectDropTarget(
-      <div className="well template">
-      {(() => {
-        if (this.props.fields.length === 0) {
-          return <h1>Drag properties here to start</h1>;
-        }
-      })()}
-      {this.props.fields.map((field, index) => {
-        return <MetadataProperty {...field} key={field.id} index={index}/>;
-      })}
+      <div className="template-properties">
+        {(() => {
+          if (this.props.fields.length === 0) {
+            return <span>Drag properties here to start</span>;
+          }
+        })()}
+        {this.props.fields.map((field, index) => {
+          return <MetadataProperty {...field} key={field.id} index={index}/>;
+        })}
       </div>
     );
   }

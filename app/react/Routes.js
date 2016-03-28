@@ -17,7 +17,10 @@ export default (
     <IndexRoute component={Library} />
     <Route path='my_account' component={MyAccount} />
     <Route path='uploads' component={Uploads} />
-    <Route path='templates' component={Templates} />
+    <Route path='templates' component={Templates} >
+      <Route path='new' component={Templates} />
+      <Route path='edit/:templateId' component={Templates} />
+    </Route>
     <Route path='login' component={Login} />
     <Route path='document/:documentId' component={Viewer} />
     <Route path="*" component={NoMatch} />

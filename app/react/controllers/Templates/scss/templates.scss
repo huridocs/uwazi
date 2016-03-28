@@ -1,4 +1,16 @@
+.template {
+  background-color: white;
+  .btn {
+    float: right;
+    margin-right: 10px;
+  }
 
+  h1{
+    border-bottom: 1px solid #ccc;
+    font-size: 25px;
+    margin-bottom: 20px;
+  }
+}
 
 .field-options {
   list-style: none;
@@ -15,9 +27,9 @@
   }
 }
 
-.template {
-  background-color: white;
-  h1 {
+.template-properties {
+  span {
+    display: block;
     text-align: center;
     font-size: 15px;
   }

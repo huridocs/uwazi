@@ -29,7 +29,12 @@ class Templates extends Component {
     return (
       <div className="row">
         <main className="col-sm-9">
-          <MetadataTemplate />
+          <div className="well template">
+            <button className="btn btn-default">Cancel</button>
+            <button className="btn btn-success"><i className="fa fa-save"/> Save Template</button>
+            <h1>Template name</h1>
+            <MetadataTemplate />
+          </div>
         </main>
         <aside className="col-sm-3">
           Field Option
