@@ -3,8 +3,12 @@ const initialState = Immutable.fromJS([]);
 import * as types from './actionTypes';
 
 export default function fields(state = initialState, action = {}) {
-  if (action.type === types.ADD_FIELD || action.type === types.ADD_PLACEHOLDER) {
+  if (action.type === types.ADD_FIELD) {
     return state.insert(action.index, Immutable.fromJS(action.config));
+  }
+
+  if (action.type === types.UPDATE_PROPERTY) {
+    return state.set(action.index, Immutable.fromJS(action.config));
   }
 
   if (action.type === types.REMOVE_FIELD) {

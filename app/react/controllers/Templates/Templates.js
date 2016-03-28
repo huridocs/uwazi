@@ -18,13 +18,6 @@ class Templates extends Component {
     return {};
   }
 
-  static renderTools() {}
-
-  createField() {
-    let name = '' + Math.floor(Math.random() * (999999 - 999) + 999);
-    this.props.addField({fieldType: 'input', name: name});
-  }
-
   render() {
     return (
       <div className="row">

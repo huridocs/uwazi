@@ -9,14 +9,9 @@ export function addField(config = {}, index = 0) {
   };
 }
 
-export function addPlaceholder(index) {
-  let config = {
-    id: Math.random().toString(36).substr(2),
-    name: 'Placeholder'
-  };
-
+export function updateProperty(config, index) {
   return {
-    type: types.ADD_PLACEHOLDER,
+    type: types.UPDATE_PROPERTY,
     config,
     index
   };

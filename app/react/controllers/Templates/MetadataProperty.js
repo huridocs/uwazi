@@ -17,7 +17,7 @@ const cardSource = {
 
 const cardTarget = {
   drop(props) {
-    return {index: props.index};
+    return props;
   },
 
   hover(props, monitor, component) {
@@ -74,11 +74,11 @@ const cardTarget = {
 
 class MetadataProperty extends Component {
   render() {
-    const {isOver, name, connectDragSource, isDragging, connectDropTarget} = this.props;
-    const opacity = isDragging ? {opacity: 0} : {opacity: 1};
+    const {inserting, name, connectDragSource, isDragging, connectDropTarget} = this.props;
     let propertyClass = 'field-option well';
-    if (isDragging) { propertyClass += ' dragging';}
-    if (isOver) { propertyClass += ' over';}
+    if (isDragging || inserting) {
+      propertyClass += ' dragging';
+    }
 
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
@@ -93,9 +93,9 @@ MetadataProperty.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
-  isOver: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
-  name: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  inserting: PropTypes.bool
 };
 
 function mapDispatchToProps(dispatch) {

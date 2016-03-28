@@ -1,18 +1,20 @@
 import React, {PropTypes, Component} from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import * as templatesActions from './templatesActions';
 import {DropTarget} from 'react-dnd';
 import MetadataProperty from './MetadataProperty';
 
 const boxTarget = {
-  drop() {
-    return {index: 0, name: 'container'};
-  },
-
-  canDrop(props) {
-    if (props.fields.length > 0) {
-      return false;
+  drop(props, monitor) {
+    if (monitor.didDrop()) {
+      let item = monitor.getItem();
+      let property = props.fields[item.index];
+      property.inserting = null;
+      props.updateProperty(property, item.index);
+      return;
     }
-    return true;
+    return {index: 0, name: 'container'};
   }
 };
 
@@ -46,10 +48,14 @@ const mapStateToProps = (state) => {
   return {fields: state.fields.toJS()};
 };
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(templatesActions, dispatch);
+}
+
 let dropTarget = DropTarget('METADATA_OPTION', boxTarget, (connector, monitor) => ({
   connectDropTarget: connector.dropTarget(),
   isOver: monitor.isOver(),
   canDrop: monitor.canDrop()
 }))(MetadataTemplate);
 
-export default connect(mapStateToProps)(dropTarget);
+export default connect(mapStateToProps, mapDispatchToProps)(dropTarget);

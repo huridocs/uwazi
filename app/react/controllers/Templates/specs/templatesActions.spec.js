@@ -26,11 +26,11 @@ describe('templatesActions', () => {
     });
   });
 
-  describe('addPlaceholder()', () => {
-    it('should return an ADD_PLACEHOLDER type action with config, unique config.id and index passed', () => {
-      let index = 2;
-      let action = actions.addPlaceholder(index);
-      expect(action).toEqual({type: types.ADD_PLACEHOLDER, config: {id: 'unique_id', name: 'Placeholder'}, index: 2});
+  describe('updateProperty()', () => {
+    it('should return an UPDATE_PROPERTY type action with the new property config', () => {
+      let config = {name: 'super name'};
+      let action = actions.updateProperty(config, 2);
+      expect(action).toEqual({type: types.UPDATE_PROPERTY, config: {name: 'super name'}, index: 2});
     });
   });
 

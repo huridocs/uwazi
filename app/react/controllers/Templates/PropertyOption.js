@@ -6,19 +6,15 @@ import {connect} from 'react-redux';
 
 const boxSource = {
   beginDrag(props) {
-    // let index = 99999;
-    // props.addField({fieldType: 'input', name: props.name}, index);
     return {
       name: props.name
-      // index: index
     };
   },
 
   endDrag(props, monitor) {
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
-
-    if (!dropResult && item.index) {
+    if (!dropResult && typeof item.index !== 'undefined') {
       return props.removeField(item.index);
     }
 

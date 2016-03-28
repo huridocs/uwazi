@@ -24,12 +24,12 @@ describe('fieldsReducer', () => {
     });
   });
 
-  describe('ADD_PLACEHOLDER', () => {
-    it('should add a new field with the config passed on the index passed', () => {
+  describe('UPDATE_PROPERTY', () => {
+    it('should update the property in the correct index with the given config', () => {
       let state = Immutable.fromJS([{name: '1'}, {name: '2'}]);
 
-      let newState = fieldsReducer(state, {type: types.ADD_PLACEHOLDER, config: {name: 'test'}, index: 1});
-      let expected = Immutable.fromJS([{name: '1'}, {name: 'test'}, {name: '2'}]);
+      let newState = fieldsReducer(state, {type: types.UPDATE_PROPERTY, config: {name: 'test'}, index: 1});
+      let expected = Immutable.fromJS([{name: '1'}, {name: 'test'}]);
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);
