@@ -14,15 +14,15 @@ describe('templatesActions', () => {
     });
   });
 
-  describe('addField()', () => {
-    it('should return an ADD_FIELD type action with config, unique config.id and index passed', () => {
-      let action = actions.addField({name: 'test'}, 'index !');
-      expect(action).toEqual({type: types.ADD_FIELD, config: {name: 'test', id: 'unique_id'}, index: 'index !'});
+  describe('addProperty()', () => {
+    it('should return an ADD_PROPERTY type action with config, unique config.id and index passed', () => {
+      let action = actions.addProperty({name: 'test'}, 'index !');
+      expect(action).toEqual({type: types.ADD_PROPERTY, config: {name: 'test', id: 'unique_id'}, index: 'index !'});
     });
 
     it('should return default config object and index if nothing passed', () => {
-      let action = actions.addField();
-      expect(action).toEqual({type: types.ADD_FIELD, config: {id: 'unique_id'}, index: 0});
+      let action = actions.addProperty();
+      expect(action).toEqual({type: types.ADD_PROPERTY, config: {id: 'unique_id'}, index: 0});
     });
   });
 
@@ -34,10 +34,10 @@ describe('templatesActions', () => {
     });
   });
 
-  describe('removeField', () => {
+  describe('removeProperty', () => {
     it('should return a REMOVE_FIELD type action with index passed', () => {
-      let action = actions.removeField(55);
-      expect(action).toEqual({type: types.REMOVE_FIELD, index: 55});
+      let action = actions.removeProperty(55);
+      expect(action).toEqual({type: types.REMOVE_PROPERTY, index: 55});
     });
   });
 

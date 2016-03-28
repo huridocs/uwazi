@@ -15,11 +15,11 @@ const boxSource = {
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
     if (!dropResult && typeof item.index !== 'undefined') {
-      return props.removeField(item.index);
+      return props.removeProperty(item.index);
     }
 
     if (dropResult && dropResult.name === 'container') {
-      props.addField({fieldType: 'input', name: item.name}, dropResult.index);
+      props.addProperty({name: item.name}, dropResult.index);
     }
   }
 };

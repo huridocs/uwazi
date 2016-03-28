@@ -1,9 +1,9 @@
 import * as types from './actionTypes';
 
-export function addField(config = {}, index = 0) {
+export function addProperty(config = {}, index = 0) {
   config.id = Math.random().toString(36).substr(2);
   return {
-    type: types.ADD_FIELD,
+    type: types.ADD_PROPERTY,
     config,
     index
   };
@@ -17,9 +17,9 @@ export function updateProperty(config, index) {
   };
 }
 
-export function removeField(index) {
+export function removeProperty(index) {
   return {
-    type: types.REMOVE_FIELD,
+    type: types.REMOVE_PROPERTY,
     index
   };
 }

@@ -12,11 +12,11 @@ describe('fieldsReducer', () => {
     });
   });
 
-  describe('ADD_FIELD', () => {
+  describe('ADD_PROPERTY', () => {
     it('should add a new field with the config passed on the index passed', () => {
       let state = Immutable.fromJS([{name: '1'}, {name: '2'}]);
 
-      let newState = fieldsReducer(state, {type: types.ADD_FIELD, config: {name: 'test'}, index: 1});
+      let newState = fieldsReducer(state, {type: types.ADD_PROPERTY, config: {name: 'test'}, index: 1});
       let expected = Immutable.fromJS([{name: '1'}, {name: 'test'}, {name: '2'}]);
 
       expect(newState).toBeImmutable();
@@ -36,11 +36,11 @@ describe('fieldsReducer', () => {
     });
   });
 
-  describe('DELETE_FIELD', () => {
+  describe('REMOVE_PROPERTY', () => {
     it('should delete the specified field', () => {
       let state = Immutable.fromJS([{fieldType: 'input', name: 'email'}, {fieldType: 'input', name: 'password'}]);
 
-      let newState = fieldsReducer(state, {type: types.REMOVE_FIELD, index: 0});
+      let newState = fieldsReducer(state, {type: types.REMOVE_PROPERTY, index: 0});
       let expected = Immutable.fromJS([{fieldType: 'input', name: 'password'}]);
 
       expect(newState).toEqualImmutable(expected);

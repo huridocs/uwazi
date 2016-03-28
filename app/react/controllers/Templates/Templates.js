@@ -1,12 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-// import {bindActionCreators} from 'redux';
-// import Field from '../../components/Form/fields/Field';
-// import * as templatesActions from './templatesActions';
-import {DragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import PropertyOption from './PropertyOption';
-import MetadataTemplate from './MetadataTemplate';
+import {connect} from 'react-redux';
 import './scss/templates.scss';
+import {Link} from 'react-router';
 
 class Templates extends Component {
 
@@ -21,32 +16,24 @@ class Templates extends Component {
   render() {
     return (
       <div className="row">
-        <main className="col-sm-9">
+        <main className="col-sm-12">
           <div className="well template">
-            <button className="btn btn-default">Cancel</button>
-            <button className="btn btn-success"><i className="fa fa-save"/> Save Template</button>
-            <h1>Template name</h1>
-            <MetadataTemplate />
+            <h1>Templates list</h1>
+            <Link to="/templates/new" className="btn btn-success">Create template</Link>
           </div>
         </main>
-        <aside className="col-sm-3">
-          Field Option
-          <ul className="field-options">
-            <li><PropertyOption name='Text' /></li>
-            <li><PropertyOption name='Checkbox' /></li>
-            <li><PropertyOption name='Select' /></li>
-            <li><PropertyOption name='List' /></li>
-            <li><PropertyOption name='Date' /></li>
-          </ul>
-        </aside>
       </div>
     );
   }
 }
 
 Templates.propTypes = {
-  addField: PropTypes.func,
-  removeField: PropTypes.func
+  templates: PropTypes.array
 };
 
-export default DragDropContext(HTML5Backend)(Templates);
+
+const mapStateToProps = (state) => {
+  return {templates: state.templates.toJS()};
+};
+
+export default connect(mapStateToProps)(Templates);

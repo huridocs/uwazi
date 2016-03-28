@@ -27,7 +27,7 @@ const cardTarget = {
     if (typeof dragIndex === 'undefined') {
       let item = monitor.getItem();
       item.index = 0;
-      return props.addField({name: item.name, inserting: true}, item.index);
+      return props.addProperty({name: item.name, inserting: true}, item.index);
     }
 
     // Don't replace items with themselves
