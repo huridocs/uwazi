@@ -25,7 +25,7 @@ class EditTemplate extends Component {
           <div className="well template">
             <button className="btn btn-default">Cancel</button>
             <button className="btn btn-success"><i className="fa fa-save"/> Save Template</button>
-            <h1>Template name</h1>
+            <h1>Template name <span className="edit">(Edit name)</span></h1>
             <MetadataTemplate />
           </div>
         </main>

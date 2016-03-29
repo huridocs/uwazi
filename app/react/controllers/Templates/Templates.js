@@ -25,10 +25,13 @@ class Templates extends Component {
       <div className="row">
         <main className="col-sm-12">
           <div className="well template">
+            <Link to="/templates/new" className="btn btn-success">New template</Link>
             <h1>Templates list</h1>
-            <Link to="/templates/new" className="btn btn-success">Create template</Link>
             {this.props.templates.map((template, index) => {
-              return <div className="well" key={index}>{template.value.name}</div>;
+              return <div className="well" key={index}>
+                      {template.value.name}
+                      <Link to={'/templates/edit/' + template.id} className='btn btn-success'>Edit</Link>
+                     </div>;
             })}
           </div>
         </main>

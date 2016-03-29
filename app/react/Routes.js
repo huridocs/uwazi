@@ -20,6 +20,7 @@ export default (
     <Route path='uploads' component={Uploads} />
     <Route path='templates' component={Templates} />
     <Route path='templates/new' component={EditTemplate} />
+    <Route path='templates/edit/:templateId' component={EditTemplate} />
     <Route path='login' component={Login} />
     <Route path='document/:documentId' component={Viewer} />
     <Route path="*" component={NoMatch} />

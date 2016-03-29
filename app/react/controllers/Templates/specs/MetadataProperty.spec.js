@@ -17,6 +17,22 @@ function wrapInTestContext(DecoratedComponent) {
   );
 }
 
+function wrapInTestContext2(Target, Source, actions) {
+  return DragDropContext(TestBackend)(
+    class TestContextContainer extends Component {
+      render() {
+        const identity = x => x;
+        let targetProps = {name: 'test', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
+        let sourceProps = {name: 'test', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
+        return <div>
+                <Target {...targetProps} {...actions}/>
+                <Source {...sourceProps} />
+              </div>;
+      }
+    }
+  );
+}
+
 
 describe('PropertyOption', () => {
   let backend;
@@ -33,7 +49,7 @@ describe('PropertyOption', () => {
   }
 
   describe('MetadataProperty', () => {
-    fit('should have mapped action into props', () => {
+    it('should have mapped action into props', () => {
       TestComponent = wrapInTestContext(MetadataProperty);
       component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
       let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
@@ -42,7 +58,7 @@ describe('PropertyOption', () => {
     });
 
     describe('when inserting', () => {
-      fit('should add "dragging" className', () => {
+      it('should add "dragging" className', () => {
         component = renderComponent(TestComponent, {inserting: true, name: 'test', index: 1, id: 'id'});
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         let div = TestUtils.findRenderedDOMComponentWithTag(option, 'div');
@@ -61,13 +77,13 @@ describe('PropertyOption', () => {
     });
 
     describe('beginDrag', () => {
-      fit('should return an object with name', () => {
+      it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         backend.simulateBeginDrag([option.getHandlerId()]);
         expect(monitor.getItem()).toEqual({index: 1});
       });
 
-      fit('should add "dragging" class name', () => {
+      it('should add "dragging" class name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         let div = TestUtils.findRenderedDOMComponentWithTag(option, 'div');
 
@@ -78,31 +94,24 @@ describe('PropertyOption', () => {
     });
   });
 
-  describe('dropTarget', () => {
-    let sourceComponent;
-    let registry;
+  fdescribe('dropTarget', () => {
+    let actions = jasmine.createSpyObj(['reorderProperty', 'addProperty']);
 
     beforeEach(() => {
-      let TestDropComponent = wrapInTestContext(dropTarget);
-      let TestSourceComponent = wrapInTestContext(dragSource);
-      const identity = x => x;
-      component = renderComponent(TestDropComponent, {name: 'test', index: 1, id: 'id', connectDragSource: identity, isDragging: false});
-      sourceComponent = renderComponent(TestSourceComponent, {name: 'test', index: 1, id: 'id', connectDragSource: identity, isDragging: false});
-      backend = sourceComponent.getManager().getBackend();
+      let TestDragAndDropContext = wrapInTestContext2(dropTarget, dragSource, actions);
+      component = renderComponent(TestDragAndDropContext);
+      backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
-      registry = component.getManager().getRegistry();
     });
 
-    // fit('shoudld be true', () => {
-    //   let target = TestUtils.findRenderedComponentWithType(component, dropTarget);
-    //   let source = TestUtils.findRenderedComponentWithType(sourceComponent, dragSource);
-    //
-    //   let targetId = registry.addTarget('METADATA_PROPERTY', new dropTarget());
-    //
-    //   // backend.simulateBeginDrag([source.getHandlerId()]);
-    //   // backend.simulateHover([targetId]);
-    //   // backend.simulateDrop();
-    //   // backend.simulateEndDrag();
-    // });
+    it('shoudld be true', () => {
+      let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
+      let source = TestUtils.findRenderedComponentWithType(component, dragSource);
+
+      backend.simulateBeginDrag([source.getHandlerId()]);
+      backend.simulateHover([target.getHandlerId()]);
+
+      expect(actions.reorderProperty).toHaveBeenCalledWith(2, 1);
+    });
   });
 });

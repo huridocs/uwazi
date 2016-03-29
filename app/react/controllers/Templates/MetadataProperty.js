@@ -61,7 +61,7 @@ const source = {
     return {
       index: props.index
     };
-  },
+  }
 };
 
 let dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) => ({
