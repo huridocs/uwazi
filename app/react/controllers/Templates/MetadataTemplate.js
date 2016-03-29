@@ -7,14 +7,15 @@ import MetadataProperty from './MetadataProperty';
 
 const boxTarget = {
   drop(props, monitor) {
+    let item = monitor.getItem();
     if (monitor.didDrop()) {
-      let item = monitor.getItem();
       let property = props.fields[item.index];
       property.inserting = null;
       props.updateProperty(property, item.index);
       return;
     }
-    return {index: 0, name: 'container'};
+    props.addProperty({name: item.name}, 0);
+    return {name: 'container'};
   }
 };
 

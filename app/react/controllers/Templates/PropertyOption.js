@@ -1,30 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-import * as templatesActions from './templatesActions';
+import {removeProperty} from './templatesActions';
 import {connect} from 'react-redux';
 
-const boxSource = {
-  beginDrag(props) {
-    return {
-      name: props.name
-    };
-  },
-
-  endDrag(props, monitor) {
-    const item = monitor.getItem();
-    const dropResult = monitor.getDropResult();
-    if (!dropResult && typeof item.index !== 'undefined') {
-      return props.removeProperty(item.index);
-    }
-
-    if (dropResult && dropResult.name === 'container') {
-      props.addProperty({name: item.name}, dropResult.index);
-    }
-  }
-};
-
-class PropertyOption extends Component {
+export class PropertyOption extends Component {
   render() {
     const {connectDragSource} = this.props;
     const {name} = this.props;
@@ -40,18 +20,32 @@ class PropertyOption extends Component {
 
 PropertyOption.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
-  isDragging: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired
 };
 
+const optionSource = {
+  beginDrag(props) {
+    return {name: props.name};
+  },
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(templatesActions, dispatch);
-}
+  endDrag(props, monitor) {
+    const item = monitor.getItem();
+    const dropResult = monitor.getDropResult();
 
-let dragSource = DragSource('METADATA_OPTION', boxSource, (connector, monitor) => ({
-  connectDragSource: connector.dragSource(),
-  isDragging: monitor.isDragging()
+    if (!dropResult && typeof item.index !== 'undefined') {
+      return props.removeProperty(item.index);
+    }
+  }
+};
+
+let dragSource = DragSource('METADATA_OPTION', optionSource, (connector) => ({
+  connectDragSource: connector.dragSource()
 }))(PropertyOption);
 
-export default connect(null, mapDispatchToProps)(dragSource);
+export {dragSource as dragSource};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({removeProperty}, dispatch);
+}
+
+export default connect(null, mapDispatchToProps, null, {withRef: true})(dragSource);
