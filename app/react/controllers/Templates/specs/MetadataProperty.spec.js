@@ -17,13 +17,13 @@ function wrapInTestContext(DecoratedComponent) {
   );
 }
 
-function wrapInTestContext2(Target, Source, actions) {
+function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let targetProps = {name: 'test', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
-        let sourceProps = {name: 'test', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
+        let targetProps = {name: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
+        let sourceProps = {name: 'source', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -96,22 +96,37 @@ describe('PropertyOption', () => {
 
   fdescribe('dropTarget', () => {
     let actions = jasmine.createSpyObj(['reorderProperty', 'addProperty']);
-
     beforeEach(() => {
-      let TestDragAndDropContext = wrapInTestContext2(dropTarget, dragSource, actions);
+      let TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);
       component = renderComponent(TestDragAndDropContext);
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });
 
-    it('shoudld be true', () => {
-      let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
-      let source = TestUtils.findRenderedComponentWithType(component, dragSource);
+    describe('when reordering', () => {
+      it('should call reorder with drag and hover indexes', () => {
+        let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
+        let source = TestUtils.findRenderedComponentWithType(component, dragSource);
 
-      backend.simulateBeginDrag([source.getHandlerId()]);
-      backend.simulateHover([target.getHandlerId()]);
+        backend.simulateBeginDrag([source.getHandlerId()]);
+        backend.simulateHover([target.getHandlerId()]);
 
-      expect(actions.reorderProperty).toHaveBeenCalledWith(2, 1);
+        expect(actions.reorderProperty).toHaveBeenCalledWith(2, 1);
+      });
+    });
+
+    describe('when inserting', () => {
+      it('should call addProperty with inserting flag and on index 0', () => {
+        let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
+        let source = TestUtils.findRenderedComponentWithType(component, dragSource);
+
+
+        backend.simulateBeginDrag([source.getHandlerId()]);
+        delete monitor.getItem().index;
+        backend.simulateHover([target.getHandlerId()]);
+
+        expect(actions.addProperty).toHaveBeenCalledWith({name: 'source', inserting: true}, 0);
+      });
     });
   });
 });

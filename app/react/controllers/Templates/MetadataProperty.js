@@ -59,7 +59,8 @@ let dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, (c
 const source = {
   beginDrag(props) {
     return {
-      index: props.index
+      index: props.index,
+      name: props.name
     };
   }
 };
