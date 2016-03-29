@@ -33,7 +33,6 @@ function sourceTargetTestContext(Target, Source, actions) {
   );
 }
 
-
 describe('PropertyOption', () => {
   let backend;
   let monitor;
@@ -80,7 +79,7 @@ describe('PropertyOption', () => {
       it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         backend.simulateBeginDrag([option.getHandlerId()]);
-        expect(monitor.getItem()).toEqual({index: 1});
+        expect(monitor.getItem()).toEqual({index: 1, name: 'test'});
       });
 
       it('should add "dragging" class name', () => {
@@ -94,7 +93,7 @@ describe('PropertyOption', () => {
     });
   });
 
-  fdescribe('dropTarget', () => {
+  describe('dropTarget', () => {
     let actions = jasmine.createSpyObj(['reorderProperty', 'addProperty']);
     beforeEach(() => {
       let TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);

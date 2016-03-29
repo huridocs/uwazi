@@ -51,9 +51,8 @@ const target = {
   }
 };
 
-let dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, (connector, monitor) => ({
-  connectDropTarget: connector.dropTarget(),
-  isOver: monitor.isOver()
+let dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, (connector) => ({
+  connectDropTarget: connector.dropTarget()
 }))(MetadataProperty);
 
 const source = {

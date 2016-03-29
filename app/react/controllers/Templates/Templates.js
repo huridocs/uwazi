@@ -13,7 +13,10 @@ class Templates extends Component {
   }
 
   static requestState() {
-    return Promise.resolve({});
+    return fetchTemplatesInitialState()
+    .then((laswebadas) => {
+      return;
+    });
   }
 
   static emptyState() {

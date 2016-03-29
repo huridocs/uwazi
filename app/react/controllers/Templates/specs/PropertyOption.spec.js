@@ -33,7 +33,7 @@ describe('PropertyOption', () => {
   }
 
   describe('PropertyOption', () => {
-    fit('should have mapped removeProperty action into props', () => {
+    it('should have mapped removeProperty action into props', () => {
       TestComponent = wrapInTestContext(PropertyOption);
       component = renderComponent(TestComponent, {name: 'test'});
       let option = TestUtils.findRenderedComponentWithType(component, PropertyOption).getWrappedInstance();
@@ -50,7 +50,7 @@ describe('PropertyOption', () => {
     });
 
     describe('beginDrag', () => {
-      fit('should return an object with name', () => {
+      it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSourceOption);
         backend.simulateBeginDrag([option.getHandlerId()]);
         expect(monitor.getItem()).toEqual({name: 'test'});
@@ -59,7 +59,7 @@ describe('PropertyOption', () => {
 
     describe('endDrag', () => {
       describe('when not droped on a target and item has an index', () => {
-        fit('should call REMOVE_FIELD with the index', () => {
+        it('should call REMOVE_FIELD with the index', () => {
           let props = {name: 'test', removeProperty: jasmine.createSpy()};
           component = renderComponent(TestComponent, props);
           backend = component.getManager().getBackend();
