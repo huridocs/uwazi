@@ -7,7 +7,7 @@ import {createStore} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 import Immutable from 'immutable';
 
-import MetadataProperty, {dragSource, dropTarget} from '~/controllers/Templates/MetadataProperty';
+import MetadataProperty, {MetadataProperty as DumbComponent, dragSource, dropTarget} from '~/controllers/Templates/MetadataProperty';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -61,6 +61,7 @@ describe('MetadataProperty', () => {
       let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
       expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
       expect(option.props.addProperty).toEqual(jasmine.any(Function));
+      expect(option.props.removeProperty).toEqual(jasmine.any(Function));
     });
 
     describe('when inserting', () => {
@@ -71,6 +72,29 @@ describe('MetadataProperty', () => {
         let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
 
         expect(div.className).toContain('dragging');
+      });
+    });
+
+    describe('when clicking on remove button', () => {
+      it('should removeProperty', () => {
+        let removeProperty = jasmine.createSpy();
+        let identity = x => x;
+        component = renderComponent(DumbComponent,
+          {
+            removeProperty,
+            isDragging: true,
+            connectDragSource: identity,
+            connectDropTarget: identity,
+            inserting: true,
+            label: 'test',
+            index: 1,
+            id: 'id'
+          }
+        );
+        let removeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'property-remove');
+
+        TestUtils.Simulate.click(removeButton);
+        expect(removeProperty).toHaveBeenCalledWith(1);
       });
     });
   });
