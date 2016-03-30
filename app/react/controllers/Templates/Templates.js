@@ -12,12 +12,12 @@ class Templates extends Component {
     props.fetchTemplates();
   }
 
-  static requestState() {
-    return fetchTemplatesInitialState()
-    .then((laswebadas) => {
-      return;
-    });
-  }
+  // static requestState() {
+  //   return fetchTemplatesInitialState()
+  //   .then(() => {
+  //     return;
+  //   });
+  // }
 
   static emptyState() {
     return {};
