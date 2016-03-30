@@ -24,8 +24,8 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let targetProps = {name: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
-        let sourceProps = {name: 'source', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
+        let targetProps = {label: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
+        let sourceProps = {label: 'source', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -57,7 +57,7 @@ describe('MetadataProperty', () => {
   describe('MetadataProperty', () => {
     it('should have mapped action into props', () => {
       let TestComponent = wrapInTestContext(MetadataProperty);
-      component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
+      component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
       let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
       expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
       expect(option.props.addProperty).toEqual(jasmine.any(Function));
@@ -66,7 +66,7 @@ describe('MetadataProperty', () => {
     describe('when inserting', () => {
       it('should add "dragging" className', () => {
         let TestComponent = wrapInTestContext(MetadataProperty);
-        component = renderComponent(TestComponent, {inserting: true, name: 'test', index: 1, id: 'id'});
+        component = renderComponent(TestComponent, {inserting: true, label: 'test', index: 1, id: 'id'});
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
 
@@ -78,7 +78,7 @@ describe('MetadataProperty', () => {
   describe('dragSource', () => {
     beforeEach(() => {
       let TestComponent = wrapInTestContext(dragSource);
-      component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
+      component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });
@@ -87,7 +87,7 @@ describe('MetadataProperty', () => {
       it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         backend.simulateBeginDrag([option.getHandlerId()]);
-        expect(monitor.getItem()).toEqual({index: 1, name: 'test'});
+        expect(monitor.getItem()).toEqual({index: 1, label: 'test'});
       });
 
       it('should add "dragging" class name', () => {
@@ -131,7 +131,7 @@ describe('MetadataProperty', () => {
         delete monitor.getItem().index;
         backend.simulateHover([target.getHandlerId()]);
 
-        expect(actions.addProperty).toHaveBeenCalledWith({name: 'source', inserting: true}, 0);
+        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', inserting: true}, 0);
       });
     });
   });

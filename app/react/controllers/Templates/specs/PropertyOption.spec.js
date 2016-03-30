@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 import TestBackend from 'react-dnd-test-backend';
 import {DragDropContext} from 'react-dnd';
@@ -32,7 +32,7 @@ describe('PropertyOption', () => {
   describe('PropertyOption', () => {
     it('should have mapped removeProperty action into props', () => {
       TestComponent = wrapInTestContext(PropertyOption);
-      component = renderComponent(TestComponent, {name: 'test'});
+      component = renderComponent(TestComponent, {label: 'test'});
       let option = TestUtils.findRenderedComponentWithType(component, PropertyOption).getWrappedInstance();
       expect(option.props.removeProperty).toEqual(jasmine.any(Function));
     });
@@ -41,7 +41,7 @@ describe('PropertyOption', () => {
   describe('DragSource', () => {
     beforeEach(() => {
       TestComponent = wrapInTestContext(dragSourceOption);
-      component = renderComponent(TestComponent, {name: 'test'});
+      component = renderComponent(TestComponent, {label: 'test'});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });
@@ -50,14 +50,14 @@ describe('PropertyOption', () => {
       it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSourceOption);
         backend.simulateBeginDrag([option.getHandlerId()]);
-        expect(monitor.getItem()).toEqual({name: 'test'});
+        expect(monitor.getItem()).toEqual({label: 'test'});
       });
     });
 
     describe('endDrag', () => {
       describe('when not droped on a target and item has an index', () => {
         it('should call REMOVE_FIELD with the index', () => {
-          let props = {name: 'test', removeProperty: jasmine.createSpy()};
+          let props = {label: 'test', removeProperty: jasmine.createSpy()};
           component = renderComponent(TestComponent, props);
           backend = component.getManager().getBackend();
           monitor = component.getManager().getMonitor();

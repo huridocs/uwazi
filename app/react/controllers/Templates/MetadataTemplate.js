@@ -42,7 +42,7 @@ const target = {
       props.updateProperty(property, item.index);
       return;
     }
-    props.addProperty({name: item.name}, 0);
+    props.addProperty({label: item.label}, 0);
     return {name: 'container'};
   }
 };

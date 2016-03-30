@@ -7,11 +7,11 @@ import {connect} from 'react-redux';
 export class PropertyOption extends Component {
   render() {
     const {connectDragSource} = this.props;
-    const {name} = this.props;
+    const {label} = this.props;
     return (
       connectDragSource(
         <div className="field-option well">
-          {name}
+          {label}
         </div>
       )
     );
@@ -20,12 +20,12 @@ export class PropertyOption extends Component {
 
 PropertyOption.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired
+  label: PropTypes.string.isRequired
 };
 
 const optionSource = {
   beginDrag(props) {
-    return {name: props.name};
+    return {label: props.label};
   },
 
   endDrag(props, monitor) {

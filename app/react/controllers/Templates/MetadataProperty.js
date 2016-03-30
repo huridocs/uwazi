@@ -7,7 +7,7 @@ import FormConfigInput from '~/controllers/Templates/FormConfigInput';
 
 export class MetadataProperty extends Component {
   render() {
-    const {inserting, name, connectDragSource, isDragging, connectDropTarget} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget} = this.props;
     let propertyClass = 'field-option well';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
@@ -15,7 +15,7 @@ export class MetadataProperty extends Component {
 
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
-        {name}
+        {label}
         <div>
           <FormConfigInput form={this.props.id} index={this.props.index} />
         </div>
@@ -30,7 +30,7 @@ MetadataProperty.propTypes = {
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
-  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
   inserting: PropTypes.bool
 };
 
@@ -47,7 +47,7 @@ const target = {
     if (typeof dragIndex === 'undefined') {
       let item = monitor.getItem();
       item.index = 0;
-      return props.addProperty({name: item.name, inserting: true}, item.index);
+      return props.addProperty({label: item.label, inserting: true}, item.index);
     }
 
     props.reorderProperty(dragIndex, hoverIndex);
@@ -63,7 +63,7 @@ const source = {
   beginDrag(props) {
     return {
       index: props.index,
-      name: props.name
+      label: props.label
     };
   }
 };
