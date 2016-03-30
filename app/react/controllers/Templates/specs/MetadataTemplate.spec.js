@@ -5,6 +5,7 @@ import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
+import {reducer as formReducer} from 'redux-form';
 
 import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/controllers/Templates/MetadataTemplate';
 import MetadataProperty, {dropTarget as MetadataTarget} from '~/controllers/Templates/MetadataProperty';
@@ -15,9 +16,9 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let fields = [{name: 'childTarget', id: 'childId', inserting: true}];
-        let targetProps = {fields: fields, name: 'target', index: 1, id: 'target', connectDropTarget: identity};
-        let sourceProps = {name: 'source', index: 2, id: 'source', connectDragSource: identity};
+        let fields = [{label: 'childTarget', id: 'childId', inserting: true}];
+        let targetProps = {fields: fields, label: 'target', index: 1, id: 'target', connectDropTarget: identity};
+        let sourceProps = {label: 'source', index: 2, id: 'source', connectDragSource: identity};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -42,7 +43,10 @@ describe('MetadataTemplate', () => {
     let result;
     let storeFields = Immutable.fromJS(fields);
     let store = createStore(() => {
-      return {fields: storeFields};
+      return {
+        fields: storeFields,
+        form: formReducer
+      };
     });
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
     return result;
@@ -54,7 +58,7 @@ describe('MetadataTemplate', () => {
   });
 
   it('should have mapped actions into props', () => {
-    let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
+    let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
     let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
     expect(template.props.updateProperty).toEqual(jasmine.any(Function));
@@ -62,35 +66,37 @@ describe('MetadataTemplate', () => {
   });
 
   it('should have mapped store.fields into props', () => {
-    let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'}, [{name: 'field', id: 1}]);
+    let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'}, [{label: 'field', id: 'id2'}]);
     let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
-    expect(template.props.fields).toEqual([{name: 'field', id: 1}]);
+    expect(template.props.fields).toEqual([{label: 'field', id: 'id2'}]);
   });
 
   describe('render()', () => {
     describe('when fields is empty', () => {
       it('should render a blank state', () => {
-        let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
+        let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
         let blankState = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
 
         expect(blankState.innerHTML).toContain('start');
       });
     });
     it('should add isOver className to the span when isOver', () => {
-      let props = {fields: [], name: 'test', index: 1, id: 'id', isOver: false, connectDropTarget: (x) => x};
+      let props = {fields: [], label: 'test', index: 1, id: 'id', isOver: false, connectDropTarget: (x) => x};
       let component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
       let span = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
       expect(span.className).toBe('');
 
-      props = {fields: [], name: 'test', index: 1, id: 'id', isOver: true, connectDropTarget: (x) => x};
+      props = {fields: [], label: 'test', index: 1, id: 'id', isOver: true, connectDropTarget: (x) => x};
       component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
       span = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
       expect(span.className).toBe('isOver');
     });
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
-        let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'}, [{name: 'property1', id: 1}, {name: 'property2', id: 2}]);
+        let component = renderComponent(TestComponent,
+          {label: 'test', index: 1, id: 'id'}, [{label: 'property1', id: '1'}, {label: 'property2', id: '2'}]
+        );
         let properties = TestUtils.scryRenderedComponentsWithType(component, MetadataProperty);
 
         expect(properties.length).toBe(2);
@@ -118,7 +124,7 @@ describe('MetadataTemplate', () => {
         backend.simulateHover([target.getHandlerId()]);
         backend.simulateDrop();
 
-        expect(actions.addProperty).toHaveBeenCalledWith({name: 'source'}, 0);
+        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source'}, 0);
       });
     });
 
@@ -132,7 +138,7 @@ describe('MetadataTemplate', () => {
         backend.simulateHover([target.getHandlerId(), childTarget.getHandlerId()]);
         backend.simulateDrop();
 
-        expect(actions.updateProperty).toHaveBeenCalledWith({name: 'childTarget', id: 'childId', inserting: null}, 0);
+        expect(actions.updateProperty).toHaveBeenCalledWith({label: 'childTarget', id: 'childId', inserting: null}, 0);
       });
     });
   });

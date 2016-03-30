@@ -1,12 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-import {reorderProperty, addProperty} from './templatesActions';
+import {removeProperty, reorderProperty, addProperty} from './templatesActions';
 import {connect} from 'react-redux';
+import FormConfigInput from '~/controllers/Templates/FormConfigInput';
 
-class MetadataProperty extends Component {
+export class MetadataProperty extends Component {
   render() {
-    const {inserting, name, connectDragSource, isDragging, connectDropTarget} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget} = this.props;
     let propertyClass = 'field-option well';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
@@ -14,7 +15,11 @@ class MetadataProperty extends Component {
 
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
-        {name}
+        {label}
+        <button onClick={() => this.props.removeProperty(this.props.index)} className="btn btn-danger property-remove">Delete</button>
+        <div>
+          <FormConfigInput form={this.props.id} index={this.props.index} />
+        </div>
       </div>
     ));
   }
@@ -26,8 +31,9 @@ MetadataProperty.propTypes = {
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
-  name: PropTypes.string.isRequired,
-  inserting: PropTypes.bool
+  label: PropTypes.string.isRequired,
+  inserting: PropTypes.bool,
+  removeProperty: PropTypes.func
 };
 
 
@@ -43,7 +49,7 @@ const target = {
     if (typeof dragIndex === 'undefined') {
       let item = monitor.getItem();
       item.index = 0;
-      return props.addProperty({name: item.name, inserting: true}, item.index);
+      return props.addProperty({label: item.label, inserting: true}, item.index);
     }
 
     props.reorderProperty(dragIndex, hoverIndex);
@@ -59,7 +65,7 @@ const source = {
   beginDrag(props) {
     return {
       index: props.index,
-      name: props.name
+      label: props.label
     };
   }
 };
@@ -70,7 +76,7 @@ let dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) =>
 }))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({reorderProperty, addProperty}, dispatch);
+  return bindActionCreators({removeProperty, reorderProperty, addProperty}, dispatch);
 }
 
 export {dragSource, dropTarget};

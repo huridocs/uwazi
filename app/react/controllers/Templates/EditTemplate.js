@@ -32,11 +32,11 @@ class EditTemplate extends Component {
         <aside className="col-sm-3">
           <h1>Construction blocks</h1>
           <ul className="field-options">
-            <li><PropertyOption name='Text' /></li>
-            <li><PropertyOption name='Checkbox' /></li>
-            <li><PropertyOption name='Select' /></li>
-            <li><PropertyOption name='List' /></li>
-            <li><PropertyOption name='Date' /></li>
+            <li><PropertyOption label='Text' /></li>
+            <li><PropertyOption label='Checkbox' /></li>
+            <li><PropertyOption label='Select' /></li>
+            <li><PropertyOption label='List' /></li>
+            <li><PropertyOption label='Date' /></li>
           </ul>
         </aside>
       </div>
