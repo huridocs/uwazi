@@ -86,7 +86,8 @@ describe('MetadataProperty', () => {
           connectDropTarget: identity,
           inserting: true,
           label: 'test',
-          index: 1
+          index: 1,
+          id: 'id'
         }
       );
         let removeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'property-remove');

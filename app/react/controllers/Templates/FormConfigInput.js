@@ -37,12 +37,14 @@ FormConfigInput.propTypes = {
   index: PropTypes.number
 };
 
+export function mapStateToProps(state, props) {
+  return {initialValues: state.fields.toJS()[props.index]};
+}
+
 let form = reduxForm({
   fields: ['label', 'required', 'filter']
 },
-(state, props) => {
-  return {initialValues: state.fields.toJS()[props.index]};
-},
+mapStateToProps,
 (dispatch) => {
   return bindActionCreators({updateProperty}, dispatch);
 }
