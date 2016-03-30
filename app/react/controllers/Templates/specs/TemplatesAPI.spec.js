@@ -11,7 +11,7 @@ describe('TemplatesAPI', () => {
   });
 
   describe('get()', () => {
-    fit('should request templates', (done) => {
+    it('should request templates', (done) => {
       templates.get()
       .then((response) => {
         expect(response).toEqual(mockResponse);

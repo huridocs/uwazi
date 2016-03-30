@@ -1,26 +1,24 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import * as templatesActions from './templatesActions';
-import './scss/templates.scss';
+import {setTemplates} from './templatesActions';
 import {Link} from 'react-router';
+import templatesAPI from '~/controllers/Templates/TemplatesAPI';
+import RouteHandler from '~/controllers/App/RouteHandler';
+import Immutable from 'immutable';
 
-class Templates extends Component {
+import './scss/templates.scss';
 
-  constructor(props) {
-    super(props);
-    props.fetchTemplates();
+class Templates extends RouteHandler {
+
+  static requestState() {
+    return templatesAPI.get()
+    .then((templates) => {
+      return {templates: Immutable.fromJS(templates)};
+    });
   }
 
-  // static requestState() {
-  //   return fetchTemplatesInitialState()
-  //   .then(() => {
-  //     return;
-  //   });
-  // }
-
-  static emptyState() {
-    return {};
+  setReduxState({templates}) {
+    this.props.dispatch(setTemplates(templates));
   }
 
   render() {
@@ -43,18 +41,14 @@ class Templates extends Component {
   }
 }
 
+Templates.__redux = true;
+
 Templates.propTypes = {
-  templates: PropTypes.array,
-  fetchTemplates: PropTypes.func
+  templates: PropTypes.array
 };
-
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(templatesActions, dispatch);
-}
 
 const mapStateToProps = (state) => {
-  return {templates: state.templates};
+  return {templates: state.templates.toJS()};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Templates);
+export default connect(mapStateToProps)(Templates);

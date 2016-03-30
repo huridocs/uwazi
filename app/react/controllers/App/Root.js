@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {toJSON} from 'transit-immutable-js';
 
 class Root extends Component {
 
@@ -6,6 +7,9 @@ class Root extends Component {
     let innerHtml = '';
     if (this.props.initialData) {
       innerHtml += `window.__initialData__ = ${JSON.stringify(this.props.initialData)};`;
+    }
+    if (this.props.reduxData) {
+      innerHtml += `window.__reduxData__ = '${toJSON(this.props.reduxData)}';`;
     }
 
     if (this.props.user) {
@@ -50,6 +54,7 @@ Root.propTypes = {
   user: PropTypes.object,
   children: PropTypes.object,
   initialData: PropTypes.object,
+  reduxData: PropTypes.object,
   head: PropTypes.object,
   content: PropTypes.string
 };

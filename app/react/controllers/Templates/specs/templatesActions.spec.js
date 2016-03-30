@@ -1,7 +1,5 @@
 import * as actions from '../templatesActions';
 import * as types from '../actionTypes';
-import {APIURL} from '~/config.js';
-import backend from 'fetch-mock';
 
 describe('templatesActions', () => {
   beforeEach(() => {
@@ -50,27 +48,11 @@ describe('templatesActions', () => {
     });
   });
 
-  fdescribe('fetch actions', () => {
-    let mockResponse = [{templates: 'templates'}];
-
-    beforeEach(() => {
-      backend.restore();
-      backend
-      .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: mockResponse})});
-    });
-
-    describe('fetchTemplates', () => {
-      it('dispatch the action with templates received', (done) => {
-        let dispatch = jasmine.createSpy();
-        let fetchAction = actions.fetchTemplates();
-
-        fetchAction(dispatch)
-        .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_TEMPLATES, templates: mockResponse});
-          done();
-        })
-        .catch(done.fail);
-      });
+  describe('setTemplates', () => {
+    it('should return a SET_TEMPLATES type with templates passed', () => {
+      let templates = 'templates';
+      let action = actions.setTemplates(templates);
+      expect(action).toEqual({type: types.SET_TEMPLATES, templates: 'templates'});
     });
   });
 });

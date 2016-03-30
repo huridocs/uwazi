@@ -15,7 +15,7 @@ import store from './store';
 
 if (isClient) {
   ReactDOM.render(
-    <Provider store={store}>
+    <Provider store={store()}>
       <CustomProvider>
         <Router history={browserHistory}>{Routes}</Router>
       </CustomProvider>
@@ -36,19 +36,39 @@ function serialize(obj) {
   return str.join('&');
 }
 
-function renderComponentWithRoot(Component, componentProps, initialData, user) {
-  const componentHtml = renderToStaticMarkup(
-    <Provider store={store}>
-      <CustomProvider initialData={initialData} user={user}>
-        <Component {...componentProps} />
-      </CustomProvider>
-    </Provider>
-  );
+function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
+  let componentHtml;
+
+  let initialStore = store({});
+
+  if (isRedux) {
+    initialStore = store(initialData);
+  }
+
+  try {
+    componentHtml = renderToStaticMarkup(
+      <Provider store={initialStore}>
+        <CustomProvider initialData={initialData} user={user}>
+          <Component {...componentProps} />
+        </CustomProvider>
+      </Provider>
+    );
+  } catch (e) {
+    console.log(e);
+  }
 
   const head = Helmet.rewind();
 
+  let reduxData = {};
+  let data = initialData;
+
+  if (isRedux) {
+    reduxData = initialData;
+    data = {};
+  }
+
   return '<!doctype html>\n' + renderToStaticMarkup(
-    <Root content={componentHtml} initialData={initialData} head={head} user={user}/>
+    <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData}/>
   );
 }
 
@@ -67,11 +87,11 @@ function handleRedirect(res, redirectLocation) {
 
 function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
-  const routeProps = getPropsFromRoute(renderProps, ['requestState']);
+  const routeProps = getPropsFromRoute(renderProps, ['requestState', '__redux']);
 
-  function renderPage(initialData) {
+  function renderPage(initialData, isRedux) {
     try {
-      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user);
+      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
       res.status(200).send(wholeHtml);
     } catch (error) {
       //console.trace(error);
@@ -84,6 +104,11 @@ function handleRoute(res, renderProps, req) {
     cookie = serialize(req.cookies);
   }
 
+  if (routeProps.__redux) {
+    return routeProps.requestState(renderProps.params, instanceApi(cookie)).then((initialData) => {
+      renderPage(initialData, true);
+    });
+  }
   if (routeProps.requestState) {
     return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage);
   }

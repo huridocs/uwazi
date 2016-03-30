@@ -8,6 +8,9 @@ class MockProvider extends Component {
       getInitialData: function () {
         return props.initialData;
       },
+      isRenderedFromServer: function () {
+        return false;
+      },
       getUser: function () {
         return props.user;
       },
@@ -23,6 +26,7 @@ class MockProvider extends Component {
 
 MockProvider.childContextTypes = {
   getInitialData: PropTypes.func,
+  isRenderedFromServer: PropTypes.func,
   getUser: PropTypes.func,
   router: PropTypes.object
 };

@@ -15,9 +15,20 @@ class RouteHandler extends Component {
 
   constructor(props, context) {
     super(props);
+
+    //// TEST !
+    if (!context.isRenderedFromServer() && this.setReduxState) {
+      this.constructor.requestState(this.props.params)
+      .then((response) => {
+        this.setReduxState(response);
+      });
+      return;
+    }
+    ////
+
     this.state = context.getInitialData();
 
-    if (!this.state) {
+    if (!context.isRenderedFromServer() && !this.state) {
       this.state = this.constructor.emptyState();
       this.constructor.requestState(this.props.params, api)
       .then((response) => {
@@ -29,6 +40,7 @@ class RouteHandler extends Component {
 
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
+  isRenderedFromServer: PropTypes.func,
   getUser: PropTypes.func,
   router: PropTypes.object
 };

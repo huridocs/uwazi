@@ -1,13 +1,12 @@
-//import Immutable from 'immutable';
+import Immutable from 'immutable';
 import * as types from './actionTypes';
 
-const initialState = [];
+const initialState = Immutable.fromJS([]);
 
 export default function templates(state = initialState, action = {}) {
 
-  if (action.type === types.LIST_TEMPLATES) {
-    console.log(action.templates);
-    return action.templates;
+  if (action.type === types.SET_TEMPLATES) {
+    return Immutable.fromJS(action.templates);
   }
 
   return state;
