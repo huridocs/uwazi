@@ -79,18 +79,16 @@ describe('MetadataProperty', () => {
       it('should removeProperty', () => {
         let removeProperty = jasmine.createSpy();
         let identity = x => x;
-        component = renderComponent(DumbComponent,
-          {
-            removeProperty,
-            isDragging: true,
-            connectDragSource: identity,
-            connectDropTarget: identity,
-            inserting: true,
-            label: 'test',
-            index: 1,
-            id: 'id'
-          }
-        );
+        component = renderComponent(DumbComponent, {
+          removeProperty,
+          isDragging: true,
+          connectDragSource: identity,
+          connectDropTarget: identity,
+          inserting: true,
+          label: 'test',
+          index: 1
+        }
+      );
         let removeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'property-remove');
 
         TestUtils.Simulate.click(removeButton);
