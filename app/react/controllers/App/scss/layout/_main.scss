@@ -6,6 +6,12 @@ html, body, #root, #app {
   padding-bottom: 110px;
 }
 
+#app {
+  .app-content {
+    min-height: 100%;
+  }
+}
+
 main {
   padding: 15px 0;
   padding: 30px !important;

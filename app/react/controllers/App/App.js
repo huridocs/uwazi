@@ -100,7 +100,7 @@ class App extends Component {
             </div>
           </div>
         </header>
-        <div className="container-fluid">
+        <div className="app-content container-fluid">
           {this.renderChildren()}
         </div>
         <footer>
