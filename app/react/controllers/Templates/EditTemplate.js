@@ -30,7 +30,7 @@ class EditTemplate extends Component {
           </div>
         </main>
         <aside className="col-sm-3">
-          Field Option
+          <h1>Construction blocks</h1>
           <ul className="field-options">
             <li><PropertyOption name='Text' /></li>
             <li><PropertyOption name='Checkbox' /></li>
