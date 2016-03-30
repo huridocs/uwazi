@@ -8,7 +8,8 @@ export default function fields(state = initialState, action = {}) {
   }
 
   if (action.type === types.UPDATE_PROPERTY) {
-    return state.set(action.index, Immutable.fromJS(action.config));
+    let original = state.get(action.index);
+    return state.set(action.index, original.merge(Immutable.fromJS(action.config)));
   }
 
   if (action.type === types.REMOVE_PROPERTY) {

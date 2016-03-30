@@ -28,8 +28,8 @@ describe('fieldsReducer', () => {
     it('should update the property in the correct index with the given config', () => {
       let state = Immutable.fromJS([{name: '1'}, {name: '2'}]);
 
-      let newState = fieldsReducer(state, {type: types.UPDATE_PROPERTY, config: {name: 'test'}, index: 1});
-      let expected = Immutable.fromJS([{name: '1'}, {name: 'test'}]);
+      let newState = fieldsReducer(state, {type: types.UPDATE_PROPERTY, config: {newProp: 'newProp'}, index: 1});
+      let expected = Immutable.fromJS([{name: '1'}, {name: '2', newProp: 'newProp'}]);
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);

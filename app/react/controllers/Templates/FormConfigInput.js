@@ -4,17 +4,18 @@ import {reduxForm} from 'redux-form';
 import {updateProperty} from '~/controllers/Templates/templatesActions';
 
 export class FormConfigInput extends Component {
-
-  componentDidUpdate() {
-    // this.props.updateProperty(this.props.values, this.props.index);
-  }
-
   render() {
     const {fields: {label, required, filter}} = this.props;
     return (
-      <form>
+      <form onChange={() => {
+        setTimeout(() => {
+          this.props.updateProperty(this.props.values, this.props.index);
+        });
+      }}>
         <label>Label</label>
-        <input type="text" {...label} />
+        <input type="text" {...label} onChange={(e) => {
+          label.onChange(e);
+        }}/>
         {label.error && label.touched && <div>{label.error}</div>}
 
         <label>Required</label>
@@ -31,7 +32,9 @@ export class FormConfigInput extends Component {
 
 FormConfigInput.propTypes = {
   fields: PropTypes.object,
-  updateProperty: PropTypes.func
+  updateProperty: PropTypes.func,
+  values: PropTypes.object,
+  index: PropTypes.number
 };
 
 let form = reduxForm({
