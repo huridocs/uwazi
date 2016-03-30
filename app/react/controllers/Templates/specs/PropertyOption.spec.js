@@ -8,13 +8,7 @@ import {createStore} from 'redux';
 import PropertyOption, {dragSource as dragSourceOption} from '~/controllers/Templates/PropertyOption';
 
 function wrapInTestContext(DecoratedComponent) {
-  return DragDropContext(TestBackend)(
-    class TestContextContainer extends Component {
-      render() {
-        return <DecoratedComponent {...this.props} />;
-      }
-    }
-  );
+  return DragDropContext(TestBackend)(DecoratedComponent);
 }
 
 
@@ -28,6 +22,9 @@ describe('PropertyOption', () => {
   function renderComponent(ComponentToRender, props) {
     let result;
     store = createStore(() => {});
+    let renderer = TestUtils.createRenderer();
+    renderer.render(<ComponentToRender {...props}/>);
+
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
     return result;
   }

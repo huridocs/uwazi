@@ -4,6 +4,8 @@ import TestBackend from 'react-dnd-test-backend';
 import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
+import {reducer as formReducer} from 'redux-form';
+import Immutable from 'immutable';
 
 import MetadataProperty, {dragSource, dropTarget} from '~/controllers/Templates/MetadataProperty';
 
@@ -33,23 +35,28 @@ function sourceTargetTestContext(Target, Source, actions) {
   );
 }
 
-describe('PropertyOption', () => {
+describe('MetadataProperty', () => {
   let backend;
   let monitor;
   let store;
-  let TestComponent;
   let component;
 
   function renderComponent(ComponentToRender, props) {
     let result;
-    store = createStore(() => {});
+    let storeFields = Immutable.fromJS([]);
+    store = createStore(() => {
+      return {
+        fields: storeFields,
+        form: formReducer
+      };
+    });
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
     return result;
   }
 
   describe('MetadataProperty', () => {
     it('should have mapped action into props', () => {
-      TestComponent = wrapInTestContext(MetadataProperty);
+      let TestComponent = wrapInTestContext(MetadataProperty);
       component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
       let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
       expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
@@ -58,9 +65,10 @@ describe('PropertyOption', () => {
 
     describe('when inserting', () => {
       it('should add "dragging" className', () => {
+        let TestComponent = wrapInTestContext(MetadataProperty);
         component = renderComponent(TestComponent, {inserting: true, name: 'test', index: 1, id: 'id'});
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
-        let div = TestUtils.findRenderedDOMComponentWithTag(option, 'div');
+        let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
 
         expect(div.className).toContain('dragging');
       });
@@ -69,7 +77,7 @@ describe('PropertyOption', () => {
 
   describe('dragSource', () => {
     beforeEach(() => {
-      TestComponent = wrapInTestContext(dragSource);
+      let TestComponent = wrapInTestContext(dragSource);
       component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
@@ -84,7 +92,7 @@ describe('PropertyOption', () => {
 
       it('should add "dragging" class name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
-        let div = TestUtils.findRenderedDOMComponentWithTag(option, 'div');
+        let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
 
         expect(div.className).not.toContain('dragging');
         backend.simulateBeginDrag([option.getHandlerId()]);
@@ -118,7 +126,6 @@ describe('PropertyOption', () => {
       it('should call addProperty with inserting flag and on index 0', () => {
         let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
         let source = TestUtils.findRenderedComponentWithType(component, dragSource);
-
 
         backend.simulateBeginDrag([source.getHandlerId()]);
         delete monitor.getItem().index;

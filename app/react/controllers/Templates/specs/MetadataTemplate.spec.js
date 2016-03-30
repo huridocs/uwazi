@@ -5,6 +5,7 @@ import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
+import {reducer as formReducer} from 'redux-form';
 
 import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/controllers/Templates/MetadataTemplate';
 import MetadataProperty, {dropTarget as MetadataTarget} from '~/controllers/Templates/MetadataProperty';
@@ -42,7 +43,10 @@ describe('MetadataTemplate', () => {
     let result;
     let storeFields = Immutable.fromJS(fields);
     let store = createStore(() => {
-      return {fields: storeFields};
+      return {
+        fields: storeFields,
+        form: formReducer
+      };
     });
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
     return result;
@@ -62,10 +66,10 @@ describe('MetadataTemplate', () => {
   });
 
   it('should have mapped store.fields into props', () => {
-    let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'}, [{name: 'field', id: 1}]);
+    let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'}, [{name: 'field', id: 'id2'}]);
     let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
-    expect(template.props.fields).toEqual([{name: 'field', id: 1}]);
+    expect(template.props.fields).toEqual([{name: 'field', id: 'id2'}]);
   });
 
   describe('render()', () => {
@@ -90,7 +94,7 @@ describe('MetadataTemplate', () => {
     });
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
-        let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'}, [{name: 'property1', id: 1}, {name: 'property2', id: 2}]);
+        let component = renderComponent(TestComponent, {name: 'test', index: 1, id: 'id'}, [{name: 'property1', id: '1'}, {name: 'property2', id: '2'}]);
         let properties = TestUtils.scryRenderedComponentsWithType(component, MetadataProperty);
 
         expect(properties.length).toBe(2);

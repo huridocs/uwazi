@@ -3,8 +3,9 @@ import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
 import {reorderProperty, addProperty} from './templatesActions';
 import {connect} from 'react-redux';
+import FormConfigInput from '~/controllers/Templates/FormConfigInput';
 
-class MetadataProperty extends Component {
+export class MetadataProperty extends Component {
   render() {
     const {inserting, name, connectDragSource, isDragging, connectDropTarget} = this.props;
     let propertyClass = 'field-option well';
@@ -15,6 +16,9 @@ class MetadataProperty extends Component {
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
         {name}
+        <div>
+          <FormConfigInput form={this.props.id} index={this.props.index} />
+        </div>
       </div>
     ));
   }
