@@ -1,5 +1,12 @@
 aside {
 	padding: 30px 0;
-	border-right: 1px solid $c-grey;
-	background: $c-white;
+	border-left: 1px dotted $c-grey;
+	border-right: 1px dotted $c-grey;
+
+	h1 {
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-size: $f-size-lg;
+		margin-top: 0;
+	}
 }
