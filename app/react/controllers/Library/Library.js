@@ -144,116 +144,201 @@ class Library extends RouteHandler {
             </div>
           </main>
           <aside className="col-xs-12 col-sm-3 panels-layout__panel">
-            <div className="panel-content">
-              <div className="search">
-                <div className="search__button--apply__filters">
-                  <a className="btn btn-success btn-block"><i className="fa fa-chevron-left"></i>Apply filters</a>
-                </div>
-                <ul className="search__filter search__filter--radiobutton">
-                  <li>Document type (Radio button)</li>
-                  <li className="is-active"><i className="fa fa-check"></i>
-                    <label>All documents</label>
-                  </li>
-                  <li> <i className="fa"></i>
-                    <label>Decisions</label>
-                  </li>
-                  <li> <i className="fa"></i>
-                    <label>Rulings</label>
-                  </li>
-                  <li> <i className="fa"></i>
-                    <label>Judgements</label>
-                  </li>
-                </ul>
-                <ul className="search__filter search__filter--short__text">
-                  <li>Document title (Short text)</li>
-                  <li className="wide">
-                    <div className="input-group">
-                      <input type="text" placeholder="Document title" className="form-control"/>
-                      <span className="input-group-addon"><i className="fa fa-search"></i></span>
-                    </div>
-                  </li>
-                </ul>
-                <ul className="search__filter search__filter--multiple__selection">
-                  <li>Multiple selection (Check box)</li>
-                  <li className="is-active"><i className="fa fa-check"></i>
-                    <label>Option 1</label>
-                  </li>
-                  <li> <i className="fa"></i>
-                    <label>Option 2</label>
-                  </li>
-                  <li> <i className="fa"></i>
-                    <label>Option 3</label>
-                  </li>
-                  <li> <i className="fa"></i>
-                    <label>Option 4</label>
-                  </li>
-                </ul>
-                <ul className="search__filter search__filter--single__selection">
-                  <li>YES/NO (Single selection)</li>
-                  <li className="wide"><i className="fa"></i>
-                    <label>Search only awesome documents</label>
-                  </li>
-                </ul>
-                <ul className="search__filter search__filter--list">
-                  <li>Country (Long list)</li>
-                  <li className="wide">
-                    <div className="input-group">
-                      <input type="text" placeholder="Search country" className="form-control"/>
-                      <span className="input-group-addon"><i className="fa fa-search"></i></span>
-                    </div>
-                    <ol>
-                      <li><i className="fa"></i>Argentina</li>
-                      <li><i className="fa"></i>Australia</li>
-                      <li><i className="fa"></i>Austria</li>
-                      <li><i className="fa"></i>Belgium</li>
-                      <li><i className="fa"></i>Brazil</li>
-                      <li><i className="fa"></i>Bulgaria</li>
-                      <li><i className="fa"></i>Canada</li>
-                      <li><i className="fa"></i>China</li>
-                      <li><i className="fa"></i>Colombia</li>
-                      <li><i className="fa"></i>Costa Rica</li>
-                      <li><i className="fa"></i>Czech Republic</li>
-                      <li><i className="fa"></i>Denmark</li>
-                      <li><i className="fa"></i>Finland</li>
-                      <li><i className="fa"></i>France</li>
-                      <li><i className="fa"></i>Germany</li>
-                      <li><i className="fa"></i>Greece</li>
-                      <li><i className="fa"></i>Hong Kong</li>
-                      <li><i className="fa"></i>Hungary</li>
-                      <li><i className="fa"></i>Iceland</li>
-                      <li><i className="fa"></i>India</li>
-                      <li><i className="fa"></i>Iran</li>
-                      <li><i className="fa"></i>Ireland</li>
-                      <li><i className="fa"></i>Italy</li>
-                      <li><i className="fa"></i>Japan</li>
-                      <li><i className="fa"></i>Malaysia</li>
-                      <li><i className="fa"></i>Mexico</li>
-                      <li><i className="fa"></i>Netherlands</li>
-                      <li><i className="fa"></i>New Zealand</li>
-                      <li><i className="fa"></i>Pakistan</li>
-                      <li><i className="fa"></i>Poland</li>
-                      <li><i className="fa"></i>Portugal</li>
-                      <li><i className="fa"></i>Romania</li>
-                      <li><i className="fa"></i>Russia</li>
-                      <li><i className="fa"></i>Singapore</li>
-                      <li><i className="fa"></i>South Africa</li>
-                      <li><i className="fa"></i>Spain</li>
-                      <li><i className="fa"></i>Sweden</li>
-                      <li><i className="fa"></i>Switzerland</li>
-                      <li><i className="fa"></i>Thailand</li>
-                      <li><i className="fa"></i>United Kingdom</li>
-                      <li><i className="fa"></i>United States</li>
-                    </ol>
-                  </li>
-                </ul>
-                <ul className="search__filter search__filter--date">
-                  <li>Date</li>
-                  <li className="wide"><i className="fa fa-calendar"></i>
-                    <input type="text" placeholder="From"/>
-                    <input type="text" placeholder="To"/>
-                  </li>
-                </ul>
-              </div>
+            <div className="search">
+              <div className="search__button--apply__filters"><a className="btn btn-success btn-block">Apply filters<i className="fa fa-chevron-left"></i></a></div>
+              <ul className="search__filter search__filter--radiobutton">
+                <li>Document type (Radio button)</li>
+                <li className="is-active">
+                  <input type="radio"/>
+                  <label>All documents</label>
+                </li>
+                <li>
+                  <input type="radio"/>
+                  <label>Decisions</label>
+                </li>
+                <li>
+                  <input type="radio"/>
+                  <label>Rulings</label>
+                </li>
+                <li>
+                  <input type="radio"/>
+                  <label>Judgements</label>
+                </li>
+              </ul>
+              <ul className="search__filter search__filter--short__text">
+                <li>Document title (Short text)</li>
+                <li className="wide">
+                  <div className="input-group">
+                    <input type="text" placeholder="Document title" className="form-control"/><span className="input-group-addon"><i className="fa fa-search"></i></span>
+                  </div>
+                </li>
+              </ul>
+              <ul className="search__filter search__filter--multiple__selection">
+                <li>Multiple selection (Check box)</li>
+                <li className="is-active">
+                  <input type="checkbox"/>
+                  <label>Option 1</label>
+                </li>
+                <li>
+                  <input type="checkbox"/>
+                  <label>Option 2</label>
+                </li>
+                <li>
+                  <input type="checkbox"/>
+                  <label>Option 3</label>
+                </li>
+                <li>
+                  <input type="checkbox"/>
+                  <label>Option 4</label>
+                </li>
+              </ul>
+              <ul className="search__filter search__filter--single__selection">
+                <li>YES/NO (Single selection)</li>
+                <li className="wide">
+                  <input type="checkbox"/>
+                  <label>Search only awesome documents</label>
+                </li>
+              </ul>
+              <ul className="search__filter search__filter--list">
+                <li>Country (Long list)</li>
+                <li className="wide">
+                  <div className="input-group">
+                    <input type="text" placeholder="Search country" className="form-control"/><span className="input-group-addon"><i className="fa fa-search"></i></span>
+                  </div>
+                  <ol>
+                    <li>
+                      <input type="checkbox"/>Argentina
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Australia
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Austria
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Belgium
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Brazil
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Bulgaria
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Canada
+                    </li>
+                    <li>
+                      <input type="checkbox"/>China
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Colombia
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Costa Rica
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Czech Republic
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Denmark
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Finland
+                    </li>
+                    <li>
+                      <input type="checkbox"/>France
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Germany
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Greece
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Hong Kong
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Hungary
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Iceland
+                    </li>
+                    <li>
+                      <input type="checkbox"/>India
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Iran
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Ireland
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Italy
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Japan
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Malaysia
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Mexico
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Netherlands
+                    </li>
+                    <li>
+                      <input type="checkbox"/>New Zealand
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Pakistan
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Poland
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Portugal
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Romania
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Russia
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Singapore
+                    </li>
+                    <li>
+                      <input type="checkbox"/>South Africa
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Spain
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Sweden
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Switzerland
+                    </li>
+                    <li>
+                      <input type="checkbox"/>Thailand
+                    </li>
+                    <li>
+                      <input type="checkbox"/>United Kingdom
+                    </li>
+                    <li>
+                      <input type="checkbox"/>United States
+                    </li>
+                  </ol>
+                </li>
+              </ul>
+              <ul className="search__filter search__filter--date">
+                <li>Date</li>
+                <li className="wide"><i className="fa fa-calendar"></i>
+                  <input type="text" placeholder="From"/>
+                  <input type="text" placeholder="To"/>
+                </li>
+              </ul>
             </div>
           </aside>
         </div>
