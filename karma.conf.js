@@ -53,6 +53,12 @@ module.exports = function (config) {
             test: /\.js$/,
             exclude: /(spec|node_modules|bower_components)\//,
             loader: 'istanbul-instrumenter' } ]
+      },
+      externals: {
+        'jsdom': 'window',
+        'cheerio': 'window',
+        'react/lib/ExecutionEnvironment': true,
+        'react/lib/ReactContext': true
       }
     },
     webpackServer: {

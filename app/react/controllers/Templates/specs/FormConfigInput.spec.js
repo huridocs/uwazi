@@ -1,8 +1,7 @@
 import React from 'react';
-import TestUtils from 'react-addons-test-utils';
 import {FormConfigInput, mapStateToProps} from '~/controllers/Templates/FormConfigInput';
-import Immutable from 'Immutable';
-
+import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 describe('FormConfigInput', () => {
   let component;
@@ -16,16 +15,17 @@ describe('FormConfigInput', () => {
       updateProperty: jasmine.createSpy('updateProperty')
     };
 
-    component = TestUtils.renderIntoDocument(<FormConfigInput {...props}/>);
+    component = shallow(<FormConfigInput {...props}/>);
   });
 
-  it('should not destroy the world', (done) => {
-    expect(true).toBe(true);
-    let form = TestUtils.findRenderedDOMComponentWithTag(component, 'form');
-    TestUtils.Simulate.change(form);
-    setTimeout(() => {
-      expect(props.updateProperty).toHaveBeenCalledWith(props.values, props.index);
-      done();
+  describe('when form changes', () => {
+    it('should updateProperty', (done) => {
+      component.find('form').simulate('change');
+
+      setTimeout(() => {
+        expect(props.updateProperty).toHaveBeenCalledWith(props.values, props.index);
+        done();
+      });
     });
   });
 
