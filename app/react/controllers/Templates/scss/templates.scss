@@ -54,5 +54,14 @@
       background-color: white;
       padding: 10px;
     }
+
+    .metadata-propery-form {
+      height: auto;
+
+      &.collapsed {
+        height: 0;
+        overflow: hidden;
+      }
+    }
   }
 }

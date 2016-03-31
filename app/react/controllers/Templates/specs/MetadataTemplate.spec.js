@@ -44,7 +44,7 @@ describe('MetadataTemplate', () => {
     let templateData = Immutable.fromJS({name: '', properties: properties});
     let store = createStore(() => {
       return {
-        template: {data: templateData},
+        template: {data: templateData, uiState: Immutable.fromJS({})},
         form: formReducer
       };
     });

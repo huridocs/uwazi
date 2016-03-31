@@ -2,12 +2,13 @@ import React, {Component, PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
 import {removeProperty, reorderProperty, addProperty} from './templatesActions';
+import {editProperty} from './uiActions';
 import {connect} from 'react-redux';
 import FormConfigInput from '~/controllers/Templates/FormConfigInput';
 
 export class MetadataProperty extends Component {
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index} = this.props;
     let propertyClass = 'metadata-propery well';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
@@ -16,8 +17,9 @@ export class MetadataProperty extends Component {
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
         {label}
-        <button onClick={() => this.props.removeProperty(this.props.index)} className="btn btn-danger property-remove">Delete</button>
-        <div>
+        <button onClick={() => this.props.removeProperty(index)} className="btn btn-danger property-remove">Delete</button>
+        <button onClick={() => this.props.editProperty(index)} className="btn btn-default property-edit">Edit</button>
+        <div className={'metadata-propery-form' + (editingProperty === index ? '' : ' collapsed') }>
           <FormConfigInput form={this.props.id} index={this.props.index} />
         </div>
       </div>
@@ -33,7 +35,9 @@ MetadataProperty.propTypes = {
   id: PropTypes.any.isRequired,
   label: PropTypes.string.isRequired,
   inserting: PropTypes.bool,
-  removeProperty: PropTypes.func
+  removeProperty: PropTypes.func,
+  editingProperty: PropTypes.number,
+  editProperty: PropTypes.func
 };
 
 
@@ -76,8 +80,12 @@ let dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) =>
 }))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({removeProperty, reorderProperty, addProperty}, dispatch);
+  return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
+const mapStateToProps = (state) => {
+  return {editingProperty: state.template.uiState.toJS().editingProperty};
+};
+
 export {dragSource, dropTarget};
-export default connect(null, mapDispatchToProps, null, {withRef: true})(dragSource);
+export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dragSource);
