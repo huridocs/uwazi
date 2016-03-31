@@ -43,10 +43,10 @@ describe('MetadataProperty', () => {
 
   function renderComponent(ComponentToRender, props) {
     let result;
-    let storeFields = Immutable.fromJS([]);
+    let templateData = Immutable.fromJS({name: '', properties: []});
     store = createStore(() => {
       return {
-        fields: storeFields,
+        template: {data: templateData},
         form: formReducer
       };
     });

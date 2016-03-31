@@ -32,7 +32,7 @@ describe('FormConfigInput', () => {
   describe('mapStateToProps', () => {
     it('should map the correct field to the props', () => {
       let state = {
-        fields: Immutable.fromJS([{label: 'first property'}, {label: 'second property'}])
+        template: {data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]})}
       };
       props = {index: 0};
       expect(mapStateToProps(state, props)).toEqual({initialValues: {label: 'first property'}});

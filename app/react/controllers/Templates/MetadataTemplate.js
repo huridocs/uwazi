@@ -12,12 +12,12 @@ export class MetadataTemplate extends Component {
     return connectDropTarget(
       <div className="template-properties">
         {(() => {
-          if (this.props.fields.length === 0) {
+          if (this.props.properties.length === 0) {
             return <div className={'no-properties' + (isOver ? ' isOver' : '')}>Drag properties here to start</div>;
           }
         })()}
-        {this.props.fields.map((field, index) => {
-          return <MetadataProperty {...field} key={field.id} index={index}/>;
+        {this.props.properties.map((config, index) => {
+          return <MetadataProperty {...config} key={config.id} index={index}/>;
         })}
       </div>
     );
@@ -26,7 +26,8 @@ export class MetadataTemplate extends Component {
 
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  fields: PropTypes.array
+  properties: PropTypes.array,
+  isOver: PropTypes.bool
 };
 
 const target = {
@@ -37,7 +38,7 @@ const target = {
   drop(props, monitor) {
     let item = monitor.getItem();
     if (monitor.didDrop()) {
-      let property = props.fields[item.index];
+      let property = props.properties[item.index];
       property.inserting = null;
       props.updateProperty(property, item.index);
       return;
@@ -55,7 +56,7 @@ let dropTarget = DropTarget('METADATA_OPTION', target, (connector, monitor) => (
 export {dropTarget};
 
 const mapStateToProps = (state) => {
-  return {fields: state.fields.toJS()};
+  return {properties: state.template.data.toJS().properties};
 };
 
 function mapDispatchToProps(dispatch) {

@@ -44,7 +44,7 @@ FormConfigInput.propTypes = {
 };
 
 export function mapStateToProps(state, props) {
-  return {initialValues: state.fields.toJS()[props.index]};
+  return {initialValues: state.template.data.toJS().properties[props.index]};
 }
 
 let form = reduxForm({

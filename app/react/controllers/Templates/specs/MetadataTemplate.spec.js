@@ -16,8 +16,8 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let fields = [{label: 'childTarget', id: 'childId', inserting: true}];
-        let targetProps = {fields: fields, label: 'target', index: 1, id: 'target', connectDropTarget: identity};
+        let properties = [{label: 'childTarget', id: 'childId', inserting: true}];
+        let targetProps = {properties: properties, connectDropTarget: identity};
         let sourceProps = {label: 'source', index: 2, id: 'source', connectDragSource: identity};
         return <div>
                 <Target {...targetProps} {...actions}/>
@@ -39,12 +39,12 @@ function wrapInTestContext(DecoratedComponent) {
 }
 
 describe('MetadataTemplate', () => {
-  function renderComponent(ComponentToRender, props = {}, fields = []) {
+  function renderComponent(ComponentToRender, props = {}, properties = []) {
     let result;
-    let storeFields = Immutable.fromJS(fields);
+    let templateData = Immutable.fromJS({name: '', properties: properties});
     let store = createStore(() => {
       return {
-        fields: storeFields,
+        template: {data: templateData},
         form: formReducer
       };
     });
@@ -58,18 +58,18 @@ describe('MetadataTemplate', () => {
   });
 
   it('should have mapped actions into props', () => {
-    let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
+    let component = renderComponent(TestComponent);
     let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
     expect(template.props.updateProperty).toEqual(jasmine.any(Function));
     expect(template.props.addProperty).toEqual(jasmine.any(Function));
   });
 
-  it('should have mapped store.fields into props', () => {
-    let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'}, [{label: 'field', id: 'id2'}]);
-    let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
+  it('should have mapped store into props', () => {
+    let component = renderComponent(TestComponent, null, [{label: 'field', id: 'id2'}]);
+    let wrappedComponent = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
-    expect(template.props.fields).toEqual([{label: 'field', id: 'id2'}]);
+    expect(wrappedComponent.props.properties).toEqual([{label: 'field', id: 'id2'}]);
   });
 
   describe('render()', () => {
@@ -81,19 +81,21 @@ describe('MetadataTemplate', () => {
         expect(blankState.innerHTML).toContain('start');
       });
     });
+
     it('should add isOver className to the span when isOver', () => {
-      let props = {fields: [], label: 'test', index: 1, id: 'id', isOver: false, connectDropTarget: (x) => x};
+      let props = {properties: [], isOver: false, connectDropTarget: (x) => x};
       let component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
       TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
 
-      props = {fields: [], label: 'test', index: 1, id: 'id', isOver: true, connectDropTarget: (x) => x};
+      props = {properties: [], isOver: true, connectDropTarget: (x) => x};
       component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
       TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties isOver');
     });
+
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
         let component = renderComponent(TestComponent,
-          {label: 'test', index: 1, id: 'id'}, [{label: 'property1', id: '1'}, {label: 'property2', id: '2'}]
+          {properties: []}, [{label: 'property1', id: '1'}, {label: 'property2', id: '2'}]
         );
         let properties = TestUtils.scryRenderedComponentsWithType(component, MetadataProperty);
 

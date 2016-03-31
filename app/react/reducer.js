@@ -1,10 +1,14 @@
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
-import fields from './controllers/Templates/fieldsReducer';
+import template from './controllers/Templates/templateReducer';
+import templateUI from './controllers/Templates/templateReducer';
 import templates from './controllers/Templates/templatesReducer';
 
 export default combineReducers({
   form: formReducer,
-  fields,
+  template: combineReducers({
+    data: template,
+    uiState: templateUI
+  }),
   templates
 });

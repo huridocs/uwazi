@@ -28,10 +28,6 @@
   padding: 15px;
   margin-bottom: 5px;
   cursor: pointer;
-
-  &.dragging {
-    opacity: 0;
-  }
 }
 
 .template-properties {
@@ -44,6 +40,10 @@
   }
 
   .metadata-propery {
+
+    &.dragging {
+      opacity: 0;
+    }
 
     .btn {
       margin-bottom: 10px;
