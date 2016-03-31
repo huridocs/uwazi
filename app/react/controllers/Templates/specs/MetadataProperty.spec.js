@@ -46,7 +46,7 @@ describe('MetadataProperty', () => {
     let templateData = Immutable.fromJS({name: '', properties: []});
     store = createStore(() => {
       return {
-        template: {data: templateData},
+        template: {data: templateData, uiState: Immutable.fromJS({})},
         form: formReducer
       };
     });
@@ -62,6 +62,7 @@ describe('MetadataProperty', () => {
       expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
       expect(option.props.addProperty).toEqual(jasmine.any(Function));
       expect(option.props.removeProperty).toEqual(jasmine.any(Function));
+      expect(option.props.editProperty).toEqual(jasmine.any(Function));
     });
 
     describe('when inserting', () => {
@@ -75,12 +76,16 @@ describe('MetadataProperty', () => {
       });
     });
 
-    describe('when clicking on remove button', () => {
-      it('should removeProperty', () => {
-        let removeProperty = jasmine.createSpy();
+    describe('ui actions', () => {
+      let removeProperty;
+      let editProperty;
+      beforeEach(() => {
+        removeProperty = jasmine.createSpy('removeProperty');
+        editProperty = jasmine.createSpy('editProperty');
         let identity = x => x;
         component = renderComponent(DumbComponent, {
           removeProperty,
+          editProperty,
           isDragging: true,
           connectDragSource: identity,
           connectDropTarget: identity,
@@ -88,12 +93,25 @@ describe('MetadataProperty', () => {
           label: 'test',
           index: 1,
           id: 'id'
-        }
-      );
-        let removeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'property-remove');
+        });
+      });
 
-        TestUtils.Simulate.click(removeButton);
-        expect(removeProperty).toHaveBeenCalledWith(1);
+      describe('delete button', () => {
+        it('should removeProperty', () => {
+          let button = TestUtils.findRenderedDOMComponentWithClass(component, 'property-remove');
+
+          TestUtils.Simulate.click(button);
+          expect(removeProperty).toHaveBeenCalledWith(1);
+        });
+      });
+
+      describe('edit button', () => {
+        it('should editProperty', () => {
+          let button = TestUtils.findRenderedDOMComponentWithClass(component, 'property-edit');
+
+          TestUtils.Simulate.click(button);
+          expect(editProperty).toHaveBeenCalledWith(1);
+        });
       });
     });
   });
