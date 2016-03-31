@@ -41,6 +41,7 @@ class Templates extends RouteHandler {
   }
 }
 
+//when all components are integrated with redux we can remove this
 Templates.__redux = true;
 
 Templates.propTypes = {
