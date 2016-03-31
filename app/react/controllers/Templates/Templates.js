@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {setTemplates} from './templatesActions';
 import {Link} from 'react-router';
@@ -8,7 +9,7 @@ import Immutable from 'immutable';
 
 import './scss/templates.scss';
 
-class Templates extends RouteHandler {
+export class Templates extends RouteHandler {
 
   static requestState() {
     return templatesAPI.get()
@@ -18,7 +19,7 @@ class Templates extends RouteHandler {
   }
 
   setReduxState({templates}) {
-    this.props.dispatch(setTemplates(templates));
+    this.props.setTemplates(templates);
   }
 
   render() {
@@ -52,4 +53,8 @@ const mapStateToProps = (state) => {
   return {templates: state.templates.toJS()};
 };
 
-export default connect(mapStateToProps)(Templates);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({setTemplates}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Templates);
