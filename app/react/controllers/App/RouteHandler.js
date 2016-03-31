@@ -22,7 +22,6 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props);
 
-    ///TEST
     if (!this.isRenderedFromServer() && this.setReduxState) {
       this.constructor.requestState(this.props.params)
       .then((response) => {
@@ -30,7 +29,6 @@ class RouteHandler extends Component {
       });
       return;
     }
-    ///
 
     //// DEPRECATED
     this.state = context.getInitialData();
