@@ -34,6 +34,13 @@ describe('templatesActions', () => {
     });
   });
 
+  describe('selectProperty()', () => {
+    it('should return an SELECT_PROPERTY type action with the property index', () => {
+      let action = actions.selectProperty('property index');
+      expect(action).toEqual({type: types.SELECT_PROPERTY, index: 'property index'});
+    });
+  });
+
   describe('removeProperty', () => {
     it('should return a REMOVE_FIELD type action with index passed', () => {
       let action = actions.removeProperty(55);

@@ -12,6 +12,11 @@ export default function fields(state = initialState, action = {}) {
     return state.set(action.index, original.merge(Immutable.fromJS(action.config)));
   }
 
+  if (action.type === types.SELECT_PROPERTY) {
+    let original = state.get(action.index);
+    return state.set(action.index, original.merge(Immutable.fromJS(action.config)));
+  }
+
   if (action.type === types.REMOVE_PROPERTY) {
     return state.delete(action.index);
   }

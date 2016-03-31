@@ -59,7 +59,9 @@
     "redux": "^3.0.4",
     "redux-form": "^4.2.2",
     "redux-thunk": "^2.0.1",
-    "superagent": "1.6.1"
+    "superagent": "1.6.1",
+    "transit-immutable-js": "^0.5.4",
+    "transit-js": "^0.8.846"
   },
   "devDependencies": {
     "babel-loader": "^6.2.1",

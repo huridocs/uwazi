@@ -76,7 +76,7 @@ describe('MetadataTemplate', () => {
     describe('when fields is empty', () => {
       it('should render a blank state', () => {
         let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
-        let blankState = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
+        let blankState = TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
 
         expect(blankState.innerHTML).toContain('start');
       });
@@ -84,13 +84,11 @@ describe('MetadataTemplate', () => {
     it('should add isOver className to the span when isOver', () => {
       let props = {fields: [], label: 'test', index: 1, id: 'id', isOver: false, connectDropTarget: (x) => x};
       let component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
-      let span = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
-      expect(span.className).toBe('');
+      TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
 
       props = {fields: [], label: 'test', index: 1, id: 'id', isOver: true, connectDropTarget: (x) => x};
       component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
-      span = TestUtils.findRenderedDOMComponentWithTag(component, 'span');
-      expect(span.className).toBe('isOver');
+      TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties isOver');
     });
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {

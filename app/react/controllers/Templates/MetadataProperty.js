@@ -8,7 +8,7 @@ import FormConfigInput from '~/controllers/Templates/FormConfigInput';
 export class MetadataProperty extends Component {
   render() {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget} = this.props;
-    let propertyClass = 'field-option well';
+    let propertyClass = 'metadata-propery well';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
     }

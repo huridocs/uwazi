@@ -7,24 +7,30 @@ export class FormConfigInput extends Component {
   render() {
     const {fields: {label, required, filter}} = this.props;
     return (
-      <form onChange={() => {
+      <form className="" onChange={() => {
         setTimeout(() => {
           this.props.updateProperty(this.props.values, this.props.index);
         });
       }}>
-        <label>Label</label>
-        <input type="text" {...label} onChange={(e) => {
-          label.onChange(e);
-        }}/>
-        {label.error && label.touched && <div>{label.error}</div>}
-
-        <label>Required</label>
-        <input type="checkbox" {...required} />
-        {required.error && required.touched && <div>{required.error}</div>}
-
-        <label>Use this field for filtering results</label>
-        <input type="checkbox" {...filter}/>
-        {filter.error && filter.touched && <div>{filter.error}</div>}
+        <div className="form-group">
+          <label>Label</label>
+          <input className="form-control" type="text" {...label} onChange={(e) => {
+            label.onChange(e);
+          }}/>
+          {label.error && label.touched && <div>{label.error}</div>}
+        </div>
+        <div className="form-group">
+          <label>
+            <input type="checkbox" {...required} /> Required
+          </label>
+          {required.error && required.touched && <div>{required.error}</div>}
+        </div>
+        <div className="form-group">
+          <label>
+            <input type="checkbox" {...filter}/> Use this field for filtering results
+          </label>
+          {filter.error && filter.touched && <div>{filter.error}</div>}
+        </div>
       </form>
     );
   }

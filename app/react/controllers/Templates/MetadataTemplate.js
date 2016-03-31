@@ -13,7 +13,7 @@ export class MetadataTemplate extends Component {
       <div className="template-properties">
         {(() => {
           if (this.props.fields.length === 0) {
-            return <span className={isOver ? 'isOver' : ''}>Drag properties here to start</span>;
+            return <div className={'no-properties' + (isOver ? ' isOver' : '')}>Drag properties here to start</div>;
           }
         })()}
         {this.props.fields.map((field, index) => {

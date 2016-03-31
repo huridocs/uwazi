@@ -35,9 +35,24 @@
 }
 
 .template-properties {
-  span {
-    display: block;
+  min-height: 400px;
+
+  .no-properties {
+    line-height: 400px;
     text-align: center;
     font-size: 15px;
+  }
+
+  .metadata-propery {
+
+    .btn {
+      margin-bottom: 10px;
+    }
+
+    form {
+      clear: both;
+      background-color: white;
+      padding: 10px;
+    }
   }
 }

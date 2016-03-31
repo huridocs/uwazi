@@ -17,6 +17,13 @@ export function updateProperty(config, index) {
   };
 }
 
+export function selectProperty(index) {
+  return {
+    type: types.SELECT_PROPERTY,
+    index
+  };
+}
+
 export function removeProperty(index) {
   return {
     type: types.REMOVE_PROPERTY,
