@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 import {reducer as formReducer} from 'redux-form';
 
 import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/Templates/components/MetadataTemplate';
-import MetadataProperty, {dropTarget as MetadataTarget} from '~/Templates/components/MetadataProperty';
+import MetadataProperty from '~/Templates/components/MetadataProperty';
 import {dragSource} from '~/Templates/components/PropertyOption';
 
 function sourceTargetTestContext(Target, Source, actions) {
@@ -108,15 +108,17 @@ describe('MetadataTemplate', () => {
     let actions = jasmine.createSpyObj(['updateProperty', 'addProperty']);
     let backend;
     let component;
+    let monitor;
 
     beforeEach(() => {
       let TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);
       component = renderComponent(TestDragAndDropContext);
       backend = component.getManager().getBackend();
+      monitor = component.getManager().getMonitor();
     });
 
     describe('when droping', () => {
-      it('should addField on index 0', () => {
+      it('should addField on the last index', () => {
         let target = TestUtils.findRenderedComponentWithType(component, dropTarget);
         let source = TestUtils.findRenderedComponentWithType(component, dragSource);
 
@@ -124,18 +126,19 @@ describe('MetadataTemplate', () => {
         backend.simulateHover([target.getHandlerId()]);
         backend.simulateDrop();
 
-        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source'}, 0);
+        let lastIndex = 1;
+        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source'}, lastIndex);
       });
     });
 
-    describe('when droping on a child', () => {
+    describe('when droping a property that is being inserted', () => {
       it('should updateProperty removing "inserting" flag on item index', () => {
         let target = TestUtils.findRenderedComponentWithType(component, dropTarget);
-        let childTarget = TestUtils.findRenderedComponentWithType(component, MetadataTarget);
         let source = TestUtils.findRenderedComponentWithType(component, dragSource);
 
         backend.simulateBeginDrag([source.getHandlerId()]);
-        backend.simulateHover([target.getHandlerId(), childTarget.getHandlerId()]);
+        monitor.getItem().index = 0;
+        backend.simulateHover([target.getHandlerId()]);
         backend.simulateDrop();
 
         expect(actions.updateProperty).toHaveBeenCalledWith({label: 'childTarget', id: 'childId', inserting: null}, 0);
