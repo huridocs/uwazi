@@ -10,7 +10,7 @@ export default function templates(state = initialState, action = {}) {
   }
 
   if (action.type === types.DELETE_TEMPLATE) {
-    return state.filter((template) => template.get('id') !== action.id);
+    return state.filter((template) => template.get('_id') !== action.id);
   }
 
   return state;

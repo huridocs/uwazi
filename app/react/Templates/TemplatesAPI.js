@@ -15,8 +15,8 @@ export default {
     });
   },
 
-  delete(id, rev) {
-    return api.delete('templates', {_id: id, _rev: rev})
+  delete(template) {
+    return api.delete('templates', template)
     .then((response) => {
       return response.json;
     });

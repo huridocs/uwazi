@@ -32,9 +32,9 @@ export class Templates extends RouteHandler {
             <h1>Templates list</h1>
             {this.props.templates.map((template, index) => {
               return <div className="well" key={index}>
-                      {template.value.name}
+                      {template.name}
                       <button onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger template-remove">Delete</button>
-                      <Link to={'/templates/edit/' + template.id} className='btn btn-success'>Edit</Link>
+                      <Link to={'/templates/edit/' + template._id} className='btn btn-success'>Edit</Link>
                      </div>;
             })}
           </div>

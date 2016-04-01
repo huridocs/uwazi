@@ -10,10 +10,10 @@ export function setTemplates(templates) {
 
 export function deleteTemplate(template) {
   return function (dispatch) {
-    return api.delete(template.value._id, template.value._rev).then(() => {
+    return api.delete(template).then(() => {
       dispatch({
         type: types.DELETE_TEMPLATE,
-        id: template.value._id
+        id: template._id
       });
     });
   };

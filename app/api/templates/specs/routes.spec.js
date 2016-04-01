@@ -26,7 +26,7 @@ describe('templates routes', () => {
       routes.get('/api/templates')
       .then((response) => {
         let docs = response.rows;
-        expect(docs[0].value.name).toBe('template_test');
+        expect(docs[0].name).toBe('template_test');
         done();
       })
       .catch(done.fail);
@@ -40,7 +40,7 @@ describe('templates routes', () => {
         routes.get('/api/templates', request)
         .then((response) => {
           let docs = response.rows;
-          expect(docs[0].value.name).toBe('template_test2');
+          expect(docs[0].name).toBe('template_test2');
           done();
         })
         .catch(done.fail);

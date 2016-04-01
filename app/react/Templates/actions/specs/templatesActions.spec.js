@@ -24,7 +24,7 @@ describe('templatesActions', () => {
 
     describe('deleteTemplate', () => {
       it('should delete the template and dispatch a DELETE_TEMPLATE action with the template id', (done) => {
-        let template = {value: {_id: 'templateId', _rev: 'rev'}};
+        let template = {_id: 'templateId', _rev: 'rev'};
 
         actions.deleteTemplate(template)(dispatch)
         .then(() => {
@@ -32,7 +32,7 @@ describe('templatesActions', () => {
           done();
         });
 
-        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual({_id: 'templateId', _rev: 'rev'});
+        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual(template);
       });
     });
   });

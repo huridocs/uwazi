@@ -38,11 +38,10 @@ describe('TemplatesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the template', (done) => {
-      let id = 'templateId';
-      let rev = 'rev';
-      templates.delete(id, rev)
+      let template = {_id: 'id'};
+      templates.delete(template)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual({_id: 'templateId', _rev: 'rev'});
+        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual(template);
         expect(response).toEqual({backednResponse: 'testdelete'});
         done();
       })
