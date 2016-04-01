@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {bindActionCreators} from 'redux';
@@ -7,17 +7,16 @@ import {connect} from 'react-redux';
 import {saveTemplate} from '~/Templates/actions/templateActions';
 import PropertyOption from '~/Templates/components/PropertyOption';
 import MetadataTemplate from '~/Templates/components/MetadataTemplate';
+import RouteHandler from '~/controllers/App/RouteHandler';
 import './scss/templates.scss';
 
-export class EditTemplate extends Component {
+export class EditTemplate extends RouteHandler {
 
   static requestState() {
     return Promise.resolve({});
   }
 
-  static emptyState() {
-    return {};
-  }
+  setReduxState() {}
 
   render() {
     return (
