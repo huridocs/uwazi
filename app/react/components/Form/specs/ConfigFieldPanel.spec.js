@@ -19,15 +19,15 @@ describe('ConfigFieldForm', () => {
     });
   });
 
-  describe('toggleModel', () => {
-    it('toggle showModal state true/false', () => {
-      expect(component.state.showModal).toBe(false);
-      component.toggleModal();
-      expect(component.state.showModal).toBe(true);
-      component.toggleModal();
-      expect(component.state.showModal).toBe(false);
-    });
-  });
+  // describe('toggleModel', () => {
+  //   it('toggle showModal state true/false', () => {
+  //     expect(component.state.showModal).toBe(false);
+  //     component.toggleModal();
+  //     expect(component.state.showModal).toBe(true);
+  //     component.toggleModal();
+  //     expect(component.state.showModal).toBe(false);
+  //   });
+  // });
 
   describe('save', () => {
     it('should toogleModal and call save function with value map of the fields', (done) => {

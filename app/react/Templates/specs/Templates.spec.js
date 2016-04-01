@@ -1,5 +1,4 @@
 import React from 'react';
-import backend from 'fetch-mock';
 import Immutable from 'immutable';
 import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
@@ -7,6 +6,8 @@ import {shallow} from 'enzyme';
 import {APIURL} from '~/config.js';
 import {Templates} from '~/Templates/Templates';
 import RouteHandler from '~/controllers/App/RouteHandler';
+
+import backend from 'fetch-mock';
 
 describe('Templates', () => {
   let templatesResponse = [{key: 'template1', id: '1', value: {}}, {key: 'template2', id: '2', value: {}}];
