@@ -1,4 +1,6 @@
 import * as types from '~/Templates/actions/actionTypes';
+import Immutable from 'immutable';
+import api from '~/Templates/TemplatesAPI';
 
 export function addProperty(config = {}, index = 0) {
   config.id = Math.random().toString(36).substr(2);
@@ -36,5 +38,20 @@ export function reorderProperty(originIndex, targetIndex) {
     type: types.REORDER_PROPERTY,
     originIndex,
     targetIndex
+  };
+}
+
+export function saveTemplate(data) {
+  let templateData = Immutable.fromJS(data).updateIn(['properties'], (properties) => {
+    return properties.map((property) => property.delete('id'));
+  }).toJS();
+
+  return function (dispatch) {
+    return api.save(templateData).then((response) => {
+      dispatch({
+        type: types.TEMPLATE_SAVED,
+        data: response
+      });
+    });
   };
 }

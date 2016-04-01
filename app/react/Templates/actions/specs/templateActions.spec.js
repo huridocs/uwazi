@@ -1,6 +1,9 @@
 import * as actions from '~/Templates/actions/templateActions';
 import * as types from '~/Templates/actions/actionTypes';
 
+import backend from 'fetch-mock';
+import {APIURL} from '~/config.js';
+
 describe('templatesActions', () => {
   beforeEach(() => {
     spyOn(Math, 'random').and.returnValue({
@@ -52,6 +55,30 @@ describe('templatesActions', () => {
     it('should return a REORDER_PROPERTY type action with origin and target indexes', () => {
       let action = actions.reorderProperty(1, 2);
       expect(action).toEqual({type: types.REORDER_PROPERTY, originIndex: 1, targetIndex: 2});
+    });
+  });
+
+  describe('async actions', () => {
+    let dispatch;
+    beforeEach(() => {
+      backend.restore();
+      backend
+      .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})});
+      dispatch = jasmine.createSpy('dispatch');
+    });
+
+    describe('saveTemplate', () => {
+      it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
+        let originalTemplateData = {name: 'my template', properties: [{id: 'a1b2', label: 'my property'}, {id: 'a1b3', label: 'my property'}]};
+        let expectedSaveData = {name: 'my template', properties: [{label: 'my property'}, {label: 'my property'}]};
+        actions.saveTemplate(originalTemplateData)(dispatch).then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok'}});
+          done();
+        });
+
+        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual(expectedSaveData);
+        expect(originalTemplateData.properties[0].id).toBe('a1b2');
+      });
     });
   });
 });

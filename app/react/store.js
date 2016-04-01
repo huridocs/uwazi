@@ -1,4 +1,4 @@
-import {applyMiddleware, createStore} from 'redux';
+import {applyMiddleware, createStore, compose} from 'redux';
 import reducer from './reducer';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
@@ -13,7 +13,6 @@ export default (initialData = data) => {
   return createStore(
     reducer,
     initialData,
-    applyMiddleware(logger),
-    applyMiddleware(thunk)
+    compose(applyMiddleware(logger), applyMiddleware(thunk))
   );
 };

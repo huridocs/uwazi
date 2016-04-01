@@ -1,12 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 
+import {saveTemplate} from '~/Templates/actions/templateActions';
 import PropertyOption from '~/Templates/components/PropertyOption';
 import MetadataTemplate from '~/Templates/components/MetadataTemplate';
 import './scss/templates.scss';
 
-class EditTemplate extends Component {
+export class EditTemplate extends Component {
 
   static requestState() {
     return Promise.resolve({});
@@ -22,7 +25,9 @@ class EditTemplate extends Component {
         <main className="col-sm-9">
           <div className="well template">
             <button className="btn btn-default">Cancel</button>
-            <button className="btn btn-success"><i className="fa fa-save"/> Save Template</button>
+            <button onClick={() => this.props.saveTemplate(this.props.template)} className="btn btn-success save-template">
+              <i className="fa fa-save"/> Save Template
+            </button>
             <h1>Template name <span className="edit">(Edit name)</span></h1>
             <MetadataTemplate />
           </div>
@@ -43,8 +48,16 @@ class EditTemplate extends Component {
 }
 
 EditTemplate.propTypes = {
-  addField: PropTypes.func,
-  removeProperty: PropTypes.func
+  saveTemplate: PropTypes.func,
+  template: PropTypes.object
 };
 
-export default DragDropContext(HTML5Backend)(EditTemplate);
+const mapStateToProps = (state) => {
+  return {template: state.template.data.toJS()};
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({saveTemplate}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DragDropContext(HTML5Backend)(EditTemplate));

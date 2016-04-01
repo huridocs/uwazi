@@ -74,7 +74,7 @@
     "eslint-plugin-jasmine": "1.6.0",
     "eslint-plugin-react": "4.2.3",
     "extract-text-webpack-plugin": "^0.8.2",
-    "fetch-mock": "3.0.3",
+    "fetch-mock": "4.3.0",
     "file-loader": "^0.8.4",
     "img-loader": "^1.2.2",
     "istanbul-instrumenter-loader": "^0.1.3",
