@@ -9,7 +9,7 @@ import FormConfigInput from '~/Templates/components/FormConfigInput';
 
 export class MetadataProperty extends Component {
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
     let propertyClass = 'metadata-propery well';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
@@ -19,8 +19,8 @@ export class MetadataProperty extends Component {
       <div className={propertyClass}>
         {label}
         <button onClick={() => this.props.removeProperty(index)} className="btn btn-danger property-remove">Delete</button>
-        <button onClick={() => this.props.editProperty(index)} className="btn btn-default property-edit">Edit</button>
-        <div className={'metadata-propery-form' + (editingProperty === index ? '' : ' collapsed') }>
+        <button onClick={() => this.props.editProperty(id)} className="btn btn-default property-edit">Edit</button>
+        <div className={'metadata-propery-form' + (editingProperty === id ? '' : ' collapsed') }>
           <FormConfigInput form={this.props.id} index={this.props.index} />
         </div>
       </div>
@@ -37,7 +37,7 @@ MetadataProperty.propTypes = {
   label: PropTypes.string.isRequired,
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
-  editingProperty: PropTypes.number,
+  editingProperty: PropTypes.string,
   editProperty: PropTypes.func
 };
 

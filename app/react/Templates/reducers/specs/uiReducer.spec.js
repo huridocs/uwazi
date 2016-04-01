@@ -13,9 +13,9 @@ describe('fieldsReducer', () => {
   });
 
   describe('EDIT_PROPERTY', () => {
-    it('should set editingProperty to the action index', () => {
-      let newState = reducer(Immutable.fromJS({}), {type: actions.EDIT_PROPERTY, index: 'test index'});
-      expect(newState).toEqualImmutable(Immutable.fromJS({editingProperty: 'test index'}));
+    it('should set editingProperty to the action id', () => {
+      let newState = reducer(Immutable.fromJS({}), {type: actions.EDIT_PROPERTY, id: 'test id'});
+      expect(newState).toEqualImmutable(Immutable.fromJS({editingProperty: 'test id'}));
     });
   });
 });

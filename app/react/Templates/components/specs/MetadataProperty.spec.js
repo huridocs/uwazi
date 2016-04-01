@@ -110,7 +110,7 @@ describe('MetadataProperty', () => {
           let button = TestUtils.findRenderedDOMComponentWithClass(component, 'property-edit');
 
           TestUtils.Simulate.click(button);
-          expect(editProperty).toHaveBeenCalledWith(1);
+          expect(editProperty).toHaveBeenCalledWith('id');
         });
       });
     });
