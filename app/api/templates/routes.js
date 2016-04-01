@@ -19,7 +19,6 @@ export default app => {
   });
 
   app.get('/api/templates', (req, res) => {
-
     let id = '';
     if(req.query && req.query._id){
       id = '?key="'+req.query._id+'"';
@@ -34,7 +33,6 @@ export default app => {
     .catch((error) => {
       res.json({error: error.json});
     });
-
   });
 
   app.delete('/api/templates', (req, res) => {

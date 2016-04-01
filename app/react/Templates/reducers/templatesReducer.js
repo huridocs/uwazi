@@ -9,5 +9,9 @@ export default function templates(state = initialState, action = {}) {
     return Immutable.fromJS(action.templates);
   }
 
+  if (action.type === types.DELETE_TEMPLATE) {
+    return state.filter((template) => template.get('id') !== action.id);
+  }
+
   return state;
 }

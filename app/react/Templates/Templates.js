@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import Immutable from 'immutable';
 
-import {setTemplates} from '~/Templates/actions/templatesActions';
+import {setTemplates, deleteTemplate} from '~/Templates/actions/templatesActions';
 import templatesAPI from '~/Templates/TemplatesAPI';
 import RouteHandler from '~/controllers/App/RouteHandler';
 
@@ -33,6 +33,7 @@ export class Templates extends RouteHandler {
             {this.props.templates.map((template, index) => {
               return <div className="well" key={index}>
                       {template.value.name}
+                      <button onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger template-remove">Delete</button>
                       <Link to={'/templates/edit/' + template.id} className='btn btn-success'>Edit</Link>
                      </div>;
             })}
@@ -55,7 +56,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setTemplates}, dispatch);
+  return bindActionCreators({setTemplates, deleteTemplate}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Templates);
