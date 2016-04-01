@@ -25,7 +25,7 @@ describe('LibraryController', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request newest, and relevant documents, and templates', (done) => {
+    fit('should request newest, and relevant documents, and templates', (done) => {
       Library.requestState(null, api)
       .then((response) => {
         expect(response.newest).toEqual(documents);

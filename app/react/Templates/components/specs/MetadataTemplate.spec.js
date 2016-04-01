@@ -7,9 +7,9 @@ import {createStore} from 'redux';
 import Immutable from 'immutable';
 import {reducer as formReducer} from 'redux-form';
 
-import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/controllers/Templates/MetadataTemplate';
-import MetadataProperty, {dropTarget as MetadataTarget} from '~/controllers/Templates/MetadataProperty';
-import {dragSource} from '~/controllers/Templates/PropertyOption';
+import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/Templates/components/MetadataTemplate';
+import MetadataProperty, {dropTarget as MetadataTarget} from '~/Templates/components/MetadataProperty';
+import {dragSource} from '~/Templates/components/PropertyOption';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(

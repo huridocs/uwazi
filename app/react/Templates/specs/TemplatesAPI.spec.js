@@ -1,4 +1,4 @@
-import templates from '~/controllers/Templates/TemplatesAPI';
+import templates from '~/Templates/TemplatesAPI';
 import {APIURL} from '~/config.js';
 import backend from 'fetch-mock';
 

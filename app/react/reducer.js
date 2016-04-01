@@ -1,8 +1,9 @@
 import {combineReducers} from 'redux';
 import {reducer as formReducer} from 'redux-form';
-import template from './controllers/Templates/templateReducer';
-import templateUI from './controllers/Templates/uiReducer';
-import templates from './controllers/Templates/templatesReducer';
+
+import templates from '~/Templates/reducers/templatesReducer';
+import template from '~/Templates/reducers/templateReducer';
+import templateUI from '~/Templates/reducers/uiReducer';
 
 export default combineReducers({
   form: formReducer,

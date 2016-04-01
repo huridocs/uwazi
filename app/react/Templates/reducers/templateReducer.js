@@ -1,6 +1,8 @@
 import Immutable from 'immutable';
+
+import * as types from '~/Templates/actions/actionTypes';
+
 const initialState = Immutable.fromJS({name: '', properties: []});
-import * as types from './actionTypes';
 
 export default function fields(state = initialState, action = {}) {
   if (action.type === types.ADD_PROPERTY) {

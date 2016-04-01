@@ -1,5 +1,5 @@
-import * as actions from '../templatesActions';
-import * as types from '../actionTypes';
+import * as actions from '~/Templates/actions/templateActions';
+import * as types from '~/Templates/actions/actionTypes';
 
 describe('templatesActions', () => {
   beforeEach(() => {
@@ -52,14 +52,6 @@ describe('templatesActions', () => {
     it('should return a REORDER_PROPERTY type action with origin and target indexes', () => {
       let action = actions.reorderProperty(1, 2);
       expect(action).toEqual({type: types.REORDER_PROPERTY, originIndex: 1, targetIndex: 2});
-    });
-  });
-
-  describe('setTemplates', () => {
-    it('should return a SET_TEMPLATES type with templates passed', () => {
-      let templates = 'templates';
-      let action = actions.setTemplates(templates);
-      expect(action).toEqual({type: types.SET_TEMPLATES, templates: 'templates'});
     });
   });
 });

@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
-import * as actions from './actionTypes';
+
+import * as actions from '~/Templates/actions/actionTypes';
 
 const initialState = Immutable.fromJS({});
 

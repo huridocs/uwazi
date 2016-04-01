@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
-import {updateProperty} from '~/controllers/Templates/templatesActions';
+
+import {updateProperty} from '~/Templates/actions/templatesActions';
 
 export class FormConfigInput extends Component {
   render() {

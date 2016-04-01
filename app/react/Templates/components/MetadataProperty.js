@@ -1,10 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-import {removeProperty, reorderProperty, addProperty} from './templatesActions';
-import {editProperty} from './uiActions';
 import {connect} from 'react-redux';
-import FormConfigInput from '~/controllers/Templates/FormConfigInput';
+
+import {editProperty} from '~/Templates/actions/uiActions';
+import {removeProperty, reorderProperty, addProperty} from '~/Templates/actions/templateActions';
+import FormConfigInput from '~/Templates/components/FormConfigInput';
 
 export class MetadataProperty extends Component {
   render() {

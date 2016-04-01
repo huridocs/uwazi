@@ -1,13 +1,14 @@
 import React, {PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {setTemplates} from './templatesActions';
 import {Link} from 'react-router';
-import templatesAPI from '~/controllers/Templates/TemplatesAPI';
-import RouteHandler from '~/controllers/App/RouteHandler';
 import Immutable from 'immutable';
 
-import './scss/templates.scss';
+import {setTemplates} from '~/Templates/actions/templatesActions';
+import templatesAPI from '~/Templates/TemplatesAPI';
+import RouteHandler from '~/controllers/App/RouteHandler';
+
+import '~/Templates/scss/templates.scss';
 
 export class Templates extends RouteHandler {
 

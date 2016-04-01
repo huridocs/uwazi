@@ -1,6 +1,7 @@
-import templateReducer from '../templateReducer';
 import Immutable from 'immutable';
-import * as types from '../actionTypes';
+
+import templateReducer from '~/Templates/reducers/templateReducer';
+import * as types from '~/Templates/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
 describe('templateReducer', () => {

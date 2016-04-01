@@ -1,9 +1,10 @@
 import React, {PropTypes, Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {updateProperty, addProperty} from './templatesActions';
 import {DropTarget} from 'react-dnd';
-import MetadataProperty from './MetadataProperty';
+
+import {updateProperty, addProperty} from '~/Templates/actions/templateActions';
+import MetadataProperty from '~/Templates/components/MetadataProperty';
 
 export class MetadataTemplate extends Component {
   render() {

@@ -7,7 +7,7 @@ import {createStore} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 import Immutable from 'immutable';
 
-import MetadataProperty, {MetadataProperty as DumbComponent, dragSource, dropTarget} from '~/controllers/Templates/MetadataProperty';
+import MetadataProperty, {MetadataProperty as DumbComponent, dragSource, dropTarget} from '~/Templates/components/MetadataProperty';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(

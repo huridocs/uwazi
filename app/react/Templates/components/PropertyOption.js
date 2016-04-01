@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-import {removeProperty} from './templatesActions';
 import {connect} from 'react-redux';
+
+import {removeProperty} from '~/Templates/actions/templateActions';
 
 export class PropertyOption extends Component {
   render() {

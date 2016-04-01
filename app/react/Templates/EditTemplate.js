@@ -1,11 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-// import {bindActionCreators} from 'redux';
-// import Field from '../../components/Form/fields/Field';
-// import * as templatesActions from './templatesActions';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import PropertyOption from './PropertyOption';
-import MetadataTemplate from './MetadataTemplate';
+
+import PropertyOption from '~/Templates/components/PropertyOption';
+import MetadataTemplate from '~/Templates/components/MetadataTemplate';
 import './scss/templates.scss';
 
 class EditTemplate extends Component {

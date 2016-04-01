@@ -1,4 +1,4 @@
-import * as types from './actionTypes';
+import * as types from '~/Templates/actions/actionTypes';
 
 export function editProperty(index) {
   return {

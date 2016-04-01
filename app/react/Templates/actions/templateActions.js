@@ -1,4 +1,4 @@
-import * as types from './actionTypes';
+import * as types from '~/Templates/actions/actionTypes';
 
 export function addProperty(config = {}, index = 0) {
   config.id = Math.random().toString(36).substr(2);
@@ -36,12 +36,5 @@ export function reorderProperty(originIndex, targetIndex) {
     type: types.REORDER_PROPERTY,
     originIndex,
     targetIndex
-  };
-}
-
-export function setTemplates(templates) {
-  return {
-    type: types.SET_TEMPLATES,
-    templates
   };
 }
