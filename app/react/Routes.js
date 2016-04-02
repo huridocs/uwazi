@@ -14,6 +14,8 @@ import Uploads from './controllers/Uploads/Uploads';
 import Templates from '~/Templates/Templates';
 import EditTemplate from '~/Templates/EditTemplate';
 
+import EditThesauri from '~/Thesauris/EditThesauri';
+
 export default (
   <Route path='/' component={App}>
     <IndexRoute component={Library} />
@@ -22,6 +24,7 @@ export default (
     <Route path='templates' component={Templates} />
     <Route path='templates/new' component={EditTemplate} />
     <Route path='templates/edit/:templateId' component={EditTemplate} />
+    <Route path='thesauris/new' component={EditThesauri} />
     <Route path='login' component={Login} />
     <Route path='document/:documentId' component={Viewer} />
     <Route path="*" component={NoMatch} />
