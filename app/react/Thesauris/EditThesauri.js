@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router';
 
 import RouteHandler from '~/controllers/App/RouteHandler';
+import {addValue} from '~/Thesauris/actions/thesauriActions';
 
 export class EditThesauri extends RouteHandler {
 
@@ -23,6 +24,13 @@ export class EditThesauri extends RouteHandler {
               <i className="fa fa-save"/> Save Thesauri
             </button>
             <h1>Thesauri name <span className="edit">(Edit name)</span></h1>
+            {this.props.values.map((value, index) => {
+              return <div key={index} className="form-group">
+                      <label>{index}</label>
+                      <input type="text" value={value.label} />
+                    </div>;
+            })}
+            <button onClick={this.props.addValue} className="btn btn-success"><i className="fa fa-plus"></i>Add value</button>
           </div>
         </main>
       </div>
@@ -35,7 +43,8 @@ EditThesauri.__redux = true;
 
 EditThesauri.propTypes = {
   name: PropTypes.string,
-  values: PropTypes.array
+  values: PropTypes.array,
+  addValue: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
@@ -46,7 +55,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({addValue}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditThesauri);

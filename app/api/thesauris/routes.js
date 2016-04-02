@@ -1,5 +1,5 @@
 import request from '../../shared/JSONRequest.js';
-import {db_url as dbUrl} from '../config/database.js'
+import {db_url as dbUrl} from '../config/database.js';
 
 export default app => {
   app.post('/api/thesauris', (req, res) => {
