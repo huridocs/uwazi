@@ -22,4 +22,17 @@ describe('fieldsReducer', () => {
       expect(newState).toEqualImmutable(templates);
     });
   });
+
+  describe('DELETE_TEMPLATE', () => {
+    it('should delete template by id', () => {
+      let state = Immutable.fromJS([{_id: '1'}, {_id: '2'}, {_id: '3'}]);
+      let templateId = '2';
+
+      let newState = reducer(state, {type: types.DELETE_TEMPLATE, id: templateId});
+
+      let expected = Immutable.fromJS([{_id: '1'}, {_id: '3'}]);
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
 });

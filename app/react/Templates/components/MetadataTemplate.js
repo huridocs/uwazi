@@ -38,13 +38,16 @@ const target = {
 
   drop(props, monitor) {
     let item = monitor.getItem();
-    if (monitor.didDrop()) {
-      let property = props.properties[item.index];
+
+    let property = props.properties[item.index];
+
+    if (property && property.inserting) {
       property.inserting = null;
       props.updateProperty(property, item.index);
       return;
     }
-    props.addProperty({label: item.label}, 0);
+
+    props.addProperty({label: item.label}, props.properties.length);
     return {name: 'container'};
   }
 };

@@ -7,8 +7,16 @@ export default {
       return response.json.rows;
     });
   },
+
   save(template) {
     return api.post('templates', template)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
+  delete(template) {
+    return api.delete('templates', template)
     .then((response) => {
       return response.json;
     });

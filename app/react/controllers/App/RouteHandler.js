@@ -30,6 +30,7 @@ class RouteHandler extends Component {
       return;
     }
 
+
     //// DEPRECATED
     this.state = context.getInitialData();
     if (!this.isRenderedFromServer() && !this.state) {
