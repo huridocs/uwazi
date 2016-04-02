@@ -22,14 +22,13 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props);
 
-    if (this.setReduxState && !this.isRenderedFromServer()) {
+    if (!this.isRenderedFromServer() && this.setReduxState) {
       this.constructor.requestState(this.props.params)
       .then((response) => {
         this.setReduxState(response);
       });
       return;
     }
-
 
     //// DEPRECATED
     if (this.constructor.__redux) {

@@ -1,19 +1,19 @@
 import React from 'react';
-import Immutable from 'immutable';
 import backend from 'fetch-mock';
-import {APIURL} from '~/config.js';
-
 import {shallow} from 'enzyme';
-import {EditTemplate} from '~/Templates/EditTemplate';
+
+import {APIURL} from '~/config.js';
+import EditTemplate from '~/Templates/EditTemplate';
+import TemplateCreator from '~/Templates/components/TemplateCreator';
 import RouteHandler from '~/controllers/App/RouteHandler';
 
 describe('EditTemplate', () => {
   let template = {id: '1', properties: [{label: 'label1'}, {label: 'label2'}]};
   let component;
   let instance;
-  let saveTemplate = jasmine.createSpy('saveTemplate');
   let setTemplate = jasmine.createSpy('setTemplate');
   let props;
+  let context;
 
   beforeEach(() => {
     spyOn(Math, 'random').and.returnValue({
@@ -28,9 +28,10 @@ describe('EditTemplate', () => {
   });
 
   beforeEach(() => {
-    props = {setTemplate, saveTemplate, template: {name: '', properties: []}};
+    props = {setTemplate};
     RouteHandler.renderedFromServer = true;
-    component = shallow(<EditTemplate {...props} />);
+    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    component = shallow(<EditTemplate {...props} />, {context});
     instance = component.instance();
 
     backend.restore();
@@ -38,12 +39,8 @@ describe('EditTemplate', () => {
     .mock(APIURL + 'templates?_id=templateId', 'GET', {body: JSON.stringify({rows: [template]})});
   });
 
-  describe('clicking save button', () => {
-    it('should call saveTemplate action with the template in props', () => {
-      component.find('.save-template').simulate('click');
-
-      expect(saveTemplate).toHaveBeenCalledWith(props.template);
-    });
+  it('should render a TemplateCreator', () => {
+    expect(component.find(TemplateCreator).length).toBe(1);
   });
 
   describe('static requestState()', () => {
@@ -61,7 +58,7 @@ describe('EditTemplate', () => {
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       instance.setReduxState({template: {data: 'template_data'}});
-      expect(instance.props.setTemplate).toHaveBeenCalledWith('template_data');
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATE', template: 'template_data'});
     });
   });
 });

@@ -87,6 +87,7 @@ function handleRedirect(res, redirectLocation) {
 
 function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
+
   const routeProps = getPropsFromRoute(renderProps, ['requestState', '__redux']);
 
   function renderPage(initialData, isRedux) {

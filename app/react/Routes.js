@@ -13,6 +13,7 @@ import Uploads from './controllers/Uploads/Uploads';
 
 import Templates from '~/Templates/Templates';
 import EditTemplate from '~/Templates/EditTemplate';
+import NewTemplate from '~/Templates/NewTemplate';
 
 import EditThesauri from '~/Thesauris/EditThesauri';
 
@@ -22,7 +23,7 @@ export default (
     <Route path='my_account' component={MyAccount} />
     <Route path='uploads' component={Uploads} />
     <Route path='templates' component={Templates} />
-    <Route path='templates/new' component={EditTemplate} />
+    <Route path='templates/new' component={NewTemplate} />
     <Route path='templates/edit/:templateId' component={EditTemplate} />
     <Route path='thesauris/new' component={EditThesauri} />
     <Route path='login' component={Login} />

@@ -2,6 +2,12 @@ import * as types from '~/Templates/actions/actionTypes';
 import Immutable from 'immutable';
 import api from '~/Templates/TemplatesAPI';
 
+export function resetTemplate() {
+  return {
+    type: types.RESET_TEMPLATE
+  };
+}
+
 export function setTemplate(template) {
   return {
     type: types.SET_TEMPLATE,

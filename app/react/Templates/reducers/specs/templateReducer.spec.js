@@ -17,6 +17,17 @@ describe('templateReducer', () => {
     return Immutable.fromJS({name: 'Template name', properties: [{name: '1'}, {name: '2'}]});
   }
 
+  describe('RESET_TEMPLATE', () => {
+    it('should reset template', () => {
+      let currentState = 'any state';
+      let newState = templateReducer(currentState, {type: types.RESET_TEMPLATE});
+      let expected = Immutable.fromJS({name: '', properties: []});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('SET_TEMPLATE', () => {
     it('should set template passed to template.data', () => {
       let newState = templateReducer(null, {type: types.SET_TEMPLATE, template: {name: 'test'}});
