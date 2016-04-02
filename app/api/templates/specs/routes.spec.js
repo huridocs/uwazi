@@ -147,7 +147,7 @@ describe('templates routes', () => {
         });
 
         expect(new_doc.value.name).toBe('created_template');
-        expect(new_doc.value.fields).toEqual([]);
+        expect(new_doc.value.properties).toEqual([]);
         expect(new_doc.value._rev).toBe(postResponse.rev);
         done();
       })
