@@ -5,6 +5,10 @@ import * as types from '~/Templates/actions/actionTypes';
 const initialState = Immutable.fromJS({name: '', properties: []});
 
 export default function fields(state = initialState, action = {}) {
+  if (action.type === types.SET_TEMPLATE) {
+    return Immutable.fromJS(action.template);
+  }
+
   if (action.type === types.ADD_PROPERTY) {
     return state.updateIn(['properties'], (properties) => properties.insert(action.index, Immutable.fromJS(action.config)));
   }

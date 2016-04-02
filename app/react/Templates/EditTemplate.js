@@ -3,8 +3,10 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import Immutable from 'immutable';
 
-import {saveTemplate} from '~/Templates/actions/templateActions';
+import api from '~/Templates/TemplatesAPI';
+import {setTemplate, saveTemplate} from '~/Templates/actions/templateActions';
 import PropertyOption from '~/Templates/components/PropertyOption';
 import MetadataTemplate from '~/Templates/components/MetadataTemplate';
 import RouteHandler from '~/controllers/App/RouteHandler';
@@ -12,11 +14,21 @@ import './scss/templates.scss';
 
 export class EditTemplate extends RouteHandler {
 
-  static requestState() {
-    return Promise.resolve({});
+  static requestState({templateId}) {
+    return api.get(templateId)
+    .then((templates) => {
+      let template = templates[0];
+      template.properties = template.properties.map((property) => {
+        property.id = Math.random().toString(36).substr(2);
+        return property;
+      });
+      return {template: {data: Immutable.fromJS(template)}};
+    });
   }
 
-  setReduxState() {}
+  setReduxState({template}) {
+    this.props.setTemplate(template.data);
+  }
 
   render() {
     return (
@@ -46,6 +58,9 @@ export class EditTemplate extends RouteHandler {
   }
 }
 
+//when all components are integrated with redux we can remove this
+EditTemplate.__redux = true;
+
 EditTemplate.propTypes = {
   saveTemplate: PropTypes.func,
   template: PropTypes.object
@@ -56,7 +71,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveTemplate}, dispatch);
+  return bindActionCreators({setTemplate, saveTemplate}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DragDropContext(HTML5Backend)(EditTemplate));

@@ -2,6 +2,13 @@ import * as types from '~/Templates/actions/actionTypes';
 import Immutable from 'immutable';
 import api from '~/Templates/TemplatesAPI';
 
+export function setTemplate(template) {
+  return {
+    type: types.SET_TEMPLATE,
+    template
+  };
+}
+
 export function addProperty(config = {}, index = 0) {
   config.id = Math.random().toString(36).substr(2);
   return {

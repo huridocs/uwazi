@@ -3,11 +3,14 @@ import {APIURL} from '~/config.js';
 import backend from 'fetch-mock';
 
 describe('TemplatesAPI', () => {
-  let mockResponse = [{templates: 'templates'}];
+  let mockResponse = [{templates: 'array'}];
+  let templateResponse = [{template: 'single'}];
+
   beforeEach(() => {
     backend.restore();
     backend
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: mockResponse})})
+    .mock(APIURL + 'templates?_id=templateId', 'GET', {body: JSON.stringify({rows: templateResponse})})
     .mock(APIURL + 'templates', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
@@ -20,6 +23,17 @@ describe('TemplatesAPI', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('when passing an id', () => {
+      it('should request for the template', (done) => {
+        templates.get('templateId')
+        .then((response) => {
+          expect(response).toEqual(templateResponse);
+          done();
+        })
+        .catch(done.fail);
+      });
     });
   });
 

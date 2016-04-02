@@ -22,7 +22,7 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props);
 
-    if (!this.isRenderedFromServer() && this.setReduxState) {
+    if (this.setReduxState && !this.isRenderedFromServer()) {
       this.constructor.requestState(this.props.params)
       .then((response) => {
         this.setReduxState(response);
@@ -32,9 +32,17 @@ class RouteHandler extends Component {
 
 
     //// DEPRECATED
+    if (this.constructor.__redux) {
+      return;
+    }
+
     this.state = context.getInitialData();
-    if (!this.isRenderedFromServer() && !this.state) {
+
+    if (!this.state || this.state && Object.keys(this.state).length === 0 && JSON.stringify(this.state) === JSON.stringify({})) {
       this.state = this.constructor.emptyState();
+    }
+
+    if (!this.isRenderedFromServer()) {
       this.constructor.requestState(this.props.params, api)
       .then((response) => {
         this.setState(response);

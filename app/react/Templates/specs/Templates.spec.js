@@ -5,7 +5,6 @@ import {shallow} from 'enzyme';
 
 import {APIURL} from '~/config.js';
 import {Templates} from '~/Templates/Templates';
-import RouteHandler from '~/controllers/App/RouteHandler';
 
 import backend from 'fetch-mock';
 
@@ -19,7 +18,6 @@ describe('Templates', () => {
 
   beforeEach(() => {
     props = {setTemplates, deleteTemplate, templates};
-    RouteHandler.renderedFromServer = false;
     component = shallow(<Templates {...props} />);
     instance = component.instance();
 
@@ -30,9 +28,8 @@ describe('Templates', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request templates and find template based on the key passed', (done) => {
-      let id = '1';
-      Templates.requestState({templateId: id})
+    it('should request templates and return immutable version for the store', (done) => {
+      Templates.requestState()
       .then((response) => {
         expect(response.templates).toEqualImmutable(Immutable.fromJS(templates));
         done();

@@ -1,8 +1,13 @@
 import api from '~/utils/singleton_api';
 
 export default {
-  get() {
-    return api.get('templates')
+  get(id) {
+    let url = 'templates';
+    if (id) {
+      url += `?_id=${id}`;
+    }
+
+    return api.get(url)
     .then((response) => {
       return response.json.rows;
     });

@@ -44,6 +44,13 @@ describe('templatesActions', () => {
     });
   });
 
+  describe('setTemplate()', () => {
+    it('should return a SET_TEMPLATE type action with the template passed', () => {
+      let action = actions.setTemplate('template');
+      expect(action).toEqual({type: types.SET_TEMPLATE, template: 'template'});
+    });
+  });
+
   describe('removeProperty', () => {
     it('should return a REMOVE_FIELD type action with index passed', () => {
       let action = actions.removeProperty(55);

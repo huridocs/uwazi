@@ -15,16 +15,15 @@ export default app => {
     .catch((error) => {
       res.json({error: error.json});
     });
-
   });
 
   app.get('/api/templates', (req, res) => {
     let id = '';
-    if(req.query && req.query._id){
-      id = '?key="'+req.query._id+'"';
+    if (req.query && req.query._id) {
+      id = '?key="' + req.query._id + '"';
     }
 
-    let url = db_url+'/_design/templates/_view/all'+id;
+    let url = db_url + '/_design/templates/_view/all' + id;
 
     request.get(url)
     .then((response) => {
