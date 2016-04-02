@@ -25,18 +25,28 @@ export class Templates extends RouteHandler {
 
   render() {
     return (
-      <div className="row">
+      <div className="row metadata">
         <main className="col-sm-12">
-          <div className="well template">
-            <Link to="/templates/new" className="btn btn-success">New template</Link>
-            <h1>Templates list</h1>
-            {this.props.templates.map((template, index) => {
-              return <div className="well" key={index}>
-                      {template.name}
-                      <button onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger template-remove">Delete</button>
-                      <Link to={'/templates/edit/' + template._id} className='btn btn-success'>Edit</Link>
-                     </div>;
-            })}
+          <div className="row">
+            <div className="col-sm-6">
+              <div className="well templates">
+                <Link to="/templates/new" className="btn btn-success">New template</Link>
+                <h1>Templates list</h1>
+                {this.props.templates.map((template, index) => {
+                  return <div className="well" key={index}>
+                          {template.name}
+                          <button onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger template-remove">Delete</button>
+                          <Link to={'/templates/edit/' + template._id} className='btn btn-success'>Edit</Link>
+                         </div>;
+                })}
+              </div>
+            </div>
+            <div className="col-sm-6">
+              <div className="well thesauris">
+                <Link to="/thesauris/new" className="btn btn-success">New thesauri</Link>
+                <h1>Thesauris list</h1>
+              </div>
+            </div>
           </div>
         </main>
       </div>

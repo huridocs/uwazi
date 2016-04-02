@@ -4,6 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import Immutable from 'immutable';
+import {Link} from 'react-router';
 
 import api from '~/Templates/TemplatesAPI';
 import {setTemplate, saveTemplate} from '~/Templates/actions/templateActions';
@@ -35,7 +36,7 @@ export class EditTemplate extends RouteHandler {
       <div className="row">
         <main className="col-sm-9">
           <div className="well template">
-            <button className="btn btn-default">Cancel</button>
+            <Link to="/templates" className="btn btn-default">Cancel</Link>
             <button onClick={() => this.props.saveTemplate(this.props.template)} className="btn btn-success save-template">
               <i className="fa fa-save"/> Save Template
             </button>
