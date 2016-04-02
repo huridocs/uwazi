@@ -1,14 +1,13 @@
 import React from 'react';
-import TestUtils from 'react-addons-test-utils';
+import {shallow} from 'enzyme';
 
 import App from '../App.js';
-import MockProvider from './MockProvider.js';
 import {events} from '../../../utils/index';
 import TestController from './TestController';
 
 describe('App', () => {
   let component;
-  let controller;
+  let instance;
 
   let fetchMock = () => {
     let res = new window.Response('{"username":"Scarecrow"}', {
@@ -27,37 +26,32 @@ describe('App', () => {
   };
 
   beforeEach(() => {
-    TestUtils.renderIntoDocument(<MockProvider>
-      <App ref={(ref) => {
-        component = ref;
-      }} fetch={fetchRejected}/>
-    </MockProvider>);
+    component = shallow(<App fetch={fetchRejected} />, {context: {getUser: () => {}}});
+    instance = component.instance();
   });
 
   describe('on instance', () => {
     it('should subscribe to login event with fetchUser', () => {
-      spyOn(component, 'fetchUser');
+      spyOn(instance, 'fetchUser');
       events.emit('login');
-      expect(component.fetchUser).toHaveBeenCalled();
+      expect(instance.fetchUser).toHaveBeenCalled();
     });
   });
 
   describe('when fething user', () => {
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<MockProvider><App ref={(ref) => {
-        component = ref;
-      }} fetch={fetchMock}>
-      <TestController ref={(ref) => {
-        controller = ref;
-      }}/></App></MockProvider>);
+      component = shallow(<App fetch={fetchMock}><TestController/></App>, {context: {getUser: () => {}}});
+      instance = component.instance();
     });
 
     it('should pass it to its children as property', (done) => {
-      component.fetchUser()
+      instance.fetchUser()
       .then(() => {
-        expect(controller.props.user).toEqual({username: 'Scarecrow'});
+        component.update();
+        expect(component.find(TestController).props()).toEqual({user: {username: 'Scarecrow'}});
         done();
-      });
+      })
+      .catch(done.fail);
     });
   });
 });

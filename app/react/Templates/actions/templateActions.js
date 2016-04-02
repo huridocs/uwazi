@@ -1,6 +1,8 @@
 import * as types from '~/Templates/actions/actionTypes';
+import {notify} from '~/Notifications';
 import Immutable from 'immutable';
 import api from '~/Templates/TemplatesAPI';
+import ID from '~/utils/uniqueID';
 
 export function resetTemplate() {
   return {
@@ -16,7 +18,7 @@ export function setTemplate(template) {
 }
 
 export function addProperty(config = {}, index = 0) {
-  config.id = Math.random().toString(36).substr(2);
+  config.id = ID();
   return {
     type: types.ADD_PROPERTY,
     config,
@@ -60,11 +62,14 @@ export function saveTemplate(data) {
   }).toJS();
 
   return function (dispatch) {
-    return api.save(templateData).then((response) => {
+    return api.save(templateData)
+    .then((response) => {
       dispatch({
         type: types.TEMPLATE_SAVED,
         data: response
       });
+
+      dispatch(notify('saved successfully !', 'info'));
     });
   };
 }

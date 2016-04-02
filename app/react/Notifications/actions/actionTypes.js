@@ -1,0 +1,2 @@
+export const NOTIFY = 'NOTIFY';
+export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
