@@ -21,7 +21,7 @@ describe('thesauris routes', () => {
       routes.get('/api/thesauris')
       .then((response) => {
         let docs = response.rows;
-        expect(docs[0].value.name).toBe('secret recipes');
+        expect(docs[0].name).toBe('secret recipes');
         done();
       })
       .catch(done.fail);
@@ -34,7 +34,7 @@ describe('thesauris routes', () => {
         routes.get('/api/thesauris', req)
         .then((response) => {
           let docs = response.rows;
-          expect(docs[0].value.name).toBe('Top 2 scify books');
+          expect(docs[0].name).toBe('Top 2 scify books');
           done();
         })
         .catch(done.fail);

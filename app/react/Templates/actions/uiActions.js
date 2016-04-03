@@ -6,3 +6,10 @@ export function editProperty(id) {
     id
   };
 }
+
+export function setThesauri(thesauri) {
+  return {
+    type: types.SET_THESAURI,
+    thesauri
+  };
+}

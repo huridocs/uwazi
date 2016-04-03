@@ -6,8 +6,11 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import {reducer as formReducer} from 'redux-form';
 import Immutable from 'immutable';
+import {shallow} from 'enzyme';
 
 import MetadataProperty, {MetadataProperty as DumbComponent, dragSource, dropTarget} from '~/Templates/components/MetadataProperty';
+import FormConfigInput from '~/Templates/components/FormConfigInput';
+import FormConfigSelect from '~/Templates/components/FormConfigSelect';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -73,6 +76,32 @@ describe('MetadataProperty', () => {
         let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
 
         expect(div.className).toContain('dragging');
+      });
+    });
+
+    describe('when type is select or list', () => {
+      it('should render FormConfigSelect', () => {
+        let identity = x => x;
+        let props = {
+          isDragging: true,
+          connectDragSource: identity,
+          connectDropTarget: identity,
+          inserting: true,
+          label: 'test',
+          index: 1,
+          id: 'id'
+        };
+        component = shallow(<DumbComponent {...props}/>);
+        expect(component.find(FormConfigInput).length).toBe(1);
+
+        component.setProps({type: 'select'});
+        expect(component.find(FormConfigSelect).length).toBe(1);
+
+        component.setProps({type: 'any'});
+        expect(component.find(FormConfigInput).length).toBe(1);
+
+        component.setProps({type: 'list'});
+        expect(component.find(FormConfigSelect).length).toBe(1);
       });
     });
 

@@ -1,27 +1,45 @@
 import React, {PropTypes} from 'react';
 import Immutable from 'immutable';
 
-import api from '~/Templates/TemplatesAPI';
+import templatesAPI from '~/Templates/TemplatesAPI';
+import thesaurisAPI from '~/Thesauris/ThesaurisAPI';
 import TemplateCreator from '~/Templates/components/TemplateCreator';
 import {setTemplate} from '~/Templates/actions/templateActions';
+import {setThesauri} from '~/Templates/actions/uiActions';
 import RouteHandler from '~/controllers/App/RouteHandler';
+import ID from '~/utils/uniqueID';
+
+let prepareTemplate = (template) => {
+  template.properties = template.properties.map((property) => {
+    property.id = ID();
+    return property;
+  });
+
+  return Immutable.fromJS(template);
+};
 
 export default class EditTemplate extends RouteHandler {
 
   static requestState({templateId}) {
-    return api.get(templateId)
-    .then((templates) => {
-      let template = templates[0];
-      template.properties = template.properties.map((property) => {
-        property.id = Math.random().toString(36).substr(2);
-        return property;
-      });
-      return {template: {data: Immutable.fromJS(template)}};
+    return Promise.all([
+      templatesAPI.get(templateId),
+      thesaurisAPI.get()
+    ])
+    .then((response) => {
+      let templates = response[0];
+      let thesauri = response[1];
+      return {
+        template: {
+          data: prepareTemplate(templates[0]),
+          uiState: Immutable.fromJS({thesauri: thesauri})
+        }
+      };
     });
   }
 
   setReduxState({template}) {
     this.context.store.dispatch(setTemplate(template.data));
+    this.context.store.dispatch(setThesauri(template.uiState.toJS().thesauri));
   }
 
   render() {
