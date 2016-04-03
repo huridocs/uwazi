@@ -36,6 +36,7 @@ export default app => {
     let url = dbUrl + '/_design/thesauris/_view/all' + id;
     request.get(url)
     .then((response) => {
+      response.json.rows = response.json.rows.map((row) => row.value);
       res.json(response.json);
     })
     .catch((error) => {
