@@ -14,3 +14,4 @@ export const RESET_TEMPLATE = 'RESET_TEMPLATE';
 
 //UI
 export const EDIT_PROPERTY = 'EDIT_PROPERTY';
+export const SET_THESAURI = 'SET_THESAURI';

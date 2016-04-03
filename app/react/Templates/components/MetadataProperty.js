@@ -6,8 +6,17 @@ import {connect} from 'react-redux';
 import {editProperty} from '~/Templates/actions/uiActions';
 import {removeProperty, reorderProperty, addProperty} from '~/Templates/actions/templateActions';
 import FormConfigInput from '~/Templates/components/FormConfigInput';
+import FormConfigSelect from '~/Templates/components/FormConfigSelect';
 
 export class MetadataProperty extends Component {
+  renderForm() {
+    if (this.props.type === 'select' || this.props.type === 'list') {
+      return <FormConfigSelect form={this.props.id} index={this.props.index} />;
+    }
+
+    return <FormConfigInput form={this.props.id} index={this.props.index} />;
+  }
+
   render() {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
     let propertyClass = 'metadata-propery well';
@@ -21,7 +30,7 @@ export class MetadataProperty extends Component {
         <button onClick={() => this.props.removeProperty(index)} className="btn btn-danger property-remove">Delete</button>
         <button onClick={() => this.props.editProperty(id)} className="btn btn-default property-edit">Edit</button>
         <div className={'metadata-propery-form' + (editingProperty === id ? '' : ' collapsed') }>
-          <FormConfigInput form={this.props.id} index={this.props.index} />
+          {this.renderForm()}
         </div>
       </div>
     ));
@@ -34,6 +43,7 @@ MetadataProperty.propTypes = {
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
+  type: PropTypes.string,
   label: PropTypes.string.isRequired,
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,

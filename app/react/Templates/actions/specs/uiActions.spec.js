@@ -8,4 +8,10 @@ describe('uiActions', () => {
       expect(action).toEqual({type: types.EDIT_PROPERTY, id: 'id'});
     });
   });
+  describe('setThesauri()', () => {
+    it('should return a SET_THESAURI action with the thesauri', () => {
+      let action = actions.setThesauri('thesauri');
+      expect(action).toEqual({type: types.SET_THESAURI, thesauri: 'thesauri'});
+    });
+  });
 });

@@ -6,9 +6,9 @@ import 'jasmine-immutablejs-matchers';
 
 describe('fieldsReducer', () => {
   describe('when state is undefined', () => {
-    it('return initial state {}', () => {
+    it('should return initial state', () => {
       let newState = reducer();
-      expect(newState).toEqual(Immutable.fromJS({}));
+      expect(newState).toEqual(Immutable.fromJS({thesauri: []}));
     });
   });
 
@@ -16,6 +16,13 @@ describe('fieldsReducer', () => {
     it('should set editingProperty to the action id', () => {
       let newState = reducer(Immutable.fromJS({}), {type: actions.EDIT_PROPERTY, id: 'test id'});
       expect(newState).toEqualImmutable(Immutable.fromJS({editingProperty: 'test id'}));
+    });
+  });
+
+  describe('SET_THESAURI', () => {
+    it('should set thesauri list on thesauri', () => {
+      let newState = reducer(Immutable.fromJS({}), {type: actions.SET_THESAURI, thesauri: 'thesauri'});
+      expect(newState).toEqualImmutable(Immutable.fromJS({thesauri: 'thesauri'}));
     });
   });
 });
