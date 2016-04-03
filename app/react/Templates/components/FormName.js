@@ -13,7 +13,7 @@ export class FormName extends Component {
           this.props.updateTemplate(this.props.values);
         });
       }}>
-        <input type="text" {...name}/>
+        <input placeholder="Template name" type="text" {...name}/>
       </form>
     );
   }
