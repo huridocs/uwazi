@@ -29,6 +29,13 @@ describe('templatesActions', () => {
     });
   });
 
+  describe('updateTemplate()', () => {
+    it('should return an UPDATE_TEMPLATE type action with template passed', () => {
+      let action = actions.updateTemplate({name: 'test'});
+      expect(action).toEqual({type: types.UPDATE_TEMPLATE, template: {name: 'test'}});
+    });
+  });
+
   describe('updateProperty()', () => {
     it('should return an UPDATE_PROPERTY type action with the new property config', () => {
       let config = {name: 'super name'};

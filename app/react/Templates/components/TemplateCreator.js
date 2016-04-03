@@ -25,7 +25,6 @@ export class TemplateCreator extends Component {
             <button onClick={() => this.props.saveTemplate(this.props.template)} className="btn btn-success save-template">
               <i className="fa fa-save"/> Save Template
             </button>
-            <h1>Template name <span className="edit">(Edit name)</span></h1>
             <MetadataTemplate />
           </div>
         </main>

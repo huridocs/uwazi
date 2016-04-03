@@ -48,6 +48,16 @@ describe('templateReducer', () => {
     });
   });
 
+  describe('UPDATE_TEMPLATE', () => {
+    it('should update the template with the values passed', () => {
+      let newState = templateReducer(testState(), {type: types.UPDATE_TEMPLATE, template: {name: 'new name', test: 'test'}});
+      let expected = Immutable.fromJS({name: 'new name', properties: [{name: '1'}, {name: '2'}], test: 'test'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('UPDATE_PROPERTY', () => {
     it('should update the property in the correct index with the given config', () => {
       let newState = templateReducer(testState(), {type: types.UPDATE_PROPERTY, config: {newProp: 'newProp'}, index: 1});

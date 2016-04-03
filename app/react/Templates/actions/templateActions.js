@@ -1,6 +1,7 @@
+import Immutable from 'immutable';
+
 import * as types from '~/Templates/actions/actionTypes';
 import {notify} from '~/Notifications';
-import Immutable from 'immutable';
 import api from '~/Templates/TemplatesAPI';
 import ID from '~/utils/uniqueID';
 
@@ -13,6 +14,13 @@ export function resetTemplate() {
 export function setTemplate(template) {
   return {
     type: types.SET_TEMPLATE,
+    template
+  };
+}
+
+export function updateTemplate(template) {
+  return {
+    type: types.UPDATE_TEMPLATE,
     template
   };
 }

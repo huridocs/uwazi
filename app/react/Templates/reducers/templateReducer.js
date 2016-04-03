@@ -21,6 +21,10 @@ export default function fields(state = initialState, action = {}) {
     return state.updateIn(['properties', action.index], (original) => original.merge(Immutable.fromJS(action.config)));
   }
 
+  if (action.type === types.UPDATE_TEMPLATE) {
+    return state.merge(Immutable.fromJS(action.template));
+  }
+
   if (action.type === types.REMOVE_PROPERTY) {
     return state.deleteIn(['properties', action.index]);
   }

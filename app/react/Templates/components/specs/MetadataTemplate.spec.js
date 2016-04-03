@@ -5,6 +5,7 @@ import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
+import {shallow} from 'enzyme';
 import {reducer as formReducer} from 'redux-form';
 
 import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/Templates/components/MetadataTemplate';
@@ -84,12 +85,12 @@ describe('MetadataTemplate', () => {
 
     it('should add isOver className to the span when isOver', () => {
       let props = {properties: [], isOver: false, connectDropTarget: (x) => x};
-      let component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
-      TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
+      let component = shallow(<DumbComponent {...props} />);
+      expect(component.find('.no-properties').length).toBe(1);
 
       props = {properties: [], isOver: true, connectDropTarget: (x) => x};
-      component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
-      TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties isOver');
+      component = shallow(<DumbComponent {...props} />);
+      expect(component.find('.no-properties.isOver').length).toBe(1);
     });
 
     describe('when has fields', () => {

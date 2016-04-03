@@ -5,21 +5,29 @@ import {DropTarget} from 'react-dnd';
 
 import {updateProperty, addProperty} from '~/Templates/actions/templateActions';
 import MetadataProperty from '~/Templates/components/MetadataProperty';
+import FormName from '~/Templates/components/FormName';
 
 export class MetadataTemplate extends Component {
   render() {
     const {connectDropTarget, isOver} = this.props;
 
     return connectDropTarget(
-      <div className="template-properties">
-        {(() => {
-          if (this.props.properties.length === 0) {
-            return <div className={'no-properties' + (isOver ? ' isOver' : '')}>Drag properties here to start</div>;
-          }
-        })()}
-        {this.props.properties.map((config, index) => {
-          return <MetadataProperty {...config} key={config.id} index={index}/>;
-        })}
+      <div>
+
+        <h1>
+          <FormName />
+        </h1>
+
+        <div className="template-properties">
+          {(() => {
+            if (this.props.properties.length === 0) {
+              return <div className={'no-properties' + (isOver ? ' isOver' : '')}>Drag properties here to start</div>;
+            }
+          })()}
+          {this.props.properties.map((config, index) => {
+            return <MetadataProperty {...config} key={config.id} index={index}/>;
+          })}
+        </div>
       </div>
     );
   }
