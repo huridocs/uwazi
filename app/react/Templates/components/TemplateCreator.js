@@ -25,18 +25,17 @@ export class TemplateCreator extends Component {
             <button onClick={() => this.props.saveTemplate(this.props.template)} className="btn btn-success save-template">
               <i className="fa fa-save"/> Save Template
             </button>
-            <h1>Template name <span className="edit">(Edit name)</span></h1>
             <MetadataTemplate />
           </div>
         </main>
         <aside className="col-sm-3">
           <h1>Construction blocks</h1>
           <ul className="field-options">
-            <li><PropertyOption label='Text' /></li>
-            <li><PropertyOption label='Checkbox' /></li>
-            <li><PropertyOption label='Select' /></li>
-            <li><PropertyOption label='List' /></li>
-            <li><PropertyOption label='Date' /></li>
+            <li><PropertyOption label='Text' type='text'/></li>
+            <li><PropertyOption label='Checkbox' type='checkbox' /></li>
+            <li><PropertyOption label='Select' type='select'/></li>
+            <li><PropertyOption label='List' type='list'/></li>
+            <li><PropertyOption label='Date' type='date'/></li>
           </ul>
         </aside>
       </div>

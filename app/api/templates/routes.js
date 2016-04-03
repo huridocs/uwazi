@@ -4,9 +4,8 @@ import {db_url} from '../config/database.js'
 export default app => {
 
   app.post('/api/templates', (req, res) => {
-
     req.body.type = 'template';
-    req.body.fields = req.body.fields || [];
+    req.body.properties = req.body.properties || [];
 
     request.post(db_url, req.body)
     .then((response) => {

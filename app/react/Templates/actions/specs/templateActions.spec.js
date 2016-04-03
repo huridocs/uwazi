@@ -1,20 +1,20 @@
-import * as actions from '~/Templates/actions/templateActions';
-import * as types from '~/Templates/actions/actionTypes';
-
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
+
 import {APIURL} from '~/config.js';
+import * as actions from '~/Templates/actions/templateActions';
+import * as notifications from '~/Notifications/actions/notificationsActions';
+import * as types from '~/Templates/actions/actionTypes';
+import * as notificationsTypes from '~/Notifications/actions/actionTypes';
+import {mockID} from '~/utils/uniqueID';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('templatesActions', () => {
   beforeEach(() => {
-    spyOn(Math, 'random').and.returnValue({
-      toString() {
-        return {
-          substr() {
-            return 'unique_id';
-          }
-        };
-      }
-    });
+    mockID();
   });
 
   describe('addProperty()', () => {
@@ -26,6 +26,13 @@ describe('templatesActions', () => {
     it('should return default config object and index if nothing passed', () => {
       let action = actions.addProperty();
       expect(action).toEqual({type: types.ADD_PROPERTY, config: {id: 'unique_id'}, index: 0});
+    });
+  });
+
+  describe('updateTemplate()', () => {
+    it('should return an UPDATE_TEMPLATE type action with template passed', () => {
+      let action = actions.updateTemplate({name: 'test'});
+      expect(action).toEqual({type: types.UPDATE_TEMPLATE, template: {name: 'test'}});
     });
   });
 
@@ -73,25 +80,30 @@ describe('templatesActions', () => {
   });
 
   describe('async actions', () => {
-    let dispatch;
     beforeEach(() => {
+      spyOn(notifications, 'notify');
       backend.restore();
       backend
       .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})});
-      dispatch = jasmine.createSpy('dispatch');
     });
 
     describe('saveTemplate', () => {
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
         let originalTemplateData = {name: 'my template', properties: [{id: 'a1b2', label: 'my property'}, {id: 'a1b3', label: 'my property'}]};
-        let expectedSaveData = {name: 'my template', properties: [{label: 'my property'}, {label: 'my property'}]};
-        actions.saveTemplate(originalTemplateData)(dispatch).then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok'}});
-          done();
-        });
 
-        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual(expectedSaveData);
-        expect(originalTemplateData.properties[0].id).toBe('a1b2');
+        const expectedActions = [
+          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok'}},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'info', id: 'unique_id'}}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.saveTemplate(originalTemplateData))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+          expect(originalTemplateData.properties[0].id).toBe('a1b2');
+        })
+        .then(done)
+        .catch(done.fail);
       });
     });
   });

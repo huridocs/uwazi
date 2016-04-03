@@ -6,9 +6,10 @@ import {events} from '../../utils/index';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import './scss/layout.scss';
+import './scss/alerts.scss';
 
 import Helmet from 'react-helmet';
-import Alerts from './Alerts.js';
+import Notifications from '~/Notifications';
 import Menu from './Menu.js';
 import {Link} from 'react-router';
 
@@ -80,7 +81,7 @@ class App extends Component {
             {name: 'description', content: 'Uwazi docs'}
           ]}
         />
-        <Alerts/>
+        <Notifications />
         <nav>
           <h1><Link to="/">Collection name</Link></h1>
           <button onClick={this.toggleMenu.bind(this)} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>

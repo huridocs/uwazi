@@ -5,6 +5,7 @@ import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
+import {shallow} from 'enzyme';
 import {reducer as formReducer} from 'redux-form';
 
 import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/Templates/components/MetadataTemplate';
@@ -18,7 +19,7 @@ function sourceTargetTestContext(Target, Source, actions) {
         const identity = x => x;
         let properties = [{label: 'childTarget', id: 'childId', inserting: true}];
         let targetProps = {properties: properties, connectDropTarget: identity};
-        let sourceProps = {label: 'source', index: 2, id: 'source', connectDragSource: identity};
+        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -84,12 +85,12 @@ describe('MetadataTemplate', () => {
 
     it('should add isOver className to the span when isOver', () => {
       let props = {properties: [], isOver: false, connectDropTarget: (x) => x};
-      let component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
-      TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
+      let component = shallow(<DumbComponent {...props} />);
+      expect(component.find('.no-properties').length).toBe(1);
 
       props = {properties: [], isOver: true, connectDropTarget: (x) => x};
-      component = TestUtils.renderIntoDocument(<DumbComponent {...props}/>);
-      TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties isOver');
+      component = shallow(<DumbComponent {...props} />);
+      expect(component.find('.no-properties.isOver').length).toBe(1);
     });
 
     describe('when has fields', () => {
@@ -127,7 +128,7 @@ describe('MetadataTemplate', () => {
         backend.simulateDrop();
 
         let lastIndex = 1;
-        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source'}, lastIndex);
+        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', type: 'type'}, lastIndex);
       });
     });
 

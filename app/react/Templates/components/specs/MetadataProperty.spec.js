@@ -25,7 +25,7 @@ function sourceTargetTestContext(Target, Source, actions) {
       render() {
         const identity = x => x;
         let targetProps = {label: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
-        let sourceProps = {label: 'source', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
+        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -119,7 +119,7 @@ describe('MetadataProperty', () => {
   describe('dragSource', () => {
     beforeEach(() => {
       let TestComponent = wrapInTestContext(dragSource);
-      component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
+      component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 1, id: 'id'});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });
@@ -128,7 +128,7 @@ describe('MetadataProperty', () => {
       it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         backend.simulateBeginDrag([option.getHandlerId()]);
-        expect(monitor.getItem()).toEqual({index: 1, label: 'test'});
+        expect(monitor.getItem()).toEqual({index: 1, label: 'test', type: 'type'});
       });
 
       it('should add "dragging" class name', () => {
@@ -172,7 +172,7 @@ describe('MetadataProperty', () => {
         delete monitor.getItem().index;
         backend.simulateHover([target.getHandlerId()]);
 
-        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', inserting: true}, 0);
+        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', type: 'type', inserting: true}, 0);
       });
     });
   });
