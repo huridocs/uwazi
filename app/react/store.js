@@ -9,10 +9,16 @@ const logger = createLogger();
 
 let data = isClient && window.__reduxData__ ? fromJSON(window.__reduxData__) : {};
 
+let store;
+
 export default (initialData = data) => {
-  return createStore(
+  store = createStore(
     reducer,
     initialData,
     compose(applyMiddleware(logger), applyMiddleware(thunk))
   );
+
+  return store;
 };
+
+export {store};
