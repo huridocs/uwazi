@@ -45,7 +45,6 @@ export class ThesauriForm extends Component {
 
 ThesauriForm.propTypes = {
   fields: PropTypes.object.isRequired,
-  thesauri: PropTypes.object.isRequired,
   saveThesauri: PropTypes.func,
   addThesauriValue: PropTypes.func,
   updateThesauri: PropTypes.func,
@@ -54,10 +53,9 @@ ThesauriForm.propTypes = {
 
 export function mapStateToProps(state) {
   let fields = ['name', 'values[].label', 'values[].id'];
-
   return {
     fields: fields,
-    thesauri: state.thesauri.toJS()
+    initialValues: state.thesauri.toJS()
   };
 }
 

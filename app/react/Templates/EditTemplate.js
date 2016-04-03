@@ -30,9 +30,5 @@ export default class EditTemplate extends RouteHandler {
 
 }
 
-EditTemplate.contextTypes = {
-  store: PropTypes.object.isRequired
-};
-
 //when all components are integrated with redux we can remove this
 EditTemplate.__redux = true;

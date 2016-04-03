@@ -57,7 +57,8 @@ RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
   getUser: PropTypes.func,
-  router: PropTypes.object
+  router: PropTypes.object,
+  store: PropTypes.object
 };
 
 RouteHandler.propTypes = {
