@@ -7,12 +7,12 @@ describe('Form', () => {
 
   let fields = [
     {
-      fieldType: 'input',
+      type: 'input',
       label: 'Input',
       name: 'input1'
     },
     {
-      fieldType: 'checkbox',
+      type: 'checkbox',
       label: 'Input 2',
       name: 'input2'
     }
