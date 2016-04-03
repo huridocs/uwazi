@@ -11,18 +11,4 @@ describe('thesauriReducer', () => {
       expect(newState).toEqual(Immutable.fromJS({name: '', values: []}));
     });
   });
-
-  function testState() {
-    return Immutable.fromJS({name: 'Thesauri name', values: [{label: '1'}]});
-  }
-
-  describe('ADD_THESAURI_VALUE', () => {
-    it('should add a new value to the values list', () => {
-      let newState = thesauriReducer(testState(), {type: types.ADD_THESAURI_VALUE});
-      let expected = Immutable.fromJS({name: 'Thesauri name', values: [{label: '1'}, {label: ''}]});
-
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
-    });
-  });
 });

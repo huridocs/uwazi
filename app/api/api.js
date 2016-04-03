@@ -14,7 +14,7 @@ export default app => {
   require('./references/routes.js')(app);
   require('./users/routes.js')(app);
   require('./templates/routes.js')(app);
+  require('./thesauris/routes.js')(app);
   require('./documents/routes.js')(app);
   require('./upload/routes.js')(app);
-
-}
+};

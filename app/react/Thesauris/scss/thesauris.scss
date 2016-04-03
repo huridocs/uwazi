@@ -1,0 +1,25 @@
+.thesauri {
+
+  &-buttons {
+    float: right;
+  }
+
+  &-name {
+    label {
+      font-weight: 700;
+      font-size: 20px;
+    }
+  }
+
+  &-values {
+    .form-control {
+      width: 90%;
+      margin-right: 20px;
+      display: inline-block;
+    }
+
+    .btn {
+      display: inline-block;
+    }
+  }
+}
