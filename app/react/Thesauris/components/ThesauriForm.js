@@ -52,7 +52,7 @@ ThesauriForm.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  let fields = ['name', 'values[].label', 'values[].id'];
+  let fields = ['name', 'values[].label', 'values[].id', '_id', '_rev'];
   return {
     fields: fields,
     initialValues: state.thesauri.toJS()

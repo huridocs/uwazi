@@ -16,7 +16,7 @@ describe('ThesauriForm', () => {
     });
 
     it('should map the fields', () => {
-      expect(mapStateToProps(state).fields).toEqual(['name', 'values[].label', 'values[].id']);
+      expect(mapStateToProps(state).fields).toEqual(['name', 'values[].label', 'values[].id', '_id', '_rev']);
     });
   });
 });
