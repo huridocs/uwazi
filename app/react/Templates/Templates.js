@@ -5,7 +5,9 @@ import {Link} from 'react-router';
 import Immutable from 'immutable';
 
 import {setTemplates, deleteTemplate} from '~/Templates/actions/templatesActions';
+import {setThesauris} from '~/Thesauris/actions/thesaurisActions';
 import templatesAPI from '~/Templates/TemplatesAPI';
+import thesaurisAPI from '~/Thesauris/ThesaurisAPI';
 import RouteHandler from '~/controllers/App/RouteHandler';
 
 import '~/Templates/scss/templates.scss';
@@ -13,14 +15,15 @@ import '~/Templates/scss/templates.scss';
 export class Templates extends RouteHandler {
 
   static requestState() {
-    return templatesAPI.get()
-    .then((templates) => {
-      return {templates: Immutable.fromJS(templates)};
+    return Promise.all([templatesAPI.get(), thesaurisAPI.get()])
+    .then((results) => {
+      return {templates: Immutable.fromJS(results[0]), thesauris: Immutable.fromJS(results[1])};
     });
   }
 
-  setReduxState({templates}) {
+  setReduxState({templates, thesauris}) {
     this.props.setTemplates(templates);
+    this.props.setThesauris(thesauris);
   }
 
   render() {
@@ -45,6 +48,13 @@ export class Templates extends RouteHandler {
               <div className="well thesauris">
                 <Link to="/thesauris/new" className="btn btn-success">New thesauri</Link>
                 <h1>Thesauris list</h1>
+                {this.props.thesauris.map((thesauri, index) => {
+                  return <div className="well" key={index}>
+                          {thesauri.name}
+                          <button  className="btn btn-danger thesauri-remove">Delete</button>
+                          <Link to={'/thesauris/edit/' + thesauri._id} className='btn btn-success'>Edit</Link>
+                         </div>;
+                })}
               </div>
             </div>
           </div>
@@ -62,11 +72,11 @@ Templates.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-  return {templates: state.templates.toJS()};
+  return {templates: state.templates.toJS(), thesauris: state.thesauris.toJS()};
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setTemplates, deleteTemplate}, dispatch);
+  return bindActionCreators({setTemplates, deleteTemplate, setThesauris}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Templates);

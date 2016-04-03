@@ -7,6 +7,7 @@ import templateUI from '~/Templates/reducers/uiReducer';
 import {reducer as notificationsReducer} from '~/Notifications';
 
 import thesauri from '~/Thesauris/reducers/thesauriReducer';
+import thesauris from '~/Thesauris/reducers/thesaurisReducer';
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -16,5 +17,6 @@ export default combineReducers({
     uiState: templateUI
   }),
   thesauri: thesauri,
+  thesauris,
   templates
 });

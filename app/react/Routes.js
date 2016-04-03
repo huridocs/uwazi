@@ -16,6 +16,7 @@ import EditTemplate from '~/Templates/EditTemplate';
 import NewTemplate from '~/Templates/NewTemplate';
 
 import EditThesauri from '~/Thesauris/EditThesauri';
+import NewThesauri from '~/Thesauris/NewThesauri';
 
 export default (
   <Route path='/' component={App}>
@@ -25,7 +26,8 @@ export default (
     <Route path='templates' component={Templates} />
     <Route path='templates/new' component={NewTemplate} />
     <Route path='templates/edit/:templateId' component={EditTemplate} />
-    <Route path='thesauris/new' component={EditThesauri} />
+    <Route path='thesauris/new' component={NewThesauri} />
+    <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
     <Route path='login' component={Login} />
     <Route path='document/:documentId' component={Viewer} />
     <Route path="*" component={NoMatch} />

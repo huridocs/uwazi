@@ -9,4 +9,12 @@ describe('thesaurisActions', () => {
       expect(action).toEqual({type: types.EDIT_THESAURI, thesauri});
     });
   });
+
+  describe('setThesauris', () => {
+    it('should return an SET_THESAURIS action ', () => {
+      let thesauris = [{name: 'Secret list of things', values: []}];
+      let action = actions.setThesauris(thesauris);
+      expect(action).toEqual({type: types.SET_THESAURIS, thesauris});
+    });
+  });
 });

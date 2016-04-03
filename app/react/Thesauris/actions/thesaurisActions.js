@@ -6,3 +6,10 @@ export function editThesauri(thesauri) {
     thesauri
   };
 }
+
+export function setThesauris(thesauris) {
+  return {
+    type: types.SET_THESAURIS,
+    thesauris
+  };
+}

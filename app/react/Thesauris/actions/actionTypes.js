@@ -2,3 +2,4 @@
 export const THESAURI_SAVED = 'THESAURI_SAVED';
 export const EDIT_THESAURI = 'EDIT_THESAURI';
 export const DELETE_THESAURI = 'EDIT_THESAURI';
+export const SET_THESAURIS = 'SET_THESAURIS';

@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as actions from '~/Thesauris/actions/thesaurisActions';
 
 import thesauriReducer from '~/Thesauris/reducers/thesauriReducer';
-import * as types from '~/Thesauris/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
 describe('thesauriReducer', () => {
