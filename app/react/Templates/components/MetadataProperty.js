@@ -54,7 +54,7 @@ const target = {
     if (typeof dragIndex === 'undefined') {
       let item = monitor.getItem();
       item.index = 0;
-      return props.addProperty({label: item.label, inserting: true}, item.index);
+      return props.addProperty({label: item.label, type: item.type, inserting: true}, item.index);
     }
 
     props.reorderProperty(dragIndex, hoverIndex);
@@ -70,7 +70,8 @@ const source = {
   beginDrag(props) {
     return {
       index: props.index,
-      label: props.label
+      label: props.label,
+      type: props.type
     };
   }
 };

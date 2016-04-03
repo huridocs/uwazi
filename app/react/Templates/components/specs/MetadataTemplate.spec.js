@@ -19,7 +19,7 @@ function sourceTargetTestContext(Target, Source, actions) {
         const identity = x => x;
         let properties = [{label: 'childTarget', id: 'childId', inserting: true}];
         let targetProps = {properties: properties, connectDropTarget: identity};
-        let sourceProps = {label: 'source', index: 2, id: 'source', connectDragSource: identity};
+        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -128,7 +128,7 @@ describe('MetadataTemplate', () => {
         backend.simulateDrop();
 
         let lastIndex = 1;
-        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source'}, lastIndex);
+        expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', type: 'type'}, lastIndex);
       });
     });
 

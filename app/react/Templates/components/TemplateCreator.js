@@ -31,11 +31,11 @@ export class TemplateCreator extends Component {
         <aside className="col-sm-3">
           <h1>Construction blocks</h1>
           <ul className="field-options">
-            <li><PropertyOption label='Text' /></li>
-            <li><PropertyOption label='Checkbox' /></li>
-            <li><PropertyOption label='Select' /></li>
-            <li><PropertyOption label='List' /></li>
-            <li><PropertyOption label='Date' /></li>
+            <li><PropertyOption label='Text' type='text'/></li>
+            <li><PropertyOption label='Checkbox' type='checkbox' /></li>
+            <li><PropertyOption label='Select' type='select'/></li>
+            <li><PropertyOption label='List' type='list'/></li>
+            <li><PropertyOption label='Date' type='date'/></li>
           </ul>
         </aside>
       </div>

@@ -26,7 +26,7 @@ PropertyOption.propTypes = {
 
 const optionSource = {
   beginDrag(props) {
-    return {label: props.label};
+    return {label: props.label, type: props.type};
   },
 
   endDrag(props, monitor) {

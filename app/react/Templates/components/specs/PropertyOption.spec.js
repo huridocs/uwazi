@@ -11,7 +11,6 @@ function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(DecoratedComponent);
 }
 
-
 describe('PropertyOption', () => {
   let backend;
   let monitor;
@@ -41,7 +40,7 @@ describe('PropertyOption', () => {
   describe('DragSource', () => {
     beforeEach(() => {
       TestComponent = wrapInTestContext(dragSourceOption);
-      component = renderComponent(TestComponent, {label: 'test'});
+      component = renderComponent(TestComponent, {label: 'test', type: 'optionType'});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });
@@ -50,7 +49,7 @@ describe('PropertyOption', () => {
       it('should return an object with name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSourceOption);
         backend.simulateBeginDrag([option.getHandlerId()]);
-        expect(monitor.getItem()).toEqual({label: 'test'});
+        expect(monitor.getItem()).toEqual({label: 'test', type: 'optionType'});
       });
     });
 

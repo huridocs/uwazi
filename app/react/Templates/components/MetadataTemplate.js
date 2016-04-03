@@ -55,7 +55,7 @@ const target = {
       return;
     }
 
-    props.addProperty({label: item.label}, props.properties.length);
+    props.addProperty({label: item.label, type: item.type}, props.properties.length);
     return {name: 'container'};
   }
 };
