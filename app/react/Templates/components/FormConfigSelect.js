@@ -20,7 +20,8 @@ export class FormConfigSelect extends Component {
         </div>
         <div className="form-group">
           <label>Content</label>
-          <select className="form-control" type="text" {...content}>
+          <select value="default" className="form-control" type="text" {...content}>
+            <option value="default" disabled>Select thesauri</option>
             {this.props.thesauri.map((thesauri) => {
               return <option key={thesauri._id} value={thesauri._id}>{thesauri.name}</option>;
             })}

@@ -33,9 +33,6 @@ describe('FormConfigInput', () => {
   it('should render thesauri as options in content select', () => {
     let options = component.find('select').find('option');
 
-    expect(options.first().text()).toBe('thesauri1');
-    expect(options.first().props().value).toBe(1);
-
     expect(options.last().text()).toBe('thesauri2');
     expect(options.last().props().value).toBe(2);
   });
