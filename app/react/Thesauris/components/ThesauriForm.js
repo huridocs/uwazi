@@ -35,7 +35,7 @@ export class ThesauriForm extends Component {
               })}
               </div>
             </form>
-            <button onClick={fields.values.addField} className="btn btn-success"><i className="fa fa-plus"></i>Add value</button>
+            <button onClick={() => fields.values.addField()} className="btn btn-success"><i className="fa fa-plus"></i>Add value</button>
           </div>
         </main>
       </div>
