@@ -1,26 +1,38 @@
+import configureMockStore from 'redux-mock-store';
 import backend from 'fetch-mock';
 import {APIURL} from '~/config.js';
+import {mockID} from '~/utils/uniqueID';
+import thunk from 'redux-thunk';
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 import * as actions from '~/Thesauris/actions/thesauriActions';
 import * as types from '~/Thesauris/actions/actionTypes';
+import * as notificationsTypes from '~/Notifications/actions/actionTypes';
 
 describe('thesaurisActions', () => {
-  let dispatch;
   beforeEach(() => {
+    mockID();
     backend.restore();
     backend
     .mock(APIURL + 'thesauris', 'post', {body: JSON.stringify({testBackendResult: 'ok'})});
-    dispatch = jasmine.createSpy('dispatch');
   });
 
   describe('saveThesauri', () => {
-    it('should save the thesauri and dispatch a thesauriSaved action', (done) => {
+    it('should save the thesauri and dispatch a thesauriSaved action and a notify', (done) => {
       let thesauri = {name: 'Secret list of things', values: []};
-      actions.saveThesauri(thesauri)(dispatch)
+      const expectedActions = [
+        {type: types.THESAURI_SAVED},
+        {type: notificationsTypes.NOTIFY, notification: {message: 'Thesauri saved', type: 'info', id: 'unique_id'}}
+      ];
+      const store = mockStore({});
+
+      store.dispatch(actions.saveThesauri(thesauri))
       .then(() => {
-        expect(dispatch).toHaveBeenCalledWith({type: types.THESAURI_SAVED});
-        done();
-      });
+        expect(store.getActions()).toEqual(expectedActions);
+      })
+      .then(done)
+      .catch(done.fail);
 
       expect(JSON.parse(backend.lastOptions(APIURL + 'thesauris').body)).toEqual(thesauri);
     });
