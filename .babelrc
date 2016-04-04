@@ -1,4 +1,12 @@
 {
   "presets": ["es2015", "react"],
-  "plugins": ["transform-class-properties", "add-module-exports"]
+  "plugins": [
+	["babel-plugin-module-alias", [
+      { "src": "./app/react", "expose": "app" },
+      { "src": "./app/api", "expose": "api" },
+      { "src": "./app/shared", "expose": "shared" }
+    ]],
+    "transform-class-properties",
+    "add-module-exports"
+  ]
 }
