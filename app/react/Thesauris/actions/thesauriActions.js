@@ -8,3 +8,7 @@ export function saveThesauri(thesauri) {
     });
   };
 }
+
+export function resetThesauri() {
+  return {type: types.RESET_THESAURI};
+}

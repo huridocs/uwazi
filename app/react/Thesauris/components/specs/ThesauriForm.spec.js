@@ -1,8 +1,28 @@
+import React from 'react';
+import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {mapStateToProps} from '~/Thesauris/components/ThesauriForm.js';
+import {mapStateToProps, ThesauriForm} from '~/Thesauris/components/ThesauriForm.js';
 
 describe('ThesauriForm', () => {
+  let props;
+  let component;
+  beforeEach(() => {
+    props = {
+      fields: {name: {}, values: []},
+      resetThesauri: jasmine.createSpy('resetThesauri')
+    };
+
+    component = shallow(<ThesauriForm {...props}/>);
+  });
+
+  describe('when unmount', () => {
+    it('shoould call resetThesauri', () => {
+      component.unmount();
+      expect(props.resetThesauri).toHaveBeenCalled();
+    });
+  });
+
   describe('mapStateToProps', () => {
     let state;
     beforeEach(() => {

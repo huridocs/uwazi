@@ -3,9 +3,13 @@ import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 import {Link} from 'react-router';
 
-import {addThesauriValue, saveThesauri, updateThesauri} from '~/Thesauris/actions/thesauriActions';
+import {saveThesauri, resetThesauri} from '~/Thesauris/actions/thesauriActions';
 
 export class ThesauriForm extends Component {
+
+  componentWillUnmount() {
+    this.props.resetThesauri();
+  }
 
   render() {
     const {fields} = this.props;
@@ -46,8 +50,7 @@ export class ThesauriForm extends Component {
 ThesauriForm.propTypes = {
   fields: PropTypes.object.isRequired,
   saveThesauri: PropTypes.func,
-  addThesauriValue: PropTypes.func,
-  updateThesauri: PropTypes.func,
+  resetThesauri: PropTypes.func,
   values: PropTypes.object
 };
 
@@ -60,7 +63,7 @@ export function mapStateToProps(state) {
 }
 
 function bindActions(dispatch) {
-  return bindActionCreators({updateThesauri, saveThesauri, addThesauriValue}, dispatch);
+  return bindActionCreators({saveThesauri, resetThesauri}, dispatch);
 }
 
 let form = reduxForm({form: 'thesauri'}, mapStateToProps, bindActions)(ThesauriForm);

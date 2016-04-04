@@ -9,5 +9,9 @@ export default function fields(state = initialState, action = {}) {
     return Immutable.fromJS(action.thesauri);
   }
 
+  if (action.type === types.RESET_THESAURI) {
+    return initialState;
+  }
+
   return state;
 }

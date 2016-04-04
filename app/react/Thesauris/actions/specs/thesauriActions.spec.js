@@ -25,4 +25,11 @@ describe('thesaurisActions', () => {
       expect(JSON.parse(backend.lastOptions(APIURL + 'thesauris').body)).toEqual(thesauri);
     });
   });
+
+  describe('resetThesauri', () => {
+    it('should return a RESET_THESAURI action', () => {
+      let action = actions.resetThesauri();
+      expect(action).toEqual({type: types.RESET_THESAURI});
+    });
+  });
 });
