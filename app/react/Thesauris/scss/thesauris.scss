@@ -2,12 +2,16 @@
 
   &-buttons {
     float: right;
+    .btn {
+      margin-left: 10px;
+    }
   }
 
   &-name {
     label {
       font-weight: 700;
       font-size: 20px;
+      margin-top: 10px;
     }
   }
 

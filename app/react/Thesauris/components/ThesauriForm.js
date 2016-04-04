@@ -19,10 +19,10 @@ export class ThesauriForm extends Component {
         <main className="col-sm-12">
           <div className="well thesauri">
             <div className="thesauri-buttons">
-              <Link to="/templates" className="btn btn-default">Cancel</Link>
               <button onClick={() => this.props.saveThesauri(this.props.values)} className="btn btn-success save-template">
                 <i className="fa fa-save"/> Save Thesauri
               </button>
+              <Link to="/templates" className="btn btn-default">Cancel</Link>
             </div>
             <form className="">
               <div className="form-group thesauri-name">
