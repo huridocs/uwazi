@@ -12,7 +12,7 @@ export class ThesauriForm extends Component {
   }
 
   render() {
-    const {fields, handleSubmit, submitFailed, } = this.props;
+    const {fields, handleSubmit, submitFailed} = this.props;
 
     return (
       <div className="row thesauri">
@@ -52,7 +52,8 @@ ThesauriForm.propTypes = {
   saveThesauri: PropTypes.func,
   resetThesauri: PropTypes.func,
   values: PropTypes.object,
-  handleSubmit: PropTypes.func
+  handleSubmit: PropTypes.func,
+  submitFailed: PropTypes.bool
 };
 
 const validate = (values) => {
