@@ -9,5 +9,9 @@ export default function fields(state = initialState, action = {}) {
     return Immutable.fromJS(action.thesauris);
   }
 
+  if (action.type === types.THESAURI_DELETED) {
+    return state.filter((thesauri) => thesauri.get('_id') !== action.id);
+  }
+
   return state;
 }

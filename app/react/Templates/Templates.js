@@ -5,7 +5,7 @@ import {Link} from 'react-router';
 import Immutable from 'immutable';
 
 import {setTemplates, deleteTemplate} from '~/Templates/actions/templatesActions';
-import {setThesauris} from '~/Thesauris/actions/thesaurisActions';
+import {setThesauris, deleteThesauri} from '~/Thesauris/actions/thesaurisActions';
 import templatesAPI from '~/Templates/TemplatesAPI';
 import thesaurisAPI from '~/Thesauris/ThesaurisAPI';
 import RouteHandler from '~/controllers/App/RouteHandler';
@@ -51,7 +51,7 @@ export class Templates extends RouteHandler {
                 {this.props.thesauris.map((thesauri, index) => {
                   return <div className="well" key={index}>
                           {thesauri.name}
-                          <button  className="btn btn-danger thesauri-remove">Delete</button>
+                          <button onClick={() => this.props.deleteThesauri(thesauri)} className="btn btn-danger thesauri-remove">Delete</button>
                           <Link to={'/thesauris/edit/' + thesauri._id} className='btn btn-success'>Edit</Link>
                          </div>;
                 })}
@@ -76,7 +76,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setTemplates, deleteTemplate, setThesauris}, dispatch);
+  return bindActionCreators({setTemplates, deleteTemplate, setThesauris, deleteThesauri}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Templates);
