@@ -52,7 +52,7 @@ class Uploads extends RouteHandler {
   }
 
   static emptyState() {
-    return {documents: [], templates: [], template: {fields: []}, showForm: false};
+    return {documents: [], templates: [], template: {properties: []}, showForm: false};
   }
 
   static requestState(params = {}, api) {
@@ -69,25 +69,25 @@ class Uploads extends RouteHandler {
 
   templateChanged() {
     let foundTemplate = this.state.templates.find((template) => {
-      return template.id === this.templateField.value();
+      return template._id === this.templateField.value();
     });
 
-    foundTemplate.fields = foundTemplate.fields || [];
+    foundTemplate.properties = foundTemplate.properties || [];
 
-    foundTemplate.value.fields = foundTemplate.value.fields || [];
-    this.setState({template: foundTemplate.value});
+    foundTemplate.properties = foundTemplate.properties || [];
+    this.setState({template: foundTemplate});
   }
 
   editDocument(document) {
     if (!document.value.template) {
-      document.value.template = this.state.templates[0].id;
+      document.value.template = this.state.templates[0]._id;
     }
 
     let foundTemplate = this.state.templates.find((template) => {
-      return template.id === document.value.template;
+      return template._id === document.value.template;
     });
 
-    this.setState({documentBeingEdited: document, template: foundTemplate.value});
+    this.setState({documentBeingEdited: document, template: foundTemplate});
   }
 
   deleteDocument(doc) {
@@ -140,7 +140,7 @@ class Uploads extends RouteHandler {
 
   render() {
     let options = this.state.templates.map((template) => {
-      return {value: template.id, label: template.value.name};
+      return {value: template._id, label: template.name};
     });
 
     let listClass = 'col-xs-12 col-sm-7 col-md-7 panels-layout__panel no-padding';
@@ -195,7 +195,7 @@ class Uploads extends RouteHandler {
                       options={options}
                       onChange={this.templateChanged.bind(this)}
                       />
-                      <Form fields={this.state.template.fields} values={this.state.documentBeingEdited.value.metadata}
+                      <Form fields={this.state.template.properties} values={this.state.documentBeingEdited.value.metadata}
                       ref={(ref) => this.form = ref }
                       />
                       &nbsp;

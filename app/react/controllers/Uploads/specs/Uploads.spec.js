@@ -9,7 +9,7 @@ import MockProvider from '../../App/specs/MockProvider';
 
 describe('UploadsController', () => {
   let documents = [{key: 'secret documents', value: {}}, {key: 'real batman id', value: {}}];
-  let templates = [{value: {name: 'batarang', fields: []}}, {value: {name: 'batmovil'}}];
+  let templates = [{name: 'batarang', properties: []}, {name: 'batmovil'}];
   let component;
   let router = {};
   let user = {};
@@ -95,7 +95,7 @@ describe('UploadsController', () => {
     describe('editDocument()', () => {
       it('should set on state the document being edited', () => {
         component.state.templates = [
-          {id: '1', value: {name: 'template1', fields: []}}, {id: '2', value: {name: 'template2', fields: []}}
+          {_id: '1', name: 'template1', properties: []}, {_id: '2', name: 'template2', properties: []}
         ];
         component.editDocument({value: {id: 1}});
         expect(component.state.documentBeingEdited).toEqual({value: {id: 1, template: '1'}});
@@ -103,19 +103,19 @@ describe('UploadsController', () => {
 
       it('should set on state the template document have', () => {
         component.state.templates = [
-          {id: '1', value: {name: 'template1', fields: []}}, {id: '2', value: {name: 'template2', fields: []}}
+          {_id: '1', name: 'template1', properties: []}, {_id: '2', name: 'template2', properties: []}
         ];
         component.editDocument({value: {id: 1, template: '2'}});
-        expect(component.state.template).toEqual({name: 'template2', fields: []});
+        expect(component.state.template).toEqual({_id: '2', name: 'template2', properties: []});
       });
 
       describe('when document does not have a template', () => {
         it('should set the first template as the default', () => {
           component.state.templates = [
-            {id: '1', value: {name: 'template1', fields: []}}, {id: '2', value: {name: 'template2', fields: []}}
+            {_id: '1', name: 'template1', properties: []}, {_id: '2', name: 'template2', properties: []}
           ];
           component.editDocument({value: {id: 1}});
-          expect(component.state.template).toEqual({name: 'template1', fields: []});
+          expect(component.state.template).toEqual({_id: '1', name: 'template1', properties: []});
           expect(component.state.documentBeingEdited.value.template).toBe('1');
         });
       });
