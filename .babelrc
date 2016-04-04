@@ -3,8 +3,7 @@
   "plugins": [
 	["babel-plugin-module-alias", [
       { "src": "./app/react", "expose": "app" },
-      { "src": "./app/api", "expose": "api" },
-      { "src": "./app/shared", "expose": "shared" }
+      { "src": "./app/api", "expose": "api" }
     ]],
     "transform-class-properties",
     "add-module-exports"
