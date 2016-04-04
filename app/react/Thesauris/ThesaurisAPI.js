@@ -13,15 +13,15 @@ export default {
     });
   },
 
-  save(template) {
-    return api.post('thesauris', template)
+  save(thesauri) {
+    return api.post('thesauris', thesauri)
     .then((response) => {
       return response.json;
     });
   },
 
-  delete(template) {
-    return api.delete('thesauris', template)
+  delete(thesauri) {
+    return api.delete('thesauris', thesauri)
     .then((response) => {
       return response.json;
     });

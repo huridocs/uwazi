@@ -1,3 +1,6 @@
+import backend from 'fetch-mock';
+import {APIURL} from '~/config.js';
+
 import * as actions from '~/Thesauris/actions/thesaurisActions';
 import * as types from '~/Thesauris/actions/actionTypes';
 
@@ -15,6 +18,30 @@ describe('thesaurisActions', () => {
       let thesauris = [{name: 'Secret list of things', values: []}];
       let action = actions.setThesauris(thesauris);
       expect(action).toEqual({type: types.SET_THESAURIS, thesauris});
+    });
+  });
+
+  describe('async action', () => {
+    let dispatch;
+
+    beforeEach(() => {
+      backend.restore();
+      backend
+      .mock(APIURL + 'thesauris', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
+      dispatch = jasmine.createSpy('dispatch');
+    });
+
+    describe('deleteThesauri', () => {
+      it('should delete the thesauri and dispatch a THESAURI_DELETED action with the id', (done) => {
+        let thesauri = {_id: 'thesauriId', name: 'Secret list of things', values: []};
+        actions.deleteThesauri(thesauri)(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: types.THESAURI_DELETED, id: 'thesauriId'});
+          done();
+        });
+
+        expect(JSON.parse(backend.lastOptions(APIURL + 'thesauris').body)).toEqual(thesauri);
+      });
     });
   });
 });

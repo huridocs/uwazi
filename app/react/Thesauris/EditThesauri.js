@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 
 import RouteHandler from '~/controllers/App/RouteHandler';
 import ThesauriForm from '~/Thesauris/components/ThesauriForm';
@@ -11,12 +12,12 @@ export default class EditThesauri extends RouteHandler {
   static requestState({thesauriId}) {
     return api.get(thesauriId)
     .then((thesauris) => {
-      return thesauris[0];
+      return {thesauri: Immutable.fromJS(thesauris[0])};
     });
   }
 
-  setReduxState(thesauri) {
-    this.context.store.dispatch(editThesauri(thesauri));
+  setReduxState(state) {
+    this.context.store.dispatch(editThesauri(state.thesauri));
   }
 
   render() {
