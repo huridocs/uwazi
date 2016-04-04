@@ -10,7 +10,8 @@ describe('ThesauriForm', () => {
   beforeEach(() => {
     props = {
       fields: {name: {}, values: []},
-      resetThesauri: jasmine.createSpy('resetThesauri')
+      resetThesauri: jasmine.createSpy('resetThesauri'),
+      handleSubmit: jasmine.createSpy('handleSubmit')
     };
 
     component = shallow(<ThesauriForm {...props}/>);
@@ -37,6 +38,13 @@ describe('ThesauriForm', () => {
 
     it('should map the fields', () => {
       expect(mapStateToProps(state).fields).toEqual(['name', 'values[].label', 'values[].id', '_id', '_rev']);
+    });
+
+    describe('validation', () => {
+      it('should add an error if the template has no name', () => {
+        let errors = mapStateToProps(state).validate({name: '', values: []});
+        expect(errors.name).toBe('Required');
+      });
     });
   });
 });

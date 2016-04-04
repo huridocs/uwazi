@@ -12,20 +12,20 @@ export class ThesauriForm extends Component {
   }
 
   render() {
-    const {fields} = this.props;
+    const {fields, handleSubmit, submitFailed, } = this.props;
 
     return (
       <div className="row thesauri">
         <main className="col-sm-12">
           <div className="well thesauri">
-            <div className="thesauri-buttons">
-              <button onClick={() => this.props.saveThesauri(this.props.values)} className="btn btn-success save-template">
-                <i className="fa fa-save"/> Save Thesauri
-              </button>
-              <Link to="/templates" className="btn btn-default">Cancel</Link>
-            </div>
-            <form className="">
-              <div className="form-group thesauri-name">
+            <form onSubmit={handleSubmit(this.props.saveThesauri)} >
+              <div className="thesauri-buttons">
+                <button className="btn btn-success save-template">
+                  <i className="fa fa-save"/> Save Thesauri
+                </button>
+                <Link to="/templates" className="btn btn-default">Cancel</Link>
+              </div>
+              <div className={'form-group thesauri-name' + (submitFailed && fields.name.invalid ? ' has-error' : '')}>
                 <label htmlFor="thesauriName" className="control-label">Thesauri name</label>
                 <input id="thesauriName" className="form-control" type="text" {...fields.name}/>
               </div>
@@ -51,14 +51,27 @@ ThesauriForm.propTypes = {
   fields: PropTypes.object.isRequired,
   saveThesauri: PropTypes.func,
   resetThesauri: PropTypes.func,
-  values: PropTypes.object
+  values: PropTypes.object,
+  handleSubmit: PropTypes.func
+};
+
+const validate = (values) => {
+  let errors = {};
+
+  if (!values.name) {
+    errors.name = 'Required';
+  }
+
+  return errors;
 };
 
 export function mapStateToProps(state) {
   let fields = ['name', 'values[].label', 'values[].id', '_id', '_rev'];
   return {
     fields: fields,
-    initialValues: state.thesauri.toJS()
+    initialValues: state.thesauri.toJS(),
+    validate,
+    onSubmit: saveThesauri
   };
 }
 
