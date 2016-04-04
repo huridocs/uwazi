@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
 
-import * as types from '~/Templates/actions/actionTypes';
-import {notify} from '~/Notifications';
-import api from '~/Templates/TemplatesAPI';
-import ID from '~/utils/uniqueID';
+import * as types from 'app/Templates/actions/actionTypes';
+import {notify} from 'app/Notifications';
+import api from 'app/Templates/TemplatesAPI';
+import ID from 'app/utils/uniqueID';
 
 export function resetTemplate() {
   return {

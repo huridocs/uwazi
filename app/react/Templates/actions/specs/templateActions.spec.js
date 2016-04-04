@@ -2,12 +2,12 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 
-import {APIURL} from '~/config.js';
-import * as actions from '~/Templates/actions/templateActions';
-import * as notifications from '~/Notifications/actions/notificationsActions';
-import * as types from '~/Templates/actions/actionTypes';
-import * as notificationsTypes from '~/Notifications/actions/actionTypes';
-import {mockID} from '~/utils/uniqueID';
+import {APIURL} from 'app/config.js';
+import * as actions from 'app/Templates/actions/templateActions';
+import * as notifications from 'app/Notifications/actions/notificationsActions';
+import * as types from 'app/Templates/actions/actionTypes';
+import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import {mockID} from 'app/utils/uniqueID';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

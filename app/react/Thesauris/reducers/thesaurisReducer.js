@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as types from '~/Thesauris/actions/actionTypes';
+import * as types from 'app/Thesauris/actions/actionTypes';
 
 const initialState = Immutable.fromJS([]);
 

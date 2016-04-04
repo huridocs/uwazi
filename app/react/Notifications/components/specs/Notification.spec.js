@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {Notification} from '~/Notifications/components/Notification';
+import {Notification} from 'app/Notifications/components/Notification';
 
 describe('Notification', () => {
   let component;

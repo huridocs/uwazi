@@ -1,5 +1,5 @@
-import templates from '~/Templates/TemplatesAPI';
-import {APIURL} from '~/config.js';
+import templates from 'app/Templates/TemplatesAPI';
+import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('TemplatesAPI', () => {

@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import notificationsReducer from '~/Notifications/reducers/notificationsReducer';
-import * as types from '~/Notifications/actions/actionTypes';
+import notificationsReducer from 'app/Notifications/reducers/notificationsReducer';
+import * as types from 'app/Notifications/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
 describe('templateReducer', () => {

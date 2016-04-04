@@ -4,13 +4,13 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import Immutable from 'immutable';
 
-import {setTemplates, deleteTemplate} from '~/Templates/actions/templatesActions';
-import {setThesauris, deleteThesauri} from '~/Thesauris/actions/thesaurisActions';
-import templatesAPI from '~/Templates/TemplatesAPI';
-import thesaurisAPI from '~/Thesauris/ThesaurisAPI';
-import RouteHandler from '~/controllers/App/RouteHandler';
+import {setTemplates, deleteTemplate} from 'app/Templates/actions/templatesActions';
+import {setThesauris, deleteThesauri} from 'app/Thesauris/actions/thesaurisActions';
+import templatesAPI from 'app/Templates/TemplatesAPI';
+import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import RouteHandler from 'app/controllers/App/RouteHandler';
 
-import '~/Templates/scss/templates.scss';
+import 'app/Templates/scss/templates.scss';
 
 export class Templates extends RouteHandler {
 

@@ -3,11 +3,11 @@ import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {APIURL} from '~/config.js';
-import EditTemplate from '~/Templates/EditTemplate';
-import TemplateCreator from '~/Templates/components/TemplateCreator';
-import RouteHandler from '~/controllers/App/RouteHandler';
-import {mockID} from '~/utils/uniqueID';
+import {APIURL} from 'app/config.js';
+import EditTemplate from 'app/Templates/EditTemplate';
+import TemplateCreator from 'app/Templates/components/TemplateCreator';
+import RouteHandler from 'app/controllers/App/RouteHandler';
+import {mockID} from 'app/utils/uniqueID';
 
 describe('EditTemplate', () => {
   let template = {id: '1', properties: [{label: 'label1'}, {label: 'label2'}]};

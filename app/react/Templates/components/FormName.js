@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 
-import {updateTemplate} from '~/Templates/actions/templateActions';
+import {updateTemplate} from 'app/Templates/actions/templateActions';
 
 export class FormName extends Component {
   render() {

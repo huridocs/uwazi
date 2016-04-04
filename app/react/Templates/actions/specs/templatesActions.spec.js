@@ -1,8 +1,8 @@
 import backend from 'fetch-mock';
-import {APIURL} from '~/config.js';
+import {APIURL} from 'app/config.js';
 
-import * as actions from '~/Templates/actions/templatesActions';
-import * as types from '~/Templates/actions/actionTypes';
+import * as actions from 'app/Templates/actions/templatesActions';
+import * as types from 'app/Templates/actions/actionTypes';
 
 describe('templatesActions', () => {
   describe('setTemplates', () => {

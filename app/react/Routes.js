@@ -11,12 +11,12 @@ import Library from './controllers/Library/Library';
 import Viewer from './controllers/Viewer/Viewer';
 import Uploads from './controllers/Uploads/Uploads';
 
-import Templates from '~/Templates/Templates';
-import EditTemplate from '~/Templates/EditTemplate';
-import NewTemplate from '~/Templates/NewTemplate';
+import Templates from 'app/Templates/Templates';
+import EditTemplate from 'app/Templates/EditTemplate';
+import NewTemplate from 'app/Templates/NewTemplate';
 
-import EditThesauri from '~/Thesauris/EditThesauri';
-import NewThesauri from '~/Thesauris/NewThesauri';
+import EditThesauri from 'app/Thesauris/EditThesauri';
+import NewThesauri from 'app/Thesauris/NewThesauri';
 
 export default (
   <Route path='/' component={App}>

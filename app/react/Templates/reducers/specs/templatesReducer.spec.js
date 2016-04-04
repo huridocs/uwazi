@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import reducer from '~/Templates/reducers/templatesReducer';
-import * as types from '~/Templates/actions/actionTypes';
+import reducer from 'app/Templates/reducers/templatesReducer';
+import * as types from 'app/Templates/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
 describe('fieldsReducer', () => {

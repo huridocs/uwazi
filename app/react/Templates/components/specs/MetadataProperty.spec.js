@@ -8,9 +8,9 @@ import {reducer as formReducer} from 'redux-form';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
-import MetadataProperty, {MetadataProperty as DumbComponent, dragSource, dropTarget} from '~/Templates/components/MetadataProperty';
-import FormConfigInput from '~/Templates/components/FormConfigInput';
-import FormConfigSelect from '~/Templates/components/FormConfigSelect';
+import MetadataProperty, {MetadataProperty as DumbComponent, dragSource, dropTarget} from 'app/Templates/components/MetadataProperty';
+import FormConfigInput from 'app/Templates/components/FormConfigInput';
+import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(

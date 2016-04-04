@@ -9,7 +9,7 @@ import './scss/layout.scss';
 import './scss/alerts.scss';
 
 import Helmet from 'react-helmet';
-import Notifications from '~/Notifications';
+import Notifications from 'app/Notifications';
 import Menu from './Menu.js';
 import {Link} from 'react-router';
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 
-import RouteHandler from '~/controllers/App/RouteHandler';
-import ThesauriForm from '~/Thesauris/components/ThesauriForm';
-import {editThesauri} from '~/Thesauris/actions/thesaurisActions';
-import api from '~/Thesauris/ThesaurisAPI';
-import '~/Thesauris/scss/thesauris.scss';
+import RouteHandler from 'app/controllers/App/RouteHandler';
+import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
+import {editThesauri} from 'app/Thesauris/actions/thesaurisActions';
+import api from 'app/Thesauris/ThesaurisAPI';
+import 'app/Thesauris/scss/thesauris.scss';
 
 export default class EditThesauri extends RouteHandler {
 

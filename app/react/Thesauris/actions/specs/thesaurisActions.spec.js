@@ -1,8 +1,8 @@
 import backend from 'fetch-mock';
-import {APIURL} from '~/config.js';
+import {APIURL} from 'app/config.js';
 
-import * as actions from '~/Thesauris/actions/thesaurisActions';
-import * as types from '~/Thesauris/actions/actionTypes';
+import * as actions from 'app/Thesauris/actions/thesaurisActions';
+import * as types from 'app/Thesauris/actions/actionTypes';
 
 describe('thesaurisActions', () => {
   describe('editThesauri', () => {

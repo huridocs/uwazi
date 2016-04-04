@@ -2,7 +2,7 @@ import {applyMiddleware, createStore, compose} from 'redux';
 import reducer from './reducer';
 // import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
-import {isClient} from '~/utils';
+import {isClient} from 'app/utils';
 import {fromJSON} from 'transit-immutable-js';
 
 // const logger = createLogger();

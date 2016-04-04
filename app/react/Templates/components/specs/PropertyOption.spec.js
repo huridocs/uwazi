@@ -5,7 +5,7 @@ import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 
-import PropertyOption, {dragSource as dragSourceOption} from '~/Templates/components/PropertyOption';
+import PropertyOption, {dragSource as dragSourceOption} from 'app/Templates/components/PropertyOption';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(DecoratedComponent);

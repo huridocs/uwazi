@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as actions from '~/Templates/actions/actionTypes';
+import * as actions from 'app/Templates/actions/actionTypes';
 
 const initialState = Immutable.fromJS({thesauri: []});
 

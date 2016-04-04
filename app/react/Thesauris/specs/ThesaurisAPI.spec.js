@@ -1,5 +1,5 @@
-import thesaurisAPI from '~/Thesauris/ThesaurisAPI';
-import {APIURL} from '~/config.js';
+import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('TemplatesAPI', () => {

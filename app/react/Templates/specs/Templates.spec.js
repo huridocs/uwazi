@@ -3,8 +3,8 @@ import Immutable from 'immutable';
 import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
 
-import {APIURL} from '~/config.js';
-import {Templates} from '~/Templates/Templates';
+import {APIURL} from 'app/config.js';
+import {Templates} from 'app/Templates/Templates';
 
 import backend from 'fetch-mock';
 

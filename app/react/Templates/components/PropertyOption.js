@@ -3,7 +3,7 @@ import {DragSource} from 'react-dnd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {removeProperty} from '~/Templates/actions/templateActions';
+import {removeProperty} from 'app/Templates/actions/templateActions';
 
 export class PropertyOption extends Component {
   render() {

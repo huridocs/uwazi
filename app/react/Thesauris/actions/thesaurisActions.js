@@ -1,5 +1,5 @@
-import * as types from '~/Thesauris/actions/actionTypes';
-import api from '~/Thesauris/ThesaurisAPI';
+import * as types from 'app/Thesauris/actions/actionTypes';
+import api from 'app/Thesauris/ThesaurisAPI';
 
 export function editThesauri(thesauri) {
   return {

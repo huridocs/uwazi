@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 
-import {updateProperty} from '~/Templates/actions/templateActions';
+import {updateProperty} from 'app/Templates/actions/templateActions';
 
 export class FormConfigInput extends Component {
   render() {

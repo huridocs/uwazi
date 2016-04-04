@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {FormName, mapStateToProps} from '~/Templates/components/FormName';
+import {FormName, mapStateToProps} from 'app/Templates/components/FormName';
 
 describe('FormName', () => {
   let component;

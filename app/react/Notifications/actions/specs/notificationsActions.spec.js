@@ -1,8 +1,8 @@
 import sinon from 'sinon';
 
-import {mockID} from '~/utils/uniqueID';
-import * as actions from '~/Notifications/actions/notificationsActions';
-import * as types from '~/Notifications/actions/actionTypes';
+import {mockID} from 'app/utils/uniqueID';
+import * as actions from 'app/Notifications/actions/notificationsActions';
+import * as types from 'app/Notifications/actions/actionTypes';
 
 describe('notificationsActions', () => {
   describe('async actions', () => {

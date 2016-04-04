@@ -3,7 +3,7 @@ import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 import {Link} from 'react-router';
 
-import {saveThesauri, resetThesauri} from '~/Thesauris/actions/thesauriActions';
+import {saveThesauri, resetThesauri} from 'app/Thesauris/actions/thesauriActions';
 
 export class ThesauriForm extends Component {
 

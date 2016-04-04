@@ -1,6 +1,6 @@
-import * as types from '~/Thesauris/actions/actionTypes';
-import api from '~/Thesauris/ThesaurisAPI';
-import * as notifications from '~/Notifications/actions/notificationsActions';
+import * as types from 'app/Thesauris/actions/actionTypes';
+import api from 'app/Thesauris/ThesaurisAPI';
+import * as notifications from 'app/Notifications/actions/notificationsActions';
 
 
 export function saveThesauri(thesauri) {

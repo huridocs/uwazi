@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {FormConfigSelect, mapStateToProps} from '~/Templates/components/FormConfigSelect';
+import {FormConfigSelect, mapStateToProps} from 'app/Templates/components/FormConfigSelect';
 
 describe('FormConfigInput', () => {
   let component;

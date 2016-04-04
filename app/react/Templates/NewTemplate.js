@@ -1,10 +1,10 @@
 import React, {PropTypes} from 'react';
 import Immutable from 'immutable';
 
-import thesaurisAPI from '~/Thesauris/ThesaurisAPI';
-import {setThesauri} from '~/Templates/actions/uiActions';
-import TemplateCreator from '~/Templates/components/TemplateCreator';
-import RouteHandler from '~/controllers/App/RouteHandler';
+import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import {setThesauri} from 'app/Templates/actions/uiActions';
+import TemplateCreator from 'app/Templates/components/TemplateCreator';
+import RouteHandler from 'app/controllers/App/RouteHandler';
 
 export default class NewTemplate extends RouteHandler {
 

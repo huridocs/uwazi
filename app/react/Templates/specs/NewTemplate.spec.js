@@ -3,10 +3,10 @@ import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 import backend from 'fetch-mock';
 
-import {APIURL} from '~/config.js';
-import NewTemplate from '~/Templates/NewTemplate';
-import TemplateCreator from '~/Templates/components/TemplateCreator';
-// import RouteHandler from '~/controllers/App/RouteHandler';
+import {APIURL} from 'app/config.js';
+import NewTemplate from 'app/Templates/NewTemplate';
+import TemplateCreator from 'app/Templates/components/TemplateCreator';
+// import RouteHandler from 'app/controllers/App/RouteHandler';
 
 describe('NewTemplate', () => {
   let component;

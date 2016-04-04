@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 
-import * as actions from '~/Notifications/actions/actionTypes';
+import * as actions from 'app/Notifications/actions/actionTypes';
 
 const initialState = Immutable.fromJS([]);
 

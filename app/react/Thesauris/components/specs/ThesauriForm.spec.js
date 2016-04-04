@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {mapStateToProps, ThesauriForm} from '~/Thesauris/components/ThesauriForm.js';
+import {mapStateToProps, ThesauriForm} from 'app/Thesauris/components/ThesauriForm.js';
 
 describe('ThesauriForm', () => {
   let props;

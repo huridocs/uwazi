@@ -1,5 +1,5 @@
-import * as types from '~/Templates/actions/actionTypes';
-import api from '~/Templates/TemplatesAPI';
+import * as types from 'app/Templates/actions/actionTypes';
+import api from 'app/Templates/TemplatesAPI';
 
 export function setTemplates(templates) {
   return {

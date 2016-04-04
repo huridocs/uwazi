@@ -1,6 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import {TemplateCreator} from '~/Templates/components/TemplateCreator';
+import {TemplateCreator} from 'app/Templates/components/TemplateCreator';
 
 describe('EditTemplate', () => {
   let template = {id: '1', properties: [{label: 'label1'}, {label: 'label2'}]};

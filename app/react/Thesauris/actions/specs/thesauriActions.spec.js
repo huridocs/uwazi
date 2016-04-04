@@ -1,14 +1,14 @@
 import configureMockStore from 'redux-mock-store';
 import backend from 'fetch-mock';
-import {APIURL} from '~/config.js';
-import {mockID} from '~/utils/uniqueID';
+import {APIURL} from 'app/config.js';
+import {mockID} from 'app/utils/uniqueID';
 import thunk from 'redux-thunk';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-import * as actions from '~/Thesauris/actions/thesauriActions';
-import * as types from '~/Thesauris/actions/actionTypes';
-import * as notificationsTypes from '~/Notifications/actions/actionTypes';
+import * as actions from 'app/Thesauris/actions/thesauriActions';
+import * as types from 'app/Thesauris/actions/actionTypes';
+import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 
 describe('thesaurisActions', () => {
   beforeEach(() => {

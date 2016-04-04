@@ -8,9 +8,9 @@ import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 import {reducer as formReducer} from 'redux-form';
 
-import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from '~/Templates/components/MetadataTemplate';
-import MetadataProperty from '~/Templates/components/MetadataProperty';
-import {dragSource} from '~/Templates/components/PropertyOption';
+import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from 'app/Templates/components/MetadataTemplate';
+import MetadataProperty from 'app/Templates/components/MetadataProperty';
+import {dragSource} from 'app/Templates/components/PropertyOption';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(

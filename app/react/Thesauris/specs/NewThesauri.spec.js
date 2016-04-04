@@ -1,8 +1,8 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import NewThesauri from '~/Thesauris/NewThesauri';
-import ThesauriForm from '~/Thesauris/components/ThesauriForm';
+import NewThesauri from 'app/Thesauris/NewThesauri';
+import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
 
 describe('NewThesauri', () => {
   let component;

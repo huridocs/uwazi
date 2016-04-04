@@ -3,9 +3,9 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {DropTarget} from 'react-dnd';
 
-import {updateProperty, addProperty} from '~/Templates/actions/templateActions';
-import MetadataProperty from '~/Templates/components/MetadataProperty';
-import FormName from '~/Templates/components/FormName';
+import {updateProperty, addProperty} from 'app/Templates/actions/templateActions';
+import MetadataProperty from 'app/Templates/components/MetadataProperty';
+import FormName from 'app/Templates/components/FormName';
 
 export class MetadataTemplate extends Component {
   render() {

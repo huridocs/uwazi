@@ -1,4 +1,4 @@
-import * as types from '~/Templates/actions/actionTypes';
+import * as types from 'app/Templates/actions/actionTypes';
 
 export function editProperty(id) {
   return {

@@ -5,10 +5,10 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 
-import {resetTemplate, saveTemplate} from '~/Templates/actions/templateActions';
-import PropertyOption from '~/Templates/components/PropertyOption';
-import MetadataTemplate from '~/Templates/components/MetadataTemplate';
-import '~/Templates/scss/templates.scss';
+import {resetTemplate, saveTemplate} from 'app/Templates/actions/templateActions';
+import PropertyOption from 'app/Templates/components/PropertyOption';
+import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
+import 'app/Templates/scss/templates.scss';
 
 export class TemplateCreator extends Component {
 

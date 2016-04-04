@@ -3,10 +3,10 @@ import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {APIURL} from '~/config.js';
-import EditThesauri from '~/Thesauris/EditThesauri';
-import ThesauriForm from '~/Thesauris/components/ThesauriForm';
-import RouteHandler from '~/controllers/App/RouteHandler';
+import {APIURL} from 'app/config.js';
+import EditThesauri from 'app/Thesauris/EditThesauri';
+import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
+import RouteHandler from 'app/controllers/App/RouteHandler';
 
 describe('EditThesauri', () => {
   let thesauri = {name: 'Countries', values: [{id: '1', label: 'label1'}, {id: '2', label: 'label2'}]};

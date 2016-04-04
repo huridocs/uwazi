@@ -3,10 +3,10 @@ import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {editProperty} from '~/Templates/actions/uiActions';
-import {removeProperty, reorderProperty, addProperty} from '~/Templates/actions/templateActions';
-import FormConfigInput from '~/Templates/components/FormConfigInput';
-import FormConfigSelect from '~/Templates/components/FormConfigSelect';
+import {editProperty} from 'app/Templates/actions/uiActions';
+import {removeProperty, reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
+import FormConfigInput from 'app/Templates/components/FormConfigInput';
+import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
 export class MetadataProperty extends Component {
   renderForm() {
