@@ -54,7 +54,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
       </Provider>
     );
   } catch (e) {
-    console.log(e);
+    // console.log(e);
   }
 
   const head = Helmet.rewind();

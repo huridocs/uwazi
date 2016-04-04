@@ -145,7 +145,9 @@ class Library extends RouteHandler {
           </main>
           <aside className="col-xs-12 col-sm-3 panels-layout__panel">
             <div className="search">
-              <div className="search__button--apply__filters"><a className="btn btn-success btn-block">Apply filters<i className="fa fa-chevron-left"></i></a></div>
+              <div className="search__button--apply__filters">
+                <a className="btn btn-success btn-block">Apply filters<i className="fa fa-chevron-left"></i></a>
+              </div>
               <ul className="search__filter search__filter--radiobutton">
                 <li>Document type (Radio button)</li>
                 <li className="is-active">
@@ -169,7 +171,8 @@ class Library extends RouteHandler {
                 <li>Document title (Short text)</li>
                 <li className="wide">
                   <div className="input-group">
-                    <input type="text" placeholder="Document title" className="form-control"/><span className="input-group-addon"><i className="fa fa-search"></i></span>
+                    <input type="text" placeholder="Document title" className="form-control"/>
+                    <span className="input-group-addon"><i className="fa fa-search"></i></span>
                   </div>
                 </li>
               </ul>
@@ -203,7 +206,8 @@ class Library extends RouteHandler {
                 <li>Country (Long list)</li>
                 <li className="wide">
                   <div className="input-group">
-                    <input type="text" placeholder="Search country" className="form-control"/><span className="input-group-addon"><i className="fa fa-search"></i></span>
+                    <input type="text" placeholder="Search country" className="form-control"/>
+                    <span className="input-group-addon"><i className="fa fa-search"></i></span>
                   </div>
                   <ol>
                     <li>
