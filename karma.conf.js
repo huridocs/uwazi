@@ -28,10 +28,7 @@ module.exports = function (config) {
         loaders: [
           { test: /\.js$/,
             loader: 'babel-loader',
-            exclude: /(node_modules)/,
-            query: {
-              cacheDirectory: true
-            }
+            exclude: /(node_modules)/
           },
           {
             test: /\.scss$/,
