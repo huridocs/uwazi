@@ -20,10 +20,7 @@ module.exports = {
     loaders: [{
       test: /\.js?$/,
       loader: 'babel-loader',
-      include: path.join(__dirname, 'app'),
-      query: {
-        cacheDirectory: true
-      }
+      include: path.join(__dirname, 'app')
     },
     {
       test: /\.scss$/,
