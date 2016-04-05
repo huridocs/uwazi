@@ -3,11 +3,12 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+
 
 import {resetTemplate, saveTemplate} from 'app/Templates/actions/templateActions';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
+import FormControls from 'app/Templates/components/FormControls';
 import 'app/Templates/scss/templates.scss';
 
 export class TemplateCreator extends Component {
@@ -21,10 +22,7 @@ export class TemplateCreator extends Component {
       <div className="row">
         <main className="col-sm-9">
           <div className="well template">
-            <Link to="/templates" className="btn btn-default">Cancel</Link>
-            <button onClick={() => this.props.saveTemplate(this.props.template)} className="btn btn-success save-template">
-              <i className="fa fa-save"/> Save Template
-            </button>
+            <FormControls/>
             <MetadataTemplate />
           </div>
         </main>
@@ -50,7 +48,10 @@ TemplateCreator.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-  return {template: state.template.data.toJS()};
+  return {
+    template: state.template.data.toJS(),
+    form: state.form.template
+  };
 };
 
 function mapDispatchToProps(dispatch) {

@@ -13,7 +13,9 @@ export class FormName extends Component {
           this.props.updateTemplate(this.props.values);
         });
       }}>
-        <input placeholder="Template name" type="text" {...name}/>
+        <div className={'form-group' + (name.touched && name.invalid ? ' has-error' : '')}>
+          <input className="form-control" placeholder="Template name" type="text" {...name}/>
+        </div>
       </form>
     );
   }
@@ -25,13 +27,26 @@ FormName.propTypes = {
   values: PropTypes.object
 };
 
+const validate = (values) => {
+  let errors = {};
+
+  if (!values.name) {
+    errors.name = 'Required';
+  }
+
+  return errors;
+};
+
 export function mapStateToProps(state) {
-  return {initialValues: {name: state.template.data.toJS().name}};
+  return {
+    initialValues: {name: state.template.data.toJS().name},
+    fields: ['name'],
+    validate
+  };
 }
 
 let form = reduxForm({
-  form: 'templateName',
-  fields: ['name']
+  form: 'template'
 },
 mapStateToProps,
 (dispatch) => {

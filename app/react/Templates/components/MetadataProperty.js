@@ -11,10 +11,9 @@ import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 export class MetadataProperty extends Component {
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'list') {
-      return <FormConfigSelect form={this.props.id} index={this.props.index} />;
+      return <FormConfigSelect formKey={this.props.index.toString()} form='template' index={this.props.index} />;
     }
-
-    return <FormConfigInput form={this.props.id} index={this.props.index} />;
+    return <FormConfigInput formKey={this.props.index.toString()} form='template' index={this.props.index} />;
   }
 
   render() {
