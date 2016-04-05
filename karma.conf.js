@@ -26,9 +26,19 @@ module.exports = function (config) {
       devtool: 'eval', //just do inline source maps instead of the default
       module: {
         loaders: [
-          { test: /\.js$/,
+          {
+            test: /\.js$/,
             loader: 'babel-loader',
-            exclude: /(node_modules)/
+            exclude: /(node_modules)/,
+            query: {
+              plugins: [
+                ['babel-plugin-module-alias', [
+                  { 'src': './app/react', 'expose': 'app' }
+                ]],
+                'transform-class-properties',
+                'add-module-exports'
+              ]
+            }
           },
           {
             test: /\.scss$/,
