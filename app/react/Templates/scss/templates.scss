@@ -5,7 +5,8 @@
   .btn {
     margin-left: 5px;
   }
-  .fa:first-child {
+
+  >.fa:first-child {
     margin: 0 25px 0 0;
     color: $c-grey;
   }
