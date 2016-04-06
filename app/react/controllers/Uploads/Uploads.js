@@ -5,7 +5,7 @@ import {events} from '../../utils';
 import SelectField from '../../components/Form/fields/SelectField';
 import TextareaField from '../../components/Form/fields/TextareaField';
 import RoundedProgressBar from '../../components/Elements/RoundedProgressBar';
-import Form from '../../components/Form/Form';
+import Form from 'app/Form';
 import Helmet from 'react-helmet';
 import Upload from '../../components/Upload/Upload';
 import {Link} from 'react-router';
@@ -153,6 +153,11 @@ class Uploads extends RouteHandler {
     }
 
 
+    let fields = [];
+    if (this.state.template) {
+      fields = this.state.template.properties.map((property) => property.name);
+    }
+
     return (
       <div>
         <Helmet title='Upload' />
@@ -195,7 +200,7 @@ class Uploads extends RouteHandler {
                       options={options}
                       onChange={this.templateChanged.bind(this)}
                       />
-                      <Form fields={this.state.template.properties} values={this.state.documentBeingEdited.value.metadata}
+                      <Form fields={fields} fieldsConfig={this.state.template.properties}
                       ref={(ref) => this.form = ref }
                       />
                       &nbsp;
