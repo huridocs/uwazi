@@ -7,7 +7,7 @@ import Input from 'app/Form/components/Input';
 import Select from 'app/Form/components/Select';
 import Textarea from 'app/Form/components/Textarea';
 
-fdescribe('DocumentForm', () => {
+describe('DocumentForm', () => {
   let component;
   let templates;
   let fieldsConfig;

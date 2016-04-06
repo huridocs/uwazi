@@ -10,17 +10,17 @@ export class Form extends Component {
   render() {
     const {fieldsConfig, fields} = this.props;
     return (
-      <form>
-      {fieldsConfig.map((field, index) => {
+      <div>
+      {fieldsConfig.map((field) => {
         if (field.type === 'select') {
-          return <Select key={index} properties={fields[field.name]} label={field.label} options={field.options} />;
+          return <Select key={field.name} properties={fields[field.name]} label={field.label} options={field.options} />;
         }
         if (field.type === 'textarea') {
-          return <Textarea key={index} properties={fields[field.name]} label={field.label} options={field.options} />;
+          return <Textarea key={field.name} properties={fields[field.name]} label={field.label} options={field.options} />;
         }
-        return <Input key={index} properties={fields[field.name]} label={field.label} />;
+        return <Input key={field.name} properties={fields[field.name]} label={field.label} />;
       })}
-      </form>
+      </div>
     );
   }
 

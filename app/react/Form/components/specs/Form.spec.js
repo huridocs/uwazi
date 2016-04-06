@@ -6,7 +6,7 @@ import Input from 'app/Form/components/Input';
 import Select from 'app/Form/components/Select';
 import Textarea from 'app/Form/components/Textarea';
 
-describe('Form', () => {
+fdescribe('Form', () => {
   let component;
   let reduxFormFields;
   let fieldsConfig;
