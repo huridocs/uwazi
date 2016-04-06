@@ -6,10 +6,12 @@ import {APIURL} from '../../../config.js';
 import {events} from '../../../utils/index';
 import API from '../../../utils/singleton_api';
 import MockProvider from '../../App/specs/MockProvider';
+import {shallow} from 'enzyme';
 
 describe('UploadsController', () => {
   let documents = [{key: 'secret documents', value: {}}, {key: 'real batman id', value: {}}];
   let templates = [{name: 'batarang', properties: []}, {name: 'batmovil'}];
+  let thesauris = [{_id: 'thesauriID', values: [{label: 'thesauri1', id: '1'}, {label: 'thesauri2', id: '2'}]}];
   let component;
   let router = {};
   let user = {};
@@ -20,15 +22,17 @@ describe('UploadsController', () => {
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: documents})})
     .mock(APIURL + 'uploads', 'GET', {body: JSON.stringify({rows: documents})})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
+    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})})
     .mock(APIURL + 'documents', 'POST', {});
   });
 
-  describe('static requestState', () => {
+  fdescribe('static requestState', () => {
     it('should request documents and templates', (done) => {
       Uploads.requestState(null, API)
       .then((response) => {
         expect(response.documents).toEqual(documents);
         expect(response.templates).toEqual(templates);
+        expect(response.thesauris).toEqual(thesauris);
         done();
       })
       .catch(done.fail);
@@ -87,8 +91,13 @@ describe('UploadsController', () => {
   });
 
   describe('when editing a document', () => {
+    let wrapper;
+
     beforeEach(() => {
-      TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => component = ref}/></MockProvider>);
+      // TestUtils.renderIntoDocument(<MockProvider router={router}><Uploads user={user} ref={(ref) => component = ref}/></MockProvider>);
+      let context = {getInitialData: () => {}};
+      wrapper = shallow(<Uploads user={user} />, {context});
+      component = wrapper.instance();
       component.setState({documents: [{id: 'id_0', value: {title: 'Enigma answers'}}]});
     });
 

@@ -10,6 +10,7 @@ import Helmet from 'react-helmet';
 import Upload from '../../components/Upload/Upload';
 import {Link} from 'react-router';
 import './scss/upload.scss';
+import DocumentForm from 'app/controllers/Uploads/components/DocumentForm';
 
 class Uploads extends RouteHandler {
 
@@ -58,12 +59,14 @@ class Uploads extends RouteHandler {
   static requestState(params = {}, api) {
     return Promise.all([
       api.get('uploads'),
-      api.get('templates')
+      api.get('templates'),
+      api.get('thesauris')
     ])
     .then((responses) => {
       let documents = responses[0].json.rows;
       let templates = responses[1].json.rows;
-      return {documents: documents, templates: templates};
+      let thesauris = responses[2].json.rows;
+      return {documents, templates, thesauris};
     });
   }
 
@@ -152,12 +155,6 @@ class Uploads extends RouteHandler {
       listClass += ' active';
     }
 
-
-    let fields = [];
-    if (this.state.template) {
-      fields = this.state.template.properties.map((property) => property.name);
-    }
-
     return (
       <div>
         <Helmet title='Upload' />
@@ -191,18 +188,13 @@ class Uploads extends RouteHandler {
                 if (this.state.documentBeingEdited) {
                   return (
                     <div className="metadata">
-                      <TextareaField label="Title" value={this.state.documentBeingEdited.value.title}
-                      ref={(ref) => this.titleField = ref}
-                      options={options}
+
+                      <DocumentForm
+                        initialValues={this.state.documentBeingEdited.value}
+                        templates={this.state.templates}
+                        thesauris={this.state.thesauris}
                       />
-                      <SelectField label="Document type" value={this.state.documentBeingEdited.value.template}
-                      ref={(ref) => this.templateField = ref}
-                      options={options}
-                      onChange={this.templateChanged.bind(this)}
-                      />
-                      <Form fields={fields} fieldsConfig={this.state.template.properties}
-                      ref={(ref) => this.form = ref }
-                      />
+
                       &nbsp;
                       <button className="btn btn-sm btn-default" onClick={this.saveDocument.bind(this)}>
                         <i className="fa fa-floppy-o"></i>

@@ -1,6 +1,9 @@
 import React, {Component, PropTypes} from 'react';
+import {reduxForm} from 'redux-form';
 
-import ID from 'app/utils/uniqueID';
+import Input from 'app/Form/components/Input';
+import Select from 'app/Form/components/Select';
+import Textarea from 'app/Form/components/Textarea';
 
 export class Form extends Component {
 
@@ -8,11 +11,14 @@ export class Form extends Component {
     const {fieldsConfig, fields} = this.props;
     return (
       <form>
-      {fieldsConfig.map((field) => {
+      {fieldsConfig.map((field, index) => {
         if (field.type === 'select') {
-          return <select key={ID()} {...fields[field.name]}/>;
+          return <Select key={index} properties={fields[field.name]} label={field.label} options={field.options} />;
         }
-        return <input key={ID()} {...fields[field.name]}/>;
+        if (field.type === 'textarea') {
+          return <Textarea key={index} properties={fields[field.name]} label={field.label} options={field.options} />;
+        }
+        return <Input key={index} properties={fields[field.name]} label={field.label} />;
       })}
       </form>
     );
@@ -25,4 +31,15 @@ Form.propTypes = {
   fields: PropTypes.object
 };
 
-export default Form;
+export function mapStateToProps(state, props) {
+  return {
+    fields: props.fieldsConfig.map((field) => field.name),
+    fieldsConfig: props.fieldsConfig
+  };
+}
+
+let form = reduxForm(null,
+mapStateToProps
+)(Form);
+
+export default form;
