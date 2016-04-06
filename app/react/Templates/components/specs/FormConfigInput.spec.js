@@ -30,13 +30,23 @@ describe('FormConfigInput', () => {
     });
   });
 
-  describe('mapStateToProps', () => {
+  describe('initialValues', () => {
     it('should map the correct field to the props', () => {
       let state = {
         template: {data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]})}
       };
       props = {index: 0};
-      expect(mapStateToProps(state, props)).toEqual({initialValues: {label: 'first property'}});
+      expect(mapStateToProps(state, props).initialValues).toEqual({label: 'first property'});
+    });
+  });
+
+  describe('validation', () => {
+    it('should return an error when the label is empty', () => {
+      let state = {
+        template: {data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]})}
+      };
+      props = {index: 0};
+      expect(mapStateToProps(state, props).validate({label: ''})).toEqual({label: 'Required'});
     });
   });
 });

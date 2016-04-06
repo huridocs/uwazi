@@ -29,12 +29,19 @@ describe('FormName', () => {
     });
   });
 
-  describe('mapStateToProps', () => {
+  describe('initialValues', () => {
     it('should map the correct field to the props', () => {
       let state = {
         template: {data: Immutable.fromJS({name: 'name'})}
       };
-      expect(mapStateToProps(state)).toEqual({initialValues: {name: 'name'}});
+      expect(mapStateToProps(state).initialValues).toEqual({name: 'name'});
+    });
+  });
+
+  describe('validation', () => {
+    it('should return an error when there is no name', () => {
+      let state = {template: {data: Immutable.fromJS({name: 'name'})}};
+      expect(mapStateToProps(state).validate({name: ''})).toEqual({name: 'Required'});
     });
   });
 });
