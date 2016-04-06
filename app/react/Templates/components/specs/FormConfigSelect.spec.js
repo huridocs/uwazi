@@ -38,15 +38,27 @@ describe('FormConfigInput', () => {
   });
 
   describe('mapStateToProps', () => {
-    it('should map the correct field to the props', () => {
-      let state = {
-        template: {
-          data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]}),
-          uiState: Immutable.fromJS({thesauri: 'thesauri'})
-        }
-      };
-      props = {index: 0};
-      expect(mapStateToProps(state, props)).toEqual({initialValues: {label: 'first property'}, thesauri: 'thesauri'});
+    let state = {
+      template: {
+        data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]}),
+        uiState: Immutable.fromJS({thesauri: 'thesauri'})
+      }
+    };
+
+    describe('initialValues', () => {
+      it('should map the correct field to the props', () => {
+        expect(mapStateToProps(state, props).initialValues).toEqual({label: 'first property'});
+      });
+    });
+
+    describe('validation', () => {
+      it('should return an error when the label is empty', () => {
+        expect(mapStateToProps(state, props).validate({label: '', content: '1'})).toEqual({label: 'Required'});
+      });
+
+      it('should return an error when the content is empty', () => {
+        expect(mapStateToProps(state, props).validate({label: 'I have a label', content: ''})).toEqual({content: 'Required'});
+      });
     });
   });
 });

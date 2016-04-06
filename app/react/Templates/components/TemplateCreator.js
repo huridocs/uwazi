@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 
-import {resetTemplate, saveTemplate} from 'app/Templates/actions/templateActions';
+import {resetTemplate} from 'app/Templates/actions/templateActions';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import FormControls from 'app/Templates/components/FormControls';
@@ -42,22 +42,13 @@ export class TemplateCreator extends Component {
 }
 
 TemplateCreator.propTypes = {
-  saveTemplate: PropTypes.func,
-  resetTemplate: PropTypes.func,
-  template: PropTypes.object
-};
-
-const mapStateToProps = (state) => {
-  return {
-    template: state.template.data.toJS(),
-    form: state.form.template
-  };
+  resetTemplate: PropTypes.func
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({resetTemplate, saveTemplate}, dispatch);
+  return bindActionCreators({resetTemplate}, dispatch);
 }
 
 export default DragDropContext(HTML5Backend)(
-  connect(mapStateToProps, mapDispatchToProps)(TemplateCreator)
+  connect(null, mapDispatchToProps)(TemplateCreator)
 );

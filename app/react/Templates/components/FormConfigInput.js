@@ -44,13 +44,25 @@ FormConfigInput.propTypes = {
   index: PropTypes.number
 };
 
+const validate = (values) => {
+  let errors = {};
+
+  if (!values.label) {
+    errors.label = 'Required';
+  }
+
+  return errors;
+};
+
 export function mapStateToProps(state, props) {
-  return {initialValues: state.template.data.toJS().properties[props.index]};
+  return {
+    initialValues: state.template.data.toJS().properties[props.index],
+    fields: ['label', 'required', 'filter'],
+    validate
+  };
 }
 
-let form = reduxForm({
-  fields: ['label', 'required', 'filter']
-},
+let form = reduxForm({form: 'template'},
 mapStateToProps,
 (dispatch) => {
   return bindActionCreators({updateProperty}, dispatch);
