@@ -8,7 +8,7 @@ export class FormName extends Component {
   render() {
     const {fields: {name}} = this.props;
     return (
-      <form className="" onChange={() => {
+      <form onChange={() => {
         setTimeout(() => {
           this.props.updateTemplate(this.props.values);
         });

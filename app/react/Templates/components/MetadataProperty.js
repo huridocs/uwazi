@@ -16,22 +16,44 @@ export class MetadataProperty extends Component {
     return <FormConfigInput formKey={this.props.index.toString()} index={this.props.index} />;
   }
 
+
+
   render() {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
-    let propertyClass = 'metadata-propery well';
+    let propertyClass = 'list-group-item';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
     }
 
+    let iconClass = 'fa fa-font';
+    if (this.props.type === 'select' || this.props.type === 'list') {
+      iconClass = 'fa fa-list';
+    }
+
+    if (this.props.type === 'date') {
+      iconClass = 'fa fa-calendar';
+    }
+
+    if (this.props.type === 'checkbox') {
+      iconClass = 'fa fa-check-square-o';
+    }
+
     return connectDragSource(connectDropTarget(
-      <div className={propertyClass}>
-        {label}
-        <button onClick={() => this.props.removeProperty(index)} className="btn btn-danger property-remove">Delete</button>
-        <button onClick={() => this.props.editProperty(id)} className="btn btn-default property-edit">Edit</button>
-        <div className={'metadata-propery-form' + (editingProperty === id ? '' : ' collapsed') }>
+      <li className={propertyClass}>
+        <div>
+           <i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}
+          <button className="btn btn-danger btn-xs pull-right" onClick={() => this.props.removeProperty(index)}>
+            <i className="fa fa-trash"></i> Delete
+          </button>
+          &nbsp;
+          <button className="btn btn-default btn-xs pull-right" onClick={() => this.props.editProperty(id)}>
+            <i className="fa fa-pencil"></i> Edit
+          </button>
+        </div>
+        <div className={'propery-form' + (editingProperty === id ? ' expand' : '') }>
           {this.renderForm()}
         </div>
-      </div>
+      </li>
     ));
   }
 }

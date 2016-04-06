@@ -1,77 +1,28 @@
-.template {
-  background-color: white;
+@import "../../controllers/App/scss/config/_colors.scss";
+
+.list-group-item {
+
   .btn {
-    float: right;
-    margin-right: 10px;
+    margin-left: 5px;
+  }
+  .fa:first-child {
+    margin: 0 25px 0 0;
+    color: $c-grey;
   }
 
-  h1{
-    border-bottom: 1px solid #ccc;
-    font-size: 25px;
-    margin-bottom: 20px;
+  .propery-form {
+    height: 0;
+    overflow: hidden;
 
-    .edit {
-      color: #aaa;
-      font-size: 10px;
-      font-weight: 300;
-      cursor: pointer;
-    }
-  }
-}
-
-.field-options {
-  list-style: none;
-  padding: 0;
-}
-
-.field-option {
-  padding: 15px;
-  margin-bottom: 5px;
-  cursor: pointer;
-}
-
-.template-properties {
-  min-height: 400px;
-
-  .no-properties {
-    line-height: 400px;
-    text-align: center;
-    font-size: 15px;
-  }
-
-  .metadata-propery {
-
-    &.dragging {
-      opacity: 0;
-    }
-
-    .btn {
-      margin-bottom: 10px;
-    }
-
-    form {
-      clear: both;
-      background-color: white;
-      padding: 10px;
-    }
-
-    .metadata-propery-form {
+    &.expand {
+      border-top: 1px solid $c-grey-light;
+      padding: 15px 0 0 30px;
+      margin-top: 15px;
       height: auto;
-
-      &.collapsed {
-        height: 0;
-        overflow: hidden;
-      }
     }
   }
-}
 
-.well .btn {
-  margin-left: 10px;
-}
-
-.metadata {
-  .btn {
-    float: right;
+  &.dragging {
+    opacity: 0;
   }
 }

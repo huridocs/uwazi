@@ -8,7 +8,6 @@ import {connect} from 'react-redux';
 import {resetTemplate} from 'app/Templates/actions/templateActions';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
-import FormControls from 'app/Templates/components/FormControls';
 import 'app/Templates/scss/templates.scss';
 
 export class TemplateCreator extends Component {
@@ -19,22 +18,21 @@ export class TemplateCreator extends Component {
 
   render() {
     return (
-      <div className="row">
+      <div>
         <main className="col-sm-9">
-          <div className="well template">
-            <FormControls/>
             <MetadataTemplate />
-          </div>
         </main>
         <aside className="col-sm-3">
           <h1>Construction blocks</h1>
-          <ul className="field-options">
-            <li><PropertyOption label='Text' type='text'/></li>
-            <li><PropertyOption label='Checkbox' type='checkbox' /></li>
-            <li><PropertyOption label='Select' type='select'/></li>
-            <li><PropertyOption label='List' type='list'/></li>
-            <li><PropertyOption label='Date' type='date'/></li>
-          </ul>
+          <div className="panel panel-default">
+            <ul className="list-group">
+              <PropertyOption label='Text' type='text'/>
+              <PropertyOption label='Checkbox' type='checkbox' />
+              <PropertyOption label='Select' type='select'/>
+              <PropertyOption label='List' type='list'/>
+              <PropertyOption label='Date' type='date'/>
+            </ul>
+          </div>
         </aside>
       </div>
     );

@@ -11,7 +11,8 @@ import Library from './controllers/Library/Library';
 import Viewer from './controllers/Viewer/Viewer';
 import Uploads from './controllers/Uploads/Uploads';
 
-import Templates from 'app/Templates/Templates';
+import Metadata from 'app/Metadata/Metadata';
+
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 
@@ -23,7 +24,7 @@ export default (
     <IndexRoute component={Library} />
     <Route path='my_account' component={MyAccount} />
     <Route path='uploads' component={Uploads} />
-    <Route path='templates' component={Templates} />
+    <Route path='metadata' component={Metadata} />
     <Route path='templates/new' component={NewTemplate} />
     <Route path='templates/edit/:templateId' component={EditTemplate} />
     <Route path='thesauris/new' component={NewThesauri} />

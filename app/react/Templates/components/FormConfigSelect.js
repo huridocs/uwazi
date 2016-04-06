@@ -8,17 +8,17 @@ export class FormConfigSelect extends Component {
   render() {
     const {fields: {label, content, required, filter}} = this.props;
     return (
-      <form className="" onChange={() => {
+      <form className="row" onChange={() => {
         setTimeout(() => {
           this.props.updateProperty(this.props.values, this.props.index);
         });
       }}>
-        <div className="form-group">
+        <div className="form-group col-sm-3">
           <label>Label</label>
           <input className="form-control" type="text" {...label} />
           {label.error && label.touched && <div>{label.error}</div>}
         </div>
-        <div className="form-group">
+        <div className="form-group col-sm-3">
           <label>Content</label>
           <select value="default" className="form-control" type="text" {...content}>
             <option value="default" disabled>Select thesauri</option>
@@ -26,19 +26,19 @@ export class FormConfigSelect extends Component {
               return <option key={thesauri._id} value={thesauri._id}>{thesauri.name}</option>;
             })}
           </select>
-          {content.error && content.touched && <div>{content.error}</div>}
         </div>
-        <div className="form-group">
-          <label>
-            <input type="checkbox" {...required} /> Required
-          </label>
-          {required.error && required.touched && <div>{required.error}</div>}
-        </div>
-        <div className="form-group">
-          <label>
-            <input type="checkbox" {...filter}/> Use this field for filtering results
-          </label>
-          {filter.error && filter.touched && <div>{filter.error}</div>}
+        <div className="form-group  col-sm-6">
+          Behaviour
+          <div>
+            <label>
+              <input type="checkbox" {...required} /> Required
+            </label>
+          </div>
+          <div>
+            <label>
+              <input type="checkbox" {...filter}/> Use this field for filtering results
+            </label>
+          </div>
         </div>
       </form>
     );

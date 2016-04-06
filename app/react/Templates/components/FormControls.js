@@ -9,7 +9,7 @@ export class FormControls extends Component {
   render() {
     return (
       <form onSubmit={this.props.handleSubmit(this.props.saveTemplate)}>
-        <Link to="/templates" className="btn btn-default">Cancel</Link>
+        <Link to="/metadata" className="btn btn-default">Cancel</Link>
         <button className="btn btn-success save-template">
           <i className="fa fa-save"/> Save Template
         </button>

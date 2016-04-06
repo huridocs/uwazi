@@ -9,11 +9,26 @@ export class PropertyOption extends Component {
   render() {
     const {connectDragSource} = this.props;
     const {label} = this.props;
+    let iconClass = 'fa fa-font';
+
+    if (this.props.type === 'select' || this.props.type === 'list') {
+      iconClass = 'fa fa-list';
+    }
+
+    if (this.props.type === 'date') {
+      iconClass = 'fa fa-calendar';
+    }
+
+    if (this.props.type === 'checkbox') {
+      iconClass = 'fa fa-check-square-o';
+    }
+
     return (
       connectDragSource(
-        <div className="field-option well">
-          {label}
-        </div>
+        <li className="list-group-item" >
+          <i className="fa fa-clone"></i>&nbsp;
+          <i className={iconClass}></i>&nbsp;{label}
+        </li>
       )
     );
   }
@@ -21,7 +36,8 @@ export class PropertyOption extends Component {
 
 PropertyOption.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired
 };
 
 const optionSource = {

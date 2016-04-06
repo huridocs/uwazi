@@ -1,10 +1,13 @@
 body {
-	background: $c-grey-light;
+	background: $c-primary-lighten;
 	color: $c-black;
 	font-family: $f-regular;
 	font-size: $f-size;
 	position: relative;
 	padding-top: 60px;
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
 }
 
 label {

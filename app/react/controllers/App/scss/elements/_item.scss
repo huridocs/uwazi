@@ -168,9 +168,6 @@
   }
 
   .label {
-    background: $c-grey-light;
-    color: $c-grey-dark;
-    border: 1px solid $c-grey;
     margin-right: 15px;
     font-size: $f-size-sm;
     font-weight: normal;
@@ -178,13 +175,18 @@
       margin-left: 0;
     }
   }
+  .label-default {
+    background: $c-grey-light;
+    color: $c-grey-dark;
+    border: 1px solid $c-grey;
+  }
 }
-
 
 .item-name {
   display: block;
   font-family: $f-special;
   font-size: $f-size-lg;
+  color: $c-black;
 }
 .item-metadata {
   color: $c-grey-dark;
@@ -215,41 +217,30 @@
   }
 }
 
-.item-fake {
- height: 75px;
- opacity: 0.5;
+.item-date {
+  margin: 0 15px 0 0;
+  .fa {
+    margin-left: 0;
+  }
 }
 
 .item-group-load-more {
-  position: relative;
-  top: -75px;
   text-align: center;
 }
 
 
 .page-title {
   text-align: left;
-  margin: 0 15px 15px;
+  margin: 0;
   padding-bottom: 15px;
-  line-height: 32px;
-  font-size: 20px;
-  border-bottom: 1px solid $c-grey;
+  line-height: 16px;
+  font-size: $f-size-lg;
 
   .label {
-    font-weight: normal;
-    background: $c-primary-lighten;
-    border: 1px solid $c-grey;
-    color: $c-grey-dark;
-    margin-left: 15px;
     font-size: $f-size-sm;
     position: relative;
     top: -3px;
     padding: 2px 5px;
-
-    .fa {
-      margin-left: 0;
-      margin-right: 5px;
-    }
   }
 }
 
@@ -263,8 +254,17 @@
       text-align: left;
     }
   }
-
-  span.filter {
+  .label {
+    font-weight: normal;
+    background: $c-primary-lighten;
+    border: 1px solid $c-grey;
+    color: $c-grey-dark;
+    .fa {
+      margin-left: 0;
+      margin-right: 5px;
+    }
+  }
+  span {
     border-bottom: 1px dotted $c-grey-dark;
     cursor: pointer;
     margin-left: 15px;

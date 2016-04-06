@@ -4,11 +4,11 @@ import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config.js';
-import {Templates} from 'app/Templates/Templates';
+import {Templates} from 'app/Metadata/Metadata';
 
 import backend from 'fetch-mock';
 
-describe('Templates', () => {
+describe('Metadata', () => {
   let templates = [{key: 'template1', id: '1', value: {}}, {key: 'template2', id: '2', value: {}}];
   let thesauris = [{name: 'thesauri1', values: []}, {name: 'thesauri2', values: []}];
   let component;
