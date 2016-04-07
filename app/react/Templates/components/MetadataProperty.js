@@ -16,8 +16,6 @@ export class MetadataProperty extends Component {
     return <FormConfigInput formKey={this.props.index.toString()} index={this.props.index} />;
   }
 
-
-
   render() {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
     let propertyClass = 'list-group-item';
@@ -42,11 +40,11 @@ export class MetadataProperty extends Component {
       <li className={propertyClass}>
         <div>
            <i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}
-          <button className="btn btn-danger btn-xs pull-right" onClick={() => this.props.removeProperty(index)}>
+          <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() => this.props.removeProperty(index)}>
             <i className="fa fa-trash"></i> Delete
           </button>
           &nbsp;
-          <button className="btn btn-default btn-xs pull-right" onClick={() => this.props.editProperty(id)}>
+          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(id)}>
             <i className="fa fa-pencil"></i> Edit
           </button>
         </div>

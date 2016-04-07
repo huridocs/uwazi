@@ -13,15 +13,14 @@ export class FormConfigSelect extends Component {
           this.props.updateProperty(this.props.values, this.props.index);
         });
       }}>
-        <div className="form-group col-sm-3">
-          <label>Label</label>
+        <div className={'form-group col-sm-3' + (label.touched && label.invalid ? ' has-error' : '')}>
+          <label className="control-label">Label</label>
           <input className="form-control" type="text" {...label} />
-          {label.error && label.touched && <div>{label.error}</div>}
         </div>
-        <div className="form-group col-sm-3">
-          <label>Content</label>
-          <select value="default" className="form-control" type="text" {...content}>
-            <option value="default" disabled>Select thesauri</option>
+        <div className={'form-group col-sm-3' + (content.touched && content.invalid ? ' has-error' : '')}>
+          <label className="control-label">Content</label>
+          <select value='' className="form-control" type="text" {...content}>
+            <option value='' disabled>Select thesauri</option>
             {this.props.thesauri.map((thesauri) => {
               return <option key={thesauri._id} value={thesauri._id}>{thesauri.name}</option>;
             })}
@@ -30,12 +29,12 @@ export class FormConfigSelect extends Component {
         <div className="form-group  col-sm-6">
           Behaviour
           <div>
-            <label>
+            <label className="control-label">
               <input type="checkbox" {...required} /> Required
             </label>
           </div>
           <div>
-            <label>
+            <label className="control-label">
               <input type="checkbox" {...filter}/> Use this field for filtering results
             </label>
           </div>

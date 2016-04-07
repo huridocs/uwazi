@@ -37,7 +37,7 @@ export class Metadata extends RouteHandler {
               {this.props.templates.map((template, index) => {
                 return (<li key={index} className="list-group-item">
                           <Link to={'/templates/edit/' + template._id}>{template.name}</Link>
-                          <div onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger btn-xs pull-right">
+                          <div onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger btn-xs pull-right template-remove">
                             <i className="fa fa-trash"></i>
                           </div>
                           &nbsp;
@@ -76,7 +76,7 @@ export class Metadata extends RouteHandler {
             <ul className="list-group">
               {this.props.thesauris.map((thesauri, index) => {
                 return <li className="list-group-item" key={index}> <Link to={'/thesauris/edit/' + thesauri._id}>{thesauri.name}</Link>
-                        <div onClick={() => this.props.deleteThesauri(thesauri)} className="btn btn-danger btn-xs pull-right">
+                        <div onClick={() => this.props.deleteThesauri(thesauri)} className="btn btn-danger btn-xs pull-right thesauri-remove">
                           <i className="fa fa-trash"></i>
                         </div>
                         &nbsp;

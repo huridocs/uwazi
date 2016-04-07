@@ -73,7 +73,7 @@ describe('MetadataProperty', () => {
         let TestComponent = wrapInTestContext(MetadataProperty);
         component = renderComponent(TestComponent, {inserting: true, label: 'test', index: 1, id: 'id'});
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
-        let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
+        let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'li')[0];
 
         expect(div.className).toContain('dragging');
       });
@@ -162,7 +162,7 @@ describe('MetadataProperty', () => {
 
       it('should add "dragging" class name', () => {
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
-        let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'div')[0];
+        let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'li')[0];
 
         expect(div.className).not.toContain('dragging');
         backend.simulateBeginDrag([option.getHandlerId()]);

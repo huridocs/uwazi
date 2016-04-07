@@ -8,7 +8,7 @@ describe('FormControls', () => {
   let component;
   let props;
   let handleSubmit = (callback) => {
-    callback(props.values);
+    return () => callback(props.values);
   };
 
   beforeEach(() => {
@@ -16,16 +16,28 @@ describe('FormControls', () => {
       fields: {name: {}, properties: []},
       values: {value: 'some value'},
       saveTemplate: jasmine.createSpy('saveTemplate'),
+      properties: [{type: 'text', label: 'text'}],
+      touchWithKey: jasmine.createSpy('touchWithKey'),
+      touch: jasmine.createSpy('touch'),
       handleSubmit
     };
 
     component = shallow(<FormControls {...props}/>);
   });
 
-  describe('clicking save button', () => {
+  describe('submiting the form', () => {
     it('should call saveTemplate action with the template in props', () => {
-      component.find('.save-template').simulate('click');
+      component.find('form').simulate('submit', {preventDefault: () => {}});
       expect(props.saveTemplate).toHaveBeenCalledWith(props.values);
+    });
+
+    it('should touch all the subforms fields', () => {
+      component.find('form').simulate('submit', {preventDefault: () => {}});
+      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['content']);
+      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['label']);
+      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['required']);
+      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['filter']);
+      expect(props.touch).toHaveBeenCalledWith('template', ['name']);
     });
   });
 

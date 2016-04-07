@@ -4,7 +4,7 @@ import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config.js';
-import {Templates} from 'app/Metadata/Metadata';
+import {Metadata} from 'app/Metadata/Metadata';
 
 import backend from 'fetch-mock';
 
@@ -15,12 +15,13 @@ describe('Metadata', () => {
   let instance;
   let setTemplates = jasmine.createSpy('setTemplates');
   let deleteTemplate = jasmine.createSpy('deleteTemplate');
+  let deleteThesauri = jasmine.createSpy('deleteThesauri');
   let setThesauris = jasmine.createSpy('setThesauris');
   let props;
 
   beforeEach(() => {
-    props = {setTemplates, deleteTemplate, templates, thesauris, setThesauris};
-    component = shallow(<Templates {...props} />);
+    props = {setTemplates, deleteTemplate, templates, thesauris, setThesauris, deleteThesauri};
+    component = shallow(<Metadata {...props} />);
     instance = component.instance();
 
     backend.restore();
@@ -32,7 +33,7 @@ describe('Metadata', () => {
 
   describe('static requestState()', () => {
     it('should request templates and return immutable version for the store', (done) => {
-      Templates.requestState()
+      Metadata.requestState()
       .then((response) => {
         expect(response.templates).toEqualImmutable(Immutable.fromJS(templates));
         expect(response.thesauris).toEqualImmutable(Immutable.fromJS(thesauris));
@@ -54,6 +55,13 @@ describe('Metadata', () => {
     it('should call props.deleteTemplate with id of the template', () => {
       component.find('.template-remove').last().simulate('click');
       expect(deleteTemplate).toHaveBeenCalledWith(templates[1]);
+    });
+  });
+
+  describe('deleteThesauri', () => {
+    it('should call props.deleteThesauri with id of the template', () => {
+      component.find('.thesauri-remove').last().simulate('click');
+      expect(deleteThesauri).toHaveBeenCalledWith(thesauris[1]);
     });
   });
 });

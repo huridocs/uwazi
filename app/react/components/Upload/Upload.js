@@ -66,8 +66,6 @@ class Upload extends Component {
     })
     .end();
 
-    // console.log(uploadRequest);
-
     return uploadRequest;
   }
 

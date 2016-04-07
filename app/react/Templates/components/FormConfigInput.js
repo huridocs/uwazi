@@ -13,23 +13,22 @@ export class FormConfigInput extends Component {
           this.props.updateProperty(this.props.values, this.props.index);
         });
       }}>
-        <div className="form-group col-sm-3">
-          <label>Label</label>
+        <div className={'form-group col-sm-3' + (label.touched && label.invalid ? ' has-error' : '')}>
+          <label className="control-label">Label</label>
           <input className="form-control" type="text" {...label} onChange={(e) => {
             label.onChange(e);
           }}/>
-          {label.error && label.touched && <div>{label.error}</div>}
         </div>
         <div className="col-sm-6">
           Behaviour
           <div className="form-group">
             <div>
-              <label>
+              <label className="control-label">
                 <input type="checkbox" {...required} /> Required
               </label>
             </div>
             <div>
-              <label>
+              <label className="control-label">
                 <input type="checkbox" {...filter}/> Use this field for filtering results
               </label>
             </div>
