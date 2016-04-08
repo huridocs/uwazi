@@ -31,12 +31,7 @@ export default app => {
       res.json(response.json);
     })
     .catch((error) => {
-      console.log(error);
-      if (error.json) {
-        res.json({error: error.json});
-      } else {
-        res.json({error: JSON.stringify(error)});
-      }
+      res.json({error: JSON.stringify(error)});
     });
   });
 
