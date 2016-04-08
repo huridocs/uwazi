@@ -34,6 +34,7 @@
     "bootstrap": "3.3.6",
     "cookie-parser": "^1.4.0",
     "crypto-js": "3.1.6",
+    "dot-object": "^1.4.1",
     "elasticsearch": "9.0.2",
     "es6-promise": "^3.0.2",
     "express": "^4.13.3",
@@ -61,7 +62,8 @@
     "redux-thunk": "^2.0.1",
     "superagent": "1.6.1",
     "transit-immutable-js": "^0.5.4",
-    "transit-js": "^0.8.846"
+    "transit-js": "^0.8.846",
+    "validate.js": "^0.9.0"
   },
   "devDependencies": {
     "babel-loader": "^6.2.1",

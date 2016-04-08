@@ -1,23 +1,23 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {Form} from 'app/Form/components/Form';
+import {DynamicFields} from 'app/Form/components/DynamicFields';
 import Input from 'app/Form/components/Input';
 import Select from 'app/Form/components/Select';
 import Textarea from 'app/Form/components/Textarea';
 
-fdescribe('Form', () => {
+describe('DynamicFields', () => {
   let component;
   let reduxFormFields;
-  let fieldsConfig;
+  let fieldsTemplate;
 
   beforeEach(() => {
     reduxFormFields = {field1: {someProp: 'prop1'}, field2: {someProp: 'prop2'}};
-    fieldsConfig = [{name: 'field1', label: 'label1'}, {name: 'field2', label: 'label2'}];
+    fieldsTemplate = [{name: 'field1', label: 'label1'}, {name: 'field2', label: 'label2'}];
   });
 
   let render = () => {
-    component = shallow(<Form fields={reduxFormFields} fieldsConfig={fieldsConfig}/>);
+    component = shallow(<DynamicFields fields={reduxFormFields} template={fieldsTemplate}/>);
   };
 
   it('should render 2 input fields passing reduxFormField as props', () => {
@@ -32,24 +32,24 @@ fdescribe('Form', () => {
   describe('type select', () => {
     it('should render a select', () => {
       reduxFormFields = {field1: {selectProp: 'prop'}};
-      fieldsConfig = [{name: 'field1', label: 'label', type: 'select', options: [{label: 'Option', value: 'option'}]}];
+      fieldsTemplate = [{name: 'field1', label: 'label', type: 'select', options: [{label: 'Option', value: 'option'}]}];
       render();
 
       expect(component.find(Select).props().label).toEqual('label');
       expect(component.find(Select).props().properties).toEqual({selectProp: 'prop'});
-      expect(component.find(Select).props().options).toEqual(fieldsConfig[0].options);
+      expect(component.find(Select).props().options).toEqual(fieldsTemplate[0].options);
     });
   });
 
   describe('type textarea', () => {
     it('should render a select', () => {
       reduxFormFields = {field1: {textareaProp: 'prop'}};
-      fieldsConfig = [{name: 'field1', label: 'label', type: 'textarea'}];
+      fieldsTemplate = [{name: 'field1', label: 'label', type: 'textarea'}];
       render();
 
       expect(component.find(Textarea).props().label).toEqual('label');
       expect(component.find(Textarea).props().properties).toEqual({textareaProp: 'prop'});
-      expect(component.find(Textarea).props().options).toEqual(fieldsConfig[0].options);
+      expect(component.find(Textarea).props().options).toEqual(fieldsTemplate[0].options);
     });
   });
 });

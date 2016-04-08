@@ -6,9 +6,6 @@ import {updateProperty} from 'app/Templates/actions/templateActions';
 
 export class FormConfigInput extends Component {
   render() {
-
-    console.log(this.props.fields);
-
     const {fields: {label, required, filter}} = this.props;
     return (
       <form className="" onChange={() => {

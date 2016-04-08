@@ -2,15 +2,12 @@ import React from 'react';
 import API from '../../utils/singleton_api';
 import RouteHandler from '../App/RouteHandler';
 import {events} from '../../utils';
-import SelectField from '../../components/Form/fields/SelectField';
-import TextareaField from '../../components/Form/fields/TextareaField';
 import RoundedProgressBar from '../../components/Elements/RoundedProgressBar';
-import Form from 'app/Form';
 import Helmet from 'react-helmet';
 import Upload from '../../components/Upload/Upload';
 import {Link} from 'react-router';
 import './scss/upload.scss';
-import DocumentForm from 'app/controllers/Uploads/components/DocumentForm';
+import DocumentForm from 'app/Uploads/components/DocumentForm';
 
 class Uploads extends RouteHandler {
 
@@ -142,10 +139,6 @@ class Uploads extends RouteHandler {
   }
 
   render() {
-    let options = this.state.templates.map((template) => {
-      return {value: template._id, label: template.name};
-    });
-
     let listClass = 'col-xs-12 col-sm-7 col-md-7 panels-layout__panel no-padding';
     let metadataClass = 'col-xs-12 col-sm-5 col-md-5 panels-layout__panel no-padding';
 
@@ -195,22 +188,6 @@ class Uploads extends RouteHandler {
                         thesauris={this.state.thesauris}
                       />
 
-                      &nbsp;
-                      <button className="btn btn-sm btn-default" onClick={this.saveDocument.bind(this)}>
-                        <i className="fa fa-floppy-o"></i>
-                        Save
-                      </button>
-                      &nbsp;
-                      {(() => {
-                        if (this.state.documentBeingEdited.value.processed) {
-                          return (
-                                  <button onClick={this.moveToLibrary.bind(this)} className="btn btn-sm btn-default">
-                                    <i className="fa fa-folder-open-o"></i>
-                                    Move to library
-                                  </button>
-                                 );
-                        }
-                      })()}
                       &nbsp;
                       {(() => {
                         if (this.state.documentBeingEdited.value.processed) {
