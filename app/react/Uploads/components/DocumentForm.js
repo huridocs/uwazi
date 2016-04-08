@@ -65,7 +65,8 @@ DocumentForm.propTypes = {
   values: PropTypes.object,
   thesauris: PropTypes.array,
   handleSubmit: PropTypes.func,
-  saveDocument: PropTypes.func
+  saveDocument: PropTypes.func,
+  moveToLibrary: PropTypes.func
 };
 
 export function mapStateToProps(state, props) {
