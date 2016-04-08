@@ -12,13 +12,10 @@ export class FormControls extends Component {
     e.preventDefault();
 
     this.props.properties.forEach((prop, index) => {
-      this.props.touchWithKey('template', index.toString(), ['content']);
-      this.props.touchWithKey('template', index.toString(), ['label']);
-      this.props.touchWithKey('template', index.toString(), ['required']);
-      this.props.touchWithKey('template', index.toString(), ['filter']);
+      this.props.touchWithKey('template', index.toString(), 'content', 'label', 'required', 'filter');
     });
 
-    this.props.touch('template', ['name']);
+    this.props.touch('template', 'name');
     this.props.handleSubmit(this.props.saveTemplate)();
   }
 

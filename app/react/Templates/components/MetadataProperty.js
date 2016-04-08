@@ -9,6 +9,7 @@ import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
 export class MetadataProperty extends Component {
+
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'list') {
       return <FormConfigSelect formKey={this.props.index.toString()} index={this.props.index} />;
@@ -18,6 +19,7 @@ export class MetadataProperty extends Component {
 
   render() {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
+    console.log(this.form);
     let propertyClass = 'list-group-item';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
@@ -114,8 +116,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
-const mapStateToProps = (state) => {
-  return {editingProperty: state.template.uiState.toJS().editingProperty};
+const mapStateToProps = (state, props) => {
+  return {
+    editingProperty: state.template.uiState.toJS().editingProperty,
+    form: state.form.template[props.index]
+  };
 };
 
 export {dragSource, dropTarget};

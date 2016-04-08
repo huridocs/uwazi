@@ -33,11 +33,8 @@ describe('FormControls', () => {
 
     it('should touch all the subforms fields', () => {
       component.find('form').simulate('submit', {preventDefault: () => {}});
-      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['content']);
-      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['label']);
-      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['required']);
-      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', ['filter']);
-      expect(props.touch).toHaveBeenCalledWith('template', ['name']);
+      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', 'content', 'label', 'required', 'filter');
+      expect(props.touch).toHaveBeenCalledWith('template', 'name');
     });
   });
 

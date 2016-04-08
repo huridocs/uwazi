@@ -11,7 +11,6 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 
 import 'app/Metadata/scss/metadata.scss';
-import 'app/Metadata/scss/metadata.scss';
 
 export class Metadata extends RouteHandler {
 
