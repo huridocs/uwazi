@@ -2,14 +2,12 @@ import React from 'react';
 import API from '../../utils/singleton_api';
 import RouteHandler from '../App/RouteHandler';
 import {events} from '../../utils';
-import SelectField from '../../components/Form/fields/SelectField';
-import TextareaField from '../../components/Form/fields/TextareaField';
 import RoundedProgressBar from '../../components/Elements/RoundedProgressBar';
-import Form from '../../components/Form/Form';
 import Helmet from 'react-helmet';
 import Upload from '../../components/Upload/Upload';
 import {Link} from 'react-router';
 import './scss/upload.scss';
+import DocumentForm from 'app/Uploads/components/DocumentForm';
 
 class Uploads extends RouteHandler {
 
@@ -58,12 +56,14 @@ class Uploads extends RouteHandler {
   static requestState(params = {}, api) {
     return Promise.all([
       api.get('uploads'),
-      api.get('templates')
+      api.get('templates'),
+      api.get('thesauris')
     ])
     .then((responses) => {
       let documents = responses[0].json.rows;
       let templates = responses[1].json.rows;
-      return {documents: documents, templates: templates};
+      let thesauris = responses[2].json.rows;
+      return {documents, templates, thesauris};
     });
   }
 
@@ -139,10 +139,6 @@ class Uploads extends RouteHandler {
   }
 
   render() {
-    let options = this.state.templates.map((template) => {
-      return {value: template._id, label: template.name};
-    });
-
     let listClass = 'col-xs-12 col-sm-7 col-md-7 panels-layout__panel no-padding';
     let metadataClass = 'col-xs-12 col-sm-5 col-md-5 panels-layout__panel no-padding';
 
@@ -151,7 +147,6 @@ class Uploads extends RouteHandler {
     } else {
       listClass += ' active';
     }
-
 
     return (
       <div>
@@ -186,34 +181,13 @@ class Uploads extends RouteHandler {
                 if (this.state.documentBeingEdited) {
                   return (
                     <div className="metadata">
-                      <TextareaField label="Title" value={this.state.documentBeingEdited.value.title}
-                      ref={(ref) => this.titleField = ref}
-                      options={options}
+
+                      <DocumentForm
+                        initialValues={this.state.documentBeingEdited.value}
+                        templates={this.state.templates}
+                        thesauris={this.state.thesauris}
                       />
-                      <SelectField label="Document type" value={this.state.documentBeingEdited.value.template}
-                      ref={(ref) => this.templateField = ref}
-                      options={options}
-                      onChange={this.templateChanged.bind(this)}
-                      />
-                      <Form fields={this.state.template.properties} values={this.state.documentBeingEdited.value.metadata}
-                      ref={(ref) => this.form = ref }
-                      />
-                      &nbsp;
-                      <button className="btn btn-sm btn-default" onClick={this.saveDocument.bind(this)}>
-                        <i className="fa fa-floppy-o"></i>
-                        Save
-                      </button>
-                      &nbsp;
-                      {(() => {
-                        if (this.state.documentBeingEdited.value.processed) {
-                          return (
-                                  <button onClick={this.moveToLibrary.bind(this)} className="btn btn-sm btn-default">
-                                    <i className="fa fa-folder-open-o"></i>
-                                    Move to library
-                                  </button>
-                                 );
-                        }
-                      })()}
+
                       &nbsp;
                       {(() => {
                         if (this.state.documentBeingEdited.value.processed) {
