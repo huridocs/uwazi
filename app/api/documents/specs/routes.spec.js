@@ -46,8 +46,8 @@ describe('documents', () => {
         return routes.get('/api/documents', {query:{_id:response.id}});
       })
       .then((response) => {
-        expect(response.rows[0].value.title).toBe('Batman begins');
-        expect(response.rows[0].value.user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
+        expect(response.rows[0].title).toBe('Batman begins');
+        expect(response.rows[0].user).toEqual({"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"});
         done();
       })
       .catch(done.fail);
@@ -60,7 +60,7 @@ describe('documents', () => {
         routes.get('/api/documents', request)
         .then((response) => {
           let doc = response.rows[0];
-          let req = {body:{_id:doc.value._id, _rev: doc.value._rev, test:'test'}, user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}};
+          let req = {body:{_id:doc._id, _rev: doc._rev, test:'test'}, user: {"_id":"c08ef2532f0bd008ac5174b45e033c93", "username":"admin"}};
           return routes.post('/api/documents', req)
         })
         .then((doc) => {
@@ -68,8 +68,8 @@ describe('documents', () => {
           return routes.get('/api/documents', request)
         })
         .then((response) => {
-          expect(response.rows[0].value.test).toBe('test');
-          expect(response.rows[0].value.title).toBe('Penguin almost done');
+          expect(response.rows[0].test).toBe('test');
+          expect(response.rows[0].title).toBe('Penguin almost done');
           done();
         })
         .catch(done.fail);
@@ -83,7 +83,7 @@ describe('documents', () => {
       routes.get('/api/documents')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0].value).toEqual({title:'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0]).toEqual({title:'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
         done();
       })
       .catch(console.log)
@@ -97,7 +97,7 @@ describe('documents', () => {
         .then((response) => {
           let docs = response.rows;
           expect(docs.length).toBe(1);
-          expect(docs[0].value.title).toBe('Penguin almost done');
+          expect(docs[0].title).toBe('Penguin almost done');
           done();
         })
         .catch(done.fail);

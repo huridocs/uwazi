@@ -8,7 +8,8 @@ import Login from './controllers/Users/Login';
 import MyAccount from './controllers/Users/MyAccount';
 import Library from './controllers/Library/Library';
 
-import Viewer from './controllers/Viewer/Viewer';
+// import Viewer from './controllers/Viewer/Viewer';
+import ViewDocument from 'app/Viewer/ViewDocument';
 import Uploads from './controllers/Uploads/Uploads';
 
 import Templates from 'app/Templates/Templates';
@@ -29,7 +30,7 @@ export default (
     <Route path='thesauris/new' component={NewThesauri} />
     <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
     <Route path='login' component={Login} />
-    <Route path='document/:documentId' component={Viewer} />
+    <Route path='document/:documentId' component={ViewDocument} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

@@ -1,0 +1,2 @@
+export const SET_REFERENCES = 'SET_REFERENCES';
+export const SET_DOCUMENT = 'SET_DOCUMENT';

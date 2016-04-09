@@ -14,12 +14,10 @@ describe('EditTemplate', () => {
   let thesauri = [{label: '1'}, {label: '2'}];
   let component;
   let instance;
-  let setTemplate = jasmine.createSpy('setTemplate');
   let props;
   let context;
 
   beforeEach(() => {
-    props = {setTemplate};
     RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<EditTemplate {...props} />, {context});
