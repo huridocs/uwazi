@@ -1,6 +1,6 @@
-import {db_url as dbURL} from 'api/config/database.js';
-import request from 'shared/JSONRequest.js';
-import generateNames from 'api/templates/generateNames';
+import {db_url as dbURL} from '../config/database.js';
+import request from '../../shared/JSONRequest.js';
+import generateNames from './generateNames';
 
 export default app => {
   app.post('/api/templates', (req, res) => {
@@ -31,7 +31,7 @@ export default app => {
       res.json(response.json);
     })
     .catch((error) => {
-      res.json({error: JSON.stringify(error)});
+      res.json({error: error.json});
     });
   });
 
