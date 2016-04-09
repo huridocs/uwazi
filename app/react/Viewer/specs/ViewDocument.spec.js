@@ -33,8 +33,8 @@ describe('ViewDocument', () => {
     it('should request for the template passed, the thesauris and return an object to fit in the state', (done) => {
       ViewDocument.requestState({documentId: 'documentId'})
       .then((response) => {
-        let documentResponse = response.document;
-        let referencesResponse = response.references.toJS();
+        let documentResponse = response.documentViewer.document;
+        let referencesResponse = response.documentViewer.references.toJS();
 
         expect(documentResponse).toEqual(document);
         expect(referencesResponse).toEqual(references);
@@ -46,7 +46,7 @@ describe('ViewDocument', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({document: 'document', references: 'references'});
+      instance.setReduxState({documentViewer: {document: 'document', references: 'references'}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: 'references'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_DOCUMENT', document: 'document'});
     });

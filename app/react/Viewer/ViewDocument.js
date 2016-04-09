@@ -16,15 +16,17 @@ export default class ViewDocument extends RouteHandler {
     ])
     .then((response) => {
       return {
-        document: response[0].json.rows[0],
-        references: Immutable.fromJS(response[1].json.rows)
+        documentViewer: {
+          document: response[0].json.rows[0],
+          references: Immutable.fromJS(response[1].json.rows)
+        }
       };
     });
   }
 
-  setReduxState({document, references}) {
-    this.context.store.dispatch(setDocument(document));
-    this.context.store.dispatch(setReferences(references));
+  setReduxState({documentViewer}) {
+    this.context.store.dispatch(setDocument(documentViewer.document));
+    this.context.store.dispatch(setReferences(documentViewer.references));
   }
 
   render() {

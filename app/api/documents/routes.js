@@ -73,7 +73,6 @@ export default app => {
   });
 
   app.get('/api/documents', (req, res) => {
-
     let id = '';
     let url = db_url+'/_design/documents/_view/list';
 
