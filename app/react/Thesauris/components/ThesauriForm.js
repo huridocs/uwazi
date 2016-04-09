@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 import {Link} from 'react-router';
+import 'app/Thesauris/scss/thesauris.scss';
 
 import {saveThesauri, resetThesauri} from 'app/Thesauris/actions/thesauriActions';
 
