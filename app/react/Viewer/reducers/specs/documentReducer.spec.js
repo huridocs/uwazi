@@ -5,7 +5,7 @@ describe('documentReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = documentReducer();
-      expect(newState).toEqual({});
+      expect(newState).toEqual({pages: [], css: []});
     });
   });
 
