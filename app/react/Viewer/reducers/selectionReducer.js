@@ -9,7 +9,11 @@ export default function template(state = initialState, action = {}) {
   }
 
   if (action.type === types.UNSET_SELECTION) {
-    return null;
+    return initialState;
+  }
+
+  if (action.type === types.RESET_DOCUMENT_VIEWER) {
+    return initialState;
   }
 
   return state;

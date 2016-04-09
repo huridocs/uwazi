@@ -17,4 +17,12 @@ describe('documentReducer', () => {
       expect(newState).toEqual(expected);
     });
   });
+
+  describe('RESET_DOCUMENT', () => {
+    it('should set document to initialState', () => {
+      let newState = documentReducer({}, {type: types.RESET_DOCUMENT_VIEWER});
+
+      expect(newState).toEqual({pages: [], css: []});
+    });
+  });
 });

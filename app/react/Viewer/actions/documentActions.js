@@ -6,3 +6,9 @@ export function setDocument(document) {
     document
   };
 }
+
+export function resetDocumentViewer() {
+  return {
+    type: types.RESET_DOCUMENT_VIEWER
+  };
+}

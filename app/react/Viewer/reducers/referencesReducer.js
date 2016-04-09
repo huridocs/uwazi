@@ -9,5 +9,9 @@ export default function template(state = initialState, action = {}) {
     return Immutable.fromJS(action.references);
   }
 
+  if (action.type === types.RESET_DOCUMENT_VIEWER) {
+    return initialState;
+  }
+
   return state;
 }

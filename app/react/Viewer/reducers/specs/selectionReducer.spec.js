@@ -26,4 +26,12 @@ describe('selectionReducer', () => {
       expect(newState).toEqual(expected);
     });
   });
+  describe('RESET_DOCUMENT_VIEWER', () => {
+    it('should unset selection', () => {
+      let newState = selectionReducer('currentState', {type: types.RESET_DOCUMENT_VIEWER});
+      let expected = null;
+
+      expect(newState).toEqual(expected);
+    });
+  });
 });

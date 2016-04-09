@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import TextRange from 'batarange';
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
+import {resetDocumentViewer} from 'app/Viewer/actions/documentActions';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -16,6 +17,13 @@ export class Document extends Component {
   onTextSelected() {
     let range = window.getSelection().getRangeAt(0);
     this.props.setSelection(TextRange.serialize(range, this.pagesContainer));
+  }
+
+  componentDidUpdate() {
+  }
+
+  componentWillUnmount() {
+    this.props.resetDocumentViewer();
   }
 
   render() {
@@ -56,7 +64,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setSelection, unsetSelection}, dispatch);
+  return bindActionCreators({setSelection, unsetSelection, resetDocumentViewer}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Document);

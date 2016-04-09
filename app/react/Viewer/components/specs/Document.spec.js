@@ -17,7 +17,8 @@ describe('Document', () => {
 
   let props = {
     setSelection: jasmine.createSpy('setSelection'),
-    unsetSelection: jasmine.createSpy('unsetSelection')
+    unsetSelection: jasmine.createSpy('unsetSelection'),
+    resetDocumentViewer: jasmine.createSpy('resetDocumentViewer')
   };
 
   beforeEach(() => {
@@ -36,6 +37,13 @@ describe('Document', () => {
 
     expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css1'})});
     expect(styles.last().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css2'})});
+  });
+
+  describe('componentWillUnmount', () => {
+    it('should resetDocumentViewer', () => {
+      component.unmount();
+      expect(props.resetDocumentViewer).toHaveBeenCalled();
+    });
   });
 
   describe('onMouseUp/onTouchEnd', () => {

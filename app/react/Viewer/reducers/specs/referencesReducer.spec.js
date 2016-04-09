@@ -23,4 +23,13 @@ describe('documentReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+  describe('RESET_DOCUMENT_VIEWER', () => {
+    it('should reset to initialState', () => {
+      let newState = referencesReducer(['reference'], {type: types.RESET_DOCUMENT_VIEWER});
+      let expected = Immutable.fromJS([]);
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
 });

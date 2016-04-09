@@ -8,4 +8,10 @@ describe('documentActions', () => {
       expect(action).toEqual({type: types.SET_DOCUMENT, document: 'document'});
     });
   });
+  describe('resetDocumentViewer()', () => {
+    it('should return a RESET_DOCUMENT_VIEWER', () => {
+      let action = actions.resetDocumentViewer();
+      expect(action).toEqual({type: types.RESET_DOCUMENT_VIEWER});
+    });
+  });
 });
