@@ -84,6 +84,9 @@ export default app => {
     request.get(url)
     .then(response => {
       response.json.rows = response.json.rows.map(row => row.value);
+      if (response.json.rows.length === 1 && response.json.rows[0].css) {
+        response.json.rows[0].css.splice(1, 1);
+      }
       res.json(response.json);
     })
     .catch(console.log);
