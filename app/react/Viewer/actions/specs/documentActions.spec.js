@@ -20,4 +20,10 @@ describe('documentActions', () => {
       expect(action).toEqual({type: types.LOAD_DEFAULT_VIEWER_MENU});
     });
   });
+  describe('openReferencePanel()', () => {
+    it('should return a OPEN_REFERENCE_PANEL', () => {
+      let action = actions.loadDefaultViewerMenu();
+      expect(action).toEqual({type: types.LOAD_DEFAULT_VIEWER_MENU});
+    });
+  });
 });

@@ -1,0 +1,62 @@
+@import "../../controllers/App/scss/config/_colors.scss";
+@import "../../controllers/App/scss/config/_materials.scss";
+@import "../../controllers/App/scss/config/_typography.scss";
+
+.create-modal {
+	position: fixed;
+	right: 0;
+	top: 60px;
+	bottom: 0;
+	border-left: 1px dotted $c-grey;
+	width: 400px;
+	padding: 15px;
+	transform: translateX(100%);
+	transition: all 500ms;
+	&.is-active {
+		transform: translateX(0);
+	}
+
+	h1 {
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-size: $f-size-lg;
+	}
+	.item-group {
+		padding: 15px 0px;
+		margin: 0 -2px 15px;
+		overflow-y: scroll;
+		height: 60%;
+	}
+	.item {
+		height: auto;
+		margin-bottom: 5px;
+		padding: 15px;
+		border-color: $c-white;
+		&:after {
+			content: '\f00c';
+			font-family: FontAwesome;
+			position: absolute;
+			top: 30%;
+		  left: 42%;
+		  font-size: 40px;
+			color: $c-success;
+			opacity: 0;
+			transition: 500ms all;
+		}
+		&.is-selected {
+			background: $c-primary-lighten;
+			color: $c-primary-light;
+			border: 1px solid $c-primary-light;
+			&:after {
+				opacity: 1;
+				top: -5px;
+			}
+			&:before {
+				display: none;
+			}
+		}
+		.item-name {
+			font-size: $f-size;
+		}
+	}
+}

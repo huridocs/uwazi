@@ -30,10 +30,10 @@ export class Document extends Component {
 
   render() {
     const {document} = this.props;
-
     return (
       <div>
-        <div className="document-viewer col-sm-8 col-sm-offset-2"
+        <div
+          className={'document-viewer col-sm-8 col-sm-offset-2 ' + (this.props.panelIsOpen ? 'is-active' : '')}
           ref={(ref) => this.pagesContainer = ref}
           onMouseUp={this.handleMouseUp.bind(this)}
           onTouchEnd={this.handleMouseUp.bind(this)}
@@ -54,6 +54,7 @@ export class Document extends Component {
 
 Document.propTypes = {
   document: PropTypes.object,
+  panelIsOpen: PropTypes.bool,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   resetDocumentViewer: PropTypes.func
@@ -62,7 +63,8 @@ Document.propTypes = {
 const mapStateToProps = (state) => {
   return {
     selection: state.documentViewer.selection,
-    document: state.documentViewer.document
+    document: state.documentViewer.document,
+    panelIsOpen: state.documentViewer.uiState.toJS().referencePanel
   };
 };
 
