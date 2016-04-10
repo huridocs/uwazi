@@ -19,8 +19,8 @@ export class MetadataProperty extends Component {
 
   render() {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
-    console.log(this.form);
     let propertyClass = 'list-group-item';
+
     if (isDragging || inserting) {
       propertyClass += ' dragging';
     }
@@ -116,10 +116,9 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   return {
-    editingProperty: state.template.uiState.toJS().editingProperty,
-    form: state.form.template[props.index]
+    editingProperty: state.template.uiState.toJS().editingProperty
   };
 };
 

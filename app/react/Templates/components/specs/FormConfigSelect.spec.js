@@ -53,11 +53,11 @@ describe('FormConfigInput', () => {
 
     describe('validation', () => {
       it('should return an error when the label is empty', () => {
-        expect(mapStateToProps(state, props).validate({label: '', content: '1'})).toEqual({label: 'Required'});
+        expect(mapStateToProps(state, props).validate({label: '', content: '1', type: 'select'})).toEqual({label: 'Required'});
       });
 
       it('should return an error when the content is empty', () => {
-        expect(mapStateToProps(state, props).validate({label: 'I have a label', content: ''})).toEqual({content: 'Required'});
+        expect(mapStateToProps(state, props).validate({label: 'I have a label', content: '', type: 'select'})).toEqual({content: 'Required'});
       });
     });
   });

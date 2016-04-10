@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
+import {validateName} from 'app/Templates/components/ValidateTemplate';
 
 import {updateTemplate} from 'app/Templates/actions/templateActions';
 
@@ -27,21 +28,11 @@ FormName.propTypes = {
   values: PropTypes.object
 };
 
-const validate = (values) => {
-  let errors = {};
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-
-  return errors;
-};
-
 export function mapStateToProps(state) {
   return {
     initialValues: {name: state.template.data.toJS().name},
     fields: ['name'],
-    validate
+    validate: validateName
   };
 }
 

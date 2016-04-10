@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {reduxForm, touchWithKey, touch, touchAll} from 'redux-form';
 import {Link} from 'react-router';
 import {bindActionCreators} from 'redux';
+import validate from 'app/Templates/components/ValidateTemplate';
 
 import {resetTemplate, saveTemplate} from 'app/Templates/actions/templateActions';
 
@@ -39,28 +40,6 @@ FormControls.propTypes = {
   touch: PropTypes.func,
   touchAll: PropTypes.func,
   properties: PropTypes.array
-};
-
-const validate = (values) => {
-  let errors = {};
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-  errors.properties = [];
-  values.properties.forEach((property, index) => {
-    errors.properties[index] = {};
-    if (!property.label) {
-      errors.properties[index].label = 'Required';
-    }
-
-    let isSelect = property.type === 'list' || property.type === 'select';
-    if (isSelect && !property.content) {
-      errors.properties[index].content = 'Required';
-    }
-  });
-
-  return errors;
 };
 
 FormControls.propTypes = {
