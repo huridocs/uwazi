@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 
 import contextMenuReducer from 'app/ContextMenu/reducers/contextMenuReducer';
 import * as types from 'app/ContextMenu/actions/actionTypes';
+import * as ViewerTypes from 'app/Viewer/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
 describe('contextMenuReducer', () => {
@@ -28,6 +29,39 @@ describe('contextMenuReducer', () => {
       let currentState = Immutable.fromJS({open: true});
       let newState = contextMenuReducer(currentState, {type: types.CLOSE_MENU});
       let expected = Immutable.fromJS({open: false});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('SET_SELECTION', () => {
+    it('should set type to ViewerTextSelectedMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.SET_SELECTION});
+      let expected = Immutable.fromJS({type: 'ViewerTextSelectedMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('UNSET_SELECTION', () => {
+    it('should set type to ViewerDefaultMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.UNSET_SELECTION});
+      let expected = Immutable.fromJS({type: 'ViewerDefaultMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('SET_DOCUMENT', () => {
+    it('should set type to ViewerDefaultMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.SET_DOCUMENT});
+      let expected = Immutable.fromJS({type: 'ViewerDefaultMenu'});
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);

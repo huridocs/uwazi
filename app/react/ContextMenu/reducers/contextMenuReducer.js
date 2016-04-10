@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
 
 import * as actions from 'app/ContextMenu/actions/actionTypes';
+import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 
 
 const initialState = Immutable.fromJS({open: false, menu: null});
@@ -12,6 +13,14 @@ export default function contextMenuReducer(state = initialState, action = {}) {
 
   if (action.type === actions.CLOSE_MENU) {
     return state.set('open', false);
+  }
+
+  if (action.type === ViewerActions.SET_SELECTION) {
+    return state.set('type', 'ViewerTextSelectedMenu');
+  }
+
+  if (action.type === ViewerActions.UNSET_SELECTION || action.type === ViewerActions.SET_DOCUMENT) {
+    return state.set('type', 'ViewerDefaultMenu');
   }
 
   return state;

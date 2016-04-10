@@ -1,12 +1,62 @@
-.context-menu {
-  background: red;
-  position: fixed;
-  bottom: 50px;
-  right: 50px;
-  height: 50px;
-  width: 50px;
+@import "../../controllers/App/scss/config/_colors.scss";
+@import "../../controllers/App/scss/config/_materials.scss";
+@import "../../controllers/App/scss/config/_typography.scss";
 
-  &.open {
-    height: 150px;
-  }
+.float-btn {
+	z-index: 99;
+	position: absolute;
+	bottom: 15px;
+	right: 15px;
+	text-align: right;
+	cursor: pointer;
+	transition: all 300ms;
+	&.active {
+		box-shadow: 0 0 0 10000px rgba(50,50,50,.66);
+		background: rgba(50,50,50,.66);
+	}
+
+	&.btn-fixed {
+		position: fixed;
+	}
+}
+.float-btn__main {
+	display: inline-block;
+	background: $c-success;
+	color: $c-white;
+	text-align: center;
+	line-height: 60px;
+	width: 60px;
+	box-shadow: $shadow;
+	border-radius: 50%;
+	font-size: $f-size-lg;
+}
+.float-btn__sec {
+	margin-bottom: 15px;
+	span {
+		background: $c-white;
+		box-shadow: $shadow;
+		padding: 7px 10px;
+		border-radius: 4px;
+	}
+	.fa {
+		background: $c-primary;
+		color: $c-white;
+		text-align: center;
+		line-height: 44px;
+		width: 44px;
+		box-shadow: $shadow;
+		border-radius: 50%;
+		margin: 0 7px 0 14px;
+	}
+}
+
+.float-btn__sec {
+	opacity: 0;
+	transform: translateY(40px);
+	transition: all 300ms;
+
+	.active & {
+		transform: translateY(0px);
+		opacity: 1;
+	}
 }

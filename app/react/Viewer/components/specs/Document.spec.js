@@ -27,9 +27,9 @@ describe('Document', () => {
   });
 
   it('should render every pagen inside a div ', () => {
-    let pages = component.find('.pages').children();
-    expect(pages.first().props()).toEqual({dangerouslySetInnerHTML: Object({__html: 'page1'})});
-    expect(pages.last().props()).toEqual({dangerouslySetInnerHTML: Object({__html: 'page3'})});
+    let pages = component.find('.document-viewer').children();
+    expect(pages.first().props().dangerouslySetInnerHTML).toEqual({__html: 'page1'});
+    expect(pages.last().props().dangerouslySetInnerHTML).toEqual({__html: 'page3'});
   });
 
   it('should render every css inside a style ', () => {
@@ -53,11 +53,11 @@ describe('Document', () => {
 
         mockRangeSelection('selection');
 
-        component.find('.pages').simulate('mouseup');
+        component.find('.document-viewer').simulate('mouseup');
         expect(instance.onTextSelected).toHaveBeenCalled();
 
         instance.onTextSelected.calls.reset();
-        component.find('.pages').simulate('touchend');
+        component.find('.document-viewer').simulate('touchend');
         expect(instance.onTextSelected).toHaveBeenCalled();
       });
     });
@@ -65,7 +65,7 @@ describe('Document', () => {
     describe('when no text selected', () => {
       it('should unsetSelection', () => {
         mockRangeSelection('');
-        component.find('.pages').simulate('mouseup');
+        component.find('.document-viewer').simulate('mouseup');
 
         expect(props.unsetSelection).toHaveBeenCalled();
       });
@@ -75,11 +75,11 @@ describe('Document', () => {
 
         mockRangeSelection('');
 
-        component.find('.pages').simulate('mouseup');
+        component.find('.document-viewer').simulate('mouseup');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
 
         instance.onTextSelected.calls.reset();
-        component.find('.pages').simulate('touchend');
+        component.find('.document-viewer').simulate('touchend');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
       });
     });

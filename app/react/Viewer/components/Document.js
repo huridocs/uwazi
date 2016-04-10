@@ -2,8 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import TextRange from 'batarange';
+
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
 import {resetDocumentViewer} from 'app/Viewer/actions/documentActions';
+import 'app/Viewer/scss/document.scss';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -31,14 +33,14 @@ export class Document extends Component {
 
     return (
       <div>
-        <div className="pages"
+        <div className="document-viewer col-sm-8 col-sm-offset-2"
           ref={(ref) => this.pagesContainer = ref}
           onMouseUp={this.handleMouseUp.bind(this)}
           onTouchEnd={this.handleMouseUp.bind(this)}
         >
         {document.pages.map((page, index) => {
           let html = {__html: page};
-          return <div key={index} dangerouslySetInnerHTML={html} ></div>;
+          return <div key={index} dangerouslySetInnerHTML={html} className="document-article"/>;
         })}
         </div>
         {document.css.map((css, index) => {
@@ -53,7 +55,8 @@ export class Document extends Component {
 Document.propTypes = {
   document: PropTypes.object,
   setSelection: PropTypes.func,
-  unsetSelection: PropTypes.func
+  unsetSelection: PropTypes.func,
+  resetDocumentViewer: PropTypes.func
 };
 
 const mapStateToProps = (state) => {

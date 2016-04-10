@@ -32,10 +32,10 @@ export default class ViewDocument extends RouteHandler {
 
   render() {
     return (
-      <div>
+      <main>
         <Document />
         <ContextMenu />
-      </div>
+      </main>
     );
   }
 
