@@ -12,3 +12,9 @@ export function resetDocumentViewer() {
     type: types.RESET_DOCUMENT_VIEWER
   };
 }
+
+export function loadDefaultViewerMenu() {
+  return {
+    type: types.LOAD_DEFAULT_VIEWER_MENU
+  };
+}

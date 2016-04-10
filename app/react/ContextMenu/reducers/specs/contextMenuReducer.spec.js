@@ -57,10 +57,10 @@ describe('contextMenuReducer', () => {
     });
   });
 
-  describe('SET_DOCUMENT', () => {
+  describe('LOAD_DEFAULT_VIEWER_MENU', () => {
     it('should set type to ViewerDefaultMenu', () => {
       let currentState = Immutable.fromJS({type: null});
-      let newState = contextMenuReducer(currentState, {type: ViewerTypes.SET_DOCUMENT});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.LOAD_DEFAULT_VIEWER_MENU});
       let expected = Immutable.fromJS({type: 'ViewerDefaultMenu'});
 
       expect(newState).toBeImmutable();

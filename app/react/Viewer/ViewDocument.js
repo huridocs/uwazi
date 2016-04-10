@@ -5,8 +5,7 @@ import api from 'app/utils/singleton_api';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';
 import {setDocument} from 'app/Viewer/actions/documentActions';
-import Document from 'app/Viewer/components/Document';
-import ContextMenu from 'app/ContextMenu';
+import Viewer from 'app/Viewer/components/Viewer';
 
 export default class ViewDocument extends RouteHandler {
 
@@ -31,12 +30,7 @@ export default class ViewDocument extends RouteHandler {
   }
 
   render() {
-    return (
-      <main>
-        <Document />
-        <ContextMenu />
-      </main>
-    );
+    return <Viewer />;
   }
 
 }

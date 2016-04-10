@@ -14,4 +14,10 @@ describe('documentActions', () => {
       expect(action).toEqual({type: types.RESET_DOCUMENT_VIEWER});
     });
   });
+  describe('loadDefaultViewerMenu()', () => {
+    it('should return a LOAD_DEFAULT_VIEWER_MENU', () => {
+      let action = actions.loadDefaultViewerMenu();
+      expect(action).toEqual({type: types.LOAD_DEFAULT_VIEWER_MENU});
+    });
+  });
 });
