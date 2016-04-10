@@ -1,0 +1,12 @@
+.context-menu {
+  background: red;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  height: 50px;
+  width: 50px;
+
+  &.open {
+    height: 150px;
+  }
+}

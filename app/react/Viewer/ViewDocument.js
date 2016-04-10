@@ -6,6 +6,7 @@ import RouteHandler from 'app/controllers/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';
 import {setDocument} from 'app/Viewer/actions/documentActions';
 import Document from 'app/Viewer/components/Document';
+import ContextMenu from 'app/ContextMenu';
 
 export default class ViewDocument extends RouteHandler {
 
@@ -30,7 +31,12 @@ export default class ViewDocument extends RouteHandler {
   }
 
   render() {
-    return <Document />;
+    return (
+      <div>
+        <Document />
+        <ContextMenu />
+      </div>
+    );
   }
 
 }

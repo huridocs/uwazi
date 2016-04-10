@@ -9,6 +9,7 @@ import {reducer as notificationsReducer} from 'app/Notifications';
 import thesauri from 'app/Thesauris/reducers/thesauriReducer';
 import thesauris from 'app/Thesauris/reducers/thesaurisReducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
+import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -20,5 +21,6 @@ export default combineReducers({
   thesauri: thesauri,
   thesauris,
   templates,
-  documentViewer
+  documentViewer,
+  contextMenu
 });
