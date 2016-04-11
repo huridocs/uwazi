@@ -166,20 +166,6 @@
     top: 5px;
     right: 5px;
   }
-
-  .label {
-    margin-right: 15px;
-    font-size: $f-size-sm;
-    font-weight: normal;
-    .fa {
-      margin-left: 0;
-    }
-  }
-  .label-default {
-    background: $c-grey-light;
-    color: $c-grey-dark;
-    border: 1px solid $c-grey;
-  }
 }
 
 .item-name {
@@ -214,6 +200,21 @@
   }
   .medium {
     color: $c-primary;
+  }
+}
+.item-data,
+.item-tag {
+  margin-right: 15px;
+  font-size: $f-size-sm;
+  font-weight: normal;
+}
+.item-tag {
+  background: $c-grey-light;
+  color: $c-grey-dark;
+  border: 1px solid $c-grey;
+
+  .fa {
+    margin-left: 0;
   }
 }
 
