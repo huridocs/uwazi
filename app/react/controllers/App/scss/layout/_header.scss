@@ -17,6 +17,10 @@ header {
     @include desktop {
       display: block;
     }
+
+    a {
+      color: $c-black;
+    }
   }
 
   .input-group {
