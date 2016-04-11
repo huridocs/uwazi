@@ -8,6 +8,7 @@ import {updateProperty} from 'app/Templates/actions/templateActions';
 export class FormConfigInput extends Component {
   render() {
     const {fields: {label, required, filter}} = this.props;
+
     return (
       <form className="row" onChange={() => {
         setTimeout(() => {
@@ -50,7 +51,7 @@ FormConfigInput.propTypes = {
 export function mapStateToProps(state, props) {
   return {
     initialValues: state.template.data.toJS().properties[props.index],
-    fields: ['label', 'required', 'filter'],
+    fields: ['label', 'required', 'filter', 'type'],
     validate: validateProperty
   };
 }

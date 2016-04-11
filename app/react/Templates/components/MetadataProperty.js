@@ -12,14 +12,37 @@ export class MetadataProperty extends Component {
 
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'list') {
-      return <FormConfigSelect formKey={this.props.index.toString()} index={this.props.index} />;
+      return <FormConfigSelect formKey={this.props.id} index={this.props.index} />;
     }
-    return <FormConfigInput formKey={this.props.index.toString()} index={this.props.index} />;
+    return <FormConfigInput formKey={this.props.id} index={this.props.index} />;
+  }
+
+  hasError(form) {
+    if (Object.keys(form).length === 0) {
+      return false;
+    }
+
+    let labelError = false;
+    if (form.label.touched && !form.label.value) {
+      labelError = true;
+    }
+
+    let contentError = false;
+    let hasContent = this.props.type === 'select' || this.props.type === 'list';
+    if (hasContent && form.content.touched && !form.content.value) {
+      contentError = true;
+    }
+
+    return labelError || contentError;
   }
 
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id, form} = this.props;
     let propertyClass = 'list-group-item';
+
+    if (this.hasError(form)) {
+      propertyClass += ' error';
+    }
 
     if (isDragging || inserting) {
       propertyClass += ' dragging';
@@ -69,7 +92,8 @@ MetadataProperty.propTypes = {
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
   editingProperty: PropTypes.string,
-  editProperty: PropTypes.func
+  editProperty: PropTypes.func,
+  form: PropTypes.object
 };
 
 
@@ -116,9 +140,10 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
   return {
-    editingProperty: state.template.uiState.toJS().editingProperty
+    editingProperty: state.template.uiState.toJS().editingProperty,
+    form: state.form.template[props.id] || {}
   };
 };
 

@@ -4,7 +4,6 @@ import TestBackend from 'react-dnd-test-backend';
 import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
-import {reducer as formReducer} from 'redux-form';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
@@ -27,8 +26,8 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let targetProps = {label: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false};
-        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity, isDragging: false};
+        let targetProps = {label: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false, form: {}};
+        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity, isDragging: false, form: {}};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -50,7 +49,7 @@ describe('MetadataProperty', () => {
     store = createStore(() => {
       return {
         template: {data: templateData, uiState: Immutable.fromJS({})},
-        form: formReducer
+        form: {template: {}}
       };
     });
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
@@ -89,7 +88,8 @@ describe('MetadataProperty', () => {
           inserting: true,
           label: 'test',
           index: 1,
-          id: 'id'
+          id: 'id',
+          form: {}
         };
         component = shallow(<DumbComponent {...props}/>);
         expect(component.find(FormConfigInput).length).toBe(1);
@@ -121,7 +121,8 @@ describe('MetadataProperty', () => {
           inserting: true,
           label: 'test',
           index: 1,
-          id: 'id'
+          id: 'id',
+          form: {}
         });
       });
 
@@ -148,7 +149,7 @@ describe('MetadataProperty', () => {
   describe('dragSource', () => {
     beforeEach(() => {
       let TestComponent = wrapInTestContext(dragSource);
-      component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 1, id: 'id'});
+      component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 1, id: 'id', form: {}});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });

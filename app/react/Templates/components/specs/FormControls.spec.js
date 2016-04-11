@@ -16,7 +16,7 @@ describe('FormControls', () => {
       fields: {name: {}, properties: []},
       values: {value: 'some value'},
       saveTemplate: jasmine.createSpy('saveTemplate'),
-      properties: [{type: 'text', label: 'text'}],
+      properties: [{type: 'text', label: 'text', id: 'propId'}],
       touchWithKey: jasmine.createSpy('touchWithKey'),
       touch: jasmine.createSpy('touch'),
       handleSubmit
@@ -33,7 +33,7 @@ describe('FormControls', () => {
 
     it('should touch all the subforms fields', () => {
       component.find('form').simulate('submit', {preventDefault: () => {}});
-      expect(props.touchWithKey).toHaveBeenCalledWith('template', '0', 'content', 'label', 'required', 'filter');
+      expect(props.touchWithKey).toHaveBeenCalledWith('template', 'propId', 'content', 'label', 'required', 'filter');
       expect(props.touch).toHaveBeenCalledWith('template', 'name');
     });
   });

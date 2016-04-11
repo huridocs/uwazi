@@ -6,7 +6,6 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
-import {reducer as formReducer} from 'redux-form';
 
 import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
@@ -46,7 +45,7 @@ describe('MetadataTemplate', () => {
     let store = createStore(() => {
       return {
         template: {data: templateData, uiState: Immutable.fromJS({})},
-        form: formReducer
+        form: {template: {}}
       };
     });
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
