@@ -34,7 +34,7 @@ export class Metadata extends RouteHandler {
             <div className="panel-heading">Document type</div>
             <ul className="list-group">
               {this.props.templates.map((template, index) => {
-                return (<li key={index} className="list-group-item">
+                return <li key={index} className="list-group-item">
                           <Link to={'/templates/edit/' + template._id}>{template.name}</Link>
                           <div onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger btn-xs pull-right template-remove">
                             <i className="fa fa-trash"></i>
@@ -43,7 +43,7 @@ export class Metadata extends RouteHandler {
                           <Link to={'/templates/edit/' + template._id} className="btn btn-default btn-xs pull-right">
                             <i className="fa fa-pencil"></i>
                           </Link>
-                       </li>);
+                       </li>;
               })}
             <Link to="/templates/new" className="panel-footer"><i className="fa fa-plus"></i> Add document type</Link>
             </ul>
