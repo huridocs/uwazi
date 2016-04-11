@@ -1,10 +1,14 @@
 import React, {Component, PropTypes} from 'react';
+import SidePanel from 'app/Layout/SidePanel';
+import {connect} from 'react-redux';
+
 import 'app/Viewer/scss/createmodal.scss';
 
 export class CreateReferencePanel extends Component {
   render() {
+    let sidePanelprops = {open: this.props.referencePanel};
     return (
-      <div className="create-modal is-active">
+      <SidePanel {...sidePanelprops}>
         <h1>Create document reference</h1>
         <div className="input-group">
           <input type="text" placeholder="Search document title" className="form-control"/><span className="input-group-addon"><i className="fa fa-search"></i></span>
@@ -62,12 +66,19 @@ export class CreateReferencePanel extends Component {
             <label>Judgements</label>
           </li>
         </ul>
-      </div>
+      </SidePanel>
     );
   }
 }
 
 CreateReferencePanel.propTypes = {
+  referencePanel: PropTypes.bool
 };
 
-export default CreateReferencePanel;
+const mapStateToProps = (state) => {
+  return {
+    referencePanel: state.documentViewer.uiState.toJS().referencePanel
+  };
+};
+
+export default connect(mapStateToProps)(CreateReferencePanel);

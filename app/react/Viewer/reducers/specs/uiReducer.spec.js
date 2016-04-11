@@ -22,4 +22,13 @@ describe('documentReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+
+  describe('UNSET_SELECTION', () => {
+    it('should set referencePanel = false', () => {
+      let newState = uiReducer(Immutable.fromJS({referencePanel: true}), {type: types.UNSET_SELECTION});
+      let expected = Immutable.fromJS({referencePanel: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
 });

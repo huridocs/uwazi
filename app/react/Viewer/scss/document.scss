@@ -11,6 +11,14 @@
 	&.is-active-2 {
 		transform: translateX(-100%);
 	}
+
+	::selection {
+		background: $c-primary-light;
+	}
+
+	.fake-selection {
+		background: $c-primary-light;
+	}
 }
 .document-article {
 	background: $c-white;

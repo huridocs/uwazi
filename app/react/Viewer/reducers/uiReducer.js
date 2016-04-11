@@ -8,5 +8,9 @@ export default function (state = initialState, action = {}) {
     return state.set('referencePanel', true);
   }
 
+  if (action.type === types.UNSET_SELECTION) {
+    return state.set('referencePanel', false);
+  }
+
   return state;
 }

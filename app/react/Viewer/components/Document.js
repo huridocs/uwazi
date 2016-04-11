@@ -1,27 +1,31 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import TextRange from 'batarange';
 
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
+import Text from 'app/Viewer/utils/Text';
 import {resetDocumentViewer} from 'app/Viewer/actions/documentActions';
 import 'app/Viewer/scss/document.scss';
 
 export class Document extends Component {
   handleMouseUp() {
-    if (window.getSelection().toString() === '') {
+    if (!this.text.selected()) {
       this.props.unsetSelection();
       return;
     }
     this.onTextSelected();
   }
 
+  componentDidMount() {
+    this.text = Text(this.pagesContainer);
+  }
+
   onTextSelected() {
-    let range = window.getSelection().getRangeAt(0);
-    this.props.setSelection(TextRange.serialize(range, this.pagesContainer));
+    this.props.setSelection(this.text.getSelection());
   }
 
   componentDidUpdate() {
+    this.text.simulateSelection(this.props.selection);
   }
 
   componentWillUnmount() {
@@ -57,7 +61,8 @@ Document.propTypes = {
   panelIsOpen: PropTypes.bool,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
-  resetDocumentViewer: PropTypes.func
+  resetDocumentViewer: PropTypes.func,
+  selection: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
