@@ -11,3 +11,10 @@ export function viewerSearching() {
     type: types.VIEWER_SEARCHING
   };
 }
+
+export function selectTargetDocument(id) {
+  return {
+    type: types.SELECT_TARGET_DOCUMENT,
+    id
+  };
+}

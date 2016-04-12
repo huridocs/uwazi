@@ -1,10 +1,13 @@
 import React, {Component, PropTypes} from 'react';
-import SidePanel from 'app/Layout/SidePanel';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import 'app/Viewer/scss/createmodal.scss';
 
+import SidePanel from 'app/Layout/SidePanel';
 import ViewerSearchForm from 'app/Viewer/components/ViewerSearchForm';
+import SearchResults from 'app/Viewer/presentation/SearchResults';
+import {selectTargetDocument} from 'app/Viewer/actions/uiActions';
 
 export class CreateReferencePanel extends Component {
   render() {
@@ -12,23 +15,16 @@ export class CreateReferencePanel extends Component {
     return (
       <SidePanel {...sidePanelprops}>
         <h1>Create document reference</h1>
+
         <ViewerSearchForm />
-        <div className="item-group">
-          {(() => {
-            if (this.props.searching) {
-              return <div>Searching...</div>;
-            }
-            return this.props.results.map((result, index) => {
-              return (
-                <li key={index}>
-                <div className="item">
-                <span className="item-name">{result.title}</span>
-                </div>
-                </li>
-              );
-            });
-          })()}
-        </div>
+
+        <SearchResults
+          results={this.props.results}
+          searching={this.props.searching}
+          selected={this.props.selected}
+          onClick={this.props.selectTargetDocument}
+        />
+
         <ul className="search__filter search__filter--radiobutton">
           <li>Relationship type</li>
           <li className="is-active"><i className="fa fa-check"></i>
@@ -52,15 +48,22 @@ export class CreateReferencePanel extends Component {
 CreateReferencePanel.propTypes = {
   referencePanel: PropTypes.bool,
   results: PropTypes.array,
-  searching: PropTypes.bool
+  searching: PropTypes.bool,
+  selected: PropTypes.string,
+  selectTargetDocument: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
   return {
     referencePanel: state.documentViewer.uiState.toJS().referencePanel,
     results: state.documentViewer.results,
-    searching: state.documentViewer.uiState.toJS().viewerSearching
+    searching: state.documentViewer.uiState.toJS().viewerSearching,
+    selected: state.documentViewer.uiState.toJS().targetDocument
   };
 };
 
-export default connect(mapStateToProps)(CreateReferencePanel);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({selectTargetDocument}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateReferencePanel);

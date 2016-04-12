@@ -20,5 +20,9 @@ export default function (state = initialState, action = {}) {
     return state.set('referencePanel', false);
   }
 
+  if (action.type === types.SELECT_TARGET_DOCUMENT) {
+    return state.set('targetDocument', action.id);
+  }
+
   return state;
 }

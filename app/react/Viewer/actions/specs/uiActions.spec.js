@@ -14,4 +14,10 @@ describe('openReferencePanel', () => {
       expect(action).toEqual({type: types.VIEWER_SEARCHING});
     });
   });
+  describe('selectTargetDocument()', () => {
+    it('should return a SELECT_TARGET_DOCUMENT with id', () => {
+      let action = actions.selectTargetDocument('id');
+      expect(action).toEqual({type: types.SELECT_TARGET_DOCUMENT, id: 'id'});
+    });
+  });
 });

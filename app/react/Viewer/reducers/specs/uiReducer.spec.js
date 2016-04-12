@@ -49,4 +49,13 @@ describe('documentReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+
+  describe('SELECT_TARGET_DOCUMENT', () => {
+    it('should set targetDocument = id passed', () => {
+      let newState = uiReducer(Immutable.fromJS({targetDocument: null}), {type: types.SELECT_TARGET_DOCUMENT, id: 'id'});
+      let expected = Immutable.fromJS({targetDocument: 'id'});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
 });
