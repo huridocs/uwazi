@@ -24,7 +24,7 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: documents})});
+    .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(documents)});
   });
 
   it('should render the DocumentsList', () => {
@@ -35,7 +35,7 @@ describe('Library', () => {
     it('should request the documents', (done) => {
       Library.requestState()
       .then((state) => {
-        expect(state).toEqual({documents: Immutable.fromJS(documents)});
+        expect(state).toEqual({library: {documents: Immutable.fromJS(documents)}});
         done();
       })
       .catch(done.fail);
@@ -44,7 +44,7 @@ describe('Library', () => {
 
   describe('setReduxState()', () => {
     it('should call setDocuments with the documents', () => {
-      instance.setReduxState({documents});
+      instance.setReduxState({library: {documents}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents: documents});
     });
   });

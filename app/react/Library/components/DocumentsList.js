@@ -1,68 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
 
 import 'app/Library/scss/DocumentsList.scss';
+import Doc from 'app/Library/components/Doc';
 
 export class DocumentsList extends Component {
-
-  renderDocument(doc, index) {
-    let documentViewUrl = '/document/' + doc._id;
-    return (
-      <li key={index} className="col-sm-4">
-              <div className="item item1">
-                <i className="fa fa-expand"></i>
-                <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{doc.title}</Link>
-                <div className="item-metadata"><span className="label label-default">
-                <i className="fa fa-calendar"></i>March 14</span><span className="label label-default">
-                <i className="fa fa-tag"></i>Decision</span>
-                </div>
-                <div className="item-snippets"><span> <i className="fa fa-search"></i> 3 matches</span>
-                  <p>
-                    "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae <b>africa</b>
-                    aut velit autem pariatur commodi. Voluptates perspiciatis nihil <b>africa</b>
-                    consequuntur fugit eum recusandae dolor, aliquid tempora sint aliquam <b>africa</b>."
-                  </p>
-                </div>
-                <div className="item-preview">
-                  <div className="row">
-                    <div className="col-sm-4">
-                      <h4>Metadata 1</h4>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                    </div>
-                    <div className="col-sm-4">
-                      <h4>Metadata 2</h4>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                    </div>
-                    <div className="col-sm-4">
-                      <h4>Metadata 3</h4>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                      <p>Text</p>
-                    </div>
-                    <div className="col-sm-6">
-                      <div className="btn btn-default btn-close"><i className="fa fa-close"></i>Close preview</div>
-                    </div>
-                    <div className="col-sm-6">
-                      <div className="btn btn-success btn-open">View document<i className="fa fa-arrow-right"></i></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-    );
-  }
-
 
   render() {
     let documents = this.props.documents;
@@ -79,7 +21,9 @@ export class DocumentsList extends Component {
             </p>
           </div>
           <div className="item-group row">
-              {documents.map(this.renderDocument)}
+              {documents.map((doc, index) => {
+                return <Doc {...doc} key={index} />;
+              })}
           </div>
         </main>
         <aside className="col-xs-12 col-sm-3">

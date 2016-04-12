@@ -4,12 +4,16 @@ import backend from 'fetch-mock';
 
 describe('DocumentsAPI', () => {
   let arrayResponse = [{documents: 'array'}];
+  let searchResponse = [{documents: 'search'}];
+  let searchResult = [{documents: 'Bruce Wayne'}];
   let singleResponse = [{documents: 'single'}];
 
   beforeEach(() => {
     backend.restore();
     backend
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
+    .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(searchResponse)})
+    .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
     .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
@@ -30,6 +34,28 @@ describe('DocumentsAPI', () => {
         documentsAPI.get('documentId')
         .then((response) => {
           expect(response).toEqual(singleResponse);
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+  });
+
+  describe('search()', () => {
+    it('should search documents', (done) => {
+      documentsAPI.search()
+      .then((response) => {
+        expect(response).toEqual(searchResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    describe('when passing a searchTerm', () => {
+      it('should search for it', (done) => {
+        documentsAPI.search('Batman')
+        .then((response) => {
+          expect(response).toEqual(searchResult);
           done();
         })
         .catch(done.fail);

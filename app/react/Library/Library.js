@@ -5,18 +5,27 @@ import RouteHandler from 'app/controllers/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import {setDocuments} from 'app/Library/actions/libraryActions';
 import api from 'app/Library/DocumentsAPI';
+import SearchBar from 'app/Library/components/SearchBar';
 
 export default class Library extends RouteHandler {
 
+  static renderTools() {
+    return <SearchBar/>;
+  }
+
   static requestState() {
-    return api.get()
+    return api.search()
     .then((documents) => {
-      return {documents: Immutable.fromJS(documents)};
+      return {
+        library: {
+          documents: Immutable.fromJS(documents)
+        }
+      };
     });
   }
 
-  setReduxState({documents}) {
-    this.context.store.dispatch(setDocuments(documents));
+  setReduxState({library}) {
+    this.context.store.dispatch(setDocuments(library.documents));
   }
 
   render() {

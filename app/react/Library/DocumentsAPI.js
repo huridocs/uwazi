@@ -13,6 +13,14 @@ export default {
     });
   },
 
+  search(searchTerm) {
+    let url = 'documents/search?searchTerm=' + (searchTerm || '');
+    return api.get(url)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   save(thesauri) {
     return api.post('documents', thesauri)
     .then((response) => {
