@@ -1,5 +1,3 @@
-import sinon from 'sinon';
-
 import {mockID} from 'app/utils/uniqueID';
 import * as actions from 'app/Notifications/actions/notificationsActions';
 import * as types from 'app/Notifications/actions/actionTypes';
@@ -7,16 +5,15 @@ import * as types from 'app/Notifications/actions/actionTypes';
 describe('notificationsActions', () => {
   describe('async actions', () => {
     let dispatch;
-    let clock;
 
     beforeEach(() => {
       mockID();
       dispatch = jasmine.createSpy('dispatch');
-      clock = sinon.useFakeTimers();
+      jasmine.clock().install();
     });
 
     afterEach(() => {
-      clock.restore();
+      jasmine.clock().uninstall();
     });
 
     describe('removeNotification', () => {
@@ -36,7 +33,7 @@ describe('notificationsActions', () => {
         actions.notify(message, type)(dispatch);
 
         expect(dispatch).toHaveBeenCalledWith({type: types.NOTIFY, notification: {message: 'message', type: 'type', id: 'unique_id'}});
-        clock.tick(3000);
+        jasmine.clock().tick(3000);
         expect(dispatch).toHaveBeenCalledWith({type: types.REMOVE_NOTIFICATION, id: 'unique_id'});
       });
     });
