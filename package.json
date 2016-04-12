@@ -94,7 +94,7 @@
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "^1.7.0",
     "node-sass": "^3.3.3",
-    "phantomjs-polyfill-find": "ptim/phantomjs-polyfill-find",
+    "phantomjs-polyfill-find": "phantomjs-polyfill-find",
     "phantomjs-prebuilt": "^2.1.6",
     "react-addons-test-utils": "^0.14.3",
     "react-dnd-test-backend": "^1.0.2",
