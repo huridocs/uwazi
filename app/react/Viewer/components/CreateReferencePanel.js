@@ -59,7 +59,7 @@ const mapStateToProps = (state) => {
   return {
     referencePanel: state.documentViewer.uiState.toJS().referencePanel,
     results: state.documentViewer.results,
-    // searching: state.documentViewer.uiState.toJS().viewerSearching
+    searching: state.documentViewer.uiState.toJS().viewerSearching
   };
 };
 

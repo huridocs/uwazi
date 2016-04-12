@@ -1,8 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import TextRange from 'batarange';
 
-import mockRangeSelection from 'app/utils/mockRangeSelection';
 import Text from 'app/Viewer/utils/Text';
 import {Document} from 'app/Viewer/components/Document.js';
 
