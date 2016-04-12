@@ -5,3 +5,9 @@ export function openReferencePanel() {
     type: types.OPEN_REFERENCE_PANEL
   };
 }
+
+export function viewerSearching() {
+  return {
+    type: types.VIEWER_SEARCHING
+  };
+}

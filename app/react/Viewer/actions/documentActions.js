@@ -1,4 +1,6 @@
 import * as types from 'app/Viewer/actions/actionTypes';
+import api from 'app/utils/singleton_api';
+import {viewerSearching} from 'app/Viewer/actions/uiActions';
 
 export function setDocument(document) {
   return {
@@ -16,5 +18,19 @@ export function resetDocumentViewer() {
 export function loadDefaultViewerMenu() {
   return {
     type: types.LOAD_DEFAULT_VIEWER_MENU
+  };
+}
+
+export function viewerSearchDocuments(searchTerm) {
+  return function (dispatch) {
+    dispatch(viewerSearching());
+
+    return api.get('documents/search?searchTerm=' + searchTerm)
+    .then((response) => {
+      dispatch({
+        type: types.SET_VIEWER_RESULTS,
+        results: response.json
+      });
+    });
   };
 }

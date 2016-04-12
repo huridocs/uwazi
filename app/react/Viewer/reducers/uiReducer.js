@@ -8,6 +8,14 @@ export default function (state = initialState, action = {}) {
     return state.set('referencePanel', true);
   }
 
+  if (action.type === types.VIEWER_SEARCHING) {
+    return state.set('viewerSearching', true);
+  }
+
+  if (action.type === types.SET_VIEWER_RESULTS) {
+    return state.set('viewerSearching', false);
+  }
+
   if (action.type === types.UNSET_SELECTION) {
     return state.set('referencePanel', false);
   }

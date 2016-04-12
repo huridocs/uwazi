@@ -23,6 +23,24 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('VIEWER_SEARCHING', () => {
+    it('should set viewerSearching = true', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.VIEWER_SEARCHING});
+      let expected = Immutable.fromJS({viewerSearching: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('SET_VIEWER_RESULTS', () => {
+    it('should set viewerSearching = false', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_VIEWER_RESULTS});
+      let expected = Immutable.fromJS({viewerSearching: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('UNSET_SELECTION', () => {
     it('should set referencePanel = false', () => {
       let newState = uiReducer(Immutable.fromJS({referencePanel: true}), {type: types.UNSET_SELECTION});
