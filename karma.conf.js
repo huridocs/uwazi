@@ -14,16 +14,15 @@ module.exports = function (config) {
       'karma-phantomjs-launcher',
       'karma-jasmine',
       'karma-sourcemap-loader',
-      'karma-webpack',
-      'karma-coverage'
+      'karma-webpack'
     ],
     browserNoActivityTimeout: 1000000,
     preprocessors: {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ] //preprocess with webpack and our sourcemap loader
     },
-    reporters: [ 'dots', 'coverage' ], //report results in this format
+    reporters: [ 'dots' ], //report results in this format
     webpack: { //kind of a copy of your webpack config
-      devtool: 'eval', //just do inline source maps instead of the default
+      devtool: 'inline-source-map', //just do inline source maps instead of the default
       module: {
         loaders: [
           { test: /\.js$/,
@@ -45,11 +44,11 @@ module.exports = function (config) {
             loader: 'file-loader',
             include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
           }
-        ],
-        postLoaders: [ { //delays coverage til after tests are run, fixing transpiled source coverage error
-            test: /\.js$/,
-            exclude: /(spec|node_modules|bower_components)\//,
-            loader: 'istanbul-instrumenter' } ]
+        ]
+        // postLoaders: [ { //delays coverage til after tests are run, fixing transpiled source coverage error
+        //     test: /\.js$/,
+        //     exclude: /(spec|node_modules|bower_components)\//,
+        //     loader: 'istanbul-instrumenter' } ]
       },
       externals: {
         'jsdom': 'window',
@@ -60,10 +59,10 @@ module.exports = function (config) {
     },
     webpackServer: {
       noInfo: true //please don't spam the console when running in karma!
-    },
-    coverageReporter: {
-      type: 'html', //produces a html document after code is run
-      dir: 'coverage/' //path to created html doc
     }
+    // coverageReporter: {
+    //   type: 'html', //produces a html document after code is run
+    //   dir: 'coverage/' //path to created html doc
+    // }
   });
 };
