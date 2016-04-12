@@ -1,0 +1,31 @@
+.panel-default>.panel-heading {
+  font-weight: bold;
+  font-size: $f-size-lg;
+  border-bottom: 0;
+}
+
+.panel>.list-group {
+  padding: 15px 15px;
+  background: $c-grey-light;
+
+  .list-group-item {
+    margin: 15px 0;
+    line-height: 22px;
+    border: 0;
+    box-shadow: $shadow;
+
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.panel-footer {
+  display: block;
+  text-align: center;
+  border: 1px dashed $c-grey;
+  color: $c-grey-dark;
+}

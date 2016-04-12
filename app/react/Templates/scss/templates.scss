@@ -1,77 +1,37 @@
-.template {
-  background-color: white;
-  .btn {
-    float: right;
-    margin-right: 10px;
-  }
+@import "../../controllers/App/scss/config/_colors.scss";
 
-  h1{
-    border-bottom: 1px solid #ccc;
-    font-size: 25px;
-    margin-bottom: 20px;
+.panel {
+  >.list-group {
+    .list-group-item {
 
-    .edit {
-      color: #aaa;
-      font-size: 10px;
-      font-weight: 300;
-      cursor: pointer;
-    }
-  }
-}
+      .btn {
+        margin-left: 5px;
+      }
 
-.field-options {
-  list-style: none;
-  padding: 0;
-}
+      &.error {
+        box-shadow: 0px 10px 15px -10px #920000;
+      }
 
-.field-option {
-  padding: 15px;
-  margin-bottom: 5px;
-  cursor: pointer;
-}
+      >.fa:first-child {
+        margin: 0 25px 0 0;
+        color: $c-grey;
+      }
 
-.template-properties {
-  min-height: 400px;
-
-  .no-properties {
-    line-height: 400px;
-    text-align: center;
-    font-size: 15px;
-  }
-
-  .metadata-propery {
-
-    &.dragging {
-      opacity: 0;
-    }
-
-    .btn {
-      margin-bottom: 10px;
-    }
-
-    form {
-      clear: both;
-      background-color: white;
-      padding: 10px;
-    }
-
-    .metadata-propery-form {
-      height: auto;
-
-      &.collapsed {
+      .propery-form {
         height: 0;
         overflow: hidden;
+
+        &.expand {
+          border-top: 1px solid $c-grey-light;
+          padding: 15px 0 0 30px;
+          margin-top: 15px;
+          height: auto;
+        }
+      }
+
+      &.dragging {
+        opacity: 0;
       }
     }
-  }
-}
-
-.well .btn {
-  margin-left: 10px;
-}
-
-.metadata {
-  .btn {
-    float: right;
   }
 }

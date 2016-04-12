@@ -11,13 +11,15 @@ header {
     font-family: $f-special;
     font-style: italic;
     font-weight: 300;
-    //text-transform: uppercase;
-    //letter-spacing: 0.05em;
     margin: 0;
     line-height: 60px;
     display: none;
     @include desktop {
       display: block;
+    }
+
+    a {
+      color: $c-black;
     }
   }
 
@@ -94,6 +96,9 @@ header {
     }
     i {
       margin-right: 3px;
+    }
+    a {
+      color: $c-black;
     }
   }
 

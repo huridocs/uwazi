@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {reduxForm} from 'redux-form';
 import {Link} from 'react-router';
+import 'app/Thesauris/scss/thesauris.scss';
 
 import {saveThesauri, resetThesauri} from 'app/Thesauris/actions/thesauriActions';
 
@@ -23,7 +24,7 @@ export class ThesauriForm extends Component {
                 <button className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save Thesauri
                 </button>
-                <Link to="/templates" className="btn btn-default">Cancel</Link>
+                <Link to="/metadata" className="btn btn-default">Cancel</Link>
               </div>
               <div className={'form-group thesauri-name' + (submitFailed && fields.name.invalid ? ' has-error' : '')}>
                 <label htmlFor="thesauriName" className="control-label">Thesauri name</label>

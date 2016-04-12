@@ -41,7 +41,7 @@ class Root extends Component {
           <link rel="shortcut icon" href="/public/favicon.ico"/>
         </head>
         <body>
-          <div id='root' dangerouslySetInnerHTML={{__html: this.props.content}} />
+          <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
           <script src={isDeveloping ? '/bundle.js' : '/bundle.min.js'}></script>

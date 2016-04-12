@@ -5,7 +5,6 @@ import RouteHandler from 'app/controllers/App/RouteHandler';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
 import {editThesauri} from 'app/Thesauris/actions/thesaurisActions';
 import api from 'app/Thesauris/ThesaurisAPI';
-import 'app/Thesauris/scss/thesauris.scss';
 
 export default class EditThesauri extends RouteHandler {
 

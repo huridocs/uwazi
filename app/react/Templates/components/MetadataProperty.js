@@ -9,29 +9,74 @@ import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
 export class MetadataProperty extends Component {
+
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'list') {
-      return <FormConfigSelect formKey={this.props.index.toString()} index={this.props.index} />;
+      return <FormConfigSelect formKey={this.props.id} index={this.props.index} />;
     }
-    return <FormConfigInput formKey={this.props.index.toString()} index={this.props.index} />;
+    return <FormConfigInput formKey={this.props.id} index={this.props.index} />;
+  }
+
+  hasError(form) {
+    if (Object.keys(form).length === 0) {
+      return false;
+    }
+
+    let labelError = false;
+    if (form.label.touched && !form.label.value) {
+      labelError = true;
+    }
+
+    let contentError = false;
+    let hasContent = this.props.type === 'select' || this.props.type === 'list';
+    if (hasContent && form.content.touched && !form.content.value) {
+      contentError = true;
+    }
+
+    return labelError || contentError;
   }
 
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id} = this.props;
-    let propertyClass = 'metadata-propery well';
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id, form} = this.props;
+    let propertyClass = 'list-group-item';
+
+    if (this.hasError(form)) {
+      propertyClass += ' error';
+    }
+
     if (isDragging || inserting) {
       propertyClass += ' dragging';
     }
 
+    let iconClass = 'fa fa-font';
+    if (this.props.type === 'select' || this.props.type === 'list') {
+      iconClass = 'fa fa-list';
+    }
+
+    if (this.props.type === 'date') {
+      iconClass = 'fa fa-calendar';
+    }
+
+    if (this.props.type === 'checkbox') {
+      iconClass = 'fa fa-check-square-o';
+    }
+
     return connectDragSource(connectDropTarget(
-      <div className={propertyClass}>
-        {label}
-        <button onClick={() => this.props.removeProperty(index)} className="btn btn-danger property-remove">Delete</button>
-        <button onClick={() => this.props.editProperty(id)} className="btn btn-default property-edit">Edit</button>
-        <div className={'metadata-propery-form' + (editingProperty === id ? '' : ' collapsed') }>
+      <li className={propertyClass}>
+        <div>
+           <i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}
+          <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() => this.props.removeProperty(index)}>
+            <i className="fa fa-trash"></i> Delete
+          </button>
+          &nbsp;
+          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(id)}>
+            <i className="fa fa-pencil"></i> Edit
+          </button>
+        </div>
+        <div className={'propery-form' + (editingProperty === id ? ' expand' : '') }>
           {this.renderForm()}
         </div>
-      </div>
+      </li>
     ));
   }
 }
@@ -47,7 +92,8 @@ MetadataProperty.propTypes = {
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
   editingProperty: PropTypes.string,
-  editProperty: PropTypes.func
+  editProperty: PropTypes.func,
+  form: PropTypes.object
 };
 
 
@@ -94,8 +140,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
-const mapStateToProps = (state) => {
-  return {editingProperty: state.template.uiState.toJS().editingProperty};
+const mapStateToProps = (state, props) => {
+  return {
+    editingProperty: state.template.uiState.toJS().editingProperty,
+    form: state.form.template[props.id] || {}
+  };
 };
 
 export {dragSource, dropTarget};

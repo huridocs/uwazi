@@ -82,27 +82,29 @@ class App extends Component {
           ]}
         />
         <Notifications />
-        <nav>
-          <h1><Link to="/">Collection name</Link></h1>
-          <button onClick={this.toggleMenu.bind(this)} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
-        </nav>
-        <header>
-          <div className="container-fluid">
-            <div className="row">
-              <i className="fa fa-filter"></i>
-              <i className="fa fa-bars"></i>
-              <h1 className="col-sm-3 col-md-3"><Link to="/">Collection name</Link></h1>
-              <div className="col-sm-3 col-md-4">
-                {this.renderTools()}
-              </div>
-              <div onClick={this.closeMenu.bind(this)} className={menuClass}>
-                <Menu className="nav nav-pills" user={this.state.user}/>
+        <div className="content">
+          <nav>
+            <h1><Link to="/">Collection name</Link></h1>
+            <button onClick={this.toggleMenu.bind(this)} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
+          </nav>
+          <header>
+            <div className="container-fluid">
+              <div className="row">
+                <i className="fa fa-filter"></i>
+                <i className="fa fa-bars"></i>
+                <h1 className="col-sm-3 col-md-3"><Link to="/">Collection name</Link></h1>
+                <div className="col-sm-3 col-md-4">
+                  {this.renderTools()}
+                </div>
+                <div onClick={this.closeMenu.bind(this)} className={menuClass}>
+                  <Menu className="nav nav-pills" user={this.state.user}/>
+                </div>
               </div>
             </div>
+          </header>
+          <div className="app-content container-fluid">
+            {this.renderChildren()}
           </div>
-        </header>
-        <div className="app-content container-fluid">
-          {this.renderChildren()}
         </div>
         <footer>
           <div className="container-fluid">
