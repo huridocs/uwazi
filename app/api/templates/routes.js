@@ -1,6 +1,6 @@
-import {db_url as dbURL} from 'api/config/database.js';
+import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
-import generateNames from 'api/templates/generateNames';
+import generateNames from './templates/generateNames';
 
 export default app => {
   app.post('/api/templates', (req, res) => {
