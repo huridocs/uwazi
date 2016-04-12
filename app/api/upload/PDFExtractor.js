@@ -1,6 +1,6 @@
-import pdftohtml from 'pdftohtmljs'
-import fs from 'fs'
-import {spawn} from 'child_process'
+import pdftohtml from 'pdftohtmljs_uwazi';
+import fs from 'fs';
+import {spawn} from 'child_process';
 
 
 
