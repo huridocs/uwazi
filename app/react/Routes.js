@@ -6,7 +6,6 @@ import NoMatch from './controllers/App/NoMatch';
 
 import Login from './controllers/Users/Login';
 import MyAccount from './controllers/Users/MyAccount';
-import Library from './controllers/Library/Library';
 
 // import Viewer from './controllers/Viewer/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
@@ -19,6 +18,8 @@ import NewTemplate from 'app/Templates/NewTemplate';
 
 import EditThesauri from 'app/Thesauris/EditThesauri';
 import NewThesauri from 'app/Thesauris/NewThesauri';
+
+import Library from 'app/Library/Library';
 
 export default (
   <Route path='/' component={App}>

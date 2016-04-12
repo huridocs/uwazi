@@ -1,0 +1,2 @@
+//DATA
+export const SET_DOCUMENTS = 'SET_DOCUMENTS';
