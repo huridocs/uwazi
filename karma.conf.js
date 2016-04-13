@@ -1,68 +1,65 @@
+/* eslint-disable */
+
 var webpack = require('webpack');
 var path = require('path');
+var webpackConfig = require('./webpack.config.js');
+
+webpackConfig.externals = {
+  'jsdom': 'window',
+  'cheerio': 'window',
+  'react/lib/ExecutionEnvironment': true,
+  'react/lib/ReactContext': true
+}
+webpackConfig.devtool = 'inline-source-map';
+delete webpackConfig.entry;
+delete webpackConfig.output;
+
+karmaConfig = {
+  browsers: ['PhantomJS'],
+  singleRun: false,
+  frameworks: ['jasmine'],
+  files: [
+    './node_modules/phantomjs-polyfill-find/find-polyfill.js',
+    'tests.webpack.js'
+  ],
+  plugins: [
+    'karma-firefox-launcher',
+    'karma-chrome-launcher',
+    'karma-phantomjs-launcher',
+    'karma-jasmine',
+    'karma-sourcemap-loader',
+    'karma-webpack',
+    'karma-coverage'
+  ],
+  browserNoActivityTimeout: 100000,
+  preprocessors: {
+    'tests.webpack.js': [ 'webpack', 'sourcemap' ]
+  },
+  reporters: [ 'dots' ],
+  webpack: webpackConfig,
+  webpackServer: {
+    noInfo: true
+  }
+}
 
 module.exports = function (config) {
-  config.set({
-    browsers: ['PhantomJS' ], // Chrome, PhantomJS
-    singleRun: false, //just run once by default
-    frameworks: [ 'jasmine' ], //use the mocha test framework
-    files: [
-      './node_modules/phantomjs-polyfill-find/find-polyfill.js',
-      'tests.webpack.js' //just load this file
-    ],
-    plugins: [
-      'karma-phantomjs-launcher',
-      'karma-jasmine',
-      'karma-sourcemap-loader',
-      'karma-webpack'
-    ],
-    browserNoActivityTimeout: 1000000,
-    preprocessors: {
-      'tests.webpack.js': [ 'webpack', 'sourcemap' ] //preprocess with webpack and our sourcemap loader
-    },
-    reporters: [ 'dots' ], //report results in this format
-    webpack: { //kind of a copy of your webpack config
-      devtool: 'inline-source-map', //just do inline source maps instead of the default
-      module: {
-        loaders: [
-          { test: /\.js$/,
-            loader: 'babel-loader',
-            exclude: /(node_modules)/
-          },
-          {
-            test: /\.scss$/,
-            loaders: ['style', 'css?sourceMap', 'sass?sourceMap'],
-            include: [path.join(__dirname, 'app'),path.join(__dirname, 'node_modules')]
-          },
-          {
-            test: /\.css$/,
-            loader: "style-loader!css-loader",
-            include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
-          },
-          {
-            test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
-            loader: 'file-loader',
-            include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
-          }
-        ]
-        // postLoaders: [ { //delays coverage til after tests are run, fixing transpiled source coverage error
-        //     test: /\.js$/,
-        //     exclude: /(spec|node_modules|bower_components)\//,
-        //     loader: 'istanbul-instrumenter' } ]
-      },
-      externals: {
-        'jsdom': 'window',
-        'cheerio': 'window',
-        'react/lib/ExecutionEnvironment': true,
-        'react/lib/ReactContext': true
+  if (config.ci) {
+    karmaConfig.browsers = ['Firefox', 'Chrome', 'PhantomJS'];
+    karmaConfig.singleRun = true;
+    karmaConfig.reporters.push('coverage');
+    karmaConfig.webpack.module.preLoaders = [{
+      test: /\.js$/,
+      include: [path.join(__dirname, 'app/react')],
+      loader: 'babel-istanbul',
+      exclude: /node_modules|specs/
+    }];
+    karmaConfig.coverageReporter = {
+      type: 'lcov',
+      dir: 'coverage/',
+      subdir: function(browser) {
+        return browser.toLowerCase().split(/[ /-]/)[0];
       }
-    },
-    webpackServer: {
-      noInfo: true //please don't spam the console when running in karma!
-    }
-    // coverageReporter: {
-    //   type: 'html', //produces a html document after code is run
-    //   dir: 'coverage/' //path to created html doc
-    // }
-  });
+    };
+  }
+  config.set(karmaConfig)
 };
