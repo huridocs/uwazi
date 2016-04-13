@@ -54,8 +54,11 @@ module.exports = function (config) {
       exclude: /node_modules|specs/
     }];
     karmaConfig.coverageReporter = {
-      type: 'html',
-      dir: 'coverage/'
+      type: 'lcov',
+      dir: 'coverage/',
+      subdir: function(browser) {
+        return browser.toLowerCase().split(/[ /-]/)[0];
+      }
     };
   }
   config.set(karmaConfig)
