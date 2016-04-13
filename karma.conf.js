@@ -49,7 +49,7 @@ module.exports = function (config) {
     karmaConfig.reporters.push('coverage');
     karmaConfig.webpack.module.preLoaders = [{
       test: /\.js$/,
-      include: [path.join(__dirname, 'app/react')],
+      include: [path.join(__dirname)],
       loader: 'babel-istanbul',
       exclude: /node_modules|specs/
     }];
