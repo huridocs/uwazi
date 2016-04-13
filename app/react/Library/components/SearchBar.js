@@ -29,7 +29,7 @@ export class SearchBar extends Component {
               value={this.props.searchTerm}
               onChange={this.handleChange.bind(this)}
             />
-          <div className="search-suggestions is-active">
+          <div className="search-suggestions">
             <p> <b>Africa</b> Legal Aid (on behalf of Isaac and Robert Banda) Gambia (The)<i className="fa fa-arrow-left"></i></p>
             <p>149 96 <b>Africa</b> Sir Dawda K. Jawara Gambia (The)<i className="fa fa-arrow-left"></i></p>
             <p>Democratic Republic of Congo Burundi, Rwanda, Uganda, <b>Africa</b><i className="fa fa-arrow-left"></i></p>

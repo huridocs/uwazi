@@ -8,12 +8,12 @@ class Doc extends Component {
     let documentViewUrl = '/document/' + _id;
     return (
       <li className="col-sm-4">
-        <div className="item item1">
+        <div className="item">
           <i className="fa fa-expand"></i>
           <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{title}</Link>
-          <div className="item-metadata"><span className="label label-default">
-          <i className="fa fa-calendar"></i>March 14</span><span className="label label-default">
-          <i className="fa fa-tag"></i>Decision</span>
+          <div className="item-metadata">
+            <span className="item-date">March 14</span>
+            <span className="label label-default">Decision</span>
           </div>
           <div className="item-snippets"><span> <i className="fa fa-search"></i> 3 matches</span>
             <p>
