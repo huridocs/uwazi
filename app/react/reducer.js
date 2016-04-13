@@ -11,12 +11,19 @@ import thesauris from 'app/Thesauris/reducers/thesaurisReducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 
+import documents from 'app/Library/reducers/documentsReducer';
+import libraryUI from 'app/Library/reducers/uiReducer';
+
 export default combineReducers({
   notifications: notificationsReducer,
   form: formReducer,
   template: combineReducers({
     data: template,
     uiState: templateUI
+  }),
+  library: combineReducers({
+    documents: documents,
+    ui: libraryUI
   }),
   thesauri: thesauri,
   thesauris,
