@@ -46,6 +46,7 @@
     "jsesc": "^1.0.0",
     "jvent": "^0.2.0",
     "multer": "^1.1.0",
+    "nightmare": "^2.3.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pdftohtmljs_uwazi": "0.3.7",
