@@ -4,7 +4,7 @@ import * as actions from 'app/ContextMenu/actions/actionTypes';
 import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 
 
-const initialState = Immutable.fromJS({open: false, menu: null});
+const initialState = {open: false, menu: null};
 
 export default function contextMenuReducer(state = initialState, action = {}) {
   if (action.type === actions.OPEN_MENU) {
@@ -23,5 +23,5 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', 'ViewerDefaultMenu');
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

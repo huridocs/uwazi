@@ -1,5 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
 
 import api from 'app/utils/singleton_api';
 import RouteHandler from 'app/controllers/App/RouteHandler';
@@ -18,7 +17,7 @@ export default class ViewDocument extends RouteHandler {
       return {
         documentViewer: {
           document: response[0].json.rows[0],
-          references: Immutable.fromJS(response[1].json.rows)
+          references: response[1].json.rows
         }
       };
     });

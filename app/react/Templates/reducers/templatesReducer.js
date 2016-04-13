@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Templates/actions/actionTypes';
 
-const initialState = Immutable.fromJS([]);
+const initialState = [];
 
 export default function templates(state = initialState, action = {}) {
   if (action.type === types.SET_TEMPLATES) {
@@ -13,5 +13,5 @@ export default function templates(state = initialState, action = {}) {
     return state.filter((template) => template.get('_id') !== action.id);
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

@@ -1,6 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import {toJSON} from 'transit-immutable-js';
-import jsesc from 'jsesc';
 
 class Root extends Component {
 
@@ -10,7 +8,7 @@ class Root extends Component {
       innerHtml += `window.__initialData__ = ${JSON.stringify(this.props.initialData)};`;
     }
     if (this.props.reduxData) {
-      innerHtml += `window.__reduxData__ = '${jsesc(toJSON(this.props.reduxData))}';`;
+      innerHtml += `window.__reduxData__ = ${JSON.stringify(this.props.reduxData)};`;
     }
 
     if (this.props.user) {

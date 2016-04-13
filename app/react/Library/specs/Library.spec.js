@@ -1,7 +1,6 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
 
 import {APIURL} from 'app/config.js';
 import Library from 'app/Library/Library';
@@ -35,7 +34,7 @@ describe('Library', () => {
     it('should request the documents', (done) => {
       Library.requestState()
       .then((state) => {
-        expect(state).toEqual({library: {documents: Immutable.fromJS(documents)}});
+        expect(state).toEqual({library: {documents}});
         done();
       })
       .catch(done.fail);

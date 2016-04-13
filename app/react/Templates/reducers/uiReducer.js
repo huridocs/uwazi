@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as actions from 'app/Templates/actions/actionTypes';
 
-const initialState = Immutable.fromJS({thesauri: []});
+const initialState = {thesauri: []};
 
 export default function templatesUI(state = initialState, action = {}) {
   if (action.type === actions.EDIT_PROPERTY) {
@@ -13,5 +13,5 @@ export default function templatesUI(state = initialState, action = {}) {
     return state.set('thesauri', action.thesauri);
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

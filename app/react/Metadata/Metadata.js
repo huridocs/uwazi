@@ -2,7 +2,6 @@ import React, {PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import Immutable from 'immutable';
 
 import {setTemplates, deleteTemplate} from 'app/Templates/actions/templatesActions';
 import {setThesauris, deleteThesauri} from 'app/Thesauris/actions/thesaurisActions';
@@ -17,7 +16,7 @@ export class Metadata extends RouteHandler {
   static requestState() {
     return Promise.all([templatesAPI.get(), thesaurisAPI.get()])
     .then((results) => {
-      return {templates: Immutable.fromJS(results[0]), thesauris: Immutable.fromJS(results[1])};
+      return {templates: results[0], thesauris: results[1]};
     });
   }
 

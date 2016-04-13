@@ -1,7 +1,6 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
 
 import {APIURL} from 'app/config.js';
 import EditTemplate from 'app/Templates/EditTemplate';
@@ -38,8 +37,8 @@ describe('EditTemplate', () => {
     it('should request for the template passed, the thesauris and return an object to fit in the state', (done) => {
       EditTemplate.requestState({templateId: 'templateId'})
       .then((response) => {
-        let templateResponse = response.template.data.toJS();
-        let thesauriResponse = response.template.uiState.toJS().thesauri;
+        let templateResponse = response.template.data;
+        let thesauriResponse = response.template.uiState.thesauri;
         expect(templateResponse.properties[0]).toEqual({label: 'label1', id: 'unique_id'});
         expect(thesauriResponse).toEqual(thesauri);
         done();
@@ -50,7 +49,7 @@ describe('EditTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({template: {data: 'template_data', uiState: Immutable.fromJS({thesauri: 'thesauri'})}});
+      instance.setReduxState({template: {data: 'template_data', uiState: {thesauri: 'thesauri'}}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATE', template: 'template_data'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURI', thesauri: 'thesauri'});
     });

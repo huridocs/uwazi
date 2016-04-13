@@ -1,7 +1,6 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
 
 import {APIURL} from 'app/config.js';
 import EditThesauri from 'app/Thesauris/EditThesauri';
@@ -31,10 +30,10 @@ describe('EditThesauri', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request the thesauri using the param thesauriId', (done) => {
+    it('should request the thesauris using the param thesauriId', (done) => {
       EditThesauri.requestState({thesauriId: 'thesauriId'})
       .then((state) => {
-        expect(state).toEqual({thesauri: Immutable.fromJS(thesauri)});
+        expect(state).toEqual({thesauri});
         done();
       })
       .catch(done.fail);
@@ -44,7 +43,7 @@ describe('EditThesauri', () => {
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       instance.setReduxState({thesauri});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'EDIT_THESAURI', thesauri: thesauri});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'EDIT_THESAURI', thesauri});
     });
   });
 });

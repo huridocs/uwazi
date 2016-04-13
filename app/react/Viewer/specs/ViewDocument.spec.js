@@ -35,7 +35,7 @@ describe('ViewDocument', () => {
       ViewDocument.requestState({documentId: 'documentId'})
       .then((response) => {
         let documentResponse = response.documentViewer.document;
-        let referencesResponse = response.documentViewer.references.toJS();
+        let referencesResponse = response.documentViewer.references;
 
         expect(documentResponse).toEqual(document);
         expect(referencesResponse).toEqual(references);

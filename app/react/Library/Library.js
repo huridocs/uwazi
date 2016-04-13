@@ -1,5 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
 
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
@@ -16,11 +15,7 @@ export default class Library extends RouteHandler {
   static requestState() {
     return api.search()
     .then((documents) => {
-      return {
-        library: {
-          documents: Immutable.fromJS(documents)
-        }
-      };
+      return {library: {documents}};
     });
   }
 

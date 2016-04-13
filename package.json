@@ -62,8 +62,6 @@
     "redux-form": "^4.2.2",
     "redux-thunk": "^2.0.1",
     "superagent": "1.6.1",
-    "transit-immutable-js": "^0.5.4",
-    "transit-js": "^0.8.846",
     "validate.js": "^0.9.0"
   },
   "devDependencies": {

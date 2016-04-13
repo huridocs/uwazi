@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = Immutable.fromJS([]);
+const initialState = [];
 
 export default function referencesReducer(state = initialState, action = {}) {
   if (action.type === types.SET_REFERENCES) {
@@ -9,8 +9,8 @@ export default function referencesReducer(state = initialState, action = {}) {
   }
 
   if (action.type === types.RESET_DOCUMENT_VIEWER) {
-    return initialState;
+    return Immutable.fromJS(initialState);
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

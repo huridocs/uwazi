@@ -5,7 +5,6 @@ import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 
 describe('libraryActions', () => {
-
   let documents = [{name: 'Secret list of things'}];
 
   describe('setDocuments', () => {

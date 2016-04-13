@@ -2,11 +2,11 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Templates/actions/actionTypes';
 
-const initialState = Immutable.fromJS({name: '', properties: []});
+const initialState = {name: '', properties: []};
 
 export default function fields(state = initialState, action = {}) {
   if (action.type === types.RESET_TEMPLATE) {
-    return initialState;
+    return Immutable.fromJS(initialState);
   }
 
   if (action.type === types.SET_TEMPLATE) {
@@ -37,5 +37,5 @@ export default function fields(state = initialState, action = {}) {
     .setIn(['properties', action.originIndex], targetProperty);
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

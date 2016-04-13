@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as actions from 'app/Notifications/actions/actionTypes';
 
-const initialState = Immutable.fromJS([]);
+const initialState = [];
 
 export default function notificationsReducer(state = initialState, action = {}) {
   if (action.type === actions.NOTIFY) {
@@ -13,5 +13,5 @@ export default function notificationsReducer(state = initialState, action = {}) 
     return state.filter((notification) => notification.get('id') !== action.id);
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

@@ -1,6 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
-import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config.js';
@@ -35,8 +33,8 @@ describe('Metadata', () => {
     it('should request templates and return immutable version for the store', (done) => {
       Metadata.requestState()
       .then((response) => {
-        expect(response.templates).toEqualImmutable(Immutable.fromJS(templates));
-        expect(response.thesauris).toEqualImmutable(Immutable.fromJS(thesauris));
+        expect(response.templates).toEqual(templates);
+        expect(response.thesauris).toEqual(thesauris);
         done();
       })
       .catch(done.fail);

@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = Immutable.fromJS({});
+const initialState = {};
 
 export default function (state = initialState, action = {}) {
   if (action.type === types.OPEN_REFERENCE_PANEL) {
@@ -24,5 +24,5 @@ export default function (state = initialState, action = {}) {
     return state.set('targetDocument', action.id);
   }
 
-  return state;
+  return Immutable.fromJS(state);
 }

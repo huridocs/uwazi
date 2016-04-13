@@ -3,11 +3,10 @@ import reducer from './reducer';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
 import {isClient} from 'app/utils';
-import {fromJSON} from 'transit-immutable-js';
 
 const logger = createLogger();
 
-let data = isClient && window.__reduxData__ ? fromJSON(window.__reduxData__) : {};
+let data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 
 let store;
 

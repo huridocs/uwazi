@@ -1,5 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
 
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
@@ -15,7 +14,7 @@ let prepareTemplate = (template) => {
     return property;
   });
 
-  return Immutable.fromJS(template);
+  return template;
 };
 
 export default class EditTemplate extends RouteHandler {
@@ -31,7 +30,7 @@ export default class EditTemplate extends RouteHandler {
       return {
         template: {
           data: prepareTemplate(templates[0]),
-          uiState: Immutable.fromJS({thesauri: thesauri})
+          uiState: {thesauri: thesauri}
         }
       };
     });
@@ -39,7 +38,7 @@ export default class EditTemplate extends RouteHandler {
 
   setReduxState({template}) {
     this.context.store.dispatch(setTemplate(template.data));
-    this.context.store.dispatch(setThesauri(template.uiState.toJS().thesauri));
+    this.context.store.dispatch(setThesauri(template.uiState.thesauri));
   }
 
   render() {
