@@ -58,4 +58,13 @@ describe('documentReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+
+  describe('RESET_DOCUMENT_VIEWER', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({targetDocument: 1, referencePanel: true}), {type: types.RESET_DOCUMENT_VIEWER});
+      let expected = Immutable.fromJS({});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
 });

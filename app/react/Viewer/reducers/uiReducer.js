@@ -24,5 +24,9 @@ export default function (state = initialState, action = {}) {
     return state.set('targetDocument', action.id);
   }
 
+  if (action.type === types.RESET_DOCUMENT_VIEWER) {
+    return Immutable.fromJS(initialState);
+  }
+
   return Immutable.fromJS(state);
 }
