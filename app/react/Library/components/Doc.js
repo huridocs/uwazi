@@ -16,7 +16,7 @@ export class Doc extends Component {
     let documentViewUrl = '/document/' + _id;
     return (
       <li className="col-sm-4">
-        <div className={'item' + (previewDoc === _id ? ' active' : '')}  onClick={this.preview.bind(this)}>
+        <div className={'item' + (previewDoc === _id ? ' active' : '')} onClick={this.preview.bind(this)}>
           <div className="preview">
             <i className="fa fa-expand"></i>
             <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{title}</Link>
