@@ -19,8 +19,7 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
-      unsetSelection: jasmine.createSpy('unsetSelection'),
-      resetDocumentViewer: jasmine.createSpy('resetDocumentViewer')
+      unsetSelection: jasmine.createSpy('unsetSelection')
     };
   });
 
@@ -58,14 +57,6 @@ describe('Document', () => {
       render();
       let viewer = component.find('.document-viewer');
       expect(viewer.hasClass('is-active')).toBe(true);
-    });
-  });
-
-  describe('componentWillUnmount', () => {
-    it('should resetDocumentViewer', () => {
-      render();
-      component.unmount();
-      expect(props.resetDocumentViewer).toHaveBeenCalled();
     });
   });
 

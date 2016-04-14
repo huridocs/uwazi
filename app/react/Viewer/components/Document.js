@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
 import Text from 'app/Viewer/utils/Text';
-import {resetDocumentViewer} from 'app/Viewer/actions/documentActions';
 import 'app/Viewer/scss/document.scss';
 
 export class Document extends Component {
@@ -26,10 +25,6 @@ export class Document extends Component {
 
   componentDidUpdate() {
     this.text.simulateSelection(this.props.selection);
-  }
-
-  componentWillUnmount() {
-    this.props.resetDocumentViewer();
   }
 
   render() {
@@ -74,7 +69,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setSelection, unsetSelection, resetDocumentViewer}, dispatch);
+  return bindActionCreators({setSelection, unsetSelection}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Document);

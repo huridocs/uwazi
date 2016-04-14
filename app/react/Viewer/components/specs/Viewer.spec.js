@@ -12,7 +12,8 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      setDefaultViewerMenu: jasmine.createSpy('setDefaultViewerMenu')
+      setDefaultViewerMenu: jasmine.createSpy('setDefaultViewerMenu'),
+      resetDocumentViewer: jasmine.createSpy('resetDocumentViewer')
     };
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<Viewer {...props}/>, {context});
@@ -27,6 +28,13 @@ describe('Viewer', () => {
     it('should loadDefaultViewerMenu()', () => {
       component.instance().componentDidMount();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'LOAD_DEFAULT_VIEWER_MENU'});
+    });
+  });
+
+  describe('componentWillUnmount', () => {
+    it('should resetDocumentViewer', () => {
+      component.unmount();
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'RESET_DOCUMENT_VIEWER'});
     });
   });
 });

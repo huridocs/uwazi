@@ -1,13 +1,18 @@
 import React, {Component, PropTypes} from 'react';
 
-import {loadDefaultViewerMenu} from 'app/Viewer/actions/documentActions';
+import {loadDefaultViewerMenu, resetDocumentViewer} from 'app/Viewer/actions/documentActions';
 import Document from 'app/Viewer/components/Document';
 import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
 import ContextMenu from 'app/ContextMenu/components/ContextMenu';
 
 export default class Viewer extends Component {
+
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
+  }
+
+  componentWillUnmount() {
+    this.context.store.dispatch(resetDocumentViewer());
   }
 
   render() {
@@ -19,6 +24,7 @@ export default class Viewer extends Component {
       </main>
     );
   }
+
 }
 
 Viewer.contextTypes = {
