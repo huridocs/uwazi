@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
 
-class Doc extends Component {
+export class Doc extends Component {
 
   render() {
     let {title, _id} = this.props;
@@ -66,5 +66,13 @@ Doc.propTypes = {
   _id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired
 };
+
+
+export function mapStateToProps(state) {
+  return {
+    previewDoc: state.library.ui.toJS().previewDoc
+  };
+}
+
 
 export default Doc;

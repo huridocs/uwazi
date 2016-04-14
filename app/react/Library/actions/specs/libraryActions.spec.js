@@ -21,6 +21,13 @@ describe('libraryActions', () => {
     });
   });
 
+  describe('setPreviewDoc', () => {
+    it('should return a SET_PREVIEW_DOC action ', () => {
+      let action = actions.setPreviewDoc('id');
+      expect(action).toEqual({type: types.SET_PREVIEW_DOC, docId: 'id'});
+    });
+  });
+
   describe('async action', () => {
     let dispatch;
     beforeEach(() => {

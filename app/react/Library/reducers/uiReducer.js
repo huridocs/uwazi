@@ -9,5 +9,9 @@ export default function ui(state = initialState, action = {}) {
     return state.set('searchTerm', action.searchTerm);
   }
 
+  if (action.type === types.SET_PREVIEW_DOC) {
+    return state.set('searchTerm', action.searchTerm);
+  }
+
   return Immutable.fromJS(state);
 }
