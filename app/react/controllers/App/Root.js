@@ -32,6 +32,11 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link
+            href={isDeveloping ? '/style.css' : '/style.min.css'}
+            rel="stylesheet"
+            type="text/css"
+          />
+          <link
           href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic|Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic|Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic|Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic|Ubuntu:400,300,300italic,400italic,500,500italic,700,700italic|Roboto+Slab:400,100,300,700|Droid+Serif:400,400italic,700,700italic|Merriweather:400,300,300italic,400italic,700,700italic,900,900italic|Lora:400,400italic,700,700italic" //eslint-disable-line
           rel="stylesheet"
           type="text/css"

@@ -3,6 +3,7 @@
 
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   devtool: '#source-map',
@@ -22,12 +23,12 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css?sourceMap', 'sass?sourceMap'],
+        loader: ExtractTextPlugin.extract('style-loader', 'css?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'),
         include: [path.join(__dirname, 'app'),path.join(__dirname, 'node_modules')]
       },
       {
         test: /\.css$/,
-        loader: "style-loader!css-loader",
+        loader: ExtractTextPlugin.extract("style-loader", "css?sourceMap"),
         include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
       },
       {
@@ -36,5 +37,8 @@ module.exports = {
         include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
       }
     ]
-  }
+  },
+  plugins: [
+      new ExtractTextPlugin("style.css")
+  ]
 };

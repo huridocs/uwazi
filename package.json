@@ -39,6 +39,7 @@
     "es6-promise": "^3.0.2",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
+    "extract-text-webpack-plugin": "^1.0.1",
     "font-awesome": "^4.5.0",
     "history": "^1.17.0",
     "immutable": "^3.7.6",
