@@ -1,16 +1,26 @@
 import React, {Component, PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import {Link} from 'react-router';
+
+import {setPreviewDoc} from 'app/Library/actions/libraryActions';
 
 export class Doc extends Component {
 
+  preview() {
+    this.props.setPreviewDoc(this.props._id);
+  }
+
   render() {
-    let {title, _id} = this.props;
+    let {title, _id, previewDoc} = this.props;
     let documentViewUrl = '/document/' + _id;
     return (
       <li className="col-sm-4">
-        <div className="item">
-          <i className="fa fa-expand"></i>
-          <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{title}</Link>
+        <div className={'item' + (previewDoc === _id ? ' active' : '')}  onClick={this.preview.bind(this)}>
+          <div className="preview">
+            <i className="fa fa-expand"></i>
+            <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{title}</Link>
+          </div>
           <div className="item-metadata">
             <span className="item-date">March 14</span>
             <span className="label label-default">Decision</span>
@@ -64,7 +74,9 @@ export class Doc extends Component {
 
 Doc.propTypes = {
   _id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  previewDoc: PropTypes.string,
+  setPreviewDoc: PropTypes.func.isRequired
 };
 
 
@@ -74,5 +86,8 @@ export function mapStateToProps(state) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({setPreviewDoc}, dispatch);
+}
 
-export default Doc;
+export default connect(mapStateToProps, mapDispatchToProps)(Doc);

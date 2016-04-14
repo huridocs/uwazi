@@ -23,7 +23,14 @@ describe('SearchBar', () => {
   describe('inout on change', () => {
     it('should call setSearchTerm', () => {
       component.find('input').simulate('change');
-      expect(props.searchDocuments).toHaveBeenCalledWith('Find my document');
+      expect(props.setSearchTerm).toHaveBeenCalledWith('Find my document');
+    });
+  });
+
+  describe('the x in the input', () => {
+    it('should empty searchTerm', () => {
+      component.find('.input-group-btn').simulate('click');
+      expect(props.setSearchTerm).toHaveBeenCalledWith('');
     });
   });
 
