@@ -27,8 +27,6 @@ ViewerTextSelectedMenu.propTypes = {
   closeMenu: PropTypes.func
 };
 
-export default ViewerTextSelectedMenu;
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({openReferencePanel, closeMenu}, dispatch);
 }

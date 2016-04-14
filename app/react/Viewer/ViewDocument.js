@@ -1,6 +1,7 @@
 import React from 'react';
 
 import api from 'app/utils/singleton_api';
+import referencesAPI from 'app/Viewer/referencesAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';
 import {setDocument} from 'app/Viewer/actions/documentActions';
@@ -11,13 +12,13 @@ export default class ViewDocument extends RouteHandler {
   static requestState({documentId}) {
     return Promise.all([
       api.get('documents?_id=' + documentId),
-      api.get('references?sourceDocument=' + documentId)
+      referencesAPI.get(documentId)
     ])
     .then((response) => {
       return {
         documentViewer: {
           document: response[0].json.rows[0],
-          references: response[1].json.rows
+          references: response[1]
         }
       };
     });

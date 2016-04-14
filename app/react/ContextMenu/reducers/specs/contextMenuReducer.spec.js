@@ -67,4 +67,14 @@ describe('contextMenuReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+  describe('OPEN_REFERENCE_PANEL', () => {
+    it('should set type to ViewerSaveReferenceMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_REFERENCE_PANEL});
+      let expected = Immutable.fromJS({type: 'ViewerSaveReferenceMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
 });

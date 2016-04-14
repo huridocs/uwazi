@@ -12,5 +12,9 @@ export default function referencesReducer(state = initialState, action = {}) {
     return Immutable.fromJS(initialState);
   }
 
+  if (action.type === types.ADD_CREATED_REFERENCE) {
+    return state.push(action.reference);
+  }
+
   return Immutable.fromJS(state);
 }

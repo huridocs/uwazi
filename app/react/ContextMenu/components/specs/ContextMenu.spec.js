@@ -4,6 +4,7 @@ import {shallow} from 'enzyme';
 import {ContextMenu} from 'app/ContextMenu/components/ContextMenu';
 import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
 import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
+import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
 
 describe('ContextMenu', () => {
   let component;
@@ -69,6 +70,14 @@ describe('ContextMenu', () => {
         render(props);
 
         expect(component.find(ViewerTextSelectedMenu).length).toBe(1);
+      });
+    });
+    describe('when type is ViewerSaveReferenceMenu', () => {
+      it('should render this menu', () => {
+        let props = {type: 'ViewerSaveReferenceMenu'};
+        render(props);
+
+        expect(component.find(ViewerSaveReferenceMenu).length).toBe(1);
       });
     });
   });

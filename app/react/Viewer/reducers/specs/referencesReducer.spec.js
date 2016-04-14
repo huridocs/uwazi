@@ -23,6 +23,15 @@ describe('documentReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+  describe('ADD_CREATED_REFERENCE', () => {
+    it('should should add reference passed', () => {
+      let newState = referencesReducer(Immutable.fromJS([1]), {type: types.ADD_CREATED_REFERENCE, reference: 2});
+      let expected = Immutable.fromJS([1, 2]);
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
   describe('RESET_DOCUMENT_VIEWER', () => {
     it('should reset to initialState', () => {
       let newState = referencesReducer(['reference'], {type: types.RESET_DOCUMENT_VIEWER});
