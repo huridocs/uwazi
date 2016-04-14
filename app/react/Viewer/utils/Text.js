@@ -53,7 +53,7 @@ export default function (container) {
           return;
         }
         let restoredRange = TextRange.restore(reference.sourceRange, container);
-        let elementWrapper = document.createElement('span');
+        let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
         this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });

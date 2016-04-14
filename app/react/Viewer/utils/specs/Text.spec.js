@@ -87,7 +87,7 @@ describe('Text', () => {
       unwrap = jasmine.createSpy('unwrap');
       spyOn(wrapper, 'wrap').and.returnValue({unwrap});
       spyOn(TextRange, 'restore').and.returnValue('restoredRange');
-      elementWrapper = document.createElement('span');
+      elementWrapper = document.createElement('a');
       elementWrapper.classList.add('reference');
     });
 
