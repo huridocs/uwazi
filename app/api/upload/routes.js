@@ -8,7 +8,6 @@ let storage = multer.diskStorage({
     cb(null, __dirname+'/../../../uploaded_documents/')
   },
   filename: function (req, file, cb) {
-    console.log(file);
     cb(null, Date.now()+'.pdf');
   }
 });
