@@ -54,11 +54,12 @@ CreateReferencePanel.propTypes = {
 };
 
 const mapStateToProps = (state) => {
+  let uiState = state.documentViewer.uiState.toJS();
   return {
-    referencePanel: state.documentViewer.uiState.toJS().referencePanel,
+    referencePanel: uiState.referencePanel,
     results: state.documentViewer.results,
-    searching: state.documentViewer.uiState.toJS().viewerSearching,
-    selected: state.documentViewer.uiState.toJS().targetDocument
+    searching: uiState.viewerSearching,
+    selected: uiState.reference.targetDocument
   };
 };
 

@@ -15,7 +15,7 @@ export default (initialData = data) => {
     reducer,
     initialData,
     compose(
-      applyMiddleware(logger),
+      // applyMiddleware(logger),
       applyMiddleware(thunk)
     )
   );

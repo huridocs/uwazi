@@ -10,7 +10,7 @@ describe('documentReducer', () => {
       let newState = uiReducer();
 
       expect(newState).toBeImmutable();
-      expect(newState.toJS()).toEqual({});
+      expect(newState.toJS()).toEqual({reference: {}});
     });
   });
 
@@ -41,19 +41,39 @@ describe('documentReducer', () => {
     });
   });
 
-  describe('UNSET_SELECTION', () => {
-    it('should set referencePanel = false', () => {
-      let newState = uiReducer(Immutable.fromJS({referencePanel: true}), {type: types.UNSET_SELECTION});
-      let expected = Immutable.fromJS({referencePanel: false});
+  describe('SELECT_TARGET_DOCUMENT', () => {
+    it('should set targetDocument = id passed', () => {
+      let newState = uiReducer(Immutable.fromJS({reference: {}}), {type: types.SELECT_TARGET_DOCUMENT, id: 'id'});
+      let expected = Immutable.fromJS({reference: {targetDocument: 'id'}});
 
       expect(newState).toEqualImmutable(expected);
     });
   });
 
-  describe('SELECT_TARGET_DOCUMENT', () => {
-    it('should set targetDocument = id passed', () => {
-      let newState = uiReducer(Immutable.fromJS({targetDocument: null}), {type: types.SELECT_TARGET_DOCUMENT, id: 'id'});
-      let expected = Immutable.fromJS({targetDocument: 'id'});
+  describe('SET_SELECTION', () => {
+    it('should set sourceRange passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_SELECTION, sourceRange: 'sourceRange'});
+      let expected = Immutable.fromJS({reference: {sourceRange: 'sourceRange'}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('UNSET_SELECTION', () => {
+    it('should set referencePanel = false and sourceRange to null', () => {
+      let newState = uiReducer(Immutable.fromJS({referencePanel: true, reference: {sourceRange: 'sourceRange'}}), {type: types.UNSET_SELECTION});
+      let expected = Immutable.fromJS({referencePanel: false, reference: {sourceRange: null}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('ADD_CREATED_REFERENCE', () => {
+    it('should set reference = {} and referencePanel=false', () => {
+      let newState = uiReducer(Immutable.fromJS(
+        {referencePanel: true, reference: {sourceRange: 'sourceRange'}}
+      ), {type: types.ADD_CREATED_REFERENCE});
+      let expected = Immutable.fromJS({referencePanel: false, reference: {}});
 
       expect(newState).toEqualImmutable(expected);
     });
@@ -62,7 +82,7 @@ describe('documentReducer', () => {
   describe('RESET_DOCUMENT_VIEWER', () => {
     it('should set initialState', () => {
       let newState = uiReducer(Immutable.fromJS({targetDocument: 1, referencePanel: true}), {type: types.RESET_DOCUMENT_VIEWER});
-      let expected = Immutable.fromJS({});
+      let expected = Immutable.fromJS({reference: {}});
 
       expect(newState).toEqualImmutable(expected);
     });

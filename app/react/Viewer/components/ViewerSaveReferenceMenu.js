@@ -9,7 +9,9 @@ export class ViewerSaveReferenceMenu extends Component {
     return (
       <div>
         <div onClick={() => {
-          this.props.saveReference({sourceRange: this.props.sourceRange, targetDocument: this.props.targetDocument});
+          let reference = this.props.reference;
+          reference.sourceDocument = this.props.sourceDocument;
+          this.props.saveReference(reference);
         }} className="float-btn__main"><i className="fa fa-save"></i></div>
       </div>
     );
@@ -18,8 +20,8 @@ export class ViewerSaveReferenceMenu extends Component {
 
 ViewerSaveReferenceMenu.propTypes = {
   saveReference: PropTypes.func,
-  sourceRange: PropTypes.object,
-  targetDocument: PropTypes.string
+  sourceDocument: PropTypes.string,
+  reference: PropTypes.object
 };
 
 function mapDispatchToProps(dispatch) {
@@ -28,8 +30,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
-    sourceRange: state.documentViewer.uiState.toJS().selection,
-    targetDocument: state.documentViewer.uiState.toJS().targetDocument
+    reference: state.documentViewer.uiState.toJS().reference,
+    sourceDocument: state.documentViewer.document._id
   };
 }
 

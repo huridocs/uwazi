@@ -78,4 +78,53 @@ describe('Text', () => {
       });
     });
   });
+
+  describe('renderReferences', () => {
+    let elementWrapper;
+    let unwrap;
+
+    beforeEach(() => {
+      unwrap = jasmine.createSpy('unwrap');
+      spyOn(wrapper, 'wrap').and.returnValue({unwrap});
+      spyOn(TextRange, 'restore').and.returnValue('restoredRange');
+      elementWrapper = document.createElement('span');
+      elementWrapper.classList.add('reference');
+    });
+
+    it('should wrap a collection of references', () => {
+      let references = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
+
+      text.renderReferences(references);
+      expect(TextRange.restore).toHaveBeenCalledWith('sourceRange1', document);
+      expect(TextRange.restore).toHaveBeenCalledWith('sourceRange2', document);
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
+    });
+
+    it('should not render references already rendered', () => {
+      let firstReferneces = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
+      let secondReferences = [
+        {_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}, {_id: '3', sourceRange: 'sourceRange3'}
+      ];
+      text.renderReferences(firstReferneces);
+      TextRange.restore.calls.reset();
+      wrapper.wrap.calls.reset();
+      text.renderReferences(secondReferences);
+
+      expect(TextRange.restore.calls.count()).toBe(1);
+      expect(wrapper.wrap.calls.count()).toBe(1);
+      expect(TextRange.restore).toHaveBeenCalledWith('sourceRange3', document);
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
+    });
+
+    it('should unwrap references that are passed', () => {
+      let firstReferneces = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
+      let secondReferences = [{_id: '2', sourceRange: 'sourceRange2'}, {_id: '3', sourceRange: 'sourceRange3'}];
+      text.renderReferences(firstReferneces);
+      text.renderReferences(secondReferences);
+
+      expect(unwrap.calls.count()).toBe(1);
+      expect(text.renderedReferences[1]).not.toBeDefined();
+    });
+  });
 });

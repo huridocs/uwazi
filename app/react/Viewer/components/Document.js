@@ -24,6 +24,7 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
+    this.text.renderReferences(this.props.references);
     this.text.simulateSelection(this.props.selection);
   }
 
@@ -57,14 +58,16 @@ Document.propTypes = {
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   resetDocumentViewer: PropTypes.func,
-  selection: PropTypes.object
+  selection: PropTypes.object,
+  references: PropTypes.array
 };
 
 const mapStateToProps = (state) => {
   return {
-    selection: state.documentViewer.selection,
+    selection: state.documentViewer.uiState.toJS().reference.sourceRange,
     document: state.documentViewer.document,
-    panelIsOpen: state.documentViewer.uiState.toJS().referencePanel
+    panelIsOpen: state.documentViewer.uiState.toJS().referencePanel,
+    references: state.documentViewer.references.toJS()
   };
 };
 

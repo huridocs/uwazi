@@ -106,6 +106,7 @@ describe('Document', () => {
   describe('onTextSelected', () => {
     beforeEach(() => {
       props.selection = {selection: 'selection'};
+      props.references = [{reference: 'reference'}];
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
@@ -123,6 +124,13 @@ describe('Document', () => {
       instance.componentDidUpdate();
 
       expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'});
+    });
+
+    it('should render the references', () => {
+      spyOn(instance.text, 'renderReferences');
+      instance.componentDidUpdate();
+
+      expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
     });
   });
 });

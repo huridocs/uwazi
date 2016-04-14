@@ -1,9 +1,9 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 
-export function setSelection(selection) {
+export function setSelection(sourceRange) {
   return {
     type: types.SET_SELECTION,
-    selection
+    sourceRange
   };
 }
 
