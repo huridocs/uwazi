@@ -57,8 +57,8 @@ describe('references routes', () => {
       .then((response) => {
         let docs = response.rows;
         expect(docs.length).toBe(2);
-        expect(docs[0].value.title).toBe('reference1');
-        expect(docs[1].value.title).toBe('reference3');
+        expect(docs[0].title).toBe('reference1');
+        expect(docs[1].title).toBe('reference3');
         done();
       })
       .catch(done.fail);

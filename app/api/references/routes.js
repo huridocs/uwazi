@@ -26,6 +26,7 @@ export default app => {
 
     request.get(url)
     .then((response) => {
+      response.json.rows = response.json.rows.map((r) => r.value);
       res.json(response.json);
     })
     .catch((error) => {
