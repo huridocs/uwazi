@@ -25,21 +25,6 @@ export class CreateReferencePanel extends Component {
           onClick={this.props.selectTargetDocument}
         />
 
-        <ul className="search__filter search__filter--radiobutton">
-          <li>Relationship type</li>
-          <li className="is-active"><i className="fa fa-check"></i>
-            <label>Based on</label>
-          </li>
-          <li> <i className="fa"></i>
-            <label>Support to</label>
-          </li>
-          <li> <i className="fa"></i>
-            <label>Contradicts</label>
-          </li>
-          <li> <i className="fa"></i>
-            <label>Judgements</label>
-          </li>
-        </ul>
       </SidePanel>
     );
   }

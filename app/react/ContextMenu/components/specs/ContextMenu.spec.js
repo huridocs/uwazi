@@ -47,6 +47,16 @@ describe('ContextMenu', () => {
     });
   });
 
+  describe('on click', () => {
+    it('should closeMenu()', () => {
+      let props = {closeMenu: jasmine.createSpy('closeMenu')};
+      render(props);
+
+      component.find('div').simulate('click');
+      expect(props.closeMenu).toHaveBeenCalled();
+    });
+  });
+
   describe('Menu rendered', () => {
     describe('when type is null', () => {
       it('should not render any menu', () => {

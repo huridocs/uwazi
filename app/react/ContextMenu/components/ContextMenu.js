@@ -27,6 +27,7 @@ export class ContextMenu extends Component {
         className={'float-btn btn-fixed ' + (this.props.open ? 'active' : '')}
         onMouseEnter={this.props.openMenu}
         onMouseLeave={this.props.closeMenu}
+        onClick={this.props.closeMenu}
       >
       {this.renderMenu()}
       </div>
