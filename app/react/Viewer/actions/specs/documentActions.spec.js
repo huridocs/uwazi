@@ -39,7 +39,26 @@ describe('documentActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'documents/search?searchTerm=term', 'GET', {body: JSON.stringify('documents')});
+      .mock(APIURL + 'documents/search?searchTerm=term', 'GET', {body: JSON.stringify('documents')})
+      .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})});
+    });
+
+    describe('loadTargetDocument', () => {
+      it('should loadTargetDocument with id passed', (done) => {
+        let targetId = 'targetId';
+
+        const expectedActions = [
+          {type: types.SET_TARGET_DOCUMENT, document: {target: 'document'}}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.loadTargetDocument(targetId))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
     });
 
     describe('viewerSearchDocuments', () => {

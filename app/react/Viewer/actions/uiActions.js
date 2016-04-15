@@ -1,8 +1,9 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 
-export function openReferencePanel() {
+export function openReferencePanel(panelType = '') {
   return {
-    type: types.OPEN_REFERENCE_PANEL
+    type: types.OPEN_REFERENCE_PANEL,
+    panelType
   };
 }
 

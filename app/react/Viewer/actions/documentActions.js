@@ -21,6 +21,20 @@ export function loadDefaultViewerMenu() {
   };
 }
 
+export function loadTargetDocument(id) {
+  return function (dispatch) {
+    // dispatch(viewerSearching());
+
+    return api.get('documents?_id=' + id)
+    .then((response) => {
+      dispatch({
+        type: types.SET_TARGET_DOCUMENT,
+        document: response.json.rows[0]
+      });
+    });
+  };
+}
+
 export function viewerSearchDocuments(searchTerm) {
   return function (dispatch) {
     dispatch(viewerSearching());

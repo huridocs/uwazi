@@ -3,9 +3,13 @@ import * as types from 'app/Viewer/actions/actionTypes';
 
 describe('openReferencePanel', () => {
   describe('openReferencePanel()', () => {
-    it('should return a OPEN_REFERENCE_PANEL', () => {
+    it('should return a OPEN_REFERENCE_PANEL with blank default panelType', () => {
       let action = actions.openReferencePanel();
-      expect(action).toEqual({type: types.OPEN_REFERENCE_PANEL});
+      expect(action).toEqual({type: types.OPEN_REFERENCE_PANEL, panelType: ''});
+    });
+    it('should return a OPEN_REFERENCE_PANEL with panelType passed', () => {
+      let action = actions.openReferencePanel('type');
+      expect(action).toEqual({type: types.OPEN_REFERENCE_PANEL, panelType: 'type'});
     });
   });
   describe('viewerSearching()', () => {
