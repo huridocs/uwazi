@@ -11,10 +11,10 @@ import 'app/ContextMenu/scss/contextMenu.scss';
 export class ContextMenu extends Component {
   renderMenu() {
     if (this.props.type === 'ViewerTextSelectedMenu') {
-      return <ViewerTextSelectedMenu />;
+      return <ViewerTextSelectedMenu active={this.props.open} />;
     }
     if (this.props.type === 'ViewerDefaultMenu') {
-      return <ViewerDefaultMenu />;
+      return <ViewerDefaultMenu active={this.props.open} />;
     }
     if (this.props.type === 'ViewerSaveReferenceMenu') {
       return <ViewerSaveReferenceMenu />;
@@ -29,7 +29,7 @@ export class ContextMenu extends Component {
         onMouseLeave={this.props.closeMenu}
         onClick={this.props.closeMenu}
       >
-      {this.renderMenu()}
+        {this.renderMenu()}
       </div>
     );
   }

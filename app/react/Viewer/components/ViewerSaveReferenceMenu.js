@@ -3,16 +3,27 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {saveReference} from 'app/Viewer/actions/referencesActions';
+import validate from 'validate.js';
 
 export class ViewerSaveReferenceMenu extends Component {
   render() {
+    let reference = this.props.reference;
+    reference.sourceDocument = this.props.sourceDocument;
+    let referenceReady = !validate(reference, {
+      sourceDocument: {presence: true},
+      targetDocument: {presence: true},
+      sourceRange: {presence: true}
+    });
+
     return (
       <div>
         <div onClick={() => {
-          let reference = this.props.reference;
-          reference.sourceDocument = this.props.sourceDocument;
-          this.props.saveReference(reference);
-        }} className="float-btn__main"><i className="fa fa-save"></i></div>
+          if (referenceReady) {
+            this.props.saveReference(reference);
+          }
+        }} className="float-btn__main">
+          <i className={'fa ' + (referenceReady ? 'fa-save' : 'fa-hand-pointer-o')}></i>
+        </div>
       </div>
     );
   }

@@ -34,8 +34,28 @@ describe('documentReducer', () => {
 
   describe('SET_VIEWER_RESULTS', () => {
     it('should set viewerSearching = false', () => {
-      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_VIEWER_RESULTS});
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_VIEWER_RESULTS, results: []});
       let expected = Immutable.fromJS({viewerSearching: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+
+    it('should mantain targetDocument if in results', () => {
+      let newState = uiReducer(Immutable.fromJS(
+        {reference: {targetDocument: 'targetId'}}),
+        {type: types.SET_VIEWER_RESULTS, results: [{_id: 'targetId'}, {_id: 'anotherId'}]}
+      );
+      let expected = Immutable.fromJS({reference: {targetDocument: 'targetId'}, viewerSearching: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+
+    it('should remove targetDocument if not in results', () => {
+      let newState = uiReducer(Immutable.fromJS(
+        {reference: {targetDocument: 'notInResultsId'}}),
+        {type: types.SET_VIEWER_RESULTS, results: [{_id: 'targetId'}]}
+      );
+      let expected = Immutable.fromJS({reference: {}, viewerSearching: false});
 
       expect(newState).toEqualImmutable(expected);
     });

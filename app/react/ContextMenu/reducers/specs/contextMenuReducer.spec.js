@@ -57,6 +57,17 @@ describe('contextMenuReducer', () => {
     });
   });
 
+  describe('ADD_CREATED_REFERENCE', () => {
+    it('should set type to ViewerDefaultMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.ADD_CREATED_REFERENCE});
+      let expected = Immutable.fromJS({type: 'ViewerDefaultMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('LOAD_DEFAULT_VIEWER_MENU', () => {
     it('should set type to ViewerDefaultMenu', () => {
       let currentState = Immutable.fromJS({type: null});

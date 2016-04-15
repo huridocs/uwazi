@@ -68,18 +68,20 @@ describe('ContextMenu', () => {
     });
     describe('when type is ViewerDefaultMenu', () => {
       it('should render this menu', () => {
-        let props = {type: 'ViewerDefaultMenu'};
+        let props = {type: 'ViewerDefaultMenu', open: true};
         render(props);
 
         expect(component.find(ViewerDefaultMenu).length).toBe(1);
+        expect(component.find(ViewerDefaultMenu).props().active).toBe(true);
       });
     });
     describe('when type is ViewerTextSelectedMenu', () => {
       it('should render this menu', () => {
-        let props = {type: 'ViewerTextSelectedMenu'};
+        let props = {type: 'ViewerTextSelectedMenu', open: false};
         render(props);
 
         expect(component.find(ViewerTextSelectedMenu).length).toBe(1);
+        expect(component.find(ViewerTextSelectedMenu).props().active).toBe(false);
       });
     });
     describe('when type is ViewerSaveReferenceMenu', () => {

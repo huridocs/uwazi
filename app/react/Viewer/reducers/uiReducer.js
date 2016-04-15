@@ -25,7 +25,12 @@ export default function (state = initialState, action = {}) {
   }
 
   if (action.type === types.SET_VIEWER_RESULTS) {
-    return state.set('viewerSearching', false);
+    let newState = state;
+    let selectedInResults = action.results.find((result) => result._id === state.getIn(['reference', 'targetDocument']));
+    if (!selectedInResults) {
+      newState = state.deleteIn(['reference', 'targetDocument']);
+    }
+    return newState.set('viewerSearching', false);
   }
 
   if (action.type === types.SELECT_TARGET_DOCUMENT) {

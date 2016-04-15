@@ -23,7 +23,8 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', 'ViewerSaveReferenceMenu');
   }
 
-  if (action.type === ViewerActions.UNSET_SELECTION || action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU) {
+  if (action.type === ViewerActions.UNSET_SELECTION || action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU
+    || action.type === ViewerActions.ADD_CREATED_REFERENCE) {
     return state.set('type', 'ViewerDefaultMenu');
   }
 
