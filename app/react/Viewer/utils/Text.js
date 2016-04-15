@@ -36,6 +36,9 @@ export default function (container) {
     },
 
     removeSelection() {
+      if (!this.selected()) {
+        return;
+      }
       if (window.getSelection) {
         if (window.getSelection().empty) {
           window.getSelection().empty();
