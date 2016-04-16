@@ -46,6 +46,35 @@ describe('libraryActions', () => {
         })
         .catch(done.fail);
       });
+
+      it('should dispatch a HIDE_SUGGESTIONS action', (done) => {
+        actions.searchDocuments('batman')(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: types.HIDE_SUGGESTIONS});
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
+    describe('getSuggestions', () => {
+      it('should perform a search and dispatch a SET_SUGGESTIONS action with the result ', (done) => {
+        actions.getSuggestions('batman')(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_SUGGESTIONS, suggestions: documents});
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should dispatch a SHOW_SUGGESTIONS action', (done) => {
+        actions.getSuggestions('batman')(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_SUGGESTIONS});
+          done();
+        })
+        .catch(done.fail);
+      });
     });
   });
 });

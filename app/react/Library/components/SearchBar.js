@@ -1,13 +1,24 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {Link} from 'react-router';
 
-import {searchDocuments, setSearchTerm} from 'app/Library/actions/libraryActions';
+import {searchDocuments, setSearchTerm, getSuggestions} from 'app/Library/actions/libraryActions';
+import debounce from 'app/utils/debounce';
 
 export class SearchBar extends Component {
 
+  getSuggestions() {
+    this.props.getSuggestions(this.field.value);
+  }
+
   handleChange() {
+    this.getSuggestions();
     this.props.setSearchTerm(this.field.value);
+  }
+
+  componentWillMount() {
+    this.getSuggestions = debounce(this.getSuggestions, 400);
   }
 
   resetSearch() {
@@ -20,7 +31,7 @@ export class SearchBar extends Component {
   }
 
   render() {
-    let searchTerm = this.props.searchTerm;
+    let {searchTerm, showSuggestions, suggestions} = this.props;
 
     return (
       <form onSubmit={this.search.bind(this)}>
@@ -36,10 +47,11 @@ export class SearchBar extends Component {
               value={this.props.searchTerm}
               onChange={this.handleChange.bind(this)}
             />
-          <div className={'search-suggestions' + (searchTerm ? ' active' : '')}>
-            <p> <b>Africa</b> Legal Aid (on behalf of Isaac and Robert Banda) Gambia (The)<i className="fa fa-arrow-left"></i></p>
-            <p>149 96 <b>Africa</b> Sir Dawda K. Jawara Gambia (The)<i className="fa fa-arrow-left"></i></p>
-            <p>Democratic Republic of Congo Burundi, Rwanda, Uganda, <b>Africa</b><i className="fa fa-arrow-left"></i></p>
+          <div className={'search-suggestions' + (showSuggestions && searchTerm ? ' active' : '')}>
+            {suggestions.map((suggestion, index) => {
+              let documentViewUrl = '/document/' + suggestion._id;
+              return <p key={index}><Link to={documentViewUrl}>{suggestion.title}<i className="fa fa-arrow-left"></i></Link></p>;
+            })}
             <p onClick={this.search.bind(this)} className="search-suggestions-all">
               <i className="fa fa-search"></i>See all documents for "{searchTerm}"
             </p>
@@ -53,7 +65,10 @@ export class SearchBar extends Component {
 SearchBar.propTypes = {
   searchDocuments: PropTypes.func.isRequired,
   setSearchTerm: PropTypes.func.isRequired,
-  searchTerm: PropTypes.string
+  getSuggestions: PropTypes.func.isRequired,
+  searchTerm: PropTypes.string,
+  suggestions: PropTypes.array,
+  showSuggestions: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
@@ -61,7 +76,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments, setSearchTerm}, dispatch);
+  return bindActionCreators({searchDocuments, setSearchTerm, getSuggestions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);

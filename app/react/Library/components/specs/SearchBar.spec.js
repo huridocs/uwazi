@@ -6,8 +6,9 @@ import {SearchBar, mapStateToProps} from 'app/Library/components/SearchBar';
 
 describe('SearchBar', () => {
   let component;
-  let props = jasmine.createSpyObj(['searchDocuments', 'setSearchTerm']);
+  let props = jasmine.createSpyObj(['searchDocuments', 'setSearchTerm', 'getSuggestions']);
   props.searchTerm = 'Find my document';
+  props.suggestions = [];
 
   beforeEach(() => {
     component = mount(<SearchBar {...props}/>);
@@ -24,6 +25,14 @@ describe('SearchBar', () => {
     it('should call setSearchTerm', () => {
       component.find('input').simulate('change');
       expect(props.setSearchTerm).toHaveBeenCalledWith('Find my document');
+    });
+
+    it('should call debounced function getSuggestions', () => {
+      jasmine.clock().install();
+      component.find('input').simulate('change');
+      jasmine.clock().tick(400);
+      expect(props.getSuggestions).toHaveBeenCalledWith('Find my document');
+      jasmine.clock().uninstall();
     });
   });
 
