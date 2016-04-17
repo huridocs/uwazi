@@ -1,5 +1,5 @@
 import configureMockStore from 'redux-mock-store';
-import Immutable from 'Immutable';
+import Immutable from 'immutable';
 import React from 'react';
 import {shallow} from 'enzyme';
 
