@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import SearchResults from 'app/Viewer/presentation/SearchResults';
+import SearchResults from 'app/Viewer/components/SearchResults';
 
 describe('SearchResults', () => {
   let component;

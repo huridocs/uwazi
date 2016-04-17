@@ -8,6 +8,10 @@ export default function (state = initialState, action = {}) {
     return state.set('referencePanel', true);
   }
 
+  if (action.type === types.OPEN_TARGET_REFERENCE_PANEL) {
+    return state.set('targetReferencePanel', true);
+  }
+
   if (action.type === types.VIEWER_SEARCHING) {
     return state.set('viewerSearching', true);
   }
@@ -17,7 +21,9 @@ export default function (state = initialState, action = {}) {
   }
 
   if (action.type === types.UNSET_SELECTION) {
-    return state.setIn(['reference', 'sourceRange'], null).set('referencePanel', false);
+    return state.setIn(['reference', 'sourceRange'], null)
+    .set('referencePanel', false)
+    .set('targetReferencePanel', false);
   }
 
   if (action.type === types.ADD_CREATED_REFERENCE) {

@@ -1,0 +1,143 @@
+//reset bootstrap conflicting classes with the conversion
+.document {
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    margin: 0;
+  }
+}
+//
+.document .pf {
+  position:relative;
+  background-color:#FFF;
+  overflow:hidden;
+  border:0;
+  margin:0;
+}
+
+.document .pc {
+  position:absolute;
+  border:0;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  display:block;
+  transform-origin:0 0;
+  -ms-transform-origin:0 0;
+  -webkit-transform-origin:0 0;
+  margin:0;
+  padding:0;
+}
+
+.pc.opened {
+  display:block;
+}
+
+.bf {
+  position:absolute;
+  border:0;
+  top:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  -ms-user-select:none;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+  user-select:none;
+  margin:0;
+}
+
+.bi {
+  position:absolute;
+  border:0;
+  -ms-user-select:none;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+  user-select:none;
+  margin:0;
+}
+
+.c {
+  position:absolute;
+  border:0;
+  overflow:hidden;
+  display:block;
+  margin:0;
+  padding:0;
+}
+
+.t {
+  position:absolute;
+  white-space:pre;
+  font-size:1px;
+  transform-origin:0 100%;
+  -ms-transform-origin:0 100%;
+  -webkit-transform-origin:0 100%;
+  unicode-bidi:bidi-override;
+  -moz-font-feature-settings:liga 0;
+}
+
+.t:after {
+  content:'';
+}
+
+.t span {
+  position:relative;
+  display:inline-block;
+  unicode-bidi:bidi-override;
+}
+
+._ {
+  color:transparent;
+  z-index:-1;
+}
+
+.pi {
+  display:none;
+}
+
+.d {
+  position:absolute;
+  transform-origin:0 100%;
+  -ms-transform-origin:0 100%;
+  -webkit-transform-origin:0 100%;
+}
+
+::selection,::-moz-selection {
+  background:rgba(127,255,255,0.4);
+}
+
+@media screen{
+  #sidebar.opened+#page-container {
+    left:250px;
+  }
+
+  #page-container {
+    bottom:0;
+    right:0;
+    overflow:auto;
+  }
+
+  .loading-indicator {
+    display:none;
+  }
+
+  .loading-indicator.active {
+    display:block;
+    position:absolute;
+    width:64px;
+    height:64px;
+    top:50%;
+    left:50%;
+    margin-top:-32px;
+    margin-left:-32px;
+  }
+
+  .loading-indicator img {
+    position:absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+  }
+}

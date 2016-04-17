@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {CreateReferencePanel} from 'app/Viewer/components/CreateReferencePanel';
 import SidePanel from 'app/Layout/SidePanel';
-import SearchResults from 'app/Viewer/presentation/SearchResults';
+import SearchResults from 'app/Viewer/components/SearchResults';
 
 describe('CreateReferencePanel', () => {
   let component;
@@ -28,7 +28,7 @@ describe('CreateReferencePanel', () => {
 
   describe('when props.referencePanel', () => {
     it('should open SidePanel', () => {
-      props.referencePanel = true;
+      props.open = true;
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);

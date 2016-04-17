@@ -23,6 +23,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('OPEN_TARGET_REFERENCE_PANEL', () => {
+    it('should set targetReferencePanel = true', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_TARGET_REFERENCE_PANEL});
+      let expected = Immutable.fromJS({targetReferencePanel: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('VIEWER_SEARCHING', () => {
     it('should set viewerSearching = true', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.VIEWER_SEARCHING});
@@ -82,7 +91,7 @@ describe('documentReducer', () => {
   describe('UNSET_SELECTION', () => {
     it('should set referencePanel = false and sourceRange to null', () => {
       let newState = uiReducer(Immutable.fromJS({referencePanel: true, reference: {sourceRange: 'sourceRange'}}), {type: types.UNSET_SELECTION});
-      let expected = Immutable.fromJS({referencePanel: false, reference: {sourceRange: null}});
+      let expected = Immutable.fromJS({referencePanel: false, targetReferencePanel: false, reference: {sourceRange: null}});
 
       expect(newState).toEqualImmutable(expected);
     });

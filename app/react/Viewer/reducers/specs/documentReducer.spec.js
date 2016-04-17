@@ -5,7 +5,7 @@ describe('documentReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = documentReducer();
-      expect(newState).toEqual({pages: [], css: []});
+      expect(newState).toEqual({pages: [], css: ''});
     });
   });
 
@@ -22,7 +22,7 @@ describe('documentReducer', () => {
     it('should set document to initialState', () => {
       let newState = documentReducer({}, {type: types.RESET_DOCUMENT_VIEWER});
 
-      expect(newState).toEqual({pages: [], css: []});
+      expect(newState).toEqual({pages: [], css: ''});
     });
   });
 });

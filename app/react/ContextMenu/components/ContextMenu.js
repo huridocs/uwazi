@@ -6,6 +6,7 @@ import {openMenu, closeMenu} from 'app/ContextMenu/actions/contextMenuActions';
 import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
 import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
+import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 import 'app/ContextMenu/scss/contextMenu.scss';
 
 export class ContextMenu extends Component {
@@ -18,6 +19,9 @@ export class ContextMenu extends Component {
     }
     if (this.props.type === 'ViewerSaveReferenceMenu') {
       return <ViewerSaveReferenceMenu />;
+    }
+    if (this.props.type === 'ViewerSaveTargetReferenceMenu') {
+      return <ViewerSaveTargetReferenceMenu />;
     }
   }
 

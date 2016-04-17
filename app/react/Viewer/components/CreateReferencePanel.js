@@ -6,12 +6,12 @@ import 'app/Viewer/scss/createmodal.scss';
 
 import SidePanel from 'app/Layout/SidePanel';
 import ViewerSearchForm from 'app/Viewer/components/ViewerSearchForm';
-import SearchResults from 'app/Viewer/presentation/SearchResults';
+import SearchResults from 'app/Viewer/components/SearchResults';
 import {selectTargetDocument} from 'app/Viewer/actions/uiActions';
 
 export class CreateReferencePanel extends Component {
   render() {
-    let sidePanelprops = {open: this.props.referencePanel};
+    let sidePanelprops = {open: this.props.open};
     return (
       <SidePanel {...sidePanelprops}>
         <h1>Create document reference</h1>
@@ -31,7 +31,7 @@ export class CreateReferencePanel extends Component {
 }
 
 CreateReferencePanel.propTypes = {
-  referencePanel: PropTypes.bool,
+  open: PropTypes.bool,
   results: PropTypes.array,
   searching: PropTypes.bool,
   selected: PropTypes.string,
@@ -41,7 +41,7 @@ CreateReferencePanel.propTypes = {
 const mapStateToProps = (state) => {
   let uiState = state.documentViewer.uiState.toJS();
   return {
-    referencePanel: uiState.referencePanel,
+    open: uiState.referencePanel || uiState.targetReferencePanel,
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,
     selected: uiState.reference.targetDocument

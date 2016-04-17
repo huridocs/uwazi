@@ -1,11 +1,13 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 
 import {loadDefaultViewerMenu, resetDocumentViewer} from 'app/Viewer/actions/documentActions';
-import Document from 'app/Viewer/components/Document';
+import SourceDocument from 'app/Viewer/components/sourceDocument';
+import TargetDocument from 'app/Viewer/components/targetDocument';
 import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
 import ContextMenu from 'app/ContextMenu/components/ContextMenu';
 
-export default class Viewer extends Component {
+export class Viewer extends Component {
 
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
@@ -16,17 +18,47 @@ export default class Viewer extends Component {
   }
 
   render() {
+    let className = 'document-viewer';
+    if (this.props.panelIsOpen) {
+      className = 'document-viewer with-panel';
+    }
+    if (this.props.targetDocument) {
+      className = 'document-viewer show-target-document';
+    }
     return (
-      <main>
-        <Document />
+      <div>
+        <main className={className + ' col-sm-8 col-sm-offset-2'}>
+          <SourceDocument />
+          <TargetDocument />
+        </main>
+
         <CreateReferencePanel />
         <ContextMenu />
-      </main>
+      </div>
     );
   }
 
 }
 
+Viewer.propTypes = {
+  panelIsOpen: PropTypes.bool,
+  targetDocument: PropTypes.string
+};
+
 Viewer.contextTypes = {
   store: PropTypes.object
 };
+
+const mapStateToProps = (state) => {
+  let uiState = state.documentViewer.uiState.toJS();
+  return {
+    panelIsOpen: uiState.referencePanel || uiState.targetReferencePanel,
+    targetDocument: state.documentViewer.targetDocument._id
+  };
+};
+
+//function mapDispatchToProps(dispatch) {
+  //return bindActionCreators({setSelection, unsetSelection}, dispatch);
+//}
+
+export default connect(mapStateToProps)(Viewer);

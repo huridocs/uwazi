@@ -11,7 +11,7 @@ describe('Document', () => {
   let document = {
     _id: 'documentId',
     pages: ['page1', 'page2', 'page3'],
-    css: ['css1', 'css2']
+    css: 'css'
   };
 
   let props;
@@ -28,9 +28,20 @@ describe('Document', () => {
     instance = component.instance();
   };
 
+  it('should add id as a className', () => {
+    render();
+    expect(component.find('div').children().first().hasClass('_documentId')).toBe(true);
+  });
+
+  it('should add the className passed', () => {
+    props.className = 'aClass';
+    render();
+    expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
+  });
+
   it('should render every pagen inside a div ', () => {
     render();
-    let pages = component.find('.document-viewer').children();
+    let pages = component.find('.document').children();
     expect(pages.first().props().dangerouslySetInnerHTML).toEqual({__html: 'page1'});
     expect(pages.last().props().dangerouslySetInnerHTML).toEqual({__html: 'page3'});
   });
@@ -39,8 +50,7 @@ describe('Document', () => {
     render();
     let styles = component.find('style');
 
-    expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css1'})});
-    expect(styles.last().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css2'})});
+    expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css'})});
   });
 
   describe('componentDidMount', () => {
@@ -48,15 +58,6 @@ describe('Document', () => {
       render();
       instance.componentDidMount();
       expect(instance.text.container).toBe(instance.pagesContainer);
-    });
-  });
-
-  describe('when a panel is open', () => {
-    it('should add class is-active to the viewer', () => {
-      props.panelIsOpen = true;
-      render();
-      let viewer = component.find('.document-viewer');
-      expect(viewer.hasClass('is-active')).toBe(true);
     });
   });
 
@@ -71,11 +72,11 @@ describe('Document', () => {
         spyOn(instance, 'onTextSelected');
         spyOn(instance.text, 'selected').and.returnValue(true);
 
-        component.find('.document-viewer').simulate('mouseup');
+        component.find('.document').simulate('mouseup');
         expect(instance.onTextSelected).toHaveBeenCalled();
 
         instance.onTextSelected.calls.reset();
-        component.find('.document-viewer').simulate('touchend');
+        component.find('.document').simulate('touchend');
         expect(instance.onTextSelected).toHaveBeenCalled();
       });
     });
@@ -84,7 +85,7 @@ describe('Document', () => {
       it('should unsetSelection', () => {
         spyOn(instance.text, 'selected').and.returnValue(false);
 
-        component.find('.document-viewer').simulate('mouseup');
+        component.find('.document').simulate('mouseup');
 
         expect(props.unsetSelection).toHaveBeenCalled();
       });
@@ -93,11 +94,11 @@ describe('Document', () => {
         spyOn(instance, 'onTextSelected');
         spyOn(instance.text, 'selected').and.returnValue(false);
 
-        component.find('.document-viewer').simulate('mouseup');
+        component.find('.document').simulate('mouseup');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
 
         instance.onTextSelected.calls.reset();
-        component.find('.document-viewer').simulate('touchend');
+        component.find('.document').simulate('touchend');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
       });
     });

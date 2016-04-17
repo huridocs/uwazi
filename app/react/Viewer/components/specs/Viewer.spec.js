@@ -1,9 +1,10 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import Document from 'app/Viewer/components/Document';
+import sourceDocument from 'app/Viewer/components/sourceDocument';
+import targetDocument from 'app/Viewer/components/targetDocument';
 import ContextMenu from 'app/ContextMenu/components/ContextMenu';
-import Viewer from 'app/Viewer/components/Viewer';
+import {Viewer} from 'app/Viewer/components/Viewer';
 
 describe('Viewer', () => {
   let component;
@@ -20,7 +21,8 @@ describe('Viewer', () => {
   });
 
   it('should render Document and ContextMenu', () => {
-    expect(component.find(Document).length).toBe(1);
+    expect(component.find(sourceDocument).length).toBe(1);
+    expect(component.find(targetDocument).length).toBe(1);
     expect(component.find(ContextMenu).length).toBe(1);
   });
 
