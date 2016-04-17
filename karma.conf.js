@@ -20,6 +20,7 @@ karmaConfig = {
   frameworks: ['jasmine'],
   files: [
     './node_modules/phantomjs-polyfill-find/find-polyfill.js',
+    './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
     'tests.webpack.js'
   ],
   plugins: [
