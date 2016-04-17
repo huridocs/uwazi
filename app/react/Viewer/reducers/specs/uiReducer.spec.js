@@ -115,6 +115,24 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('SET_TARGET_SELECTION', () => {
+    it('should set targetRange passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_TARGET_SELECTION, targetRange: 'targetRange'});
+      let expected = Immutable.fromJS({reference: {targetRange: 'targetRange'}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('unsetTargetSelection', () => {
+    it('should set targetRange to null', () => {
+      let newState = uiReducer(Immutable.fromJS({reference: {targetRange: 'targetRange'}}), {type: types.UNSET_TARGET_SELECTION});
+      let expected = Immutable.fromJS({reference: {targetRange: null}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('ADD_CREATED_REFERENCE', () => {
     it('should set reference = {} and referencePanel=false', () => {
       let newState = uiReducer(Immutable.fromJS(

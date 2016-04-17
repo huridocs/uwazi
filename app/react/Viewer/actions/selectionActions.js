@@ -7,8 +7,21 @@ export function setSelection(sourceRange) {
   };
 }
 
+export function setTargetSelection(targetRange) {
+  return {
+    type: types.SET_TARGET_SELECTION,
+    targetRange
+  };
+}
+
 export function unsetSelection() {
   return {
     type: types.UNSET_SELECTION
+  };
+}
+
+export function unsetTargetSelection() {
+  return {
+    type: types.UNSET_TARGET_SELECTION
   };
 }

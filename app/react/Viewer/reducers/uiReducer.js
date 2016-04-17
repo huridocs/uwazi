@@ -24,6 +24,14 @@ export default function (state = initialState, action = {}) {
     return state.setIn(['reference', 'sourceRange'], action.sourceRange);
   }
 
+  if (action.type === types.SET_TARGET_SELECTION) {
+    return state.setIn(['reference', 'targetRange'], action.targetRange);
+  }
+
+  if (action.type === types.UNSET_TARGET_SELECTION) {
+    return state.setIn(['reference', 'targetRange'], null);
+  }
+
   if (action.type === types.UNSET_SELECTION) {
     return state.setIn(['reference', 'sourceRange'], null)
     .set('referencePanel', false)

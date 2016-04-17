@@ -2,22 +2,22 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import Document from 'app/Viewer/components/Document';
+import {setTargetSelection, unsetTargetSelection} from 'app/Viewer/actions/selectionActions';
 
 const mapStateToProps = (state) => {
+  let uiState = state.documentViewer.uiState.toJS();
   return {
-    selection: null,
     document: state.documentViewer.targetDocument,
-    panelIsOpen: false,
+    selection: uiState.reference.targetRange,
     references: [],
-    targetDocumentLoaded: false,
     className: 'targetDocument'
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    setSelection: () => {},
-    unsetSelection: () => {}
+    setSelection: setTargetSelection,
+    unsetSelection: unsetTargetSelection
   },
   dispatch);
 }

@@ -2,8 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import {loadDefaultViewerMenu, resetDocumentViewer} from 'app/Viewer/actions/documentActions';
-import SourceDocument from 'app/Viewer/components/sourceDocument';
-import TargetDocument from 'app/Viewer/components/targetDocument';
+import SourceDocument from 'app/Viewer/components/SourceDocument';
+import TargetDocument from 'app/Viewer/components/TargetDocument';
 import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
 import ContextMenu from 'app/ContextMenu/components/ContextMenu';
 
