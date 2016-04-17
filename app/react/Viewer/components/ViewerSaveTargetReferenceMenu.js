@@ -7,7 +7,7 @@ import {loadTargetDocument} from 'app/Viewer/actions/documentActions';
 
 export class ViewerSaveTargetReferenceMenu extends Component {
   handleClick() {
-    if (this.props.targetDocument) {
+    if (this.props.reference.targetRange) {
       let reference = this.props.reference;
       reference.sourceDocument = this.props.sourceDocument;
       return this.props.saveReference(reference);
@@ -18,11 +18,11 @@ export class ViewerSaveTargetReferenceMenu extends Component {
   }
   render() {
     let className = 'fa-hand-pointer-o';
-    if (this.props.targetDocument) {
-      className = 'fa-save';
-    }
     if (this.props.reference.targetDocument) {
       className = 'fa-arrow-right';
+    }
+    if (this.props.reference.targetRange) {
+      className = 'fa-save';
     }
     return (
       <div>

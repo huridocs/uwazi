@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {ViewerSaveTargetReferenceMenu} from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 
-describe('ViewerSaveReferenceMenu', () => {
+describe('ViewerSaveTargetReferenceMenu', () => {
   let component;
   let props;
 
@@ -37,8 +37,8 @@ describe('ViewerSaveReferenceMenu', () => {
     expect(props.loadTargetDocument).not.toHaveBeenCalled();
   });
 
-  describe('when target document is loaded', () => {
-    it('shuld render saveReference button', () => {
+  describe('when targetRange is selected', () => {
+    it('should render saveReference button', () => {
       props = {
         saveReference: jasmine.createSpy('saveReference'),
         reference: {
