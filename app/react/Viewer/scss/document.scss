@@ -34,10 +34,11 @@
     font-weight: bold;
   }
 
-  a {
+  a.reference {
     text-decoration: none !important;
     border-bottom: 1px dotted $c-grey;
     color: $c-black;
+    cursor: pointer;
     .relation-button {
       display: block;
       position: absolute;
@@ -57,27 +58,9 @@
         margin-right: 2px;
       }
     }
-    &.is-active {
+    &.highlighted, &.highlighted a.reference {
       background: #FFFFC5;
       color: orange;
-      .relation-button {
-        background: #FFFFC5;
-        color: orange;
-        border-color: orange
-      }
-    }
-    &:hover {
-      background: #FFFFC5;
-      color: orange;
-      border-color: orange;
-      .relation-button {
-        background: #FFFFC5;
-        color: orange;
-        border-color: orange;
-      }
-      .relation-dialog {
-        opacity: 1;
-      }
     }
   }
 

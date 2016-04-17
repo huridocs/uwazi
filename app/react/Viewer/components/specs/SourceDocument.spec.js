@@ -13,7 +13,8 @@ describe('SourceDocument', function () {
   let state = {
     documentViewer: {
       uiState: Immutable.fromJS({
-        reference: {sourceRange: {selection: 'selection'}}
+        reference: {sourceRange: {selection: 'selection'}},
+        highlightedReference: 'highlightedReference'
       }),
       document: {name: 'document'},
       targetDocument: {},
@@ -34,6 +35,7 @@ describe('SourceDocument', function () {
     expect(props.references).toEqual([{reference: 'reference'}]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);
+    expect(props.highlightedReference).toBe('highlightedReference');
   });
 
   it('should pass executeOnClickHandler true if target document is loaded', () => {

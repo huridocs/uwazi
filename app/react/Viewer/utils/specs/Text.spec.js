@@ -80,15 +80,19 @@ describe('Text', () => {
   });
 
   describe('renderReferences', () => {
-    let elementWrapper;
     let unwrap;
+
+    let elementWrapper = (id) => {
+      let element = document.createElement('a');
+      element.classList.add('reference');
+      element.setAttribute('x-id', id);
+      return element;
+    };
 
     beforeEach(() => {
       unwrap = jasmine.createSpy('unwrap');
       spyOn(wrapper, 'wrap').and.returnValue({unwrap});
       spyOn(TextRange, 'restore').and.returnValue('restoredRange');
-      elementWrapper = document.createElement('a');
-      elementWrapper.classList.add('reference');
     });
 
     it('should wrap a collection of references', () => {
@@ -97,8 +101,8 @@ describe('Text', () => {
       text.renderReferences(references);
       expect(TextRange.restore).toHaveBeenCalledWith('sourceRange1', document);
       expect(TextRange.restore).toHaveBeenCalledWith('sourceRange2', document);
-      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
-      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('1'), 'restoredRange');
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('2'), 'restoredRange');
     });
 
     it('should not render references already rendered', () => {
@@ -114,7 +118,7 @@ describe('Text', () => {
       expect(TextRange.restore.calls.count()).toBe(1);
       expect(wrapper.wrap.calls.count()).toBe(1);
       expect(TextRange.restore).toHaveBeenCalledWith('sourceRange3', document);
-      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('3'), 'restoredRange');
     });
 
     it('should unwrap references that are passed', () => {
@@ -125,6 +129,46 @@ describe('Text', () => {
 
       expect(unwrap.calls.count()).toBe(1);
       expect(text.renderedReferences[1]).not.toBeDefined();
+    });
+  });
+
+  describe('highlight', () => {
+    let createElement = () => {
+      return document.createElement('a');
+    };
+
+    beforeEach(() => {
+      text.renderedReferences = {
+        reference1: {
+          nodes: [createElement(), createElement()]
+        },
+        reference2: {
+          nodes: [createElement(), createElement(), createElement()]
+        }
+      };
+    });
+
+    it('should add class highlighted to all nodes of a reference', () => {
+      text.highlight('reference2');
+
+      expect(text.renderedReferences.reference2.nodes[0].className).toBe('highlighted');
+      expect(text.renderedReferences.reference2.nodes[1].className).toBe('highlighted');
+    });
+
+    it('should toggle highlighting when new reference is passed', () => {
+      text.highlight('reference2');
+      text.highlight('reference1');
+
+      expect(text.renderedReferences.reference2.nodes[0].className).toBe('');
+      expect(text.renderedReferences.reference2.nodes[1].className).toBe('');
+      expect(text.renderedReferences.reference1.nodes[0].className).toBe('highlighted');
+      expect(text.renderedReferences.reference1.nodes[1].className).toBe('highlighted');
+    });
+
+    describe('when passing null', () => {
+      it('should not throw an error', () => {
+        expect(text.highlight.bind(text, null)).not.toThrow();
+      });
     });
   });
 });

@@ -31,3 +31,10 @@ export function selectTargetDocument(id) {
   };
 }
 
+export function highlightReference(reference) {
+  return {
+    type: types.HIGHLIGHT_REFERENCE,
+    reference
+  };
+}
+

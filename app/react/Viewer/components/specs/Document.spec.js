@@ -83,6 +83,27 @@ describe('Document', () => {
     });
   });
 
+  describe('onMouseOver', () => {
+    describe('when over a reference', () => {
+      it('should highlightReference if over a reference', () => {
+        props.highlightReference = jasmine.createSpy('highlightReference');
+        render();
+
+        component.find('.document').simulate('mouseover', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+        expect(props.highlightReference).toHaveBeenCalledWith('referenceId');
+      });
+    });
+    describe('when not over a reference', () => {
+      it('should unHighlight reference', () => {
+        props.highlightReference = jasmine.createSpy('highlightReference');
+        render();
+
+        component.find('.document').simulate('mouseover', {target: {className: '', getAttribute: () => ''}});
+        expect(props.highlightReference).toHaveBeenCalledWith(null);
+      });
+    });
+  });
+
   describe('onMouseUp/onTouchEnd', () => {
     beforeEach(() => {
       render();
@@ -129,31 +150,39 @@ describe('Document', () => {
   describe('onTextSelected', () => {
     beforeEach(() => {
       props.selection = {selection: 'selection'};
+      props.highlightedReference = 'highlightedReference';
       props.references = [{reference: 'reference'}];
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
+      spyOn(instance.text, 'simulateSelection');
+      spyOn(instance.text, 'highlight');
+      spyOn(instance.text, 'renderReferences');
     });
 
-    it('should setSelection() with the range serialized', () => {
+    it('should setSelection with the range serialized', () => {
       instance.onTextSelected();
       expect(props.setSelection).toHaveBeenCalledWith('serializedRange');
     });
-  });
 
-  describe('componentDidUpdate', () => {
-    it('should simulateSelection', () => {
-      spyOn(instance.text, 'simulateSelection');
-      instance.componentDidUpdate();
+    describe('componentDidUpdate', () => {
+      it('should simulateSelection', () => {
+        instance.componentDidUpdate();
 
-      expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'});
-    });
+        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'});
+      });
 
-    it('should render the references', () => {
-      spyOn(instance.text, 'renderReferences');
-      instance.componentDidUpdate();
+      it('should render the references', () => {
+        instance.componentDidUpdate();
 
-      expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
+        expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
+      });
+
+      it('should highlight the reference', () => {
+        instance.componentDidUpdate();
+
+        expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
+      });
     });
   });
 });

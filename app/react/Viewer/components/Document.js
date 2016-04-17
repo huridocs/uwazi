@@ -19,6 +19,14 @@ export class Document extends Component {
     }
   }
 
+  handleOver(e) {
+    if (e.target.className === 'reference') {
+      return this.props.highlightReference(e.target.getAttribute('x-id'));
+    }
+
+    this.props.highlightReference(null);
+  }
+
   componentDidMount() {
     this.text = Text(this.pagesContainer);
   }
@@ -30,6 +38,7 @@ export class Document extends Component {
   componentDidUpdate() {
     this.text.renderReferences(this.props.references);
     this.text.simulateSelection(this.props.selection);
+    this.text.highlight(this.props.highlightedReference);
   }
 
   render() {
@@ -43,6 +52,7 @@ export class Document extends Component {
           onMouseUp={this.handleMouseUp.bind(this)}
           onTouchEnd={this.handleMouseUp.bind(this)}
           onClick={this.handleClick.bind(this)}
+          onMouseOver={this.handleOver.bind(this)}
         >
         {document.pages.map((page, index) => {
           let html = {__html: page};
@@ -59,7 +69,8 @@ Document.propTypes = {
   document: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
-  resetDocumentViewer: PropTypes.func,
+  highlightReference: PropTypes.func,
+  highlightedReference: PropTypes.string,
   selection: PropTypes.object,
   references: PropTypes.array,
   className: PropTypes.string,

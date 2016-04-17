@@ -38,4 +38,10 @@ describe('openReferencePanel', () => {
       expect(action).toEqual({type: types.RESET_REFERENCE_CREATION});
     });
   });
+  describe('highlightReference()', () => {
+    it('should return a HIGHLIGHT_REFERENCE with id', () => {
+      let action = actions.highlightReference('id');
+      expect(action).toEqual({type: types.HIGHLIGHT_REFERENCE, reference: 'id'});
+    });
+  });
 });

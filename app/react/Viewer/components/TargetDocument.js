@@ -10,7 +10,8 @@ const mapStateToProps = (state) => {
     document: state.documentViewer.targetDocument,
     selection: uiState.reference.targetRange,
     references: [],
-    className: 'targetDocument'
+    className: 'targetDocument',
+    highlightReference: () => {}
   };
 };
 

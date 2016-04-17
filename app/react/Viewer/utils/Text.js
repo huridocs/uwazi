@@ -5,6 +5,7 @@ export default function (container) {
   return {
     container,
     renderedReferences: {},
+    highlightedReference: null,
 
     selected() {
       return window.getSelection().toString() !== '';
@@ -13,6 +14,22 @@ export default function (container) {
     getSelection() {
       let range = window.getSelection().getRangeAt(0);
       return TextRange.serialize(range, container);
+    },
+
+    highlight(referenceId) {
+      if (this.highlightedReference) {
+        this.renderedReferences[this.highlightedReference].nodes.forEach((node) => {
+          node.classList.remove('highlighted');
+        });
+      }
+
+      if (referenceId) {
+        this.renderedReferences[referenceId].nodes.forEach((node) => {
+          node.classList.add('highlighted');
+        });
+      }
+
+      this.highlightedReference = referenceId;
     },
 
     simulateSelection(range) {
@@ -58,6 +75,7 @@ export default function (container) {
         let restoredRange = TextRange.restore(reference.sourceRange, container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
+        elementWrapper.setAttribute('x-id', reference._id);
         this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 

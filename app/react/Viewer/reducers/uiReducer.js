@@ -4,6 +4,10 @@ import * as types from 'app/Viewer/actions/actionTypes';
 const initialState = {reference: {}};
 
 export default function (state = initialState, action = {}) {
+  if (action.type === types.HIGHLIGHT_REFERENCE) {
+    return state.set('highlightedReference', action.reference);
+  }
+
   if (action.type === types.OPEN_REFERENCE_PANEL) {
     return state.set('referencePanel', true);
   }
