@@ -26,10 +26,13 @@ describe('Upload', () => {
   });
 
   describe('upload()', () => {
-    it('should reset the progress', () => {
+    it('should reset the progress', (done) => {
       component.state.progress = 100;
       component.upload();
-      expect(component.state.progress).toBe(0);
+      setTimeout(() => {
+        expect(component.state.progress).toBe(0);
+        done();
+      });
     });
 
     it('should uploadFile passing the recent created document with his id', (done) => {
@@ -97,6 +100,7 @@ describe('Upload', () => {
         events.on('uploadProgress', (id, percent) => {
           expect(percent).toBe(51);
           expect(id).toBe('1234');
+          events.removeAllListeners('uploadProgress');
           done();
         });
 
