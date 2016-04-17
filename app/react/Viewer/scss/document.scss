@@ -36,7 +36,7 @@
 
   a.reference {
     text-decoration: none !important;
-    border-bottom: 1px dotted $c-grey;
+    background: $c-grey;
     color: $c-black;
     cursor: pointer;
     .relation-button {
