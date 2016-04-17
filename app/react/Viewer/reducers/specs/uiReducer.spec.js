@@ -32,6 +32,24 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('SET_TARGET_DOCUMENT', () => {
+    it('should set panels to false', () => {
+      let newState = uiReducer(Immutable.fromJS({targetReferencePanel: true, referencePanel: true}), {type: types.SET_TARGET_DOCUMENT});
+      let expected = Immutable.fromJS({targetReferencePanel: false, referencePanel: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('RESET_REFERENCE_CREATION', () => {
+    it('should set reference to {}', () => {
+      let newState = uiReducer(Immutable.fromJS({reference: 'current'}), {type: types.RESET_REFERENCE_CREATION});
+      let expected = Immutable.fromJS({reference: {}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('VIEWER_SEARCHING', () => {
     it('should set viewerSearching = true', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.VIEWER_SEARCHING});

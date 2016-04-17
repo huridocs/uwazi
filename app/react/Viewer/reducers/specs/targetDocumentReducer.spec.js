@@ -25,4 +25,12 @@ describe('targetDocumentReducer', () => {
       expect(newState).toEqual({pages: [], css: []});
     });
   });
+
+  describe('RESET_REFERENCE_CREATION', () => {
+    it('should set document to initialState', () => {
+      let newState = targetDocumentReducer({}, {type: types.RESET_REFERENCE_CREATION});
+
+      expect(newState).toEqual({pages: [], css: []});
+    });
+  });
 });

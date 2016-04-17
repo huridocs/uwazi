@@ -19,7 +19,8 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
-      unsetSelection: jasmine.createSpy('unsetSelection')
+      unsetSelection: jasmine.createSpy('unsetSelection'),
+      onClick: jasmine.createSpy('onClick')
     };
   });
 
@@ -51,6 +52,27 @@ describe('Document', () => {
     let styles = component.find('style');
 
     expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css'})});
+  });
+
+  describe('onClick', () => {
+    describe('when executeOnClickHandler = true', () => {
+      it('should execute onClick', () => {
+        props.executeOnClickHandler = true;
+        render();
+        component.find('.document').simulate('click');
+
+        expect(props.onClick).toHaveBeenCalled();
+      });
+    });
+    describe('when executeOnClickHandler = false', () => {
+      it('should not execute onClick', () => {
+        props.executeOnClickHandler = false;
+        render();
+        component.find('.document').simulate('click');
+
+        expect(props.onClick).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('componentDidMount', () => {

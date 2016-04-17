@@ -16,6 +16,10 @@ export default function (state = initialState, action = {}) {
     return state.set('viewerSearching', true);
   }
 
+  if (action.type === types.RESET_REFERENCE_CREATION) {
+    return state.set('reference', Immutable.fromJS({}));
+  }
+
   if (action.type === types.SET_SELECTION) {
     return state.setIn(['reference', 'sourceRange'], action.sourceRange);
   }
@@ -24,6 +28,10 @@ export default function (state = initialState, action = {}) {
     return state.setIn(['reference', 'sourceRange'], null)
     .set('referencePanel', false)
     .set('targetReferencePanel', false);
+  }
+
+  if (action.type === types.SET_TARGET_DOCUMENT) {
+    return state.set('referencePanel', false).set('targetReferencePanel', false);
   }
 
   if (action.type === types.ADD_CREATED_REFERENCE) {

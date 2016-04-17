@@ -13,6 +13,12 @@ export class Document extends Component {
     this.onTextSelected();
   }
 
+  handleClick() {
+    if (this.props.executeOnClickHandler) {
+      this.props.onClick();
+    }
+  }
+
   componentDidMount() {
     this.text = Text(this.pagesContainer);
   }
@@ -36,6 +42,7 @@ export class Document extends Component {
           ref={(ref) => this.pagesContainer = ref}
           onMouseUp={this.handleMouseUp.bind(this)}
           onTouchEnd={this.handleMouseUp.bind(this)}
+          onClick={this.handleClick.bind(this)}
         >
         {document.pages.map((page, index) => {
           let html = {__html: page};
@@ -55,7 +62,9 @@ Document.propTypes = {
   resetDocumentViewer: PropTypes.func,
   selection: PropTypes.object,
   references: PropTypes.array,
-  className: PropTypes.string
+  className: PropTypes.string,
+  onClick: PropTypes.func,
+  executeOnClickHandler: PropTypes.bool
 };
 
 export default Document;

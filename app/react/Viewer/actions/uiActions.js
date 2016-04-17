@@ -18,9 +18,16 @@ export function viewerSearching() {
   };
 }
 
+export function resetReferenceCreation() {
+  return {
+    type: types.RESET_REFERENCE_CREATION
+  };
+}
+
 export function selectTargetDocument(id) {
   return {
     type: types.SELECT_TARGET_DOCUMENT,
     id
   };
 }
+

@@ -26,4 +26,16 @@ describe('openReferencePanel', () => {
       expect(action).toEqual({type: types.SELECT_TARGET_DOCUMENT, id: 'id'});
     });
   });
+  describe('selectTargetDocument()', () => {
+    it('should return a SELECT_TARGET_DOCUMENT with id', () => {
+      let action = actions.selectTargetDocument('id');
+      expect(action).toEqual({type: types.SELECT_TARGET_DOCUMENT, id: 'id'});
+    });
+  });
+  describe('resetReferenceCreation()', () => {
+    it('should return a RESET_REFERENCE_CREATION with id', () => {
+      let action = actions.resetReferenceCreation();
+      expect(action).toEqual({type: types.RESET_REFERENCE_CREATION});
+    });
+  });
 });
