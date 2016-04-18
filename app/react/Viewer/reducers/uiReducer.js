@@ -37,7 +37,7 @@ export default function (state = initialState, action = {}) {
   }
 
   if (action.type === types.UNSET_SELECTION) {
-    return state.setIn(['reference', 'sourceRange'], null).set('panel', false)
+    return state.setIn(['reference', 'sourceRange'], null).set('panel', false);
   }
 
   if (action.type === types.SET_TARGET_DOCUMENT) {
