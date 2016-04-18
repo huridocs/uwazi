@@ -5,12 +5,14 @@ import {bindActionCreators} from 'redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {highlightReference} from 'app/Viewer/actions/uiActions';
 
+import 'app/Viewer/scss/viewReferencesPanel.scss';
+
 export class ViewReferencesPanel extends Component {
   render() {
     let sidePanelprops = {open: this.props.open};
     return (
       <SidePanel {...sidePanelprops}>
-        <h1>References</h1>
+        <div className="item-group">
           {(() => {
             return this.props.references.map((reference, index) => {
               return (
@@ -18,13 +20,17 @@ export class ViewReferencesPanel extends Component {
                   onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
                   onMouseLeave={this.props.highlightReference.bind(null, null)}
                 >
-                  <div>
+                  <div className="item">
+                    <div className="reference-type">
+                      <i className="fa fa-file-text-o"></i>
+                    </div>
                     <span className="item-name">{reference.targetDocument}</span>
                   </div>
                 </li>
-              );
+                );
             });
           })()}
+        </div>
       </SidePanel>
     );
   }
