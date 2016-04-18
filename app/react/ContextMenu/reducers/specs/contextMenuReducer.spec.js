@@ -78,20 +78,20 @@ describe('contextMenuReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
-  describe('OPEN_REFERENCE_PANEL', () => {
+  describe('OPEN_PANEL with referencePanel', () => {
     it('should set type to ViewerSaveReferenceMenu', () => {
       let currentState = Immutable.fromJS({type: null});
-      let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_REFERENCE_PANEL});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_PANEL, panel: 'referencePanel'});
       let expected = Immutable.fromJS({type: 'ViewerSaveReferenceMenu'});
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);
     });
   });
-  describe('OPEN_TARGET_REFERENCE_PANEL', () => {
+  describe('OPEN_PANEL with targetReferencePanel', () => {
     it('should set type to ViewerSaveTargetReferenceMenu', () => {
       let currentState = Immutable.fromJS({type: null});
-      let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_TARGET_REFERENCE_PANEL});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_PANEL, panel: 'targetReferencePanel'});
       let expected = Immutable.fromJS({type: 'ViewerSaveTargetReferenceMenu'});
 
       expect(newState).toBeImmutable();

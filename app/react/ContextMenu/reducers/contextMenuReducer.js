@@ -3,8 +3,12 @@ import Immutable from 'immutable';
 import * as actions from 'app/ContextMenu/actions/actionTypes';
 import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 
-
 const initialState = {open: false, menu: null};
+
+const panels = {
+  referencePanel: 'ViewerSaveReferenceMenu',
+  targetReferencePanel: 'ViewerSaveTargetReferenceMenu'
+};
 
 export default function contextMenuReducer(state = initialState, action = {}) {
   if (action.type === actions.OPEN_MENU) {
@@ -19,12 +23,8 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', 'ViewerTextSelectedMenu');
   }
 
-  if (action.type === ViewerActions.OPEN_REFERENCE_PANEL) {
-    return state.set('type', 'ViewerSaveReferenceMenu');
-  }
-
-  if (action.type === ViewerActions.OPEN_TARGET_REFERENCE_PANEL) {
-    return state.set('type', 'ViewerSaveTargetReferenceMenu');
+  if (action.type === ViewerActions.OPEN_PANEL) {
+    return state.set('type', panels[action.panel]);
   }
 
   if (action.type === ViewerActions.UNSET_SELECTION || action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU

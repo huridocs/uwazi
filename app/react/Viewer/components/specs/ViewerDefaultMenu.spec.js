@@ -13,11 +13,11 @@ describe('ViewerDefaultMenu', () => {
 
   it('should render a default button when reference its not complete', () => {
     props = {
-      openViewReferencesPanel: jasmine.createSpy('openViewReferencesPanel')
+      openPanel: jasmine.createSpy('openViewReferencesPanel')
     };
     render();
 
     component.find('.view-references').simulate('click');
-    expect(props.openViewReferencesPanel).toHaveBeenCalled();
+    expect(props.openPanel).toHaveBeenCalledWith('viewReferencesPanel');
   });
 });

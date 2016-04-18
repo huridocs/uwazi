@@ -8,16 +8,8 @@ export default function (state = initialState, action = {}) {
     return state.set('highlightedReference', action.reference);
   }
 
-  if (action.type === types.OPEN_REFERENCE_PANEL) {
-    return state.set('panel', 'referencePanel');
-  }
-
-  if (action.type === types.OPEN_VIEW_REFERENCES_PANEL) {
-    return state.set('panel', 'viewReferencesPanel');
-  }
-
-  if (action.type === types.OPEN_TARGET_REFERENCE_PANEL) {
-    return state.set('panel', 'targetReferencePanel');
+  if (action.type === types.OPEN_PANEL) {
+    return state.set('panel', action.panel);
   }
 
   if (action.type === types.VIEWER_SEARCHING) {

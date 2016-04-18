@@ -2,22 +2,10 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 
 describe('Viewer uiActions', () => {
-  describe('openReferencesPanel()', () => {
-    it('should return a OPEN_VIEW_REFERENCES_PANEL', () => {
-      let action = actions.openViewReferencesPanel();
-      expect(action).toEqual({type: types.OPEN_VIEW_REFERENCES_PANEL});
-    });
-  });
-  describe('openReferencePanel()', () => {
-    it('should return a OPEN_REFERENCE_PANEL', () => {
-      let action = actions.openReferencePanel();
-      expect(action).toEqual({type: types.OPEN_REFERENCE_PANEL});
-    });
-  });
-  describe('openTargetReferencePanel()', () => {
-    it('should return a OPEN_TARGET_REFERENCE_PANEL', () => {
-      let action = actions.openTargetReferencePanel();
-      expect(action).toEqual({type: types.OPEN_TARGET_REFERENCE_PANEL});
+  describe('openPanel()', () => {
+    it('should return a OPEN_PANEL with panel passed', () => {
+      let action = actions.openPanel('a panel');
+      expect(action).toEqual({type: types.OPEN_PANEL, panel: 'a panel'});
     });
   });
   describe('viewerSearching()', () => {

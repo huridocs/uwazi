@@ -2,17 +2,17 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {openReferencePanel, openTargetReferencePanel} from 'app/Viewer/actions/uiActions';
+import {openPanel} from 'app/Viewer/actions/uiActions';
 
 export class ViewerTextSelectedMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
-        <div onClick={this.props.openReferencePanel} className="float-btn__sec">
+        <div onClick={this.props.openPanel.bind(null, 'referencePanel')} className="float-btn__sec">
           <span>Reference to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
-        <div className="float-btn__sec" onClick={this.props.openTargetReferencePanel}>
+        <div className="float-btn__sec" onClick={this.props.openPanel.bind(null, 'targetReferencePanel')}>
           <span>Reference to a paragraph</span>
           <i className="fa fa-file-text-o"></i>
         </div>
@@ -25,14 +25,13 @@ export class ViewerTextSelectedMenu extends Component {
 }
 
 ViewerTextSelectedMenu.propTypes = {
-  openReferencePanel: PropTypes.func,
-  openTargetReferencePanel: PropTypes.func,
+  openPanel: PropTypes.func,
   closeMenu: PropTypes.func,
   active: PropTypes.bool
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openReferencePanel, openTargetReferencePanel}, dispatch);
+  return bindActionCreators({openPanel}, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(ViewerTextSelectedMenu);
