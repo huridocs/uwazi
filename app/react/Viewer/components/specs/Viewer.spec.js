@@ -16,11 +16,29 @@ describe('Viewer', () => {
       setDefaultViewerMenu: jasmine.createSpy('setDefaultViewerMenu'),
       resetDocumentViewer: jasmine.createSpy('resetDocumentViewer')
     };
+  });
+
+  let render = () => {
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<Viewer {...props}/>, {context});
+  };
+
+  it('should add with-panel className when there is a panel open', () => {
+    props.panelIsOpen = true;
+    render();
+    expect(component.find('.document-viewer').hasClass('with-panel')).toBe(true);
+  });
+
+  it('should add  show-target-document className when targetDocument loaded', () => {
+    props.panelIsOpen = true;
+    props.targetDocument = true;
+    render();
+    expect(component.find('.document-viewer').hasClass('show-target-document')).toBe(true);
+    expect(component.find('.document-viewer').hasClass('with-panel')).toBe(false);
   });
 
   it('should render Document and ContextMenu', () => {
+    render();
     expect(component.find(SourceDocument).length).toBe(1);
     expect(component.find(TargetDocument).length).toBe(1);
     expect(component.find(ContextMenu).length).toBe(1);
@@ -28,6 +46,7 @@ describe('Viewer', () => {
 
   describe('on mount', () => {
     it('should loadDefaultViewerMenu()', () => {
+      render();
       component.instance().componentDidMount();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'LOAD_DEFAULT_VIEWER_MENU'});
     });
@@ -35,6 +54,7 @@ describe('Viewer', () => {
 
   describe('componentWillUnmount', () => {
     it('should resetDocumentViewer', () => {
+      render();
       component.unmount();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'RESET_DOCUMENT_VIEWER'});
     });

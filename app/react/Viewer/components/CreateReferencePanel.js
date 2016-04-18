@@ -41,7 +41,7 @@ CreateReferencePanel.propTypes = {
 const mapStateToProps = (state) => {
   let uiState = state.documentViewer.uiState.toJS();
   return {
-    open: uiState.referencePanel || uiState.targetReferencePanel,
+    open: !!uiState.panel,
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,
     selected: uiState.reference.targetDocument

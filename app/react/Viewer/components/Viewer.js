@@ -42,7 +42,7 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
-  targetDocument: PropTypes.string
+  targetDocument: PropTypes.bool
 };
 
 Viewer.contextTypes = {
@@ -52,13 +52,9 @@ Viewer.contextTypes = {
 const mapStateToProps = (state) => {
   let uiState = state.documentViewer.uiState.toJS();
   return {
-    panelIsOpen: uiState.referencePanel || uiState.targetReferencePanel,
-    targetDocument: state.documentViewer.targetDocument._id
+    panelIsOpen: !!uiState.panel,
+    targetDocument: !!state.documentViewer.targetDocument._id
   };
 };
-
-//function mapDispatchToProps(dispatch) {
-  //return bindActionCreators({setSelection, unsetSelection}, dispatch);
-//}
 
 export default connect(mapStateToProps)(Viewer);
