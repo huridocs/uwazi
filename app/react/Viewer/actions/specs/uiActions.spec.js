@@ -1,7 +1,13 @@
 import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-describe('openReferencePanel', () => {
+describe('Viewer uiActions', () => {
+  describe('openReferencesPanel()', () => {
+    it('should return a OPEN_VIEW_REFERENCES_PANEL', () => {
+      let action = actions.openViewReferencesPanel();
+      expect(action).toEqual({type: types.OPEN_VIEW_REFERENCES_PANEL});
+    });
+  });
   describe('openReferencePanel()', () => {
     it('should return a OPEN_REFERENCE_PANEL', () => {
       let action = actions.openReferencePanel();

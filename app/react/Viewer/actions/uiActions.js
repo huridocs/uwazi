@@ -12,6 +12,12 @@ export function openTargetReferencePanel() {
   };
 }
 
+export function openViewReferencesPanel() {
+  return {
+    type: types.OPEN_VIEW_REFERENCES_PANEL
+  };
+}
+
 export function viewerSearching() {
   return {
     type: types.VIEWER_SEARCHING

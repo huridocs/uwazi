@@ -14,6 +14,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('OPEN_VIEW_REFERENCEs_PANEL', () => {
+    it('should set panel = "viewReferencesPanel"', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_VIEW_REFERENCES_PANEL});
+      let expected = Immutable.fromJS({panel: 'viewReferencesPanel'});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('OPEN_REFERENCE_PANEL', () => {
     it('should set panel = "referencePanel"', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_REFERENCE_PANEL});
