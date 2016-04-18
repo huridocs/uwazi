@@ -2,13 +2,13 @@ require('es6-promise').polyfill(); // Required in some browsers
 require('babel-core/register')({
   "presets": ["es2015", "react"],
   "plugins": [
+    "transform-class-properties",
+    "add-module-exports",
     ["babel-plugin-module-alias", [
       { "src": "./app/react", "expose": "app" },
       { "src": "./app/shared", "expose": "shared" },
       { "src": "./app/api", "expose": "api" }
-    ]],
-    "transform-class-properties",
-    "add-module-exports"
+    ]]
   ]
 }); //babel polyfill ES6
 
