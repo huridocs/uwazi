@@ -1,11 +1,15 @@
 import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
+import fs from 'fs';
+
+let basename = (filepath) => {
+  return path.basename(filepath, path.extname(filepath));
+};
 
 let generateOutputPath = (filepath) => {
   let directory = path.dirname(filepath);
-  let baseName = path.basename(filepath, path.extname(filepath));
-  return `${directory}/${baseName}.optimized${path.extname(filepath)}`;
+  return `${directory}/${basename(filepath)}.optimized${path.extname(filepath)}`;
 };
 
 export default class PDF extends EventEmitter {
@@ -29,8 +33,26 @@ export default class PDF extends EventEmitter {
     });
 
     return new Promise((resolve, reject) => {
-      conversion.stdout.on('close', () => resolve(generateOutputPath(this.filepath)));
+      conversion.stdout.on('close', () => {
+        this.optimizedPath = generateOutputPath(this.filepath);
+        resolve(this.optimizedPath);
+      });
       conversion.stderr.on('data', (error) => reject(error));
+    });
+  }
+
+  extractText() {
+    let tmpPath = `/tmp/${basename(this.filepath)}`;
+    let options = ['text', `-o /tmp/${tmpPath}`, this.filepath];
+    let extraction = spawn('docsplit', options);
+
+    return new Promise((resolve, reject) => {
+      extraction.stderr.on('data', (error) => reject(error));
+      extraction.stdout.on('close', () => {
+        fs.readFile(tmpPath, 'utf-8', (err, content) => {
+          resolve(content);
+        });
+      });
     });
   }
 }

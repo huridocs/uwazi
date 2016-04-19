@@ -6,17 +6,13 @@ class Events extends EventEmitter {}
 
 fdescribe('PDF', function () {
   let pdf;
-  let filepath = '/the/pdf/path.pdf';
-  //let filepath = __dirname + '/test_document.pdf';
-
-  beforeEach(() => {
-    pdf = new PDFObject(filepath);
-  });
 
   describe('optimize', () => {
-    let ghostscript = {stdout: new Events(), stderr: new Events()};
+    let filepath = '/the/pdf/path.pdf';
+    let commandBeingExecuted = {stdout: new Events(), stderr: new Events()};
     beforeEach(() => {
-      spyOn(childProcess, 'spawn').and.returnValue(ghostscript);
+      spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
+      pdf = new PDFObject(filepath);
     });
 
     it('should optimize the pdf with ghostscript', () => {
@@ -38,31 +34,65 @@ fdescribe('PDF', function () {
       });
 
       pdf.optimize();
-      ghostscript.stdout.emit('data', new Buffer('Processing pages 1 through 11.', 'utf-8'));
-      ghostscript.stdout.emit('data', new Buffer('Page 5', 'utf-8'));
+      commandBeingExecuted.stdout.emit('data', new Buffer('Processing pages 1 through 11.', 'utf-8'));
+      commandBeingExecuted.stdout.emit('data', new Buffer('Page 5', 'utf-8'));
     });
 
     it('should return a promise and resolve it when conversion finishes', (done) => {
       pdf.optimize()
       .then((optimizedPath) => {
         expect(optimizedPath).toBe('/the/pdf/path.optimized.pdf');
+        expect(pdf.optimizedPath).toBe('/the/pdf/path.optimized.pdf');
         done();
       }).catch(done.fail);
 
-      ghostscript.stdout.emit('close');
+      commandBeingExecuted.stdout.emit('close');
     });
 
     it('should reject the promise on error', (done) => {
       pdf.optimize()
       .then(() => {
-        done.fail('promise should be rejected');
+        done.fail('promise should be rejected when there is an error on stderr');
       })
       .catch((error) => {
         expect(error).toBe('error!');
         done();
       });
 
-      ghostscript.stderr.emit('data', 'error!');
+      commandBeingExecuted.stderr.emit('data', 'error!');
+    });
+  });
+
+  describe('extractText', () => {
+    let filepath = __dirname + '/test_document.pdf';
+    beforeEach(() => {
+      pdf = new PDFObject(filepath);
+    });
+
+    it('should extract the text of the pdf using docsplit', () => {
+      pdf.extractText()
+      .then((text) => {
+        let lines = text.split(/\f/);
+
+        expect(lines[0]).toBe('Page 1\n\n');
+        expect(lines[1]).toBe('Page 2\n\n');
+        expect(lines[2]).toBe('Page 3\n\n');
+      });
+    });
+
+    it('should reject the promise when there is an error', (done) => {
+      let commandBeingExecuted = {stdout: new Events(), stderr: new Events()};
+      spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
+
+      pdf.extractText()
+      .then(() => {
+        done.fail('promise should be rejected when there is an error on stderr')
+      })
+      .catch((error) => {
+        expect(error).toBe('error');
+        done();
+      });
+      commandBeingExecuted.stderr.emit('data', 'error');
     });
   });
 });
