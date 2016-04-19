@@ -20,6 +20,12 @@
   border-bottom: 1px solid $c-grey;
   margin: 0;
   padding: 0 0 15px;
+
+  .fa {
+    position: absolute;
+    left: 15px;
+    margin-top: 4px;
+  }
 }
 
 

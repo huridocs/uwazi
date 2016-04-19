@@ -29,7 +29,7 @@ export class DocumentsList extends Component {
         <aside className="col-xs-12 col-sm-3">
           <div className="search">
             <div className="search__button--apply__filters">
-              <a className="btn btn-success btn-block">Apply filters<i className="fa fa-chevron-left"></i></a>
+              <a className="btn btn-success btn-block"><i className="fa fa-chevron-left"></i>Apply filters</a>
             </div>
             <ul className="search__filter search__filter--radiobutton">
               <li>Document type (Radio button)</li>
