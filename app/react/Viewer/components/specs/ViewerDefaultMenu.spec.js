@@ -11,13 +11,23 @@ describe('ViewerDefaultMenu', () => {
     component = shallow(<ViewerDefaultMenu {...props}/>);
   };
 
-  it('should render a default button when reference its not complete', () => {
+  it('should open viewReferencesPanel on click references button', () => {
     props = {
-      openPanel: jasmine.createSpy('openViewReferencesPanel')
+      openPanel: jasmine.createSpy('openPanel')
     };
     render();
 
     component.find('.view-references').simulate('click');
     expect(props.openPanel).toHaveBeenCalledWith('viewReferencesPanel');
+  });
+
+  it('should open viewMetadataPanel on click metadata button', () => {
+    props = {
+      openPanel: jasmine.createSpy('openPanel')
+    };
+    render();
+
+    component.find('.view-metadata').simulate('click');
+    expect(props.openPanel).toHaveBeenCalledWith('viewMetadataPanel');
   });
 });
