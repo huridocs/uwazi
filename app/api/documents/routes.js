@@ -35,6 +35,13 @@ export default app => {
     });
   });
 
+  app.get('/api/documents/match_title', (req, res) => {
+    return documents.matchTitle(req.query.searchTerm)
+    .then((results) => {
+      res.json(results);
+    });
+  });
+
   app.get('/api/documents', (req, res) => {
     let id = '';
     let url = db_url+'/_design/documents/_view/list';

@@ -143,6 +143,21 @@ describe('documents', () => {
     });
   });
 
+  describe('/api/documents/match_title', () => {
+    it('should search documents by title and return the results', (done) => {
+      spyOn(documents, 'matchTitle').and.returnValue(new Promise((resolve) => resolve('results')));
+      let req = {query: {searchTerm: 'test'}};
+
+      routes.get('/api/documents/match_title', req)
+      .then((response) => {
+        expect(response).toEqual('results');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+
   describe("DELETE", () => {
 
     it("should delete a document", (done) => {

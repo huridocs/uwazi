@@ -1,29 +1,5 @@
 import elastic from './elastic';
-
-
-let buildQuery = (searchTerm) => {
-  let query = {match_all: {}};
-  if (searchTerm) {
-    query = {
-      multi_match: {
-        query: searchTerm,
-        type: 'phrase_prefix',
-        fields: ['doc.fullText', 'doc.metadata.*', 'doc.title']
-      }
-    };
-  }
-  return {
-    _source: {
-      include: [ 'doc.title', 'doc.processed']
-    },
-    from: 0,
-    size: 100,
-    query: query,
-    filter: {
-      term: {'doc.published': true}
-    }
-  };
-};
+import buildQuery from './elasticQuery';
 
 export default {
   search(searchTerm) {
@@ -32,6 +8,18 @@ export default {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;
         result._id = hit._id;
+        return result;
+      });
+    });
+  },
+
+  matchTitle(searchTerm) {
+    return elastic.search({index: 'uwazi', body: buildQuery(searchTerm, ['doc.title'], ['doc.title'])})
+    .then((response) => {
+      return response.hits.hits.map((hit) => {
+        let result = hit._source.doc;
+        result._id = hit._id;
+        result.title = hit.highlight['doc.title'][0];
         return result;
       });
     });
