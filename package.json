@@ -84,6 +84,7 @@
     "jasmine-core": "^2.3.4",
     "jasmine-immutablejs-matchers": "^0.1.2",
     "jasmine-reporters": "^2.1.0",
+    "jasmine-spec-reporter": "^2.4.0",
     "karma": "^0.13.15",
     "karma-chrome-launcher": "^0.2.1",
     "karma-coverage": "^0.5.3",
