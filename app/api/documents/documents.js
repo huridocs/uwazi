@@ -14,7 +14,7 @@ export default {
   },
 
   matchTitle(searchTerm) {
-    return elastic.search({index: 'uwazi', body: buildQuery(searchTerm, ['doc.title'], ['doc.title'])})
+    return elastic.search({index: 'uwazi', body: buildQuery(searchTerm, ['doc.title'], ['doc.title'], 5)})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;

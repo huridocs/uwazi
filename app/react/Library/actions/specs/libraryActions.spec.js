@@ -33,6 +33,7 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
+      .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
       .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)});
       dispatch = jasmine.createSpy('dispatch');
     });

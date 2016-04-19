@@ -48,7 +48,7 @@ describe('documents', () => {
 
       documents.matchTitle('term')
       .then((results) => {
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: buildQuery('term', ['doc.title'], ['doc.title'])});
+        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: buildQuery('term', ['doc.title'], ['doc.title'], 5)});
         expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
         done();
       })

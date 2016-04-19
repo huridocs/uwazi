@@ -50,7 +50,13 @@ export class SearchBar extends Component {
           <div className={'search-suggestions' + (showSuggestions && searchTerm ? ' active' : '')}>
             {suggestions.map((suggestion, index) => {
               let documentViewUrl = '/document/' + suggestion._id;
-              return <p key={index}><Link to={documentViewUrl}>{suggestion.title}<i className="fa fa-arrow-left"></i></Link></p>;
+              return <p key={index}>
+                <Link to={documentViewUrl}>
+                  <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
+                  <i className="fa fa-arrow-left">
+                  </i>
+                </Link>
+              </p>;
             })}
             <p onClick={this.search.bind(this)} className="search-suggestions-all">
               <i className="fa fa-search"></i>See all documents for "{searchTerm}"

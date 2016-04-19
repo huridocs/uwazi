@@ -13,6 +13,7 @@ describe('DocumentsAPI', () => {
     backend
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
     .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(searchResponse)})
+    .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
     .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
     .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
@@ -38,6 +39,17 @@ describe('DocumentsAPI', () => {
         })
         .catch(done.fail);
       });
+    });
+  });
+
+  describe('getSuggestions()', () => {
+    it('should match_title ', (done) => {
+      documentsAPI.getSuggestions('term')
+      .then((response) => {
+        expect(response).toEqual(searchResponse);
+        done();
+      })
+      .catch(done.fail);
     });
   });
 

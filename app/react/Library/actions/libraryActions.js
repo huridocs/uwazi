@@ -25,7 +25,7 @@ export function searchDocuments(searchTerm) {
 
 export function getSuggestions(searchTerm) {
   return (dispatch) => {
-    return api.search(searchTerm)
+    return api.getSuggestions(searchTerm)
     .then((suggestions) => {
       dispatch({type: types.SET_SUGGESTIONS, suggestions});
       dispatch({type: types.SHOW_SUGGESTIONS});
