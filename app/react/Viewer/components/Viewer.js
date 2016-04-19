@@ -7,6 +7,7 @@ import TargetDocument from 'app/Viewer/components/TargetDocument';
 import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
 import ContextMenu from 'app/ContextMenu/components/ContextMenu';
 import ViewReferencesPanel from 'app/Viewer/components/ViewReferencesPanel';
+import ViewMetadataPanel from 'app/Viewer/components/ViewMetadataPanel';
 
 export class Viewer extends Component {
 
@@ -35,6 +36,7 @@ export class Viewer extends Component {
 
         <CreateReferencePanel />
         <ViewReferencesPanel />
+        <ViewMetadataPanel />
         <ContextMenu />
       </div>
     );

@@ -8,7 +8,11 @@ export class ViewerDefaultMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
-        <div className="float-btn__sec"><span>View metadata</span><i className="fa fa-list-alt"></i></div>
+        <div onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')} className="float-btn__sec view-metadata">
+          <span>View metadata</span>
+          <i className="fa fa-list-alt">
+          </i>
+        </div>
         <div onClick={this.props.openPanel.bind(null, 'viewReferencesPanel')} className="float-btn__sec view-references">
           <span>View relationships</span>
           <i className="fa fa-link"></i>
