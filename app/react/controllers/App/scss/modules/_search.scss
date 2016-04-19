@@ -19,12 +19,6 @@
   border-bottom: 1px solid $c-grey;
   margin: 0;
   padding: 0 0 15px;
-  z-index: 10;
-
-  .fa {
-    float: left;
-    margin-top: 3px;
-  }
 }
 
 
@@ -55,46 +49,9 @@
     width: 100%;
   }
 
-  > li.is-active {
-    label {
-      color: $c-success;
-      font-weight: bold;
-    }
-    .fa {
-      color: $c-success;
-      border-color: $c-success;
-      font-weight: normal;
-    }
-  }
-
   input[type="radio"],
   input[type="checkbox"] {
     margin: 0px 5px 0 0;
-  }
-}
-
-.search__filter--radiobutton,
-.search__filter--single__selection,
-.search__filter--multiple__selection {
-  .fa {
-    position: relative;
-    margin-right: 5px;
-    color: $c-grey;
-    border: 1px solid $c-grey;
-    width: 20px;
-    line-height: 19px;
-    height: 20px;
-    text-align: center;
-    display: block;
-    float: left;
-    background: $c-white;
-    box-shadow: $shadow-little;
-  }
-}
-
-.search__filter--radiobutton {
-  .fa {
-    border-radius: 50%;
   }
 }
 
@@ -111,24 +68,12 @@
     li {
       border-top: 0;
       padding: 5px 12px;
-      .fa {
-        width: 10px;
-        height: 10px;
-        margin-right: 5px;
-        border: 1px solid $c-grey;
-      }
     }
   }
 }
 
 
 .search__filter--date {
-  .fa {
-    float: left;
-    width: 5%;
-    text-align: center;
-    line-height: 23px;
-  }
   input {
     float: left;
     width: 46.5%;
