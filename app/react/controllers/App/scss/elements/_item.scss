@@ -35,33 +35,6 @@
   @include desktop {
     height: 125px;
   }
-  /*
-  &.active {
-    z-index: 20;
-    transition-delay: 250ms;
-    top: -100%;
-    left: -100%;
-    width: calc(300%);
-    height: 125*4px;
-    &:before {
-      border: 0px solid;
-      border-color: $c-grey-light $c-grey-light $c-white $c-white;
-      box-shadow: 0 0 0 0 $c-grey;
-    }
-  }
-  &.leave {
-    opacity: 0;
-    top: 30px;
-  }
-  */
-  &.active {
-    z-index: 20;
-    margin-bottom: 265px;
-  }
-  &.item2.leave,
-  &.item3.leave {
-    margin-bottom: 265px;
-  }
   .item-snippets {
     display: none;
     margin-top: 15px;
@@ -82,28 +55,6 @@
       display: block;
     }
   }
-  .item-preview {
-    background: $c-white;
-    border-top: 1px dotted $c-grey;
-    border-bottom: 1px solid $c-grey;
-    position: absolute;
-    top: 124px;
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    width: 100%;
-    left: 0;
-    box-shadow: $shadow, $shadow-inverse;
-    transition: all 300ms;
-    width: calc(300% + 15px);
-    padding: 15px;
-  }
-  &.active {
-    .item-preview {
-      height: 125*2px;
-      opacity: 1;
-    }
-  }
   &:before {
     content: " ";
     display: block;
@@ -115,58 +66,6 @@
     box-shadow: -3px 3px 9px -3px $c-grey;
     transition: all 300ms;
   }
-
-  &:hover{
-    cursor: pointer;
-    &:before {
-      border: 0px solid;
-      border-color: $c-grey-light $c-grey-light $c-white $c-white;
-      box-shadow: 0 0 0 0 $c-grey;
-    }
-  }
-
-  .fa-expand,
-  .fa-close {
-    position: absolute;
-    top: 7px;
-    right: 7px;
-    opacity: 0;
-    transition: all 300ms;
-    color: $c-grey-dark;
-  }
-  .btn-close,
-  .btn-open {
-    opacity: 0;
-    position: relative;
-    top: 170px;
-    width: 100%;
-    transition: all 300ms;
-    transition-delay: 600ms;
-    .fa {
-      position: relative;
-      top: 0;
-      left: 0;
-      margin: 0 5px;
-    }
-  }
-
-  .item-preview {
-    opacity: 0;
-    transition-delay: 300ms;
-    h4 {
-      font-size: $f-size-sm;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      border-bottom: 1px solid $c-grey;
-      padding-bottom: 5px;
-    }
-  }
-  &:hover .fa-expand {
-    opacity: 1;
-    top: 5px;
-    right: 5px;
-  }
-
   .label {
     margin-right: 15px;
     font-size: $f-size-sm;

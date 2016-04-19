@@ -18,8 +18,7 @@ export class Doc extends Component {
       <li className="col-sm-4">
         <div className={'item' + (previewDoc === _id ? ' active' : '')} onClick={this.preview.bind(this)}>
           <div className="preview">
-            <i className="fa fa-expand"></i>
-            <i className="fa fa-close"></i><Link to={documentViewUrl} className="item-name">{title}</Link>
+            <Link to={documentViewUrl} className="item-name">{title}</Link>
           </div>
           <div className="item-metadata">
             <span className="item-date">March 14</span>
@@ -32,6 +31,7 @@ export class Doc extends Component {
               consequuntur fugit eum recusandae dolor, aliquid tempora sint aliquam <b>africa</b>."
             </p>
           </div>
+          {/*
           <div className="item-preview">
             <div className="row">
               <div className="col-sm-4">
@@ -66,6 +66,7 @@ export class Doc extends Component {
               </div>
             </div>
           </div>
+          */}
         </div>
       </li>
     );
