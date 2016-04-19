@@ -264,12 +264,14 @@
       margin-right: 5px;
     }
   }
-  span {
+  & > span {
     border-bottom: 1px dotted $c-grey-dark;
     cursor: pointer;
     margin-left: 15px;
+    padding: 1px 5px;
     &.active {
       color: $c-primary;
+      border-bottom: 1px solid $c-primary;
       font-weight: bold;
     }
   }
