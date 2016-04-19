@@ -1,10 +1,11 @@
 import PDFObject from '../PDF.js';
 import childProcess from 'child_process';
 import EventEmitter from 'events';
+import fs from 'fs';
 
 class Events extends EventEmitter {}
 
-fdescribe('PDF', function () {
+describe('PDF', function () {
   let pdf;
 
   describe('optimize', () => {
@@ -93,6 +94,61 @@ fdescribe('PDF', function () {
         done();
       });
       commandBeingExecuted.stderr.emit('data', 'error');
+    });
+  });
+
+  describe('toHTML', () => {
+    let filepath = __dirname + '/test_document.pdf';
+    beforeEach(() => {
+      pdf = new PDFObject(filepath);
+      pdf.optimizedPath = filepath;
+    });
+
+    it('should extract html pages in order', (done) => {
+      pdf.toHTML()
+      .then((conversion) => {
+        let pages = conversion.pages;
+        expect(pages.length).toBe(11);
+        expect(pages[0].match(/Page 1/)[0]).toBe('Page 1');
+        expect(pages[1].match(/Page 2/)[0]).toBe('Page 2');
+        expect(pages[2].match(/Page 3/)[0]).toBe('Page 3');
+
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should extract and divide the custom css file fonts and css', (done) => {
+      pdf.toHTML()
+      .then((conversion) => {
+        expect(!!conversion.fonts.match(/font-face/)).toBe(true);
+        expect(!!conversion.css.match(/ff0/)).toBe(true);
+
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('convert', () => {
+    let filepath = __dirname + '/test_document.pdf';
+    beforeEach(() => {
+      pdf = new PDFObject(filepath);
+    });
+
+    afterEach((done) => {
+      fs.unlink(pdf.optimizedPath, done);
+    });
+
+    it('should optimize and extract html and text', (done) => {
+      pdf.convert()
+      .then((conversion) => {
+        expect(conversion.pages.length).toBe(11);
+        expect(!!conversion.css.match(/ff0/)).toBe(true);
+        expect(!!conversion.fonts.match(/font-face/)).toBe(true);
+        done();
+      })
+      .catch(done.fail);
     });
   });
 });
