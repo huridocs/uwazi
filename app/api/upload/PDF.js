@@ -20,11 +20,11 @@ export default class PDF extends EventEmitter {
 
     let pages = 0;
     conversion.stdout.on('data', (data) => {
-      if (data.toString().match(/Processing pages (.*) through (.*)\./) ) {
+      if (data.toString().match(/Processing pages (.*) through (.*)\./)) {
         pages = RegExp.$2;
       }
-      if (data.toString().match(/Page (.*)/) ) {
-        this.emit('progress', (Math.round(RegExp.$1*100/pages)), parseInt(RegExp.$1));
+      if (data.toString().match(/Page (.*)/)) {
+        this.emit('progress', Math.round(RegExp.$1 * 100 / pages), parseInt(RegExp.$1, 10));
       }
     });
 
