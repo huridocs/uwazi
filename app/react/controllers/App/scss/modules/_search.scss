@@ -66,6 +66,11 @@
       font-weight: normal;
     }
   }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    margin: 0px 5px 0 0;
+  }
 }
 
 .search__filter--radiobutton,
