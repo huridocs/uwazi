@@ -36,7 +36,7 @@
 
   a.reference {
     text-decoration: none !important;
-    background: $c-grey;
+    background: rgba(110,0,255,0.20);
     color: $c-black;
     cursor: pointer;
     .relation-button {
@@ -59,8 +59,8 @@
       }
     }
     &.highlighted, &.highlighted a.reference {
-      background: #FFFFC5;
-      color: orange;
+      background: #A478DE;
+      color: #FFFFFF;
     }
   }
 
