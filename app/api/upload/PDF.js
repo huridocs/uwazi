@@ -44,14 +44,14 @@ export default class PDF extends EventEmitter {
   }
 
   extractText() {
-    let tmpPath = `/tmp/${basename(this.filepath)}`;
-    let options = ['text', `-o /tmp/${tmpPath}`, this.filepath];
+    let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
+    let options = ['text', '-o', tmpPath, this.filepath];
     let extraction = spawn('docsplit', options);
 
     return new Promise((resolve, reject) => {
       extraction.stderr.on('data', (error) => reject(error));
       extraction.stdout.on('close', () => {
-        fs.readFile(tmpPath, 'utf-8', (err, content) => {
+        fs.readFile(tmpPath + basename(this.filepath) + '.txt', 'utf-8', (err, content) => {
           resolve(content);
         });
       });

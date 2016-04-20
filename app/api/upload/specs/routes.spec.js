@@ -47,6 +47,7 @@ describe('upload routes', () => {
             expect(doc.json.processed).toBe(true);
             done()
           })
+          .catch(done.fail);
         }, 500)
       })
       .catch(done.fail);

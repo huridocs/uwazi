@@ -70,7 +70,7 @@ describe('PDF', function () {
       pdf = new PDFObject(filepath);
     });
 
-    it('should extract the text of the pdf using docsplit', () => {
+    it('should extract the text of the pdf using docsplit', (done) => {
       pdf.extractText()
       .then((text) => {
         let lines = text.split(/\f/);
@@ -78,7 +78,9 @@ describe('PDF', function () {
         expect(lines[0]).toBe('Page 1\n\n');
         expect(lines[1]).toBe('Page 2\n\n');
         expect(lines[2]).toBe('Page 3\n\n');
-      });
+        done();
+      })
+      .catch(done.fail);
     });
 
     it('should reject the promise when there is an error', (done) => {
@@ -144,6 +146,7 @@ describe('PDF', function () {
       pdf.convert()
       .then((conversion) => {
         expect(conversion.pages.length).toBe(11);
+        expect(conversion.fullText).toMatch('Page 1');
         expect(!!conversion.css.match(/ff0/)).toBe(true);
         expect(!!conversion.fonts.match(/font-face/)).toBe(true);
         done();
