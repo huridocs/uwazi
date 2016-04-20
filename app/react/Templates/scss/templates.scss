@@ -27,6 +27,7 @@
     margin: 0;
   }
 }
+
 .metadataTemplate-list {
   .no-properties {
     text-align: center;
@@ -42,6 +43,26 @@
   }
 }
 
+.metadataTemplate-list,
+.metadataTemplate-constructor {
+  .list-group-item {
+    border: 1px solid transparent !important;
+    .fa-clone,
+    .fa-arrows-v {
+      margin: 0 15px 0 0;
+      color: #ccc;
+    }
+  }
+  .list-group-item:hover {
+    cursor: move;
+    border-color: #D4D7DB !important;
+    .fa-clone,
+    .fa-arrows-v {
+      color: #777;
+    }
+  }
+}
+
 .panel {
   >.list-group {
     .list-group-item {
@@ -52,11 +73,6 @@
 
       &.error {
         box-shadow: 0px 10px 15px -10px #920000;
-      }
-
-      >.fa:first-child {
-        margin: 0 25px 0 0;
-        color: $c-grey;
       }
 
       .propery-form {

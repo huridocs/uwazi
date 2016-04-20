@@ -24,7 +24,7 @@ export class TemplateCreator extends Component {
         </main>
         <aside className="col-sm-3">
           <h1>Construction blocks</h1>
-          <div className="panel panel-default">
+          <div className="metadataTemplate-constructor panel panel-default">
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
               <PropertyOption label='Checkbox' type='checkbox' />
