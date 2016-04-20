@@ -3,7 +3,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 
-import {searchDocuments, setSearchTerm, getSuggestions} from 'app/Library/actions/libraryActions';
+import {searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
 
 export class SearchBar extends Component {
@@ -17,8 +17,21 @@ export class SearchBar extends Component {
     this.props.setSearchTerm(this.field.value);
   }
 
+  mouseEnter() {
+    this.props.setOverSuggestions(true);
+  }
+
+  mouseOut() {
+    this.props.setOverSuggestions(false);
+  }
+
   componentWillMount() {
     this.getSuggestions = debounce(this.getSuggestions, 400);
+  }
+
+  componentWillUnmount() {
+    this.resetSearch();
+    this.mouseOut();
   }
 
   resetSearch() {
@@ -31,7 +44,7 @@ export class SearchBar extends Component {
   }
 
   render() {
-    let {searchTerm, showSuggestions, suggestions} = this.props;
+    let {searchTerm, showSuggestions, suggestions, overSuggestions} = this.props;
 
     return (
       <form onSubmit={this.search.bind(this)}>
@@ -46,8 +59,13 @@ export class SearchBar extends Component {
               className="form-control"
               value={this.props.searchTerm}
               onChange={this.handleChange.bind(this)}
+              onBlur={this.props.hideSuggestions}
             />
-          <div className={'search-suggestions' + (showSuggestions && searchTerm ? ' active' : '')}>
+          <div
+            onMouseOver={this.mouseEnter.bind(this)}
+            onMouseLeave={this.mouseOut.bind(this)}
+            className={'search-suggestions' + (showSuggestions && searchTerm || overSuggestions ? ' active' : '')}
+            >
             {suggestions.map((suggestion, index) => {
               let documentViewUrl = '/document/' + suggestion._id;
               return <p key={index}>
@@ -72,9 +90,12 @@ SearchBar.propTypes = {
   searchDocuments: PropTypes.func.isRequired,
   setSearchTerm: PropTypes.func.isRequired,
   getSuggestions: PropTypes.func.isRequired,
+  hideSuggestions: PropTypes.func.isRequired,
+  setOverSuggestions: PropTypes.func.isRequired,
   searchTerm: PropTypes.string,
   suggestions: PropTypes.array,
-  showSuggestions: PropTypes.bool
+  showSuggestions: PropTypes.bool,
+  overSuggestions: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
@@ -82,7 +103,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments, setSearchTerm, getSuggestions}, dispatch);
+  return bindActionCreators({searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);

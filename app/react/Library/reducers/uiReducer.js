@@ -6,7 +6,11 @@ const initialState = {searchTerm: '', previewDoc: '', suggestions: []};
 
 export default function ui(state = initialState, action = {}) {
   if (action.type === types.SET_SEARCHTERM) {
-    return state.set('searchTerm', action.searchTerm);
+    let newState = state.set('searchTerm', action.searchTerm);
+    if (!action.searchTerm) {
+      newState = newState.set('suggestions', []);
+    }
+    return newState;
   }
 
   if (action.type === types.SET_PREVIEW_DOC) {
@@ -23,6 +27,10 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.HIDE_SUGGESTIONS) {
     return state.set('showSuggestions', false);
+  }
+
+  if (action.type === types.OVER_SUGGESTIONS) {
+    return state.set('overSuggestions', action.hover);
   }
 
   return Immutable.fromJS(state);

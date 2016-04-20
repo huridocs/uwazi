@@ -19,6 +19,14 @@ describe('uiReducer', () => {
       let newState = uiReducer(initialState, {type: types.SET_SEARCHTERM, searchTerm: 'something cool'});
       expect(newState.toJS().searchTerm).toBe('something cool');
     });
+
+    describe('when the searchTerm is empty', () => {
+      it('should clear the suggestions', () => {
+        let state = initialState.set('suggestions', ['some', 'suggestions']);
+        let newState = uiReducer(state, {type: types.SET_SEARCHTERM, searchTerm: ''});
+        expect(newState.toJS().suggestions).toEqual([]);
+      });
+    });
   });
 
   describe('SET_SUGGESTIONS', () => {
@@ -40,6 +48,16 @@ describe('uiReducer', () => {
     it('should set the showSuggestions to true', () => {
       let newState = uiReducer(initialState, {type: types.HIDE_SUGGESTIONS});
       expect(newState.toJS().showSuggestions).toBe(false);
+    });
+  });
+
+  describe('OVER_SUGGESTIONS', () => {
+    it('should set the overSuggestions to true', () => {
+      let newState = uiReducer(initialState, {type: types.OVER_SUGGESTIONS, hover: false});
+      expect(newState.toJS().overSuggestions).toBe(false);
+
+      newState = uiReducer(initialState, {type: types.OVER_SUGGESTIONS, hover: true});
+      expect(newState.toJS().overSuggestions).toBe(true);
     });
   });
 

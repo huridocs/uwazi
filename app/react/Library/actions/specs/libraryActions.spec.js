@@ -28,6 +28,13 @@ describe('libraryActions', () => {
     });
   });
 
+  describe('overSuggestions', () => {
+    it('should return a OVER_SUGGESTIONS action ', () => {
+      let action = actions.setOverSuggestions(true);
+      expect(action).toEqual({type: types.OVER_SUGGESTIONS, hover: true});
+    });
+  });
+
   describe('async action', () => {
     let dispatch;
     beforeEach(() => {
