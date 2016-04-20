@@ -1,5 +1,47 @@
 @import "../../controllers/App/scss/config/_colors.scss";
 
+.metadataTemplate-heading {
+  display: flex;
+
+  > form:first-child {
+    flex: 1;
+    margin-right: 15px;
+
+    .form-control {
+      font-size: 20px;
+      border: 1px solid transparent;
+      background: 0;
+      box-shadow: none;
+      &:hover {
+        border: 1px solid #DDD;
+        cursor: pointer;
+      }
+      &:focus,
+      &:active {
+        border: 1px solid #CCC;
+        background: #FFF;
+      }
+    }
+  }
+  .form-group {
+    margin: 0;
+  }
+}
+.metadataTemplate-list {
+  .no-properties {
+    text-align: center;
+    font-size: 14px;
+    color: #AFAFAF;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px dashed #ccc;
+    padding: 15px;
+    .fa {
+      margin-right: 5px;
+    }
+  }
+}
+
 .panel {
   >.list-group {
     .list-group-item {

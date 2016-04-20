@@ -13,12 +13,12 @@ export class MetadataTemplate extends Component {
     const {connectDropTarget, isOver} = this.props;
 
     return connectDropTarget(
-      <div className="panel panel-default">
-        <div className="panel-heading">
+      <div className="metadataTemplate panel panel-default">
+        <div className="metadataTemplate-heading panel-heading">
           <FormName />
           <FormControls/>
         </div>
-        <ul className="list-group">
+        <ul className="metadataTemplate-list list-group">
           {(() => {
             if (this.props.properties.length === 0) {
               return <div className={'no-properties' + (isOver ? ' isOver' : '')}>
