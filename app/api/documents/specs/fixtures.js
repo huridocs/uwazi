@@ -2,6 +2,7 @@ export default {
   "docs":[
     {"_id":"_design/documents","language":"javascript","views":{
       "all":{"map":"function(doc) {\nif(doc.type === 'document')\t\n  emit(doc._id, doc);\n}"},
+      "metadata_by_template":{"map":"function(doc) {\nif(doc.type === 'document')\t\n  emit(doc.template, {_id: doc._id, metadata: doc.metadata});\n}"},
       "list":{"map":"function(doc) {\nif(doc.type === 'document' && doc.published === true)\t\n  emit(doc._id, {title:doc.title, _id: doc._id});\n}"},
       "uploads":{"map":"function(doc) {\nif(doc.type === 'document' && !doc.published)\t\n  emit(doc.user._id, {title:doc.title, _id: doc._id});\n}"}
       },
@@ -10,6 +11,10 @@ export default {
     {"_id":"8202c463d6158af8065022d9b5014a18", "type":"document","title":"Batman finishes", "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
     {"_id":"8202c463d6158af8065022d9b5014ccb", "type":"document","title":"Penguin almost done", "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
     {"_id":"d0298a48d1221c5ceb53c4879301507f", "type":"document","title":"Right there", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c95"}},
-    {"_id":"d0298a48d1221c5ceb53c4879301508f", "type":"document","title":"unpublished", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c94"}}
+    {"_id":"d0298a48d1221c5ceb53c4879301508f", "type":"document","title":"unpublished", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c94"}},
+    // metadata property name changes
+    {"_id":"d0298a48d1221c5ceb53c48793015080", "type":"document","title":"doc1", "template": 'template1', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
+    {"_id":"d0298a48d1221c5ceb53c48793015081", "type":"document","title":"doc2", "template": 'template1', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
+    {"_id":"d0298a48d1221c5ceb53c48793015082", "type":"document","title":"doc3", "template": 'template2', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}}
   ]
 }

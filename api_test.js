@@ -1,4 +1,5 @@
 require('babel-core/register')({
+  "sourceMaps": "inline",
   "presets": ["es2015", "react"],
   "plugins": [
     ["babel-plugin-module-alias", [

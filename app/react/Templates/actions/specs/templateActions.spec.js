@@ -20,12 +20,12 @@ describe('templatesActions', () => {
   describe('addProperty()', () => {
     it('should return an ADD_PROPERTY type action with config, unique config.id and index passed', () => {
       let action = actions.addProperty({name: 'test'}, 'index !');
-      expect(action).toEqual({type: types.ADD_PROPERTY, config: {name: 'test', id: 'unique_id'}, index: 'index !'});
+      expect(action).toEqual({type: types.ADD_PROPERTY, config: {name: 'test', localID: 'unique_id'}, index: 'index !'});
     });
 
     it('should return default config object and index if nothing passed', () => {
       let action = actions.addProperty();
-      expect(action).toEqual({type: types.ADD_PROPERTY, config: {id: 'unique_id'}, index: 0});
+      expect(action).toEqual({type: types.ADD_PROPERTY, config: {localID: 'unique_id'}, index: 0});
     });
   });
 
@@ -89,7 +89,7 @@ describe('templatesActions', () => {
 
     describe('saveTemplate', () => {
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
-        let originalTemplateData = {name: 'my template', properties: [{id: 'a1b2', label: 'my property'}, {id: 'a1b3', label: 'my property'}]};
+        let originalTemplateData = {name: 'my template', properties: [{localID: 'a1b2', label: 'my property'}, {localID: 'a1b3', label: 'my property'}]};
 
         const expectedActions = [
           {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok'}},
@@ -100,7 +100,7 @@ describe('templatesActions', () => {
         store.dispatch(actions.saveTemplate(originalTemplateData))
         .then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(originalTemplateData.properties[0].id).toBe('a1b2');
+          expect(originalTemplateData.properties[0].localID).toBe('a1b2');
         })
         .then(done)
         .catch(done.fail);

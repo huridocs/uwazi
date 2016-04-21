@@ -26,7 +26,7 @@ export function updateTemplate(template) {
 }
 
 export function addProperty(config = {}, index = 0) {
-  config.id = ID();
+  config.localID = ID();
   return {
     type: types.ADD_PROPERTY,
     config,
@@ -66,7 +66,7 @@ export function reorderProperty(originIndex, targetIndex) {
 
 export function saveTemplate(data) {
   let templateData = Immutable.fromJS(data).updateIn(['properties'], (properties) => {
-    return properties.map((property) => property.delete('id'));
+    return properties.map((property) => property.delete('idToRender'));
   }).toJS();
 
   return function (dispatch) {

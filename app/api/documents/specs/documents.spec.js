@@ -1,15 +1,48 @@
+import {db_url as dbURL} from 'api/config/database.js';
 import documents from '../documents.js';
 import elastic from '../elastic';
 import elasticResult from './elasticResult';
 import buildQuery from '../elasticQuery';
+import database from 'api/utils/database.js';
+import fixtures from './fixtures.js';
+import request from 'shared/JSONRequest';
 
 describe('documents', () => {
   let result;
-  beforeEach(() => {
+  beforeEach((done) => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1'},
       {title: 'doc2', _id: 'id2'}
     ]).toObject();
+
+    database.reset_testing_database()
+    .then(() => database.import(fixtures))
+    .then(done)
+    .catch(done.fail);
+  });
+
+  describe('updateMetadataNames', () => {
+    let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/documents/_view/metadata_by_template?key="' + template + '"')
+    .then((response) => {
+      return response.json.rows.map((r) => r.value);
+    });
+
+    it('should update metadata property names on the documents matching the template', (done) => {
+      let nameChanges = {property1: 'new_name1', property2: 'new_name2'};
+      documents.updateMetadataNames('template1', nameChanges)
+      .then(() => getDocumentsByTemplate('template1'))
+      .then((docs) => {
+        expect(docs[0].metadata.new_name1).toBe('value1');
+        expect(docs[0].metadata.new_name2).toBe('value2');
+        expect(docs[0].metadata.property3).toBe('value3');
+
+        expect(docs[1].metadata.new_name1).toBe('value1');
+        expect(docs[1].metadata.new_name2).toBe('value2');
+        expect(docs[1].metadata.property3).toBe('value3');
+        done();
+      })
+      .catch(done.fail);
+    });
   });
 
   describe('search', () => {

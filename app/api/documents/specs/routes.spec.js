@@ -173,7 +173,7 @@ describe('documents', () => {
       })
       .then((response) => {
         let docs = response.json.rows;
-        expect(docs.length).toBe(3);
+        expect(docs.length).toBe(6);
         expect(docs[0].value.title).toBe('Batman finishes');
         done();
       })

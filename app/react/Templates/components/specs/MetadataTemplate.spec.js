@@ -16,9 +16,9 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let properties = [{label: 'childTarget', id: 'childId', inserting: true}];
+        let properties = [{label: 'childTarget', localID: 'childId', inserting: true}];
         let targetProps = {properties: properties, connectDropTarget: identity};
-        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity};
+        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -66,16 +66,16 @@ describe('MetadataTemplate', () => {
   });
 
   it('should have mapped store into props', () => {
-    let component = renderComponent(TestComponent, null, [{label: 'field', id: 'id2'}]);
+    let component = renderComponent(TestComponent, null, [{label: 'field', localID: 'id2'}]);
     let wrappedComponent = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
-    expect(wrappedComponent.props.properties).toEqual([{label: 'field', id: 'id2'}]);
+    expect(wrappedComponent.props.properties).toEqual([{label: 'field', localID: 'id2'}]);
   });
 
   describe('render()', () => {
     describe('when fields is empty', () => {
       it('should render a blank state', () => {
-        let component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
+        let component = renderComponent(TestComponent, {label: 'test', index: 1, localID: 'id'});
         let blankState = TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
 
         expect(blankState.innerHTML).toContain('start');
@@ -95,7 +95,7 @@ describe('MetadataTemplate', () => {
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
         let component = renderComponent(TestComponent,
-          {properties: []}, [{label: 'property1', id: '1'}, {label: 'property2', id: '2'}]
+          {properties: []}, [{label: 'property1', localID: '1'}, {label: 'property2', localID: '2'}]
         );
         let properties = TestUtils.scryRenderedComponentsWithType(component, MetadataProperty);
 
@@ -141,7 +141,7 @@ describe('MetadataTemplate', () => {
         backend.simulateHover([target.getHandlerId()]);
         backend.simulateDrop();
 
-        expect(actions.updateProperty).toHaveBeenCalledWith({label: 'childTarget', id: 'childId', inserting: null}, 0);
+        expect(actions.updateProperty).toHaveBeenCalledWith({label: 'childTarget', localID: 'childId', inserting: null}, 0);
       });
     });
   });

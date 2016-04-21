@@ -39,7 +39,7 @@ describe('EditTemplate', () => {
       .then((response) => {
         let templateResponse = response.template.data;
         let thesauriResponse = response.template.uiState.thesauri;
-        expect(templateResponse.properties[0]).toEqual({label: 'label1', id: 'unique_id'});
+        expect(templateResponse.properties[0]).toEqual({label: 'label1', localID: 'unique_id'});
         expect(thesauriResponse).toEqual(thesauri);
         done();
       })

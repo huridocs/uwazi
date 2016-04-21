@@ -1,5 +1,8 @@
 import elastic from './elastic';
 import buildQuery from './elasticQuery';
+import request from 'shared/JSONRequest';
+import {db_url as dbURL} from 'api/config/database';
+import {updateMetadataNames} from 'api/documents/utils';
 
 export default {
   search(searchTerm) {
@@ -22,6 +25,22 @@ export default {
         result.title = hit.highlight['doc.title'][0];
         return result;
       });
+    });
+  },
+
+  updateMetadataNames(templateId, nameMatches) {
+    return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
+    .then((response) => {
+      let documents = response.json.rows.map((r) => r.value);
+      documents = updateMetadataNames(documents, nameMatches);
+
+      let updates = [];
+      documents.forEach((document) => {
+        let url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
+        updates.push(request.post(url, document));
+      });
+
+      return Promise.all(updates);
     });
   }
 };

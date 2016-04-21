@@ -37,7 +37,7 @@ export class MetadataProperty extends Component {
   }
 
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id, form} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, form} = this.props;
     let propertyClass = 'list-group-item';
 
     if (this.hasError(form)) {
@@ -69,11 +69,11 @@ export class MetadataProperty extends Component {
             <i className="fa fa-trash"></i> Delete
           </button>
           &nbsp;
-          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(id)}>
+          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(localID)}>
             <i className="fa fa-pencil"></i> Edit
           </button>
         </div>
-        <div className={'propery-form' + (editingProperty === id ? ' expand' : '') }>
+        <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
           {this.renderForm()}
         </div>
       </li>
@@ -86,7 +86,7 @@ MetadataProperty.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
-  id: PropTypes.any.isRequired,
+  localID: PropTypes.any.isRequired,
   type: PropTypes.string,
   label: PropTypes.string.isRequired,
   inserting: PropTypes.bool,
@@ -143,7 +143,7 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = (state, props) => {
   return {
     editingProperty: state.template.uiState.toJS().editingProperty,
-    form: state.form.template[props.id] || {}
+    form: state.form.template[props.localID] || {}
   };
 };
 

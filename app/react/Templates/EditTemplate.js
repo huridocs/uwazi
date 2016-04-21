@@ -10,7 +10,7 @@ import ID from 'app/utils/uniqueID';
 
 let prepareTemplate = (template) => {
   template.properties = template.properties.map((property) => {
-    property.id = ID();
+    property.localID = ID();
     return property;
   });
 

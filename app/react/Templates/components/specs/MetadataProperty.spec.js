@@ -26,8 +26,8 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let targetProps = {label: 'target', index: 1, id: 'target', connectDragSource: identity, isDragging: false, form: {}};
-        let sourceProps = {label: 'source', type: 'type', index: 2, id: 'source', connectDragSource: identity, isDragging: false, form: {}};
+        let targetProps = {label: 'target', index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}};
+        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false, form: {}};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -59,7 +59,7 @@ describe('MetadataProperty', () => {
   describe('MetadataProperty', () => {
     it('should have mapped action into props', () => {
       let TestComponent = wrapInTestContext(MetadataProperty);
-      component = renderComponent(TestComponent, {label: 'test', index: 1, id: 'id'});
+      component = renderComponent(TestComponent, {label: 'test', index: 1, localID: 'id'});
       let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
       expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
       expect(option.props.addProperty).toEqual(jasmine.any(Function));
@@ -70,7 +70,7 @@ describe('MetadataProperty', () => {
     describe('when inserting', () => {
       it('should add "dragging" className', () => {
         let TestComponent = wrapInTestContext(MetadataProperty);
-        component = renderComponent(TestComponent, {inserting: true, label: 'test', index: 1, id: 'id'});
+        component = renderComponent(TestComponent, {inserting: true, label: 'test', index: 1, localID: 'id'});
         let option = TestUtils.findRenderedComponentWithType(component, dragSource);
         let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'li')[0];
 
@@ -88,7 +88,7 @@ describe('MetadataProperty', () => {
           inserting: true,
           label: 'test',
           index: 1,
-          id: 'id',
+          localID: 'id',
           form: {}
         };
         component = shallow(<DumbComponent {...props}/>);
@@ -121,7 +121,7 @@ describe('MetadataProperty', () => {
           inserting: true,
           label: 'test',
           index: 1,
-          id: 'id',
+          localID: 'id',
           form: {}
         });
       });
@@ -149,7 +149,7 @@ describe('MetadataProperty', () => {
   describe('dragSource', () => {
     beforeEach(() => {
       let TestComponent = wrapInTestContext(dragSource);
-      component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 1, id: 'id', form: {}});
+      component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 1, localID: 'id', form: {}});
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });

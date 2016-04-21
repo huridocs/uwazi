@@ -27,7 +27,7 @@ export class MetadataTemplate extends Component {
             }
           })()}
           {this.props.properties.map((config, index) => {
-            return <MetadataProperty {...config} key={config.id} index={index}/>;
+            return <MetadataProperty {...config} key={config.localID} index={index}/>;
           })}
         </ul>
       </div>
