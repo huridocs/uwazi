@@ -12,9 +12,9 @@ export class MetadataProperty extends Component {
 
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'list') {
-      return <FormConfigSelect formKey={this.props.id} index={this.props.index} />;
+      return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
     }
-    return <FormConfigInput formKey={this.props.id} index={this.props.index} />;
+    return <FormConfigInput formKey={this.props.localID} index={this.props.index} />;
   }
 
   hasError(form) {

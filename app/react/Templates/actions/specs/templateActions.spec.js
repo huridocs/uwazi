@@ -89,7 +89,10 @@ describe('templatesActions', () => {
 
     describe('saveTemplate', () => {
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
-        let originalTemplateData = {name: 'my template', properties: [{localID: 'a1b2', label: 'my property'}, {localID: 'a1b3', label: 'my property'}]};
+        let originalTemplateData = {name: 'my template', properties: [
+          {localID: 'a1b2', label: 'my property'},
+          {localID: 'a1b3', label: 'my property'}
+        ]};
 
         const expectedActions = [
           {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok'}},
