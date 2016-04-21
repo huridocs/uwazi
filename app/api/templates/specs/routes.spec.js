@@ -114,14 +114,12 @@ describe('templates routes', () => {
       .catch(done.fail);
     });
 
-    it('should assign a unique safe property name based on the label for each property that does not have already a name', (done) => {
+    it('should assign a safe property name based on the label to each', (done) => {
       let req = {body: {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 2'},
-        {label: 'label 2'},
-        {label: 'label 2'},
-        {label: 'label 3', name: 'has_name'},
-        {label: 'has name'}
+        {label: 'label 3'},
+        {label: 'label 4', name: 'has_name'}
       ]}};
 
       routes.post('/api/templates', req)
@@ -135,10 +133,8 @@ describe('templates routes', () => {
 
         expect(newDoc.value.properties[0].name).toEqual('label_1');
         expect(newDoc.value.properties[1].name).toEqual('label_2');
-        expect(newDoc.value.properties[2].name).toEqual('label_2-2');
-        expect(newDoc.value.properties[3].name).toEqual('label_2-3');
-        expect(newDoc.value.properties[4].name).toEqual('has_name');
-        expect(newDoc.value.properties[5].name).toEqual('has_name-2');
+        expect(newDoc.value.properties[2].name).toEqual('label_3');
+        expect(newDoc.value.properties[3].name).toEqual('label_4');
         done();
       })
       .catch(done.fail);
