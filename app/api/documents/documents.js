@@ -47,7 +47,11 @@ export default {
   getHTML(documentId) {
     return request.get(`${dbURL}/_design/documents/_view/conversions?key="${documentId}"`)
     .then((response) => {
-      return response.json.rows[0].value;
+      let conversion = response.json.rows[0].value;
+      if (conversion.css) {
+        conversion.css = conversion.css.replace(/(\..*?){/g, '._' + conversion.document + ' $1{');
+      }
+      return conversion;
     });
   },
 

@@ -25,7 +25,7 @@ describe('documents', () => {
     it('should return the html conversion of the document', (done) => {
       documents.getHTML('docId')
       .then((html) => {
-        expect(html.css).toBe('thecss');
+        expect(html.css).toBe('._docId .selector1 {} ._docId .selector2 {}');
         done();
       })
       .catch(done.fail);
