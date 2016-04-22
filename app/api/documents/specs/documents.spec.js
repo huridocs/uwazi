@@ -21,6 +21,29 @@ describe('documents', () => {
     .catch(done.fail);
   });
 
+  describe('getHTML', () => {
+    it('should return the html conversion of the document', (done) => {
+      documents.getHTML('docId')
+      .then((html) => {
+        expect(html.css).toBe('thecss');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('saveHTML', () => {
+    it('should save html conversion', (done) => {
+      documents.saveHTML({pages: ['pages'], document: 'documentId'})
+      .then(() => documents.getHTML('documentId'))
+      .then((conversion) => {
+        expect(conversion.pages[0]).toBe('pages');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
   describe('updateMetadataNames', () => {
     let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/documents/_view/metadata_by_template?key="' + template + '"')
     .then((response) => {

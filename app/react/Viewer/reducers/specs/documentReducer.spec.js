@@ -10,9 +10,13 @@ describe('documentReducer', () => {
   });
 
   describe('SET_DOCUMENT', () => {
-    it('should set document passed', () => {
-      let newState = documentReducer(null, {type: types.SET_DOCUMENT, document: {title: 'test'}});
-      let expected = {title: 'test'};
+    it('should set document and html passed', () => {
+      let newState = documentReducer(null, {
+        type: types.SET_DOCUMENT,
+        document: {_id: 'docid', title: 'test'},
+        html: {_id: 'htmlid', pages: ['pages'], css: 'css', fonts: 'fonts'}
+      });
+      let expected = {_id: 'docid', title: 'test', pages: ['pages'], css: 'css', fonts: 'fonts'};
 
       expect(newState).toEqual(expected);
     });

@@ -131,6 +131,21 @@ describe('documents', () => {
 
   describe('/api/documents/search', () => {
     it('should search documents and return the results', (done) => {
+      spyOn(documents, 'getHTML').and.returnValue(new Promise((resolve) => resolve('html')));
+      let req = {query: {_id: 'test'}};
+
+      routes.get('/api/documents/html', req)
+      .then((response) => {
+        expect(response).toEqual('html');
+        expect(documents.getHTML).toHaveBeenCalledWith('test');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('/api/documents/search', () => {
+    it('should search documents and return the results', (done) => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
       let req = {query: {searchTerm: 'test'}};
 

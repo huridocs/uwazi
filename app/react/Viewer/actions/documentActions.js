@@ -2,10 +2,11 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import api from 'app/utils/singleton_api';
 import {viewerSearching} from 'app/Viewer/actions/uiActions';
 
-export function setDocument(document) {
+export function setDocument(document, html) {
   return {
     type: types.SET_DOCUMENT,
-    document
+    document,
+    html
   };
 }
 
@@ -25,11 +26,15 @@ export function loadTargetDocument(id) {
   return function (dispatch) {
     // dispatch(viewerSearching());
 
-    return api.get('documents?_id=' + id)
+    return Promise.all([
+      api.get('documents?_id=' + id),
+      api.get('documents/html?_id=' + id)
+    ])
     .then((response) => {
       dispatch({
         type: types.SET_TARGET_DOCUMENT,
-        document: response.json.rows[0]
+        document: response[0].json.rows[0],
+        html: response[1].json
       });
     });
   };

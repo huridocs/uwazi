@@ -42,5 +42,20 @@ export default {
 
       return Promise.all(updates);
     });
+  },
+
+  getHTML(documentId) {
+    return request.get(`${dbURL}/_design/documents/_view/conversions?key="${documentId}"`)
+    .then((response) => {
+      return response.json.rows[0].value;
+    });
+  },
+
+  saveHTML(conversion) {
+    conversion.type = 'conversion';
+    return request.post(dbURL, conversion)
+    .then((response) => {
+      return response.json;
+    });
   }
 };

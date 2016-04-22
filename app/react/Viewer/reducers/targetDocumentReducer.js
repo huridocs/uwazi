@@ -4,7 +4,7 @@ const initialState = {pages: [], css: []};
 
 export default function targetDocumentReducer(state = initialState, action = {}) {
   if (action.type === types.SET_TARGET_DOCUMENT) {
-    return action.document;
+    return Object.assign({}, action.html, action.document);
   }
 
   if (action.type === types.RESET_DOCUMENT_VIEWER

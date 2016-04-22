@@ -12,8 +12,8 @@ const mockStore = configureMockStore(middlewares);
 describe('documentActions', () => {
   describe('setDocument()', () => {
     it('should return a SET_REFERENCES type action with the document', () => {
-      let action = actions.setDocument('document');
-      expect(action).toEqual({type: types.SET_DOCUMENT, document: 'document'});
+      let action = actions.setDocument('document', 'html');
+      expect(action).toEqual({type: types.SET_DOCUMENT, document: 'document', html: 'html'});
     });
   });
   describe('resetDocumentViewer()', () => {
@@ -40,7 +40,8 @@ describe('documentActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'documents/search?searchTerm=term', 'GET', {body: JSON.stringify('documents')})
-      .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})});
+      .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
+      .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')});
     });
 
     describe('loadTargetDocument', () => {
@@ -48,7 +49,7 @@ describe('documentActions', () => {
         let targetId = 'targetId';
 
         const expectedActions = [
-          {type: types.SET_TARGET_DOCUMENT, document: {target: 'document'}}
+          {type: types.SET_TARGET_DOCUMENT, document: {target: 'document'}, html: 'html'}
         ];
         const store = mockStore({});
 

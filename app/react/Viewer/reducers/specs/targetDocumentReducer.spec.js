@@ -11,8 +11,12 @@ describe('targetDocumentReducer', () => {
 
   describe('SET_TARGET_DOCUMENT', () => {
     it('should set document passed', () => {
-      let newState = targetDocumentReducer(null, {type: types.SET_TARGET_DOCUMENT, document: {title: 'test'}});
-      let expected = {title: 'test'};
+      let newState = targetDocumentReducer(null, {
+        type: types.SET_TARGET_DOCUMENT,
+        document: {_id: 'docid', title: 'test'},
+        html: {_id: 'htmlid', pages: 'pages'}
+      });
+      let expected = {_id: 'docid', title: 'test', pages: 'pages'};
 
       expect(newState).toEqual(expected);
     });
