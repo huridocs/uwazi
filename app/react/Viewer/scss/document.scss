@@ -132,15 +132,13 @@
 }
 
 .document.targetDocument {
-  position: fixed;
-  top: 15px;
-  left: 100%;
-  right: -100%;
-  opacity: 0;
+  position: relative;
+  transform: translateX(100%);
 }
 
 .document-viewer.show-target-document {
   .sourceDocument {
+    position: absolute;
     opacity: 0.3;
     &:hover {
       opacity: 1;
@@ -151,7 +149,6 @@
     opacity: 1;
   }
 }
-
 
 
 .relation-dialog {
