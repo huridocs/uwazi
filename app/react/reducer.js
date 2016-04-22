@@ -13,6 +13,7 @@ import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 
 import documents from 'app/Library/reducers/documentsReducer';
 import libraryUI from 'app/Library/reducers/uiReducer';
+import libraryFilters from 'app/Library/reducers/filtersReducer';
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -23,7 +24,8 @@ export default combineReducers({
   }),
   library: combineReducers({
     documents: documents,
-    ui: libraryUI
+    ui: libraryUI,
+    filters: libraryFilters
   }),
   thesauri: thesauri,
   thesauris,

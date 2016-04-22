@@ -5,6 +5,10 @@ export function setDocuments(documents) {
   return {type: types.SET_DOCUMENTS, documents};
 }
 
+export function setTemplates(templates) {
+  return {type: types.SET_TEMPLATES, templates};
+}
+
 export function setSearchTerm(searchTerm) {
   return {type: types.SET_SEARCHTERM, searchTerm};
 }

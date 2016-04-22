@@ -6,11 +6,19 @@ import * as types from 'app/Library/actions/actionTypes';
 
 describe('libraryActions', () => {
   let documents = [{name: 'Secret list of things'}];
+  let templates = [{name: 'Decision'}, {name: 'Ruling'}];
 
   describe('setDocuments', () => {
     it('should return a SET_DOCUMENTS action ', () => {
       let action = actions.setDocuments(documents);
       expect(action).toEqual({type: types.SET_DOCUMENTS, documents});
+    });
+  });
+
+  describe('setTemplates', () => {
+    it('should return a SET_TEMPLATES action ', () => {
+      let action = actions.setTemplates(templates);
+      expect(action).toEqual({type: types.SET_TEMPLATES, templates});
     });
   });
 

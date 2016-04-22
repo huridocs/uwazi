@@ -10,6 +10,7 @@ import * as actionTypes from 'app/Library/actions/actionTypes';
 
 describe('Library', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
+  let templates = {rows: [{name: 'Decision'}, {name: 'Ruling'}]};
   let component;
   let instance;
   let context;
@@ -23,7 +24,8 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(documents)});
+    .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)});
   });
 
   it('should render the DocumentsList', () => {
@@ -34,7 +36,16 @@ describe('Library', () => {
     it('should request the documents', (done) => {
       Library.requestState()
       .then((state) => {
-        expect(state).toEqual({library: {documents}});
+        expect(state.library.documents).toEqual(documents);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should request the templates', (done) => {
+      Library.requestState()
+      .then((state) => {
+        expect(state.library.filters.templates).toEqual(templates.rows);
         done();
       })
       .catch(done.fail);
@@ -42,9 +53,16 @@ describe('Library', () => {
   });
 
   describe('setReduxState()', () => {
+    beforeEach(() => {
+      instance.setReduxState({library: {documents, filters: {templates}}});
+    });
+
     it('should call setDocuments with the documents', () => {
-      instance.setReduxState({library: {documents}});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents: documents});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
+    });
+
+    it('should call setTemplates with the templates', () => {
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_TEMPLATES, templates});
     });
   });
 });
