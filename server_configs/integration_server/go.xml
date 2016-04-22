@@ -4,7 +4,173 @@
   <pipelines group="defaultGroup">
     <pipeline name="master">
       <materials>
-        <git url="https://github.com/huridocs/uwazidocs.git" />
+        <git url="https://github.com/huridocs/uwazidocs.git" dest="app" materialName="APP" />
+        <git url="https://github.com/huridocs/uwazi-fixtures.git" dest="fixtures" materialName="fixtures" />
+      </materials>
+      <stage name="install_dependencies">
+        <jobs>
+          <job name="npm">
+            <tasks>
+              <exec command="rm" workingdir="app">
+                <arg>-fR</arg>
+                <arg>node_modules</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="pnpm" workingdir="app">
+                <arg>install</arg>
+                <arg>img-loader</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="pnpm" workingdir="app">
+                <arg>install</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="pnpm" workingdir="fixtures">
+                <arg>install</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="lint">
+        <jobs>
+          <job name="lint">
+            <tasks>
+              <exec command="node" workingdir="app">
+                <arg>./node_modules/eslint/bin/eslint.js</arg>
+                <arg>app/react</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="server_test">
+        <environmentvariables>
+          <variable name="PWD">
+            <value>/var/lib/go-agent/pipelines/master</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="test">
+            <tasks>
+              <exec command="node" workingdir="app">
+                <arg>api_test.js</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="client_test">
+        <environmentvariables>
+          <variable name="DISPLAY">
+            <value>:99</value>
+          </variable>
+          <variable name="PWD">
+            <value>/var/lib/go-agent/pipelines/master</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="test">
+            <environmentvariables>
+              <variable name="CODECLIMATE_REPO_TOKEN">
+                <value>1a171725ee4c0b3c0ce6616f57a038733c294e05893aa1e93c5818f152e69b91</value>
+              </variable>
+            </environmentvariables>
+            <tasks>
+              <exec command="./node_modules/karma/bin/karma" workingdir="app">
+                <arg>start</arg>
+                <arg>--ci</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="upload_coverage.sh">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="deploy">
+        <environmentvariables>
+          <variable name="PWD">
+            <value>/var/lib/go-agent/pipelines/master</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="deploy">
+            <tasks>
+              <exec command="sudo">
+                <arg>/etc/init.d/logstash</arg>
+                <arg>force-stop</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="cp" workingdir="app">
+                <arg>-f</arg>
+                <arg>app/react/ci_config.js</arg>
+                <arg>app/react/config.js</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="rm" workingdir="app">
+                <arg>-fR</arg>
+                <arg>./build</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sh" workingdir="app">
+                <arg>build.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="rm">
+                <arg>-fr</arg>
+                <arg>/home/deploys/dev</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="cp" workingdir="app">
+                <arg>-fR</arg>
+                <arg>./build</arg>
+                <arg>/home/deploys/dev</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="cp" workingdir="app">
+                <arg>-fR</arg>
+                <arg>node_modules</arg>
+                <arg>/home/deploys/dev</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="stop_uwazi_dev.sh">
+                <runif status="passed" />
+              </exec>
+              <exec command="sh" workingdir="fixtures">
+                <arg>restore.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="forever">
+                <arg>start</arg>
+                <arg>/home/deploys/dev/server.js</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="mkdir">
+                <arg>/home/deploys/dev/uploaded_documents</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>/usr/bin/copy_logstash_config.sh</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="sudo">
+                <arg>/etc/init.d/logstash</arg>
+                <arg>start</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+    <pipeline name="development">
+      <materials>
+        <git url="https://github.com/huridocs/uwazidocs.git" branch="development" />
       </materials>
       <stage name="install_dependencies">
         <jobs>
@@ -15,7 +181,12 @@
                 <arg>node_modules</arg>
                 <runif status="passed" />
               </exec>
-              <exec command="npm">
+              <exec command="pnpm">
+                <arg>install</arg>
+                <arg>img-loader</arg>
+                <runif status="passed" />
+              </exec>
+              <exec command="pnpm">
                 <arg>install</arg>
                 <runif status="passed" />
               </exec>
@@ -23,10 +194,30 @@
           </job>
         </jobs>
       </stage>
+      <stage name="lint">
+        <jobs>
+          <job name="lint">
+            <tasks>
+              <exec command="node">
+                <arg>./node_modules/eslint/bin/eslint.js</arg>
+                <arg>app/react</arg>
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
       <stage name="server_test">
+        <environmentvariables>
+          <variable name="PWD">
+            <value>/var/lib/go-agent/pipelines/development</value>
+          </variable>
+        </environmentvariables>
         <jobs>
           <job name="test">
             <tasks>
+              <exec command="printenv">
+                <runif status="passed" />
+              </exec>
               <exec command="node">
                 <arg>api_test.js</arg>
                 <runif status="passed" />
@@ -40,53 +231,16 @@
           <variable name="DISPLAY">
             <value>:99</value>
           </variable>
+          <variable name="PWD">
+            <value>/var/lib/go-agent/pipelines/development</value>
+          </variable>
         </environmentvariables>
         <jobs>
           <job name="test">
             <tasks>
-              <exec command="./node_modules/karma/bin/karma">
+              <exec command="node_modules/karma/bin/karma">
                 <arg>start</arg>
-                <arg>karma_ci.conf.js</arg>
-                <runif status="passed" />
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-      <stage name="deploy">
-        <jobs>
-          <job name="deploy">
-            <tasks>
-              <exec command="cp">
-                <arg>-f</arg>
-                <arg>app/react/ci_config.js</arg>
-                <arg>app/react/config.js</arg>
-                <runif status="passed" />
-              </exec>
-              <exec command="webpack">
-                <runif status="passed" />
-              </exec>
-              <exec command="rm">
-                <arg>-fr</arg>
-                <arg>/home/deploys/dev</arg>
-                <runif status="passed" />
-              </exec>
-              <exec command="cp">
-                <arg>-fR</arg>
-                <arg>./</arg>
-                <arg>/home/deploys/dev</arg>
-                <runif status="passed" />
-              </exec>
-              <exec command="stop_uwazi_dev.sh">
-                <runif status="passed" />
-              </exec>
-              <exec command="sh" workingdir="utils">
-                <arg>restore.sh</arg>
-                <runif status="passed" />
-              </exec>
-              <exec command="forever">
-                <arg>start</arg>
-                <arg>/home/deploys/dev/server.js</arg>
+                <arg>--ci</arg>
                 <runif status="passed" />
               </exec>
             </tasks>
