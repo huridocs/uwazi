@@ -21,3 +21,16 @@ export function getUpdatedNames(oldProperties = [], newProperties) {
 
   return propertiesWithNewName;
 }
+
+export function getDeletedProperties(oldProperties = [], newProperties) {
+  let deletedProperties = [];
+
+  oldProperties.forEach((property) => {
+    let newProperty = newProperties.find((p) => p.id === property.id);
+    if (!newProperty) {
+      deletedProperties.push(property.name);
+    }
+  });
+
+  return deletedProperties;
+}

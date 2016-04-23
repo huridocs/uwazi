@@ -1,6 +1,6 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
-import {generateNamesAndIds, getUpdatedNames} from './utils';
+import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
 import documents from 'api/documents/documents';
 
 let save = (template) => {
@@ -17,7 +17,8 @@ let update = (template) => {
     let currentProperties = response.json.properties;
     let newProperties = template.properties;
     let updatedNames = getUpdatedNames(currentProperties, newProperties);
-    return documents.updateMetadataNames(template._id, updatedNames);
+    let deletedProperties = getDeletedProperties(currentProperties, newProperties);
+    return documents.updateMetadataProperties(template._id, updatedNames, deletedProperties);
   })
   .then(() => save(template));
 };

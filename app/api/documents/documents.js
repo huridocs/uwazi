@@ -2,7 +2,7 @@ import elastic from './elastic';
 import buildQuery from './elasticQuery';
 import request from 'shared/JSONRequest';
 import {db_url as dbURL} from 'api/config/database';
-import {updateMetadataNames} from 'api/documents/utils';
+import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 
 export default {
   search(searchTerm) {
@@ -28,11 +28,12 @@ export default {
     });
   },
 
-  updateMetadataNames(templateId, nameMatches) {
+  updateMetadataProperties(templateId, nameMatches, deleteProperties) {
     return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
     .then((response) => {
       let documents = response.json.rows.map((r) => r.value);
       documents = updateMetadataNames(documents, nameMatches);
+      documents = deleteMetadataProperties(documents, deleteProperties);
 
       let updates = [];
       documents.forEach((document) => {

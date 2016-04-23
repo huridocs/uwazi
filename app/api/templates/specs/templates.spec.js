@@ -60,9 +60,9 @@ describe('templates', () => {
     });
 
     describe('when updateng a property label', () => {
-      it('should should update the name and update all documents using this template', (done) => {
+      it('should update the name and update all documents using this template', (done) => {
         let newTemplate = {name: 'created_template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
-        spyOn(documents, 'updateMetadataNames').and.returnValue(new Promise((resolve) => resolve()));
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         templates.save(newTemplate)
         .then((createdTemplate) => getTemplate(createdTemplate.id))
         .then((template) => {
@@ -71,10 +71,28 @@ describe('templates', () => {
           return templates.save(template);
         })
         .then((updatedTemplate) => {
-          expect(documents.updateMetadataNames).toHaveBeenCalledWith(updatedTemplate.id, {
+          expect(documents.updateMetadataProperties).toHaveBeenCalledWith(updatedTemplate.id, {
             label_1: 'new_label_1',
             label_2: 'new_label_2'
-          });
+          }, []);
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
+    describe('when removing properties', () => {
+      it('should remove the properties on all documents using the template', (done) => {
+        let newTemplate = {name: 'created_template', properties: [ {label: 'label 1'}, {label: 'label 2'}, {label: 'label 3'}]};
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
+        templates.save(newTemplate)
+        .then((createdTemplate) => getTemplate(createdTemplate.id))
+        .then((template) => {
+          template.properties = [template.properties[1]];
+          return templates.save(template);
+        })
+        .then((updatedTemplate) => {
+          expect(documents.updateMetadataProperties).toHaveBeenCalledWith(updatedTemplate.id, {}, ['label_1', 'label_3']);
           done();
         })
         .catch(done.fail);
@@ -99,7 +117,7 @@ describe('templates', () => {
 
     describe('when passing _id and _rev', () => {
       it('edit an existing one', (done) => {
-        spyOn(documents, 'updateMetadataNames').and.returnValue(new Promise((resolve) => resolve()));
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         getTemplate()
         .then((template) => {
           let edited = {_id: template._id, _rev: template._rev, name: 'changed name'};
@@ -116,7 +134,7 @@ describe('templates', () => {
 
     describe('when there is a db error', () => {
       it('return the error', (done) => {
-        spyOn(documents, 'updateMetadataNames').and.returnValue(new Promise((resolve) => resolve()));
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'};
         templates.save(badTemplate)
         .then((error) => {

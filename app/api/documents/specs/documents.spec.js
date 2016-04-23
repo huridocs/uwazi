@@ -22,7 +22,7 @@ describe('documents', () => {
   });
 
   describe('getHTML', () => {
-    it('should return the html conversion of the document', (done) => {
+    it('should return the html conversion of the document with documentid selector added to al css', (done) => {
       documents.getHTML('docId')
       .then((html) => {
         expect(html.css).toBe('._docId .selector1 {} ._docId .selector2 {}');
@@ -44,7 +44,7 @@ describe('documents', () => {
     });
   });
 
-  describe('updateMetadataNames', () => {
+  describe('updateMetadataProperties', () => {
     let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/documents/_view/metadata_by_template?key="' + template + '"')
     .then((response) => {
       return response.json.rows.map((r) => r.value);
@@ -52,7 +52,7 @@ describe('documents', () => {
 
     it('should update metadata property names on the documents matching the template', (done) => {
       let nameChanges = {property1: 'new_name1', property2: 'new_name2'};
-      documents.updateMetadataNames('template1', nameChanges)
+      documents.updateMetadataProperties('template1', nameChanges)
       .then(() => getDocumentsByTemplate('template1'))
       .then((docs) => {
         expect(docs[0].metadata.new_name1).toBe('value1');
@@ -62,6 +62,26 @@ describe('documents', () => {
         expect(docs[1].metadata.new_name1).toBe('value1');
         expect(docs[1].metadata.new_name2).toBe('value2');
         expect(docs[1].metadata.property3).toBe('value3');
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should delete properties passed', (done) => {
+      let nameChanges = {property2: 'new_name'};
+      let deleteProperties = ['property1', 'property3'];
+      documents.updateMetadataProperties('template1', nameChanges, deleteProperties)
+      .then(() => getDocumentsByTemplate('template1'))
+      .then((docs) => {
+        expect(docs[0].metadata.property1).not.toBeDefined();
+        expect(docs[0].metadata.new_name).toBe('value2');
+        expect(docs[0].metadata.property2).not.toBeDefined();
+        expect(docs[0].metadata.property3).not.toBeDefined();
+
+        expect(docs[1].metadata.property1).not.toBeDefined();
+        expect(docs[1].metadata.new_name).toBe('value2');
+        expect(docs[1].metadata.property2).not.toBeDefined();
+        expect(docs[1].metadata.property3).not.toBeDefined();
         done();
       })
       .catch(done.fail);

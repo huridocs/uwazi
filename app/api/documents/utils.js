@@ -11,3 +11,13 @@ export function updateMetadataNames(documents, nameMatches) {
 
   return documents;
 }
+
+export function deleteMetadataProperties(documents, properties = []) {
+  documents.forEach((doc) => {
+    properties.forEach((property) => {
+      delete doc.metadata[property];
+    });
+  });
+
+  return documents;
+}
