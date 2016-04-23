@@ -35,6 +35,24 @@ describe('templates', () => {
       .catch(done.fail);
     });
 
+    it('should validate properties not having repeated names and return an error', (done) => {
+      let newTemplate = {name: 'created_template', properties: [
+        {label: 'label 1'},
+        {label: 'label 1'},
+        {label: 'label 2'},
+        {label: 'label 2'},
+        {label: 'label 3'}
+      ]};
+
+      templates.save(newTemplate)
+      .then(() => done.fail('properties have repeated names, should have failed with an error'))
+      .catch((error) => {
+        expect(error.properties.message).toBe('duplicated_labels');
+        expect(error.properties.value).toEqual(['label 1', 'label 2']);
+        done();
+      });
+    });
+
     it('should assign a safe property name based on the label to each', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
@@ -133,15 +151,17 @@ describe('templates', () => {
     });
 
     describe('when there is a db error', () => {
-      it('return the error', (done) => {
+      it('should return the error', (done) => {
         spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'};
         templates.save(badTemplate)
-        .then((error) => {
-          expect(error.error).toBe('bad_request');
-          done();
+        .then(() => {
+          done.fail('should return an error');
         })
-        .catch(done.fail);
+        .catch((error) => {
+          expect(error.json.error).toBe('bad_request');
+          done();
+        });
       });
     });
   });
