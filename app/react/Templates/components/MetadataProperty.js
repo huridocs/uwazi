@@ -3,8 +3,8 @@ import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {editProperty} from 'app/Templates/actions/uiActions';
-import {removeProperty, reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
+import {editProperty, showRemovePropertyConfirm} from 'app/Templates/actions/uiActions';
+import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
@@ -137,7 +137,7 @@ let dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) =>
 }))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
+  return bindActionCreators({removeProperty: showRemovePropertyConfirm, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
 const mapStateToProps = (state, props) => {

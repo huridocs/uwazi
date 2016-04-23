@@ -63,7 +63,6 @@ describe('MetadataProperty', () => {
       let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
       expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
       expect(option.props.addProperty).toEqual(jasmine.any(Function));
-      expect(option.props.removeProperty).toEqual(jasmine.any(Function));
       expect(option.props.editProperty).toEqual(jasmine.any(Function));
     });
 
