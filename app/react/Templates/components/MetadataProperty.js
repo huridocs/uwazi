@@ -129,9 +129,9 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({removeProperty: showRemovePropertyConfirm, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   return {
-    editingProperty: state.template.uiState.toJS().editingProperty,
+    editingProperty: state.template.uiState.toJS().editingProperty
     //form: state.form.template[props.localID] || {}
   };
 };
