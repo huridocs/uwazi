@@ -38,6 +38,14 @@ karmaConfig = {
     'tests.webpack.js': [ 'webpack', 'sourcemap' ]
   },
   reporters: [ 'jasmine-diff', 'dots' ],
+  jasmineDiffReporter: {
+    color: {
+      expectedBg: '',        // default 'bgRed'
+      expectedFg: 'green',   // default 'white'
+      actualBg: '',          // default 'bgGreen'
+      actualFg: 'red',       // default 'white',
+    }
+  },
   webpack: webpackConfig,
   webpackServer: {
     noInfo: true
