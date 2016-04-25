@@ -39,7 +39,7 @@ describe('templates', () => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 1'},
-        {label: 'label 2'},
+        {label: 'Label 2'},
         {label: 'label 2'},
         {label: 'label 3'}
       ]};

@@ -3,7 +3,7 @@ import validate from 'validate.js';
 validate.validators.duplicatedLabels = (properties) => {
   let labels = {};
   properties.forEach((property) => {
-    labels[property.label] = (labels[property.label] || 0) + 1;
+    labels[property.label.toLowerCase()] = (labels[property.label.toLowerCase()] || 0) + 1;
   });
 
   let duplicatedLabels = Object.keys(labels).filter((label) => {

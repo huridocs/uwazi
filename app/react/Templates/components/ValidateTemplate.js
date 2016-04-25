@@ -5,8 +5,8 @@ export function validateProperty(property = {}, allProperties = []) {
     errors.label = 'Required';
   }
 
-  let otherPropertyLabels = allProperties.filter((p) => p.localID !== property.localID).map((p) => p.label);
-  if (property.label && otherPropertyLabels.indexOf(property.label) !== -1) {
+  let otherPropertyLabels = allProperties.filter((p) => p.localID !== property.localID).map((p) => p.label.toLowerCase());
+  if (property.label && otherPropertyLabels.indexOf(property.label.toLowerCase()) !== -1) {
     errors.label = 'Duplicated';
   }
 

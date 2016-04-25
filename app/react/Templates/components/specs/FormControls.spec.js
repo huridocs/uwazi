@@ -60,7 +60,7 @@ describe('FormControls', () => {
 
     it('should retun error when properties has same labels', () => {
       let values = {name: 'I have name',
-        properties: [{label: 'label 1', localID: 1}, {label: 'label 2', localID: 2}, {label: 'label 1', localID: 3}]
+        properties: [{label: 'Label 1', localID: 1}, {label: 'label 2', localID: 2}, {label: 'label 1', localID: 3}]
       };
       expect(mapStateToProps(state).validate(values)).toEqual({properties: [{label: 'Duplicated'}, {}, {label: 'Duplicated'}]});
     });
