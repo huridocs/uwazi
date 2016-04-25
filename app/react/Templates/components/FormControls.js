@@ -8,7 +8,6 @@ import {resetTemplate, saveTemplate} from 'app/Templates/actions/templateActions
 
 export class FormControls extends Component {
 
-
   submit(e) {
     e.preventDefault();
     this.props.properties.forEach((prop) => {

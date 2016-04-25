@@ -17,8 +17,8 @@ export class MetadataTemplate extends Component {
       <div className="metadataTemplate panel panel-default">
         <RemovePropertyConfirm />
         <div className="metadataTemplate-heading panel-heading">
-          <FormName ref='formName'/>
-          <FormControls formsToSubmit={this.refs}/>
+          <FormName />
+          <FormControls />
         </div>
         <ul className="metadataTemplate-list list-group">
           {(() => {
