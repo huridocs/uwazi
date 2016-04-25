@@ -11,7 +11,7 @@ describe('LibraryFilters', () => {
 
   beforeEach(() => {
     templates = [{name: 'Decision'}, {name: 'Ruling'}];
-    props = {templates};
+    props = {templates, documentTypes: {}};
     component = shallow(<LibraryFilters {...props} />);
   });
 
@@ -21,14 +21,14 @@ describe('LibraryFilters', () => {
   });
 
   describe('maped state', () => {
-    it('should contain the ui', () => {
+    it('should contain the filters store', () => {
       let store = {
         library: {
-          filters: Immutable.fromJS({templates})
+          filters: Immutable.fromJS(['filters state'])
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({templates});
+      expect(state).toEqual(['filters state']);
     });
   });
 });

@@ -1,5 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+
+import {filterDocumentType, filterAllDocumentTypes} from 'app/Library/actions/filterActions';
+import FiltersForm from 'app/Library/components/FiltersForm';
 
 export class LibraryFilters extends Component {
 
@@ -7,14 +11,8 @@ export class LibraryFilters extends Component {
     this.docTypes = [];
   }
 
-  checkAll() {
-    this.docTypes.forEach((ref) => {
-      ref.checked = this.checkAll.checked;
-    });
-  }
-
-  filterType(e) {
-    
+  handleFilterDocType(e) {
+    this.props.filterDocumentType(e.target.id);
   }
 
   render() {
@@ -27,16 +25,22 @@ export class LibraryFilters extends Component {
           <ul className="search__filter search__filter--radiobutton">
             <li>Document type</li>
             <li>
-              <input ref={(ref) => {this.checkAll = ref}} onClick={this.checkAll.bind(this)} id="all-documents" type="checkbox"/>
-              <label htmlFor="all-documents">All documents</label>
+              <input
+                onChange={this.props.filterAllDocumentTypes}
+                id="all-documents"
+                type="checkbox"
+                defaultChecked={true}
+                checked={this.props.allDocumentTypes}/>
+              <label htmlFor="all-documents">Select all</label>
             </li>
             {this.props.templates.map((template, index) => {
               return <li key={index}>
-                      <input onChange={this.filterType.bind(this)} ref={(ref) => this.docTypes.push(ref)} id={template._id} type="checkbox"/>
+                      <input onChange={this.handleFilterDocType.bind(this)} defaultChecked={true} id={template._id} type="checkbox" checked={this.props.documentTypes[template._id]}/>
                       <label htmlFor={template._id}>{template.name}</label>
-                    </li>
+                    </li>;
             })}
           </ul>
+          <FiltersForm />
         </div>
       </aside>
     );
@@ -44,11 +48,19 @@ export class LibraryFilters extends Component {
 }
 
 LibraryFilters.propTypes = {
-  templates: PropTypes.array
+  templates: PropTypes.array,
+  allDocumentTypes: PropTypes.bool,
+  documentTypes: PropTypes.object,
+  filterDocumentType: PropTypes.func,
+  filterAllDocumentTypes: PropTypes.func
 };
 
 export function mapStateToProps(state) {
   return state.library.filters.toJS();
 }
 
-export default connect(mapStateToProps)(LibraryFilters);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({filterDocumentType, filterAllDocumentTypes}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);

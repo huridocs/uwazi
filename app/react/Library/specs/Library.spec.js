@@ -10,7 +10,8 @@ import * as actionTypes from 'app/Library/actions/actionTypes';
 
 describe('Library', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
-  let templates = {rows: [{name: 'Decision'}, {name: 'Ruling'}]};
+  let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
+  let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
   let component;
   let instance;
   let context;
@@ -25,7 +26,8 @@ describe('Library', () => {
     backend.restore();
     backend
     .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(documents)})
-    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)});
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
+    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
 
   it('should render the DocumentsList', () => {
@@ -37,6 +39,10 @@ describe('Library', () => {
       Library.requestState()
       .then((state) => {
         expect(state.library.documents).toEqual(documents);
+        expect(state.library.filters.templates).toEqual(templates.rows);
+        expect(state.library.filters.documentTypes).toEqual({abc1: true, abc2: true});
+        expect(state.library.filters.allDocumentTypes).toBe(true);
+        expect(state.library.filters.thesauris).toEqual(thesauris.rows);
         done();
       })
       .catch(done.fail);
@@ -54,15 +60,15 @@ describe('Library', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({library: {documents, filters: {templates}}});
+      instance.setReduxState({library: {documents, filters: {templates, thesauris}}});
     });
 
     it('should call setDocuments with the documents', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
     });
 
-    it('should call setTemplates with the templates', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_TEMPLATES, templates});
+    it('should call setTemplates with the templates and thesauris', () => {
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_TEMPLATES, templates, thesauris});
     });
   });
 });

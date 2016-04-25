@@ -28,6 +28,7 @@ karmaConfig = {
     'karma-chrome-launcher',
     'karma-phantomjs-launcher',
     'karma-jasmine',
+    'karma-jasmine-diff-reporter',
     'karma-sourcemap-loader',
     'karma-webpack',
     'karma-coverage'
@@ -36,7 +37,7 @@ karmaConfig = {
   preprocessors: {
     'tests.webpack.js': [ 'webpack', 'sourcemap' ]
   },
-  reporters: [ 'dots' ],
+  reporters: [ 'jasmine-diff', 'dots' ],
   webpack: webpackConfig,
   webpackServer: {
     noInfo: true

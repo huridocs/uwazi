@@ -5,8 +5,8 @@ export function setDocuments(documents) {
   return {type: types.SET_DOCUMENTS, documents};
 }
 
-export function setTemplates(templates) {
-  return {type: types.SET_TEMPLATES, templates};
+export function setTemplates(templates, thesauris) {
+  return {type: types.SET_TEMPLATES, templates, thesauris};
 }
 
 export function setSearchTerm(searchTerm) {
