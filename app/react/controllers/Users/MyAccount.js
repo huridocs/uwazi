@@ -1,7 +1,8 @@
-import {PropTypes} from 'react';
-import template from './templates/my_account.js';
+import React, {PropTypes} from 'react';
 import fetch from 'isomorphic-fetch';
 import RouteHandler from '../App/RouteHandler';
+import Helmet from 'react-helmet';
+import Alert from '../../components/Elements/Alert';
 
 class MyAccount extends RouteHandler {
 
@@ -12,8 +13,32 @@ class MyAccount extends RouteHandler {
   }
 
   render() {
-    this.render = template.bind(this);
-    return this.render();
+    return (
+      <div className="row">
+        <Helmet title="My account" />
+        <h1>{this.props.user.username}</h1>
+        <hr/>
+        <h2>Update password</h2>
+        <div className="col-xs-4">
+          <Alert message={this.state.feedback.message} type={this.state.feedback.type} />
+          <form onSubmit={this.submit.bind(this)}>
+            <div className="form-group">
+              <label htmlFor="password">New password</label>
+              <input type="password" className="form-control" name="password" id="password"
+                onChange={this.passwordChange.bind(this)}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="repeatPassword">Repeat password</label>
+              <input type="password" className="form-control" name="repeatPassword" id="repeatPassword"
+                onChange={this.repeatPasswordChange.bind(this)}
+              />
+            </div>
+            <button type="submit" className="btn btn-default btn-primary">Change</button>
+          </form>
+        </div>
+      </div>
+    );
   }
 
   passwordChange(e) {
@@ -35,16 +60,16 @@ class MyAccount extends RouteHandler {
     let user = this.props.user;
     user.password = this.state.password;
     return this.fetch('/api/users', {method: 'POST',
-                 headers: {
-                   Accept: 'application/json',
-                   'Content-Type': 'application/json'
-                 },
-                 credentials: 'same-origin',
-                 body: JSON.stringify(user)})
-      .then(() => {
-        this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}});
-      }
-    );
+                      headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                      },
+                      credentials: 'same-origin',
+                      body: JSON.stringify(user)})
+                      .then(() => {
+                        this.setState({feedback: {message: 'Password changed succesfully', type: 'success'}});
+                      }
+                           );
   }
 }
 

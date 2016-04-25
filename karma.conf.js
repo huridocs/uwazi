@@ -5,6 +5,7 @@ var path = require('path');
 var webpackConfig = require('./webpack.config.js');
 
 webpackConfig.externals = {
+  'react/addons': true,
   'jsdom': 'window',
   'cheerio': 'window',
   'react/lib/ExecutionEnvironment': true,
