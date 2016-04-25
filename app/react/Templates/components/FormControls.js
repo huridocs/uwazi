@@ -12,7 +12,7 @@ export class FormControls extends Component {
   submit(e) {
     e.preventDefault();
     this.props.properties.forEach((prop) => {
-      this.props.touchWithKey('template', prop.id, 'content', 'label', 'required', 'filter');
+      this.props.touchWithKey('template', prop.localID, 'content', 'label', 'required', 'filter');
     });
 
     this.props.touch('template', 'name');

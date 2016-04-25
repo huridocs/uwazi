@@ -45,14 +45,14 @@ describe('MetadataProperty', () => {
 
   function renderComponent(ComponentToRender, props) {
     let result;
-    let templateData = Immutable.fromJS({name: '', properties: []});
+    let templateData = Immutable.fromJS({name: '', properties: [{}]});
     store = createStore(() => {
       return {
         template: {data: templateData, uiState: Immutable.fromJS({})},
         form: {template: {}}
       };
     });
-    TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
+    TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props} index={1}/></Provider>);
     return result;
   }
 

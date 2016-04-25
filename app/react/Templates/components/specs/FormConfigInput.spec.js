@@ -43,10 +43,10 @@ describe('FormConfigInput', () => {
   describe('validation', () => {
     it('should return an error when the label is empty', () => {
       let state = {
-        template: {data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]})}
+        template: {data: Immutable.fromJS({name: '', properties: [{label: ''}, {label: 'second property'}]})}
       };
       props = {index: 0};
-      expect(mapStateToProps(state, props).validate({label: ''})).toEqual({label: 'Required'});
+      expect(mapStateToProps(state, props).validate()).toEqual({label: 'Required'});
     });
   });
 });
