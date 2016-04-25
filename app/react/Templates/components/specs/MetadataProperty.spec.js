@@ -15,7 +15,7 @@ function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
     class TestContextContainer extends Component {
       render() {
-        return <DecoratedComponent {...this.props} />;
+        return <DecoratedComponent {...this.props} errors={{}}/>;
       }
     }
   );
@@ -26,8 +26,8 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let targetProps = {label: 'target', index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}};
-        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false, form: {}};
+        let targetProps = {label: 'target', errors: {}, index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}};
+        let sourceProps = {label: 'source', errors: {}, type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false, form: {}};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -57,15 +57,6 @@ describe('MetadataProperty', () => {
   }
 
   describe('MetadataProperty', () => {
-    it('should have mapped action into props', () => {
-      let TestComponent = wrapInTestContext(MetadataProperty);
-      component = renderComponent(TestComponent, {label: 'test', index: 1, localID: 'id'});
-      let option = TestUtils.findRenderedComponentWithType(component, MetadataProperty).getWrappedInstance();
-      expect(option.props.reorderProperty).toEqual(jasmine.any(Function));
-      expect(option.props.addProperty).toEqual(jasmine.any(Function));
-      expect(option.props.editProperty).toEqual(jasmine.any(Function));
-    });
-
     describe('when inserting', () => {
       it('should add "dragging" className', () => {
         let TestComponent = wrapInTestContext(MetadataProperty);
@@ -88,7 +79,8 @@ describe('MetadataProperty', () => {
           label: 'test',
           index: 1,
           localID: 'id',
-          form: {}
+          form: {},
+          errors: {}
         };
         component = shallow(<DumbComponent {...props}/>);
         expect(component.find(FormConfigInput).length).toBe(1);
@@ -121,7 +113,8 @@ describe('MetadataProperty', () => {
           label: 'test',
           index: 1,
           localID: 'id',
-          form: {}
+          form: {},
+          errors: {}
         });
       });
 

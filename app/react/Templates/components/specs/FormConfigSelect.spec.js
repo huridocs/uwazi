@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 import {FormConfigSelect, mapStateToProps} from 'app/Templates/components/FormConfigSelect';
 
-describe('FormConfigInput', () => {
+describe('FormConfigSelect', () => {
   let component;
   let props;
 
@@ -53,11 +53,23 @@ describe('FormConfigInput', () => {
 
     describe('validation', () => {
       it('should return an error when the label is empty', () => {
-        expect(mapStateToProps(state, props).validate({label: '', content: '1', type: 'select'})).toEqual({label: 'Required'});
+        state = {
+          template: {
+            data: Immutable.fromJS({name: '', properties: [{label: ''}, {label: 'second property'}]}),
+            uiState: Immutable.fromJS({thesauri: 'thesauri'})
+          }
+        };
+        expect(mapStateToProps(state, props).validate()).toEqual({label: 'Required'});
       });
 
       it('should return an error when the content is empty', () => {
-        expect(mapStateToProps(state, props).validate({label: 'I have a label', content: '', type: 'select'})).toEqual({content: 'Required'});
+        state = {
+          template: {
+            data: Immutable.fromJS({name: 'test', properties: [{label: 'first_property', content: '', type: 'list'}, {label: 'second property'}]}),
+            uiState: Immutable.fromJS({thesauri: 'thesauri'})
+          }
+        };
+        expect(mapStateToProps(state, props).validate()).toEqual({content: 'Required'});
       });
     });
   });
