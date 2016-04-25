@@ -7,6 +7,7 @@ import {updateProperty, addProperty} from 'app/Templates/actions/templateActions
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import FormName from 'app/Templates/components/FormName';
 import FormControls from 'app/Templates/components/FormControls';
+import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 
 export class MetadataTemplate extends Component {
   render() {
@@ -14,6 +15,7 @@ export class MetadataTemplate extends Component {
 
     return connectDropTarget(
       <div className="metadataTemplate panel panel-default">
+        <RemovePropertyConfirm />
         <div className="metadataTemplate-heading panel-heading">
           <FormName />
           <FormControls/>
@@ -27,7 +29,7 @@ export class MetadataTemplate extends Component {
             }
           })()}
           {this.props.properties.map((config, index) => {
-            return <MetadataProperty {...config} key={config.id} index={index}/>;
+            return <MetadataProperty {...config} key={config.localID} index={index}/>;
           })}
         </ul>
       </div>

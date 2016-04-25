@@ -2,6 +2,7 @@ import request from '../../shared/JSONRequest.js';
 import {db_url} from '../config/database.js'
 import multer from 'multer'
 import PDF from './PDF';
+import documents from 'api/documents/documents';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -34,9 +35,17 @@ export default app => {
       ]);
     })
     .then((response) => {
-      let document = Object.assign({}, response[1].json, response[0]);
+      let document = response[1].json;
+      let conversion = response[0];
+      conversion.document = document._id;
+
       document.processed = true;
-      return request.post(db_url, document);
+      document.fullText = conversion.fullText;
+      delete conversion.fullText;
+      return Promise.all([
+        request.post(db_url, document),
+        documents.saveHTML(conversion)
+      ]);
     })
     .catch((err) => {
       console.log(err);

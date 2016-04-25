@@ -1,19 +1,15 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
-import generateNames from './generateNames';
+import templates from './templates';
 
 export default app => {
   app.post('/api/templates', (req, res) => {
-    req.body.type = 'template';
-    req.body.properties = req.body.properties || [];
-    req.body.properties = generateNames(req.body.properties);
-
-    request.post(dbURL, req.body)
+    templates.save(req.body)
     .then((response) => {
-      res.json(response.json);
+      res.json(response);
     })
     .catch((error) => {
-      res.json({error: error.json});
+      res.json({error});
     });
   });
 

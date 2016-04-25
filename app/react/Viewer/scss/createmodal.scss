@@ -7,13 +7,14 @@
 		padding: 15px 0px;
 		margin: 0 -2px 15px;
 		overflow-y: scroll;
-		height: 60%;
+		height: 90%;
 	}
 	.item {
 		height: auto;
 		margin-bottom: 5px;
 		padding: 15px;
-		border-color: $c-white;
+		border: 1px solid $c-white;
+		cursor: pointer;
 		&:after {
 			content: '\f00c';
 			font-family: FontAwesome;
@@ -28,7 +29,7 @@
 		&.is-selected {
 			background: $c-primary-lighten;
 			color: $c-primary-light;
-			border: 1px solid $c-primary-light;
+			border-color: $c-primary-light;
 			&:after {
 				opacity: 1;
 				top: -5px;

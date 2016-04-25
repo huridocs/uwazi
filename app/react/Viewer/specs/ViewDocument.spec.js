@@ -9,6 +9,7 @@ import ViewDocument from 'app/Viewer/ViewDocument';
 
 describe('ViewDocument', () => {
   let document = {_id: '1', title: 'title'};
+  let docHTML = {_id: '2', html: 'html'};
   let references = [{_id: '1'}, {_id: '2'}];
   let component;
   let instance;
@@ -23,6 +24,7 @@ describe('ViewDocument', () => {
     backend.restore();
     backend
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: [document]})})
+    .mock(APIURL + 'documents/html?_id=documentId', 'GET', {body: JSON.stringify(docHTML)})
     .mock(APIURL + 'references?sourceDocument=documentId', 'GET', {body: JSON.stringify({rows: references})});
   });
 
@@ -30,14 +32,15 @@ describe('ViewDocument', () => {
     expect(component.find(Viewer).length).toBe(1);
   });
 
-  describe('static requestState()', () => {
+  describe('static requestState', () => {
     it('should request for the template passed, the thesauris and return an object to fit in the state', (done) => {
       ViewDocument.requestState({documentId: 'documentId'})
       .then((response) => {
         let documentResponse = response.documentViewer.document;
         let referencesResponse = response.documentViewer.references;
 
-        expect(documentResponse).toEqual(document);
+        expect(documentResponse._id).toBe('1');
+        expect(documentResponse.html).toBe('html');
         expect(referencesResponse).toEqual(references);
         done();
       })
@@ -49,7 +52,7 @@ describe('ViewDocument', () => {
     it('should call setTemplates with templates passed', () => {
       instance.setReduxState({documentViewer: {document: 'document', references: 'references'}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: 'references'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_DOCUMENT', document: 'document'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_DOCUMENT', document: 'document', html: null});
     });
   });
 });

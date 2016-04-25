@@ -3,8 +3,8 @@ import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {editProperty} from 'app/Templates/actions/uiActions';
-import {removeProperty, reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
+import {editProperty, showRemovePropertyConfirm} from 'app/Templates/actions/uiActions';
+import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
@@ -12,9 +12,9 @@ export class MetadataProperty extends Component {
 
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'list') {
-      return <FormConfigSelect formKey={this.props.id} index={this.props.index} />;
+      return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
     }
-    return <FormConfigInput formKey={this.props.id} index={this.props.index} />;
+    return <FormConfigInput formKey={this.props.localID} index={this.props.index} />;
   }
 
   hasError(form) {
@@ -37,7 +37,7 @@ export class MetadataProperty extends Component {
   }
 
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, id, form} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, form} = this.props;
     let propertyClass = 'list-group-item';
 
     if (this.hasError(form)) {
@@ -69,11 +69,11 @@ export class MetadataProperty extends Component {
             <i className="fa fa-trash"></i> Delete
           </button>
           &nbsp;
-          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(id)}>
+          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(localID)}>
             <i className="fa fa-pencil"></i> Edit
           </button>
         </div>
-        <div className={'propery-form' + (editingProperty === id ? ' expand' : '') }>
+        <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
           {this.renderForm()}
         </div>
       </li>
@@ -86,7 +86,7 @@ MetadataProperty.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
-  id: PropTypes.any.isRequired,
+  localID: PropTypes.any.isRequired,
   type: PropTypes.string,
   label: PropTypes.string.isRequired,
   inserting: PropTypes.bool,
@@ -137,13 +137,13 @@ let dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) =>
 }))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({removeProperty, reorderProperty, addProperty, editProperty}, dispatch);
+  return bindActionCreators({removeProperty: showRemovePropertyConfirm, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
 const mapStateToProps = (state, props) => {
   return {
     editingProperty: state.template.uiState.toJS().editingProperty,
-    form: state.form.template[props.id] || {}
+    form: state.form.template[props.localID] || {}
   };
 };
 
