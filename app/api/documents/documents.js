@@ -5,9 +5,11 @@ import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 
 export default {
-  search(searchTerm) {
-    let query = queryBuilder().fullTextSearch(searchTerm).query();
-    return elastic.search({index: 'uwazi', body: query})
+  search(query) {
+    let searchTerm = query.searchTerm;
+    delete query.searchTerm;
+    let documentsQuery = queryBuilder().fullTextSearch(searchTerm).filterMetadata(query).query();
+    return elastic.search({index: 'uwazi', body: documentsQuery})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;

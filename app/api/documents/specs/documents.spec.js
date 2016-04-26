@@ -91,9 +91,9 @@ describe('documents', () => {
   describe('search', () => {
     it('should perform a search on all fields', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      documents.search('searchTerm')
+      documents.search({searchTerm: 'searchTerm', property1: 'value1', property2: 'value2'})
       .then((results) => {
-        let query = queryBuilder().fullTextSearch('searchTerm').query();
+        let query = queryBuilder().fullTextSearch('searchTerm').filterMetadata({property1: 'value1', property2: 'value2'}).query();
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
