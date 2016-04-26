@@ -7,13 +7,12 @@ export class FiltersForm extends Component {
 
   render() {
     return (
-      <div>
+      <form>
         <DynamicFields fields={this.props.fields} template={this.props.properties} />
-      </div>
+      </form>
     );
   }
 }
-// <DynamicFields fields={this.props.fields} template={this.props.properties} />
 
 FiltersForm.propTypes = {
   fields: PropTypes.object.isRequired,

@@ -50,7 +50,8 @@ describe('libraryActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)});
+      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
+      .mock(APIURL + 'documents/search?joker=true&searchTerm=batman', 'get', {body: JSON.stringify(documents)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -58,6 +59,16 @@ describe('libraryActions', () => {
       it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
         actions.searchDocuments('batman')(dispatch)
         .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should be able to handle filters', (done) => {
+        actions.searchDocuments('batman', {joker: true})(dispatch)
+        .then(() => {
+          expect(backend.called(APIURL + 'documents/search?joker=true&searchTerm=batman')).toBe(true);
           expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
           done();
         })
