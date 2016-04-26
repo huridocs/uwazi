@@ -1,0 +1,30 @@
+@import "../../controllers/App/scss/config/_colors.scss";
+@import "../../controllers/App/scss/config/_materials.scss";
+@import "../../controllers/App/scss/config/_typography.scss";
+
+.modal-dialog {
+	.btn-default {
+		opacity: 0.5;
+	}
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+.modal-content {
+	border-radius: 0;
+	border: 0;
+  box-shadow: $shadow;
+}
+
+.modal-success {
+	border-left: 5px solid #8BC74C;
+}
+.modal-warning {
+	border-left: 5px solid orange;
+}
+.modal-danger {
+	border-left: 5px solid #ED353D;
+}
+
