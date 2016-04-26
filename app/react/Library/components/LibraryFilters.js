@@ -26,7 +26,9 @@ export class LibraryFilters extends Component {
       <aside className="col-xs-12 col-sm-3">
         <div className="search">
           <div className="search__button--apply__filters">
-            <a onClick={this.applyFilters.bind(this)} className="btn btn-success btn-block apply-filters"><i className="fa fa-chevron-left"></i>Apply filters</a>
+            <a onClick={this.applyFilters.bind(this)} className="btn btn-success btn-block apply-filters">
+              <i className="fa fa-chevron-left"></i>Apply filters
+            </a>
           </div>
           <ul className="search__filter search__filter--radiobutton">
             <li>Document type</li>
