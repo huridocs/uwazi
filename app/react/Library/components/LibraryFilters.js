@@ -37,14 +37,12 @@ export class LibraryFilters extends Component {
                 onChange={this.props.filterAllDocumentTypes}
                 id="all-documents"
                 type="checkbox"
-                defaultChecked={true}
                 checked={this.props.allDocumentTypes}/>
               <label htmlFor="all-documents">Select all</label>
             </li>
             {this.props.templates.map((template, index) => {
               return <li key={index}>
                       <input onChange={this.handleFilterDocType.bind(this)}
-                            defaultChecked={true}
                             id={template._id}
                             type="checkbox"
                             checked={this.props.documentTypes[template._id]}/>
