@@ -25,7 +25,8 @@ describe('library helper', () => {
         let documentTypes = {1: true, 2: false, 3: false};
         let filters = libraryFilters(templates, documentTypes, thesauris);
         expect(filters)
-        .toEqual([{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']}, {name: 'date', filter: true, type: 'text'}]);
+        .toEqual([{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']},
+                  {name: 'date', filter: true, type: 'text'}]);
       });
     });
 
