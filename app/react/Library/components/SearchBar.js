@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
+import {getValues} from 'redux-form';
 
 import {searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
@@ -40,7 +41,7 @@ export class SearchBar extends Component {
 
   search(e) {
     e.preventDefault();
-    this.props.searchDocuments(this.props.searchTerm);
+    this.props.searchDocuments(this.props.searchTerm, getValues(this.props.filtersForm));
   }
 
   render() {
@@ -94,12 +95,15 @@ SearchBar.propTypes = {
   setOverSuggestions: PropTypes.func.isRequired,
   searchTerm: PropTypes.string,
   suggestions: PropTypes.array,
+  filtersForm: PropTypes.object,
   showSuggestions: PropTypes.bool,
   overSuggestions: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
-  return state.library.ui.toJS();
+  let props = state.library.ui.toJS();
+  props.filtersForm = state.form.filters;
+  return props;
 }
 
 function mapDispatchToProps(dispatch) {
