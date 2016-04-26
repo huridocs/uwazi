@@ -5,10 +5,11 @@ import './scss/modal.scss';
 export default class Modal extends Component {
   render() {
     let style = {overlay: {zIndex: 100, backgroundColor: 'rgba(0, 0, 0, 0.75)'}};
+    const type = this.props.type || 'success';
     return (
       <ReactModal
         style={style}
-        className="modal-dialog modal-warning"
+        className={`modal-dialog modal-${type}`}
         isOpen={this.props.isOpen}
       >
         <div className="modal-content">
@@ -27,6 +28,7 @@ let childrenType = PropTypes.oneOfType([
 
 Modal.propTypes = {
   isOpen: PropTypes.bool,
+  type: PropTypes.string,
   children: childrenType
 };
 

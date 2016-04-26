@@ -15,7 +15,7 @@ export class RemovePropertyConfirm extends Component {
 
   render() {
     return (
-      <Modal isOpen={this.props.isOpen || false}>
+      <Modal isOpen={this.props.isOpen || false} type="danger">
 
         <Modal.Body>
           <h4>Are you sure ? (change will take effect when saving the template)</h4>
@@ -24,7 +24,7 @@ export class RemovePropertyConfirm extends Component {
 
         <Modal.Footer>
           <button type="button" className="btn btn-default cancel-button" onClick={this.props.hideRemovePropertyConfirm}>Cancel</button>
-          <button type="button" className="btn btn-warning confirm-button" onClick={() => this.confirm()}>Ok</button>
+          <button type="button" className="btn btn-danger confirm-button" onClick={() => this.confirm()}>Delete Property</button>
         </Modal.Footer>
 
       </Modal>

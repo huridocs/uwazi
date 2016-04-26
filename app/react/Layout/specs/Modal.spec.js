@@ -11,13 +11,17 @@ describe('Modal', () => {
     component = shallow(<Modal {...props}><div></div></Modal>);
   };
 
-  it('should render children', () => {
+  it('should pass isOpen props', () => {
     render({isOpen: false});
     expect(component.find(ReactModal).props().isOpen).toBe(false);
-  });
-
-  it('should be hidden by default', () => {
     render({isOpen: true});
     expect(component.find(ReactModal).props().isOpen).toBe(true);
+  });
+
+  it('should append type passed to modal class and render default success if nothing passed', () => {
+    render({type: 'modalType'});
+    expect(component.find(ReactModal).hasClass('modal-modalType')).toBe(true);
+    render();
+    expect(component.find(ReactModal).hasClass('modal-success')).toBe(true);
   });
 });
