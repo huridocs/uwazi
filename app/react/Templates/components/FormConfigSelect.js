@@ -55,11 +55,14 @@ FormConfigSelect.propTypes = {
 };
 
 export function mapStateToProps(state, props) {
+  let properties = state.template.data.toJS().properties;
   return {
-    initialValues: state.template.data.toJS().properties[props.index],
+    initialValues: properties[props.index],
     thesauri: state.template.uiState.toJS().thesauri,
     fields: ['label', 'content', 'required', 'filter', 'type'],
-    validate: validateProperty
+    validate: () => {
+      return validateProperty(properties[props.index], properties);
+    }
   };
 }
 

@@ -48,7 +48,7 @@ describe('MetadataTemplate', () => {
         form: {template: {}}
       };
     });
-    TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
+    TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props} index={1}/></Provider>);
     return result;
   }
 
@@ -112,7 +112,7 @@ describe('MetadataTemplate', () => {
 
     beforeEach(() => {
       let TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);
-      component = renderComponent(TestDragAndDropContext);
+      component = renderComponent(TestDragAndDropContext, {}, [{}]);
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });

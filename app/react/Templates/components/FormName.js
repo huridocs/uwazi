@@ -13,7 +13,11 @@ export class FormName extends Component {
         setTimeout(() => {
           this.props.updateTemplate(this.props.values);
         });
-      }}>
+      }}
+      onSubmit={() => {
+        return this.props.values;
+      }}
+      >
         <div className={'form-group' + (name.touched && name.invalid ? ' has-error' : '')}>
           <input className="form-control" placeholder="Template name" type="text" {...name}/>
         </div>

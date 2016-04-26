@@ -26,4 +26,10 @@ describe('uiActions', () => {
       expect(action).toEqual({type: types.HIDE_REMOVE_PROPERTY_CONFIRM});
     });
   });
+  describe('setPropertyValidity', () => {
+    it('should return a SET_PROPERTY_VALIDITY', () => {
+      let action = actions.hideRemovePropertyConfirm();
+      expect(action).toEqual({type: types.HIDE_REMOVE_PROPERTY_CONFIRM});
+    });
+  });
 });

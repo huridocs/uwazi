@@ -1,12 +1,15 @@
-import elastic from './elastic';
-import buildQuery from './elasticQuery';
-import request from 'shared/JSONRequest';
 import {db_url as dbURL} from 'api/config/database';
+import elastic from './elastic';
+import queryBuilder from './documentQueryBuilder';
+import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 
 export default {
-  search(searchTerm) {
-    return elastic.search({index: 'uwazi', body: buildQuery(searchTerm)})
+  search(query) {
+    let searchTerm = query.searchTerm;
+    delete query.searchTerm;
+    let documentsQuery = queryBuilder().fullTextSearch(searchTerm).filterMetadata(query).query();
+    return elastic.search({index: 'uwazi', body: documentsQuery})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;
@@ -17,7 +20,8 @@ export default {
   },
 
   matchTitle(searchTerm) {
-    return elastic.search({index: 'uwazi', body: buildQuery(searchTerm, ['doc.title'], ['doc.title'], 5)})
+    let query = queryBuilder().fullTextSearch(searchTerm, ['doc.title']).highlight(['doc.title']).limit(5).query();
+    return elastic.search({index: 'uwazi', body: query})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;

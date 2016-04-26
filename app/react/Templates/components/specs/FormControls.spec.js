@@ -16,7 +16,7 @@ describe('FormControls', () => {
       fields: {name: {}, properties: []},
       values: {value: 'some value'},
       saveTemplate: jasmine.createSpy('saveTemplate'),
-      properties: [{type: 'text', label: 'text', id: 'propId'}],
+      properties: [{type: 'text', label: 'text', localID: 'propId'}],
       touchWithKey: jasmine.createSpy('touchWithKey'),
       touch: jasmine.createSpy('touch'),
       handleSubmit
@@ -56,6 +56,13 @@ describe('FormControls', () => {
     it('should retun error when a property has no label', () => {
       let values = {name: 'I have name', properties: [{label: ''}]};
       expect(mapStateToProps(state).validate(values)).toEqual({properties: [{label: 'Required'}]});
+    });
+
+    it('should retun error when properties has same labels', () => {
+      let values = {name: 'I have name',
+        properties: [{label: 'Label 1', localID: 1}, {label: 'label 2', localID: 2}, {label: 'label 1', localID: 3}]
+      };
+      expect(mapStateToProps(state).validate(values)).toEqual({properties: [{label: 'Duplicated'}, {}, {label: 'Duplicated'}]});
     });
 
     it('should retun error when a property type select has no content', () => {

@@ -2,10 +2,10 @@ import {db_url as dbURL} from 'api/config/database.js';
 import documents from '../documents.js';
 import elastic from '../elastic';
 import elasticResult from './elasticResult';
-import buildQuery from '../elasticQuery';
 import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
+import queryBuilder from 'api/documents/documentQueryBuilder';
 
 describe('documents', () => {
   let result;
@@ -91,23 +91,12 @@ describe('documents', () => {
   describe('search', () => {
     it('should perform a search on all fields', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      documents.search('searchTerm')
+      documents.search({searchTerm: 'searchTerm', property1: 'value1', property2: 'value2'})
       .then((results) => {
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: buildQuery('searchTerm')});
+        let query = queryBuilder().fullTextSearch('searchTerm').filterMetadata({property1: 'value1', property2: 'value2'}).query();
+        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
-      });
-    });
-
-    describe('when searchTerm is blank', () => {
-      it('should match all', (done) => {
-        spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-        documents.search('')
-        .then((results) => {
-          expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: buildQuery('')});
-          expect(results).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
-          done();
-        });
       });
     });
   });
@@ -124,7 +113,8 @@ describe('documents', () => {
 
       documents.matchTitle('term')
       .then((results) => {
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: buildQuery('term', ['doc.title'], ['doc.title'], 5)});
+        let query = queryBuilder().fullTextSearch('term', ['doc.title']).highlight(['doc.title']).limit(5).query();
+        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
         done();
       })

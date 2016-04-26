@@ -13,6 +13,7 @@ export class FormConfigInput extends Component {
       <form className="row" onChange={() => {
         setTimeout(() => {
           this.props.updateProperty(this.props.values, this.props.index);
+          //console.log(this.props.valid);
         });
       }}>
         <div className={'form-group col-sm-3' + (label.touched && label.invalid ? ' has-error' : '')}>
@@ -49,10 +50,13 @@ FormConfigInput.propTypes = {
 };
 
 export function mapStateToProps(state, props) {
+  let properties = state.template.data.toJS().properties;
   return {
-    initialValues: state.template.data.toJS().properties[props.index],
+    initialValues: properties[props.index],
     fields: ['label', 'required', 'filter', 'type'],
-    validate: validateProperty
+    validate: () => {
+      return validateProperty(properties[props.index], properties);
+    }
   };
 }
 
