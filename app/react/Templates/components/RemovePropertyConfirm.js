@@ -31,7 +31,7 @@ export class RemovePropertyConfirm extends Component {
             <h4 className="modal-title">Deleting Template Property</h4>
           </div>
           <div className="modal-body">
-            <h4>Are you sure ?</h4>
+            <h4>Are you sure ? (change will take effect when saving the template)</h4>
             <p>Deleting a Template property will delete this metadata information on all documents using this template</p>
           </div>
           <div className="modal-footer">
