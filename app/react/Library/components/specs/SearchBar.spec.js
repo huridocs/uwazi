@@ -12,17 +12,18 @@ describe('SearchBar', () => {
     props = jasmine.createSpyObj(['searchDocuments', 'setSearchTerm', 'getSuggestions', 'hideSuggestions', 'setOverSuggestions']);
     props.searchTerm = 'Find my document';
     props.suggestions = [];
+    props.filtersForm = {isBatman: {value: true}};
     warpper = mount(<SearchBar {...props}/>);
   });
 
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm', () => {
       warpper.find('form').simulate('submit', {preventDefault: ()=>{}});
-      expect(props.searchDocuments).toHaveBeenCalledWith(props.searchTerm);
+      expect(props.searchDocuments).toHaveBeenCalledWith(props.searchTerm, {isBatman: true});
     });
   });
 
-  describe('inout', () => {
+  describe('input', () => {
     describe('onChange', () => {
       it('should call setSearchTerm', () => {
         warpper.find('input').simulate('change');
@@ -82,10 +83,13 @@ describe('SearchBar', () => {
       let store = {
         library: {
           ui: Immutable.fromJS({searchTerm: 'do a barrel roll'})
+        },
+        form: {
+          filters: 'filtersForm'
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({searchTerm: 'do a barrel roll'});
+      expect(state).toEqual({searchTerm: 'do a barrel roll', filtersForm: 'filtersForm'});
     });
   });
 });
