@@ -1,8 +1,8 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {RemovePropertyConfirm} from 'app/Templates/components/RemovePropertyConfirm.js';
-import Modal from 'react-modal';
+import {RemovePropertyConfirm} from 'app/Templates/components/RemovePropertyConfirm';
+import Modal from 'app/Layout/Modal.js';
 
 describe('RemovePropertyConfirm', () => {
   let component;
@@ -44,9 +44,6 @@ describe('RemovePropertyConfirm', () => {
     it('should call hideRemovePropertyConfirm', () => {
       render();
       component.find('.cancel-button').simulate('click');
-      expect(props.hideRemovePropertyConfirm).toHaveBeenCalled();
-
-      component.find('.close').simulate('click');
       expect(props.hideRemovePropertyConfirm).toHaveBeenCalled();
     });
   });
