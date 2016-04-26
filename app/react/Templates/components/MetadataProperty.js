@@ -1,12 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+//import {connect} from 'react-redux';
+import {reduxForm} from 'redux-form';
 
 import {editProperty, showRemovePropertyConfirm} from 'app/Templates/actions/uiActions';
 import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
+import validate from 'app/Templates/components/ValidateTemplate';
 
 export class MetadataProperty extends Component {
 
@@ -17,30 +19,16 @@ export class MetadataProperty extends Component {
     return <FormConfigInput formKey={this.props.localID} index={this.props.index} />;
   }
 
-  hasError(form) {
-    if (Object.keys(form).length === 0) {
-      return false;
-    }
-
-    let labelError = false;
-    if (form.label.touched && !form.label.value) {
-      labelError = true;
-    }
-
-    let contentError = false;
-    let hasContent = this.props.type === 'select' || this.props.type === 'list';
-    if (hasContent && form.content.touched && !form.content.value) {
-      contentError = true;
-    }
-
-    return labelError || contentError;
+  hasError(propertyErrors) {
+    let errors = Object.keys(propertyErrors);
+    return errors.length > 0;
   }
 
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, form} = this.props;
+    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, errors} = this.props;
     let propertyClass = 'list-group-item';
 
-    if (this.hasError(form)) {
+    if (errors.properties && this.hasError(errors.properties[index])) {
       propertyClass += ' error';
     }
 
@@ -85,6 +73,7 @@ MetadataProperty.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
+  errors: PropTypes.object,
   isDragging: PropTypes.bool.isRequired,
   localID: PropTypes.any.isRequired,
   type: PropTypes.string,
@@ -140,12 +129,22 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({removeProperty: showRemovePropertyConfirm, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   return {
-    editingProperty: state.template.uiState.toJS().editingProperty,
-    form: state.form.template[props.localID] || {}
+    editingProperty: state.template.uiState.toJS().editingProperty
+    //form: state.form.template[props.localID] || {}
   };
 };
 
 export {dragSource, dropTarget};
-export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dragSource);
+//export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dragSource);
+let form = reduxForm({
+  form: 'template',
+  fields: ['properties[]'],
+  readonly: true,
+  destroyOnUnmount: false,
+  validate
+},
+mapStateToProps, mapDispatchToProps)(dragSource);
+
+export default form;

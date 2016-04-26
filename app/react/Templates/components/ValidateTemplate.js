@@ -1,7 +1,13 @@
-export function validateProperty(property) {
+export function validateProperty(property = {}, allProperties = []) {
+
   let errors = {};
   if (!property.label) {
     errors.label = 'Required';
+  }
+
+  let otherPropertyLabels = allProperties.filter((p) => p.localID !== property.localID).map((p) => p.label.toLowerCase());
+  if (property.label && otherPropertyLabels.indexOf(property.label.toLowerCase()) !== -1) {
+    errors.label = 'Duplicated';
   }
 
   let isSelect = property.type === 'list' || property.type === 'select';
@@ -27,7 +33,7 @@ export default function validate(values) {
 
   errors.properties = [];
   values.properties.forEach((property, index) => {
-    errors.properties[index] = validateProperty(property);
+    errors.properties[index] = validateProperty(property, values.properties);
   });
 
   return errors;

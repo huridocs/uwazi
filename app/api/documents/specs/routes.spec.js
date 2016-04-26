@@ -129,8 +129,8 @@ describe('documents', () => {
     });
   });
 
-  describe('/api/documents/search', () => {
-    it('should search documents and return the results', (done) => {
+  describe('/api/documents/html', () => {
+    it('should get the thml conversion', (done) => {
       spyOn(documents, 'getHTML').and.returnValue(new Promise((resolve) => resolve('html')));
       let req = {query: {_id: 'test'}};
 
@@ -147,10 +147,11 @@ describe('documents', () => {
   describe('/api/documents/search', () => {
     it('should search documents and return the results', (done) => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
-      let req = {query: {searchTerm: 'test'}};
+      let req = {query: {searchTerm: 'test', property: 'property'}};
 
       routes.get('/api/documents/search', req)
       .then((response) => {
+        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', property: 'property'});
         expect(response).toEqual('results');
         done();
       })

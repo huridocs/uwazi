@@ -5,6 +5,7 @@ var path = require('path');
 var webpackConfig = require('./webpack.config.js');
 
 webpackConfig.externals = {
+  'react/addons': true,
   'jsdom': 'window',
   'cheerio': 'window',
   'react/lib/ExecutionEnvironment': true,
@@ -28,6 +29,7 @@ karmaConfig = {
     'karma-chrome-launcher',
     'karma-phantomjs-launcher',
     'karma-jasmine',
+    'karma-jasmine-diff-reporter',
     'karma-sourcemap-loader',
     'karma-webpack',
     'karma-coverage'
@@ -36,7 +38,15 @@ karmaConfig = {
   preprocessors: {
     'tests.webpack.js': [ 'webpack', 'sourcemap' ]
   },
-  reporters: [ 'dots' ],
+  reporters: [ 'jasmine-diff', 'dots' ],
+  jasmineDiffReporter: {
+    color: {
+      expectedBg: '',        // default 'bgRed'
+      expectedFg: 'green',   // default 'white'
+      actualBg: '',          // default 'bgGreen'
+      actualFg: 'red',       // default 'white',
+    }
+  },
   webpack: webpackConfig,
   webpackServer: {
     noInfo: true

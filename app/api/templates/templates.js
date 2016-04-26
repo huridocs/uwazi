@@ -2,13 +2,14 @@ import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
 import documents from 'api/documents/documents';
+import validateTemplate from 'api/templates/validateTemplate';
 
 let save = (template) => {
-  return request.post(dbURL, template)
+  return validateTemplate(template)
+  .then(() => request.post(dbURL, template))
   .then((response) => {
     return response.json;
-  })
-  .catch((error) => error.json);
+  });
 };
 
 let update = (template) => {

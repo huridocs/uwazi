@@ -6,6 +6,7 @@ describe('DocumentsAPI', () => {
   let arrayResponse = [{documents: 'array'}];
   let searchResponse = [{documents: 'search'}];
   let searchResult = [{documents: 'Bruce Wayne'}];
+  let filteredSearchResult = [{documents: 'Alfred'}];
   let singleResponse = [{documents: 'single'}];
 
   beforeEach(() => {
@@ -15,6 +16,7 @@ describe('DocumentsAPI', () => {
     .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(searchResponse)})
     .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
     .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
+    .mock(APIURL + 'documents/search?joker=true&searchTerm=Batman', 'GET', {body: JSON.stringify(filteredSearchResult)})
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
     .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
@@ -73,6 +75,17 @@ describe('DocumentsAPI', () => {
         .catch(done.fail);
       });
     });
+
+    describe('when passing filters', () => {
+      it('should search for it', (done) => {
+        documentsAPI.search('Batman', {joker: true})
+        .then((response) => {
+          expect(response).toEqual(filteredSearchResult);
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
   });
 
   describe('save()', () => {
@@ -98,6 +111,14 @@ describe('DocumentsAPI', () => {
         done();
       })
       .catch(done.fail);
+    });
+  });
+
+  describe('toParams()', () => {
+    it('should convert an object to query string', () => {
+      expect(documentsAPI.toParams({searchTerm: 'batman'})).toEqual('searchTerm=batman');
+      expect(documentsAPI.toParams({searchTerm: 'batman', joker: true})).toEqual('searchTerm=batman&joker=true');
+      expect(documentsAPI.toParams({searchTerm: 'batman', enemies: ['scarecrow', 'joker']})).toEqual('searchTerm=batman&enemies=scarecrow%2Cjoker');
     });
   });
 });
