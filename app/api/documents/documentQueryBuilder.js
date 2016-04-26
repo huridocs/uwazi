@@ -36,6 +36,15 @@ export default function () {
       return this;
     },
 
+    filterMetadata(filters) {
+      Object.keys(filters).forEach((property) => {
+        let match = {};
+        match[`doc.metadata.${property}`] = filters[property];
+        baseQuery.filter.bool.must.push({match});
+      });
+      return this;
+    },
+
     highlight(fields) {
       baseQuery.highlight = {
         pre_tags : ['<b>'],
