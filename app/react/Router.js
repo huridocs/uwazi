@@ -95,7 +95,7 @@ function handleRoute(res, renderProps, req) {
       const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
       res.status(200).send(wholeHtml);
     } catch (error) {
-      //console.trace(error);
+      console.trace(error);
     }
   }
 
@@ -108,10 +108,10 @@ function handleRoute(res, renderProps, req) {
   if (routeProps.__redux) {
     return routeProps.requestState(renderProps.params, instanceApi(cookie)).then((initialData) => {
       renderPage(initialData, true);
-    });
+    }).catch(console.log);
   }
   if (routeProps.requestState) {
-    return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage);
+    return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage).catch(console.log);
   }
   renderPage();
 }
