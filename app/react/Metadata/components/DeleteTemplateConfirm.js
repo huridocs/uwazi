@@ -18,7 +18,8 @@ export class DeleteTemplateConfirm extends Component {
       <Modal isOpen={this.props.isOpen || false} type="danger">
 
         <Modal.Body>
-          <h4>Are you sure you want to delete <b>{this.props.template.name}</b></h4>
+          <h4>Confirm deletion</h4>
+          <p>Are you sure you want to delete the template {this.props.template.name} and all its properties?</p>
         </Modal.Body>
 
         <Modal.Footer>

@@ -18,8 +18,10 @@ export class RemovePropertyConfirm extends Component {
       <Modal isOpen={this.props.isOpen || false} type="danger">
 
         <Modal.Body>
-          <h4>Are you sure ? (change will take effect when saving the template)</h4>
-          <p>Deleting a Template property will delete this metadata information on all documents using this template</p>
+          <h4>Confirm deletion</h4>
+          <p>Deleting a template property will delete this metadata information on all documents using this template.</p>
+          <p>Change will take effect after saving the template</p>
+
         </Modal.Body>
 
         <Modal.Footer>

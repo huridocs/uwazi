@@ -12,7 +12,11 @@ export class CantDeleteTemplateAlert extends Component {
       <Modal isOpen={this.props.isOpen || false} type="danger">
 
         <Modal.Body>
-          <h4>this template can not be deleted, has <b>{this.props.documents} documents using it !</b></h4>
+          <h4>You can't delete templates with documents associated.</h4>
+          <p>
+            There are {this.props.documents} documents based on this template.
+            Change these document's type or delete them before attempting to delete this template.
+          </p>
         </Modal.Body>
 
         <Modal.Footer>
