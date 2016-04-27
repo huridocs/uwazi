@@ -13,13 +13,5 @@ export default function templatesUI(state = initialState, action = {}) {
     return state.set('thesauri', action.thesauri);
   }
 
-  if (action.type === actions.SHOW_REMOVE_PROPERTY_CONFIRM) {
-    return state.set('propertyBeingDeleted', action.propertyId);
-  }
-
-  if (action.type === actions.HIDE_REMOVE_PROPERTY_CONFIRM) {
-    return state.set('propertyBeingDeleted', null);
-  }
-
   return Immutable.fromJS(state);
 }

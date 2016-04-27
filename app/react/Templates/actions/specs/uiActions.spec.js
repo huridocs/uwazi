@@ -14,22 +14,4 @@ describe('uiActions', () => {
       expect(action).toEqual({type: types.SET_THESAURI, thesauri: 'thesauri'});
     });
   });
-  describe('showRemovePropertyConfirm', () => {
-    it('should return a SHOW_REMOVE_PROPERTY_CONFIRM with propertyId', () => {
-      let action = actions.showRemovePropertyConfirm('propertyId');
-      expect(action).toEqual({type: types.SHOW_REMOVE_PROPERTY_CONFIRM, propertyId: 'propertyId'});
-    });
-  });
-  describe('hideRemovePropertyConfirm', () => {
-    it('should return a HIDE_REMOVE_PROPERTY_CONFIRM', () => {
-      let action = actions.hideRemovePropertyConfirm();
-      expect(action).toEqual({type: types.HIDE_REMOVE_PROPERTY_CONFIRM});
-    });
-  });
-  describe('setPropertyValidity', () => {
-    it('should return a SET_PROPERTY_VALIDITY', () => {
-      let action = actions.hideRemovePropertyConfirm();
-      expect(action).toEqual({type: types.HIDE_REMOVE_PROPERTY_CONFIRM});
-    });
-  });
 });

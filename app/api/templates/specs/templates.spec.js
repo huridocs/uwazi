@@ -166,7 +166,7 @@ describe('templates', () => {
     });
   });
 
-  fdescribe('delete', () => {
+  describe('delete', () => {
     it('should delete a template when no document is using it', (done) => {
       spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(0));
       request.get(dbURL + '/c08ef2532f0bd008ac5174b45e033c93')

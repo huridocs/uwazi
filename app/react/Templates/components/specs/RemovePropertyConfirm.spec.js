@@ -10,7 +10,7 @@ describe('RemovePropertyConfirm', () => {
 
   beforeEach(() => {
     props = {
-      hideRemovePropertyConfirm: jasmine.createSpy('hideRemovePropertyConfirm'),
+      hideModal: jasmine.createSpy('hideModal'),
       removeProperty: jasmine.createSpy('removeProperty'),
       propertyBeingDeleted: 1
     };
@@ -36,7 +36,7 @@ describe('RemovePropertyConfirm', () => {
       render();
       component.find('.confirm-button').simulate('click');
       expect(props.removeProperty).toHaveBeenCalledWith(1);
-      expect(props.hideRemovePropertyConfirm).toHaveBeenCalled();
+      expect(props.hideModal).toHaveBeenCalledWith('RemovePropertyModal');
     });
   });
 
@@ -44,7 +44,7 @@ describe('RemovePropertyConfirm', () => {
     it('should call hideRemovePropertyConfirm', () => {
       render();
       component.find('.cancel-button').simulate('click');
-      expect(props.hideRemovePropertyConfirm).toHaveBeenCalled();
+      expect(props.hideModal).toHaveBeenCalledWith('RemovePropertyModal');
     });
   });
 });

@@ -3,13 +3,13 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Modal from 'app/Layout/Modal';
 
-import {hideRemovePropertyConfirm} from 'app/Templates/actions/uiActions';
 import {removeProperty} from 'app/Templates/actions/templateActions';
+import {hideModal} from 'app/Modals/actions/modalActions';
 
 export class RemovePropertyConfirm extends Component {
 
   confirm() {
-    this.props.hideRemovePropertyConfirm();
+    this.props.hideModal('RemovePropertyModal');
     this.props.removeProperty(this.props.propertyBeingDeleted);
   }
 
@@ -23,7 +23,7 @@ export class RemovePropertyConfirm extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <button type="button" className="btn btn-default cancel-button" onClick={this.props.hideRemovePropertyConfirm}>Cancel</button>
+          <button type="button" className="btn btn-default cancel-button" onClick={() => this.props.hideModal('RemovePropertyModal') }>Cancel</button>
           <button type="button" className="btn btn-danger confirm-button" onClick={() => this.confirm()}>Delete Property</button>
         </Modal.Footer>
 
@@ -34,13 +34,13 @@ export class RemovePropertyConfirm extends Component {
 
 RemovePropertyConfirm.propTypes = {
   isOpen: PropTypes.bool,
-  hideRemovePropertyConfirm: PropTypes.func,
+  hideModal: PropTypes.func,
   removeProperty: PropTypes.func,
   propertyBeingDeleted: PropTypes.number
 };
 
 const mapStateToProps = (state) => {
-  let propertyBeingDeleted = state.template.uiState.toJS().propertyBeingDeleted;
+  let propertyBeingDeleted = state.modals.toJS().RemovePropertyModal;
   return {
     propertyBeingDeleted: propertyBeingDeleted,
     isOpen: typeof propertyBeingDeleted === 'number'
@@ -48,7 +48,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({hideRemovePropertyConfirm, removeProperty}, dispatch);
+  return bindActionCreators({hideModal, removeProperty}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RemovePropertyConfirm);

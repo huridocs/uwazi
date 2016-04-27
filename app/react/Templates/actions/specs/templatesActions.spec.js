@@ -3,6 +3,7 @@ import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Templates/actions/templatesActions';
 import * as types from 'app/Templates/actions/actionTypes';
+import * as modalTypes from 'app/Modals/actions/actionTypes';
 
 describe('templatesActions', () => {
   describe('setTemplates', () => {
@@ -16,10 +17,24 @@ describe('templatesActions', () => {
   describe('async actions', () => {
     let dispatch;
     beforeEach(() => {
+      let documentsUsingTemplate = 2;
       backend.restore();
       backend
-      .mock(APIURL + 'templates', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
+      .mock(APIURL + 'templates', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})})
+      .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(documentsUsingTemplate)});
       dispatch = jasmine.createSpy('dispatch');
+    });
+
+    describe('checkTemplateCanBeDeleted', () => {
+      it('should check if the template can be deleted and dispatch an alert action if not', (done) => {
+        let templateId = 'templateId';
+
+        actions.checkTemplateCanBeDeleted(templateId)(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'templateCantBeDeleted', data: 2});
+          done();
+        });
+      });
     });
 
     describe('deleteTemplate', () => {

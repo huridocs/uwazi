@@ -1,7 +1,7 @@
 import * as actions from 'app/Modals/actions/modalActions';
 import * as types from 'app/Modals/actions/actionTypes';
 
-fdescribe('modalsActions', () => {
+describe('modalsActions', () => {
   describe('showModal', () => {
     it('should return a SHOW_MODAL action with modal name and data', () => {
       let action = actions.showModal('modalName', {data: 'data'});

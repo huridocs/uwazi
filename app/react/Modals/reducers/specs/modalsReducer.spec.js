@@ -4,7 +4,7 @@ import * as types from 'app/Modals/actions/actionTypes';
 import modalsReducer from 'app/Modals/reducers/modalsReducer';
 import 'jasmine-immutablejs-matchers';
 
-fdescribe('modalsReducer', () => {
+describe('modalsReducer', () => {
   const initialState = Immutable.fromJS({});
 
   describe('when state is undefined', () => {
