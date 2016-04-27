@@ -53,6 +53,15 @@ describe('documents', () => {
       })
       .catch(done.fail);
     });
+
+    it('should return 0 when no count found', (done) => {
+      documents.countByTemplate('newTemplate')
+      .then((count) => {
+        expect(count).toBe(0);
+        done();
+      })
+      .catch(done.fail);
+    });
   });
 
   describe('updateMetadataProperties', () => {

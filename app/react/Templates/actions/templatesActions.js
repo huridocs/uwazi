@@ -27,7 +27,10 @@ export function checkTemplateCanBeDeleted(template) {
   return function (dispatch) {
     return documentsAPI.countByTemplate(template._id)
     .then((count) => {
-      dispatch(showModal('CantDeleteTemplateAlert', count));
+      if (count) {
+        return dispatch(showModal('CantDeleteTemplateAlert', count));
+      }
+      dispatch(showModal('DeleteTemplateConfirm', template));
     });
   };
 }

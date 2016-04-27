@@ -21,17 +21,29 @@ describe('templatesActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'templates', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})})
-      .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(documentsUsingTemplate)});
+      .mock(APIURL + 'documents/count_by_template?templateId=templateWithDocuments', 'GET', {body: JSON.stringify(documentsUsingTemplate)})
+      .mock(APIURL + 'documents/count_by_template?templateId=templateWithoutDocuments', 'GET', {body: JSON.stringify(0)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
     describe('checkTemplateCanBeDeleted', () => {
-      it('should check if the template can be deleted and dispatch an alert action if not', (done) => {
-        let templateId = {_id: 'templateId'};
+      it('should show an error modal when template has documents', (done) => {
+        let template = {_id: 'templateWithDocuments'};
 
-        actions.checkTemplateCanBeDeleted(templateId)(dispatch)
+        actions.checkTemplateCanBeDeleted(template)(dispatch)
         .then(() => {
+          expect(dispatch.calls.count()).toBe(1);
           expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'CantDeleteTemplateAlert', data: 2});
+          done();
+        });
+      });
+      it('should show an error modal when template has documents', (done) => {
+        let template = {_id: 'templateWithoutDocuments'};
+
+        actions.checkTemplateCanBeDeleted(template)(dispatch)
+        .then(() => {
+          expect(dispatch.calls.count()).toBe(1);
+          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'DeleteTemplateConfirm', data: template});
           done();
         });
       });

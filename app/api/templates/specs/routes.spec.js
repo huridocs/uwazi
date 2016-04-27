@@ -71,7 +71,7 @@ describe('templates routes', () => {
     });
 
     describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
+      it('should return the error in the response', (done) => {
         let req = {body: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
 
         routes.delete('/api/templates', req)
@@ -99,7 +99,7 @@ describe('templates routes', () => {
     });
 
     describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
+      it('should return the error in the response', (done) => {
         spyOn(templates, 'save').and.returnValue(new Promise((resolve, reject) => reject('error')));
         let req = {body: {}};
         routes.post('/api/templates', req)

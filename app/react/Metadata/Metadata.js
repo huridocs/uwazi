@@ -9,6 +9,7 @@ import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import CantDeleteTemplateAlert from 'app/Metadata/components/CantDeleteTemplateAlert';
+import DeleteTemplateConfirm from 'app/Metadata/components/DeleteTemplateConfirm';
 
 import 'app/Metadata/scss/metadata.scss';
 
@@ -33,6 +34,7 @@ export class Metadata extends RouteHandler {
           <div className="panel panel-default">
             <div className="panel-heading">Document type</div>
             <CantDeleteTemplateAlert />
+            <DeleteTemplateConfirm />
             <ul className="list-group">
               {this.props.templates.map((template, index) => {
                 return <li key={index} className="list-group-item">

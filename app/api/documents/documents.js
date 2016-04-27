@@ -35,6 +35,9 @@ export default {
   countByTemplate(templateId) {
     return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
     .then((response) => {
+      if (!response.json.rows.length) {
+        return 0;
+      }
       return response.json.rows[0].value;
     });
   },
