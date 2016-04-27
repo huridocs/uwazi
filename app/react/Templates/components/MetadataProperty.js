@@ -1,10 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-//import {connect} from 'react-redux';
 import {reduxForm} from 'redux-form';
 
-import {editProperty, showRemovePropertyConfirm} from 'app/Templates/actions/uiActions';
+import {editProperty} from 'app/Templates/actions/uiActions';
+import {showModal} from 'app/Modals/actions/modalActions';
 import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
@@ -53,7 +53,9 @@ export class MetadataProperty extends Component {
       <li className={propertyClass}>
         <div>
            <i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}
-          <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() => this.props.removeProperty(index)}>
+           <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() => 
+             this.props.removeProperty('RemovePropertyModal', index)}
+           >
             <i className="fa fa-trash"></i> Delete
           </button>
           &nbsp;
@@ -126,18 +128,16 @@ let dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) =>
 }))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({removeProperty: showRemovePropertyConfirm, reorderProperty, addProperty, editProperty}, dispatch);
+  return bindActionCreators({removeProperty: showModal, reorderProperty, addProperty, editProperty}, dispatch);
 }
 
 const mapStateToProps = (state) => {
   return {
     editingProperty: state.template.uiState.toJS().editingProperty
-    //form: state.form.template[props.localID] || {}
   };
 };
 
 export {dragSource, dropTarget};
-//export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dragSource);
 let form = reduxForm({
   form: 'template',
   fields: ['properties[]'],

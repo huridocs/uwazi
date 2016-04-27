@@ -1,44 +1,32 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import Modal from 'react-modal';
+import Modal from 'app/Layout/Modal';
 
-import {hideRemovePropertyConfirm} from 'app/Templates/actions/uiActions';
 import {removeProperty} from 'app/Templates/actions/templateActions';
+import {hideModal} from 'app/Modals/actions/modalActions';
 
 export class RemovePropertyConfirm extends Component {
 
   confirm() {
-    this.props.hideRemovePropertyConfirm();
+    this.props.hideModal('RemovePropertyModal');
     this.props.removeProperty(this.props.propertyBeingDeleted);
   }
 
   render() {
-    let style = {overlay: {zIndex: 100}};
     return (
-      <Modal
-        style={style}
-        className="Modal__Bootstrap modal-dialog"
-        isOpen={this.props.isOpen}
-        onRequestClose={() => {}}
-      >
-        <div className="modal-content">
-          <div className="modal-header">
-            <button type="button" className="close" onClick={this.props.hideRemovePropertyConfirm}>
-              <span aria-hidden="true">&times;</span>
-              <span className="sr-only">Close</span>
-            </button>
-            <h4 className="modal-title">Deleting Template Property</h4>
-          </div>
-          <div className="modal-body">
-            <h4>Are you sure ? (change will take effect when saving the template)</h4>
-            <p>Deleting a Template property will delete this metadata information on all documents using this template</p>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-default cancel-button" onClick={this.props.hideRemovePropertyConfirm}>Cancel</button>
-            <button type="button" className="btn btn-primary confirm-button" onClick={() => this.confirm()}>Ok</button>
-          </div>
-        </div>
+      <Modal isOpen={this.props.isOpen || false} type="danger">
+
+        <Modal.Body>
+          <h4>Are you sure ? (change will take effect when saving the template)</h4>
+          <p>Deleting a Template property will delete this metadata information on all documents using this template</p>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <button type="button" className="btn btn-default cancel-button" onClick={() => this.props.hideModal('RemovePropertyModal') }>Cancel</button>
+          <button type="button" className="btn btn-danger confirm-button" onClick={() => this.confirm()}>Delete Property</button>
+        </Modal.Footer>
+
       </Modal>
     );
   }
@@ -46,13 +34,13 @@ export class RemovePropertyConfirm extends Component {
 
 RemovePropertyConfirm.propTypes = {
   isOpen: PropTypes.bool,
-  hideRemovePropertyConfirm: PropTypes.func,
+  hideModal: PropTypes.func,
   removeProperty: PropTypes.func,
   propertyBeingDeleted: PropTypes.number
 };
 
 const mapStateToProps = (state) => {
-  let propertyBeingDeleted = state.template.uiState.toJS().propertyBeingDeleted;
+  let propertyBeingDeleted = state.modals.toJS().RemovePropertyModal;
   return {
     propertyBeingDeleted: propertyBeingDeleted,
     isOpen: typeof propertyBeingDeleted === 'number'
@@ -60,7 +48,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({hideRemovePropertyConfirm, removeProperty}, dispatch);
+  return bindActionCreators({hideModal, removeProperty}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RemovePropertyConfirm);

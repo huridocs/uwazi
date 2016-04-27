@@ -25,18 +25,4 @@ describe('fieldsReducer', () => {
       expect(newState).toEqualImmutable(Immutable.fromJS({thesauri: 'thesauri'}));
     });
   });
-
-  describe('SHOW_REMOVE_PROPERTY_CONFIRM', () => {
-    it('should set propertyBeingDeleted with propertyId', () => {
-      let newState = reducer(Immutable.fromJS({}), {type: actions.SHOW_REMOVE_PROPERTY_CONFIRM, propertyId: 'propertyId'});
-      expect(newState).toEqualImmutable(Immutable.fromJS({propertyBeingDeleted: 'propertyId'}));
-    });
-  });
-
-  describe('HIDE_REMOVE_PROPERTY_CONFIRM', () => {
-    it('should set propertyBeingDeleted to null', () => {
-      let newState = reducer(Immutable.fromJS({propertyBeingDeleted: 'test'}), {type: actions.HIDE_REMOVE_PROPERTY_CONFIRM});
-      expect(newState).toEqualImmutable(Immutable.fromJS({propertyBeingDeleted: null}));
-    });
-  });
 });

@@ -32,11 +32,9 @@ export default app => {
   });
 
   app.delete('/api/templates', (req, res) => {
-    let url = dbURL + '/' + req.body._id + '?rev=' + req.body._rev;
-
-    request.delete(url)
+    templates.delete(req.body)
     .then((response) => {
-      res.json(response.json);
+      res.json(response);
     })
     .catch((error) => {
       res.json({error: error.json});

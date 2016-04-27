@@ -14,15 +14,3 @@ export function setThesauri(thesauri) {
   };
 }
 
-export function showRemovePropertyConfirm(propertyId) {
-  return {
-    type: types.SHOW_REMOVE_PROPERTY_CONFIRM,
-    propertyId
-  };
-}
-
-export function hideRemovePropertyConfirm() {
-  return {
-    type: types.HIDE_REMOVE_PROPERTY_CONFIRM
-  };
-}

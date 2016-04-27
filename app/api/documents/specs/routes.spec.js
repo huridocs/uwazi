@@ -144,6 +144,21 @@ describe('documents', () => {
     });
   });
 
+  describe('/api/documents/count_by_template', () => {
+    it('should return count of documents using a specific template', (done) => {
+      spyOn(documents, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
+      let req = {query: {templateId: 'templateId'}};
+
+      routes.get('/api/documents/count_by_template', req)
+      .then((response) => {
+        expect(documents.countByTemplate).toHaveBeenCalledWith('templateId');
+        expect(response).toEqual(2);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
   describe('/api/documents/search', () => {
     it('should search documents and return the results', (done) => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));

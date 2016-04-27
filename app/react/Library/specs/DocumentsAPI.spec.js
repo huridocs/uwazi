@@ -14,6 +14,7 @@ describe('DocumentsAPI', () => {
     backend
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
     .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(searchResponse)})
+    .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
     .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
     .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
     .mock(APIURL + 'documents/search?joker=true&searchTerm=Batman', 'GET', {body: JSON.stringify(filteredSearchResult)})
@@ -49,6 +50,17 @@ describe('DocumentsAPI', () => {
       documentsAPI.getSuggestions('term')
       .then((response) => {
         expect(response).toEqual(searchResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('countByTemplate()', () => {
+    it('should count_by_template', (done) => {
+      documentsAPI.countByTemplate('templateId')
+      .then((response) => {
+        expect(response).toEqual(1);
         done();
       })
       .catch(done.fail);

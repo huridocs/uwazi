@@ -45,7 +45,8 @@ describe('MetadataTemplate', () => {
     let store = createStore(() => {
       return {
         template: {data: templateData, uiState: Immutable.fromJS({})},
-        form: {template: {}}
+        form: {template: {}},
+        modals: Immutable.fromJS({})
       };
     });
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props} index={1}/></Provider>);

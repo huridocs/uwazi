@@ -3,6 +3,7 @@ import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Templates/actions/templatesActions';
 import * as types from 'app/Templates/actions/actionTypes';
+import * as modalTypes from 'app/Modals/actions/actionTypes';
 
 describe('templatesActions', () => {
   describe('setTemplates', () => {
@@ -16,10 +17,36 @@ describe('templatesActions', () => {
   describe('async actions', () => {
     let dispatch;
     beforeEach(() => {
+      let documentsUsingTemplate = 2;
       backend.restore();
       backend
-      .mock(APIURL + 'templates', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
+      .mock(APIURL + 'templates', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})})
+      .mock(APIURL + 'documents/count_by_template?templateId=templateWithDocuments', 'GET', {body: JSON.stringify(documentsUsingTemplate)})
+      .mock(APIURL + 'documents/count_by_template?templateId=templateWithoutDocuments', 'GET', {body: JSON.stringify(0)});
       dispatch = jasmine.createSpy('dispatch');
+    });
+
+    describe('checkTemplateCanBeDeleted', () => {
+      it('should show an error modal when template has documents', (done) => {
+        let template = {_id: 'templateWithDocuments'};
+
+        actions.checkTemplateCanBeDeleted(template)(dispatch)
+        .then(() => {
+          expect(dispatch.calls.count()).toBe(1);
+          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'CantDeleteTemplateAlert', data: 2});
+          done();
+        });
+      });
+      it('should show an error modal when template has documents', (done) => {
+        let template = {_id: 'templateWithoutDocuments'};
+
+        actions.checkTemplateCanBeDeleted(template)(dispatch)
+        .then(() => {
+          expect(dispatch.calls.count()).toBe(1);
+          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'DeleteTemplateConfirm', data: template});
+          done();
+        });
+      });
     });
 
     describe('deleteTemplate', () => {

@@ -165,4 +165,41 @@ describe('templates', () => {
       });
     });
   });
+
+  describe('delete', () => {
+    it('should delete a template when no document is using it', (done) => {
+      spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(0));
+      request.get(dbURL + '/c08ef2532f0bd008ac5174b45e033c93')
+      .then(template => {
+        return templates.delete(template.json);
+      })
+      .then((response) => {
+        expect(response.ok).toBe(true);
+        return request.get(dbURL + '/_design/templates/_view/all');
+      })
+      .then((response) => {
+        let docs = response.json.rows;
+        expect(docs.length).toBe(1);
+        expect(docs[0].value.name).toBe('template_test2');
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should throw an error when there is documents using it', (done) => {
+      spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(1));
+      request.get(dbURL + '/c08ef2532f0bd008ac5174b45e033c93')
+      .then(template => {
+        return templates.delete(template.json);
+      })
+      .then(() => {
+        done.fail('should not delete the template and throw an error because there is some documents associated with the template');
+      })
+      .catch((error) => {
+        expect(error.key).toEqual('documents_using_template');
+        expect(error.value).toEqual(1);
+        done();
+      });
+    });
+  });
 });

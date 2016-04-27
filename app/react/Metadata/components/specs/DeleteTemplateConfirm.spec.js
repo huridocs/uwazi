@@ -1,23 +1,23 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {RemovePropertyConfirm} from 'app/Templates/components/RemovePropertyConfirm';
-import Modal from 'app/Layout/Modal.js';
+import {DeleteTemplateConfirm} from 'app/Metadata/components/DeleteTemplateConfirm.js';
+import Modal from 'app/Layout/Modal';
 
-describe('RemovePropertyConfirm', () => {
+describe('DeleteTemplateConfirm', () => {
   let component;
   let props;
 
   beforeEach(() => {
     props = {
       hideModal: jasmine.createSpy('hideModal'),
-      removeProperty: jasmine.createSpy('removeProperty'),
-      propertyBeingDeleted: 1
+      deleteTemplate: jasmine.createSpy('deleteTemplate'),
+      template: {_id: 2}
     };
   });
 
   let render = () => {
-    component = shallow(<RemovePropertyConfirm {...props} />);
+    component = shallow(<DeleteTemplateConfirm {...props} />);
   };
 
   it('should render a default closed modal', () => {
@@ -32,19 +32,19 @@ describe('RemovePropertyConfirm', () => {
   });
 
   describe('when clicking confirm button', () => {
-    it('should call removeProperty and hideRemovePropertyConfirm', () => {
+    it('should call deleteTemplate and hideModal', () => {
       render();
-      component.find('.confirm-button').simulate('click');
-      expect(props.removeProperty).toHaveBeenCalledWith(1);
-      expect(props.hideModal).toHaveBeenCalledWith('RemovePropertyModal');
+      component.find('.btn-danger').simulate('click');
+      expect(props.deleteTemplate).toHaveBeenCalledWith({_id: 2});
+      expect(props.hideModal).toHaveBeenCalledWith('DeleteTemplateConfirm');
     });
   });
 
   describe('when clicking cancel button or close button', () => {
     it('should call hideRemovePropertyConfirm', () => {
       render();
-      component.find('.cancel-button').simulate('click');
-      expect(props.hideModal).toHaveBeenCalledWith('RemovePropertyModal');
+      component.find('.btn-default').simulate('click');
+      expect(props.hideModal).toHaveBeenCalledWith('DeleteTemplateConfirm');
     });
   });
 });
