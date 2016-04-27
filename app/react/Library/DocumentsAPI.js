@@ -23,8 +23,8 @@ export default {
 
   search(searchTerm, filters = {}) {
     filters.searchTerm = searchTerm;
-    let url = 'documents/search?' + this.toParams(filters);
-    return api.get(url)
+    let url = 'documents/search';
+    return api.get(url, filters)
     .then((response) => {
       return response.json;
     });
@@ -50,12 +50,5 @@ export default {
     .then((response) => {
       return response.json;
     });
-  },
-
-  toParams(data) {
-    return Object.keys(data).reduce((params, key) => {
-      params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key] || ''));
-      return params;
-    }, []).join('&');
   }
 };
