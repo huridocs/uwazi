@@ -23,11 +23,11 @@ export function deleteTemplate(template) {
   };
 }
 
-export function checkTemplateCanBeDeleted(templateId) {
+export function checkTemplateCanBeDeleted(template) {
   return function (dispatch) {
-    return documentsAPI.countByTemplate(templateId)
+    return documentsAPI.countByTemplate(template._id)
     .then((count) => {
-      dispatch(showModal('templateCantBeDeleted', count));
+      dispatch(showModal('CantDeleteTemplateAlert', count));
     });
   };
 }

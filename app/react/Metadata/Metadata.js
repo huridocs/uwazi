@@ -3,11 +3,12 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 
-import {setTemplates, deleteTemplate} from 'app/Templates/actions/templatesActions';
+import {setTemplates, checkTemplateCanBeDeleted} from 'app/Templates/actions/templatesActions';
 import {setThesauris, deleteThesauri} from 'app/Thesauris/actions/thesaurisActions';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
+import CantDeleteTemplateAlert from 'app/Metadata/components/CantDeleteTemplateAlert';
 
 import 'app/Metadata/scss/metadata.scss';
 
@@ -31,11 +32,13 @@ export class Metadata extends RouteHandler {
         <div className="col-sm-4">
           <div className="panel panel-default">
             <div className="panel-heading">Document type</div>
+            <CantDeleteTemplateAlert />
             <ul className="list-group">
               {this.props.templates.map((template, index) => {
                 return <li key={index} className="list-group-item">
                           <Link to={'/templates/edit/' + template._id}>{template.name}</Link>
-                          <div onClick={() => this.props.deleteTemplate(template)} className="btn btn-danger btn-xs pull-right template-remove">
+                          <div onClick={() => this.props.checkTemplateCanBeDeleted(template)}
+                            className="btn btn-danger btn-xs pull-right template-remove">
                             <i className="fa fa-trash"></i>
                           </div>
                           &nbsp;
@@ -98,7 +101,8 @@ Metadata.__redux = true;
 
 Metadata.propTypes = {
   templates: PropTypes.array,
-  thesauris: PropTypes.array
+  thesauris: PropTypes.array,
+  checkTemplateCanBeDeleted: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
@@ -106,7 +110,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setTemplates, deleteTemplate, setThesauris, deleteThesauri}, dispatch);
+  return bindActionCreators({setTemplates, checkTemplateCanBeDeleted, setThesauris, deleteThesauri}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Metadata);

@@ -27,11 +27,11 @@ describe('templatesActions', () => {
 
     describe('checkTemplateCanBeDeleted', () => {
       it('should check if the template can be deleted and dispatch an alert action if not', (done) => {
-        let templateId = 'templateId';
+        let templateId = {_id: 'templateId'};
 
         actions.checkTemplateCanBeDeleted(templateId)(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'templateCantBeDeleted', data: 2});
+          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'CantDeleteTemplateAlert', data: 2});
           done();
         });
       });

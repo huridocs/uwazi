@@ -7,18 +7,18 @@ import {Metadata} from 'app/Metadata/Metadata';
 import backend from 'fetch-mock';
 
 describe('Metadata', () => {
-  let templates = [{key: 'template1', id: '1', value: {}}, {key: 'template2', id: '2', value: {}}];
+  let templates = [{_id: 'templateId1'}, {_id: 'templateId2'}];
   let thesauris = [{name: 'thesauri1', values: []}, {name: 'thesauri2', values: []}];
   let component;
   let instance;
   let setTemplates = jasmine.createSpy('setTemplates');
-  let deleteTemplate = jasmine.createSpy('deleteTemplate');
+  let checkTemplateCanBeDeleted = jasmine.createSpy('checkTemplateCanBeDeleted');
   let deleteThesauri = jasmine.createSpy('deleteThesauri');
   let setThesauris = jasmine.createSpy('setThesauris');
   let props;
 
   beforeEach(() => {
-    props = {setTemplates, deleteTemplate, templates, thesauris, setThesauris, deleteThesauri};
+    props = {setTemplates, checkTemplateCanBeDeleted, templates, thesauris, setThesauris, deleteThesauri};
     component = shallow(<Metadata {...props} />);
     instance = component.instance();
 
@@ -52,7 +52,7 @@ describe('Metadata', () => {
   describe('deleteTemplate', () => {
     it('should call props.deleteTemplate with id of the template', () => {
       component.find('.template-remove').last().simulate('click');
-      expect(deleteTemplate).toHaveBeenCalledWith(templates[1]);
+      expect(checkTemplateCanBeDeleted).toHaveBeenCalledWith(templates[1]);
     });
   });
 
