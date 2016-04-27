@@ -125,12 +125,4 @@ describe('DocumentsAPI', () => {
       .catch(done.fail);
     });
   });
-
-  describe('toParams()', () => {
-    it('should convert an object to query string', () => {
-      expect(documentsAPI.toParams({searchTerm: 'batman'})).toEqual('searchTerm=batman');
-      expect(documentsAPI.toParams({searchTerm: 'batman', joker: true})).toEqual('searchTerm=batman&joker=true');
-      expect(documentsAPI.toParams({searchTerm: 'batman', enemies: ['scarecrow', 'joker']})).toEqual('searchTerm=batman&enemies=scarecrow%2Cjoker');
-    });
-  });
 });
