@@ -60,19 +60,11 @@ describe('templates routes', () => {
 
   describe('DELETE', () => {
     it('should delete a template', (done) => {
-      request.get(dbURL + '/c08ef2532f0bd008ac5174b45e033c93')
-      .then(template => {
-        let req = {body: {_id: template.json._id, _rev: template.json._rev}};
-        return routes.delete('/api/templates', req);
-      })
+      spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
+      routes.delete('/api/templates', {body: 'template'})
       .then((response) => {
-        expect(response.ok).toBe(true);
-        return request.get(dbURL + '/_design/templates/_view/all');
-      })
-      .then((response) => {
-        let docs = response.json.rows;
-        expect(docs.length).toBe(1);
-        expect(docs[0].value.name).toBe('template_test2');
+        expect(templates.delete).toHaveBeenCalledWith('template');
+        expect(response).toBe('ok');
         done();
       })
       .catch(done.fail);

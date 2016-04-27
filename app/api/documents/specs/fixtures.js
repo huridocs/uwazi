@@ -2,6 +2,10 @@ export default {
   "docs":[
     {"_id":"_design/documents","language":"javascript","views":{
       "all":{"map":"function(doc) {\nif(doc.type === 'document')\t\n  emit(doc._id, doc);\n}"},
+      "count_by_template":{
+        "map":"function(doc) {\nif(doc.type === 'document' && doc.template)\t\n  emit(doc.template, 1);\n}",
+        "reduce": "_sum"
+      },
       "metadata_by_template":{"map":"function(doc) {\nif(doc.type === 'document')\t\n  emit(doc.template, {_id: doc._id, metadata: doc.metadata});\n}"},
       "list":{"map":"function(doc) {\nif(doc.type === 'document' && doc.published === true)\t\n  emit(doc._id, {title:doc.title, _id: doc._id});\n}"},
       "uploads":{"map":"function(doc) {\nif(doc.type === 'document' && !doc.published)\t\n  emit(doc.user._id, {title:doc.title, _id: doc._id});\n}"},

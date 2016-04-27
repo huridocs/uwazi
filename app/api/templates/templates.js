@@ -35,5 +35,21 @@ export default {
     }
 
     return save(template);
+  },
+
+  delete(template) {
+    let url = `${dbURL}/${template._id}?rev=${template._rev}`;
+
+    return documents.countByTemplate(template._id)
+    .then((count) => {
+      if (count > 0) {
+        return Promise.reject({key: 'documents_using_template', value: count});
+      }
+
+      return request.delete(url);
+    })
+    .then((response) => {
+      return response.json;
+    });
   }
 };

@@ -34,6 +34,13 @@ export default app => {
     });
   });
 
+  app.get('/api/documents/count_by_template', (req, res) => {
+    return documents.countByTemplate(req.query.templateId)
+    .then((results) => {
+      res.json(results);
+    });
+  });
+
   app.get('/api/documents/search', (req, res) => {
     return documents.search(req.query)
     .then((results) => {

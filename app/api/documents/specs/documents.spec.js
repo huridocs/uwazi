@@ -44,6 +44,17 @@ describe('documents', () => {
     });
   });
 
+  describe('countByTemplate', () => {
+    it('should return how many documents using the template passed', (done) => {
+      documents.countByTemplate('template1')
+      .then((count) => {
+        expect(count).toBe(2);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
   describe('updateMetadataProperties', () => {
     let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/documents/_view/metadata_by_template?key="' + template + '"')
     .then((response) => {
