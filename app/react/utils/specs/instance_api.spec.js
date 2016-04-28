@@ -11,7 +11,6 @@ describe('Login', () => {
     backend.restore();
     backend
     .mock(APIURL + 'test_get', 'GET', JSON.stringify({method: 'GET'}))
-    .mock(APIURL + 'test_get?search=test', 'GET', JSON.stringify({method: 'GET WITH PARAMS'}))
     .mock(APIURL + 'test_post', 'POST', JSON.stringify({method: 'POST'}))
     .mock(APIURL + 'test_delete', 'DELETE', JSON.stringify({method: 'DELETE'}));
   });
@@ -25,17 +24,6 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
-    });
-
-    describe('when passing data', () => {
-      it('should convert it to url params', (done) => {
-        api.get('test_get', {search: 'test'})
-        .then((response) => {
-          expect(response.json.method).toBe('GET WITH PARAMS');
-          done();
-        })
-        .catch(done.fail);
-      });
     });
 
     describe('when passing a cookie', () => {

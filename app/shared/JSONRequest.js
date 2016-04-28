@@ -1,5 +1,15 @@
 import 'isomorphic-fetch';
 
+function toParams(data) {
+  if (!data || Object.keys(data).length === 0) {
+    return '';
+  }
+  return '?' + Object.keys(data).reduce((params, key) => {
+    params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key] || ''));
+    return params;
+  }, []).join('&');
+}
+
 let _fetch = (url, data, method, cookie) => {
 
   let response;
@@ -7,11 +17,17 @@ let _fetch = (url, data, method, cookie) => {
   let headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
   headers.Cookie = cookie;
 
+  let body;
+
+  if (method !== 'GET') {
+    body = JSON.stringify(data)
+  }
+
   return fetch(url, {
     method: method,
     headers: headers,
     credentials: 'same-origin',
-    body: JSON.stringify(data)
+    body: body
   })
   .then((res) => {
     response = res;
@@ -37,7 +53,8 @@ export default {
   },
 
   get: (url, data, cookie) => {
-    return _fetch(url, data, 'GET', cookie);
+    let params = toParams(data);
+    return _fetch(url + params, data, 'GET', cookie);
   },
 
   delete: (url, data) => {
