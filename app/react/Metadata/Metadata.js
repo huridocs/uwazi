@@ -35,7 +35,7 @@ export class Metadata extends RouteHandler {
   render() {
     return (
       <div className="row metadata">
-        <div className="col-sm-4">
+        <div className="col-sm-4 document">
           <div className="panel panel-default">
             <div className="panel-heading">Document type</div>
             <CantDeleteTemplateAlert />
@@ -58,7 +58,7 @@ export class Metadata extends RouteHandler {
             </ul>
           </div>
         </div>
-        <div className="col-sm-4">
+        <div className="col-sm-4 relationship">
           <div className="panel panel-default">
             <div className="panel-heading">Relation types</div>
             <CantDeleteRelationType />
@@ -81,7 +81,7 @@ export class Metadata extends RouteHandler {
             </ul>
           </div>
         </div>
-        <div className="col-sm-4">
+        <div className="col-sm-4 thesauris">
           <div className="panel panel-default">
             <div className="panel-heading">Thesauris</div>
             <ul className="list-group">

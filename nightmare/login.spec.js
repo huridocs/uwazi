@@ -1,8 +1,8 @@
 import Nightmare from 'nightmare';
+import {login, invalidLogin} from './helpers/login.js'
+import url from './helpers/url.js';
 
 describe('login', () => {
-
-  let url = 'http://localhost:3000';
   let nightmare;
 
   beforeEach(() => {
@@ -13,34 +13,35 @@ describe('login', () => {
     return document.querySelector(selector).innerText;
   }
 
+  var catchError = (done) => {
+    return (error) => {
+      expect(error).toBe(null);
+      done();
+    }
+  }
+
   describe('login success', () => {
     it('should redirect to home page', (done) => {
-      nightmare.goto(url + '/login')
-      .type('input[name="username"]', 'admin')
-      .type('input[name="password"]', 'admin')
-      .click('button[type="submit"]')
-      .wait('.fa-user')
+      login(nightmare, url)
+      .url()
       .end()
-      .then(done);
+      .then((url) => {
+        expect(url).toBe('http://localhost:3000/');
+        done();
+      })
     });
   });
 
   describe('form errors', () => {
     it('should show error message', (done) => {
-      nightmare.goto(url + '/login')
-      .type('input[name="username"]', 'wrong')
-      .type('input[name="password"]', 'pass')
-      .click('button[type="submit"]')
-      .wait('.alert-message')
+      invalidLogin(nightmare, url)
       .evaluate(getInnerText, '.alert-message')
       .end()
       .then((innerText) => {
         expect(innerText).toBe('Invalid password or username');
         done();
-      }).catch((error) => {
-        expect(error).toBe(null);
-        done();
-      });
+      })
+      .catch(catchError(done));
     });
   });
 });
