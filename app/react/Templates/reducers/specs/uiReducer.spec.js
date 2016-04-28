@@ -4,11 +4,11 @@ import reducer from 'app/Templates/reducers/uiReducer';
 import * as actions from 'app/Templates/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
-describe('fieldsReducer', () => {
+describe('uiReducer', () => {
   describe('when state is undefined', () => {
     it('should return initial state', () => {
       let newState = reducer();
-      expect(newState).toEqual(Immutable.fromJS({thesauri: [], propertyBeingDeleted: null}));
+      expect(newState).toEqual(Immutable.fromJS({thesauris: [], propertyBeingDeleted: null}));
     });
   });
 
@@ -21,8 +21,8 @@ describe('fieldsReducer', () => {
 
   describe('SET_THESAURI', () => {
     it('should set thesauri list on thesauri', () => {
-      let newState = reducer(Immutable.fromJS({}), {type: actions.SET_THESAURI, thesauri: 'thesauri'});
-      expect(newState).toEqualImmutable(Immutable.fromJS({thesauri: 'thesauri'}));
+      let newState = reducer(Immutable.fromJS({}), {type: actions.SET_THESAURIS, thesauris: 'thesauris'});
+      expect(newState).toEqualImmutable(Immutable.fromJS({thesauris: 'thesauris'}));
     });
   });
 });

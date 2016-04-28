@@ -4,7 +4,7 @@ import reducer from 'app/Templates/reducers/templatesReducer';
 import * as types from 'app/Templates/actions/actionTypes';
 import 'jasmine-immutablejs-matchers';
 
-describe('fieldsReducer', () => {
+describe('templatesReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state []', () => {
       let newState = reducer();

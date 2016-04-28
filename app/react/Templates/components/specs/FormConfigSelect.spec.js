@@ -12,7 +12,7 @@ describe('FormConfigSelect', () => {
     props = {
       fields: {label: {}, content: {}, required: {}, filter: {}},
       values: {value: 'some value'},
-      thesauri: [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}],
+      thesauris: [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}],
       index: 0,
       updateProperty: jasmine.createSpy('updateProperty')
     };
@@ -41,7 +41,7 @@ describe('FormConfigSelect', () => {
     let state = {
       template: {
         data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]}),
-        uiState: Immutable.fromJS({thesauri: 'thesauri'})
+        uiState: Immutable.fromJS({thesauris: []})
       }
     };
 
@@ -56,7 +56,7 @@ describe('FormConfigSelect', () => {
         state = {
           template: {
             data: Immutable.fromJS({name: '', properties: [{label: ''}, {label: 'second property'}]}),
-            uiState: Immutable.fromJS({thesauri: 'thesauri'})
+            uiState: Immutable.fromJS({thesauris: []})
           }
         };
         expect(mapStateToProps(state, props).validate()).toEqual({label: 'Required'});
@@ -66,7 +66,7 @@ describe('FormConfigSelect', () => {
         state = {
           template: {
             data: Immutable.fromJS({name: 'test', properties: [{label: 'first_property', content: '', type: 'list'}, {label: 'second property'}]}),
-            uiState: Immutable.fromJS({thesauri: 'thesauri'})
+            uiState: Immutable.fromJS({thesauris: []})
           }
         };
         expect(mapStateToProps(state, props).validate()).toEqual({content: 'Required'});

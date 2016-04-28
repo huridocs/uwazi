@@ -4,7 +4,7 @@ import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import {setTemplate} from 'app/Templates/actions/templateActions';
-import {setThesauri} from 'app/Templates/actions/uiActions';
+import {setThesauris} from 'app/Templates/actions/uiActions';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import ID from 'app/utils/uniqueID';
 
@@ -24,13 +24,11 @@ export default class EditTemplate extends RouteHandler {
       templatesAPI.get(templateId),
       thesaurisAPI.get()
     ])
-    .then((response) => {
-      let templates = response[0];
-      let thesauri = response[1];
+    .then(([templates, thesauris]) => {
       return {
         template: {
           data: prepareTemplate(templates[0]),
-          uiState: {thesauri: thesauri}
+          uiState: {thesauris: thesauris}
         }
       };
     });
@@ -38,7 +36,7 @@ export default class EditTemplate extends RouteHandler {
 
   setReduxState({template}) {
     this.context.store.dispatch(setTemplate(template.data));
-    this.context.store.dispatch(setThesauri(template.uiState.thesauri));
+    this.context.store.dispatch(setThesauris(template.uiState.thesauris));
   }
 
   render() {

@@ -23,7 +23,7 @@ export class FormConfigSelect extends Component {
           <label className="control-label">Content</label>
           <select value='' className="form-control" type="text" {...content}>
             <option value='' disabled>Select thesauri</option>
-            {this.props.thesauri.map((thesauri) => {
+            {this.props.thesauris.map((thesauri) => {
               return <option key={thesauri._id} value={thesauri._id}>{thesauri.name}</option>;
             })}
           </select>
@@ -50,7 +50,7 @@ FormConfigSelect.propTypes = {
   fields: PropTypes.object,
   updateProperty: PropTypes.func,
   values: PropTypes.object,
-  thesauri: PropTypes.array,
+  thesauris: PropTypes.array,
   index: PropTypes.number
 };
 
@@ -58,7 +58,7 @@ export function mapStateToProps(state, props) {
   let properties = state.template.data.toJS().properties;
   return {
     initialValues: properties[props.index],
-    thesauri: state.template.uiState.toJS().thesauri,
+    thesauris: state.template.uiState.toJS().thesauri,
     fields: ['label', 'content', 'required', 'filter', 'type'],
     validate: () => {
       return validateProperty(properties[props.index], properties);

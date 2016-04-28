@@ -7,10 +7,9 @@ export function editProperty(id) {
   };
 }
 
-export function setThesauri(thesauri) {
+export function setThesauris(thesauris) {
   return {
-    type: types.SET_THESAURI,
-    thesauri
+    type: types.SET_THESAURIS,
+    thesauris
   };
 }
-
