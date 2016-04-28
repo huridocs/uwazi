@@ -1,5 +1,5 @@
 import Nightmare from 'nightmare';
-import {addThesauri, addThesauriName, checkThesauriName} from './helpers/metadata.js'
+import {addThesauri, deleteThesauri} from './helpers/metadata.js'
 import url from './helpers/url.js';
 
 var getInnerText = (selector) => {
@@ -25,15 +25,17 @@ describe('metadata', () => {
   }
 
   describe('add thesauri', () => {
-    it('should add a new thesauri', (done) => {
+    it('should add a new thesauri then delete it', (done) => {
       addThesauri(nightmare, 'Test sauri')
       .goto(url + '/metadata')
       .evaluate(getInnerText, '.thesauris li a')
-      .end()
       .then((innerText) => {
         expect(innerText).toBe('Test sauri');
-        done();
       })
+      .then(() => {
+        return deleteThesauri(nightmare).end()
+      })
+      .then(done)
     });
   });
 });
