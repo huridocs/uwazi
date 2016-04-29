@@ -1,9 +1,9 @@
 let executeRoute = (method, routePath, req = {}, app) => {
   let args = app[method].calls.allArgs().find((a) => a[0] === routePath);
-  return new Promise((resolve, reject) => {
-    if (!args) {
-      reject('Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined');
-    }
+  if (!args) {
+    throw 'Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined';
+  }
+  let result = new Promise((resolve, reject) => {
 
     let statusCode;
     let res = {
@@ -27,11 +27,12 @@ let executeRoute = (method, routePath, req = {}, app) => {
 
     args[args.length - 1](req, res);
   });
-};
 
-let middlewares = (method, routePath, app) => {
-  let args = app[method].calls.allArgs().find((a) => a[0] === routePath);
-  return args.slice(1, -1);
+  if(args) {
+    result.middlewares = args.slice(1, -1);
+  }
+
+  return result;
 };
 
 export default (route) => {
@@ -49,18 +50,6 @@ export default (route) => {
 
     post: (routePath, req) => {
       return executeRoute('post', routePath, req, app);
-    },
-
-    middlewares: {
-      get: (routePath) => {
-        return middlewares('get', routePath, app);
-      },
-      post: (routePath) => {
-        return middlewares('post', routePath, app);
-      },
-      delete: (routePath) => {
-        return middlewares('delete', routePath, app);
-      }
     }
   };
 

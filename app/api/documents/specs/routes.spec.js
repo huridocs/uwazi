@@ -229,6 +229,11 @@ describe('documents', () => {
   });
 
   describe('/uploads', () => {
+
+    it('should need authorization', () => {
+      expect(routes.get('/api/uploads')).toNeedAuthorization();
+    });
+
     it('should return a list of documents not published of the current user', (done) => {
       routes.get('/api/uploads', {user: {"_id": "c08ef2532f0bd008ac5174b45e033c94"}})
       .then((response) => {

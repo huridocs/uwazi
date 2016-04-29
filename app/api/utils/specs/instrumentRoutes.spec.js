@@ -73,10 +73,10 @@ describe('routesMock', () => {
       .catch(done.fail);
     });
 
-    it('should have a method to get the middlewares', () => {
-      expect(route.middlewares.get('/routeWith/middleware')).toEqual([middleware1, middleware2]);
-      expect(route.middlewares.post('/routeWith/middleware')).toEqual([middleware1, middleware2]);
-      expect(route.middlewares.delete('/routeWith/middleware')).toEqual([middleware1, middleware2]);
+    it('should attach the middlewares to the returned promise', () => {
+      expect(route.get('/routeWith/middleware').middlewares).toEqual([middleware1, middleware2]);
+      expect(route.post('/routeWith/middleware').middlewares).toEqual([middleware1, middleware2]);
+      expect(route.delete('/routeWith/middleware').middlewares).toEqual([middleware1, middleware2]);
     });
   });
 
@@ -116,12 +116,8 @@ describe('routesMock', () => {
 
 
   describe('when routepath do not match', () => {
-    it('should throw an error', (done) => {
-      route.get('/unexistent/route')
-      .catch((error) => {
-        expect(error).toBe('Route GET /unexistent/route is not defined');
-        done();
-      });
+    it('should throw an error', () => {
+      expect(route.get.bind(route, '/unexistent/route')).toThrow('Route GET /unexistent/route is not defined');
     });
   });
 

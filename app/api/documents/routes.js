@@ -2,6 +2,7 @@ import request from '../../shared/JSONRequest.js';
 import {db_url} from '../config/database.js';
 import documents from './documents';
 import sanitizeResponse from '../utils/sanitizeResponse';
+import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
   app.post('/api/documents', (req, res) => {
@@ -92,14 +93,7 @@ export default app => {
     .catch(console.log);
   });
 
-  app.get('/api/uploads', (req, res) => {
-
-    if(!req.user){
-      res.status(401);
-      res.json({error: 'Unauthorized'});
-      return;
-    }
-
+  app.get('/api/uploads', needsAuthorization, (req, res) => {
     let url = db_url+'/_design/documents/_view/uploads?key="'+req.user._id+'"';
 
     request.get(url)
