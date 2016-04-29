@@ -10,7 +10,7 @@ describe('FormConfigSelect', () => {
 
   beforeEach(() => {
     props = {
-      fields: {label: {}, content: {}, required: {}, filter: {}},
+      fields: {label: {}, content: {}, required: {}, filter: {}, type: {}},
       values: {value: 'some value'},
       thesauris: [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}],
       index: 0,

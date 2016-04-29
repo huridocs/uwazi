@@ -4,10 +4,11 @@ import {reduxForm} from 'redux-form';
 import {validateProperty} from 'app/Templates/components/ValidateTemplate';
 
 import {updateProperty} from 'app/Templates/actions/templateActions';
+import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 
 export class FormConfigSelect extends Component {
   render() {
-    const {fields: {label, content, required, filter}} = this.props;
+    const {fields: {label, content, required, filter, type}} = this.props;
 
     return (
       <form className="row" onChange={() => {
@@ -41,6 +42,7 @@ export class FormConfigSelect extends Component {
             </label>
           </div>
         </div>
+        <FilterSuggestions label={label.value} type={type.value} filter={filter.value} content={content.value} />
       </form>
     );
   }
@@ -58,7 +60,7 @@ export function mapStateToProps(state, props) {
   let properties = state.template.data.toJS().properties;
   return {
     initialValues: properties[props.index],
-    thesauris: state.template.uiState.toJS().thesauri,
+    thesauris: state.template.uiState.toJS().thesauris,
     fields: ['label', 'content', 'required', 'filter', 'type'],
     validate: () => {
       return validateProperty(properties[props.index], properties);

@@ -133,8 +133,7 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = (state) => {
   return {
-    editingProperty: state.template.uiState.toJS().editingProperty,
-    templates: state.template.uiState.toJS().templates
+    editingProperty: state.template.uiState.toJS().editingProperty
   };
 };
 
