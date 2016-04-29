@@ -25,7 +25,7 @@ export default {
     let url = 'documents/uploads';
     return api.get(url)
     .then((response) => {
-      return response.json;
+      return response.json.rows;
     });
   },
 
