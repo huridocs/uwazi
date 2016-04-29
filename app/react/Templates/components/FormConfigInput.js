@@ -4,23 +4,21 @@ import {reduxForm} from 'redux-form';
 import {validateProperty} from 'app/Templates/components/ValidateTemplate';
 
 import {updateProperty} from 'app/Templates/actions/templateActions';
+import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 
 export class FormConfigInput extends Component {
-  render() {
-    const {fields: {label, required, filter}} = this.props;
 
+  render() {
+    const {fields: {label, required, filter, type}} = this.props;
     return (
       <form className="row" onChange={() => {
         setTimeout(() => {
           this.props.updateProperty(this.props.values, this.props.index);
-          //console.log(this.props.valid);
         });
       }}>
         <div className={'form-group col-sm-3' + (label.touched && label.invalid ? ' has-error' : '')}>
           <label className="control-label">Label</label>
-          <input className="form-control" type="text" {...label} onChange={(e) => {
-            label.onChange(e);
-          }}/>
+          <input className="form-control" type="text" {...label} onChange={(e) => label.onChange(e)}/>
         </div>
         <div className="col-sm-6">
           Behaviour
@@ -37,6 +35,7 @@ export class FormConfigInput extends Component {
             </div>
           </div>
         </div>
+        <FilterSuggestions label={label.value} type={type.value} filter={filter.value} />
       </form>
     );
   }
@@ -56,7 +55,8 @@ export function mapStateToProps(state, props) {
     fields: ['label', 'required', 'filter', 'type'],
     validate: () => {
       return validateProperty(properties[props.index], properties);
-    }
+    },
+    parentTemplateId: state.template.data.toJS()._id
   };
 }
 

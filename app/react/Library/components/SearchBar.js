@@ -31,12 +31,13 @@ export class SearchBar extends Component {
   }
 
   componentWillUnmount() {
-    this.resetSearch();
+    this.props.setSearchTerm('');
     this.mouseOut();
   }
 
   resetSearch() {
     this.props.setSearchTerm('');
+    this.props.searchDocuments('', getValues(this.props.filtersForm));
   }
 
   search(e) {

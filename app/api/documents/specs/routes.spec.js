@@ -20,16 +20,8 @@ describe('documents', () => {
 
   describe('POST', () => {
 
-    describe('when not logged in', () => {
-      it('should return unauthorized error', (done) => {
-        let req = {body:{title: 'Batman starts'}};
-        routes.post('/api/documents', req)
-        .then((response) => {
-          expect(response.status).toBe(401);
-          done()
-        })
-        .catch(done.fail);
-      });
+    it('should need authorization', () => {
+      expect(routes.post('/api/documents')).toNeedAuthorization();
     });
 
     it('should create a new document with use user', (done) => {
@@ -229,6 +221,11 @@ describe('documents', () => {
   });
 
   describe('/uploads', () => {
+
+    it('should need authorization', () => {
+      expect(routes.get('/api/uploads')).toNeedAuthorization();
+    });
+
     it('should return a list of documents not published of the current user', (done) => {
       routes.get('/api/uploads', {user: {"_id": "c08ef2532f0bd008ac5174b45e033c94"}})
       .then((response) => {

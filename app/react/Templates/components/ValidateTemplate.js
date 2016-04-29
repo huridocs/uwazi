@@ -1,5 +1,4 @@
 export function validateProperty(property = {}, allProperties = []) {
-
   let errors = {};
   if (!property.label) {
     errors.label = 'Required';

@@ -31,42 +31,6 @@ export class Doc extends Component {
               consequuntur fugit eum recusandae dolor, aliquid tempora sint aliquam <b>africa</b>."
             </p>
           </div>
-          {/*
-          <div className="item-preview">
-            <div className="row">
-              <div className="col-sm-4">
-                <h4>Metadata 1</h4>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-              </div>
-              <div className="col-sm-4">
-                <h4>Metadata 2</h4>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-              </div>
-              <div className="col-sm-4">
-                <h4>Metadata 3</h4>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-                <p>Text</p>
-              </div>
-              <div className="col-sm-6">
-                <div className="btn btn-default btn-close"><i className="fa fa-close"></i>Close preview</div>
-              </div>
-              <div className="col-sm-6">
-                <div className="btn btn-success btn-open">View document<i className="fa fa-arrow-right"></i></div>
-              </div>
-            </div>
-          </div>
-          */}
         </div>
       </li>
     );

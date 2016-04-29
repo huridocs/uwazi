@@ -4,10 +4,11 @@ import {reduxForm} from 'redux-form';
 import {validateProperty} from 'app/Templates/components/ValidateTemplate';
 
 import {updateProperty} from 'app/Templates/actions/templateActions';
+import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 
 export class FormConfigSelect extends Component {
   render() {
-    const {fields: {label, content, required, filter}} = this.props;
+    const {fields: {label, content, required, filter, type}} = this.props;
 
     return (
       <form className="row" onChange={() => {
@@ -23,7 +24,7 @@ export class FormConfigSelect extends Component {
           <label className="control-label">Content</label>
           <select value='' className="form-control" type="text" {...content}>
             <option value='' disabled>Select thesauri</option>
-            {this.props.thesauri.map((thesauri) => {
+            {this.props.thesauris.map((thesauri) => {
               return <option key={thesauri._id} value={thesauri._id}>{thesauri.name}</option>;
             })}
           </select>
@@ -41,6 +42,7 @@ export class FormConfigSelect extends Component {
             </label>
           </div>
         </div>
+        <FilterSuggestions label={label.value} type={type.value} filter={filter.value} content={content.value} />
       </form>
     );
   }
@@ -50,7 +52,7 @@ FormConfigSelect.propTypes = {
   fields: PropTypes.object,
   updateProperty: PropTypes.func,
   values: PropTypes.object,
-  thesauri: PropTypes.array,
+  thesauris: PropTypes.array,
   index: PropTypes.number
 };
 
@@ -58,7 +60,7 @@ export function mapStateToProps(state, props) {
   let properties = state.template.data.toJS().properties;
   return {
     initialValues: properties[props.index],
-    thesauri: state.template.uiState.toJS().thesauri,
+    thesauris: state.template.uiState.toJS().thesauris,
     fields: ['label', 'content', 'required', 'filter', 'type'],
     validate: () => {
       return validateProperty(properties[props.index], properties);

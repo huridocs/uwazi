@@ -9,8 +9,11 @@ import RouteHandler from 'app/controllers/App/RouteHandler';
 import {mockID} from 'app/utils/uniqueID';
 
 describe('EditTemplate', () => {
-  let template = {id: '1', properties: [{label: 'label1'}, {label: 'label2'}]};
-  let thesauri = [{label: '1'}, {label: '2'}];
+  let templates = [
+    {_id: 'abc1', properties: [{label: 'label1'}, {label: 'label2'}]},
+    {_id: 'abc2', properties: [{label: 'label3'}, {label: 'label4'}]}
+  ];
+  let thesauris = [{label: '1'}, {label: '2'}];
   let component;
   let instance;
   let props;
@@ -25,8 +28,8 @@ describe('EditTemplate', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'templates?_id=templateId', 'GET', {body: JSON.stringify({rows: [template]})})
-    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauri})});
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
+    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})});
   });
 
   it('should render a TemplateCreator', () => {
@@ -34,13 +37,21 @@ describe('EditTemplate', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request for the template passed, the thesauris and return an object to fit in the state', (done) => {
-      EditTemplate.requestState({templateId: 'templateId'})
+    it('should request templates and thesauris, and return templates, thesauris and find the editing template', (done) => {
+      EditTemplate.requestState({templateId: 'abc2'})
       .then((response) => {
-        let templateResponse = response.template.data;
-        let thesauriResponse = response.template.uiState.thesauri;
-        expect(templateResponse.properties[0]).toEqual({label: 'label1', localID: 'unique_id'});
-        expect(thesauriResponse).toEqual(thesauri);
+        expect(response.template.data._id).toEqual('abc2');
+        expect(response.template.uiState.thesauris).toEqual(thesauris);
+        expect(response.template.uiState.templates.length).toBe(2);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should prepare the template properties with unique ids', (done) => {
+      EditTemplate.requestState({templateId: 'abc2'})
+      .then((response) => {
+        expect(response.template.data.properties[0]).toEqual({label: 'label3', localID: 'unique_id'});
         done();
       })
       .catch(done.fail);
@@ -49,9 +60,10 @@ describe('EditTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({template: {data: 'template_data', uiState: {thesauri: 'thesauri'}}});
+      instance.setReduxState({template: {data: 'template_data', uiState: {thesauris: 'thesauris', templates: 'templates'}}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATE', template: 'template_data'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURI', thesauri: 'thesauri'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATES', templates: 'templates'});
     });
   });
 });

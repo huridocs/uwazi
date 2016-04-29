@@ -53,7 +53,7 @@ export class MetadataProperty extends Component {
       <li className={propertyClass}>
         <div>
            <i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}
-           <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() => 
+           <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() =>
              this.props.removeProperty('RemovePropertyModal', index)}
            >
             <i className="fa fa-trash"></i> Delete

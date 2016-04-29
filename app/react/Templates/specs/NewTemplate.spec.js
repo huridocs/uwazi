@@ -12,7 +12,8 @@ describe('NewTemplate', () => {
   let component;
   let instance;
   let context;
-  let thesauri = [{label: '1'}, {label: '2'}];
+  let thesauris = [{label: '1'}, {label: '2'}];
+  let templates = [{name: 'Comic'}, {name: 'Newspaper'}];
 
   beforeEach(() => {
     // RouteHandler.renderedFromServer = true;
@@ -21,7 +22,8 @@ describe('NewTemplate', () => {
     instance = component.instance();
     backend.restore();
     backend
-    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauri})});
+    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})})
+    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})});
   });
 
   it('should render a TemplateCreator', () => {
@@ -29,11 +31,12 @@ describe('NewTemplate', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request the thesauris and return an object to fit in the state', (done) => {
+    it('should request the thesauris and templates to fit in the state', (done) => {
       NewTemplate.requestState()
       .then((response) => {
-        let thesauriResponse = response.template.uiState.toJS().thesauri;
-        expect(thesauriResponse).toEqual(thesauri);
+        let state = response.template.uiState.toJS();
+        expect(state.thesauris).toEqual(thesauris);
+        expect(state.templates).toEqual(templates);
         done();
       })
       .catch(done.fail);
@@ -42,8 +45,9 @@ describe('NewTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setThesauri with thesauri passed', () => {
-      instance.setReduxState({template: {uiState: Immutable.fromJS({thesauri: 'thesauri'})}});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURI', thesauri: 'thesauri'});
+      instance.setReduxState({template: {uiState: Immutable.fromJS({thesauris: 'thesauris', templates: 'templates'})}});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATES', templates: 'templates'});
     });
   });
 });
