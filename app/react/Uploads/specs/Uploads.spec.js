@@ -24,7 +24,7 @@ describe('Uploads', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify({rows: documents})})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})});
   });

@@ -1,0 +1,26 @@
+@import "../../controllers/App/scss/config/_colors.scss";
+@import "../../controllers/App/scss/config/_materials.scss";
+@import "../../controllers/App/scss/config/_typography.scss";
+
+.upload-box {
+	border: 1px dashed $c-grey;
+	text-align: center;
+	padding: 45px;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: $c-grey-dark;
+	margin-bottom: 30px;
+  cursor: pointer;
+	/*font-size: $f-size-lg;
+	&:hover a {
+		text-decoration: underline;
+	}
+	*/
+	a {
+		color: $c-grey-dark;
+	}
+
+	.fa {
+		margin-right: 5px;
+	}
+}
