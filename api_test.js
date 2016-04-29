@@ -16,6 +16,9 @@ var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
 var SpecReporter = require('jasmine-spec-reporter');
 
+//var customMatchers = require('./app/api/utils/jasmineMatchers.js');
+//jasmine.getEnv().addMatchers(customMatchers);
+
 var db_config = require('./app/api/config/database.js');
 db_config.db_url = db_config.development;
 
@@ -24,6 +27,9 @@ jasmine.loadConfig({
   spec_files: [
     'api/**/*[sS]pec.js',
     'shared/**/*[sS]pec.js'
+  ],
+  helpers: [
+    '/api/utils/jasmineMatchers.js',
   ]
 });
 
