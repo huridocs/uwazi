@@ -14,7 +14,7 @@ describe('DocumentsAPI', () => {
     backend
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
     .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify({uploads: 'uploads'})})
+    .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify({rows: 'uploads'})})
     .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
     .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
     .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
@@ -28,7 +28,7 @@ describe('DocumentsAPI', () => {
     it('should request uploads', (done) => {
       documentsAPI.uploads()
       .then((response) => {
-        expect(response).toEqual({uploads: 'uploads'});
+        expect(response).toEqual('uploads');
         done();
       })
       .catch(done.fail);
