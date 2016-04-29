@@ -25,30 +25,28 @@ export default app => {
 
   app.get('/api/documents/html', (req, res) => {
     return documents.getHTML(req.query._id)
-    .then((doc) => {
-      res.json(doc);
-    });
+    .then(doc => res.json(doc));
   });
 
   app.get('/api/documents/count_by_template', (req, res) => {
     return documents.countByTemplate(req.query.templateId)
-    .then((results) => {
-      res.json(results);
-    });
+    .then(results => res.json(results));
   });
 
   app.get('/api/documents/search', (req, res) => {
     return documents.search(req.query)
-    .then((results) => {
-      res.json(results);
-    });
+    .then(results => res.json(results));
   });
 
   app.get('/api/documents/match_title', (req, res) => {
     return documents.matchTitle(req.query.searchTerm)
-    .then((results) => {
-      res.json(results);
-    });
+    .then(results => res.json(results));
+  });
+
+  app.get('/api/documents/uploads', needsAuthorization, (req, res) => {
+    documents.getUploadsByUser(req.user)
+    .then(response => res.json(response))
+    .catch(error => res.json({error: error}));
   });
 
   app.get('/api/documents', (req, res) => {
@@ -88,27 +86,15 @@ export default app => {
     .catch(console.log);
   });
 
-  app.get('/api/documents/uploads', needsAuthorization, (req, res) => {
-    let url = db_url+'/_design/documents/_view/uploads?key="'+req.user._id+'"';
-
-    request.get(url)
-    .then(response => {
-      res.json(response.json);
-    })
-    .catch(console.log);
-  });
-
   app.delete('/api/documents', (req, res) => {
-
     let url = db_url+'/'+req.body._id+'?rev='+req.body._rev;
 
     request.delete(url)
     .then((response) => {
-      res.json(response.json)
+      res.json(response.json);
     })
     .catch((error) => {
       res.json({error: error.json});
     });
-
   });
-}
+};

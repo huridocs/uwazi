@@ -19,6 +19,16 @@ export default {
     });
   },
 
+  getUploadsByUser(user) {
+    let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"`;
+
+    return request.get(url)
+    .then(response => {
+      response.json.rows = response.json.rows.map(row => row.value);
+      return response.json;
+    });
+  },
+
   matchTitle(searchTerm) {
     let query = queryBuilder().fullTextSearch(searchTerm, ['doc.title']).highlight(['doc.title']).limit(5).query();
     return elastic.search({index: 'uwazi', body: query})

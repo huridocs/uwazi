@@ -6,6 +6,7 @@ import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import queryBuilder from 'api/documents/documentQueryBuilder';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('documents', () => {
   let result;
@@ -61,6 +62,19 @@ describe('documents', () => {
         done();
       })
       .catch(done.fail);
+    });
+  });
+
+  describe('getUploadsByUser', () => {
+    it('should request all unpublished documents for the user', (done) => {
+      let user = {_id: 'c08ef2532f0bd008ac5174b45e033c94'};
+      documents.getUploadsByUser(user)
+      .then((response) => {
+        expect(response.rows.length).toBe(1);
+        expect(response.rows[0]).toEqual({title: 'unpublished', _id: 'd0298a48d1221c5ceb53c4879301508f'});
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 
