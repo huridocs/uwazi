@@ -6,6 +6,9 @@ import documentsAPI from 'app/Library/DocumentsAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 
+import UploadBox from 'app/Uploads/components/UploadBox';
+import UploadsList from 'app/Uploads/components/UploadsList';
+
 export default class Uploads extends RouteHandler {
   static requestState() {
     return Promise.all([documentsAPI.uploads(), templatesAPI.get(), thesaurisAPI.get()])
@@ -22,7 +25,10 @@ export default class Uploads extends RouteHandler {
 
   render() {
     return (
-      <div className="row panels-layout" />
+      <main className="col-sm-8 col-sm-offset-2">
+        <UploadBox />
+        <UploadsList />
+      </main>
     );
   }
 }
