@@ -20,16 +20,8 @@ describe('documents', () => {
 
   describe('POST', () => {
 
-    describe('when not logged in', () => {
-      it('should return unauthorized error', (done) => {
-        let req = {body:{title: 'Batman starts'}};
-        routes.post('/api/documents', req)
-        .then((response) => {
-          expect(response.status).toBe(401);
-          done()
-        })
-        .catch(done.fail);
-      });
+    it('should need authorization', () => {
+      expect(routes.post('/api/documents')).toNeedAuthorization();
     });
 
     it('should create a new document with use user', (done) => {

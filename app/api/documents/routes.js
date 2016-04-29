@@ -5,12 +5,7 @@ import sanitizeResponse from '../utils/sanitizeResponse';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/documents', (req, res) => {
-    if(!req.user){
-      res.status(401);
-      res.json({error: 'Unauthorized'});
-      return;
-    }
+  app.post('/api/documents', needsAuthorization, (req, res) => {
 
     let document = req.body;
     document.type = 'document';
