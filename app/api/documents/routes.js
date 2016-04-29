@@ -88,7 +88,7 @@ export default app => {
     .catch(console.log);
   });
 
-  app.get('/api/uploads', needsAuthorization, (req, res) => {
+  app.get('/api/documents/uploads', needsAuthorization, (req, res) => {
     let url = db_url+'/_design/documents/_view/uploads?key="'+req.user._id+'"';
 
     request.get(url)
