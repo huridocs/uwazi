@@ -6,6 +6,7 @@ import {db_url} from '../../config/database.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import elastic from '../elastic';
 import documents from '../documents';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('documents', () => {
   let routes;
@@ -181,9 +182,7 @@ describe('documents', () => {
 
 
   describe("DELETE", () => {
-
     it("should delete a document", (done) => {
-
       request.get(db_url+'/8202c463d6158af8065022d9b5014ccb')
       .then(template => {
         let request = {body:{"_id":template.json._id, "_rev":template.json._rev}};
@@ -220,19 +219,21 @@ describe('documents', () => {
   });
 
   describe('/uploads', () => {
-
     it('should need authorization', () => {
       expect(routes.get('/api/documents/uploads')).toNeedAuthorization();
     });
 
-    it('should return a list of documents not published of the current user', (done) => {
-      routes.get('/api/documents/uploads', {user: {"_id": "c08ef2532f0bd008ac5174b45e033c94"}})
+    it('should return documents.uploadsByUser', (done) => {
+      spyOn(documents, 'getUploadsByUser').and.returnValue(new Promise((resolve) => resolve('results')));
+      let req = {user: {_id: 'c08ef2532f0bd008ac5174b45e033c94'}};
+
+      routes.get('/api/documents/uploads', req)
       .then((response) => {
-        expect(response.rows.length).toBe(1);
-        expect(response.rows[0].value).toEqual({title:'unpublished', _id: 'd0298a48d1221c5ceb53c4879301508f'});
+        expect(response).toBe('results');
+        expect(documents.getUploadsByUser).toHaveBeenCalledWith(req.user);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 });
