@@ -6,7 +6,7 @@ import Select from 'app/Form/components/Select';
 import Textarea from 'app/Form/components/Textarea';
 import {DynamicFields} from 'app/Form';
 import {prepareTemplateFields, validate, generateValidation} from 'app/Form';
-import {saveDocument, moveToLibrary} from 'app/Uploads/actions/documentActions';
+import {saveDocument, moveToLibrary} from 'app/Uploads/actions/uploadsActions';
 
 export class DocumentForm extends Component {
 

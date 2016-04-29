@@ -9,7 +9,7 @@ import MyAccount from './controllers/Users/MyAccount';
 
 // import Viewer from './controllers/Viewer/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
-import Uploads from './controllers/Uploads/Uploads';
+import Uploads from 'app/Uploads/Uploads';
 
 import Metadata from 'app/Metadata/Metadata';
 

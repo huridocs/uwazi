@@ -21,7 +21,6 @@ export class RemovePropertyConfirm extends Component {
           <h4>Confirm deletion</h4>
           <p>Deleting a template property will delete this metadata information on all documents using this template.</p>
           <p>Change will take effect after saving the template</p>
-
         </Modal.Body>
 
         <Modal.Footer>

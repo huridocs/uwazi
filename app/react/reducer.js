@@ -15,6 +15,7 @@ import documents from 'app/Library/reducers/documentsReducer';
 import libraryUI from 'app/Library/reducers/uiReducer';
 import libraryFilters from 'app/Library/reducers/filtersReducer';
 import modals from 'app/Modals/reducers/modalsReducer';
+import uploads from 'app/Uploads/reducers/reducer';
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -33,5 +34,6 @@ export default combineReducers({
   templates,
   documentViewer,
   contextMenu,
-  modals
+  modals,
+  uploads
 });

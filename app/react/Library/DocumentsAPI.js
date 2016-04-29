@@ -21,6 +21,14 @@ export default {
     });
   },
 
+  uploads() {
+    let url = 'documents/uploads';
+    return api.get(url)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   search(searchTerm, filters = {}) {
     filters.searchTerm = searchTerm;
     let url = 'documents/search';
