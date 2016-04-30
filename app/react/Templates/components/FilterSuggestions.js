@@ -1,14 +1,36 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {formatNames, findSameLabelProperties} from 'app/Templates/helpers/filterSuggestions';
-
 export class FilterSuggestions extends Component {
+
+  formatNames(matches) {
+    return matches.reduce((names, match) => {
+      names.push(match.template);
+      return names;
+    }, [])
+    .join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
+  }
+
+  findSameLabelProperties(label, templates, currentTemplateId) {
+    return templates
+    .filter((template) => template._id !== currentTemplateId)
+    .map((template) => {
+      let property = template.properties.find((prop) => {
+        return prop.label.toLowerCase() === label.toLowerCase() & prop.filter;
+      });
+
+      if (property) {
+        return {template: template.name, property};
+      }
+    })
+    .filter((match) => match);
+  }
+
 
   renderPerfectMatch(matches) {
     return <p className="text-primary">
       <i className="fa fa-thumbs-o-up" aria-hidden="true"></i>&nbsp;
-      This property will be used as filter in addition to the same property in <strong>{formatNames(matches)}</strong>.
+      This property will be used as filter in addition to the same property in <strong>{this.formatNames(matches)}</strong>.
     </p>;
   }
 
@@ -16,7 +38,7 @@ export class FilterSuggestions extends Component {
     let otherType = matches[0].property.type;
     return <p className="text-warning">
       <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;
-      This property has the same label as other in <strong>{formatNames(matches)}</strong>,
+      This property has the same label as other in <strong>{this.formatNames(matches)}</strong>,
       but not the same type ({otherType}) and won&#39;t be used together for filtering.
     </p>;
   }
@@ -27,7 +49,7 @@ export class FilterSuggestions extends Component {
     }).name;
     return <p className="text-warning">
       <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;
-      This property has the same label and type as other in <strong>{formatNames(matches)}</strong>,
+      This property has the same label and type as other in <strong>{this.formatNames(matches)}</strong>,
       but not the same thesauri ({otherThesauri}) and won&#39;t be used together for filtering.
     </p>;
   }
@@ -40,7 +62,7 @@ export class FilterSuggestions extends Component {
     let type = this.props.type;
     let content = this.props.content;
 
-    let filterMatches = findSameLabelProperties(label, this.props.templates, this.props.parentTemplateId);
+    let filterMatches = this.findSameLabelProperties(label, this.props.templates, this.props.parentTemplateId);
 
     let perfectMatches = filterMatches.filter((match) => match.property.type === type && match.property.content === content);
 
