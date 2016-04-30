@@ -41,15 +41,15 @@ describe('FilterSuggestions', () => {
   beforeEach(renderComponent);
 
   describe('when matches type and label as other template property', () => {
-    it('should should a message', () => {
-      renderComponent('Author', 'text');
+    it('should show a message', () => {
+      renderComponent('author', 'text');
       expect(component.find('.filter-suggestions').text())
       .toBe(' This property will be used as filter in addition to the same property in Template 2.');
     });
   });
 
   describe('when matches to multiple templates', () => {
-    it('should should a message', () => {
+    it('should show a message', () => {
       renderComponent('Date', 'date');
       expect(component.find('.filter-suggestions').text())
       .toBe(' This property will be used as filter in addition to the same property in Template 2 and Template 3.');
@@ -57,7 +57,7 @@ describe('FilterSuggestions', () => {
   });
 
   describe('when matches to multiple templates', () => {
-    it('should should a message', () => {
+    it('should show a message', () => {
       renderComponent('Keywords', 'date');
       expect(component.find('.filter-suggestions').text())
       .toBe(' This property has the same label as other in Template 3, but not the same type (text) and won\'t be used together for filtering.');
@@ -65,7 +65,7 @@ describe('FilterSuggestions', () => {
   });
 
   describe('when is select or list and the thesauris does not match', () => {
-    it('should should a message', () => {
+    it('should show a message', () => {
       renderComponent('Authors', 'select', 'abc2');
       expect(component.find('.filter-suggestions').text())
       .toBe(' This property has the same label and type as other in Template 2, but not the same thesauri (Best SCI FI Authors) and won\'t be used together for filtering.');// eslint-disable-line
