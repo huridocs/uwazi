@@ -23,6 +23,15 @@ export function setThesauris(thesauris) {
   };
 }
 
+export function uploadDocument(data) {
+  return function (dispatch) {
+    return api.post('documents', data)
+    .then((response) => {
+      dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc: response.json});
+    });
+  };
+}
+
 export function saveDocument(data) {
   return function (dispatch) {
     return api.post('documents', data)

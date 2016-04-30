@@ -21,4 +21,13 @@ describe('uploadsReducer', () => {
       expect(newState).toEqualImmutable(Immutable.fromJS(documents));
     });
   });
+
+  describe('NEW_UPLOAD_DOCUMENT', () => {
+    it('should insert the new document at the top', () => {
+      let currentState = Immutable.fromJS([{title: '1'}, {title: '2'}]);
+      let doc = {title: '3'};
+      let newState = uploadsReducer(currentState, {type: types.NEW_UPLOAD_DOCUMENT, doc});
+      expect(newState.toJS()).toEqual([{title: '3'}, {title: '1'}, {title: '2'}]);
+    });
+  });
 });
