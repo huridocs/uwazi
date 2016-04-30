@@ -5,6 +5,20 @@ import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 
 export default {
+  save(doc, user) {
+    doc.user = user;
+    doc.type = 'document';
+
+    let url = dbURL;
+    if (doc._id) {
+      url = dbURL + '/_design/documents/_update/partialUpdate/' + doc._id;
+    }
+
+    return request.post(url, doc)
+    .then(response => request.get(`${dbURL}/${response.json.id}`))
+    .then(response => response.json);
+  },
+
   search(query) {
     let searchTerm = query.searchTerm;
     delete query.searchTerm;
