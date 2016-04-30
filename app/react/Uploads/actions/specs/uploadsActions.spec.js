@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
+import superagent from 'superagent';
 
 import {APIURL} from 'app/config.js';
 import {mockID} from 'app/utils/uniqueID.js';
@@ -43,16 +44,34 @@ describe('uploadsActions', () => {
   describe('async actions', () => {
     describe('uploadDocument', () => {
       it('should create a document and upload file while dispatching the upload progress', (done) => {
+        backend.restore();
+        backend
+        .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({_id: 'test'})});
+
+        let mockUpload = superagent.post(APIURL + 'upload');
+        spyOn(mockUpload, 'field').and.callThrough();
+        spyOn(mockUpload, 'attach').and.callThrough();
+        spyOn(superagent, 'post').and.returnValue(mockUpload);
+
         let document = {name: 'doc'};
 
         const expectedActions = [
-          {type: types.NEW_UPLOAD_DOCUMENT, doc: {testBackendResult: 'ok'}}
+          {type: types.NEW_UPLOAD_DOCUMENT, doc: {_id: 'test'}},
+          {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 0},
+          {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 55},
+          {type: types.UPLOAD_COMPLETE, doc: 'test'}
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.uploadDocument(document))
+        let file = {name: 'filename'};
+        store.dispatch(actions.uploadDocument(document, file))
         .then(() => {
           expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
+          expect(mockUpload.field).toHaveBeenCalledWith('document', 'test');
+          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+
+          mockUpload.emit('progress', {percent: 55.1});
+          mockUpload.emit('response');
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

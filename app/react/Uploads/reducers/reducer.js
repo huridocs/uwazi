@@ -1,11 +1,13 @@
 import {combineReducers} from 'redux';
 
 import documents from 'app/Uploads/reducers/uploadsReducer';
-//import references from 'app/Viewer/reducers/referencesReducer';
-//import uiState from 'app/Viewer/reducers/uiReducer';
-//import results from 'app/Viewer/reducers/resultsReducer';
-//import targetDocument from 'app/Viewer/reducers/targetDocumentReducer';
+import thesauris from 'app/Uploads/reducers/thesaurisReducer';
+import templates from 'app/Uploads/reducers/templatesReducer';
+import progress from 'app/Uploads/reducers/progressReducer';
 
 export default combineReducers({
-  documents
+  documents,
+  templates,
+  thesauris,
+  progress
 });

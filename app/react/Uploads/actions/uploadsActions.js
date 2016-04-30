@@ -1,6 +1,8 @@
-import api from '../../utils/singleton_api';
+import superagent from 'superagent';
+import {APIURL} from '../../config.js';
 import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
+import api from '../../utils/singleton_api';
 
 export function setUploads(documents) {
   return {
@@ -23,11 +25,25 @@ export function setThesauris(thesauris) {
   };
 }
 
-export function uploadDocument(data) {
+export function uploadDocument(newDoc, file) {
   return function (dispatch) {
-    return api.post('documents', data)
+    return api.post('documents', newDoc)
     .then((response) => {
-      dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc: response.json});
+      let doc = response.json;
+      dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc});
+      dispatch({type: types.UPLOAD_PROGRESS, doc: doc._id, progress: 0});
+
+      superagent.post(APIURL + 'upload')
+      .set('Accept', 'application/json')
+      .field('document', doc._id)
+      .attach('file', file, file.name)
+      .on('progress', (data) => {
+        dispatch({type: types.UPLOAD_PROGRESS, doc: doc._id, progress: Math.floor(data.percent)});
+      })
+      .on('response', () => {
+        dispatch({type: types.UPLOAD_COMPLETE, doc: doc._id});
+      })
+      .end();
     });
   };
 }
