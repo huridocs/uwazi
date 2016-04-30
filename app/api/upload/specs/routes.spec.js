@@ -38,7 +38,7 @@ describe('upload routes', () => {
       routes.post('/api/upload', req)
       .then((response) => {
         setTimeout(() => {
-          request.get(dbURL+'/8202c463d6158af8065022d9b5014ccb')
+          request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`)
           .then((doc) => {
             expect(doc.json.processed).toBe(true);
             expect(doc.json.fullText).toMatch(/Test file/);
@@ -51,24 +51,25 @@ describe('upload routes', () => {
             done();
           })
           .catch(done.fail);
-        }, 500)
+        }, 500);
       })
       .catch(done.fail);
     });
 
-    it('should update the document with the file path', (done) => {
-      routes.post('/api/upload', req)
-      .then((response) => {
-        expect(response).toEqual(file);
-        return request.get(dbURL+'/8202c463d6158af8065022d9b5014ccb');
-      })
-      .then((doc) => {
-        expect(doc.json.file).toEqual(file);
-        done()
-      })
-      .catch(done.fail);
+    describe('when upload finishes', () => {
+      it('should update the document with the file path and uploaded flag to true', (done) => {
+        routes.post('/api/upload', req)
+        .then((response) => {
+          expect(response).toEqual(file);
+          return request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`);
+        })
+        .then((doc) => {
+          expect(doc.json.file).toEqual(file);
+          expect(doc.json.uploaded).toEqual(true);
+          done();
+        })
+        .catch(done.fail);
+      });
     });
-
-
   });
 });

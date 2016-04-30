@@ -21,6 +21,7 @@ export default app => {
     .then((response) => {
       let doc = response.json;
       doc.file = req.files[0];
+      doc.uploaded = true;
 
       return request.post(db_url, doc);
     })
