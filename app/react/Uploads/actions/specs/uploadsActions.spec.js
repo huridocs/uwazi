@@ -41,6 +41,24 @@ describe('uploadsActions', () => {
   });
 
   describe('async actions', () => {
+    describe('uploadDocument', () => {
+      it('should create a document and upload file while dispatching the upload progress', (done) => {
+        let document = {name: 'doc'};
+
+        const expectedActions = [
+          {type: types.NEW_UPLOAD_DOCUMENT, doc: {testBackendResult: 'ok'}}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.uploadDocument(document))
+        .then(() => {
+          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         let document = {name: 'doc'};
@@ -59,6 +77,7 @@ describe('uploadsActions', () => {
         .catch(done.fail);
       });
     });
+
     describe('moveToLibrary', () => {
       it('should save the document with published:true and dispatch notification on success', (done) => {
         let document = {name: 'doc'};
