@@ -6,21 +6,8 @@ import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
   app.post('/api/documents', needsAuthorization, (req, res) => {
-
-    let document = req.body;
-    document.type = 'document';
-    document.user = req.user;
-
-    let url = db_url;
-    if(document._id){
-      url = db_url + '/_design/documents/_update/partialUpdate/'+document._id;
-    }
-
-    request.post(url, document)
-    .then((response) => {
-      res.json(response.json);
-    })
-    .catch(console.log);
+    return documents.save(req.body, req.user)
+    .then(doc => res.json(doc));
   });
 
   app.get('/api/documents/html', (req, res) => {
