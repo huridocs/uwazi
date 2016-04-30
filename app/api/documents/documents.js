@@ -34,7 +34,7 @@ export default {
   },
 
   getUploadsByUser(user) {
-    let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"`;
+    let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"&descending=true`;
 
     return request.get(url)
     .then(response => {
