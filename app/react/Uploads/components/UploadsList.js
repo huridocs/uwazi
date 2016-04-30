@@ -34,6 +34,7 @@ UploadsList.propTypes = {
 export function mapStateToProps(state) {
   return {
     documents: state.uploads.documents.toJS()
+    //progress: state.uploads.progress.toJS()
   };
 }
 
