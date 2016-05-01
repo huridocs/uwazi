@@ -20,6 +20,13 @@ describe('uploadsActions', () => {
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
 
+  describe('editDocument()', () => {
+    it('should return a EDIT_UPLOADED_DOCUMENT with the document', () => {
+      let action = actions.editDocument('document');
+      expect(action).toEqual({type: types.EDIT_UPLOADED_DOCUMENT, doc: 'document'});
+    });
+  });
+
   describe('setUploads()', () => {
     it('should return a SET_UPLOADS with the documents', () => {
       let action = actions.setUploads('documents');
