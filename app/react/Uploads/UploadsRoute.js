@@ -6,9 +6,7 @@ import documentsAPI from 'app/Library/DocumentsAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 
-import UploadBox from 'app/Uploads/components/UploadBox';
-import UploadsList from 'app/Uploads/components/UploadsList';
-import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
+import UploadsSection from 'app/Uploads/components/UploadsSection';
 
 export default class UploadsRoute extends RouteHandler {
   static requestState() {
@@ -25,15 +23,7 @@ export default class UploadsRoute extends RouteHandler {
   }
 
   render() {
-    return (
-      <div>
-        <main className="col-sm-8 col-sm-offset-2">
-          <UploadBox />
-          <UploadsList />
-        </main>
-        <UploadsFormPanel />
-      </div>
-    );
+    return <UploadsSection />;
   }
 }
 
