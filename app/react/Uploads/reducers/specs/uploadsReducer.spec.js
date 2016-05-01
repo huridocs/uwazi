@@ -27,7 +27,15 @@ describe('uploadsReducer', () => {
       let currentState = Immutable.fromJS([{title: '1'}, {title: '2'}]);
       let doc = {title: '3'};
       let newState = uploadsReducer(currentState, {type: types.NEW_UPLOAD_DOCUMENT, doc});
-      expect(newState.toJS()).toEqual([{title: '3'}, {title: '1'}, {title: '2'}]);
+      expect(newState).toEqualImmutable(Immutable.fromJS([{title: '3'}, {title: '1'}, {title: '2'}]));
+    });
+  });
+
+  describe('UPLOAD_COMPLETE', () => {
+    it('should set uploaded flag to true for the document', () => {
+      let currentState = Immutable.fromJS([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2'}]);
+      let newState = uploadsReducer(currentState, {type: types.UPLOAD_COMPLETE, doc: 'id2'});
+      expect(newState.toJS()).toEqual([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2', uploaded: true}]);
     });
   });
 });
