@@ -4,6 +4,13 @@ import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
 import api from '../../utils/singleton_api';
 
+export function editDocument(doc) {
+  return {
+    type: types.EDIT_UPLOADED_DOCUMENT,
+    doc
+  };
+}
+
 export function setUploads(documents) {
   return {
     type: types.SET_UPLOADS,
