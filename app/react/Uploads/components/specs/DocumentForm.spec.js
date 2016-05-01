@@ -13,7 +13,6 @@ describe('DocumentForm', () => {
   let fields;
   let thesauris;
   let saveDocument = jasmine.createSpy('saveDocument');
-  let moveToLibrary = jasmine.createSpy('moveToLibrary');
   let values = {template: '1'};
   let handleSubmit = (callback) => {
     return callback.bind(null, values);
@@ -28,7 +27,6 @@ describe('DocumentForm', () => {
     component = shallow(<DocumentForm
       handleSubmit={handleSubmit}
       saveDocument={saveDocument}
-      moveToLibrary={moveToLibrary}
       templates={templates}
       fields={fields}
       values={values}
@@ -61,13 +59,6 @@ describe('DocumentForm', () => {
     });
   });
 
-  describe('moveToLibrary', () => {
-    it('should call saveDocument and add published: true', () => {
-      component.find('.to-library').simulate('click', {preventDefault: () => {}});
-      expect(moveToLibrary).toHaveBeenCalledWith({template: '1'});
-    });
-  });
-
   describe('mapStateToProps', () => {
     describe('when state.form.template is not defined', () => {
       it('should use initialValues.template to find the template being used and generate dynamic names', () => {
@@ -85,6 +76,16 @@ describe('DocumentForm', () => {
         let newProps = mapStateToProps(state, props);
         expect(newProps.fields).toEqual(['_id', '_rev', 'title', 'template', 'metadata.field3']);
         expect(newProps.template).toEqual(templates[1]);
+      });
+    });
+
+    describe('when document has no template', () => {
+      it('should use the first template', () => {
+        let state = {form: {}};
+        let props = {initialValues: {}, templates};
+        let newProps = mapStateToProps(state, props);
+        expect(newProps.fields).toEqual(['_id', '_rev', 'title', 'template', 'metadata.field1', 'metadata.field2']);
+        expect(newProps.template).toEqual(templates[0]);
       });
     });
   });
