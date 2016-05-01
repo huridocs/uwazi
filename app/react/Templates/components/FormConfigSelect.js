@@ -58,7 +58,7 @@ export function mapStateToProps(state, props) {
   let properties = state.template.data.toJS().properties;
   return {
     initialValues: properties[props.index],
-    thesauris: state.template.uiState.toJS().thesauri,
+    thesauris: state.template.uiState.toJS().thesauris,
     fields: ['label', 'content', 'required', 'filter', 'type'],
     validate: () => {
       return validateProperty(properties[props.index], properties);
