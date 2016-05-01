@@ -3,11 +3,11 @@ import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config';
-import Uploads from 'app/Uploads/Uploads';
+import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import * as actionTypes from 'app/Uploads/actions/actionTypes.js';
 
-describe('Uploads', () => {
+describe('UploadsRoute', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
   let templates = [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}];
   let thesauris = [{name: 'countries', _id: '1', values: []}];
@@ -19,7 +19,7 @@ describe('Uploads', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
-    component = shallow(<Uploads {...props}/>, {context});
+    component = shallow(<UploadsRoute {...props}/>, {context});
     instance = component.instance();
 
     backend.restore();
@@ -31,7 +31,7 @@ describe('Uploads', () => {
 
   describe('static requestState()', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {
-      Uploads.requestState()
+      UploadsRoute.requestState()
       .then((state) => {
         expect(state.uploads.documents).toEqual(documents);
         expect(state.uploads.templates).toEqual(templates);
