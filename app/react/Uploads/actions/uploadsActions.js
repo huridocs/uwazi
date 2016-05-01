@@ -31,7 +31,6 @@ export function uploadDocument(newDoc, file) {
     .then((response) => {
       let doc = response.json;
       dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc});
-      dispatch({type: types.UPLOAD_PROGRESS, doc: doc._id, progress: 0});
 
       superagent.post(APIURL + 'upload')
       .set('Accept', 'application/json')

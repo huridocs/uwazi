@@ -57,8 +57,8 @@ describe('uploadsActions', () => {
 
         const expectedActions = [
           {type: types.NEW_UPLOAD_DOCUMENT, doc: {_id: 'test'}},
-          {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 0},
           {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 55},
+          {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 65},
           {type: types.UPLOAD_COMPLETE, doc: 'test'}
         ];
         const store = mockStore({});
@@ -71,6 +71,7 @@ describe('uploadsActions', () => {
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
           mockUpload.emit('progress', {percent: 55.1});
+          mockUpload.emit('progress', {percent: 65});
           mockUpload.emit('response');
           expect(store.getActions()).toEqual(expectedActions);
         })
