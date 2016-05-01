@@ -8,8 +8,9 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsList from 'app/Uploads/components/UploadsList';
+import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
 
-export default class Uploads extends RouteHandler {
+export default class UploadsRoute extends RouteHandler {
   static requestState() {
     return Promise.all([documentsAPI.uploads(), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
@@ -25,13 +26,16 @@ export default class Uploads extends RouteHandler {
 
   render() {
     return (
-      <main className="col-sm-8 col-sm-offset-2">
-        <UploadBox />
-        <UploadsList />
-      </main>
+      <div>
+        <main className="col-sm-8 col-sm-offset-2">
+          <UploadBox />
+          <UploadsList />
+        </main>
+        <UploadsFormPanel />
+      </div>
     );
   }
 }
 
 //when all components are integrated with redux we can remove this
-Uploads.__redux = true;
+UploadsRoute.__redux = true;
