@@ -8,7 +8,9 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 
 import UploadsSection from 'app/Uploads/components/UploadsSection';
 
+
 export default class UploadsRoute extends RouteHandler {
+
   static requestState() {
     return Promise.all([documentsAPI.uploads(), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {

@@ -16,6 +16,11 @@ export class UploadDoc extends Component {
       message = 'Upload failed';
     }
 
+    if (!doc.processed && doc.uploaded) {
+      status = 'info';
+      message = 'Processing...';
+    }
+
     let itsUploading = typeof this.props.progress === 'number';
 
     if (itsUploading) {

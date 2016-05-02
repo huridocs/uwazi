@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsList from 'app/Uploads/components/UploadsList';
 import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
+import socket from 'app/utils/socket';
 
 export class UploadsSection extends Component {
   render() {
@@ -15,7 +16,7 @@ export class UploadsSection extends Component {
       <div>
         <main className={'col-sm-8 col-sm-offset-2 ' + className}>
           <UploadBox />
-          <UploadsList />
+          <UploadsList socket={socket}/>
         </main>
         <UploadsFormPanel />
       </div>

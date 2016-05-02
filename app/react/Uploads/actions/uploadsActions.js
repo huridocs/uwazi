@@ -72,3 +72,10 @@ export function moveToLibrary(data) {
     });
   };
 }
+
+export function conversionComplete(docId) {
+  return {
+    type: types.CONVERSION_COMPLETE,
+    doc: docId
+  };
+}

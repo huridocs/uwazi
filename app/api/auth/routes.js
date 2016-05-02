@@ -1,12 +1,12 @@
-import cookieParser from 'cookie-parser'
-import session from 'express-session'
-import passport from 'passport'
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import passport from 'passport';
 import './passport_conf.js';
 
-export default app => {
+export default (app) => {
 
   app.use(cookieParser());
-  app.use(session({ secret: 'keyboard cat' }));
+  app.use(session({secret: 'Lola and Harvey'}));
   app.use(passport.initialize());
   app.use(passport.session());
 

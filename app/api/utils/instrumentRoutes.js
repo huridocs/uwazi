@@ -4,7 +4,6 @@ let executeRoute = (method, routePath, req = {}, app) => {
     throw 'Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined';
   }
   let result = new Promise((resolve, reject) => {
-
     let statusCode;
     let res = {
       json: () => {},
@@ -28,16 +27,16 @@ let executeRoute = (method, routePath, req = {}, app) => {
     args[args.length - 1](req, res);
   });
 
-  if(args) {
+  if (args) {
     result.middlewares = args.slice(1, -1);
   }
 
   return result;
 };
 
-export default (route) => {
+export default (route, io) => {
   let app = jasmine.createSpyObj('app', ['get', 'post', 'delete']);
-  route(app);
+  route(app, io);
 
   let instrumentedRoute = {
     get: (routePath, req) => {
