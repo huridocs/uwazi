@@ -19,7 +19,9 @@ export function loadDocument(oldDoc, templates) {
         doc.metadata[property.name] = '';
       }
     });
+
     dispatch(formActions.load('document', doc));
+    dispatch(formActions.setInitial('document'));
   };
 }
 

@@ -19,6 +19,7 @@ describe('documentFormActions', () => {
 
     it('should should set the first template if document has no template', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
+      spyOn(formActions, 'setInitial').and.returnValue('forminitial');
       let dispatch = jasmine.createSpy('dispatch');
       let doc = {title: 'test'};
       let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
@@ -28,7 +29,9 @@ describe('documentFormActions', () => {
 
       let expectedDoc = {title: 'test', metadata: {test: '', newProp: ''}, template: 'templateId'};
       expect(dispatch).toHaveBeenCalledWith('formload');
+      expect(dispatch).toHaveBeenCalledWith('forminitial');
       expect(formActions.load).toHaveBeenCalledWith('document', expectedDoc);
+      expect(formActions.setInitial).toHaveBeenCalledWith('document');
     });
   });
 
