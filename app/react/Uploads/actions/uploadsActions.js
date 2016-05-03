@@ -11,6 +11,12 @@ export function editDocument(doc) {
   };
 }
 
+export function finishEdit() {
+  return {
+    type: types.FINISH_UPLOADED_DOCUMENT_EDIT
+  };
+}
+
 export function setUploads(documents) {
   return {
     type: types.SET_UPLOADS,
@@ -54,11 +60,13 @@ export function uploadDocument(newDoc, file) {
   };
 }
 
-export function saveDocument(data) {
+export function saveDocument(doc) {
   return function (dispatch) {
-    return api.post('documents', data)
+    return api.post('documents', doc)
     .then(() => {
       dispatch(notify('saved successfully !', 'info'));
+      dispatch({type: types.UPDATE_DOCUMENT, doc});
+      dispatch({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
     });
   };
 }

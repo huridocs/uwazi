@@ -12,6 +12,11 @@ export class UploadDoc extends Component {
     let status = 'success';
     let message = 'Ready for publish';
 
+    if (!doc.template) {
+      status = 'warning';
+      message = 'Metadata required';
+    }
+
     if (doc.uploaded === false) {
       status = 'danger';
       message = 'Upload failed';

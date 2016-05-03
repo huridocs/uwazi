@@ -14,6 +14,22 @@ describe('uploadsReducer', () => {
     });
   });
 
+  describe('UPDATE_DOCUMENT', () => {
+    it('should update the document with document passed', () => {
+      let state = Immutable.fromJS([
+        {_id: 1, title: 'Song of Ice and Fire: The Winds of Winter'},
+        {_id: 2, title: 'Song of Ice and Fire: A Dream of Spring'}
+      ]);
+      let doc = {_id: 1, metadata: {test: 'test'}};
+      let newState = uploadsReducer(state, {type: types.UPDATE_DOCUMENT, doc});
+      let expected = Immutable.fromJS([
+        {_id: 1, metadata: {test: 'test'}, title: 'Song of Ice and Fire: The Winds of Winter'},
+        {_id: 2, title: 'Song of Ice and Fire: A Dream of Spring'}
+      ]);
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('SET_UPLOADS', () => {
     it('should set the documents in the state', () => {
       let documents = [{title: 'Song of Ice and Fire: The Winds of Winter'}, {title: 'Song of Ice and Fire: A Dream of Spring'}];

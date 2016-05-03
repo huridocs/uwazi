@@ -9,5 +9,9 @@ export default function uiState(state = initialState, action = {}) {
     return state.set('documentBeingEdited', action.doc._id);
   }
 
+  if (action.type === types.FINISH_UPLOADED_DOCUMENT_EDIT) {
+    return state.delete('documentBeingEdited');
+  }
+
   return Immutable.fromJS(state);
 }

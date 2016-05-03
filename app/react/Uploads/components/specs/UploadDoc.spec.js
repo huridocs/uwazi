@@ -11,7 +11,7 @@ describe('UploadDoc', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({title: 'doc title'}),
+      doc: Immutable.fromJS({title: 'doc title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
       editDocument: jasmine.createSpy('editDocument'),
       loadDocument: jasmine.createSpy('loadDocument')
@@ -86,6 +86,16 @@ describe('UploadDoc', () => {
       render();
       expect(component.find(RowList.Item).props().status).toBe('info');
       expect(component.find(ItemFooter.ProgressBar).props().progress).toBe(0);
+    });
+  });
+
+  describe('when document has no template', () => {
+    it('should render warning status', () => {
+      props = {
+        doc: Immutable.fromJS({title: 'doc title'})
+      };
+      render();
+      expect(component.find(RowList.Item).props().status).toBe('warning');
     });
   });
 

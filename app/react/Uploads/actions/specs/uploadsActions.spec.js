@@ -20,6 +20,13 @@ describe('uploadsActions', () => {
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
 
+  describe('finishEdit()', () => {
+    it('should return a FINISH_UPLOADED_DOCUMENT_EDIT', () => {
+      let action = actions.finishEdit();
+      expect(action).toEqual({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
+    });
+  });
+
   describe('editDocument()', () => {
     it('should return a EDIT_UPLOADED_DOCUMENT with the document', () => {
       let action = actions.editDocument('document');
@@ -93,16 +100,19 @@ describe('uploadsActions', () => {
         .catch(done.fail);
       });
     });
+
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
-        let document = {name: 'doc'};
+        let doc = {name: 'doc'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'info', id: 'unique_id'}}
+          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'info', id: 'unique_id'}},
+          {type: types.UPDATE_DOCUMENT, doc},
+          {type: types.FINISH_UPLOADED_DOCUMENT_EDIT}
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.saveDocument(document))
+        store.dispatch(actions.saveDocument(doc))
         .then(() => {
           expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
           expect(store.getActions()).toEqual(expectedActions);

@@ -17,6 +17,10 @@ export default function documents(state = initialState, action = {}) {
     return state.update(state.findIndex(doc => doc.get('_id') === action.doc), (doc) => doc.set('uploaded', true));
   }
 
+  if (action.type === types.UPDATE_DOCUMENT) {
+    return state.update(state.findIndex(doc => doc.get('_id') === action.doc._id), (doc) => doc.merge(Immutable.fromJS(action.doc)));
+  }
+
   if (action.type === types.CONVERSION_COMPLETE) {
     return state.update(state.findIndex(doc => doc.get('_id') === action.doc), (doc) => doc.set('processed', true));
   }

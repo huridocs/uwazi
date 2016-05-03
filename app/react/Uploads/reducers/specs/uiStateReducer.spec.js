@@ -21,4 +21,12 @@ describe('uploadsReducer', () => {
       expect(newState).toEqualImmutable(Immutable.fromJS({documentBeingEdited: 'doc2'}));
     });
   });
+
+  describe('FINISH_UPLOADED_DOCUMENT_EDIT', () => {
+    it('should unset the documentBeingEdited', () => {
+      let currentState = Immutable.fromJS({documentBeingEdited: 'doc'});
+      let newState = uiReducer(currentState, {type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
+      expect(newState).toEqualImmutable(Immutable.fromJS({}));
+    });
+  });
 });

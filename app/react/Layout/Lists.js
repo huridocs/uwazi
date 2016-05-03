@@ -33,6 +33,9 @@ let ItemLabel = ({children, status}) => {
   if (status === 'danger') {
     icon = 'fa-close';
   }
+  if (status === 'warning') {
+    icon = 'fa-warning';
+  }
   return (
     <span className={'label label-' + (status || 'success')}>
       <i className={'fa ' + icon}></i>
