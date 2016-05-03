@@ -121,7 +121,7 @@ describe('UploadDoc', () => {
       it('should open metadataRequired modal', () => {
         props.doc = Immutable.fromJS({title: 'doc title'});
         render();
-        component.find(ItemFooter).simulate('click');
+        component.find(ItemFooter).simulate('click', {stopPropagation: () => {}});
         expect(props.showModal).toHaveBeenCalledWith('metadataRequired', props.doc);
       });
     });
