@@ -1,2 +1,4 @@
+import {isClient} from 'app/utils';
 import io from 'socket.io-client';
-export default io();
+
+export default isClient ? io() : {};
