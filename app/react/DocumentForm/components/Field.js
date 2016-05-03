@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
+import { createFieldClass, controls } from 'react-redux-form';
 
-export class Textarea extends Component {
+export class FormGroup extends Component {
 
   render() {
     const {label} = this.props;
@@ -10,19 +11,16 @@ export class Textarea extends Component {
     }
     return (
       <div className={className}>
-        <label>{label}</label>
-        <textarea className="form-control" {...this.props}/>
+        {this.props.children}
       </div>
     );
   }
 
 }
 
-Textarea.propTypes = {
+FormGroup.propTypes = {
   properties: PropTypes.object,
-  label: PropTypes.string,
-  touched: PropTypes.bool,
-  valid: PropTypes.bool
+  label: PropTypes.string
 };
 
-export default Textarea;
+export default FormGroup;

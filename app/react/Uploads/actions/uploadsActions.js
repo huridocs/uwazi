@@ -3,6 +3,21 @@ import {APIURL} from '../../config.js';
 import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
 import api from '../../utils/singleton_api';
+import {actions as formActions} from  'react-redux-form';
+
+export function changeTemplate(doc, templates) {
+  return function (dispatch) {
+    let template = templates.find((t) => t._id === doc.template);
+    console.log(template);
+    template.properties.forEach((property) => {
+      if (!doc.metadata[property.name]) {
+        doc.metadata[property.name] = '';
+      }
+    });
+    console.log(doc);
+    dispatch(formActions.merge('document', doc));
+  };
+}
 
 export function editDocument(doc) {
   return {

@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {reducer as formReducer} from 'redux-form';
+import {reducer as reduxForm} from 'redux-form';
 
 import templates from 'app/Templates/reducers/templatesReducer';
 import template from 'app/Templates/reducers/templateReducer';
@@ -17,9 +17,11 @@ import libraryFilters from 'app/Library/reducers/filtersReducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import uploads from 'app/Uploads/reducers/reducer';
 
+import {modelReducer, formReducer} from 'react-redux-form';
+
 export default combineReducers({
   notifications: notificationsReducer,
-  form: formReducer,
+  form: reduxForm,
   template: combineReducers({
     data: template,
     uiState: templateUI
@@ -35,5 +37,7 @@ export default combineReducers({
   documentViewer,
   contextMenu,
   modals,
-  uploads
+  uploads,
+  document: modelReducer('document'),
+  documentForm: formReducer('document')
 });

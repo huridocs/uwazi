@@ -2,7 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {editDocument} from 'app/Uploads/actions/uploadsActions';
+import {editDocument, changeTemplate} from 'app/Uploads/actions/uploadsActions';
+import {loadDocument} from 'app/DocumentForm/actions/actions';
 
 export class UploadDoc extends Component {
   render() {
@@ -28,7 +29,10 @@ export class UploadDoc extends Component {
     }
 
     return (
-      <RowList.Item status={status} active={active} onClick={() => this.props.editDocument(doc)}>
+      <RowList.Item status={status} active={active} onClick={() => {
+        this.props.loadDocument(doc, this.props.templates.toJS());
+        this.props.editDocument(doc);
+      }}>
         <ItemName>{doc.title}</ItemName>
         <ItemFooter>
           {(() => {
@@ -53,12 +57,13 @@ UploadDoc.propTypes = {
 export function mapStateToProps(state, props) {
   return {
     progress: state.uploads.progress.get(props.doc.get('_id')),
-    documentBeingEdited: state.uploads.uiState.get('documentBeingEdited')
+    documentBeingEdited: state.uploads.uiState.get('documentBeingEdited'),
+    templates: state.uploads.templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({editDocument}, dispatch);
+  return bindActionCreators({editDocument, loadDocument, changeTemplate}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

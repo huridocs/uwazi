@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import Immutable from 'immutable';
 
 import SidePanel from 'app/Layout/SidePanel';
-import DocumentForm from 'app/Uploads/components/DocumentForm';
+import DocumentForm from 'app/DocumentForm/components/DocumentForm';
 
 export class UploadsFormPanel extends Component {
   render() {
@@ -11,11 +11,7 @@ export class UploadsFormPanel extends Component {
     return (
       <SidePanel {...sidePanelprops}>
         <h1>Form</h1>
-        <DocumentForm
-          initialValues={this.props.document.toJS()}
-          templates={this.props.templates.toJS()}
-          thesauris={this.props.thesauris.toJS()}
-        />
+        <DocumentForm templates={this.props.templates} thesauris={this.props.thesauris}/>
       </SidePanel>
     );
   }
@@ -32,9 +28,9 @@ const mapStateToProps = (state) => {
   let uiState = state.uploads.uiState;
   return {
     open: typeof uiState.get('documentBeingEdited') === 'string',
+    document: state.uploads.documents.find(doc => uiState.get('documentBeingEdited') === doc.get('_id')) || Immutable.fromJS({}),
     templates: state.uploads.templates,
-    thesauris: state.uploads.thesauris,
-    document: state.uploads.documents.find(doc => uiState.get('documentBeingEdited') === doc.get('_id')) || Immutable.fromJS({})
+    thesauris: state.uploads.thesauris
   };
 };
 
