@@ -5,6 +5,14 @@ export function loadDocument(oldDoc, templates) {
     //test
     let doc = Object.assign({}, oldDoc);
     //
+    if (!doc.template) {
+      doc.template = templates[0]._id;
+    }
+
+    if (!doc.metadata) {
+      doc.metadata = {};
+    }
+
     let template = templates.find((t) => t._id === doc.template);
     template.properties.forEach((property) => {
       if (!doc.metadata[property.name]) {
