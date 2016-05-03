@@ -59,6 +59,22 @@ describe('upload routes', () => {
       .catch(done.fail);
     });
 
+    describe('when conversion fails', () => {
+      it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
+        spyOn(documents, 'save');
+        iosocket.emit.and.callFake((eventName, docId) => {
+          expect(eventName).toBe('conversionFailed');
+          expect(docId).toBe('8202c463d6158af8065022d9b5014ccb');
+          expect(documents.save).toHaveBeenCalledWith({_id: '8202c463d6158af8065022d9b5014ccb', processed: false});
+          done();
+        });
+
+        req.files = ['invalid_file'];
+        routes.post('/api/upload', req)
+        .catch(done.fail);
+      });
+    });
+
     describe('when upload finishes', () => {
       it('should update the document with the file path and uploaded flag to true', (done) => {
         routes.post('/api/upload', req)

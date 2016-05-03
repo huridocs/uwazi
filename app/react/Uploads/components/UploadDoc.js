@@ -27,6 +27,11 @@ export class UploadDoc extends Component {
       message = 'Processing...';
     }
 
+    if (doc.processed === false) {
+      status = 'danger';
+      message = 'Conversion failed';
+    }
+
     let itsUploading = typeof this.props.progress === 'number';
 
     if (itsUploading) {

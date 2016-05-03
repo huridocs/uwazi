@@ -15,7 +15,8 @@ describe('DocumentsList', () => {
     documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
 
     let conversionComplete = jasmine.createSpy('conversionComplete');
-    props = {documents, socket, conversionComplete};
+    let updateDocument = jasmine.createSpy('updateDocument');
+    props = {documents, socket, conversionComplete, updateDocument};
     component = shallow(<UploadsList {...props} />);
   });
 
@@ -30,6 +31,13 @@ describe('DocumentsList', () => {
     it('should call conversionComplete with the id', () => {
       socket.socketClient.emit('documentProcessed', 'doc_id_1');
       expect(props.conversionComplete).toHaveBeenCalledWith('doc_id_1');
+    });
+  });
+
+  describe('when socket event conversionFailed', () => {
+    it('should call updateDocument with the doc processed false', () => {
+      socket.socketClient.emit('conversionFailed', 'doc_id_1');
+      expect(props.updateDocument).toHaveBeenCalledWith({_id: 'doc_id_1', processed: false});
     });
   });
 

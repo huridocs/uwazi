@@ -27,6 +27,13 @@ describe('uploadsActions', () => {
     });
   });
 
+  describe('UPDATE_DOCUMENT()', () => {
+    it('should return a UPDATE_DOCUMENT with the document', () => {
+      let action = actions.updateDocument('document');
+      expect(action).toEqual({type: types.UPDATE_DOCUMENT, doc: 'document'});
+    });
+  });
+
   describe('editDocument()', () => {
     it('should return a EDIT_UPLOADED_DOCUMENT with the document', () => {
       let action = actions.editDocument('document');

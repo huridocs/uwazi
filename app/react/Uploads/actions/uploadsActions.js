@@ -11,6 +11,13 @@ export function editDocument(doc) {
   };
 }
 
+export function updateDocument(doc) {
+  return {
+    type: types.UPDATE_DOCUMENT,
+    doc
+  };
+}
+
 export function finishEdit() {
   return {
     type: types.FINISH_UPLOADED_DOCUMENT_EDIT
@@ -65,7 +72,7 @@ export function saveDocument(doc) {
     return api.post('documents', doc)
     .then(() => {
       dispatch(notify('saved successfully !', 'info'));
-      dispatch({type: types.UPDATE_DOCUMENT, doc});
+      dispatch(updateDocument(doc));
       dispatch({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
     });
   };

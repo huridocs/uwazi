@@ -1,5 +1,5 @@
 import request from '../../shared/JSONRequest.js';
-import {db_url} from '../config/database.js';
+import {db_url as dbURL} from '../config/database.js';
 import multer from 'multer';
 import PDF from './PDF';
 import documents from 'api/documents/documents';
@@ -13,17 +13,17 @@ let storage = multer.diskStorage({
   }
 });
 
-export default (app, io) => {
+export default (app) => {
   let upload = multer({storage: storage});
 
   app.post('/api/upload', upload.any(), (req, res) => {
-    request.get(db_url + '/' + req.body.document)
+    request.get(dbURL + '/' + req.body.document)
     .then((response) => {
       let doc = response.json;
       doc.file = req.files[0];
       doc.uploaded = true;
 
-      return request.post(db_url, doc);
+      return request.post(dbURL, doc);
     })
     .then(() => {
       res.json(req.files[0]);
@@ -32,7 +32,7 @@ export default (app, io) => {
 
       return Promise.all([
         new PDF(file).convert(),
-        request.get(db_url + '/' + req.body.document)
+        request.get(dbURL + '/' + req.body.document)
       ]);
     })
     .then((response) => {
@@ -49,12 +49,16 @@ export default (app, io) => {
       document.fullText = conversion.fullText;
       delete conversion.fullText;
       return Promise.all([
-        request.post(db_url, document),
+        request.post(dbURL, document),
         documents.saveHTML(conversion)
       ]);
     })
     .catch((err) => {
-      console.log(err);
+      if (err.error === 'conversion_error') {
+        documents.save({_id: req.body.document, processed: false});
+        let socket = req.io.getSocket();
+        socket.emit('conversionFailed', req.body.document);
+      }
     });
   });
 };

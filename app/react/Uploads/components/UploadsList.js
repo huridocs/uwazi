@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import 'app/Uploads/scss/uploads_list.scss';
 import {RowList} from 'app/Layout/Lists';
 import UploadDoc from 'app/Uploads/components/UploadDoc';
-import {conversionComplete} from 'app/Uploads/actions/uploadsActions';
+import {conversionComplete, updateDocument} from 'app/Uploads/actions/uploadsActions';
 
 
 export class UploadsList extends Component {
@@ -13,6 +13,10 @@ export class UploadsList extends Component {
   componentWillMount() {
     this.props.socket.on('documentProcessed', (docId) => {
       this.props.conversionComplete(docId);
+    });
+
+    this.props.socket.on('conversionFailed', (docId) => {
+      this.props.updateDocument({_id: docId, processed: false});
     });
   }
 
@@ -31,7 +35,8 @@ UploadsList.propTypes = {
   documents: PropTypes.object,
   progress: PropTypes.object,
   socket: PropTypes.object,
-  conversionComplete: PropTypes.func
+  conversionComplete: PropTypes.func,
+  updateDocument: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -41,7 +46,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({conversionComplete}, dispatch);
+  return bindActionCreators({conversionComplete, updateDocument}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsList);
