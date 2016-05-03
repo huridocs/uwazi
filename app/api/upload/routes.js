@@ -36,11 +36,15 @@ export default (app, io) => {
       ]);
     })
     .then((response) => {
-
       let document = response[1].json;
       let conversion = response[0];
       conversion.document = document._id;
-      req.iosocket.emit('documentProcessed', document._id);
+
+      let socket = req.io.getSocket();
+      if (socket) {
+        socket.emit('documentProcessed', document._id);
+      }
+
       document.processed = true;
       document.fullText = conversion.fullText;
       delete conversion.fullText;

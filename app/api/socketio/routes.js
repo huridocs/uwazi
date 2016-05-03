@@ -6,14 +6,20 @@ export default (server, app) => {
   app.use((req, res, next) => {
     req.io = io;
 
-    Object.keys(io.sockets.connected).forEach((socketId) => {
-      let socket = io.sockets.connected[socketId];
-      let sessionId = cookie.parse(socket.handshake.headers.cookie)['connect.sid']
-      .split('.')[0].split(':')[1];
-      if (sessionId === req.session.id) {
-        req.iosocket = socket;
-      }
-    });
+    io.getSocket = () => {
+      let found = false;
+      Object.keys(io.sockets.connected).forEach((socketId) => {
+        let socket = io.sockets.connected[socketId];
+        let sessionId = cookie.parse(socket.handshake.headers.cookie)['connect.sid']
+        .split('.')[0].split(':')[1];
+
+        if (sessionId === req.session.id) {
+          found = socket;
+        }
+      });
+
+      return found;
+    };
 
     next();
   });

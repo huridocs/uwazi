@@ -4,9 +4,18 @@ import {connect} from 'react-redux';
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsList from 'app/Uploads/components/UploadsList';
 import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
-import socket from 'app/utils/socket';
+import io from 'socket.io-client';
 
 export class UploadsSection extends Component {
+
+  componentWillMount() {
+    this.socket = io();
+  }
+
+  componentWillUnmount() {
+    this.socket.disconnect();
+  }
+
   render() {
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
@@ -16,7 +25,7 @@ export class UploadsSection extends Component {
       <div>
         <main className={'col-sm-8 col-sm-offset-2 ' + className}>
           <UploadBox />
-          <UploadsList socket={socket}/>
+          <UploadsList socket={this.socket}/>
         </main>
         <UploadsFormPanel />
       </div>

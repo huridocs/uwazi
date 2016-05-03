@@ -14,6 +14,9 @@ describe('upload routes', () => {
 
   beforeEach((done) => {
     iosocket = jasmine.createSpyObj('socket', ['emit']);
+    let io = {getSocket: () => {
+      return iosocket;
+    }};
     routes = instrumentRoutes(uploadRoutes);
     file = {fieldname: 'file',
             originalname: 'gadgets-01.pdf',
@@ -23,7 +26,7 @@ describe('upload routes', () => {
             filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
             path: __dirname + '/uploads/f2082bf51b6ef839690485d7153e847a.pdf',
             size: 171411271};
-    req = {headers: {}, body: {document: '8202c463d6158af8065022d9b5014ccb'}, files: [file], iosocket};
+    req = {headers: {}, body: {document: '8202c463d6158af8065022d9b5014ccb'}, files: [file], io};
 
     database.reset_testing_database()
     .then(() => database.import(fixtures))
