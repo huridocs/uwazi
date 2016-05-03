@@ -26,7 +26,7 @@ export class UploadBox extends Component {
 
   render() {
     return (
-      <Dropzone style={{}} onDrop={this.onDrop.bind(this)}>
+      <Dropzone style={{}} onDrop={this.onDrop.bind(this)} multiple={false}>
         <div className="upload-box">
           <i className="fa fa-upload"></i>
           <a>Upload your document</a>
