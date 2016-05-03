@@ -4,7 +4,7 @@ export class FormGroup extends Component {
 
   render() {
     let className = 'form-group';
-    if ((this.props.touched || this.props.submitFailed) && !this.props.valid) {
+    if ((this.props.touched === true || this.props.submitFailed) && this.props.valid === false) {
       className += ' has-error';
     }
     return (

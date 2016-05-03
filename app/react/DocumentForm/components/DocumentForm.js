@@ -5,6 +5,7 @@ import {Field, Form} from 'react-redux-form';
 import {changeTemplate} from 'app/DocumentForm/actions/actions';
 import Select, {SelectField} from 'app/DocumentForm/components/Select';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
+import validator from 'app/DocumentForm/utils/documentValidator';
 
 export class DocumentForm extends Component {
   render() {
@@ -23,21 +24,8 @@ export class DocumentForm extends Component {
       return {label: t.name, value: t._id};
     });
 
-    let required = val => val !== '';
-
-    let validators = {
-      title: {required},
-      template: {required}
-    };
-
-    template.properties.forEach((property) => {
-      if (property.required) {
-        validators[`metadata.${property.name}`] = {required};
-      }
-    });
-
     return (
-      <Form model="document" onSubmit={this.props.onSubmit} validators={validators}>
+      <Form model="document" onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
         <FormGroup {...state.fields.title}>
           <Field model="document.title">
@@ -67,7 +55,7 @@ export class DocumentForm extends Component {
               );
           }
           return (
-            <FormGroup key={index} {...state.fields[`metadata.${property.name}`]}>
+            <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
               <Field model={`document.metadata.${property.name}`} >
                 <label>{property.label}{property.required ? ' *' : ''}</label>
                 <input className="form-control" value={document.metadata[property.name]}/>
@@ -76,7 +64,7 @@ export class DocumentForm extends Component {
             );
         })}
 
-        <button type="submit" disabled={!state.valid}>
+        <button type="submit">
           Save
         </button>
       </Form>
