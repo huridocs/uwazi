@@ -3,7 +3,7 @@ import RouteHandler from '../RouteHandler';
 import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
-import api from '../../../utils/singleton_api';
+import api from '../../../utils/api';
 import Provider from '../Provider';
 import TestController from './TestController';
 

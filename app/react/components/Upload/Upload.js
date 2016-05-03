@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import superagent from 'superagent';
-import api from '../../utils/singleton_api';
+import api from '../../utils/api';
 import {APIURL} from '../../config.js';
 import './scss/upload.scss';
 import {events} from '../../utils/index';

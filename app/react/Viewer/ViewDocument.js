@@ -1,6 +1,6 @@
 import React from 'react';
 
-import api from 'app/utils/singleton_api';
+import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';

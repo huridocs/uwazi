@@ -1,5 +1,5 @@
 import * as types from 'app/Viewer/actions/actionTypes';
-import api from 'app/utils/singleton_api';
+import api from 'app/utils/api';
 import {viewerSearching} from 'app/Viewer/actions/uiActions';
 
 export function setDocument(document, html) {

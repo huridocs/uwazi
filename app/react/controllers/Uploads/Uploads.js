@@ -1,5 +1,5 @@
 import React from 'react';
-import API from '../../utils/singleton_api';
+import API from '../../utils/api';
 import RouteHandler from '../App/RouteHandler';
 import {events} from '../../utils';
 import RoundedProgressBar from '../../components/Elements/RoundedProgressBar';

@@ -1,6 +1,6 @@
 import {events} from '../../utils/index';
 import template from './templates/login.js';
-import api from '../../utils/singleton_api';
+import api from '../../utils/api';
 import {browserHistory} from 'react-router';
 import RouteHandler from '../App/RouteHandler';
 

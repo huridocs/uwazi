@@ -10,8 +10,8 @@ import CustomProvider from './controllers/App/Provider';
 import Root from './controllers/App/Root';
 import NoMatch from './controllers/App/NoMatch';
 import {isClient, getPropsFromRoute} from './utils';
-import instanceApi from './utils/instance_api';
 import store from './store';
+import api from 'app/utils/api';
 
 if (isClient) {
   ReactDOM.render(
@@ -106,7 +106,8 @@ function handleRoute(res, renderProps, req) {
   }
 
   if (routeProps.__redux) {
-    return routeProps.requestState(renderProps.params, instanceApi(cookie)).then((initialData) => {
+    api.authorize(cookie);
+    return routeProps.requestState(renderProps.params).then((initialData) => {
       renderPage(initialData, true);
     }).catch(console.log);
   }

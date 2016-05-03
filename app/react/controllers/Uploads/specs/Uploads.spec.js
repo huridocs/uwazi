@@ -4,7 +4,7 @@ import backend from 'fetch-mock';
 import TestUtils from 'react-addons-test-utils';
 import {APIURL} from '../../../config.js';
 import {events} from '../../../utils/index';
-import API from '../../../utils/singleton_api';
+import API from '../../../utils/api';
 import MockProvider from '../../App/specs/MockProvider';
 import {shallow} from 'enzyme';
 
