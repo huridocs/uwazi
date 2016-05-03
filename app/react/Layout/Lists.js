@@ -1,6 +1,4 @@
 import React, {PropTypes} from 'react';
-//import './scss/modal.scss';
-
 
 let List = ({children}) => {
   return <div className="item-group">{children}</div>;
@@ -10,8 +8,8 @@ let ItemName = ({children}) => {
   return <div className="item-name">{children}</div>;
 };
 
-let ItemFooter = ({children}) => {
-  return <div className="item-metadata">{children}</div>;
+let ItemFooter = ({children, onClick}) => {
+  return <div className="item-metadata" onClick={onClick}>{children}</div>;
 };
 
 let ProgressBar = ({progress}) => {
@@ -79,7 +77,7 @@ let childrenType = PropTypes.oneOfType([
 List.propTypes = {children: childrenType};
 RowList.propTypes = {children: childrenType};
 RowListItem.propTypes = {children: childrenType, status: PropTypes.string, onClick: PropTypes.func, active: PropTypes.bool};
-ItemFooter.propTypes = {children: childrenType};
+ItemFooter.propTypes = {children: childrenType, onClick: PropTypes.func};
 ItemLabel.propTypes = {children: childrenType, status: PropTypes.string};
 ItemName.propTypes = {children: childrenType};
 ProgressBar.propTypes = {children: childrenType, progress: PropTypes.number};

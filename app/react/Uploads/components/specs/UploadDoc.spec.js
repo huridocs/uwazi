@@ -15,7 +15,8 @@ describe('UploadDoc', () => {
       templates: Immutable.fromJS([{templates: 'templates'}]),
       editDocument: jasmine.createSpy('editDocument'),
       finishEdit: jasmine.createSpy('finishEdit'),
-      loadDocument: jasmine.createSpy('loadDocument')
+      loadDocument: jasmine.createSpy('loadDocument'),
+      showModal: jasmine.createSpy('showModal')
     };
   });
 
@@ -26,6 +27,14 @@ describe('UploadDoc', () => {
   it('should render the title', () => {
     render();
     expect(component.find(ItemName).children().text()).toBe('doc title');
+  });
+
+  describe('showModal', () => {
+    it('should not call showModal if modal false', () => {
+      render();
+      component.instance().showModal(false);
+      expect(props.showModal).not.toHaveBeenCalled();
+    });
   });
 
   it('should render success status by default', () => {
@@ -103,11 +112,18 @@ describe('UploadDoc', () => {
 
   describe('when document has no template', () => {
     it('should render warning status', () => {
-      props = {
-        doc: Immutable.fromJS({title: 'doc title'})
-      };
+      props = {doc: Immutable.fromJS({title: 'doc title'})};
       render();
       expect(component.find(RowList.Item).props().status).toBe('warning');
+    });
+
+    describe('clicking on the footer', () => {
+      it('should open metadataRequired modal', () => {
+        props.doc = Immutable.fromJS({title: 'doc title'});
+        render();
+        component.find(ItemFooter).simulate('click');
+        expect(props.showModal).toHaveBeenCalledWith('metadataRequired', props.doc);
+      });
     });
   });
 
