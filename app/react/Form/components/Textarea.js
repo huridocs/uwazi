@@ -3,15 +3,15 @@ import React, {Component, PropTypes} from 'react';
 export class Textarea extends Component {
 
   render() {
-    const {label} = this.props;
+    const {properties, label} = this.props;
     let className = 'form-group';
-    if (this.props.touched && !this.props.valid) {
+    if (properties.touched && properties.error) {
       className += ' has-error';
     }
     return (
       <div className={className}>
         <label>{label}</label>
-        <textarea className="form-control" {...this.props}/>
+        <textarea className="form-control" {...properties}/>
       </div>
     );
   }

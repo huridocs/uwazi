@@ -1,7 +1,7 @@
 import * as actions from 'app/DocumentForm/actions/actions';
 import {actions as formActions} from 'react-redux-form';
 
-fdescribe('documentFormActions', () => {
+describe('documentFormActions', () => {
   describe('loadDocument', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');

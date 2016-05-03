@@ -3,9 +3,8 @@ import {shallow} from 'enzyme';
 
 import Select from 'app/DocumentForm/components/Select';
 
-fdescribe('Select', () => {
+describe('Select', () => {
   let component;
-  let properties;
   let props;
 
   beforeEach(() => {

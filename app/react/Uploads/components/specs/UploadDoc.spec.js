@@ -12,7 +12,9 @@ describe('UploadDoc', () => {
   beforeEach(() => {
     props = {
       doc: Immutable.fromJS({title: 'doc title'}),
-      editDocument: jasmine.createSpy('editDocument')
+      templates: Immutable.fromJS([{templates: 'templates'}]),
+      editDocument: jasmine.createSpy('editDocument'),
+      loadDocument: jasmine.createSpy('loadDocument')
     };
   });
 
@@ -93,6 +95,7 @@ describe('UploadDoc', () => {
 
       component.find(RowList.Item).simulate('click');
       expect(props.editDocument).toHaveBeenCalledWith(props.doc.toJS());
+      expect(props.loadDocument).toHaveBeenCalledWith(props.doc.toJS(), props.templates.toJS());
     });
   });
 });

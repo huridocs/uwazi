@@ -36,8 +36,6 @@ export class DocumentForm extends Component {
       }
     });
 
-    console.log(state.fields.title);
-
     return (
       <Form model="document" onSubmit={this.props.onSubmit} validators={validators}>
 

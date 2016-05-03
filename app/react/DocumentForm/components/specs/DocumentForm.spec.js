@@ -7,7 +7,7 @@ import Select from 'app/DocumentForm/components/Select';
 import {Form} from 'react-redux-form';
 
 
-fdescribe('DocumentForm', () => {
+describe('DocumentForm', () => {
   let component;
   let fieldsTemplate;
   let props;
@@ -35,23 +35,23 @@ fdescribe('DocumentForm', () => {
   it('should render a form with document as model', () => {
     render();
     let form = component.find(Form);
-    expect(form.props().model).toEuqual('document');
+    expect(form.props().model).toEqual('document');
   });
 
-  fit('should render title field as a textarea', () => {
+  it('should render title field as a textarea', () => {
     render();
     let title = component.find('textarea');
     expect(title.props().value).toEqual('testTitle');
   });
 
-  fit('should render template as a select', () => {
+  it('should render template as a select', () => {
     render();
     let template = component.find(Select).first();
     expect(template.props().value).toEqual('templateId');
     expect(template.props().options).toEqual([{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}]);
   });
 
-  fdescribe('on template change', () => {
+  describe('on template change', () => {
     it('should call changeTemplate with the document and the template', () => {
       render();
       let template = component.find(Select).first();
@@ -60,7 +60,7 @@ fdescribe('DocumentForm', () => {
     });
   });
 
-  fit('should render dynamic fields based on the template selected', () => {
+  it('should render dynamic fields based on the template selected', () => {
     render();
     let inputField = component.findWhere((node) => node.props().model === 'document.metadata.field1');
     let input = inputField.find('input');
@@ -72,7 +72,7 @@ fdescribe('DocumentForm', () => {
     expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
   });
 
-  fdescribe('submit', () => {
+  describe('submit', () => {
     it('should call onSubmit with the values', () => {
       render();
       component.find(Form).simulate('submit', 'values');
