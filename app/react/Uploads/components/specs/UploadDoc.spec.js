@@ -64,6 +64,17 @@ describe('UploadDoc', () => {
     });
   });
 
+  describe('when document is uploaded but not processed', () => {
+    it('should render danger status', () => {
+      props = {
+        doc: Immutable.fromJS({title: 'doc title', uploaded: true, processed: false})
+      };
+      render();
+      expect(component.find(RowList.Item).props().status).toBe('info');
+      expect(component.find(ItemFooter.Label).props().status).toBe('info');
+    });
+  });
+
   describe('when document has uploading progress', () => {
     it('should render info status and the progressBar', () => {
       props = {

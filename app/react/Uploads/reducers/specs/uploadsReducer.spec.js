@@ -38,4 +38,11 @@ describe('uploadsReducer', () => {
       expect(newState.toJS()).toEqual([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2', uploaded: true}]);
     });
   });
+  describe('CONVERSION_COMPLETE', () => {
+    it('should set processed flag to true for the document', () => {
+      let currentState = Immutable.fromJS([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2'}]);
+      let newState = uploadsReducer(currentState, {type: types.CONVERSION_COMPLETE, doc: 'id2'});
+      expect(newState.toJS()).toEqual([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2', processed: true}]);
+    });
+  });
 });

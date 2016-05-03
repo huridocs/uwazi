@@ -64,9 +64,10 @@ describe('SearchBar', () => {
   });
 
   describe('the x in the input', () => {
-    it('should empty searchTerm', () => {
-      warpper.find('.input-group-btn').simulate('click');
+    it('should empty searchTerm and perform a search', () => {
+      warpper.find('.input-group-btn').simulate('click', {preventDefault: ()=>{}});
       expect(props.setSearchTerm).toHaveBeenCalledWith('');
+      expect(props.searchDocuments).toHaveBeenCalledWith('', {isBatman: true});
     });
   });
 

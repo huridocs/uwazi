@@ -45,8 +45,9 @@ describe('NewTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setThesauri with thesauri passed', () => {
-      instance.setReduxState({template: {uiState: Immutable.fromJS({thesauris: 'thesauris'})}});
+      instance.setReduxState({template: {uiState: Immutable.fromJS({thesauris: 'thesauris', templates: 'templates'})}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATES', templates: 'templates'});
     });
   });
 });

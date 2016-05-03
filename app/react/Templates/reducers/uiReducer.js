@@ -13,5 +13,9 @@ export default function templatesUI(state = initialState, action = {}) {
     return state.set('thesauris', action.thesauris);
   }
 
+  if (action.type === actions.SET_TEMPLATES) {
+    return state.set('templates', action.templates);
+  }
+
   return Immutable.fromJS(state);
 }

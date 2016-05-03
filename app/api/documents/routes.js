@@ -4,7 +4,7 @@ import documents from './documents';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import needsAuthorization from '../auth/authMiddleware';
 
-export default app => {
+export default (app) => {
   app.post('/api/documents', needsAuthorization, (req, res) => {
     return documents.save(req.body, req.user)
     .then(doc => res.json(doc));
@@ -38,11 +38,11 @@ export default app => {
 
   app.get('/api/documents', (req, res) => {
     let id = '';
-    let url = db_url+'/_design/documents/_view/list';
+    let url = db_url + '/_design/documents/_view/list';
 
-    if(req.query && req.query._id){
-      id = '?key="'+req.query._id+'"';
-      url = db_url+'/_design/documents/_view/all'+id;
+    if (req.query && req.query._id) {
+      id = '?key="' + req.query._id + '"';
+      url = db_url + '/_design/documents/_view/all' + id;
     }
 
     request.get(url)
@@ -58,7 +58,7 @@ export default app => {
   });
 
   app.get('/api/documents/newest', (req, res) => {
-    request.get(db_url+'/_design/documents/_view/list')
+    request.get(db_url + '/_design/documents/_view/list')
     .then(response => {
       res.json(sanitizeResponse(response.json));
     })

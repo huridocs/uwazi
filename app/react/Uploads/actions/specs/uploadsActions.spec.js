@@ -48,6 +48,13 @@ describe('uploadsActions', () => {
     });
   });
 
+  describe('conversionComplete()', () => {
+    it('should return a CONVERSION_COMPLETE with the document id', () => {
+      let action = actions.conversionComplete('document_id');
+      expect(action).toEqual({type: types.CONVERSION_COMPLETE, doc: 'document_id'});
+    });
+  });
+
   describe('async actions', () => {
     describe('uploadDocument', () => {
       it('should create a document and upload file while dispatching the upload progress', (done) => {

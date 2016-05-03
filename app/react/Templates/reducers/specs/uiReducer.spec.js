@@ -19,10 +19,17 @@ describe('uiReducer', () => {
     });
   });
 
-  describe('SET_THESAURI', () => {
-    it('should set thesauri list on thesauri', () => {
+  describe('SET_THESAURIS', () => {
+    it('should set thesauris list on thesauris', () => {
       let newState = reducer(Immutable.fromJS({}), {type: actions.SET_THESAURIS, thesauris: 'thesauris'});
       expect(newState).toEqualImmutable(Immutable.fromJS({thesauris: 'thesauris'}));
+    });
+  });
+
+  describe('SET_TEMPLATES', () => {
+    it('should set templates list on templates', () => {
+      let newState = reducer(Immutable.fromJS({}), {type: actions.SET_TEMPLATES, templates: 'templates'});
+      expect(newState).toEqualImmutable(Immutable.fromJS({templates: 'templates'}));
     });
   });
 });

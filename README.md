@@ -1,3 +1,6 @@
+[![devDependency Status](https://david-dm.org/huridocs/uwazidocs/dev-status.svg)](https://david-dm.org/huridocs/uwazidocs#info=devDependencies)
+[![dependency Status](https://david-dm.org/huridocs/uwazidocs/status.svg)](https://david-dm.org/huridocs/uwazidocs#info=dependencies)
+
 #Global dependencies
 
 - **NodeJs 4.2.6**

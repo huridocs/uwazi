@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {editDocument, changeTemplate} from 'app/Uploads/actions/uploadsActions';
+import {editDocument} from 'app/Uploads/actions/uploadsActions';
 import {loadDocument} from 'app/DocumentForm/actions/actions';
 
 export class UploadDoc extends Component {
@@ -15,6 +15,11 @@ export class UploadDoc extends Component {
     if (doc.uploaded === false) {
       status = 'danger';
       message = 'Upload failed';
+    }
+
+    if (!doc.processed && doc.uploaded) {
+      status = 'info';
+      message = 'Processing...';
     }
 
     let itsUploading = typeof this.props.progress === 'number';
@@ -51,7 +56,9 @@ UploadDoc.propTypes = {
   doc: PropTypes.object,
   progress: PropTypes.number,
   editDocument: PropTypes.func,
-  documentBeingEdited: PropTypes.string
+  documentBeingEdited: PropTypes.string,
+  loadDocument: PropTypes.func,
+  templates: PropTypes.object
 };
 
 export function mapStateToProps(state, props) {
@@ -63,7 +70,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({editDocument, loadDocument, changeTemplate}, dispatch);
+  return bindActionCreators({editDocument, loadDocument}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);
