@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
 
-import {uploadDocument} from 'app/Uploads/actions/uploadsActions';
+import {uploadDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import 'app/Uploads/scss/upload_box.scss';
 
 export class UploadBox extends Component {
@@ -12,6 +12,7 @@ export class UploadBox extends Component {
       let doc = {title: this.extractTitle(file)};
       this.props.uploadDocument(doc, file);
     });
+    this.props.finishEdit();
   }
 
   extractTitle(file) {
@@ -37,12 +38,13 @@ export class UploadBox extends Component {
 }
 
 UploadBox.propTypes = {
-  uploadDocument: PropTypes.func
+  uploadDocument: PropTypes.func,
+  finishEdit: PropTypes.func
 };
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument}, dispatch);
+  return bindActionCreators({uploadDocument, finishEdit}, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(UploadBox);

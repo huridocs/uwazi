@@ -11,9 +11,10 @@ describe('UploadDoc', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({title: 'doc title', template: 'templateId'}),
+      doc: Immutable.fromJS({_id: 'docId', title: 'doc title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
       editDocument: jasmine.createSpy('editDocument'),
+      finishEdit: jasmine.createSpy('finishEdit'),
       loadDocument: jasmine.createSpy('loadDocument')
     };
   });
@@ -117,6 +118,18 @@ describe('UploadDoc', () => {
       component.find(RowList.Item).simulate('click');
       expect(props.editDocument).toHaveBeenCalledWith(props.doc.toJS());
       expect(props.loadDocument).toHaveBeenCalledWith(props.doc.toJS(), props.templates.toJS());
+    });
+
+    describe('when clicking on the same document being edited', () => {
+      it('should finishEdit', () => {
+        props.documentBeingEdited = 'docId';
+        render();
+
+        component.find(RowList.Item).simulate('click');
+        expect(props.finishEdit).toHaveBeenCalled();
+        expect(props.editDocument).not.toHaveBeenCalled();
+        expect(props.loadDocument).not.toHaveBeenCalled();
+      });
     });
   });
 });

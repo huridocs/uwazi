@@ -112,7 +112,7 @@ function handleRoute(res, renderProps, req) {
     }).catch(console.log);
   }
   if (routeProps.requestState) {
-    return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage).catch(console.log);
+    //return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage).catch(console.log);
   }
   renderPage();
 }

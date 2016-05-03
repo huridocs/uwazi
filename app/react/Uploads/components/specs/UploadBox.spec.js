@@ -14,7 +14,8 @@ describe('UploadBox', () => {
   let instance;
 
   let props = {
-    uploadDocument: jasmine.createSpy('uploadDocument')
+    uploadDocument: jasmine.createSpy('uploadDocument'),
+    finishEdit: jasmine.createSpy('finishEdit')
   };
 
   let render = () => {
@@ -22,10 +23,18 @@ describe('UploadBox', () => {
     instance = component.instance();
   };
 
-  it('should render input with properties passed', () => {
-    render();
-    instance.onDrop(files);
-    expect(props.uploadDocument).toHaveBeenCalledWith({title: 'Fighting crime 101'}, files[0]);
-    expect(props.uploadDocument).toHaveBeenCalledWith({title: 'File2'}, files[1]);
+  describe('onDrop', () => {
+    it('should upload all documents passed', () => {
+      render();
+      instance.onDrop(files);
+      expect(props.uploadDocument).toHaveBeenCalledWith({title: 'Fighting crime 101'}, files[0]);
+      expect(props.uploadDocument).toHaveBeenCalledWith({title: 'File2'}, files[1]);
+    });
+
+    it('should should call finishEdit to close the document form being edited', () => {
+      render();
+      instance.onDrop([]);
+      expect(props.finishEdit).toHaveBeenCalled();
+    });
   });
 });
