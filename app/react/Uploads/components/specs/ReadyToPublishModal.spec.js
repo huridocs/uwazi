@@ -26,15 +26,7 @@ describe('ReadyToPublishModal', () => {
     render();
     expect(component.find(Modal).props().isOpen).toBe(true);
   });
-
-  it('should render a Link to document viewer', () => {
-    render();
-    let link = component.find(Link);
-    expect(link.props().to).toBe('/document/docId');
-    link.simulate('click');
-    expect(props.hideModal).toHaveBeenCalledWith('readyToPublish');
-  });
-
+  
   describe('when clicking confirm button', () => {
     it('should publish the document and close the modal', () => {
       render();

@@ -37,9 +37,6 @@ export class ReadyToPublishModal extends Component {
           <button type="button" className="btn btn-default cancel-button" onClick={() => this.props.hideModal('readyToPublish') }>
             <i className="fa fa-close"></i> Cancel
           </button>
-          <Link to={`/document/${doc._id}`} className="btn btn-default" onClick={() => this.props.hideModal('readyToPublish')}>
-            <i className="fa fa-send"></i> Edit before publication
-          </Link>
           <button type="button" className="btn btn-success confirm-button" onClick={() => this.confirm()}>
             <i className="fa fa-paper-plane"></i> Publish document
           </button>
