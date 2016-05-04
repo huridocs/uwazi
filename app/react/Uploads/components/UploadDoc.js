@@ -5,6 +5,7 @@ import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {editDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import {loadDocument} from 'app/DocumentForm/actions/actions';
 import {showModal} from 'app/Modals/actions/modalActions';
+import {Link} from 'react-router';
 
 export class UploadDoc extends Component {
   showModal(modal, e) {
@@ -35,22 +36,22 @@ export class UploadDoc extends Component {
       modal = 'metadataRequired';
     }
 
-    if (doc.uploaded === false) {
-      status = 'danger';
-      message = 'Upload failed';
-      modal = 'uploadFailed';
-    }
-
-    if (!doc.processed && doc.uploaded) {
+    if (doc.uploaded && !doc.processed) {
       status = 'info';
       message = 'Processing...';
       modal = '';
     }
 
-    if (doc.processed === false) {
+    if (doc.uploaded && doc.processed === false) {
       status = 'danger';
       message = 'Conversion failed';
       modal = '';
+    }
+
+    if (doc.uploaded === false) {
+      status = 'danger';
+      message = 'Upload failed';
+      modal = 'uploadFailed';
     }
 
     let itsUploading = typeof this.props.progress === 'number';
@@ -65,6 +66,8 @@ export class UploadDoc extends Component {
       active = this.props.documentBeingEdited === doc._id;
     }
 
+    console.log(doc.title, doc.uploaded, doc.processed);
+
     return (
       <RowList.Item status={status} active={active} onClick={this.editDocument.bind(this, doc, active)}>
       <ItemName>{doc.title}</ItemName>
@@ -72,6 +75,14 @@ export class UploadDoc extends Component {
         {(() => {
           if (itsUploading) {
             return <ItemFooter.ProgressBar progress={this.props.progress} />;
+          }
+          if (doc.processed) {
+            return <ItemFooter.Label status={status}>
+                    {message}
+                    <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+                      <i className="fa fa-file-o"></i>
+                    </Link>
+                   </ItemFooter.Label>;
           }
           return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
         })()}
