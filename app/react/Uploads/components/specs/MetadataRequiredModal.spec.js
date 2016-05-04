@@ -13,7 +13,10 @@ describe('MetadataRequiredModal', () => {
   beforeEach(() => {
     props = {
       hideModal: jasmine.createSpy('hideModal'),
-      doc: Immutable.fromJS({_id: 'docId', title: 'test'})
+      loadDocument: jasmine.createSpy('loadDocument'),
+      editDocument: jasmine.createSpy('editDocument'),
+      doc: Immutable.fromJS({_id: 'docId', title: 'test'}),
+      templates: Immutable.fromJS([{_id: 'templateid', name: 'ruling'}])
     };
   });
 
@@ -26,12 +29,14 @@ describe('MetadataRequiredModal', () => {
     expect(component.find(Modal).props().isOpen).toBe(true);
   });
 
-  it('should render a Link to document viewer', () => {
-    render();
-    let link = component.find(Link);
-    expect(link.props().to).toBe('/document/docId');
-    link.simulate('click');
-    expect(props.hideModal).toHaveBeenCalledWith('metadataRequired');
+  describe('when clicking edit metadata button', () => {
+    it('should open the metadata form and close the modal', () => {
+      render();
+      component.find('.confirm-button').simulate('click');
+      expect(props.hideModal).toHaveBeenCalledWith('metadataRequired');
+      expect(props.loadDocument).toHaveBeenCalledWith(props.doc.toJS(), props.templates.toJS());
+      expect(props.editDocument).toHaveBeenCalledWith(props.doc.toJS());
+    });
   });
 
   describe('when clicking cancel button', () => {

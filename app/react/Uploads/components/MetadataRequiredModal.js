@@ -4,10 +4,19 @@ import {bindActionCreators} from 'redux';
 import Modal from 'app/Layout/Modal';
 import {Link} from 'react-router';
 
-import {removeProperty} from 'app/Templates/actions/templateActions';
 import {hideModal} from 'app/Modals/actions/modalActions';
+import {editDocument} from 'app/Uploads/actions/uploadsActions';
+import {loadDocument} from 'app/DocumentForm/actions/actions';
 
 export class MetadataRequiredModal extends Component {
+
+  editDocument() {
+    this.props.hideModal('metadataRequired');
+    let doc = this.props.doc.toJS();
+    this.props.loadDocument(doc, this.props.templates.toJS());
+    this.props.editDocument(doc);
+  }
+
   render() {
     if (!this.props.doc) {
       return <div />;
@@ -27,9 +36,9 @@ export class MetadataRequiredModal extends Component {
           <button type="button" className="btn btn-default cancel-button" onClick={() => this.props.hideModal('metadataRequired')}>
             <i className="fa fa-close"></i> Cancel
           </button>
-          <Link to={`/document/${doc._id}`} className="btn btn-warning" onClick={() => this.props.hideModal('metadataRequired')}>
+          <button type="button" className="btn btn-warning confirm-button" onClick={this.editDocument.bind(this)}>
             <i className="fa fa-send"></i> Edit metadata
-          </Link>
+          </button>
         </Modal.Footer>
 
       </Modal>
@@ -40,15 +49,21 @@ export class MetadataRequiredModal extends Component {
 MetadataRequiredModal.propTypes = {
   isOpen: PropTypes.bool,
   doc: PropTypes.object,
-  hideModal: PropTypes.func
+  templates: PropTypes.object,
+  hideModal: PropTypes.func,
+  editDocument: PropTypes.func,
+  loadDocument: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
-  return {doc: state.modals.get('metadataRequired')};
+  return {
+    doc: state.modals.get('metadataRequired'),
+    templates: state.uploads.templates
+  };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({hideModal, removeProperty}, dispatch);
+  return bindActionCreators({hideModal, editDocument, loadDocument}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataRequiredModal);
