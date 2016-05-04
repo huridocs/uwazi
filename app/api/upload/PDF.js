@@ -77,7 +77,7 @@ export default class PDF extends EventEmitter {
       return new Promise((resolve) => {
         fs.readdir(destination, (err, filenames) => {
           let orderedPageFiles = filenames
-          .filter((filename) => parseInt(filename, 10))
+          .filter((filename) => !filename.match(/\.html/) && parseInt(filename, 10))
           .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
           .map((file) => destination + file);
 

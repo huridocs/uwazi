@@ -65,7 +65,7 @@ describe('PDF', function () {
   });
 
   describe('extractText', () => {
-    let filepath = __dirname + '/test_document.pdf';
+    let filepath = __dirname + '/12345.test.pdf';
     beforeEach(() => {
       pdf = new PDFObject(filepath);
     });
@@ -89,7 +89,7 @@ describe('PDF', function () {
 
       pdf.extractText()
       .then(() => {
-        done.fail('promise should be rejected when there is an error on stderr')
+        done.fail('promise should be rejected when there is an error on stderr');
       })
       .catch((error) => {
         expect(error).toBe('error');
@@ -100,7 +100,7 @@ describe('PDF', function () {
   });
 
   describe('toHTML', () => {
-    let filepath = __dirname + '/test_document.pdf';
+    let filepath = __dirname + '/12345.test.pdf';
     beforeEach(() => {
       pdf = new PDFObject(filepath);
       pdf.optimizedPath = filepath;
@@ -133,7 +133,7 @@ describe('PDF', function () {
   });
 
   describe('convert', () => {
-    let filepath = __dirname + '/test_document.pdf';
+    let filepath = __dirname + '/12345.test.pdf';
     beforeEach(() => {
       pdf = new PDFObject(filepath);
     });
@@ -141,8 +141,7 @@ describe('PDF', function () {
     afterEach((done) => {
       if (pdf.optimizedPath) {
         fs.unlink(pdf.optimizedPath, done);
-      }
-      else {
+      } else {
         done();
       }
     });
