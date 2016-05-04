@@ -6,7 +6,7 @@ const initialState = {};
 
 export default function documents(state = initialState, action = {}) {
   if (action.type === types.NEW_UPLOAD_DOCUMENT) {
-    return state.set(action.doc._id, 0);
+    return state.set(action.doc, 0);
   }
 
   if (action.type === types.UPLOAD_PROGRESS) {

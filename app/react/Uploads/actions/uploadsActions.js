@@ -51,25 +51,31 @@ export function setThesauris(thesauris) {
   };
 }
 
-export function uploadDocument(newDoc, file) {
+export function createDocument(newDoc) {
   return function (dispatch) {
     return api.post('documents', newDoc)
     .then((response) => {
       let doc = response.json;
-      dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc});
-
-      superagent.post(APIURL + 'upload')
-      .set('Accept', 'application/json')
-      .field('document', doc._id)
-      .attach('file', file, file.name)
-      .on('progress', (data) => {
-        dispatch({type: types.UPLOAD_PROGRESS, doc: doc._id, progress: Math.floor(data.percent)});
-      })
-      .on('response', () => {
-        dispatch({type: types.UPLOAD_COMPLETE, doc: doc._id});
-      })
-      .end();
+      dispatch({type: types.DOCUMENT_CREATED, doc});
+      return doc;
     });
+  };
+}
+
+export function uploadDocument(docId, file) {
+  return function (dispatch) {
+    dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc: docId});
+    superagent.post(APIURL + 'upload')
+    .set('Accept', 'application/json')
+    .field('document', docId)
+    .attach('file', file, file.name)
+    .on('progress', (data) => {
+      dispatch({type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent)});
+    })
+    .on('response', () => {
+      dispatch({type: types.UPLOAD_COMPLETE, doc: docId});
+    })
+    .end();
   };
 }
 

@@ -3,14 +3,17 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
 
-import {uploadDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {uploadDocument, finishEdit, createDocument} from 'app/Uploads/actions/uploadsActions';
 import 'app/Uploads/scss/upload_box.scss';
 
 export class UploadBox extends Component {
   onDrop(files) {
     files.forEach((file) => {
       let doc = {title: this.extractTitle(file)};
-      this.props.uploadDocument(doc, file);
+      this.props.createDocument(doc)
+      .then((newDoc) => {
+        this.props.uploadDocument(newDoc._id, file);
+      });
     });
     this.props.finishEdit();
   }
@@ -39,12 +42,13 @@ export class UploadBox extends Component {
 
 UploadBox.propTypes = {
   uploadDocument: PropTypes.func,
+  createDocument: PropTypes.func,
   finishEdit: PropTypes.func
 };
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument, finishEdit}, dispatch);
+  return bindActionCreators({uploadDocument, finishEdit, createDocument}, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(UploadBox);
