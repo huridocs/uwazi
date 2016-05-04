@@ -3,9 +3,11 @@ import Immutable from 'immutable';
 import contextMenuReducer from 'app/ContextMenu/reducers/contextMenuReducer';
 import * as types from 'app/ContextMenu/actions/actionTypes';
 import * as ViewerTypes from 'app/Viewer/actions/actionTypes';
+import * as UploadActions from 'app/Uploads/actions/actionTypes';
+
 import 'jasmine-immutablejs-matchers';
 
-describe('contextMenuReducer', () => {
+fdescribe('contextMenuReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = contextMenuReducer();
@@ -93,6 +95,16 @@ describe('contextMenuReducer', () => {
       let currentState = Immutable.fromJS({type: null});
       let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_PANEL, panel: 'targetReferencePanel'});
       let expected = Immutable.fromJS({type: 'ViewerSaveTargetReferenceMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+  describe('SET_UPLOADS', () => {
+    it('should set type to UploadsMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: UploadActions.ENTER_UPLOADS_SECTION});
+      let expected = Immutable.fromJS({type: 'UploadsMenu'});
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);

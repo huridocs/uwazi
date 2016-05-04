@@ -66,8 +66,6 @@ export class UploadDoc extends Component {
       active = this.props.documentBeingEdited === doc._id;
     }
 
-    console.log(doc.title, doc.uploaded, doc.processed);
-
     return (
       <RowList.Item status={status} active={active} onClick={this.editDocument.bind(this, doc, active)}>
       <ItemName>{doc.title}</ItemName>

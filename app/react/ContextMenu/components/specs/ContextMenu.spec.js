@@ -6,8 +6,9 @@ import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
 import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
+import UploadsMenu from 'app/Uploads/components/UploadsMenu';
 
-describe('ContextMenu', () => {
+fdescribe('ContextMenu', () => {
   let component;
 
   let render = (withProps = {}) => {
@@ -99,6 +100,15 @@ describe('ContextMenu', () => {
         render(props);
 
         expect(component.find(ViewerSaveTargetReferenceMenu).length).toBe(1);
+      });
+    });
+    describe('when type is UploadsMenu', () => {
+      it('should render this menu', () => {
+        let props = {type: 'UploadsMenu', open: true};
+        render(props);
+
+        expect(component.find(UploadsMenu).length).toBe(1);
+        expect(component.find(UploadsMenu).props().active).toBe(true);
       });
     });
   });

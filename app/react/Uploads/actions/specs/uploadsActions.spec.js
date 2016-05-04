@@ -12,13 +12,20 @@ import * as types from 'app/Uploads/actions/actionTypes';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('uploadsActions', () => {
+fdescribe('uploadsActions', () => {
   beforeEach(() => {
     mockID();
     backend.restore();
     backend
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})})
     .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({testBackendResult: 'ok'})});
+  });
+
+  describe('enterUploads()', () => {
+    it('should return a ENTER_UPLOADS_SECTION', () => {
+      let action = actions.enterUploads();
+      expect(action).toEqual({type: types.ENTER_UPLOADS_SECTION});
+    });
   });
 
   describe('finishEdit()', () => {
