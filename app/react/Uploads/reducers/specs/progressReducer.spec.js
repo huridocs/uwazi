@@ -17,7 +17,7 @@ describe('uploadsReducer', () => {
   describe('NEW_UPLOAD_DOCUMENT', () => {
     it('should set the progress for the document to 0', () => {
       let currentState = Immutable.fromJS({doc1: 45});
-      let newState = progressReducer(currentState, {type: types.NEW_UPLOAD_DOCUMENT, doc: {_id: 'doc2'}});
+      let newState = progressReducer(currentState, {type: types.NEW_UPLOAD_DOCUMENT, doc: 'doc2'});
       expect(newState).toEqualImmutable(Immutable.fromJS({doc1: 45, doc2: 0}));
     });
   });

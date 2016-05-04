@@ -28,7 +28,7 @@ describe('uploadsActions', () => {
     });
   });
 
-  describe('UPDATE_DOCUMENT()', () => {
+  describe('updateDocument()', () => {
     it('should return a UPDATE_DOCUMENT with the document', () => {
       let action = actions.updateDocument('document');
       expect(action).toEqual({type: types.UPDATE_DOCUMENT, doc: 'document'});
@@ -71,41 +71,54 @@ describe('uploadsActions', () => {
   });
 
   describe('async actions', () => {
-    describe('uploadDocument', () => {
-      it('should create a document and upload file while dispatching the upload progress', (done) => {
+    describe('createDocument', () => {
+      it('should create a document', (done) => {
         backend.restore();
         backend
         .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({_id: 'test'})});
 
+        let newDoc = {name: 'doc'};
+        const store = mockStore({});
+
+        const expectedActions = [
+          {type: types.DOCUMENT_CREATED, doc: {_id: 'test'}}
+        ];
+
+        store.dispatch(actions.createDocument(newDoc))
+        .then((createdDoc) => {
+          expect(createdDoc).toEqual({_id: 'test'});
+          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
+          expect(store.getActions()).toEqual(expectedActions);
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
+    describe('uploadDocument', () => {
+      it('should create a document and upload file while dispatching the upload progress', () => {
         let mockUpload = superagent.post(APIURL + 'upload');
         spyOn(mockUpload, 'field').and.callThrough();
         spyOn(mockUpload, 'attach').and.callThrough();
         spyOn(superagent, 'post').and.returnValue(mockUpload);
 
-        let document = {name: 'doc'};
-
         const expectedActions = [
-          {type: types.NEW_UPLOAD_DOCUMENT, doc: {_id: 'test'}},
-          {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 55},
-          {type: types.UPLOAD_PROGRESS, doc: 'test', progress: 65},
-          {type: types.UPLOAD_COMPLETE, doc: 'test'}
+          {type: types.NEW_UPLOAD_DOCUMENT, doc: 'abc1'},
+          {type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 55},
+          {type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 65},
+          {type: types.UPLOAD_COMPLETE, doc: 'abc1'}
         ];
         const store = mockStore({});
 
         let file = {name: 'filename'};
-        store.dispatch(actions.uploadDocument(document, file))
-        .then(() => {
-          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
-          expect(mockUpload.field).toHaveBeenCalledWith('document', 'test');
-          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+        store.dispatch(actions.uploadDocument('abc1', file));
+        expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+        expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
-          mockUpload.emit('progress', {percent: 55.1});
-          mockUpload.emit('progress', {percent: 65});
-          mockUpload.emit('response');
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        mockUpload.emit('progress', {percent: 55.1});
+        mockUpload.emit('progress', {percent: 65});
+        mockUpload.emit('response');
+        expect(store.getActions()).toEqual(expectedActions);
       });
     });
 

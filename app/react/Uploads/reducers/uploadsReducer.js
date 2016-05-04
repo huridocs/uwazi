@@ -9,7 +9,7 @@ export default function documents(state = initialState, action = {}) {
     return Immutable.fromJS(action.documents);
   }
 
-  if (action.type === types.NEW_UPLOAD_DOCUMENT) {
+  if (action.type === types.DOCUMENT_CREATED) {
     return state.unshift(Immutable.fromJS(action.doc));
   }
 
