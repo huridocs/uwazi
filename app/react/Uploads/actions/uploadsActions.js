@@ -78,12 +78,13 @@ export function saveDocument(doc) {
   };
 }
 
-export function moveToLibrary(data) {
+export function moveToLibrary(doc) {
   return function (dispatch) {
-    data.published = true;
-    return api.post('documents', data)
+    doc.published = true;
+    return api.post('documents', doc)
     .then(() => {
       dispatch(notify('moved successfully !', 'info'));
+      dispatch({type: types.MOVED_TO_LIBRARY, doc: doc._id});
     });
   };
 }

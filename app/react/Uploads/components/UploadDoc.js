@@ -24,10 +24,10 @@ export class UploadDoc extends Component {
 
   render() {
     let doc = this.props.doc.toJS();
-    let modal = false;
+    let modal = 'readyToPublish';
 
     let status = 'success';
-    let message = 'Ready for publish';
+    let message = 'Ready to publish';
 
     if (!doc.template) {
       status = 'warning';

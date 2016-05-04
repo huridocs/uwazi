@@ -131,16 +131,17 @@ describe('uploadsActions', () => {
 
     describe('moveToLibrary', () => {
       it('should save the document with published:true and dispatch notification on success', (done) => {
-        let document = {name: 'doc'};
+        let document = {name: 'doc', _id: 'abc1'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'moved successfully !', type: 'info', id: 'unique_id'}}
+          {type: notificationsTypes.NOTIFY, notification: {message: 'moved successfully !', type: 'info', id: 'unique_id'}},
+          {type: types.MOVED_TO_LIBRARY, doc: 'abc1'}
         ];
         const store = mockStore({});
 
         store.dispatch(actions.moveToLibrary(document))
         .then(() => {
-          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc', published: true}));
+          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc', _id: 'abc1', published: true}));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

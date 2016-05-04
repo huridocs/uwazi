@@ -25,5 +25,9 @@ export default function documents(state = initialState, action = {}) {
     return state.update(state.findIndex(doc => doc.get('_id') === action.doc), (doc) => doc.set('processed', true));
   }
 
+  if (action.type === types.MOVED_TO_LIBRARY) {
+    return state.delete(state.findIndex(doc => doc.get('_id') === action.doc));
+  }
+
   return Immutable.fromJS(state);
 }
