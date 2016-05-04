@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {events} from '../../utils/index';
 import Alert from '../../components/Elements/Alert.js';
-import './scss/alerts.scss';
+//import './scss/alerts.scss';
 
 class Alerts extends Component {
 
