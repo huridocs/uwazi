@@ -6,6 +6,7 @@ import UploadsList from 'app/Uploads/components/UploadsList';
 import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
 import MetadataRequiredModal from 'app/Uploads/components/MetadataRequiredModal';
 import ReadyToPublishModal from 'app/Uploads/components/ReadyToPublishModal';
+import UploadFailedModal from 'app/Uploads/components/UploadFailedModal';
 
 import io from 'socket.io-client';
 
@@ -33,6 +34,7 @@ export class UploadsSection extends Component {
         <UploadsFormPanel />
         <MetadataRequiredModal />
         <ReadyToPublishModal />
+        <UploadFailedModal />
       </div>
     );
   }

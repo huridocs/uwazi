@@ -17,7 +17,8 @@ describe('uploadsActions', () => {
     mockID();
     backend.restore();
     backend
-    .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})});
+    .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})})
+    .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
 
   describe('finishEdit()', () => {
@@ -113,7 +114,7 @@ describe('uploadsActions', () => {
         let doc = {name: 'doc'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'info', id: 'unique_id'}},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'info', id: 'unique_id'}},
           {type: types.UPDATE_DOCUMENT, doc},
           {type: types.FINISH_UPLOADED_DOCUMENT_EDIT}
         ];
@@ -134,7 +135,7 @@ describe('uploadsActions', () => {
         let document = {name: 'doc', _id: 'abc1'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'moved successfully !', type: 'info', id: 'unique_id'}},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document published', type: 'info', id: 'unique_id'}},
           {type: types.MOVED_TO_LIBRARY, doc: 'abc1'}
         ];
         const store = mockStore({});
@@ -142,6 +143,26 @@ describe('uploadsActions', () => {
         store.dispatch(actions.moveToLibrary(document))
         .then(() => {
           expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc', _id: 'abc1', published: true}));
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('deleteDocument', () => {
+      it('should delete the document and dispatch notification on success', (done) => {
+        let document = {name: 'doc', _id: 'abc1'};
+
+        const expectedActions = [
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'info', id: 'unique_id'}},
+          {type: types.DOCUMENT_DELETED, doc: 'abc1'}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.deleteDocument(document))
+        .then(() => {
+          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc', _id: 'abc1'}));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

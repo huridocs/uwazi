@@ -29,5 +29,9 @@ export default function documents(state = initialState, action = {}) {
     return state.delete(state.findIndex(doc => doc.get('_id') === action.doc));
   }
 
+  if (action.type === types.DOCUMENT_DELETED) {
+    return state.delete(state.findIndex(doc => doc.get('_id') === action.doc));
+  }
+
   return Immutable.fromJS(state);
 }

@@ -38,7 +38,7 @@ export class UploadDoc extends Component {
     if (doc.uploaded === false) {
       status = 'danger';
       message = 'Upload failed';
-      modal = '';
+      modal = 'uploadFailed';
     }
 
     if (!doc.processed && doc.uploaded) {

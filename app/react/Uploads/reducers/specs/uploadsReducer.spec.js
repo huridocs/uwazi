@@ -63,9 +63,17 @@ describe('uploadsReducer', () => {
   });
 
   describe('MOVED_TO_LIBRARY', () => {
-    it('should set processed flag to true for the document', () => {
+    it('should remove it from the state', () => {
       let currentState = Immutable.fromJS([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2'}]);
       let newState = uploadsReducer(currentState, {type: types.MOVED_TO_LIBRARY, doc: 'id2'});
+      expect(newState.toJS()).toEqual([{_id: 'id1', title: '1'}]);
+    });
+  });
+
+  describe('DOCUMENT_DELETED', () => {
+    it('should remove it from the state', () => {
+      let currentState = Immutable.fromJS([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2'}]);
+      let newState = uploadsReducer(currentState, {type: types.DOCUMENT_DELETED, doc: 'id2'});
       expect(newState.toJS()).toEqual([{_id: 'id1', title: '1'}]);
     });
   });
