@@ -77,7 +77,7 @@ export function saveTemplate(data) {
         data: response
       });
 
-      dispatch(notify('saved successfully !', 'info'));
+      dispatch(notify('saved successfully !', 'success'));
     });
   };
 }

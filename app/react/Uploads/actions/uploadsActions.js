@@ -71,7 +71,7 @@ export function saveDocument(doc) {
   return function (dispatch) {
     return api.post('documents', doc)
     .then(() => {
-      dispatch(notify('Document updated', 'info'));
+      dispatch(notify('Document updated', 'success'));
       dispatch(updateDocument(doc));
       dispatch({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
     });
@@ -83,7 +83,7 @@ export function moveToLibrary(doc) {
     doc.published = true;
     return api.post('documents', doc)
     .then(() => {
-      dispatch(notify('Document published', 'info'));
+      dispatch(notify('Document published', 'success'));
       dispatch({type: types.MOVED_TO_LIBRARY, doc: doc._id});
     });
   };
@@ -93,7 +93,7 @@ export function deleteDocument(doc) {
   return function (dispatch) {
     return api.delete('documents', doc)
     .then(() => {
-      dispatch(notify('Document deleted', 'info'));
+      dispatch(notify('Document deleted', 'success'));
       dispatch({type: types.DOCUMENT_DELETED, doc: doc._id});
     });
   };

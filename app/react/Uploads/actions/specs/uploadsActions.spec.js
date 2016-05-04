@@ -114,7 +114,7 @@ describe('uploadsActions', () => {
         let doc = {name: 'doc'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'info', id: 'unique_id'}},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.UPDATE_DOCUMENT, doc},
           {type: types.FINISH_UPLOADED_DOCUMENT_EDIT}
         ];
@@ -135,7 +135,7 @@ describe('uploadsActions', () => {
         let document = {name: 'doc', _id: 'abc1'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'Document published', type: 'info', id: 'unique_id'}},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document published', type: 'success', id: 'unique_id'}},
           {type: types.MOVED_TO_LIBRARY, doc: 'abc1'}
         ];
         const store = mockStore({});
@@ -155,7 +155,7 @@ describe('uploadsActions', () => {
         let document = {name: 'doc', _id: 'abc1'};
 
         const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'info', id: 'unique_id'}},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'success', id: 'unique_id'}},
           {type: types.DOCUMENT_DELETED, doc: 'abc1'}
         ];
         const store = mockStore({});

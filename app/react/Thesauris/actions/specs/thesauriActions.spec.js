@@ -23,7 +23,7 @@ describe('thesaurisActions', () => {
       let thesauri = {name: 'Secret list of things', values: []};
       const expectedActions = [
         {type: types.THESAURI_SAVED},
-        {type: notificationsTypes.NOTIFY, notification: {message: 'Thesauri saved', type: 'info', id: 'unique_id'}}
+        {type: notificationsTypes.NOTIFY, notification: {message: 'Thesauri saved', type: 'success', id: 'unique_id'}}
       ];
       const store = mockStore({});
 

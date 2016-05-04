@@ -14,9 +14,8 @@ header ul .btn .fa {
     margin-right: 5px;
 }
 
-.alerts {
-  z-index: 100;
-  position: fixed;
-  top: 60px;
-  width: 100%;
+.alert {
+  display: block;
+  width: 50%;
+  left: 25%
 }
