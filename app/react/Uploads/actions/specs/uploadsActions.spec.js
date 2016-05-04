@@ -12,7 +12,7 @@ import * as types from 'app/Uploads/actions/actionTypes';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-fdescribe('uploadsActions', () => {
+describe('uploadsActions', () => {
   beforeEach(() => {
     mockID();
     backend.restore();

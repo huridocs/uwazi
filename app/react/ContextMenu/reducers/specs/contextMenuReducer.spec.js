@@ -7,7 +7,7 @@ import * as UploadActions from 'app/Uploads/actions/actionTypes';
 
 import 'jasmine-immutablejs-matchers';
 
-fdescribe('contextMenuReducer', () => {
+describe('contextMenuReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = contextMenuReducer();

@@ -5,7 +5,7 @@ import {Link} from 'react-router';
 
 import {UploadsMenu} from 'app/Uploads/components/UploadsMenu';
 
-fdescribe('ViewerDefaultMenu', () => {
+describe('ViewerDefaultMenu', () => {
   let component;
   let props;
 
@@ -62,7 +62,7 @@ fdescribe('ViewerDefaultMenu', () => {
       props.doc = Immutable.fromJS({_id: '1', title: 'test', processed: true});
       render();
       let link = component.find('.view').find(Link);
-      expect(link.props().to).toBe('/document/1');
+      expect(link.props().to).toBe('document/1');
     });
   });
 });

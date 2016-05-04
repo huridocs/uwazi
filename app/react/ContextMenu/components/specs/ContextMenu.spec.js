@@ -8,7 +8,7 @@ import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMe
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 import UploadsMenu from 'app/Uploads/components/UploadsMenu';
 
-fdescribe('ContextMenu', () => {
+describe('ContextMenu', () => {
   let component;
 
   let render = (withProps = {}) => {

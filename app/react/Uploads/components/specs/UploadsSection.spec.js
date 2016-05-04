@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {UploadsSection} from 'app/Uploads/components/UploadsSection';
 
-fdescribe('UploadsSection', () => {
+describe('UploadsSection', () => {
   let component;
   let props;
   let context;
