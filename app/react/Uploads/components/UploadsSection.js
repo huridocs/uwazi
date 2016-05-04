@@ -26,7 +26,7 @@ export class UploadsSection extends Component {
       className = 'document-viewer with-panel';
     }
     return (
-      <div>
+      <div className="row">
         <main className={'col-sm-8 col-sm-offset-2 ' + className}>
           <UploadBox />
           <UploadsList socket={this.socket}/>
