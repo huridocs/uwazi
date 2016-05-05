@@ -7,10 +7,16 @@ import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
 import MetadataRequiredModal from 'app/Uploads/components/MetadataRequiredModal';
 import ReadyToPublishModal from 'app/Uploads/components/ReadyToPublishModal';
 import UploadFailedModal from 'app/Uploads/components/UploadFailedModal';
+import ContextMenu from 'app/ContextMenu/components/ContextMenu';
+import {enterUploads} from 'app/Uploads/actions/uploadsActions';
 
 import io from 'socket.io-client';
 
 export class UploadsSection extends Component {
+
+  componentDidMount() {
+    this.context.store.dispatch(enterUploads());
+  }
 
   componentWillMount() {
     this.socket = io();
@@ -31,6 +37,7 @@ export class UploadsSection extends Component {
           <UploadBox />
           <UploadsList socket={this.socket}/>
         </main>
+        <ContextMenu />
         <UploadsFormPanel />
         <MetadataRequiredModal />
         <ReadyToPublishModal />

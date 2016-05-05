@@ -21,6 +21,13 @@ describe('uploadsActions', () => {
     .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
 
+  describe('enterUploads()', () => {
+    it('should return a ENTER_UPLOADS_SECTION', () => {
+      let action = actions.enterUploads();
+      expect(action).toEqual({type: types.ENTER_UPLOADS_SECTION});
+    });
+  });
+
   describe('finishEdit()', () => {
     it('should return a FINISH_UPLOADED_DOCUMENT_EDIT', () => {
       let action = actions.finishEdit();

@@ -25,7 +25,7 @@ export class DocumentForm extends Component {
     });
 
     return (
-      <Form model="document" onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
+      <Form id='documentForm' model="document" onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
         <FormGroup {...state.fields.title}>
           <Field model="document.title">
@@ -63,10 +63,6 @@ export class DocumentForm extends Component {
             </FormGroup>
             );
         })}
-
-        <button type="submit">
-          Save
-        </button>
       </Form>
     );
   }

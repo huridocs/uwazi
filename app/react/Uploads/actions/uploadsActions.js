@@ -4,6 +4,12 @@ import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
 import api from '../../utils/api';
 
+export function enterUploads() {
+  return {
+    type: types.ENTER_UPLOADS_SECTION
+  };
+}
+
 export function editDocument(doc) {
   return {
     type: types.EDIT_UPLOADED_DOCUMENT,

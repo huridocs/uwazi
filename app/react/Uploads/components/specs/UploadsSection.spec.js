@@ -23,13 +23,13 @@ describe('UploadsSection', () => {
     expect(component.find('.document-viewer').hasClass('with-panel')).toBe(true);
   });
 
-  //describe('on mount', () => {
-    //it('should loadDefaultViewerMenu()', () => {
-      //render();
-      //component.instance().componentDidMount();
-      //expect(context.store.dispatch).toHaveBeenCalledWith({type: 'LOAD_DEFAULT_VIEWER_MENU'});
-    //});
-  //});
+  describe('on mount', () => {
+    it('should loadDefaultViewerMenu()', () => {
+      render();
+      component.instance().componentDidMount();
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'ENTER_UPLOADS_SECTION'});
+    });
+  });
 
   //describe('componentWillUnmount', () => {
     //it('should resetDocumentViewer', () => {
