@@ -1,4 +1,4 @@
-import {mockID} from 'app/utils/uniqueID';
+import {mockID} from 'shared/uniqueID';
 import * as actions from 'app/Notifications/actions/notificationsActions';
 import * as types from 'app/Notifications/actions/actionTypes';
 

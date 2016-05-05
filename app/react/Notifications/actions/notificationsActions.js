@@ -1,5 +1,5 @@
 import * as actions from 'app/Notifications/actions/actionTypes';
-import ID from 'app/utils/uniqueID';
+import ID from 'shared/uniqueID';
 
 export function removeNotification(id) {
   return {

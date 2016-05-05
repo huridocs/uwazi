@@ -7,7 +7,7 @@ import * as actions from 'app/Templates/actions/templateActions';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import * as types from 'app/Templates/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import {mockID} from 'app/utils/uniqueID';
+import {mockID} from 'shared/uniqueID';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

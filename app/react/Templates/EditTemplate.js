@@ -7,7 +7,7 @@ import {setTemplate} from 'app/Templates/actions/templateActions';
 import {setTemplates} from 'app/Templates/actions/templatesActions';
 import {setThesauris} from 'app/Templates/actions/uiActions';
 import RouteHandler from 'app/controllers/App/RouteHandler';
-import ID from 'app/utils/uniqueID';
+import ID from 'shared/uniqueID';
 
 let prepareTemplate = (template) => {
   template.properties = template.properties.map((property) => {

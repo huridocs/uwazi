@@ -4,7 +4,7 @@ import backend from 'fetch-mock';
 import superagent from 'superagent';
 
 import {APIURL} from 'app/config.js';
-import {mockID} from 'app/utils/uniqueID.js';
+import {mockID} from 'shared/uniqueID.js';
 import * as actions from 'app/Uploads/actions/uploadsActions';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';

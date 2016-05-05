@@ -6,7 +6,7 @@ import {APIURL} from 'app/config.js';
 import EditTemplate from 'app/Templates/EditTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import RouteHandler from 'app/controllers/App/RouteHandler';
-import {mockID} from 'app/utils/uniqueID';
+import {mockID} from 'shared/uniqueID';
 
 describe('EditTemplate', () => {
   let templates = [

@@ -2,7 +2,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 
-import {mockID} from 'app/utils/uniqueID.js';
+import {mockID} from 'shared/uniqueID.js';
 import {APIURL} from 'app/config.js';
 import * as actions from 'app/Viewer/actions/referencesActions';
 import * as types from 'app/Viewer/actions/actionTypes';

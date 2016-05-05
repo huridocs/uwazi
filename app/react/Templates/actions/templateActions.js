@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import * as types from 'app/Templates/actions/actionTypes';
 import {notify} from 'app/Notifications';
 import api from 'app/Templates/TemplatesAPI';
-import ID from 'app/utils/uniqueID';
+import ID from 'shared/uniqueID';
 
 export function resetTemplate() {
   return {
