@@ -1,6 +1,5 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import {Link} from 'react-router';
 import Immutable from 'immutable';
 
 import {MetadataRequiredModal} from 'app/Uploads/components/MetadataRequiredModal.js';

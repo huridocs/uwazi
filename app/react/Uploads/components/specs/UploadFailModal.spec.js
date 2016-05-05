@@ -1,6 +1,5 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import {Link} from 'react-router';
 import Immutable from 'immutable';
 
 import {UploadFailedModal} from 'app/Uploads/components/UploadFailedModal.js';
