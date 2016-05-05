@@ -3,13 +3,14 @@ import {db_url as dbURL} from '../config/database.js';
 import multer from 'multer';
 import PDF from './PDF';
 import documents from 'api/documents/documents';
+import ID from 'shared/uniqueID';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, __dirname + '/../../../uploaded_documents/');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '.pdf');
+    cb(null, Date.now() + ID() + '.pdf');
   }
 });
 
