@@ -13,6 +13,7 @@ describe('ReadyToPublishModal', () => {
   beforeEach(() => {
     props = {
       hideModal: jasmine.createSpy('hideModal'),
+      finishEdit: jasmine.createSpy('finishEdit'),
       moveToLibrary: jasmine.createSpy('moveToLibrary'),
       doc: Immutable.fromJS({_id: 'docId', title: 'test'})
     };
@@ -26,11 +27,12 @@ describe('ReadyToPublishModal', () => {
     render();
     expect(component.find(Modal).props().isOpen).toBe(true);
   });
-  
+
   describe('when clicking confirm button', () => {
-    it('should publish the document and close the modal', () => {
+    it('should publish the document and close the modal and the form', () => {
       render();
       component.find('.confirm-button').simulate('click');
+      expect(props.finishEdit).toHaveBeenCalled();
       expect(props.hideModal).toHaveBeenCalledWith('readyToPublish');
       expect(props.moveToLibrary).toHaveBeenCalledWith(props.doc.toJS());
     });
