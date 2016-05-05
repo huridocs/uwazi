@@ -20,7 +20,7 @@ let ProgressBar = ({progress}) => {
         <span>{progress} % Complete</span>
       </span>
       <div className="progress">
-        <div className="progress-bar" style={{width: `${progress}%`}} />
+        <div className="progress-bar progress-bar-striped" style={{width: `${progress}%`}} />
       </div>
     </div>
   );
