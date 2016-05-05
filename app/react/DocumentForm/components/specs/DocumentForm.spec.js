@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 import {DocumentForm} from 'app/DocumentForm/components/DocumentForm';
 import Select from 'app/DocumentForm/components/Select';
-import {Form} from 'react-redux-form';
+import {Form, Field} from 'react-redux-form';
 
 
 describe('DocumentForm', () => {
@@ -40,7 +40,7 @@ describe('DocumentForm', () => {
 
   it('should render title field as a textarea', () => {
     render();
-    let title = component.find('textarea').parent();
+    let title = component.find('textarea').closest(Field);
     expect(title.props().model).toEqual('document.title');
   });
 

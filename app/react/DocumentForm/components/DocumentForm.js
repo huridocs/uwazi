@@ -29,35 +29,53 @@ export class DocumentForm extends Component {
 
         <FormGroup {...state.fields.title}>
           <Field model="document.title">
-            <label>Title</label>
-            <textarea className="form-control" />
+            <ul className="search__filter">
+              <li>Document title <span className="required">*</span></li>
+              <li className="wide"><textarea className="form-control" /></li>
+            </ul>
           </Field>
         </FormGroup>
 
 
         <FormGroup>
-          <label>Document type</label>
-          <Select
-            options={templateOptions}
-            onChange={(e) => {
-              this.props.changeTemplate(document, templates.find((t) => t._id === e.target.value));
-            }}
-          />
+          <ul className="search__filter">
+            <li>Document Type <span className="required">*</span></li>
+            <li className="wide">
+              <Select options={templateOptions}
+                onChange={(e) => {
+                  this.props.changeTemplate(document, templates.find((t) => t._id === e.target.value));
+                }}
+              />
+            </li>
+          </ul>
         </FormGroup>
 
         {template.properties.map((property, index) => {
           if (property.type === 'select') {
             return (
-              <SelectField key={index} model={`document.metadata.${property.name}`} >
-                <Select options={thesauris.find((t) => t._id === property.content).values} />
-              </SelectField>
+              <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
+                <SelectField model={`document.metadata.${property.name}`} >
+                  <ul className="search__filter">
+                    <li>
+                      {property.label}
+                      {property.required ? <span className="required">*</span> : ''}
+                    </li>
+                    <li className="wide"><Select options={thesauris.find((t) => t._id === property.content).values} /></li>
+                  </ul>
+                </SelectField>
+              </FormGroup>
               );
           }
           return (
             <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
               <Field model={`document.metadata.${property.name}`} >
-                <label>{property.label}{property.required ? ' *' : ''}</label>
-                <input className="form-control" />
+                <ul className="search__filter">
+                  <li>
+                    {property.label}
+                    {property.required ? <span className="required">*</span> : ''}
+                  </li>
+                  <li className="wide"><input className="form-control" /></li>
+                </ul>
               </Field>
             </FormGroup>
             );

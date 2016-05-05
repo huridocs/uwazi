@@ -15,7 +15,8 @@ export class UploadsFormPanel extends Component {
     let sidePanelprops = {open: this.props.open};
     return (
       <SidePanel {...sidePanelprops}>
-        <h1>Form <i className='fa fa-close' onClick={this.props.finishEdit}></i></h1>
+        <h1>{this.props.title}</h1>
+        <i className='fa fa-close' onClick={this.props.finishEdit}></i>
         <DocumentForm templates={this.props.templates} thesauris={this.props.thesauris} onSubmit={this.submit.bind(this)}/>
       </SidePanel>
     );
@@ -27,7 +28,8 @@ UploadsFormPanel.propTypes = {
   saveDocument: PropTypes.func,
   finishEdit: PropTypes.func,
   templates: PropTypes.object,
-  thesauris: PropTypes.object
+  thesauris: PropTypes.object,
+  title: PropTypes.string
 };
 
 const mapStateToProps = (state) => {
@@ -35,7 +37,8 @@ const mapStateToProps = (state) => {
   return {
     open: typeof uiState.get('documentBeingEdited') === 'string',
     templates: state.uploads.templates,
-    thesauris: state.uploads.thesauris
+    thesauris: state.uploads.thesauris,
+    title: state.document.title
   };
 };
 

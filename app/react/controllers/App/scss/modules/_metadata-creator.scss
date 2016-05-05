@@ -1,3 +1,31 @@
+.metadataTemplate-heading {
+  display: flex;
+
+  > form:first-child {
+    flex: 1;
+    margin-right: 15px;
+
+    .form-control {
+      font-size: 20px;
+      border: 1px solid transparent;
+      background: 0;
+      box-shadow: none;
+      &:hover {
+        border: 1px solid #DDD;
+        cursor: pointer;
+      }
+      &:focus,
+      &:active {
+        border: 1px solid #CCC;
+        background: #FFF;
+      }
+    }
+  }
+  .form-group {
+    margin: 0;
+  }
+}
+
 .metadata {
 	background: $c-white;
 	padding: 30px;
@@ -19,7 +47,6 @@
 }
 
 .list-group-item {
-
 	.btn {
 		margin-left: 5px;
 	}
@@ -31,12 +58,10 @@
 		border-top: 1px solid $c-grey-light;
 		padding: 15px 0 0 30px;
 		margin-top: 15px;
-		display: flex;
-		.btn-success {
-			position: absolute;
-			bottom: 15px;
-			right: 15px;
-		}
+	}
+	&.validation {
+		border-bottom: 1px solid #ED353D !important;
+		color: #ED353D;
 	}
 }
 

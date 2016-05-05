@@ -5,6 +5,26 @@
 .form-control {
 	height: 32px;
 }
+.input-group {
+	label {
+		border-left: 0;
+		padding-left: 0;
+		background: #EEE;
+		box-shadow: none;
+		cursor: pointer;
+	}
+}
+
+.has-error {
+		.input-group-addon {
+			color: #ED353D;
+			border-color: #ED353D;
+			background: #FFCED0;
+		}
+		.form-control {
+			border-color: #ED353D;
+		}
+}
 
 .btn {
 	.fa {

@@ -77,3 +77,44 @@
 .modal-danger {
 	border-left: 5px solid #ED353D;
 }
+
+.well {
+	background: $c-white;
+	border: 0;
+	box-shadow: none;
+	padding: 10px 0px 7px;
+	margin: 15px 0 0;
+
+	p {
+		margin: 0;
+
+		> .fa {
+			color: $c-grey;
+			margin: 0 8px 0 0;
+			font-size: $f-size-lg;
+		}
+	}
+	b {
+		position: relative;
+		margin: 0 8px;
+		padding: 3px 5px;
+		border-radius: 3px;
+		font-weight: normal;
+		color: $c-primary;
+		border: 1px solid $c-primary-light;
+		&.conflict {
+			color: #8a6d3b;
+			border-color: #E2D3B7;
+		}
+		.fa {
+			margin: 0 5px 0 20px;
+		}
+		.fa-angle-right {
+			position: absolute;
+			top: -4px;
+			margin: 0 0 0 5px;
+			font-size: 29px;
+			opacity: 0.2;
+		}
+	}
+}

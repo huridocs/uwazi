@@ -43,16 +43,17 @@
 }
 
 .search__filter {
-	background: #E7FBD9;
 	list-style-type: none;
 	margin: 0 0 15px;
 	padding: 10px 15px 15px;
 	display: table;
 	width: 100%;
+	color: $c-grey-dark;
+	background: $c-grey-light;
 
-	&.disabled {
-		background: $c-grey-light;
-		color: $c-grey-dark;
+	&.is-active {
+		color: $c-black;
+		background: #E7FBD9;
 	}
 
 
@@ -170,7 +171,7 @@
 
 .switcher {
 	display: block;
-	background: #8BC74C;
+	background: $c-grey-dark;
 	position: absolute;
 	right: 0;
 	top: 6px;
@@ -186,14 +187,14 @@
 		display: block;
 		position: absolute;
 		top: 2px;
-		right: 2px;
+		left: 2px;
 		border-radius: 50%;
 	}
-	.disabled & {
-		background: $c-grey-dark;
+	.search__filter.is-active & {
+		background: #8BC74C;
 		&:after {
-			right: auto;
-			left: 2px;
+			left: auto;
+			right: 2px;
 		}
 	}
 }

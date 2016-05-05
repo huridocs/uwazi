@@ -18,17 +18,12 @@ describe('Select', () => {
     component = shallow(<Select {...props}/>);
   };
 
-  it('should render input with properties passed', () => {
+  it('should render select with properties passed', () => {
     props.value = 'test';
     render();
     let select = component.find('select');
 
     expect(select.props().value).toBe('test');
-  });
-
-  it('should render the label passed', () => {
-    render();
-    expect(component.find('label').text()).toBe('input label');
   });
 
   it('should render the options', () => {
