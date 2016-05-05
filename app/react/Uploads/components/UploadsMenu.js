@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 
-import {moveToLibrary} from 'app/Uploads/actions/uploadsActions';
+import {showModal} from 'app/Modals/actions/modalActions';
 
 export class UploadsMenu extends Component {
   render() {
@@ -13,7 +13,7 @@ export class UploadsMenu extends Component {
       <div className={active ? 'active' : ''}>
         {(() => {
           if (doc && doc.get('template')) {
-            return <div className="float-btn__sec publish" onClick={() => this.props.moveToLibrary(doc.toJS())}>
+            return <div className="float-btn__sec publish" onClick={() => this.props.showModal('readyToPublish', doc)}>
               <span>Publish document</span><i className="fa fa-send"></i>
             </div>;
           }
@@ -44,7 +44,7 @@ UploadsMenu.propTypes = {
   active: PropTypes.bool,
   documentBeingEdited: PropTypes.string,
   doc: PropTypes.object,
-  moveToLibrary: PropTypes.func
+  showModal: PropTypes.func
 };
 
 function mapStateToProps(state) {
@@ -56,7 +56,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({moveToLibrary}, dispatch);
+  return bindActionCreators({showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsMenu);

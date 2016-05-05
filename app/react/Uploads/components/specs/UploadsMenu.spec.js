@@ -16,7 +16,7 @@ describe('ViewerDefaultMenu', () => {
   beforeEach(() => {
     props = {
       active: true,
-      moveToLibrary: jasmine.createSpy('moveToLibrary')
+      showModal: jasmine.createSpy('showModal')
     };
   });
 
@@ -52,11 +52,11 @@ describe('ViewerDefaultMenu', () => {
       expect(component.find('.publish').length).toBe(0);
     });
 
-    it('should moveToLibrary', () => {
+    it('should show ReadyToPublishModal', () => {
       props.doc = Immutable.fromJS({template: '1', title: 'test'});
       render();
       component.find('.publish').simulate('click');
-      expect(props.moveToLibrary).toHaveBeenCalledWith(props.doc.toJS());
+      expect(props.showModal).toHaveBeenCalledWith('readyToPublish', props.doc);
     });
   });
   describe('View button', () => {
