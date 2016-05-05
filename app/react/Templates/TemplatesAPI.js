@@ -1,4 +1,4 @@
-import api from 'app/utils/singleton_api';
+import api from 'app/utils/api';
 
 export default {
   get(id) {

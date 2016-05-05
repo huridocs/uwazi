@@ -5,8 +5,9 @@ import {events} from '../../utils/index';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
-import './scss/layout.scss';
-import './scss/alerts.scss';
+import './scss/styles.scss';
+import './scss/fixes.scss';
+//import './scss/alerts.scss';
 
 import Helmet from 'react-helmet';
 import Notifications from 'app/Notifications';
@@ -92,13 +93,11 @@ class App extends Component {
               <div className="row">
                 <i className="fa fa-filter"></i>
                 <i className="fa fa-bars"></i>
-                <h1 className="col-sm-3 col-md-3"><Link to="/">Collection name</Link></h1>
-                <div className="col-sm-3 col-md-4">
+                <h1 className="col-sm-3"><Link to="/">Collection name</Link></h1>
+                <div className="col-sm-5">
                   {this.renderTools()}
                 </div>
-                <div onClick={this.closeMenu.bind(this)} className={menuClass}>
-                  <Menu className="nav nav-pills" user={this.state.user}/>
-                </div>
+                <Menu className="nav nav-pills col-sm-4" user={this.state.user}/>
               </div>
             </div>
           </header>

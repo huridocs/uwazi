@@ -1,5 +1,5 @@
 import {Component, PropTypes} from 'react';
-import api from '../../utils/singleton_api';
+import api from '../../utils/api';
 
 class RouteHandler extends Component {
 

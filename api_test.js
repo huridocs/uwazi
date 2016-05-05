@@ -1,5 +1,5 @@
 require('babel-core/register')({
-  "sourceMaps": "inline",
+  "retainLines": "true",
   "presets": ["es2015", "react"],
   "plugins": [
     ["babel-plugin-module-alias", [
@@ -29,7 +29,7 @@ jasmine.loadConfig({
     'shared/**/*[sS]pec.js'
   ],
   helpers: [
-    '/api/utils/jasmineMatchers.js',
+    '/api/utils/jasmineHelpers.js',
   ]
 });
 

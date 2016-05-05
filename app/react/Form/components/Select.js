@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import ID from 'app/utils/uniqueID';
 
 export class Select extends Component {
 
@@ -9,8 +8,8 @@ export class Select extends Component {
       <div className="form-group">
         <label>{label}</label>
         <select className="form-control" {...properties}>
-        {options.map((option) => {
-          return <option key={ID()} value={option.value}>{option.label}</option>;
+        {options.map((option, index) => {
+          return <option key={index} value={option.value}>{option.label}</option>;
         })}
         </select>
       </div>

@@ -20,7 +20,7 @@ export function saveReference(reference) {
         reference: Immutable.fromJS(reference).set('_id', response.id).toJS()
       });
 
-      dispatch(notify('saved successfully !', 'info'));
+      dispatch(notify('saved successfully !', 'success'));
     });
   };
 }

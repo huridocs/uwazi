@@ -39,7 +39,7 @@ describe('referencesActions', () => {
 
         const expectedActions = [
           {type: types.ADD_CREATED_REFERENCE, reference: {reference: 'reference', _id: 'createdID'}},
-          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'info', id: 'unique_id'}}
+          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}
         ];
 
         const store = mockStore({});

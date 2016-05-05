@@ -20,7 +20,9 @@ export class Textarea extends Component {
 
 Textarea.propTypes = {
   properties: PropTypes.object,
-  label: PropTypes.string
+  label: PropTypes.string,
+  touched: PropTypes.bool,
+  valid: PropTypes.bool
 };
 
 export default Textarea;

@@ -28,3 +28,7 @@ export function generateValidation(template, prefix = '') {
 export function validate(values, validations) {
   return dot.object(_validate(values, validations) || {});
 }
+
+export function buildDocumentForm() {
+  
+}

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './scss/sidepanel.scss';
 
 export class SearchInput extends Component {
   render() {

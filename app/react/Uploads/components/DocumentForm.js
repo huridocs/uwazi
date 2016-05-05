@@ -6,7 +6,7 @@ import Select from 'app/Form/components/Select';
 import Textarea from 'app/Form/components/Textarea';
 import {DynamicFields} from 'app/Form';
 import {prepareTemplateFields, validate, generateValidation} from 'app/Form';
-import {saveDocument, moveToLibrary} from 'app/Uploads/actions/documentActions';
+import {saveDocument, moveToLibrary} from 'app/Uploads/actions/uploadsActions';
 
 export class DocumentForm extends Component {
 
@@ -41,16 +41,6 @@ export class DocumentForm extends Component {
           <i className="fa fa-floppy-o"></i>
           Save
         </button>
-        {(() => {
-          if (this.props.initialDoc.processed) {
-            return (
-              <button onClick={(e) => this.submit(e, true)} className="btn btn-sm btn-default to-library">
-              <i className="fa fa-folder-open-o"></i>
-              Move to library
-              </button>
-            );
-          }
-        })()}
       </form>
     );
   }
@@ -76,7 +66,7 @@ export function mapStateToProps(state, props) {
     currentTemplate = state.form.document.template.value;
   }
 
-  let template = props.templates.find((t) => t._id === currentTemplate);
+  let template = props.templates.find((t) => t._id === currentTemplate) || props.templates[0] || {properties: []};
 
   let metadataFields = template.properties.map((property) => {
     return 'metadata.' + property.name;
@@ -107,6 +97,6 @@ let form = reduxForm({
 },
 mapStateToProps,
 mapDispatchToProps
-)(DocumentForm);
+                    )(DocumentForm);
 
-export default form;
+                    export default form;

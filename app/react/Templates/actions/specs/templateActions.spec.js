@@ -96,7 +96,7 @@ describe('templatesActions', () => {
 
         const expectedActions = [
           {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok'}},
-          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'info', id: 'unique_id'}}
+          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}
         ];
         const store = mockStore({});
 

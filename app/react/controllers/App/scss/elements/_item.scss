@@ -1,179 +1,261 @@
-@import "../config/_breakpoints.scss";
-@import "../config/_colors.scss";
-@import "../config/_materials.scss";
-@import "../config/_typography.scss";
-
 .item-group {
-  list-style-type: none;
-  padding-bottom: 15px;
-  @include desktop {
-    margin-left: -4px;
-    margin-right: -4px;
+	list-style-type: none;
+	padding-bottom: 15px;
+	@include desktop {
+		margin-left: -4px;
+		margin-right: -4px;
 
-    li {
-      position: static;
-      //height: 140px;
-      padding: 0 4px;
-    }
-  }
+		li {
+			position: static;
+			//height: 140px;
+			padding: 0 4px;
+		}
+	}
 }
 
 .item {
-  margin: 0 0 15px;
-  padding: 25px;
-  background: $c-white;
-  border-radius: 0 !important;
-  box-shadow: $shadow;
-  position: relative;
-  top: 0;
-  left: 0;
-  width: calc(100%);
-  opacity: 1;
-  transition: all 500ms;
-  zoom: 1;
-  @include desktop {
-    height: 125px;
-  }
-  .item-snippets {
-    display: none;
-    margin-top: 15px;
-    font-style: italic;
-    b {
-      background: #FFFFC5;
-      color: orange;
-      font-weight: normal;
-      padding: 1px 2px;
-    }
-    span {
-      color: green;
-      font-style: normal;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-size: $f-size-sm;
-      margin: 0 0 3px;
-      display: block;
-    }
-  }
-  &:before {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 7px solid;
-    border-color: $c-grey-light $c-grey-light $c-white $c-white;
-    box-shadow: -3px 3px 9px -3px $c-grey;
-    transition: all 300ms;
-  }
-  .label {
-    margin-right: 15px;
-    font-size: $f-size-sm;
-    font-weight: normal;
-    .fa {
-      margin-left: 0;
-    }
-  }
-  .label-default {
-    background: $c-grey-light;
-    color: $c-grey-dark;
-    border: 1px solid $c-grey;
-  }
+	margin: 0 0 15px;
+	padding: 25px;
+	background: $c-white;
+	border-radius: 0 !important;
+	border-bottom: 1px solid $c-grey;
+	box-shadow: $shadow;
+	position: relative;
+	top: 0;
+	left: 0;
+	width: calc(100%);
+	opacity: 1;
+	transition: all 300ms;
+	zoom: 1;
+	@include desktop {
+		height: 145px;
+	}
+	.item-snippets {
+		display: none;
+		margin-top: 15px;
+		font-style: italic;
+		b {
+			background: #FFFFC5;
+			color: orange;
+			font-weight: normal;
+			padding: 1px 2px;
+		}
+		span {
+			color: green;
+			font-style: normal;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			font-size: $f-size-sm;
+			margin: 0 0 3px;
+			display: block;
+		}
+	}
+	&:before {
+		content: " ";
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		border: 7px solid;
+		border-color: $c-grey-light $c-grey-light $c-white $c-white;
+		box-shadow: -3px 3px 9px -3px $c-grey;
+		transition: all 300ms;
+	}
+
+
+	&:hover{
+		cursor: pointer;
+	}
+	&.is-active {
+		box-shadow: $shadow-active;
+		top: -3px;
+	}
+	&.is-disabled {
+		opacity: 0.3;
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	.label {
+		margin-right: 15px;
+		font-size: $f-size-sm;
+		font-weight: normal;
+		margin-right: 5px;
+		display: inline-block;
+		.fa {
+			margin-left: 0;
+		}
+	}
 }
 
 .item-name {
-  display: block;
-  font-family: $f-special;
-  font-size: $f-size-lg;
-  color: $c-black;
+	display: inline;
+	font-family: $f-special;
+	color: $c-black;
 }
 .item-metadata {
-  color: $c-grey-dark;
-  font-size: $f-size-sm;
-  position: relative;
-  padding: 10px 0 0;
-  z-index: 2;
-  background: $c-white;
+	color: $c-grey-dark;
+	font-size: $f-size-sm;
+	border-top: 1px solid $c-grey-light;
+	position: relative;
+	padding: 10px 0 0;
+	z-index: 2;
 
-  @include desktop {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: 0;
-    padding: 0 25px 15px;
-  }
+	@include desktop {
+		position: absolute;
+		width: 100%;
+		left: 0;
+		bottom: 0;
+		padding: 15px 25px;
+	}
 
-  .fa {
-    margin: 0 6px;
-  }
-
-  .high {
-    color: rgb(0, 190, 230);
-    font-weight: bold;
-  }
-  .medium {
-    color: $c-primary;
-  }
+	.fa {
+		margin: 0 6px;
+	}
 }
-
-.item-date {
-  margin: 0 15px 0 0;
-  .fa {
-    margin-left: 0;
-  }
+.item-shortcut {
+	position: absolute;
+	top: 50%;
+	right: 10px;
+	transform: translateY(-50%);
+	display: block;
+	width: 32px;
+	height: 32px;
+	line-height: 30px;
+	text-align: center;
+	border-radius: 50%;
+	border: 1px solid $c-grey-light;
+	background: $c-white;
 }
 
 .item-group-load-more {
-  text-align: center;
+	text-align: center;
 }
 
 
 .page-title {
-  text-align: left;
-  margin: 0;
-  padding-bottom: 15px;
-  line-height: 16px;
-  font-size: $f-size-lg;
+	text-align: left;
+	margin: 0;
+	padding-bottom: 15px;
+	line-height: 16px;
+	font-size: $f-size-lg;
 
-  .label {
-    font-size: $f-size-sm;
-    position: relative;
-    top: -3px;
-    padding: 2px 5px;
-  }
+	.label {
+		font-size: $f-size-sm;
+		position: relative;
+		top: -3px;
+		padding: 2px 5px;
+	}
 }
 
 /* sort-by controller */
 
 .sort-by {
-  text-align: center;
-  @include desktop {
-    text-align: right;
-    #documents-counter {
-      text-align: left;
-    }
-  }
-  .label {
-    font-weight: normal;
-    background: $c-primary-lighten;
-    border: 1px solid $c-grey;
-    color: $c-grey-dark;
-    .fa {
-      margin-left: 0;
-      margin-right: 5px;
-    }
-  }
-  & > span {
-    border-bottom: 1px dotted $c-grey-dark;
-    cursor: pointer;
-    margin-left: 15px;
-    padding: 1px 5px;
-    &.active {
-      color: $c-primary;
-      border-bottom: 1px solid $c-primary;
-      font-weight: bold;
-    }
-  }
-  .fa {
-    margin-left: 5px;
-  }
+	text-align: center;
+	@include desktop {
+		text-align: right;
+		#documents-counter {
+			text-align: left;
+		}
+	}
+	.label {
+		font-weight: normal;
+		background: $c-primary-lighten;
+		border: 1px solid $c-grey;
+		color: $c-grey-dark;
+		.fa {
+			margin-left: 0;
+			margin-right: 5px;
+		}
+	}
+	span {
+		border-bottom: 1px dotted $c-grey-dark;
+		cursor: pointer;
+		margin-left: 15px;
+		&.active {
+			color: $c-primary;
+			font-weight: bold;
+		}
+	}
+	.fa {
+		margin-left: 5px;
+	}
+}
+
+.item-status {
+
+	.progress {
+		margin: 0;
+		position: absolute;
+		left: 0;
+		bottom: -2px;
+		width: 100%;
+		height: 2px;
+	}
+	.progress-bar-striped, .progress-striped .progress-bar {
+	  background-image: -webkit-linear-gradient(45deg,rgba(255,255,255,.5) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.5) 75%,transparent 75%,transparent);
+	  background-image: -o-linear-gradient(45deg,rgba(255,255,255,.5) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.5) 75%,transparent 75%,transparent);
+	  background-image: linear-gradient(45deg,rgba(255,255,255,.5) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.5) 75%,transparent 75%,transparent);
+	  -webkit-background-size: 40px 40px;
+	  background-size: 40px 40px;
+	}
+
+	// please delete item1, item2, item3... and let only the proper classes (like item-danger).
+	&.item3,
+	&.item5,
+	&.item6,
+	&.item7,
+	&.item10,
+	&.item11,
+	&.item12,
+	&.item-success {
+		border-bottom: 2px solid #8BC74C;
+	}
+	&.item2,
+	&.item9,
+	&.item-warning {
+		border-bottom: 2px solid orange;
+	}
+
+	&.item4,
+	&.item8,
+	&.item-danger {
+		border-bottom: 2px solid #ED353D;
+	}
+
+	&.item1,
+	&.item-info {
+		border-bottom: 2px solid $c-white;
+		cursor: default;
+	}
+}
+
+.label-default,
+.label-info,
+.label-success,
+.label-warning,
+.label-danger {
+	background: $c-white;
+	padding: 0;
+}
+
+.label-info {
+	color: $c-primary;
+}
+
+.label-success {
+	color: #8BC74C;
+}
+
+.label-warning {
+	color: orange;
+}
+
+.label-danger {
+	color: #ED353D;
+}
+
+.label-default {
+	color: $c-grey-dark;
 }

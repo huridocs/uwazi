@@ -6,24 +6,18 @@ import {removeNotification} from 'app/Notifications';
 export class Notification extends Component {
 
   render() {
-    let type = this.props.type || 'info';
+    let type = this.props.type || 'success';
     let cssClass = 'alert alert-' + type;
-    let icon = 'fa fa-info-circle';
+    let icon = 'fa fa-check';
     if (type === 'warning' || type === 'danger') {
       icon = 'fa fa-exclamation-triangle';
     }
 
     return (
-        <div className="alert-wrapper">
-          <div className={cssClass}>
-            <span className="alert-icon">
-              <i className={icon}></i>
-            </span>
-            <span className="alert-message">{this.props.message}</span>
-            <a onClick={() => this.props.removeNotification(this.props.id)} className="alert-close">
-              <i className="fa fa-times"></i>
-            </a>
-          </div>
+        <div className={cssClass}>
+          <i className={icon}>
+          </i>
+          <span>{this.props.message}</span>
         </div>
     );
   }

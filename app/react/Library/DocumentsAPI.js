@@ -1,4 +1,4 @@
-import api from 'app/utils/singleton_api';
+import api from 'app/utils/api';
 
 export default {
   get(id) {
@@ -18,6 +18,14 @@ export default {
     return api.get(url)
     .then((response) => {
       return response.json;
+    });
+  },
+
+  uploads() {
+    let url = 'documents/uploads';
+    return api.get(url)
+    .then((response) => {
+      return response.json.rows;
     });
   },
 
