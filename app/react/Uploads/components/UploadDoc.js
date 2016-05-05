@@ -29,17 +29,22 @@ export class UploadDoc extends Component {
 
     let status = 'success';
     let message = 'Ready to publish';
+    let progress = 0;
 
-    if (!doc.template) {
-      status = 'warning';
-      message = 'Metadata required';
-      modal = 'metadataRequired';
-    }
 
-    if (doc.uploaded && !doc.processed) {
+    let itsProcessing = doc.uploaded && typeof doc.processed === 'undefined';
+
+    if (itsProcessing) {
       status = 'info';
       message = 'Processing...';
       modal = '';
+      progress = 100;
+    }
+
+    if (!doc.template && doc.processed) {
+      status = 'warning';
+      message = 'Metadata required';
+      modal = 'metadataRequired';
     }
 
     if (doc.uploaded && doc.processed === false) {
@@ -59,6 +64,7 @@ export class UploadDoc extends Component {
     if (itsUploading) {
       status = 'info';
       modal = '';
+      progress = this.props.progress;
     }
 
     let active;
@@ -71,8 +77,8 @@ export class UploadDoc extends Component {
       <ItemName>{doc.title}</ItemName>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
         {(() => {
-          if (itsUploading) {
-            return <ItemFooter.ProgressBar progress={this.props.progress} />;
+          if (itsUploading || (itsProcessing)) {
+            return <ItemFooter.ProgressBar progress={progress} />;
           }
           if (doc.processed) {
             return <ItemFooter.Label status={status}>

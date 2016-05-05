@@ -13,11 +13,17 @@ let ItemFooter = ({children, onClick}) => {
 };
 
 let ProgressBar = ({progress}) => {
+  let message = `${progress} % Completed`;
+  let icon = 'fa fa-upload';
+  if (progress === 100) {
+    message = 'Processing...';
+    icon = 'fa fa-clock-o';
+  }
   return (
     <div>
       <span className="label label-info">
-        <i className="fa fa-upload"></i>
-        <span>{progress} % Complete</span>
+        <i className={icon}></i>
+        <span>{message}</span>
       </span>
       <div className="progress">
         <div className="progress-bar progress-bar-striped" style={{width: `${progress}%`}} />

@@ -76,17 +76,6 @@ describe('UploadDoc', () => {
     });
   });
 
-  describe('when document is uploaded but not processed', () => {
-    it('should render info status', () => {
-      props = {
-        doc: Immutable.fromJS({title: 'doc title', uploaded: true})
-      };
-      render();
-      expect(component.find(RowList.Item).props().status).toBe('info');
-      expect(component.find(ItemFooter.Label).props().status).toBe('info');
-    });
-  });
-
   describe('when document conversion failed', () => {
     it('should render danger status', () => {
       props = {
@@ -110,16 +99,27 @@ describe('UploadDoc', () => {
     });
   });
 
+  describe('when document its being processed', () => {
+    it('should render info status and the progressBar with 100%', () => {
+      props = {
+        doc: Immutable.fromJS({title: 'doc title', uploaded: true})
+      };
+      render();
+      expect(component.find(RowList.Item).props().status).toBe('info');
+      expect(component.find(ItemFooter.ProgressBar).props().progress).toBe(100);
+    });
+  });
+
   describe('when document has no template', () => {
     it('should render warning status', () => {
-      props = {doc: Immutable.fromJS({title: 'doc title'})};
+      props = {doc: Immutable.fromJS({title: 'doc title', processed: true})};
       render();
       expect(component.find(RowList.Item).props().status).toBe('warning');
     });
 
     describe('clicking on the footer', () => {
       it('should open metadataRequired modal', () => {
-        props.doc = Immutable.fromJS({title: 'doc title'});
+        props.doc = Immutable.fromJS({title: 'doc title', processed: true});
         render();
         component.find(ItemFooter).simulate('click', {stopPropagation: () => {}});
         expect(props.showModal).toHaveBeenCalledWith('metadataRequired', props.doc);
