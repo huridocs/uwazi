@@ -40,14 +40,13 @@ describe('DocumentForm', () => {
 
   it('should render title field as a textarea', () => {
     render();
-    let title = component.find('textarea');
-    expect(title.props().value).toEqual('testTitle');
+    let title = component.find('textarea').parent();
+    expect(title.props().model).toEqual('document.title');
   });
 
   it('should render template as a select', () => {
     render();
     let template = component.find(Select).first();
-    expect(template.props().value).toEqual('templateId');
     expect(template.props().options).toEqual([{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}]);
   });
 
@@ -64,11 +63,10 @@ describe('DocumentForm', () => {
     render();
     let inputField = component.findWhere((node) => node.props().model === 'document.metadata.field1');
     let input = inputField.find('input');
-    expect(input.props().value).toBe('field1value');
+    expect(input).toBeDefined();
 
     let selectField = component.findWhere((node) => node.props().model === 'document.metadata.field2');
     let select = selectField.find(Select);
-    expect(select.props().value).toBe('field2value');
     expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
   });
 

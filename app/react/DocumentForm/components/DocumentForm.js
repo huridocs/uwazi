@@ -30,7 +30,7 @@ export class DocumentForm extends Component {
         <FormGroup {...state.fields.title}>
           <Field model="document.title">
             <label>Title</label>
-            <textarea className="form-control" value={document.title}/>
+            <textarea className="form-control" />
           </Field>
         </FormGroup>
 
@@ -38,7 +38,6 @@ export class DocumentForm extends Component {
         <FormGroup>
           <label>Document type</label>
           <Select
-            value={document.template}
             options={templateOptions}
             onChange={(e) => {
               this.props.changeTemplate(document, templates.find((t) => t._id === e.target.value));
@@ -50,7 +49,7 @@ export class DocumentForm extends Component {
           if (property.type === 'select') {
             return (
               <SelectField key={index} model={`document.metadata.${property.name}`} >
-                <Select value={document.metadata[property.name]} options={thesauris.find((t) => t._id === property.content).values} />
+                <Select options={thesauris.find((t) => t._id === property.content).values} />
               </SelectField>
               );
           }
@@ -58,7 +57,7 @@ export class DocumentForm extends Component {
             <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
               <Field model={`document.metadata.${property.name}`} >
                 <label>{property.label}{property.required ? ' *' : ''}</label>
-                <input className="form-control" value={document.metadata[property.name]}/>
+                <input className="form-control" />
               </Field>
             </FormGroup>
             );
