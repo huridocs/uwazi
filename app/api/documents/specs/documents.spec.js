@@ -7,6 +7,7 @@ import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import queryBuilder from 'api/documents/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import date from 'api/utils/date.js';
 
 describe('documents', () => {
   let result;
@@ -26,7 +27,8 @@ describe('documents', () => {
     let getDocuments = () => request.get(dbURL + '/_design/documents/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    it('should create a new document with logged user id', (done) => {
+    it('should create a new document with logged user id and UTC date', (done) => {
+      spyOn(date, 'currentUTC').and.returnValue('universal time');
       let doc = {title: 'Batman begins'};
       let user = {_id: 'user Id'};
 
@@ -36,6 +38,7 @@ describe('documents', () => {
         let createdDocument = docs.find((d) => d.title === 'Batman begins');
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
+        expect(createdDocument.creationDate).toEqual('universal time');
         done();
       })
       .catch(catchErrors(done));
@@ -57,6 +60,23 @@ describe('documents', () => {
     });
 
     describe('when document have _id', () => {
+      it('should not assign again user and creation date', (done) => {
+        spyOn(date, 'currentUTC').and.returnValue('another_date');
+        getDocument()
+        .then((doc) => {
+          let modifiedDoc = {_id: doc._id, _rev: doc._rev};
+          return documents.save(modifiedDoc, 'another_user');
+        })
+        .then(getDocuments)
+        .then((docs) => {
+          let modifiedDoc = docs.find((d) => d.title === 'Penguin almost done');
+          expect(modifiedDoc.user).not.toBe('another_user');
+          expect(modifiedDoc.creationDate).not.toBe('another_date');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
       it('should be able to partially update it', (done) => {
         getDocument()
         .then((doc) => {

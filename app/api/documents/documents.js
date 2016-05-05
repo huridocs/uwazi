@@ -3,11 +3,15 @@ import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
+import date from 'api/utils/date.js';
 
 export default {
   save(doc, user) {
-    doc.user = user;
     doc.type = 'document';
+    if (!doc._id) {
+      doc.user = user;
+      doc.creationDate = date.currentUTC();
+    }
 
     let url = dbURL;
     if (doc._id) {
