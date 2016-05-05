@@ -116,15 +116,6 @@ describe('UploadDoc', () => {
       render();
       expect(component.find(RowList.Item).props().status).toBe('warning');
     });
-
-    describe('clicking on the footer', () => {
-      it('should open metadataRequired modal', () => {
-        props.doc = Immutable.fromJS({title: 'doc title', processed: true});
-        render();
-        component.find(ItemFooter).simulate('click', {stopPropagation: () => {}});
-        expect(props.showModal).toHaveBeenCalledWith('metadataRequired', props.doc);
-      });
-    });
   });
 
   describe('onClick', () => {

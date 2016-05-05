@@ -44,7 +44,7 @@ export class UploadDoc extends Component {
     if (!doc.template && doc.processed) {
       status = 'warning';
       message = 'Metadata required';
-      modal = 'metadataRequired';
+      modal = '';
     }
 
     if (doc.uploaded && doc.processed === false) {
@@ -77,7 +77,7 @@ export class UploadDoc extends Component {
       <ItemName>{doc.title}</ItemName>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
         {(() => {
-          if (itsUploading || (itsProcessing)) {
+          if (itsUploading || itsProcessing) {
             return <ItemFooter.ProgressBar progress={progress} />;
           }
           if (doc.processed) {
