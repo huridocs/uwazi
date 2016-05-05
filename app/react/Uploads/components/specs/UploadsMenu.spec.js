@@ -46,6 +46,15 @@ describe('ViewerDefaultMenu', () => {
     });
   });
 
+  describe('delete button', () => {
+    it('should show deleteDocumentModal', () => {
+      props.doc = Immutable.fromJS({template: '1', title: 'test'});
+      render();
+      component.find('.delete').simulate('click');
+      expect(props.showModal).toHaveBeenCalledWith('deleteDocument', props.doc);
+    });
+  });
+
   describe('publish button', () => {
     it('should not be rendered when document has no template', () => {
       render();
