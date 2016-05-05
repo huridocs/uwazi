@@ -16,8 +16,7 @@ describe('ViewerDefaultMenu', () => {
   beforeEach(() => {
     props = {
       active: true,
-      moveToLibrary: jasmine.createSpy('moveToLibrary'),
-      doc: Immutable.fromJS({})
+      moveToLibrary: jasmine.createSpy('moveToLibrary')
     };
   });
 
@@ -36,6 +35,14 @@ describe('ViewerDefaultMenu', () => {
       render();
       expect(component.find('.active').length).toBe(1);
       expect(component.find('.float-btn__main').hasClass('cta')).toBe(true);
+    });
+  });
+
+  describe('submit button', () => {
+    it('should be rendered when document its defined', () => {
+      props.doc = Immutable.fromJS({});
+      render();
+      expect(component.find('[type="submit"]').props().form).toBe('documentForm');
     });
   });
 

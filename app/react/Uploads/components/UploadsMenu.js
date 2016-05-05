@@ -26,20 +26,10 @@ export class UploadsMenu extends Component {
           }
         })()}
         {(() => {
-          if (false) {
-            return (
-              <div>
-                <div className="float-btn__sec">
-                  <span>View metadata</span><i className="fa fa-list-alt"></i>
-                </div>
-                <div className="float-btn__sec">
-                  <span>View metadata</span><i className="fa fa-list-alt"></i>
-                </div>
-                <div className="float-btn__sec">
-                  <span>View metadata</span><i className="fa fa-list-alt"></i>
-                </div>
-              </div>
-              );
+          if (doc) {
+            return <div className="float-btn__sec">
+              <button type="submit" form="documentForm"><span>Save metadata</span><i className="fa fa-save"></i></button>
+            </div>;
           }
         })()}
         <div className={'float-btn__main ' + (this.props.documentBeingEdited ? 'cta' : 'disabled')}>
