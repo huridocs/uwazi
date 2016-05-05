@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
 
 import {uploadDocument, finishEdit, createDocument} from 'app/Uploads/actions/uploadsActions';
-import 'app/Uploads/scss/upload_box.scss';
 
 export class UploadBox extends Component {
   onDrop(files) {

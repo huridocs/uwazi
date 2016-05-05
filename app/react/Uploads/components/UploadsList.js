@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import 'app/Uploads/scss/uploads_list.scss';
 import {RowList} from 'app/Layout/Lists';
 import UploadDoc from 'app/Uploads/components/UploadDoc';
 import {conversionComplete, updateDocument} from 'app/Uploads/actions/uploadsActions';
