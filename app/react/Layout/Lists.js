@@ -33,16 +33,19 @@ let ProgressBar = ({progress}) => {
 };
 
 let ItemLabel = ({children, status}) => {
-  let icon = 'fa-check';
+  let icon = '';
+  if (status === 'success') {
+    icon = 'fa fa-check';
+  }
   if (status === 'danger') {
-    icon = 'fa-close';
+    icon = 'fa fa-close';
   }
   if (status === 'warning') {
-    icon = 'fa-warning';
+    icon = 'fa fa-warning';
   }
   return (
-    <span className={'label label-' + (status || 'success')}>
-      <i className={'fa ' + icon}></i>
+    <span className={'label label-' + (status || 'default')}>
+      <i className={icon}></i>
       <span>{children}</span>
     </span>
   );
@@ -66,7 +69,7 @@ let RowListItem = ({children, status, onClick, active}) => {
 
   return (
     <li className={'col-sm-4'} onClick={onClick}>
-      <div className={'item item-status item-' + (status || 'success') + ' ' + activeClass}>
+      <div className={'item item-status item-' + (status || 'default') + ' ' + activeClass}>
         {children}
       </div>
     </li>

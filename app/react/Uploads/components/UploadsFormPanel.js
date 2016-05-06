@@ -16,7 +16,7 @@ export class UploadsFormPanel extends Component {
     return (
       <SidePanel {...sidePanelprops}>
         <h1>{this.props.title}</h1>
-        <i className='fa fa-close' onClick={this.props.finishEdit}></i>
+        <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
         <DocumentForm templates={this.props.templates} thesauris={this.props.thesauris} onSubmit={this.submit.bind(this)}/>
       </SidePanel>
     );

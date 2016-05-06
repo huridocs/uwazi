@@ -6,6 +6,7 @@ import {getValues} from 'redux-form';
 import {filterDocumentType, filterAllDocumentTypes} from 'app/Library/actions/filterActions';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
+import SidePanel from 'app/Layout/SidePanel';
 
 export class LibraryFilters extends Component {
 
@@ -23,36 +24,33 @@ export class LibraryFilters extends Component {
 
   render() {
     return (
-      <aside className="col-xs-12 col-sm-3">
+      <SidePanel open={true}>
         <div className="search">
-          <div className="search__button--apply__filters">
-            <a onClick={this.applyFilters.bind(this)} className="btn btn-success btn-block apply-filters">
-              <i className="fa fa-chevron-left"></i>Apply filters
-            </a>
-          </div>
-          <ul className="search__filter search__filter--radiobutton">
-            <li>Document type</li>
+          <h1>Filters<small> <i className="fa fa-refresh"></i><span>Reset filters</span></small></h1>
+          <i className="fa fa-close close-modal"></i>
+          <ul className="search__filter search__filter--type">
+            <li>Filter by document type:</li>
             <li>
               <input
                 onChange={this.props.filterAllDocumentTypes}
                 id="all-documents"
                 type="checkbox"
                 checked={this.props.allDocumentTypes}/>
-              <label htmlFor="all-documents">Select all</label>
+              <label htmlFor="all-documents">&nbsp;Select all</label>
             </li>
             {this.props.templates.map((template, index) => {
               return <li key={index}>
-                      <input onChange={this.handleFilterDocType.bind(this)}
-                            id={template._id}
-                            type="checkbox"
-                            checked={this.props.documentTypes[template._id]}/>
-                      <label htmlFor={template._id}>{template.name}</label>
-                    </li>;
+                <input onChange={this.handleFilterDocType.bind(this)}
+                  id={template._id}
+                  type="checkbox"
+                  checked={this.props.documentTypes[template._id]}/>
+                <label htmlFor={template._id}>&nbsp;{template.name}</label>
+              </li>;
             })}
           </ul>
           <FiltersForm />
         </div>
-      </aside>
+      </SidePanel>
     );
   }
 }

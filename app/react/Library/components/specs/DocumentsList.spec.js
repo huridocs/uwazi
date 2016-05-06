@@ -11,7 +11,7 @@ describe('DocumentsList', () => {
   let props;
 
   beforeEach(() => {
-    documents = [{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}];
+    documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
     props = {documents};
     component = shallow(<DocumentsList {...props} />);
   });
@@ -19,6 +19,7 @@ describe('DocumentsList', () => {
   it('should render a Doc element for each document', () => {
     let docs = component.find(Doc);
     expect(docs.length).toBe(2);
+    expect(docs.first().props().title).toBe('Document one');
   });
 
   describe('maped state', () => {

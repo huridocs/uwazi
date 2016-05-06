@@ -19,16 +19,4 @@ describe('Input', () => {
     expect(input.props().prop).toBe('prop');
     expect(input.props().prop2).toBe('prop2');
   });
-
-  it('should render the label passed', () => {
-    render();
-    expect(component.find('label').text()).toBe('input label');
-  });
-
-  it('should show error if field is touched and has errors', () => {
-    render();
-    expect(component.find('.has-error').length).toBe(0);
-    render({touched: true, error: 'error'});
-    expect(component.find('.has-error').length).toBe(1);
-  });
 });

@@ -5,6 +5,7 @@ import {Link} from 'react-router';
 import UTCToLocal from 'app/Layout/UTCToLocal';
 
 import {setPreviewDoc} from 'app/Library/actions/libraryActions';
+import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 
 export class Doc extends Component {
 
@@ -13,20 +14,17 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, previewDoc, creationDate} = this.props;
+    let {title, _id, creationDate} = this.props;
     let documentViewUrl = '/document/' + _id;
     return (
-      <li className="col-sm-4">
-        <div className={'item' + (previewDoc === _id ? ' active' : '')} onClick={this.preview.bind(this)}>
-          <div className="preview">
-            <Link to={documentViewUrl} className="item-name">{title}</Link>
-          </div>
-          <div className="item-metadata">
-            <span className="item-date"><UTCToLocal utc={creationDate}/></span>
-            <span className="label label-default"></span>
-          </div>
-        </div>
-      </li>
+      <RowList.Item>
+        <ItemName><Link to={documentViewUrl} className="item-name">{title}</Link></ItemName>
+        <ItemFooter>
+          <ItemFooter.Label>Decision</ItemFooter.Label>
+          <ItemFooter.Label><UTCToLocal utc={creationDate}/></ItemFooter.Label>
+          <Link to={documentViewUrl} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
+        </ItemFooter>
+      </RowList.Item>
     );
   }
 }

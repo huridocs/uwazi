@@ -1,41 +1,44 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import 'app/Library/scss/DocumentsList.scss';
+//import 'app/Library/scss/DocumentsList.scss';
 import Doc from 'app/Library/components/Doc';
+import {RowList} from 'app/Layout/Lists';
 
 export class DocumentsList extends Component {
 
   render() {
     let documents = this.props.documents;
     return (
-        <main className="col-xs-12 col-sm-9">
+      <main className="document-viewer col-sm-8 col-sm-offset-2">
+        <div className="sort-by">
           <div className="row">
-            <p id="documents-counter" className="col-sm-5">1-12 of 39 documents</p>
-            <p className="col-sm-7 sort-by">
+            <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>
+            <p className="col-sm-5">
               Sort by
-              <span className="filter active">A-Z<i className="fa fa-caret-down"></i></span>
-              <span className="filter">Upload date</span>
-              <span className="filter">Relevance</span>
+              <span className="active">
+                A-Z
+                <i className="fa fa-caret-down"></i>
+              </span>
+              <span>Upload date</span>
             </p>
           </div>
-          <div className="item-group row">
-              {documents.map((doc, index) => {
-                return <Doc {...doc} key={index} />;
-              })}
-          </div>
-        </main>
+        </div>
+        <RowList>
+          {documents.map((doc, index) => <Doc {...doc.toJS()} key={index} />)}
+        </RowList>
+      </main>
     );
   }
 }
 
 DocumentsList.propTypes = {
-  documents: PropTypes.array.isRequired
+  documents: PropTypes.object.isRequired
 };
 
 export function mapStateToProps(state) {
   return {
-    documents: state.library.documents.toJS()
+    documents: state.library.documents
   };
 }
 

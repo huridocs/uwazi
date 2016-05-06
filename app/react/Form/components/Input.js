@@ -9,10 +9,10 @@ export class Input extends Component {
       className += ' has-error';
     }
     return (
-      <div className={className}>
-        <label>{label}</label>
-        <input className="form-control" {...properties}/>
-      </div>
+      <ul className="search__filter">
+        <li><span>{label}</span></li>
+        <li className="wide"><input className="form-control" {...properties}/></li>
+      </ul>
     );
   }
 

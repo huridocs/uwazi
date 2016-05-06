@@ -21,13 +21,6 @@ describe('LibraryFilters', () => {
     component = shallow(<LibraryFilters {...props} />);
   });
 
-  describe('Apply Filters', () => {
-    it('should do a searchDocuments action with the searchTerm and the form values', () => {
-      component.find('.apply-filters').simulate('click');
-      expect(props.searchDocuments).toHaveBeenCalledWith('Bruce Wayne', {isBatman: true});
-    });
-  });
-
   it('should render a checkbox to filter for all types and one for each document type', () => {
     let docs = component.find('input[type="checkbox"]');
     expect(docs.length).toBe(3);
