@@ -20,7 +20,7 @@ export class UploadsList extends Component {
   }
 
   render() {
-    const {documents} = this.props;
+    const documents = this.props.documents.sort((a, b) => b.get('creationDate') - a.get('creationDate'));
 
     return (
       <RowList>
