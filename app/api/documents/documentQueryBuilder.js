@@ -9,6 +9,7 @@ export default function () {
     query: {
       match_all: {}
     },
+    sort: [],
     filter: {
       bool: {
         must: [
@@ -33,6 +34,13 @@ export default function () {
           }
         };
       }
+      return this;
+    },
+
+    sort(property, order = 'desc') {
+      let sort = {};
+      sort[`doc.${property}`] = order;
+      baseQuery.sort.push(sort);
       return this;
     },
 

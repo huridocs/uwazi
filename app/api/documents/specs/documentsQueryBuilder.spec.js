@@ -50,8 +50,19 @@ describe('documentQueryBuilder', () => {
       });
     });
 
+    describe('sort', () => {
+      it('should add a sort property desc by default', () => {
+        let query = queryBuilder().sort('title').query();
+        expect(query.sort[0]).toEqual({'doc.title': 'desc'});
+      });
+      it('should sort by order passed', () => {
+        let query = queryBuilder().sort('title', 'asc').query();
+        expect(query.sort[0]).toEqual({'doc.title': 'asc'});
+      });
+    });
+
     describe('when passing fields', () => {
-      it('should use passed fields instead of the default ones', () => {
+      it('should use them instead of the default ones', () => {
         let query = queryBuilder().fullTextSearch('term', ['another.field']).query();
         expect(query.query).toEqual({
           multi_match: {
