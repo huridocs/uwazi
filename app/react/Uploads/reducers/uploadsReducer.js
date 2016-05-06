@@ -10,7 +10,7 @@ export default function documents(state = initialState, action = {}) {
   }
 
   if (action.type === types.DOCUMENT_CREATED) {
-    return state.unshift(Immutable.fromJS(action.doc));
+    return state.push(Immutable.fromJS(action.doc)).sort((a, b) => b.get('creationDate') - a.get('creationDate'));
   }
 
   if (action.type === types.UPLOAD_COMPLETE) {

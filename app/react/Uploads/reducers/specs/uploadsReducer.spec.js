@@ -39,11 +39,19 @@ describe('uploadsReducer', () => {
   });
 
   describe('DOCUMENT_CREATED', () => {
-    it('should insert the new document at the top', () => {
-      let currentState = Immutable.fromJS([{title: '1'}, {title: '2'}]);
-      let doc = {title: '3'};
-      let newState = uploadsReducer(currentState, {type: types.DOCUMENT_CREATED, doc});
-      expect(newState).toEqualImmutable(Immutable.fromJS([{title: '3'}, {title: '1'}, {title: '2'}]));
+    it('should insert the new document and sort documents by date', () => {
+      let currentState = Immutable.fromJS([{title: '1', creationDate: 25}, {title: '2', creationDate: 35}]);
+      let doc = {title: '3', creationDate: 15};
+      currentState = uploadsReducer(currentState, {type: types.DOCUMENT_CREATED, doc});
+
+      let anotherDoc = {title: '4', creationDate: 50};
+      let newState = uploadsReducer(currentState, {type: types.DOCUMENT_CREATED, doc: anotherDoc});
+      expect(newState).toEqualImmutable(Immutable.fromJS([
+        {title: '4', creationDate: 50},
+        {title: '2', creationDate: 35},
+        {title: '1', creationDate: 25},
+        {title: '3', creationDate: 15}
+      ]));
     });
   });
 
