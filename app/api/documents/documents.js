@@ -42,7 +42,7 @@ export default {
 
     return request.get(url)
     .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value);
+      response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
       return response.json;
     });
   },
