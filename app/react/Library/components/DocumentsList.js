@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-//import 'app/Library/scss/DocumentsList.scss';
 import Doc from 'app/Library/components/Doc';
 import {RowList} from 'app/Layout/Lists';
 
@@ -10,7 +9,7 @@ export class DocumentsList extends Component {
   render() {
     let documents = this.props.documents;
     return (
-      <main className="document-viewer col-sm-8 col-sm-offset-2">
+      <main className={'document-viewer col-sm-8 col-sm-offset-2 ' + (this.props.filtersPanel ? 'is-active' : '')}>
         <div className="sort-by">
           <div className="row">
             <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>
@@ -33,12 +32,14 @@ export class DocumentsList extends Component {
 }
 
 DocumentsList.propTypes = {
-  documents: PropTypes.object.isRequired
+  documents: PropTypes.object.isRequired,
+  filtersPanel: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
   return {
-    documents: state.library.documents
+    documents: state.library.documents,
+    filtersPanel: state.library.ui.get('filtersPanel')
   };
 }
 

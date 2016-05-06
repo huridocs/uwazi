@@ -37,6 +37,20 @@ describe('uiReducer', () => {
     });
   });
 
+  describe('SHOW_FILTERS', () => {
+    it('should set the filtersPanel to true', () => {
+      let newState = uiReducer(initialState, {type: types.SHOW_FILTERS});
+      expect(newState.toJS().filtersPanel).toBe(true);
+    });
+  });
+
+  describe('HIDE_FILTERS', () => {
+    it('should set the filtersPanel to false', () => {
+      let newState = uiReducer(initialState, {type: types.HIDE_FILTERS});
+      expect(newState.toJS().filtersPanel).toBe(false);
+    });
+  });
+
   describe('SHOW_SUGGESTIONS', () => {
     it('should set the showSuggestions to true', () => {
       let newState = uiReducer(initialState, {type: types.SHOW_SUGGESTIONS});

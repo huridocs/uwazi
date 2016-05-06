@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import * as actions from 'app/ContextMenu/actions/actionTypes';
 import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 import * as UploadActions from 'app/Uploads/actions/actionTypes';
+import * as LibraryActions from 'app/Library/actions/actionTypes';
 
 const initialState = {open: false, menu: null};
 
@@ -22,6 +23,10 @@ export default function contextMenuReducer(state = initialState, action = {}) {
 
   if (action.type === ViewerActions.SET_SELECTION) {
     return state.set('type', 'ViewerTextSelectedMenu');
+  }
+
+  if (action.type === LibraryActions.ENTER_LIBRARY) {
+    return state.set('type', 'LibraryMenu');
   }
 
   if (action.type === UploadActions.ENTER_UPLOADS_SECTION) {

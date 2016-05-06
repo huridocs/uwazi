@@ -1,6 +1,18 @@
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Library/DocumentsAPI';
 
+export function enterLibrary() {
+  return {type: types.ENTER_LIBRARY};
+}
+
+export function showFilters() {
+  return {type: types.SHOW_FILTERS};
+}
+
+export function hideFilters() {
+  return {type: types.HIDE_FILTERS};
+}
+
 export function setDocuments(documents) {
   return {type: types.SET_DOCUMENTS, documents};
 }

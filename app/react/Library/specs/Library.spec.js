@@ -34,6 +34,13 @@ describe('Library', () => {
     expect(component.find(DocumentsList).length).toBe(1);
   });
 
+  describe('on mount', () => {
+    it('should enterLirabry()', () => {
+      component.instance().componentDidMount();
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'ENTER_LIBRARY'});
+    });
+  });
+
   describe('static requestState()', () => {
     it('should request the documents', (done) => {
       Library.requestState()

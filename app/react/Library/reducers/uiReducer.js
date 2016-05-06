@@ -13,6 +13,14 @@ export default function ui(state = initialState, action = {}) {
     return newState;
   }
 
+  if (action.type === types.HIDE_FILTERS) {
+    return state.set('filtersPanel', false);
+  }
+
+  if (action.type === types.SHOW_FILTERS) {
+    return state.set('filtersPanel', true);
+  }
+
   if (action.type === types.SET_PREVIEW_DOC) {
     return state.set('previewDoc', action.docId);
   }

@@ -8,6 +8,7 @@ import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu
 import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 import UploadsMenu from 'app/Uploads/components/UploadsMenu';
+import LibraryMenu from 'app/Library/components/LibraryMenu';
 import 'app/ContextMenu/scss/contextMenu.scss';
 
 export class ContextMenu extends Component {
@@ -26,6 +27,9 @@ export class ContextMenu extends Component {
     }
     if (this.props.type === 'UploadsMenu') {
       return <UploadsMenu active={this.props.open} />;
+    }
+    if (this.props.type === 'LibraryMenu') {
+      return <LibraryMenu />;
     }
   }
 

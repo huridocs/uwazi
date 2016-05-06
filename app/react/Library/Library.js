@@ -3,12 +3,13 @@ import React from 'react';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import {setDocuments, setTemplates} from 'app/Library/actions/libraryActions';
+import {enterLibrary, setDocuments, setTemplates} from 'app/Library/actions/libraryActions';
 import {libraryFilters, generateDocumentTypes} from 'app/Library/helpers/libraryFilters';
 import documentsAPI from 'app/Library/DocumentsAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from 'app/Library/components/SearchBar';
+import ContextMenu from 'app/ContextMenu/components/ContextMenu';
 
 export default class Library extends RouteHandler {
 
@@ -36,10 +37,15 @@ export default class Library extends RouteHandler {
     this.context.store.dispatch(setTemplates(library.filters.templates, library.filters.thesauris));
   }
 
+  componentDidMount() {
+    this.context.store.dispatch(enterLibrary());
+  }
+
   render() {
     return <div className="row panels-layout">
               <DocumentsList />
               <LibraryFilters />
+              <ContextMenu />
             </div>;
   }
 }

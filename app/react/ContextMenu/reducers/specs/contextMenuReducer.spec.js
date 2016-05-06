@@ -4,6 +4,7 @@ import contextMenuReducer from 'app/ContextMenu/reducers/contextMenuReducer';
 import * as types from 'app/ContextMenu/actions/actionTypes';
 import * as ViewerTypes from 'app/Viewer/actions/actionTypes';
 import * as UploadActions from 'app/Uploads/actions/actionTypes';
+import * as LibraryActions from 'app/Library/actions/actionTypes';
 
 import 'jasmine-immutablejs-matchers';
 
@@ -100,11 +101,22 @@ describe('contextMenuReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
-  describe('SET_UPLOADS', () => {
+  describe('ENTER_UPLOADS_SECTION', () => {
     it('should set type to UploadsMenu', () => {
       let currentState = Immutable.fromJS({type: null});
       let newState = contextMenuReducer(currentState, {type: UploadActions.ENTER_UPLOADS_SECTION});
       let expected = Immutable.fromJS({type: 'UploadsMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('ENTER_LIBRARY', () => {
+    it('should set type to LibraryMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: LibraryActions.ENTER_LIBRARY});
+      let expected = Immutable.fromJS({type: 'LibraryMenu'});
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);

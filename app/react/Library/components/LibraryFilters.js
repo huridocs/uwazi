@@ -5,6 +5,7 @@ import {getValues} from 'redux-form';
 
 import {filterDocumentType, filterAllDocumentTypes} from 'app/Library/actions/filterActions';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
+import {hideFilters} from 'app/Library/actions/libraryActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import SidePanel from 'app/Layout/SidePanel';
 
@@ -24,10 +25,10 @@ export class LibraryFilters extends Component {
 
   render() {
     return (
-      <SidePanel open={true}>
+      <SidePanel open={this.props.open}>
         <div className="search">
           <h1>Filters<small> <i className="fa fa-refresh"></i><span>Reset filters</span></small></h1>
-          <i className="fa fa-close close-modal"></i>
+          <i className="fa fa-close close-modal" onClick={this.props.hideFilters}></i>
           <ul className="search__filter search__filter--type">
             <li>Filter by document type:</li>
             <li>
@@ -62,19 +63,22 @@ LibraryFilters.propTypes = {
   form: PropTypes.object,
   filterDocumentType: PropTypes.func,
   filterAllDocumentTypes: PropTypes.func,
+  hideFilters: PropTypes.func,
   searchDocuments: PropTypes.func,
-  searchTerm: PropTypes.string
+  searchTerm: PropTypes.string,
+  open: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
   let props = state.library.filters.toJS();
   props.form = state.form.filters;
   props.searchTerm = state.library.ui.toJS().searchTerm;
+  props.open = state.library.ui.get('filtersPanel');
   return props;
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({filterDocumentType, filterAllDocumentTypes, searchDocuments}, dispatch);
+  return bindActionCreators({filterDocumentType, filterAllDocumentTypes, searchDocuments, hideFilters}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);

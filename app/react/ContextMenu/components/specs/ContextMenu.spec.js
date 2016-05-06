@@ -7,6 +7,7 @@ import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu
 import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 import UploadsMenu from 'app/Uploads/components/UploadsMenu';
+import LibraryMenu from 'app/Library/components/LibraryMenu';
 
 describe('ContextMenu', () => {
   let component;
@@ -100,6 +101,14 @@ describe('ContextMenu', () => {
         render(props);
 
         expect(component.find(ViewerSaveTargetReferenceMenu).length).toBe(1);
+      });
+    });
+    describe('when type is LibraryMenu', () => {
+      it('should render this menu', () => {
+        let props = {type: 'LibraryMenu', open: true};
+        render(props);
+
+        expect(component.find(LibraryMenu).length).toBe(1);
       });
     });
     describe('when type is UploadsMenu', () => {

@@ -23,10 +23,31 @@ describe('libraryActions', () => {
     });
   });
 
+  describe('enterLirabry', () => {
+    it('should return a ENTER_LIBRARY action ', () => {
+      let action = actions.enterLibrary();
+      expect(action).toEqual({type: types.ENTER_LIBRARY});
+    });
+  });
+
   describe('setSearchTerm', () => {
     it('should return a SET_SEARCHTERM action ', () => {
       let action = actions.setSearchTerm('Zerg Rush');
       expect(action).toEqual({type: types.SET_SEARCHTERM, searchTerm: 'Zerg Rush'});
+    });
+  });
+
+  describe('hideFilters', () => {
+    it('should return a HIDE_FILTERS action ', () => {
+      let action = actions.hideFilters();
+      expect(action).toEqual({type: types.HIDE_FILTERS});
+    });
+  });
+
+  describe('showFilters', () => {
+    it('should return a SHOW_FILTERS action ', () => {
+      let action = actions.showFilters();
+      expect(action).toEqual({type: types.SHOW_FILTERS});
     });
   });
 

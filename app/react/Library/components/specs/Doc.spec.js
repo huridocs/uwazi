@@ -1,20 +1,20 @@
-import React from 'react';
-import {mount} from 'enzyme';
+//import React from 'react';
+//import {mount} from 'enzyme';
 import Immutable from 'immutable';
 
-import {Doc, mapStateToProps} from 'app/Library/components/Doc';
+import {mapStateToProps} from 'app/Library/components/Doc';
 
 describe('Doc', () => {
-  let component;
-  let props = {
-    previewDoc: 'idOne',
-    _id: 'idOne',
-    title: 'My title',
-    setPreviewDoc: jasmine.createSpy('setPreviewDoc')
-  };
+  //let component;
+  //let props = {
+    //previewDoc: 'idOne',
+    //_id: 'idOne',
+    //title: 'My title',
+    //setPreviewDoc: jasmine.createSpy('setPreviewDoc')
+  //};
 
   beforeEach(() => {
-    component = mount(<Doc {...props}/>);
+    //component = mount(<Doc {...props}/>);
   });
 
   //describe('when is the document previewed', () => {
