@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
+import UTCToLocal from 'app/Layout/UTCToLocal';
 
 import {setPreviewDoc} from 'app/Library/actions/libraryActions';
 
@@ -12,7 +13,7 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, previewDoc} = this.props;
+    let {title, _id, previewDoc, creationDate} = this.props;
     let documentViewUrl = '/document/' + _id;
     return (
       <li className="col-sm-4">
@@ -21,15 +22,8 @@ export class Doc extends Component {
             <Link to={documentViewUrl} className="item-name">{title}</Link>
           </div>
           <div className="item-metadata">
-            <span className="item-date">March 14</span>
-            <span className="label label-default">Decision</span>
-          </div>
-          <div className="item-snippets"><span> <i className="fa fa-search"></i> 3 matches</span>
-            <p>
-              "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae <b>africa</b>
-              aut velit autem pariatur commodi. Voluptates perspiciatis nihil <b>africa</b>
-              consequuntur fugit eum recusandae dolor, aliquid tempora sint aliquam <b>africa</b>."
-            </p>
+            <span className="item-date"><UTCToLocal utc={creationDate}/></span>
+            <span className="label label-default"></span>
           </div>
         </div>
       </li>
@@ -41,7 +35,8 @@ Doc.propTypes = {
   _id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   previewDoc: PropTypes.string,
-  setPreviewDoc: PropTypes.func.isRequired
+  setPreviewDoc: PropTypes.func.isRequired,
+  creationDate: PropTypes.number
 };
 
 
