@@ -16,7 +16,8 @@ describe('LibraryFilters', () => {
       documentTypes: {},
       searchTerm: 'Bruce Wayne',
       form: {isBatman: {value: true}},
-      searchDocuments: jasmine.createSpy('searchDocuments')
+      searchDocuments: jasmine.createSpy('searchDocuments'),
+      search: {sort: 'title'}
     };
     component = shallow(<LibraryFilters {...props} />);
   });

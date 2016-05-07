@@ -10,6 +10,8 @@ import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from 'app/Library/components/SearchBar';
 import ContextMenu from 'app/ContextMenu/components/ContextMenu';
+import {store} from 'app/store';
+import {getValues} from 'redux-form';
 
 export default class Library extends RouteHandler {
 
@@ -18,7 +20,16 @@ export default class Library extends RouteHandler {
   }
 
   static requestState() {
-    return Promise.all([documentsAPI.search(), templatesAPI.get(), thesaurisAPI.get()])
+    let searchTerm = '';
+    let filters = {};
+    //
+    if (store) {
+      let state = store.getState();
+      searchTerm = state.searchTerm;
+      filters = Object.assign({}, getValues(state.filtersForm), state.search);
+    }
+    //
+    return Promise.all([documentsAPI.search(searchTerm, filters), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       let documentTypes = generateDocumentTypes(templates);
       let properties = libraryFilters(templates, documentTypes);
