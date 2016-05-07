@@ -11,19 +11,22 @@ function toParams(data) {
 }
 
 let _fetch = (url, data, method, cookie) => {
-
   let response;
-
-  let headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
-  headers.Cookie = cookie;
-
+  let params = '';
   let body;
 
-  if (method !== 'GET') {
-    body = JSON.stringify(data)
+  let headers = {Accept: 'application/json', 'Content-Type': 'application/json'};
+  headers.Cookie = cookie;
+
+  if (method === 'GET' || method === 'DELETE') {
+    params = toParams(data);
   }
 
-  return fetch(url, {
+  if (method === 'POST') {
+    body = JSON.stringify(data);
+  }
+
+  return fetch(url + params, {
     method: method,
     headers: headers,
     credentials: 'same-origin',
@@ -31,21 +34,21 @@ let _fetch = (url, data, method, cookie) => {
   })
   .then((res) => {
     response = res;
-    return res.json()
+    return res.json();
   })
   .then((json) => {
-    let procesed_response = {
+    let procesedResponse = {
       json: json,
       status: response.status
     };
 
-    if (response.status > 399){
-      throw procesed_response;
+    if (response.status > 399) {
+      throw procesedResponse;
     }
 
-    return procesed_response;
+    return procesedResponse;
   });
-}
+};
 
 export default {
   post: (url, data) => {
@@ -53,11 +56,10 @@ export default {
   },
 
   get: (url, data, cookie) => {
-    let params = toParams(data);
-    return _fetch(url + params, data, 'GET', cookie);
+    return _fetch(url, data, 'GET', cookie);
   },
 
   delete: (url, data) => {
     return _fetch(url, data, 'DELETE');
   }
-}
+};

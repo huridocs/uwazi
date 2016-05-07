@@ -1,15 +1,15 @@
-import backend from 'fetch-mock'
-import request from '../JSONRequest'
+import backend from 'fetch-mock';
+import request from '../JSONRequest';
 
 describe('JSONRequest', () => {
-
   beforeEach(() => {
     backend.restore();
     backend
-    .mock('http://localhost:3000/api/test', 'POST', JSON.stringify({response:'post'}))
-    .mock('http://localhost:3000/api/test', 'GET', JSON.stringify({response:'get'}))
-    .mock('http://localhost:3000/api/withParams?param1=param1&param2=param2', 'GET', JSON.stringify({response:'get'}))
-    .mock('http://localhost:3000/api/test', 'DELETE', JSON.stringify({response:'delete'}));
+    .mock('http://localhost:3000/api/test', 'POST', JSON.stringify({response: 'post'}))
+    .mock('http://localhost:3000/api/test', 'GET', JSON.stringify({response: 'get'}))
+    .mock('http://localhost:3000/api/withParams?param1=param1&param2=param2', 'GET', JSON.stringify({response: 'get with params'}))
+    .mock('http://localhost:3000/api/test', 'DELETE', JSON.stringify({response: 'delete'}))
+    .mock('http://localhost:3000/api/test?id=123', 'DELETE', JSON.stringify({response: 'delete with params'}));
   });
 
   describe('post()', () => {
@@ -17,18 +17,18 @@ describe('JSONRequest', () => {
       request.post('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response:'post'});
+        expect(response.json).toEqual({response: 'post'});
         done();
       })
       .catch(done.fail);
     });
 
     describe('when response is greater than 399', () => {
-      it("should throw an error", (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'POST', {status:400, body: JSON.stringify({error:'error!'})});
+      it('should throw an error', (done) => {
+        backend.reMock('http://localhost:3000/api/test', 'POST', {status: 400, body: JSON.stringify({error: 'error!'})});
 
         request.post('http://localhost:3000/api/test')
-        .then((response) => {
+        .then(() => {
           done.fail('should have thrown an error');
         })
         .catch((response) => {
@@ -45,7 +45,7 @@ describe('JSONRequest', () => {
       request.get('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response:'get'});
+        expect(response.json).toEqual({response: 'get'});
         done();
       })
       .catch(done.fail);
@@ -56,7 +56,7 @@ describe('JSONRequest', () => {
         request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: 'param2'})
         .then((response) => {
           expect(response.status).toBe(200);
-          expect(response.json).toEqual({response:'get'});
+          expect(response.json).toEqual({response: 'get with params'});
           expect(backend.lastOptions().body).not.toBeDefined();
           done();
         })
@@ -67,8 +67,7 @@ describe('JSONRequest', () => {
     describe('when passing a cookie', () => {
       it('should send the cookie in the headers', (done) => {
         request.get('http://localhost:3000/api/test', {}, 'cookie')
-        .then((response) => {
-
+        .then(() => {
           let headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
 
@@ -79,11 +78,11 @@ describe('JSONRequest', () => {
     });
 
     describe('when response is greater than 399', () => {
-      it("should throw an error", (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'GET', {status:500, body: JSON.stringify({error:'error!'})});
+      it('should throw an error', (done) => {
+        backend.reMock('http://localhost:3000/api/test', 'GET', {status: 500, body: JSON.stringify({error: 'error!'})});
 
         request.get('http://localhost:3000/api/test')
-        .then((response) => {
+        .then(() => {
           done.fail('should have thrown an error');
         })
         .catch((response) => {
@@ -93,7 +92,6 @@ describe('JSONRequest', () => {
         });
       });
     });
-
   });
 
   describe('delete()', () => {
@@ -101,18 +99,30 @@ describe('JSONRequest', () => {
       request.delete('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response:'delete'});
+        expect(response.json).toEqual({response: 'delete'});
         done();
       })
       .catch(done.fail);
     });
 
+    describe('when passing data', () => {
+      it('should send it in params', (done) => {
+        request.delete('http://localhost:3000/api/test', {id: '123'})
+        .then((response) => {
+          expect(response.status).toBe(200);
+          expect(response.json).toEqual({response: 'delete with params'});
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
     describe('when response is greater than 399', () => {
-      it("should throw an error", (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'DELETE', {status:404, body: JSON.stringify({error:'error!'})});
+      it('should throw an error', (done) => {
+        backend.reMock('http://localhost:3000/api/test', 'DELETE', {status: 404, body: JSON.stringify({error: 'error!'})});
 
         request.delete('http://localhost:3000/api/test')
-        .then((response) => {
+        .then(() => {
           done.fail('should have thrown an error');
         })
         .catch((response) => {
@@ -122,7 +132,5 @@ describe('JSONRequest', () => {
         });
       });
     });
-
   });
-
 });
