@@ -38,6 +38,7 @@ export default combineReducers({
   contextMenu,
   modals,
   uploads,
+  search: modelReducer('search', {sort: 'title', order: 'desc', searchTerm: ''}),
   document: modelReducer('document'),
   documentForm: formReducer('document')
 });
