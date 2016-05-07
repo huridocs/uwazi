@@ -13,13 +13,14 @@ describe('SearchBar', () => {
     props.searchTerm = 'Find my document';
     props.suggestions = [];
     props.filtersForm = {isBatman: {value: true}};
+    props.search = {sort: 'title'};
     warpper = mount(<SearchBar {...props}/>);
   });
 
   describe('form on submit', () => {
-    it('should call searchDocuments, with the searchTerm', () => {
+    it('should call searchDocuments, with the searchTerm filters and sort', () => {
       warpper.find('form').simulate('submit', {preventDefault: ()=>{}});
-      expect(props.searchDocuments).toHaveBeenCalledWith(props.searchTerm, {isBatman: true});
+      expect(props.searchDocuments).toHaveBeenCalledWith(props.searchTerm, {isBatman: true, sort: 'title'});
     });
   });
 
@@ -67,7 +68,7 @@ describe('SearchBar', () => {
     it('should empty searchTerm and perform a search', () => {
       warpper.find('.input-group-btn').simulate('click', {preventDefault: ()=>{}});
       expect(props.setSearchTerm).toHaveBeenCalledWith('');
-      expect(props.searchDocuments).toHaveBeenCalledWith('', {isBatman: true});
+      expect(props.searchDocuments).toHaveBeenCalledWith('', {isBatman: true, sort: 'title'});
     });
   });
 
@@ -87,10 +88,11 @@ describe('SearchBar', () => {
         },
         form: {
           filters: 'filtersForm'
-        }
+        },
+        search: 'search'
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({searchTerm: 'do a barrel roll', filtersForm: 'filtersForm'});
+      expect(state).toEqual({searchTerm: 'do a barrel roll', filtersForm: 'filtersForm', search: 'search'});
     });
   });
 });

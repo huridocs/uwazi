@@ -37,12 +37,14 @@ export class SearchBar extends Component {
 
   resetSearch() {
     this.props.setSearchTerm('');
-    this.props.searchDocuments('', getValues(this.props.filtersForm));
+    let filters = Object.assign({}, getValues(this.props.filtersForm), this.props.search);
+    this.props.searchDocuments('', filters);
   }
 
   search(e) {
     e.preventDefault();
-    this.props.searchDocuments(this.props.searchTerm, getValues(this.props.filtersForm));
+    let filters = Object.assign({}, getValues(this.props.filtersForm), this.props.search);
+    this.props.searchDocuments(this.props.searchTerm, filters);
   }
 
   render() {
@@ -98,12 +100,14 @@ SearchBar.propTypes = {
   suggestions: PropTypes.array,
   filtersForm: PropTypes.object,
   showSuggestions: PropTypes.bool,
+  search: PropTypes.object,
   overSuggestions: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
   let props = state.library.ui.toJS();
   props.filtersForm = state.form.filters;
+  props.search = state.search;
   return props;
 }
 
