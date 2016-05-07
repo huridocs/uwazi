@@ -61,7 +61,7 @@ describe('templates routes', () => {
   describe('DELETE', () => {
     it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
-      routes.delete('/api/templates', {body: 'template'})
+      routes.delete('/api/templates', {query: 'template'})
       .then((response) => {
         expect(templates.delete).toHaveBeenCalledWith('template');
         expect(response).toBe('ok');
@@ -72,7 +72,7 @@ describe('templates routes', () => {
 
     describe('when there is a db error', () => {
       it('should return the error in the response', (done) => {
-        let req = {body: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
+        let req = {query: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
 
         routes.delete('/api/templates', req)
         .then((response) => {

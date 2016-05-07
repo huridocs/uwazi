@@ -11,7 +11,7 @@ describe('ThesaurisAPI', () => {
     backend
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: arrayResponse})})
     .mock(APIURL + 'thesauris?_id=thesauriId', 'GET', {body: JSON.stringify({rows: singleResponse})})
-    .mock(APIURL + 'thesauris', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .mock(APIURL + 'thesauris?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'thesauris', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -55,7 +55,6 @@ describe('ThesaurisAPI', () => {
       let thesauri = {_id: 'id'};
       thesaurisAPI.delete(thesauri)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'thesauris').body)).toEqual(thesauri);
         expect(response).toEqual({backednResponse: 'testdelete'});
         done();
       })

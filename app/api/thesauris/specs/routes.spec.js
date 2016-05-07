@@ -61,7 +61,7 @@ describe('thesauris routes', () => {
     it('should delete a thesauri', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
-        let req = {body: {_id: thesauri.json._id, _rev: thesauri.json._rev}};
+        let req = {query: {_id: thesauri.json._id, _rev: thesauri.json._rev}};
         return routes.delete('/api/thesauris', req);
       })
       .then((response) => {
@@ -79,7 +79,7 @@ describe('thesauris routes', () => {
 
     describe('when there is a db error', () => {
       it('return the error in the response', (done) => {
-        let req = {body: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
+        let req = {query: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
         routes.delete('/api/thesauris', req)
         .then((response) => {
           expect(response.error.error).toBe('bad_request');

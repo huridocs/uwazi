@@ -27,20 +27,18 @@ describe('thesaurisActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'thesauris', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
+      .mock(APIURL + 'thesauris?_id=thesauriId', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
       dispatch = jasmine.createSpy('dispatch');
     });
 
     describe('deleteThesauri', () => {
       it('should delete the thesauri and dispatch a THESAURI_DELETED action with the id', (done) => {
-        let thesauri = {_id: 'thesauriId', name: 'Secret list of things', values: []};
+        let thesauri = {_id: 'thesauriId'};
         actions.deleteThesauri(thesauri)(dispatch)
         .then(() => {
           expect(dispatch).toHaveBeenCalledWith({type: types.THESAURI_DELETED, id: 'thesauriId'});
           done();
         });
-
-        expect(JSON.parse(backend.lastOptions(APIURL + 'thesauris').body)).toEqual(thesauri);
       });
     });
   });

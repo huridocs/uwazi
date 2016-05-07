@@ -11,7 +11,7 @@ describe('TemplatesAPI', () => {
     backend
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: mockResponse})})
     .mock(APIURL + 'templates?_id=templateId', 'GET', {body: JSON.stringify({rows: templateResponse})})
-    .mock(APIURL + 'templates', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .mock(APIURL + 'templates?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -55,7 +55,6 @@ describe('TemplatesAPI', () => {
       let template = {_id: 'id'};
       templates.delete(template)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'templates').body)).toEqual(template);
         expect(response).toEqual({backednResponse: 'testdelete'});
         done();
       })

@@ -9,7 +9,7 @@ describe('referencesAPI', () => {
     backend.restore();
     backend
     .mock(APIURL + 'references?sourceDocument=sourceDocument', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'references', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .mock(APIURL + 'references?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'references', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -42,7 +42,6 @@ describe('referencesAPI', () => {
       let document = {_id: 'id'};
       referencesAPI.delete(document)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'references').body)).toEqual(document);
         expect(response).toEqual({backednResponse: 'testdelete'});
         done();
       })

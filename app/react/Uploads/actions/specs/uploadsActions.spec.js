@@ -18,7 +18,7 @@ describe('uploadsActions', () => {
     backend.restore();
     backend
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})})
-    .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({testBackendResult: 'ok'})});
+    .mock(APIURL + 'documents?name=doc&_id=abc1', 'DELETE', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
 
   describe('enterUploads()', () => {
@@ -189,7 +189,6 @@ describe('uploadsActions', () => {
 
         store.dispatch(actions.deleteDocument(document))
         .then(() => {
-          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc', _id: 'abc1'}));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

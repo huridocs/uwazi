@@ -2,9 +2,8 @@ import documentRoutes from '../routes.js';
 import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
 import request from '../../../shared/JSONRequest.js';
-import {db_url} from '../../config/database.js';
+import {db_url as dbUrl} from '../../config/database.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import elastic from '../elastic';
 import documents from '../documents';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -46,17 +45,17 @@ describe('documents', () => {
       routes.get('/api/documents')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title:'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
         done();
       })
-      .catch(console.log)
+      .catch(console.log);
     });
 
-    describe("when passing id", () => {
+    describe('when passing id', () => {
       it('should return matching document', (done) => {
-        let request = {query:{_id:'8202c463d6158af8065022d9b5014ccb'}};
+        let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}};
 
-        routes.get('/api/documents', request)
+        routes.get('/api/documents', req)
         .then((response) => {
           let docs = response.rows;
           expect(docs.length).toBe(1);
@@ -64,29 +63,28 @@ describe('documents', () => {
           done();
         })
         .catch(done.fail);
-
       });
     });
-  })
+  });
 
   describe('/api/documents/newest', () => {
     it('should return a list of documents returned from the list view', (done) => {
       routes.get('/api/documents/newest')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title:'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
         done();
       })
-      .catch(console.log)
+      .catch(console.log);
     });
-  })
+  });
 
   describe('/api/documents/relevant', () => {
     it('should return a list of documents returned from the list view', (done) => {
       routes.get('/api/documents/relevant')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title:'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
         done();
       })
       .catch(console.log);
@@ -152,17 +150,16 @@ describe('documents', () => {
     });
   });
 
-
-  describe("DELETE", () => {
-    it("should delete a document", (done) => {
-      request.get(db_url+'/8202c463d6158af8065022d9b5014ccb')
+  describe('DELETE', () => {
+    it('should delete a document', (done) => {
+      request.get(dbUrl + '/8202c463d6158af8065022d9b5014ccb')
       .then(template => {
-        let request = {body:{"_id":template.json._id, "_rev":template.json._rev}};
-        return routes.delete('/api/documents', request);
+        let req = {query: {_id: template.json._id, _rev: template.json._rev}};
+        return routes.delete('/api/documents', req);
       })
       .then((response) => {
         expect(response.ok).toBe(true);
-        return request.get(db_url+'/_design/documents/_view/all');
+        return request.get(dbUrl + '/_design/documents/_view/all');
       })
       .then((response) => {
         let docs = response.json.rows;
@@ -171,23 +168,20 @@ describe('documents', () => {
         done();
       })
       .catch(done.fail);
-
     });
 
-    describe("when there is a db error", () => {
-      it("return the error in the response", (done) => {
-        let request = {body:{"_id":'8202c463d6158af8065022d9b5014ccb', "_rev":'bad_rev'}};
+    describe('when there is a db error', () => {
+      it('return the error in the response', (done) => {
+        let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb', _rev: 'bad_rev'}};
 
-        routes.delete('/api/documents', request)
+        routes.delete('/api/documents', req)
         .then((response) => {
           expect(response.error.error).toBe('bad_request');
           done();
         })
         .catch(done.fail);
-
       });
     });
-
   });
 
   describe('/uploads', () => {

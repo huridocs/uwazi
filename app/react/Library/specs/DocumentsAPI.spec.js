@@ -20,7 +20,7 @@ describe('DocumentsAPI', () => {
     .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
     .mock(APIURL + 'documents/search?joker=true&searchTerm=Batman', 'GET', {body: JSON.stringify(filteredSearchResult)})
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
-    .mock(APIURL + 'documents', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .mock(APIURL + 'documents?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -130,7 +130,6 @@ describe('DocumentsAPI', () => {
       let document = {_id: 'id'};
       documentsAPI.delete(document)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'documents').body)).toEqual(document);
         expect(response).toEqual({backednResponse: 'testdelete'});
         done();
       })

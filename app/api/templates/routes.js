@@ -32,7 +32,7 @@ export default app => {
   });
 
   app.delete('/api/templates', (req, res) => {
-    templates.delete(req.body)
+    templates.delete(req.query)
     .then((response) => {
       res.json(response);
     })

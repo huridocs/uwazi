@@ -8,7 +8,7 @@ describe('Login', () => {
     backend
     .mock(APIURL + 'test_get', 'GET', JSON.stringify({method: 'GET'}))
     .mock(APIURL + 'test_post', 'POST', JSON.stringify({method: 'POST'}))
-    .mock(APIURL + 'test_delete', 'DELETE', JSON.stringify({method: 'DELETE'}));
+    .mock(APIURL + 'test_delete?data=delete', 'DELETE', JSON.stringify({method: 'DELETE'}));
   });
 
 
@@ -53,7 +53,6 @@ describe('Login', () => {
     it('should prefix url with config api url', (done) => {
       api.delete('test_delete', {data: 'delete'})
       .then((response) => {
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({data: 'delete'}));
         expect(response.json.method).toBe('DELETE');
         done();
       })
@@ -61,4 +60,3 @@ describe('Login', () => {
     });
   });
 });
-

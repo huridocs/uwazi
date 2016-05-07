@@ -45,9 +45,7 @@ export default app => {
   });
 
   app.delete('/api/thesauris', (req, res) => {
-    let url = dbUrl + '/' + req.body._id + '?rev=' + req.body._rev;
-
-    request.delete(url)
+    request.delete(`${dbUrl}/${req.query._id}`, {rev: req.query._rev})
     .then((response) => {
       res.json(response.json);
     })

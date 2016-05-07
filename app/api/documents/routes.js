@@ -1,5 +1,5 @@
 import request from '../../shared/JSONRequest.js';
-import {db_url} from '../config/database.js';
+import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import needsAuthorization from '../auth/authMiddleware';
@@ -38,11 +38,11 @@ export default (app) => {
 
   app.get('/api/documents', (req, res) => {
     let id = '';
-    let url = db_url + '/_design/documents/_view/list';
+    let url = dbUrl + '/_design/documents/_view/list';
 
     if (req.query && req.query._id) {
       id = '?key="' + req.query._id + '"';
-      url = db_url + '/_design/documents/_view/all' + id;
+      url = dbUrl + '/_design/documents/_view/all' + id;
     }
 
     request.get(url)
@@ -58,7 +58,7 @@ export default (app) => {
   });
 
   app.get('/api/documents/newest', (req, res) => {
-    request.get(db_url + '/_design/documents/_view/list')
+    request.get(dbUrl + '/_design/documents/_view/list')
     .then(response => {
       res.json(sanitizeResponse(response.json));
     })
@@ -66,7 +66,7 @@ export default (app) => {
   });
 
   app.get('/api/documents/relevant', (req, res) => {
-    request.get(db_url+'/_design/documents/_view/list')
+    request.get(`${dbUrl}/_design/documents/_view/list`)
     .then(response => {
       res.json(sanitizeResponse(response.json));
     })
@@ -74,9 +74,7 @@ export default (app) => {
   });
 
   app.delete('/api/documents', (req, res) => {
-    let url = db_url+'/'+req.body._id+'?rev='+req.body._rev;
-
-    request.delete(url)
+    request.delete(`${dbUrl}/${req.query._id}`, {rev: req.query._rev})
     .then((response) => {
       res.json(response.json);
     })
