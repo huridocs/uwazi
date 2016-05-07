@@ -12,9 +12,10 @@ export class LibraryMenu extends Component {
         {(() => {
           if (this.props.filtersPanel) {
             return (
-              <div className="float-btn__main cta" onClick={
-                () => this.props.searchDocuments(this.props.searchTerm, getValues(this.props.filtersForm))
-              }>
+              <div className="float-btn__main cta" onClick={() => {
+                let filters = Object.assign({}, getValues(this.props.filtersForm), this.props.search);
+                this.props.searchDocuments(this.props.searchTerm, filters);
+              }}>
                 <i className="fa fa-filter fa-upload fa-save"></i>
               </div>
               );
@@ -34,6 +35,7 @@ LibraryMenu.propTypes = {
   filtersPanel: PropTypes.bool,
   showFilters: PropTypes.func,
   filtersForm: PropTypes.object,
+  search: PropTypes.object,
   searchDocuments: PropTypes.func,
   searchTerm: PropTypes.string
 };
@@ -42,7 +44,8 @@ function mapStateToProps(state) {
   return {
     filtersPanel: state.library.ui.get('filtersPanel'),
     searchTerm: state.library.ui.get('searchTerm'),
-    filtersForm: state.form.filters
+    filtersForm: state.form.filters,
+    search: state.search
   };
 }
 

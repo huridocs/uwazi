@@ -16,7 +16,8 @@ describe('LibraryMenu', () => {
       showFilters: jasmine.createSpy('showFilters'),
       searchDocuments: jasmine.createSpy('searchDocuments'),
       filtersForm: {isBatman: {value: true}},
-      searchTerm: 'test'
+      searchTerm: 'test',
+      search: {sort: 'title'}
     };
   });
 
@@ -33,7 +34,7 @@ describe('LibraryMenu', () => {
       props.filtersPanel = true;
       render();
       component.find('.float-btn__main').simulate('click');
-      expect(props.searchDocuments).toHaveBeenCalledWith('test', {isBatman: true});
+      expect(props.searchDocuments).toHaveBeenCalledWith('test', {isBatman: true, sort: 'title'});
     });
   });
 });
