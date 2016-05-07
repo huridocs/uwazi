@@ -19,6 +19,9 @@ import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauris/EditThesauri';
 import NewThesauri from 'app/Thesauris/NewThesauri';
 
+import EditRelationType from 'app/RelationTypes/EditRelationType';
+import NewRelationType from 'app/RelationTypes/NewRelationType';
+
 import Library from 'app/Library/Library';
 
 export default (
@@ -31,6 +34,8 @@ export default (
     <Route path='templates/edit/:templateId' component={EditTemplate} />
     <Route path='thesauris/new' component={NewThesauri} />
     <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
+    <Route path='relationtypes/new' component={NewRelationType} />
+    <Route path='relationtypes/edit/:relationTypeId' component={EditRelationType} />
     <Route path='login' component={Login} />
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path="*" component={NoMatch} />

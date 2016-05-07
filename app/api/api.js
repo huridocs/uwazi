@@ -1,6 +1,5 @@
 import bodyParser from 'body-parser';
 import db_config from './config/database.js';
-import session from 'express-session';
 
 export default (app, server) => {
   //set db to use
@@ -16,6 +15,7 @@ export default (app, server) => {
   require('./users/routes.js')(app);
   require('./templates/routes.js')(app);
   require('./thesauris/routes.js')(app);
+  require('./relationtypes/routes.js')(app);
   require('./documents/routes.js')(app);
   require('./upload/routes.js')(app);
 };

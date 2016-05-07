@@ -5,8 +5,10 @@ import {Link} from 'react-router';
 
 import {setTemplates, checkTemplateCanBeDeleted} from 'app/Templates/actions/templatesActions';
 import {setThesauris, deleteThesauri} from 'app/Thesauris/actions/thesaurisActions';
+import {setRelationTypes, deleteRelationType} from 'app/RelationTypes/actions/relationTypesActions';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import CantDeleteTemplateAlert from 'app/Metadata/components/CantDeleteTemplateAlert';
 import DeleteTemplateConfirm from 'app/Metadata/components/DeleteTemplateConfirm';
@@ -16,15 +18,16 @@ import 'app/Metadata/scss/metadata.scss';
 export class Metadata extends RouteHandler {
 
   static requestState() {
-    return Promise.all([templatesAPI.get(), thesaurisAPI.get()])
-    .then((results) => {
-      return {templates: results[0], thesauris: results[1]};
+    return Promise.all([templatesAPI.get(), thesaurisAPI.get(), relationTypesAPI.get()])
+    .then(([templates, thesauris, relationTypes]) => {
+      return {templates, thesauris, relationTypes};
     });
   }
 
-  setReduxState({templates, thesauris}) {
+  setReduxState({templates, thesauris, relationTypes}) {
     this.props.setTemplates(templates);
     this.props.setThesauris(thesauris);
+    this.props.setRelationTypes(relationTypes);
   }
 
   render() {
@@ -55,21 +58,22 @@ export class Metadata extends RouteHandler {
         </div>
         <div className="col-sm-4">
           <div className="panel panel-default">
-            <div className="panel-heading">Relationship types</div>
+            <div className="panel-heading">Relation types</div>
             <ul className="list-group">
-              <li className="list-group-item"> <a href="metadata-relationship.html">Based on</a>
-                <div className="btn btn-danger btn-xs pull-right"><i className="fa fa-trash"></i></div>
-                <a href="metadata-relationship.html" className="btn btn-default btn-xs pull-right"><i className="fa fa-pencil"></i></a>
-              </li>
-              <li className="list-group-item"> <a href="metadata-relationship.html">Supports</a>
-                <div className="btn btn-danger btn-xs pull-right"><i className="fa fa-trash"></i></div>
-                <a href="metadata-relationship.html" className="btn btn-default btn-xs pull-right"><i className="fa fa-pencil"></i></a>
-              </li>
-              <li className="list-group-item"> <a href="metadata-relationship.html">Contradicts</a>
-                <div className="btn btn-danger btn-xs pull-right"><i className="fa fa-trash"></i></div>
-                <a href="metadata-relationship.html" className="btn btn-default btn-xs pull-right"><i className="fa fa-pencil"></i></a>
-              </li>
-              <div className="panel-footer"><i className="fa fa-plus"></i> Add relationship type</div>
+              {this.props.relationTypes.map((relationType, index) => {
+                return <li className="list-group-item" key={index}> <Link to={'/relationtypes/edit/' + relationType._id}>{relationType.name}</Link>
+                        <div
+                          onClick={() => this.props.deleteRelationType(relationType)}
+                          className="btn btn-danger btn-xs pull-right relation-type-remove">
+                          <i className="fa fa-trash"></i>
+                        </div>
+                        &nbsp;
+                        <Link to={'/relationtypes/edit/' + relationType._id} className="btn btn-default btn-xs pull-right">
+                          <i className="fa fa-pencil"></i>
+                        </Link>
+                      </li>;
+              })}
+              <Link to="/relationtypes/new" className="panel-footer"><i className="fa fa-plus"></i> Add relation type</Link>
             </ul>
           </div>
         </div>
@@ -104,15 +108,20 @@ Metadata.__redux = true;
 Metadata.propTypes = {
   templates: PropTypes.array,
   thesauris: PropTypes.array,
+  relationTypes: PropTypes.array,
   checkTemplateCanBeDeleted: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
-  return {templates: state.templates.toJS(), thesauris: state.thesauris.toJS()};
+  return {
+    templates: state.templates.toJS(),
+    thesauris: state.thesauris.toJS(),
+    relationTypes: state.relationTypes.toJS()
+  };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setTemplates, checkTemplateCanBeDeleted, setThesauris, deleteThesauri}, dispatch);
+  return bindActionCreators({setTemplates, checkTemplateCanBeDeleted, setThesauris, deleteThesauri, setRelationTypes, deleteRelationType}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Metadata);

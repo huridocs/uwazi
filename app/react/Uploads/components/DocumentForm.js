@@ -96,7 +96,6 @@ let form = reduxForm({
   validate: validateForm
 },
 mapStateToProps,
-mapDispatchToProps
-                    )(DocumentForm);
+mapDispatchToProps)(DocumentForm);
 
-                    export default form;
+export default form;

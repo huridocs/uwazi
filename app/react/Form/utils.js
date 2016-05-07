@@ -30,5 +30,5 @@ export function validate(values, validations) {
 }
 
 export function buildDocumentForm() {
-  
+
 }

@@ -28,7 +28,7 @@ export function loadDocument(oldDoc, templates) {
 export function changeTemplate(oldDoc, template) {
   return function (dispatch) {
     let propertyNames = [];
-    //test 
+    //test
     let doc = Object.assign({}, oldDoc);
     doc.metadata = Object.assign({}, oldDoc.metadata);
     //test
@@ -51,4 +51,3 @@ export function changeTemplate(oldDoc, template) {
     dispatch(formActions.setInitial('document'));
   };
 }
-

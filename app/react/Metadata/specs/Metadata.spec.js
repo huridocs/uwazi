@@ -9,16 +9,29 @@ import backend from 'fetch-mock';
 describe('Metadata', () => {
   let templates = [{_id: 'templateId1'}, {_id: 'templateId2'}];
   let thesauris = [{name: 'thesauri1', values: []}, {name: 'thesauri2', values: []}];
+  let relationTypes = [{name: 'thesauri1'}, {name: 'thesauri2'}];
   let component;
   let instance;
   let setTemplates = jasmine.createSpy('setTemplates');
   let checkTemplateCanBeDeleted = jasmine.createSpy('checkTemplateCanBeDeleted');
   let deleteThesauri = jasmine.createSpy('deleteThesauri');
   let setThesauris = jasmine.createSpy('setThesauris');
+  let setRelationTypes = jasmine.createSpy('setRelationTypes');
+  let deleteRelationType = jasmine.createSpy('deleteRelationType');
   let props;
 
   beforeEach(() => {
-    props = {setTemplates, checkTemplateCanBeDeleted, templates, thesauris, setThesauris, deleteThesauri};
+    props = {
+      setTemplates,
+      checkTemplateCanBeDeleted,
+      templates,
+      thesauris,
+      relationTypes,
+      setThesauris,
+      deleteThesauri,
+      setRelationTypes,
+      deleteRelationType
+    };
     component = shallow(<Metadata {...props} />);
     instance = component.instance();
 
@@ -26,6 +39,7 @@ describe('Metadata', () => {
     backend
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})})
+    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify(relationTypes)})
     .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({id: '2'})});
   });
 
@@ -35,6 +49,7 @@ describe('Metadata', () => {
       .then((response) => {
         expect(response.templates).toEqual(templates);
         expect(response.thesauris).toEqual(thesauris);
+        expect(response.relationTypes).toEqual(relationTypes);
         done();
       })
       .catch(done.fail);
@@ -42,10 +57,11 @@ describe('Metadata', () => {
   });
 
   describe('setReduxState()', () => {
-    it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({templates, thesauris});
+    it('should call set templates, thesauris and relation', () => {
+      instance.setReduxState({templates, thesauris, relationTypes});
       expect(instance.props.setTemplates).toHaveBeenCalledWith(templates);
       expect(instance.props.setThesauris).toHaveBeenCalledWith(thesauris);
+      expect(instance.props.setRelationTypes).toHaveBeenCalledWith(relationTypes);
     });
   });
 
@@ -60,6 +76,13 @@ describe('Metadata', () => {
     it('should call props.deleteThesauri with id of the template', () => {
       component.find('.thesauri-remove').last().simulate('click');
       expect(deleteThesauri).toHaveBeenCalledWith(thesauris[1]);
+    });
+  });
+
+  describe('deleteRelationType', () => {
+    it('should call props.deleteRelationType with id of the relation', () => {
+      component.find('.relation-type-remove').last().simulate('click');
+      expect(deleteRelationType).toHaveBeenCalledWith(relationTypes[1]);
     });
   });
 });
