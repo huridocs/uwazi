@@ -26,12 +26,22 @@ export default {
   search(query) {
     let searchTerm = query.searchTerm;
     delete query.searchTerm;
-    let sort = query.sort;
-    let order = query.order;
-    delete query.sort;
-    delete query.order;
-    let documentsQuery = queryBuilder().fullTextSearch(searchTerm).filterMetadata(query).sort(sort, order).query();
-    return elastic.search({index: 'uwazi', body: documentsQuery})
+    let sort;
+    let order;
+    if (query.sort) {
+      sort = query.sort;
+      order = query.order;
+      delete query.sort;
+      delete query.order;
+    }
+
+    let documentsQuery = queryBuilder().fullTextSearch(searchTerm).filterMetadata(query);
+
+    if (sort) {
+      documentsQuery.sort(sort, order);
+    }
+
+    return elastic.search({index: 'uwazi', body: documentsQuery.query()})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;
