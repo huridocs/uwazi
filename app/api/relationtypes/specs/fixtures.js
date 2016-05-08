@@ -22,11 +22,13 @@ export default {
       name: 'Related'
     },
     //reference for testing delete
-    {
-      _id: '_design/references', language: 'javascript', views: {
-        all: {map: 'function(doc) {\nif(doc.type === "reference")\t\n  emit(doc._id, doc);\n}'}
+    {_id: '_design/references', language: 'javascript', views: {
+      "count_by_relation_type":{
+        "map":"function(doc) {\nif(doc.type === 'reference' && doc.relationtype)\t\n  emit(doc.relationtype, 1);\n}",
+        "reduce": "_sum"
       }
+    }
     },
-    {_id: 'c08ef2532f0bd008ac5174b45e033c00', type: 'reference', title: 'reference1', sourceDocument: 'source1', relation: '8202c463d6158af8065022d9b5014ccb'}
+    {_id: 'c08ef2532f0bd008ac5174b45e033c00', type: 'reference', title: 'reference1', sourceDocument: 'source1', relationtype: '8202c463d6158af8065022d9b5014ccb'}
   ]
 };

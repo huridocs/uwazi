@@ -39,7 +39,7 @@ describe('Metadata', () => {
     backend
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})})
-    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify(relationTypes)})
+    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify({rows: relationTypes})})
     .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({id: '2'})});
   });
 

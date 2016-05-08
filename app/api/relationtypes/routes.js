@@ -18,7 +18,7 @@ export default app => {
   });
 
   app.delete('/api/relationtypes', (req, res) => {
-    relationtypes.delete(req.query._id)
+    relationtypes.delete(req.query)
     .then((response) => res.json(response));
   });
 };

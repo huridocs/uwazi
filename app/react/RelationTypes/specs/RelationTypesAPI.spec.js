@@ -9,8 +9,8 @@ describe('RelationTypesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify(arrayResponse)})
-    .mock(APIURL + 'relationtypes?_id=relationId', 'GET', {body: JSON.stringify(singleResponse)})
+    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify({rows: arrayResponse})})
+    .mock(APIURL + 'relationtypes?_id=relationId', 'GET', {body: JSON.stringify({rows: [singleResponse]})})
     .mock(APIURL + 'relationtypes?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'relationtypes', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
@@ -29,7 +29,7 @@ describe('RelationTypesAPI', () => {
       it('should request for the thesauri', (done) => {
         relationTypesAPI.get('relationId')
         .then((response) => {
-          expect(response).toEqual(singleResponse);
+          expect(response[0]).toEqual(singleResponse);
           done();
         })
         .catch(done.fail);

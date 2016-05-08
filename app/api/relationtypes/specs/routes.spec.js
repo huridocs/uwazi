@@ -41,9 +41,9 @@ describe('relationtypes routes', () => {
   describe('DELETE', () => {
     it('should delete the relationtype', (done) => {
       spyOn(relationtypes, 'delete').and.returnValue(mockRequest);
-      routes.delete('/api/relationtypes', {query: {_id: 'someId'}})
+      routes.delete('/api/relationtypes', {query: {_id: 'someId', _rev: 'latest'}})
       .then((response) => {
-        expect(relationtypes.delete).toHaveBeenCalledWith('someId');
+        expect(relationtypes.delete).toHaveBeenCalledWith({_id: 'someId', _rev: 'latest'});
         expect(response).toEqual({relationtypes: 'response'});
         done();
       })

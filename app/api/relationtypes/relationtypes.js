@@ -1,18 +1,21 @@
 import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import sanitizeResponse from 'api/utils/sanitizeResponse';
+import references from 'api/references/references';
 
 export default {
   getAll() {
     return request.get(`${dbURL}/_design/relationtypes/_view/all`)
     .then((result) => {
-      return sanitizeResponse(result.json).rows;
+      return sanitizeResponse(result.json);
     });
   },
 
   getById(id) {
-    return request.get(`${dbURL}/${id}`)
-    .then((result) => result.json);
+    return request.get(`${dbURL}/_design/relationtypes/_view/all?key="${id}"`)
+    .then((result) => {
+      return sanitizeResponse(result.json);
+    });
   },
 
   save(relationtype) {
@@ -23,18 +26,14 @@ export default {
   },
 
   delete(relationtype) {
-    return request.get(`${dbURL}/_design/references/_view/all`)
-    .then((result) => {
-      let itsBeenUse = result.json.rows.find((row) => {
-        return row.value.relation === relationtype._id;
-      });
-
-      if (!itsBeenUse) {
+    return references.countByRelationType(relationtype._id)
+    .then((referencesUsingIt) => {
+      if (referencesUsingIt === 0) {
         return request.delete(`${dbURL}/${relationtype._id}`, {rev: relationtype._rev})
         .then(() => true);
       }
 
       return false;
-    });
+    }).catch(console.log);
   }
 };

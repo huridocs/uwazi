@@ -9,19 +9,19 @@ export default {
 
     return api.get('relationtypes', params)
     .then((response) => {
-      return response.json;
+      return response.json.rows;
     });
   },
 
-  save(thesauri) {
-    return api.post('relationtypes', thesauri)
+  save(relationType) {
+    return api.post('relationtypes', relationType)
     .then((response) => {
       return response.json;
     });
   },
 
-  delete(thesauri) {
-    return api.delete('relationtypes', thesauri)
+  delete(relationType) {
+    return api.delete('relationtypes', relationType)
     .then((response) => {
       return response.json;
     });

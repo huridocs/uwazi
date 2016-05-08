@@ -22,7 +22,7 @@ describe('EditRelationType', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'relationtypes?_id=relationTypeId', 'GET', {body: JSON.stringify(relationType)});
+    .mock(APIURL + 'relationtypes?_id=relationTypeId', 'GET', {body: JSON.stringify({rows: [relationType]})});
   });
 
   it('should render a RelationTypeForm', () => {

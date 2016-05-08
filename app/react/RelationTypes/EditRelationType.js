@@ -9,7 +9,7 @@ export default class EditRelationType extends RouteHandler {
 
   static requestState({relationTypeId}) {
     return api.get(relationTypeId)
-    .then((relationType) => {
+    .then(([relationType]) => {
       return {relationType: relationType};
     });
   }

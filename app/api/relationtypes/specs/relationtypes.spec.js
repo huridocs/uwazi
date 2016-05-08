@@ -18,9 +18,9 @@ describe('relationtypes', () => {
     it('should return all the relationtypes in the database', (done) => {
       relationtypes.getAll()
       .then((result) => {
-        expect(result.length).toBe(3);
-        expect(result[0].type).toBe('relationtype');
-        expect(result[0].name).toBe('Against');
+        expect(result.rows.length).toBe(3);
+        expect(result.rows[0].type).toBe('relationtype');
+        expect(result.rows[0].name).toBe('Against');
         done();
       }).catch(catchErrors(done));
     });
@@ -30,8 +30,8 @@ describe('relationtypes', () => {
     it('should return the relationtype with the id', (done) => {
       relationtypes.getById('8202c463d6158af8065022d9b5014a18')
       .then((result) => {
-        expect(result._id).toBe('8202c463d6158af8065022d9b5014a18');
-        expect(result.name).toBe('Against');
+        expect(result.rows[0]._id).toBe('8202c463d6158af8065022d9b5014a18');
+        expect(result.rows[0].name).toBe('Against');
         done();
       }).catch(catchErrors(done));
     });

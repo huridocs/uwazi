@@ -1,14 +1,12 @@
 import request from '../../shared/JSONRequest.js';
-import {db_url} from '../config/database.js'
+import {db_url as dbUrl} from '../config/database.js'
+import references from './references.js';
 
 export default app => {
-
   app.post('/api/references', (req, res) => {
-    req.body.type = 'reference';
-
-    request.post(db_url, req.body)
+    references.save(req.body)
     .then((response) => {
-      res.json(response.json);
+      res.json(response);
     })
     .catch((error) => {
       res.json({error: error.json});
@@ -16,23 +14,23 @@ export default app => {
   });
 
   app.get('/api/references', (req, res) => {
-
-    let id = '';
-    if(req.query && req.query.sourceDocument){
-      id = '?key="'+req.query.sourceDocument+'"';
+    if (req.query && req.query.sourceDocument) {
+      references.getByDocument(req.query.sourceDocument)
+      .then((response) => {
+        res.json(response);
+      })
+      .catch((error) => {
+        res.json({error: error.json});
+      });
+      return;
     }
 
-    let url = db_url+'/_design/references/_view/by_source_document'+id;
-
-    request.get(url)
+    references.getAll()
     .then((response) => {
-      response.json.rows = response.json.rows.map((r) => r.value);
-      res.json(response.json);
+      res.json(response);
     })
     .catch((error) => {
       res.json({error: error.json});
     });
-
   });
-
-}
+};
