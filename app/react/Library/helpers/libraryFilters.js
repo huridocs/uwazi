@@ -26,7 +26,6 @@ function getOptions(property, thesauris) {
 
 export function libraryFilters(templates, documentTypes, thesauris) {
   let filters = [];
-
   let selectedTemplates = templates.filter((template) => {
     return documentTypes[template._id];
   });
@@ -49,9 +48,14 @@ export function libraryFilters(templates, documentTypes, thesauris) {
   return filters;
 }
 
-export function generateDocumentTypes(templates, value = true) {
+export function generateDocumentTypes(templates, value = false) {
   return templates.reduce((docTypes, templ) => {
     docTypes[templ._id] = value;
     return docTypes;
   }, {});
 }
+
+export default {
+  generateDocumentTypes,
+  libraryFilters
+};

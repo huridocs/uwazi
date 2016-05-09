@@ -29,8 +29,7 @@ export default {
     });
   },
 
-  search(searchTerm, filters = {}) {
-    filters.searchTerm = searchTerm;
+  search(filters) {
     let url = 'documents/search';
     return api.get(url, filters)
     .then((response) => {

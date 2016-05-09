@@ -16,7 +16,13 @@ export class LibraryFilters extends Component {
   }
 
   handleFilterDocType(e) {
-    this.props.filterDocumentType(e.target.id);
+    let {documentTypes, templates, thesauris} = this.props;
+    this.props.filterDocumentType(e.target.id, documentTypes, templates, thesauris);
+  }
+
+  handleFilterAllDocuments() {
+    let {documentTypes, templates, thesauris} = this.props;
+    this.props.filterAllDocumentTypes(!this.props.allDocumentTypes, documentTypes, templates, thesauris);
   }
 
   applyFilters() {
@@ -33,7 +39,7 @@ export class LibraryFilters extends Component {
             <li>Filter by document type:</li>
             <li>
               <input
-                onChange={this.props.filterAllDocumentTypes}
+                onClick={this.handleFilterAllDocuments.bind(this)}
                 id="all-documents"
                 type="checkbox"
                 checked={this.props.allDocumentTypes}/>
@@ -58,6 +64,7 @@ export class LibraryFilters extends Component {
 
 LibraryFilters.propTypes = {
   templates: PropTypes.array,
+  thesauris: PropTypes.array,
   allDocumentTypes: PropTypes.bool,
   documentTypes: PropTypes.object,
   form: PropTypes.object,

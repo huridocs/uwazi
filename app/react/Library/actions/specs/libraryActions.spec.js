@@ -4,6 +4,8 @@ import {APIURL} from 'app/config.js';
 import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 
+import libraryHelper from 'app/Library/helpers/libraryFilters';
+
 describe('libraryActions', () => {
   let documents = [{name: 'Secret list of things'}];
   let templates = [{name: 'Decision'}, {name: 'Ruling'}];
@@ -17,9 +19,19 @@ describe('libraryActions', () => {
   });
 
   describe('setTemplates', () => {
+    let documentTypes = 'generated document types';
+    let libraryFilters = 'generated filters';
+
+    beforeEach(() => {
+      spyOn(libraryHelper, 'generateDocumentTypes').and.returnValue(documentTypes);
+      spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
+    });
+
     it('should return a SET_TEMPLATES action ', () => {
       let action = actions.setTemplates(templates, thesauris);
-      expect(action).toEqual({type: types.SET_TEMPLATES, templates, thesauris});
+      expect(libraryHelper.generateDocumentTypes).toHaveBeenCalledWith(templates);
+      expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, 'generated document types', thesauris);
+      expect(action).toEqual({type: types.SET_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
     });
   });
 
@@ -27,13 +39,6 @@ describe('libraryActions', () => {
     it('should return a ENTER_LIBRARY action ', () => {
       let action = actions.enterLibrary();
       expect(action).toEqual({type: types.ENTER_LIBRARY});
-    });
-  });
-
-  describe('setSearchTerm', () => {
-    it('should return a SET_SEARCHTERM action ', () => {
-      let action = actions.setSearchTerm('Zerg Rush');
-      expect(action).toEqual({type: types.SET_SEARCHTERM, searchTerm: 'Zerg Rush'});
     });
   });
 
@@ -71,25 +76,15 @@ describe('libraryActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?joker=true&searchTerm=batman', 'get', {body: JSON.stringify(documents)});
+      .mock(APIURL + 'documents/search?searchTerm=batman&joker=true', 'get', {body: JSON.stringify(documents)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
     describe('searchDocuments', () => {
       it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
-        actions.searchDocuments('batman')(dispatch)
+        actions.searchDocuments({searchTerm: 'batman', joker: true})(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
-          done();
-        })
-        .catch(done.fail);
-      });
-
-      it('should be able to handle filters', (done) => {
-        actions.searchDocuments('batman', {joker: true})(dispatch)
-        .then(() => {
-          expect(backend.called(APIURL + 'documents/search?joker=true&searchTerm=batman')).toBe(true);
+          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&joker=true')).toBe(true);
           expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
           done();
         })
@@ -97,7 +92,7 @@ describe('libraryActions', () => {
       });
 
       it('should dispatch a HIDE_SUGGESTIONS action', (done) => {
-        actions.searchDocuments('batman')(dispatch)
+        actions.searchDocuments({searchTerm: 'batman', joker: true})(dispatch)
         .then(() => {
           expect(dispatch).toHaveBeenCalledWith({type: types.HIDE_SUGGESTIONS});
           done();

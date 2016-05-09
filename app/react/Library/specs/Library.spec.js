@@ -25,7 +25,7 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
@@ -47,8 +47,8 @@ describe('Library', () => {
       .then((state) => {
         expect(state.library.documents).toEqual(documents);
         expect(state.library.filters.templates).toEqual(templates.rows);
-        expect(state.library.filters.documentTypes).toEqual({abc1: true, abc2: true});
-        expect(state.library.filters.allDocumentTypes).toBe(true);
+        expect(state.library.filters.documentTypes).toEqual({abc1: false, abc2: false});
+        expect(state.library.filters.allDocumentTypes).toBe(false);
         expect(state.library.filters.thesauris).toEqual(thesauris.rows);
         done();
       })
@@ -67,7 +67,7 @@ describe('Library', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({library: {documents, filters: {templates, thesauris}}});
+      instance.setReduxState({library: {documents, filters: {templates: templates.rows, thesauris: thesauris.rows}}});
     });
 
     it('should call setDocuments with the documents', () => {
@@ -75,7 +75,13 @@ describe('Library', () => {
     });
 
     it('should call setTemplates with the templates and thesauris', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_TEMPLATES, templates, thesauris});
+      expect(context.store.dispatch)
+      .toHaveBeenCalledWith({
+        type: actionTypes.SET_TEMPLATES,
+        templates: templates.rows,
+        thesauris: thesauris.rows,
+        documentTypes: Object({abc1: false, abc2: false}),
+        libraryFilters: [ ]});
     });
   });
 });

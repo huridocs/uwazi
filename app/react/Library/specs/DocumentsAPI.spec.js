@@ -13,12 +13,11 @@ describe('DocumentsAPI', () => {
     backend.restore();
     backend
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'documents/search?searchTerm=', 'GET', {body: JSON.stringify(searchResponse)})
+    .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(searchResponse)})
     .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify({rows: 'uploads'})})
     .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
     .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'documents/search?searchTerm=Batman', 'GET', {body: JSON.stringify(searchResult)})
-    .mock(APIURL + 'documents/search?joker=true&searchTerm=Batman', 'GET', {body: JSON.stringify(filteredSearchResult)})
+    .mock(APIURL + 'documents/search?searchTerm=Batman&joker=true', 'GET', {body: JSON.stringify(filteredSearchResult)})
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
     .mock(APIURL + 'documents?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
@@ -89,20 +88,9 @@ describe('DocumentsAPI', () => {
       .catch(done.fail);
     });
 
-    describe('when passing a searchTerm', () => {
-      it('should search for it', (done) => {
-        documentsAPI.search('Batman')
-        .then((response) => {
-          expect(response).toEqual(searchResult);
-          done();
-        })
-        .catch(done.fail);
-      });
-    });
-
     describe('when passing filters', () => {
       it('should search for it', (done) => {
-        documentsAPI.search('Batman', {joker: true})
+        documentsAPI.search({searchTerm: 'Batman', joker: true})
         .then((response) => {
           expect(response).toEqual(filteredSearchResult);
           done();

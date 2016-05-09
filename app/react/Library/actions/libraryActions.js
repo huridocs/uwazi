@@ -1,5 +1,6 @@
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Library/DocumentsAPI';
+import libraryHelper from 'app/Library/helpers/libraryFilters';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -18,11 +19,9 @@ export function setDocuments(documents) {
 }
 
 export function setTemplates(templates, thesauris) {
-  return {type: types.SET_TEMPLATES, templates, thesauris};
-}
-
-export function setSearchTerm(searchTerm) {
-  return {type: types.SET_SEARCHTERM, searchTerm};
+  let documentTypes = libraryHelper.generateDocumentTypes(templates);
+  let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes, thesauris);
+  return {type: types.SET_TEMPLATES, templates, thesauris, documentTypes, libraryFilters};
 }
 
 export function setPreviewDoc(docId) {
@@ -45,9 +44,9 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
-export function searchDocuments(searchTerm, filters) {
+export function searchDocuments(filters) {
   return (dispatch) => {
-    return api.search(searchTerm, filters)
+    return api.search(filters)
     .then((documents) => {
       dispatch(setDocuments(documents));
       dispatch(hideSuggestions());

@@ -29,9 +29,14 @@ header ul .btn .fa {
   color: black;
 }
 
-.float-btn__sec button {
+.float-btn__sec button, .search-suggestions-all button {
   background: transparent;
   border: none;
+}
+
+.search-suggestions-all button {
+  width: 100%;
+  text-align: left;
 }
 
 .item-shortcut {

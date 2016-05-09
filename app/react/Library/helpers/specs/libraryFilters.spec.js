@@ -49,8 +49,8 @@ describe('library helper', () => {
 
   describe('generateDocumentTypes()', () => {
     it('should generate an object with one document type for each template using the ID', () => {
-      expect(generateDocumentTypes(templates)).toEqual({1: true, 2: true, 3: true});
-      expect(generateDocumentTypes(templates, false)).toEqual({1: false, 2: false, 3: false});
+      expect(generateDocumentTypes(templates)).toEqual({1: false, 2: false, 3: false});
+      expect(generateDocumentTypes(templates, true)).toEqual({1: true, 2: true, 3: true});
     });
   });
 });

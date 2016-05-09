@@ -1,41 +1,64 @@
 import React, {Component, PropTypes} from 'react';
-import {reduxForm} from 'redux-form';
+import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {Field, Form} from 'react-redux-form';
 
-import {DynamicFields} from 'app/Form';
+import Select, {SelectField} from 'app/DocumentForm/components/Select';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 
 export class FiltersForm extends Component {
 
-  search(values) {
-    this.props.searchDocuments(this.props.searchTerm, values);
-  }
-
   render() {
     return (
-      <form id="filters-form" onSubmit={this.props.handleSubmit(this.search.bind(this))}>
-        <DynamicFields fields={this.props.fields} template={this.props.properties} />
-      </form>
+      <Form model="search" id="filters-form" onSubmit={this.props.searchDocuments}>
+      {this.props.fields.toJS().map((property, index) => {
+        if (property.type === 'select') {
+          return (
+            <FormGroup key={index}>
+              <SelectField model={`search.${property.name}`} >
+                <ul className="search__filter">
+                  <li>
+                    {property.label}
+                    {property.required ? <span className="required">*</span> : ''}
+                  </li>
+                  <li className="wide">
+                    <Select options={property.options} />
+                  </li>
+                </ul>
+              </SelectField>
+            </FormGroup>
+            );
+        }
+        return (
+          <FormGroup key={index}>
+            <Field model={`search.${property.name}`} >
+              <ul className="search__filter">
+                <li>
+                  {property.label}
+                  {property.required ? <span className="required">*</span> : ''}
+                </li>
+                <li className="wide"><input className="form-control" /></li>
+              </ul>
+            </Field>
+          </FormGroup>
+          );
+      })}
+      </Form>
     );
   }
 }
 
 FiltersForm.propTypes = {
   fields: PropTypes.object.isRequired,
-  properties: PropTypes.array.isRequired,
   searchDocuments: PropTypes.func,
-  handleSubmit: PropTypes.func,
-  searchTerm: PropTypes.string
+  search: PropTypes.object
 };
 
 export function mapStateToProps(state) {
-  let properties = state.library.filters.toJS().properties;
-  let fields = properties.map((property) => property.name);
-  let searchTerm = state.library.ui.toJS().searchTerm;
   return {
-    fields,
-    properties,
-    searchTerm
+    fields: state.library.filters.get('properties'),
+    search: state.search
   };
 }
 
@@ -43,6 +66,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({searchDocuments}, dispatch);
 }
 
-let form = reduxForm({form: 'filters'}, mapStateToProps, mapDispatchToProps)(FiltersForm);
-
-export default form;
+export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

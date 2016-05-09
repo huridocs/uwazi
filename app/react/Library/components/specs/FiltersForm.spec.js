@@ -1,35 +1,32 @@
 import React from 'react';
-import {mount} from 'enzyme';
+import {shallow} from 'enzyme';
 import Immutable from 'immutable';
+import {Form} from 'react-redux-form';
 
 import {FiltersForm, mapStateToProps} from 'app/Library/components/FiltersForm';
 
 describe('FiltersForm', () => {
-  let wrapper;
+  let component;
   let props;
 
   beforeEach(() => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      searchTerm: 'Find my document',
-      fields: {author: {initialValue: 'Philip K. Dick'}},
-      properties: [{name: 'author'}],
-      handleSubmit: (callBack) => {
-        callBack({author: 'Philip K. Dick'});
-      }
+      fields: Immutable.fromJS([{author: {initialValue: 'Philip K. Dick'}}]),
+      search: {searchTerm: 'Batman'}
     };
-    wrapper = mount(<FiltersForm {...props}/>);
+    component = shallow(<FiltersForm {...props}/>);
   });
 
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm', () => {
-      wrapper.find('form').simulate('submit', {preventDefault: ()=>{}});
-      expect(props.searchDocuments).toHaveBeenCalledWith(props.searchTerm, {author: 'Philip K. Dick'});
+      component.find(Form).simulate('submit', {myfilter: true});
+      expect(props.searchDocuments).toHaveBeenCalledWith({myfilter: true});
     });
   });
 
   describe('maped state', () => {
-    it('should contain the searchTerm, fields and properties', () => {
+    it('should contain the fields', () => {
       let store = {
         library: {
           ui: Immutable.fromJS({searchTerm: 'do a barrel roll'}),
@@ -40,9 +37,7 @@ describe('FiltersForm', () => {
         }
       };
       let state = mapStateToProps(store);
-      expect(state.searchTerm).toBe('do a barrel roll');
-      expect(state.fields).toEqual(['author']);
-      expect(state.properties).toEqual([{name: 'author'}]);
+      expect(state.fields.toJS()).toEqual([{name: 'author'}]);
     });
   });
 });
