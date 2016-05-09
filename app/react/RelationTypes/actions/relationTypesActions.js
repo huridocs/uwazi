@@ -1,10 +1,10 @@
 import * as types from 'app/RelationTypes/actions/actionTypes';
 import api from 'app/RelationTypes/RelationTypesAPI';
+import {actions as formActions} from 'react-redux-form';
 
 export function editRelationType(relationType) {
-  return {
-    type: types.EDIT_RELATION_TYPE,
-    relationType
+  return function (dispatch) {
+    dispatch(formActions.load('relationType', relationType));
   };
 }
 

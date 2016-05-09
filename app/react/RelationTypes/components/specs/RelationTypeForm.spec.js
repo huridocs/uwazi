@@ -9,7 +9,7 @@ describe('RelationTypeForm', () => {
   let component;
   beforeEach(() => {
     props = {
-      fields: {name: {}},
+      relationType: {name: 'test'},
       resetRelationType: jasmine.createSpy('resetRelationType'),
       handleSubmit: jasmine.createSpy('handleSubmit')
     };
@@ -32,12 +32,8 @@ describe('RelationTypeForm', () => {
       };
     });
 
-    it('should map the relationType to initialValues', () => {
-      expect(mapStateToProps(state).initialValues).toEqual({name: 'relationType name'});
-    });
-
-    it('should map the fields', () => {
-      expect(mapStateToProps(state).fields).toEqual(['name', '_id', '_rev']);
+    it('should map the relationType', () => {
+      expect(mapStateToProps(state).relationType).toEqual({name: 'relationType name'});
     });
 
     describe('validation', () => {
