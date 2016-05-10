@@ -16,13 +16,11 @@ export class LibraryFilters extends Component {
   }
 
   handleFilterDocType(e) {
-    let {documentTypes, templates, thesauris} = this.props;
-    this.props.filterDocumentType(e.target.id, documentTypes, templates, thesauris);
+    this.props.filterDocumentType(e.target.id);
   }
 
   handleFilterAllDocuments() {
-    let {documentTypes, templates, thesauris} = this.props;
-    this.props.filterAllDocumentTypes(!this.props.allDocumentTypes, documentTypes, templates, thesauris);
+    this.props.filterAllDocumentTypes(!this.props.allDocumentTypes);
   }
 
   applyFilters() {

@@ -33,7 +33,7 @@ describe('uiReducer', () => {
     it('should set the suggestions in the state', () => {
       let suggestions = [{title: 'something'}];
       let newState = uiReducer(initialState, {type: types.SET_SUGGESTIONS, suggestions});
-      expect(newState.toJS().suggestions).toEqual(suggestions);
+      expect(newState.get('suggestions').toJS()).toEqual(suggestions);
     });
   });
 

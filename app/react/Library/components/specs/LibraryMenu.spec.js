@@ -28,13 +28,4 @@ describe('LibraryMenu', () => {
       expect(props.showFilters).toHaveBeenCalled();
     });
   });
-
-  describe('when filtersPanel is open', () => {
-    it('should searchDocuments on click', () => {
-      props.filtersPanel = true;
-      render();
-      component.find('.float-btn__main').simulate('click');
-      expect(props.searchDocuments).toHaveBeenCalledWith('test', {isBatman: true, sort: 'title'});
-    });
-  });
 });

@@ -5,7 +5,11 @@ function toParams(data) {
     return '';
   }
   return '?' + Object.keys(data).reduce((params, key) => {
-    params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key] || ''));
+    let value = data[key] || '';
+    if (typeof value === 'object') {
+      value = JSON.stringify(value);
+    }
+    params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
     return params;
   }, []).join('&');
 }

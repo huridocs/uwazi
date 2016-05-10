@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
-import {Field, Form} from 'react-redux-form';
+import {Form} from 'react-redux-form';
 
 import {SearchBar, mapStateToProps} from 'app/Library/components/SearchBar';
 
@@ -11,16 +11,15 @@ describe('SearchBar', () => {
 
   beforeEach(() => {
     props = jasmine.createSpyObj(['searchDocuments', 'change', 'getSuggestions', 'hideSuggestions', 'setOverSuggestions']);
-    props.suggestions = [];
-    props.filtersForm = {isBatman: {value: true}};
-    props.search = {searchTerm: 'Find my document', sort: 'title'};
+    props.suggestions = Immutable.fromJS([]);
+    props.search = {searchTerm: 'Find my document', sort: 'title', filters: {isBatman: true}};
     component = shallow(<SearchBar {...props}/>);
   });
 
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm filters and sort', () => {
-      component.find(Form).simulate('submit', {searchTerm: 'Find my document', sort: 'title'});
-      expect(props.searchDocuments).toHaveBeenCalledWith({searchTerm: 'Find my document', isBatman: true, sort: 'title'});
+      component.find(Form).simulate('submit', 'SEARCH MODEL VALUES');
+      expect(props.searchDocuments).toHaveBeenCalledWith('SEARCH MODEL VALUES');
     });
   });
 
@@ -63,7 +62,7 @@ describe('SearchBar', () => {
     it('should empty searchTerm and perform a search', () => {
       component.find('.input-group-btn').simulate('click', {preventDefault: ()=>{}});
       expect(props.change).toHaveBeenCalledWith('search.searchTerm', '');
-      expect(props.searchDocuments).toHaveBeenCalledWith({searchTerm: '', isBatman: true, sort: 'title'});
+      expect(props.searchDocuments).toHaveBeenCalledWith({searchTerm: '', filters: {isBatman: true}, sort: 'title'});
     });
   });
 
@@ -77,16 +76,13 @@ describe('SearchBar', () => {
   describe('maped state', () => {
     it('should contain the searchTerm', () => {
       let store = {
+        search: 'search',
         library: {
-          ui: Immutable.fromJS({searchTerm: 'do a barrel roll'})
-        },
-        form: {
-          filters: 'filtersForm'
-        },
-        search: 'search'
+          ui: Immutable.fromJS({suggestions: 'suggestions', showSuggestions: true, overSuggestions: true})
+        }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({searchTerm: 'do a barrel roll', filtersForm: 'filtersForm', search: 'search'});
+      expect(state).toEqual({search: 'search', suggestions: 'suggestions', showSuggestions: true, overSuggestions: true});
     });
   });
 });

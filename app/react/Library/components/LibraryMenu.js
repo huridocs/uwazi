@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {showFilters, searchDocuments} from 'app/Library/actions/libraryActions';
-import {getValues} from 'redux-form';
 
 export class LibraryMenu extends Component {
   render() {
@@ -12,11 +11,10 @@ export class LibraryMenu extends Component {
         {(() => {
           if (this.props.filtersPanel) {
             return (
-              <div className="float-btn__main cta" onClick={() => {
-                let filters = Object.assign({}, getValues(this.props.filtersForm), this.props.search);
-                this.props.searchDocuments(this.props.searchTerm, filters);
-              }}>
-                <i className="fa fa-filter fa-upload fa-save"></i>
+              <div className="float-btn__main cta" >
+                <button type="submit" form="filtersForm">
+                  <i className="fa fa-search"></i>
+                </button>
               </div>
               );
           }

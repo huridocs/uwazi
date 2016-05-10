@@ -7,7 +7,7 @@ describe('JSONRequest', () => {
     backend
     .mock('http://localhost:3000/api/test', 'POST', JSON.stringify({response: 'post'}))
     .mock('http://localhost:3000/api/test', 'GET', JSON.stringify({response: 'get'}))
-    .mock('http://localhost:3000/api/withParams?param1=param1&param2=param2', 'GET', JSON.stringify({response: 'get with params'}))
+    .mock('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', 'GET', JSON.stringify({response: 'get with params'}))
     .mock('http://localhost:3000/api/test', 'DELETE', JSON.stringify({response: 'delete'}))
     .mock('http://localhost:3000/api/test?id=123', 'DELETE', JSON.stringify({response: 'delete with params'}));
   });
@@ -53,7 +53,7 @@ describe('JSONRequest', () => {
 
     describe('when passing data', () => {
       it('should transform it to url params and not send a body', (done) => {
-        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: 'param2'})
+        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: {value: 2}})
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.json).toEqual({response: 'get with params'});

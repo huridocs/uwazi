@@ -26,7 +26,7 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SET_SUGGESTIONS) {
-    return state.set('suggestions', action.suggestions);
+    return state.set('suggestions', Immutable.fromJS(action.suggestions));
   }
 
   if (action.type === types.SHOW_SUGGESTIONS) {

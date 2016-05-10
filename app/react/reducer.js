@@ -42,7 +42,7 @@ export default combineReducers({
   contextMenu,
   modals,
   uploads,
-  search: modelReducer('search', {sort: 'title', order: 'desc', searchTerm: ''}),
+  search: modelReducer('search', {sort: 'title', order: 'desc', searchTerm: '', filters: {}}),
   document: modelReducer('document'),
   documentForm: formReducer('document')
 });

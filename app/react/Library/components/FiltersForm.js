@@ -11,12 +11,12 @@ export class FiltersForm extends Component {
 
   render() {
     return (
-      <Form model="search" id="filters-form" onSubmit={this.props.searchDocuments}>
+      <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments}>
       {this.props.fields.toJS().map((property, index) => {
         if (property.type === 'select') {
           return (
             <FormGroup key={index}>
-              <SelectField model={`search.${property.name}`} >
+              <SelectField model={`search.filters.${property.name}`} >
                 <ul className="search__filter">
                   <li>
                     {property.label}
@@ -32,7 +32,7 @@ export class FiltersForm extends Component {
         }
         return (
           <FormGroup key={index}>
-            <Field model={`search.${property.name}`} >
+            <Field model={`search.filters.${property.name}`} >
               <ul className="search__filter">
                 <li>
                   {property.label}
