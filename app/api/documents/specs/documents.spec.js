@@ -197,7 +197,7 @@ describe('documents', () => {
   describe('search', () => {
     it('should perform a search on all fields', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      documents.search({searchTerm: 'searchTerm', property1: 'value1', property2: 'value2'})
+      documents.search({searchTerm: 'searchTerm', filters: {property1: 'value1', property2: 'value2'}})
       .then((results) => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
@@ -212,7 +212,7 @@ describe('documents', () => {
 
     it('should sort if sort is present', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      documents.search({searchTerm: 'searchTerm', property1: 'value1', property2: 'value2', sort: 'title', order: 'asc'})
+      documents.search({searchTerm: 'searchTerm', filters: {property1: 'value1', property2: 'value2'}, sort: 'title', order: 'asc'})
       .then((results) => {
 
         let expectedQuery = queryBuilder()

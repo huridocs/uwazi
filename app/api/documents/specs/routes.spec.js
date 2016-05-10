@@ -124,15 +124,31 @@ describe('documents', () => {
   describe('/api/documents/search', () => {
     it('should search documents and return the results', (done) => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
-      let req = {query: {searchTerm: 'test', property: 'property'}};
+      let filtersValue = JSON.stringify({property: 'property'});
+      let req = {query: {searchTerm: 'test', filters: filtersValue}};
 
       routes.get('/api/documents/search', req)
       .then((response) => {
-        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', property: 'property'});
+        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', filters: {property: 'property'}});
         expect(response).toEqual('results');
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('when has no filters', () => {
+      it('should search documents and return the results', (done) => {
+        spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
+        let req = {query: {}};
+
+        routes.get('/api/documents/search', req)
+        .then((response) => {
+          expect(documents.search).toHaveBeenCalledWith({});
+          expect(response).toEqual('results');
+          done();
+        })
+        .catch(done.fail);
+      });
     });
   });
 

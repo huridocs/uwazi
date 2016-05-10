@@ -44,7 +44,7 @@ export default function () {
       return this;
     },
 
-    filterMetadata(filters) {
+    filterMetadata(filters = {}) {
       Object.keys(filters).forEach((property) => {
         let match = {};
         match[`doc.metadata.${property}`] = filters[property];

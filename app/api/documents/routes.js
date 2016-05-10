@@ -21,6 +21,9 @@ export default (app) => {
   });
 
   app.get('/api/documents/search', (req, res) => {
+    if (req.query.filters) {
+      req.query.filters = JSON.parse(req.query.filters);
+    }
     return documents.search(req.query)
     .then(results => res.json(results));
   });

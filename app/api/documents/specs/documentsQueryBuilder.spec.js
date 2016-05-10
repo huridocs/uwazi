@@ -29,6 +29,14 @@ describe('documentQueryBuilder', () => {
       expect(query.filter.bool.must[1]).toEqual({match: {'doc.metadata.property1': 'value1'}});
       expect(query.filter.bool.must[2]).toEqual({match: {'doc.metadata.property2': 'value2'}});
     });
+
+    describe('when there is no filters', () => {
+      it('should add filter conditions', () => {
+        let query = queryBuilder().filterMetadata().query();
+        expect(query.filter.bool.must[0]).toEqual({match: {'doc.published': true}});
+        expect(query.filter.bool.must.length).toBe(1);
+      });
+    });
   });
 
   describe('fullTextSearch', () => {
