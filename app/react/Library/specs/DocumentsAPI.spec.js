@@ -5,7 +5,6 @@ import backend from 'fetch-mock';
 describe('DocumentsAPI', () => {
   let arrayResponse = [{documents: 'array'}];
   let searchResponse = [{documents: 'search'}];
-  let searchResult = [{documents: 'Bruce Wayne'}];
   let filteredSearchResult = [{documents: 'Alfred'}];
   let singleResponse = [{documents: 'single'}];
 

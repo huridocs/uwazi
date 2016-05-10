@@ -17,9 +17,7 @@ describe('SortButtons', () => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
       merge: jasmine.createSpy('merge'),
-      search: {order: 'desc', sort: 'title'},
-      filtersForm: {isBatman: {value: true}},
-      searchTerm: 'searchTerm'
+      search: {order: 'desc', sort: 'title'}
     };
   });
 
@@ -27,12 +25,12 @@ describe('SortButtons', () => {
     it('should merge with searchTerm and filtersForm and toggle between asc/desc', () => {
       render();
       instance.sort('title');
-      expect(props.searchDocuments).toHaveBeenCalledWith('searchTerm', {isBatman: true, sort: 'title', order: 'asc'});
+      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
       props.search.order = 'asc';
       render();
       instance.sort('title');
-      expect(props.searchDocuments).toHaveBeenCalledWith('searchTerm', {isBatman: true, sort: 'title', order: 'desc'});
+      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
       expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'desc'});
     });
 
@@ -41,13 +39,13 @@ describe('SortButtons', () => {
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('title');
-        expect(props.searchDocuments).toHaveBeenCalledWith('searchTerm', {isBatman: true, sort: 'title', order: 'asc'});
+        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
         props.searchDocuments.calls.reset();
         props.search = {order: 'asc', sort: 'title'};
         render();
         instance.sort('creationDate');
-        expect(props.searchDocuments).toHaveBeenCalledWith('searchTerm', {isBatman: true, sort: 'creationDate', order: 'asc'});
+        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc'});
       });
     });
   });

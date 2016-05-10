@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions} from 'react-redux-form';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
-import {getValues} from 'redux-form';
 
 export class SortButtons extends Component {
   sort(property) {
@@ -20,9 +19,9 @@ export class SortButtons extends Component {
 
     let sort = {sort: property, order: order};
 
-    let filters = Object.assign({}, getValues(this.props.filtersForm), sort);
+    let filters = Object.assign({}, this.props.search, sort);
     this.props.merge('search', sort);
-    this.props.searchDocuments(this.props.searchTerm, filters);
+    this.props.searchDocuments(filters);
   }
 
   render() {
@@ -55,16 +54,12 @@ export class SortButtons extends Component {
 SortButtons.propTypes = {
   searchDocuments: PropTypes.func,
   merge: PropTypes.func,
-  search: PropTypes.object,
-  searchTerm: PropTypes.string,
-  filtersForm: PropTypes.object
+  search: PropTypes.object
 };
 
 export function mapStateToProps(state) {
   return {
-    search: state.search,
-    searchTerm: state.library.ui.get('searchTerm'),
-    filtersForm: state.form.filters
+    search: state.search
   };
 }
 
