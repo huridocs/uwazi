@@ -57,11 +57,11 @@ describe('references routes', () => {
     });
   });
 
-  describe('/count_by_relationtype', () => {
+  describe('/references/count_by_relationtype', () => {
     it('should return the number of references using a relationtype', (done) => {
       spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));
       let req = {query: {relationtypeId: 'abc1'}};
-      routes.get('/api/count_by_relationtype', req)
+      routes.get('/api/references/count_by_relationtype', req)
       .then((result) => {
         expect(result).toBe(2);
         expect(references.countByRelationType).toHaveBeenCalledWith('abc1');

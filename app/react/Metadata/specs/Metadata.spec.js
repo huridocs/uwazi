@@ -17,7 +17,7 @@ describe('Metadata', () => {
   let deleteThesauri = jasmine.createSpy('deleteThesauri');
   let setThesauris = jasmine.createSpy('setThesauris');
   let setRelationTypes = jasmine.createSpy('setRelationTypes');
-  let deleteRelationType = jasmine.createSpy('deleteRelationType');
+  let checkRelationTypeCanBeDeleted = jasmine.createSpy('checkRelationTypeCanBeDeleted');
   let props;
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('Metadata', () => {
       setThesauris,
       deleteThesauri,
       setRelationTypes,
-      deleteRelationType
+      checkRelationTypeCanBeDeleted
     };
     component = shallow(<Metadata {...props} />);
     instance = component.instance();
@@ -80,9 +80,9 @@ describe('Metadata', () => {
   });
 
   describe('deleteRelationType', () => {
-    it('should call props.deleteRelationType with id of the relation', () => {
+    it('should call props.checkRelationTypeCanBeDeleted with id of the relation', () => {
       component.find('.relation-type-remove').last().simulate('click');
-      expect(deleteRelationType).toHaveBeenCalledWith(relationTypes[1]);
+      expect(checkRelationTypeCanBeDeleted).toHaveBeenCalledWith(relationTypes[1]);
     });
   });
 });

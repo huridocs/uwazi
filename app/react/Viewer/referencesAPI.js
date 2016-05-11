@@ -24,5 +24,12 @@ export default {
     .then((response) => {
       return response.json;
     });
+  },
+
+  countByRelationType(relationtypeId) {
+    return api.get('references/count_by_relationtype', {relationtypeId})
+    .then((response) => {
+      return response.json;
+    });
   }
 };

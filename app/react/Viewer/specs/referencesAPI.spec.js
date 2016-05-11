@@ -9,6 +9,7 @@ describe('referencesAPI', () => {
     backend.restore();
     backend
     .mock(APIURL + 'references?sourceDocument=sourceDocument', 'GET', {body: JSON.stringify({rows: arrayResponse})})
+    .mock(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', 'GET', {body: "2"})
     .mock(APIURL + 'references?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'references', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
@@ -43,6 +44,17 @@ describe('referencesAPI', () => {
       referencesAPI.delete(document)
       .then((response) => {
         expect(response).toEqual({backednResponse: 'testdelete'});
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('countByRelationType()', () => {
+    it('should request references', (done) => {
+      referencesAPI.countByRelationType('abc1')
+      .then((response) => {
+        expect(response).toEqual(2);
         done();
       })
       .catch(done.fail);

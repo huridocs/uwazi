@@ -32,7 +32,7 @@ export default app => {
     });
   });
 
-  app.get('/api/count_by_relationtype', (req, res) => {
+  app.get('/api/references/count_by_relationtype', (req, res) => {
     references.countByRelationType(req.query.relationtypeId)
     .then((response) => {
       res.json(response);
