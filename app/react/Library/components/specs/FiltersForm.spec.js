@@ -13,6 +13,7 @@ describe('FiltersForm', () => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
       fields: Immutable.fromJS([{author: {initialValue: 'Philip K. Dick'}}]),
+      documentTypes: Immutable.fromJS({}),
       search: {searchTerm: 'Batman'}
     };
     component = shallow(<FiltersForm {...props}/>);
@@ -30,7 +31,7 @@ describe('FiltersForm', () => {
       let store = {
         library: {
           ui: Immutable.fromJS({searchTerm: 'do a barrel roll'}),
-          filters: Immutable.fromJS({properties: [{name: 'author'}]})
+          filters: Immutable.fromJS({properties: [{name: 'author'}], documentTypes: {a: true}})
         },
         form: {
           filters: 'filtersForm'
@@ -38,6 +39,7 @@ describe('FiltersForm', () => {
       };
       let state = mapStateToProps(store);
       expect(state.fields.toJS()).toEqual([{name: 'author'}]);
+      expect(state.documentTypes.toJS()).toEqual({a: true});
     });
   });
 });

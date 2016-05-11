@@ -4,7 +4,7 @@ function sameProperty(prop1, prop2) {
 
 function templateHasProperty(template, property) {
   return template.properties.filter((prop) => {
-    return sameProperty(prop, property);
+    return sameProperty(prop, property) && prop.filter;
   }).length;
 }
 

@@ -5,11 +5,13 @@ describe('library helper', () => {
     {_id: '1', properties: [
       {name: 'author', filter: false, type: 'text'},
       {name: 'country', filter: true, type: 'select', content: 'abc1'},
-      {name: 'date', filter: true, type: 'text'}
+      {name: 'date', filter: true, type: 'text'},
+      {name: 'language', filter: true, type: 'text'}
     ]},
     {_id: '2', properties: [
       {name: 'author', filter: false, type: 'text'},
-      {name: 'country', filter: true, type: 'select', content: 'abc1'}
+      {name: 'country', filter: true, type: 'select', content: 'abc1'},
+      {name: 'language', filter: false, type: 'text'}
     ]},
     {_id: '3', properties: [
       {name: 'author', filter: false, type: 'text'},
@@ -25,8 +27,11 @@ describe('library helper', () => {
         let documentTypes = {1: true, 2: false, 3: false};
         let filters = libraryFilters(templates, documentTypes, thesauris);
         expect(filters)
-        .toEqual([{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']},
-                  {name: 'date', filter: true, type: 'text'}]);
+        .toEqual([
+                  {name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']},
+                  {name: 'date', filter: true, type: 'text'},
+                  {name: 'language', filter: true, type: 'text'}
+                ]);
       });
     });
 

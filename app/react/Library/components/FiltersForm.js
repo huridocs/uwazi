@@ -11,7 +11,6 @@ export class FiltersForm extends Component {
 
   render() {
     let fields = this.props.fields.toJS();
-    console.log(fields);
     return (
       <div className="filters-box">
         <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments}>
@@ -63,7 +62,6 @@ export class FiltersForm extends Component {
                   </div>;
           }
 
-          console.log(filtering, fields.length === 0);
           if (filtering && fields.length === 0) {
             return <div className="empty-state no-filters">
                     <i className="fa fa-close"></i><b>No common filters</b>
