@@ -125,7 +125,14 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setTemplates, checkTemplateCanBeDeleted, setThesauris, deleteThesauri, setRelationTypes, checkRelationTypeCanBeDeleted}, dispatch);
+  return bindActionCreators({
+    setTemplates,
+    checkTemplateCanBeDeleted,
+    setThesauris,
+    deleteThesauri,
+    setRelationTypes,
+    checkRelationTypeCanBeDeleted
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Metadata);
