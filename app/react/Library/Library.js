@@ -34,7 +34,7 @@ export default class Library extends RouteHandler {
       return {
         library: {
           documents: documents,
-          filters: {templates: templates, documentTypes, properties, thesauris, allDocumentTypes: false}
+          filters: {templates, documentTypes, properties, thesauris, allDocumentTypes: false}
         }
       };
     });

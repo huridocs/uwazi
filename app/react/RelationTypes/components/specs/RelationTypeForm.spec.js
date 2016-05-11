@@ -9,9 +9,11 @@ describe('RelationTypeForm', () => {
   let component;
   beforeEach(() => {
     props = {
-      fields: {name: {}},
+      relationType: {name: 'test'},
       resetRelationType: jasmine.createSpy('resetRelationType'),
-      handleSubmit: jasmine.createSpy('handleSubmit')
+      resetForm: jasmine.createSpy('resetForm'),
+      handleSubmit: jasmine.createSpy('handleSubmit'),
+      state: {fields: []}
     };
 
     component = shallow(<RelationTypeForm {...props}/>);
@@ -21,6 +23,7 @@ describe('RelationTypeForm', () => {
     it('shoould call resetRelationType', () => {
       component.unmount();
       expect(props.resetRelationType).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalled();
     });
   });
 
@@ -32,19 +35,8 @@ describe('RelationTypeForm', () => {
       };
     });
 
-    it('should map the relationType to initialValues', () => {
-      expect(mapStateToProps(state).initialValues).toEqual({name: 'relationType name'});
-    });
-
-    it('should map the fields', () => {
-      expect(mapStateToProps(state).fields).toEqual(['name', '_id', '_rev']);
-    });
-
-    describe('validation', () => {
-      it('should add an error if the template has no name', () => {
-        let errors = mapStateToProps(state).validate({name: ''});
-        expect(errors.name).toBe('Required');
-      });
+    it('should map the relationType', () => {
+      expect(mapStateToProps(state).relationType.toJS()).toEqual({name: 'relationType name'});
     });
   });
 });

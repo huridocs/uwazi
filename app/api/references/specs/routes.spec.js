@@ -4,6 +4,8 @@ import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
+import references from 'api/references/references';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('references routes', () => {
   let routes;
@@ -13,7 +15,7 @@ describe('references routes', () => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
-    .catch(done.fail);
+    .catch(catchErrors(done));
   });
 
   describe('POST', () => {
@@ -35,7 +37,7 @@ describe('references routes', () => {
         expect(newDoc.value._rev).toBe(postResponse._rev);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 
@@ -51,7 +53,21 @@ describe('references routes', () => {
         expect(docs[1].title).toBe('reference3');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('/references/count_by_relationtype', () => {
+    it('should return the number of references using a relationtype', (done) => {
+      spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));
+      let req = {query: {relationtypeId: 'abc1'}};
+      routes.get('/api/references/count_by_relationtype', req)
+      .then((result) => {
+        expect(result).toBe(2);
+        expect(references.countByRelationType).toHaveBeenCalledWith('abc1');
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 });

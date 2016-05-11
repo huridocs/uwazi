@@ -1,5 +1,3 @@
-import request from '../../shared/JSONRequest.js';
-import {db_url as dbUrl} from '../config/database.js'
 import references from './references.js';
 
 export default app => {
@@ -31,6 +29,13 @@ export default app => {
     })
     .catch((error) => {
       res.json({error: error.json});
+    });
+  });
+
+  app.get('/api/references/count_by_relationtype', (req, res) => {
+    references.countByRelationType(req.query.relationtypeId)
+    .then((response) => {
+      res.json(response);
     });
   });
 };

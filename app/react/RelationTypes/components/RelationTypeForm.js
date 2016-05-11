@@ -1,35 +1,45 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
-import {reduxForm} from 'redux-form';
+import {Field, Form} from 'react-redux-form';
+import {connect} from 'react-redux';
 import {Link} from 'react-router';
+import {actions as formActions} from 'react-redux-form';
 
+import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {saveRelationType, resetRelationType} from 'app/RelationTypes/actions/relationTypeActions';
 
 export class RelationTypeForm extends Component {
 
   componentWillUnmount() {
     this.props.resetRelationType();
+    this.props.resetForm('relationType');
+  }
+
+  validation() {
+    return {
+      name: {required: (val) => val.trim() !== ''}
+    };
   }
 
   render() {
-    const {fields, handleSubmit, submitFailed} = this.props;
-
     return (
       <div className="row relationType">
         <main className="col-sm-12">
           <div className="well relationType">
-            <form onSubmit={handleSubmit(this.props.saveRelationType)} >
+            <Form model="relationType" onSubmit={this.props.saveRelationType} validators={this.validation()}>
               <div className="relationType-buttons">
-                <button className="btn btn-success save-template">
+                <button type="submit" className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save Relation Type
                 </button>
                 <Link to="/metadata" className="btn btn-default">Cancel</Link>
               </div>
-              <div className={'form-group relationType-name' + (submitFailed && fields.name.invalid ? ' has-error' : '')}>
-                <label htmlFor="relationTypeName" className="control-label">Relation Type name</label>
-                <input id="relationTypeName" className="form-control" type="text" {...fields.name}/>
-              </div>
-            </form>
+              <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+                <Field model="relationType.name">
+                    <label htmlFor="relationTypeName" className="control-label">Relation Type name</label>
+                    <input id="relationTypeName" className="form-control" type="text"/>
+                </Field>
+              </FormGroup>
+            </Form>
           </div>
         </main>
       </div>
@@ -38,38 +48,22 @@ export class RelationTypeForm extends Component {
 }
 
 RelationTypeForm.propTypes = {
-  fields: PropTypes.object.isRequired,
+  relationType: PropTypes.object.isRequired,
   saveRelationType: PropTypes.func,
   resetRelationType: PropTypes.func,
-  values: PropTypes.object,
-  handleSubmit: PropTypes.func,
-  submitFailed: PropTypes.bool
-};
-
-const validate = (values) => {
-  let errors = {};
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-
-  return errors;
+  resetForm: PropTypes.func,
+  state: PropTypes.object
 };
 
 export function mapStateToProps(state) {
-  let fields = ['name', '_id', '_rev'];
   return {
-    fields: fields,
-    initialValues: state.relationType.toJS(),
-    validate,
-    onSubmit: saveRelationType
+    relationType: state.relationType,
+    state: state.relationTypeForm
   };
 }
 
-function bindActions(dispatch) {
-  return bindActionCreators({saveRelationType, resetRelationType}, dispatch);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({saveRelationType, resetRelationType, resetForm: formActions.reset}, dispatch);
 }
 
-let form = reduxForm({form: 'relationType'}, mapStateToProps, bindActions)(RelationTypeForm);
-
-export default form;
+export default connect(mapStateToProps, mapDispatchToProps)(RelationTypeForm);

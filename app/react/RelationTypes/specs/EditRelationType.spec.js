@@ -6,11 +6,11 @@ import {APIURL} from 'app/config.js';
 import EditRelationType from 'app/RelationTypes/EditRelationType';
 import RelationTypeForm from 'app/RelationTypes/components/RelationTypeForm';
 import RouteHandler from 'app/controllers/App/RouteHandler';
+import * as relationTypesActions from 'app/RelationTypes/actions/relationTypesActions';
 
 describe('EditRelationType', () => {
   let relationType = {name: 'Against'};
   let component;
-  let instance;
   let props = jasmine.createSpyObj(['editRelationType']);
   let context;
 
@@ -18,7 +18,6 @@ describe('EditRelationType', () => {
     RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<EditRelationType {...props}/>, {context});
-    instance = component.instance();
 
     backend.restore();
     backend
@@ -42,8 +41,11 @@ describe('EditRelationType', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({relationType});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'EDIT_RELATION_TYPE', relationType});
+      spyOn(relationTypesActions, 'editRelationType').and.returnValue('RELATION_TYPE_LOADED');
+      component.instance().setReduxState({relationType});
+
+      expect(relationTypesActions.editRelationType).toHaveBeenCalledWith(relationType);
+      expect(context.store.dispatch).toHaveBeenCalledWith('RELATION_TYPE_LOADED');
     });
   });
 });
