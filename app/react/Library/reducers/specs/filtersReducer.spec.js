@@ -5,7 +5,7 @@ import filtersReducer from 'app/Library/reducers/filtersReducer';
 import 'jasmine-immutablejs-matchers';
 
 describe('filtersReducer', () => {
-  const initialState = Immutable.fromJS({templates: [], properties: [], allDocumentTypes: false});
+  const initialState = Immutable.fromJS({templates: [], properties: [], allDocumentTypes: false, documentTypes: {}});
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
@@ -31,25 +31,25 @@ describe('filtersReducer', () => {
 
   let documentTypes = {cba1: false, abc1: false};
 
-  describe('SET_TEMPLATES', () => {
+  describe('SET_LIBRARY_TEMPLATES', () => {
     it('should set the templates in the state', () => {
-      let newState = filtersReducer(initialState, {type: types.SET_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
+      let newState = filtersReducer(initialState, {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
       expect(newState.toJS().templates).toEqual(templates);
     });
 
     it('should set the thesauris in the state', () => {
-      let newState = filtersReducer(initialState, {type: types.SET_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
+      let newState = filtersReducer(initialState, {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
       expect(newState.toJS().thesauris).toEqual(thesauris);
     });
 
     it('should set an object with each templateid to be used as doctype filter flags', () => {
-      let newState = filtersReducer(initialState, {type: types.SET_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
+      let newState = filtersReducer(initialState, {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
       expect(newState.toJS().documentTypes).toEqual(documentTypes);
       expect(newState.toJS().allDocumentTypes).toBe(false);
     });
 
     it('should set an object with the properties to be used as filters', () => {
-      let newState = filtersReducer(initialState, {type: types.SET_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
+      let newState = filtersReducer(initialState, {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters, documentTypes});
       expect(newState.get('properties').toJS()).toEqual(libraryFilters);
     });
   });

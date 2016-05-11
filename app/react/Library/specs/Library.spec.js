@@ -77,7 +77,7 @@ describe('Library', () => {
     it('should call setTemplates with the templates and thesauris', () => {
       expect(context.store.dispatch)
       .toHaveBeenCalledWith({
-        type: actionTypes.SET_TEMPLATES,
+        type: actionTypes.SET_LIBRARY_TEMPLATES,
         templates: templates.rows,
         thesauris: thesauris.rows,
         documentTypes: Object({abc1: false, abc2: false}),

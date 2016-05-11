@@ -21,7 +21,7 @@ export function setDocuments(documents) {
 export function setTemplates(templates, thesauris) {
   let documentTypes = libraryHelper.generateDocumentTypes(templates);
   let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes, thesauris);
-  return {type: types.SET_TEMPLATES, templates, thesauris, documentTypes, libraryFilters};
+  return {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters};
 }
 
 export function setPreviewDoc(docId) {

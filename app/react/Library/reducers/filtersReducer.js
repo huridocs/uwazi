@@ -2,10 +2,10 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 
-const initialState = {templates: [], properties: [], allDocumentTypes: false};
+const initialState = {templates: [], properties: [], allDocumentTypes: false, documentTypes: {}};
 
 export default function filters(state = initialState, action = {}) {
-  if (action.type === types.SET_TEMPLATES) {
+  if (action.type === types.SET_LIBRARY_TEMPLATES) {
     return state.set('templates', Immutable.fromJS(action.templates))
     .set('thesauris', Immutable.fromJS(action.thesauris))
     .set('documentTypes', Immutable.fromJS(action.documentTypes))

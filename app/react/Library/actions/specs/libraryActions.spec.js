@@ -27,11 +27,11 @@ describe('libraryActions', () => {
       spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
     });
 
-    it('should return a SET_TEMPLATES action ', () => {
+    it('should return a SET_LIBRARY_TEMPLATES action ', () => {
       let action = actions.setTemplates(templates, thesauris);
       expect(libraryHelper.generateDocumentTypes).toHaveBeenCalledWith(templates);
       expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, 'generated document types', thesauris);
-      expect(action).toEqual({type: types.SET_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
+      expect(action).toEqual({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
     });
   });
 
