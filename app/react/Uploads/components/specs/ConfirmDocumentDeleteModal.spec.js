@@ -12,6 +12,7 @@ describe('ConfirmDocumentDeleteModal', () => {
   beforeEach(() => {
     props = {
       hideModal: jasmine.createSpy('hideModal'),
+      finishEdit: jasmine.createSpy('finishEdit'),
       deleteDocument: jasmine.createSpy('deleteDocument'),
       doc: Immutable.fromJS({_id: 'docId', title: 'test'})
     };
@@ -27,10 +28,11 @@ describe('ConfirmDocumentDeleteModal', () => {
   });
 
   describe('when clicking delete document', () => {
-    it('should delete the document and close the modal', () => {
+    it('should delete the document, close the modal and close the form', () => {
       render();
       component.find('.confirm-button').simulate('click');
       expect(props.hideModal).toHaveBeenCalledWith('deleteDocument');
+      expect(props.finishEdit).toHaveBeenCalled();
       expect(props.deleteDocument).toHaveBeenCalledWith(props.doc.toJS());
     });
   });

@@ -11,6 +11,7 @@ describe('UploadFailedModal', () => {
 
   beforeEach(() => {
     props = {
+      finishEdit: jasmine.createSpy('finishEdit'),
       hideModal: jasmine.createSpy('hideModal'),
       deleteDocument: jasmine.createSpy('deleteDocument'),
       doc: Immutable.fromJS({_id: 'docId', title: 'test'})
@@ -31,6 +32,7 @@ describe('UploadFailedModal', () => {
       render();
       component.find('.confirm-button').simulate('click');
       expect(props.hideModal).toHaveBeenCalledWith('uploadFailed');
+      expect(props.finishEdit).toHaveBeenCalled();
       expect(props.deleteDocument).toHaveBeenCalledWith(props.doc.toJS());
     });
   });

@@ -4,11 +4,12 @@ import {bindActionCreators} from 'redux';
 import Modal from 'app/Layout/Modal';
 
 import {hideModal} from 'app/Modals/actions/modalActions';
-import {deleteDocument} from 'app/Uploads/actions/uploadsActions';
+import {deleteDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
 
 export class UploadFailedModal extends Component {
 
   confirm() {
+    this.props.finishEdit();
     this.props.hideModal('uploadFailed');
     this.props.deleteDocument(this.props.doc.toJS());
   }
@@ -45,6 +46,7 @@ export class UploadFailedModal extends Component {
 UploadFailedModal.propTypes = {
   hideModal: PropTypes.func,
   deleteDocument: PropTypes.func,
+  finishEdit: PropTypes.func,
   doc: PropTypes.object
 };
 
@@ -53,7 +55,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({hideModal, deleteDocument}, dispatch);
+  return bindActionCreators({hideModal, deleteDocument, finishEdit}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadFailedModal);
