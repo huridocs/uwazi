@@ -32,7 +32,7 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link
-            href={isDeveloping ? '/style.css' : '/style.min.css'}
+            href={isDeveloping ? '/style.css' : '/style.css'}
             rel="stylesheet"
             type="text/css"
           />
@@ -47,7 +47,7 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script src={isDeveloping ? '/bundle.js' : '/bundle.min.js'}></script>
+          <script src={isDeveloping ? '/bundle.js' : '/bundle.js'}></script>
         </body>
       </html>
     );
