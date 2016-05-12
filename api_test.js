@@ -22,6 +22,9 @@ var SpecReporter = require('jasmine-spec-reporter');
 var db_config = require('./app/api/config/database.js');
 db_config.db_url = db_config.testing;
 
+var elasticConfig = require('./app/api/config/elasticIndexes.js');
+elasticConfig.index = elasticConfig.production;
+
 jasmine.loadConfig({
   spec_dir: 'app/',
   spec_files: [

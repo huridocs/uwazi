@@ -1,4 +1,5 @@
 import {db_url as dbURL} from 'api/config/database';
+import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import request from 'shared/JSONRequest';
@@ -30,7 +31,7 @@ export default {
       documentsQuery.sort(query.sort, query.order);
     }
 
-    return elastic.search({index: 'uwazi', body: documentsQuery.query()})
+    return elastic.search({index: elasticIndex, body: documentsQuery.query()})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;
@@ -52,7 +53,7 @@ export default {
 
   matchTitle(searchTerm) {
     let query = queryBuilder().fullTextSearch(searchTerm, ['doc.title']).highlight(['doc.title']).limit(5).query();
-    return elastic.search({index: 'uwazi', body: query})
+    return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       return response.hits.hits.map((hit) => {
         let result = hit._source.doc;
