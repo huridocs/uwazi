@@ -20,7 +20,7 @@ var SpecReporter = require('jasmine-spec-reporter');
 //jasmine.getEnv().addMatchers(customMatchers);
 
 var db_config = require('./app/api/config/database.js');
-db_config.db_url = db_config.development;
+db_config.db_url = db_config.testing;
 
 jasmine.loadConfig({
   spec_dir: 'app/',

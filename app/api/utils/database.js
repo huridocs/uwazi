@@ -1,14 +1,15 @@
 import fetch from 'isomorphic-fetch'
+import {db_url as dbURL} from '../config/database.js';
 
 let database =  {
 
   reset_testing_database () {
-    return fetch('http://127.0.0.1:5984/uwazi_development/', {method:'DELETE'})
-    .then((response) => fetch('http://127.0.0.1:5984/uwazi_development/', {method:'PUT'}))
+    return fetch(dbURL, {method:'DELETE'})
+    .then((response) => fetch(dbURL, {method:'PUT'}))
   },
 
   import (fixture) {
-    return fetch('http://127.0.0.1:5984/uwazi_development/_bulk_docs',
+    return fetch(`${dbURL}/_bulk_docs`,
     {
       method:'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
