@@ -31,7 +31,8 @@ app.use('/public', express.static(path.resolve(__dirname, 'public')));
 require('./app/api/api.js')(app, http);
 require('./app/react/server.js')(app);
 
-const port = 3000;
+var ports = require('./app/api/config/ports.js');
+const port = ports[app.get('env')];
 http.listen(port, function onStart(err) {
   if (err) {
     console.log(err);
