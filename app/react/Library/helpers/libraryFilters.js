@@ -48,7 +48,7 @@ export function libraryFilters(templates, documentTypes, thesauris) {
   return filters;
 }
 
-export function generateDocumentTypes(templates, value = false) {
+export function generateDocumentTypes(templates = [], value = false) {
   return templates.reduce((docTypes, templ) => {
     docTypes[templ._id] = value;
     return docTypes;
