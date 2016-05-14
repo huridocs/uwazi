@@ -1,5 +1,5 @@
 export default {
   production: 'uwazi',
-  development: 'uwazi_dev',
+  development: 'uwazi_development',
   demo: 'uwazi_demo'
 };

@@ -61,11 +61,11 @@ describe('documentQueryBuilder', () => {
     describe('sort', () => {
       it('should add a sort property desc by default', () => {
         let query = queryBuilder().sort('title').query();
-        expect(query.sort[0]).toEqual({'doc.title': 'desc'});
+        expect(query.sort[0]).toEqual({'doc.title': {order: 'desc', ignore_unmapped: true}});
       });
       it('should sort by order passed', () => {
         let query = queryBuilder().sort('title', 'asc').query();
-        expect(query.sort[0]).toEqual({'doc.title': 'asc'});
+        expect(query.sort[0]).toEqual({'doc.title': {order: 'asc', ignore_unmapped: true}});
       });
     });
 
