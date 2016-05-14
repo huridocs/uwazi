@@ -1,7 +1,8 @@
 import relationtypes from 'api/relationtypes/relationtypes';
+import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/relationtypes', (req, res) => {
+  app.post('/api/relationtypes', needsAuthorization, (req, res) => {
     relationtypes.save(req.body)
     .then((response) => res.json(response));
   });
@@ -17,7 +18,7 @@ export default app => {
     .then((response) => res.json(response));
   });
 
-  app.delete('/api/relationtypes', (req, res) => {
+  app.delete('/api/relationtypes', needsAuthorization, (req, res) => {
     relationtypes.delete(req.query)
     .then((response) => res.json(response));
   });

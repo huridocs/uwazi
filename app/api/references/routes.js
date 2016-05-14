@@ -1,7 +1,8 @@
 import references from './references.js';
+import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/references', (req, res) => {
+  app.post('/api/references', needsAuthorization, (req, res) => {
     references.save(req.body)
     .then((response) => {
       res.json(response);

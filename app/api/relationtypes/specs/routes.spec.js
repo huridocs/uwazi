@@ -1,5 +1,4 @@
 import relationtypesRoutes from 'api/relationtypes/routes.js';
-import database from 'api/utils/database.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import relationtypes from 'api/relationtypes/relationtypes';
 import {catchErrors} from 'api/utils/jasmineHelpers';

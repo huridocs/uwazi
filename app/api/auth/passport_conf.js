@@ -1,27 +1,27 @@
-import fetch from 'isomorphic-fetch'
-import passport from 'passport'
-import LocalStrategy from 'passport-local'
-import {db_url} from '../config/database.js'
+import fetch from 'isomorphic-fetch';
+import passport from 'passport';
+import LocalStrategy from 'passport-local';
+import {db_url as dbUrl} from '../config/database.js';
 import SHA256 from 'crypto-js/sha256';
 
 passport.use('local', new LocalStrategy(
-  function(username, password, done){
-    var user = username+SHA256(password).toString();
-    fetch(db_url+'/_design/users/_view/users/?key="'+user+'"')
+  function (username, password, done) {
+    let user = username + SHA256(password).toString();
+    fetch(dbUrl + '/_design/users/_view/users/?key="' + user + '"')
     .then(response => response.json())
-    .then(json => done(null, json.rows[0]), () => done(null, false))
+    .then(json => done(null, json.rows[0]), () => done(null, false));
   })
-)
+);
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
   done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
-  fetch(db_url+'/'+ id)
+passport.deserializeUser(function (id, done) {
+  fetch(dbUrl + '/' + id)
   .then(response => response.json())
   .then((user) => {
-    user.password = undefined;
-    done(null, user)
-  })
+    delete user.password;
+    done(null, user);
+  });
 });

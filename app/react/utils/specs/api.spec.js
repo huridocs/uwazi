@@ -1,6 +1,7 @@
 import {APIURL} from 'app/config';
 import api from 'app/utils/api';
 import backend from 'fetch-mock';
+import {browserHistory} from 'react-router';
 
 describe('Login', () => {
   beforeEach(() => {
@@ -8,7 +9,10 @@ describe('Login', () => {
     backend
     .mock(APIURL + 'test_get', 'GET', JSON.stringify({method: 'GET'}))
     .mock(APIURL + 'test_post', 'POST', JSON.stringify({method: 'POST'}))
-    .mock(APIURL + 'test_delete?data=delete', 'DELETE', JSON.stringify({method: 'DELETE'}));
+    .mock(APIURL + 'test_delete?data=delete', 'DELETE', JSON.stringify({method: 'DELETE'}))
+    .mock(APIURL + 'unauthorised_get', 'GET', {status: 401, body: {}})
+    .mock(APIURL + 'unauthorised_post', 'POST', {status: 401, body: {}})
+    .mock(APIURL + 'unauthorised_delete', 'DELETE', {status: 401, body: {}});
   });
 
 
@@ -20,6 +24,17 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('handles 401', () => {
+      it('should redirect to login', (done) => {
+        spyOn(browserHistory, 'replace');
+        api.get('unauthorised_get')
+        .catch(() => {
+          expect(browserHistory.replace).toHaveBeenCalledWith('login', '/login');
+          done();
+        });
+      });
     });
 
     describe('when authorizing', () => {
@@ -47,6 +62,17 @@ describe('Login', () => {
       })
       .catch(done.fail);
     });
+
+    describe('handles 401', () => {
+      it('should redirect to login', (done) => {
+        spyOn(browserHistory, 'replace');
+        api.post('unauthorised_post')
+        .catch(() => {
+          expect(browserHistory.replace).toHaveBeenCalledWith('login', '/login');
+          done();
+        });
+      });
+    });
   });
 
   describe('DELETE', () => {
@@ -57,6 +83,17 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('handles 401', () => {
+      it('should redirect to login', (done) => {
+        spyOn(browserHistory, 'replace');
+        api.delete('unauthorised_delete')
+        .catch(() => {
+          expect(browserHistory.replace).toHaveBeenCalledWith('login', '/login');
+          done();
+        });
+      });
     });
   });
 });

@@ -1,8 +1,6 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import templateRoutes from 'api/templates/routes.js';
 import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
-import request from 'shared/JSONRequest';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import templates from 'api/templates/templates';
 

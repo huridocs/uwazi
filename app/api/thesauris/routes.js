@@ -1,8 +1,9 @@
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
+import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/thesauris', (req, res) => {
+  app.post('/api/thesauris', needsAuthorization, (req, res) => {
     req.body.type = 'thesauri';
     req.body.values = req.body.values || [];
 
@@ -44,7 +45,7 @@ export default app => {
     });
   });
 
-  app.delete('/api/thesauris', (req, res) => {
+  app.delete('/api/thesauris', needsAuthorization, (req, res) => {
     request.delete(`${dbUrl}/${req.query._id}`, {rev: req.query._rev})
     .then((response) => {
       res.json(response.json);

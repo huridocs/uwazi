@@ -4,6 +4,7 @@ import multer from 'multer';
 import PDF from './PDF';
 import documents from 'api/documents/documents';
 import ID from 'shared/uniqueID';
+import needsAuthorization from '../auth/authMiddleware';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -17,7 +18,7 @@ let storage = multer.diskStorage({
 export default (app) => {
   let upload = multer({storage: storage});
 
-  app.post('/api/upload', upload.any(), (req, res) => {
+  app.post('/api/upload', needsAuthorization, upload.any(), (req, res) => {
     request.get(dbURL + '/' + req.body.document)
     .then((response) => {
       let doc = response.json;
