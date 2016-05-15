@@ -34,11 +34,13 @@ describe('Doc', () => {
     it('should contain the previewDoc', () => {
       let store = {
         library: {
-          ui: Immutable.fromJS({previewDoc: 'docId'})
+          ui: Immutable.fromJS({previewDoc: 'docId'}),
+          filters: Immutable.fromJS({templates: {}})
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({previewDoc: 'docId'});
+      expect(state.previewDoc).toEqual('docId');
+      expect(state.templates.toJS()).toEqual({});
     });
   });
 });

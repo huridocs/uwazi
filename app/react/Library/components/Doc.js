@@ -14,13 +14,16 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, creationDate} = this.props;
+    let {title, _id, creationDate, template} = this.props;
     let documentViewUrl = '/document/' + _id;
+    let type = this.props.templates.toJS().find((templ) => {
+      return templ._id === template;
+    }).name;
     return (
       <RowList.Item>
         <ItemName><Link to={documentViewUrl} className="item-name">{title}</Link></ItemName>
         <ItemFooter>
-          <ItemFooter.Label>Decision</ItemFooter.Label>
+          <ItemFooter.Label>{type}</ItemFooter.Label>
           <ItemFooter.Label><UTCToLocal utc={creationDate}/></ItemFooter.Label>
           <Link to={documentViewUrl} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
         </ItemFooter>
@@ -32,15 +35,18 @@ export class Doc extends Component {
 Doc.propTypes = {
   _id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  template: PropTypes.string.isRequired,
   previewDoc: PropTypes.string,
   setPreviewDoc: PropTypes.func.isRequired,
-  creationDate: PropTypes.number
+  creationDate: PropTypes.number,
+  templates: PropTypes.object
 };
 
 
 export function mapStateToProps(state) {
   return {
-    previewDoc: state.library.ui.toJS().previewDoc
+    previewDoc: state.library.ui.get('previewDoc'),
+    templates: state.library.filters.get('templates')
   };
 }
 
