@@ -2,10 +2,11 @@ import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 
-import {APIURL} from 'app/config.js';
+import {APIURL} from 'app/config';
 import Library from 'app/Library/Library';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import RouteHandler from 'app/controllers/App/RouteHandler';
+import createStore from 'app/store';
 import * as actionTypes from 'app/Library/actions/actionTypes';
 
 describe('Library', () => {
@@ -25,7 +26,7 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'documents/search?prop1=prop1', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
@@ -42,7 +43,9 @@ describe('Library', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request the documents', (done) => {
+    it('should request the documents passing search object on the store', (done) => {
+      createStore({search: {prop1: 'prop1'}});
+
       Library.requestState()
       .then((state) => {
         expect(state.library.documents).toEqual(documents);

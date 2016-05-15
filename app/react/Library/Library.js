@@ -19,14 +19,7 @@ export default class Library extends RouteHandler {
   }
 
   static requestState() {
-    let filters = {};
-    //
-    if (store) {
-      let state = store.getState();
-      filters = state.search;
-    }
-    //
-    return Promise.all([documentsAPI.search(filters), templatesAPI.get(), thesaurisAPI.get()])
+    return Promise.all([documentsAPI.search(store.getState().search), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       let documentTypes = generateDocumentTypes(templates);
       let properties = libraryFilters(templates, documentTypes);
