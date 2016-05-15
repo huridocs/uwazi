@@ -10,7 +10,7 @@ let data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 
 let store;
 
-export default (initialData = data) => {
+export default function create(initialData = data) {
   store = createStore(
     reducer,
     initialData,
@@ -21,6 +21,11 @@ export default (initialData = data) => {
   );
 
   return store;
-};
+}
+
+if (!store) {
+  store = create();
+}
+
 
 export {store};
