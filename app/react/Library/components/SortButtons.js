@@ -27,18 +27,18 @@ export class SortButtons extends Component {
   render() {
     let {search} = this.props;
 
-    let order = 'up';
+    let order = 'down';
     if (search.order === 'asc') {
-      order = 'down';
+      order = 'up';
     }
 
-    let sortingTitle = search.sort === 'title';
+    let sortingTitle = search.sort === 'title.raw';
     let sortingRecent = search.sort === 'creationDate';
 
     return (
       <p className="col-sm-5">
         Sort by
-        <span className={sortingTitle ? 'active' : ''} onClick={() => this.sort('title')}>
+        <span className={sortingTitle ? 'active' : ''} onClick={() => this.sort('title.raw')}>
           A-Z
           {sortingTitle ? <i className={'fa fa-caret-' + order}></i> : ''}
         </span>
