@@ -118,8 +118,17 @@ function handleRoute(res, renderProps, req) {
 }
 
 function ServerRouter(req, res) {
-  let userRoutes = ['/uploads', '/my_account'];
-  if (!req.user && userRoutes.includes(req.url)) {
+  let authRoutes = ['/uploads',
+                    '/my_account',
+                    '/metadata',
+                    '/relationTypes/new',
+                    '/relationTypes/edit',
+                    'templates/new',
+                    'templates/edit',
+                    '/thesauris/new',
+                    '/thesauris/edit'
+                  ];
+  if (!req.user && authRoutes.includes(req.url)) {
     res.redirect(302, '/login');
   }
 

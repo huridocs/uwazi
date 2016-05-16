@@ -14,11 +14,12 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, creationDate, template} = this.props;
+    let {title, _id, creationDate} = this.props;
     let documentViewUrl = '/document/' + _id;
-    let type = this.props.templates.toJS().find((templ) => {
-      return templ._id === template;
-    }).name;
+    let templateId = this.props.template;
+    let type = this.props.templates.toJS().reduce((result, templ) => {
+      return templ._id === templateId ? templ.name : result;
+    }, '');
     return (
       <RowList.Item>
         <ItemName><Link to={documentViewUrl} className="item-name">{title}</Link></ItemName>
