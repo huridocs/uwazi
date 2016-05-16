@@ -31,7 +31,7 @@ describe('Login', () => {
         spyOn(browserHistory, 'replace');
         api.get('unauthorised_get')
         .catch(() => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('login', '/login');
+          expect(browserHistory.replace).toHaveBeenCalledWith('/login');
           done();
         });
       });
@@ -68,7 +68,7 @@ describe('Login', () => {
         spyOn(browserHistory, 'replace');
         api.post('unauthorised_post')
         .catch(() => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('login', '/login');
+          expect(browserHistory.replace).toHaveBeenCalledWith('/login');
           done();
         });
       });
@@ -90,7 +90,7 @@ describe('Login', () => {
         spyOn(browserHistory, 'replace');
         api.delete('unauthorised_delete')
         .catch(() => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('login', '/login');
+          expect(browserHistory.replace).toHaveBeenCalledWith('/login');
           done();
         });
       });
