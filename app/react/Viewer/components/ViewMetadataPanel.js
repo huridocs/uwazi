@@ -5,24 +5,25 @@ import SidePanel from 'app/Layout/SidePanel';
 
 export class ViewMetadataPanel extends Component {
   render() {
+    const {doc} = this.props;
+
     return (
       <SidePanel open={this.props.open}>
-        <h1>METADATA</h1>
+        <h1>{doc.title}</h1>
       </SidePanel>
     );
   }
 }
 
 ViewMetadataPanel.propTypes = {
-  open: PropTypes.bool,
-  references: PropTypes.array,
-  highlightReference: PropTypes.func
+  doc: PropTypes.object,
+  open: PropTypes.bool
 };
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
   return {
-    open: uiState.panel === 'viewMetadataPanel'
+    open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
+    doc: documentViewer.document
   };
 };
 

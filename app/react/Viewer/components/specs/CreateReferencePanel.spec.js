@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
 import {CreateReferencePanel} from 'app/Viewer/components/CreateReferencePanel';
@@ -11,7 +12,7 @@ describe('CreateReferencePanel', () => {
 
   beforeEach(() => {
     props = {
-      results: []
+      results: Immutable.fromJS([])
     };
   });
 

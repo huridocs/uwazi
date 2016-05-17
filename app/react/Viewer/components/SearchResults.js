@@ -8,7 +8,7 @@ export class SearchResults extends Component {
             if (this.props.searching) {
               return <div className="loader">Searching...</div>;
             }
-            return this.props.results.map((result, index) => {
+            return this.props.results.toJS().map((result, index) => {
               return (
                 <li key={index} onClick={() => this.props.onClick(result._id)}>
                   <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}>
@@ -24,7 +24,7 @@ export class SearchResults extends Component {
 }
 
 SearchResults.propTypes = {
-  results: PropTypes.array,
+  results: PropTypes.object,
   selected: PropTypes.string,
   searching: PropTypes.bool,
   onClick: PropTypes.func
