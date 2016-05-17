@@ -36,5 +36,15 @@ describe('document helpers', () => {
         ]
       });
     });
+
+    describe('when no templates provided', () => {
+      it('should return the document with empty metadata', () => {
+        expect(helpers.prepareMetadata(doc, [], thesauris)).toEqual({
+          title: 'doc title',
+          template: '2',
+          metadata: []
+        });
+      });
+    });
   });
 });

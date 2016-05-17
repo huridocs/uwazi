@@ -2,6 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
+import {helpers} from 'app/Documents';
 
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
@@ -42,16 +43,29 @@ describe('ViewMetadataPanel', () => {
         uiState: Immutable.fromJS({
           panel: ''
         }),
-        references: Immutable.fromJS(['reference'])
+        document: {},
+        references: Immutable.fromJS(['reference']),
+        templates: Immutable.fromJS(['template']),
+        thesauris: Immutable.fromJS(['thesauris'])
       }
     };
 
     const mockStore = configureMockStore([]);
 
     let renderContainer = () => {
+      spyOn(helpers, 'prepareMetadata');
       let store = mockStore(state);
       component = shallow(<PanelContainer />, {context: {store}});
     };
+
+    it('should prepare doc with template and thesauris', () => {
+      renderContainer();
+      expect(helpers.prepareMetadata).toHaveBeenCalledWith(
+        state.documentViewer.document,
+        state.documentViewer.templates.toJS(),
+        state.documentViewer.thesauris.toJS()
+      );
+    });
 
     it('should be closed when panel is not viewMetadataPanel', () => {
       renderContainer();

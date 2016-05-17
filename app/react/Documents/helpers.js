@@ -1,5 +1,9 @@
 export default {
   prepareMetadata(doc, templates, thesauris) {
+    if (!templates.length) {
+      return Object.assign({}, doc, {metadata: []});
+    }
+
     let template = templates.find(t => t._id === doc.template);
     let metadata = template.properties.map((property) => {
       let value = doc.metadata[property.name];

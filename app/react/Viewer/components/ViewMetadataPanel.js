@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-
 import SidePanel from 'app/Layout/SidePanel';
+import {helpers} from 'app/Documents';
 
 export class ViewMetadataPanel extends Component {
   render() {
@@ -10,6 +10,7 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open}>
         <h1>{doc.title}</h1>
+        <i className='fa fa-close close-modal'></i>
       </SidePanel>
     );
   }
@@ -23,7 +24,7 @@ ViewMetadataPanel.propTypes = {
 const mapStateToProps = ({documentViewer}) => {
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
-    doc: documentViewer.document
+    doc: helpers.prepareMetadata(documentViewer.document, documentViewer.templates.toJS(), documentViewer.thesauris.toJS())
   };
 };
 
