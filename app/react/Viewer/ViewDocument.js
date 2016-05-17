@@ -8,6 +8,7 @@ import {setDocument} from 'app/Viewer/actions/documentActions';
 import Viewer from 'app/Viewer/components/Viewer';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
+import {actions} from 'app/BasicReducer';
 
 export default class ViewDocument extends RouteHandler {
 
@@ -34,6 +35,8 @@ export default class ViewDocument extends RouteHandler {
   setReduxState({documentViewer}) {
     this.context.store.dispatch(setDocument(documentViewer.document, null));
     this.context.store.dispatch(setReferences(documentViewer.references));
+    this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
+    this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
   }
 
   render() {

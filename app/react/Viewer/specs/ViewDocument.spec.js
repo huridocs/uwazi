@@ -7,7 +7,7 @@ import RouteHandler from 'app/controllers/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 
-fdescribe('ViewDocument', () => {
+describe('ViewDocument', () => {
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
   let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
   let document = {_id: '1', title: 'title'};
@@ -58,9 +58,11 @@ fdescribe('ViewDocument', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({documentViewer: {document: 'document', references: 'references'}});
+      instance.setReduxState({documentViewer: {document: 'document', references: 'references', templates: 'templates', thesauris: 'thesauris'}});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: 'references'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_DOCUMENT', document: 'document', html: null});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/SET', value: 'templates'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/SET', value: 'thesauris'});
     });
   });
 });
