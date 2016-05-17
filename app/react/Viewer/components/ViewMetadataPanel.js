@@ -5,9 +5,8 @@ import SidePanel from 'app/Layout/SidePanel';
 
 export class ViewMetadataPanel extends Component {
   render() {
-    let sidePanelprops = {open: this.props.open};
     return (
-      <SidePanel {...sidePanelprops}>
+      <SidePanel open={this.props.open}>
         <h1>METADATA</h1>
       </SidePanel>
     );

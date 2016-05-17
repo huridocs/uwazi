@@ -1,5 +1,19 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 
+export function setTemplates(templates) {
+  return {
+    type: types.VIEWER_SET_TEMPLATES,
+    templates
+  };
+}
+
+export function setThesauris(thesauris) {
+  return {
+    type: types.VIEWER_SET_THESAURIS,
+    thesauris
+  };
+}
+
 export function openPanel(panel) {
   return {
     type: types.OPEN_PANEL,

@@ -1,7 +1,21 @@
 import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-describe('Viewer uiActions', () => {
+fdescribe('Viewer uiActions', () => {
+  describe('setTemplates()', () => {
+    it('should return a VIEWER_SET_TEMPLATES with templates', () => {
+      let action = actions.setTemplates('templates');
+      expect(action).toEqual({type: types.VIEWER_SET_TEMPLATES, templates: 'templates'});
+    });
+  });
+
+  describe('setThesauris()', () => {
+    it('should return a VIEWER_SET_THESAURIS with thesauris', () => {
+      let action = actions.setThesauris('thesauris');
+      expect(action).toEqual({type: types.VIEWER_SET_THESAURIS, thesauris: 'thesauris'});
+    });
+  });
+
   describe('openPanel()', () => {
     it('should return a OPEN_PANEL with panel passed', () => {
       let action = actions.openPanel('a panel');
