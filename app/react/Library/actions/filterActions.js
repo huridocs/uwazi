@@ -42,3 +42,29 @@ export function filterAllDocumentTypes(newValue) {
     updateModelFilters(dispatch, getState, libraryFilters);
   };
 }
+
+export function toggleFilter(propertyName) {
+  return function (dispatch, getState) {
+    let state = getState().library.filters.toJS();
+    let updatedProperties = state.properties.map((property) => {
+      if (property.name === propertyName) {
+        property.active = !property.active;
+      }
+      return property;
+    });
+    dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
+  };
+}
+
+export function activateFilter(propertyName) {
+  return function (dispatch, getState) {
+    let state = getState().library.filters.toJS();
+    let updatedProperties = state.properties.map((property) => {
+      if (property.name === propertyName) {
+        property.active = true;
+      }
+      return property;
+    });
+    dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
+  };
+}

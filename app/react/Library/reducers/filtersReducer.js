@@ -21,5 +21,9 @@ export default function filters(state = initialState, action = {}) {
     }, true));
   }
 
+  if (action.type === types.UPDATE_LIBRARY_FILTERS) {
+    return state.set('properties', Immutable.fromJS(action.libraryFilters));
+  }
+
   return Immutable.fromJS(state);
 }

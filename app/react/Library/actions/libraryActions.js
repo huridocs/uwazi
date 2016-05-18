@@ -44,9 +44,20 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
-export function searchDocuments(filters) {
-  return (dispatch) => {
-    return api.search(filters)
+export function searchDocuments(readOnlySearch) {
+  return (dispatch, getState) => {
+    let properties = getState().library.filters.toJS().properties;
+
+    let search = Object.assign({}, readOnlySearch);
+    search.filters = Object.assign({}, readOnlySearch.filters);
+
+    properties.forEach((property) => {
+      if (!property.active) {
+        delete search.filters[property.name];
+      }
+    });
+
+    return api.search(search)
     .then((documents) => {
       dispatch(setDocuments(documents));
       dispatch(hideSuggestions());

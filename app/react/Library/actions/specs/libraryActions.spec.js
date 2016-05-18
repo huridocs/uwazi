@@ -1,5 +1,6 @@
 import backend from 'fetch-mock';
 import {APIURL} from 'app/config.js';
+import Immutable from 'immutable';
 
 import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
@@ -76,15 +77,38 @@ describe('libraryActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman&joker=true', 'get', {body: JSON.stringify(documents)});
+      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D', 'get', {body: JSON.stringify(documents)})
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D', 'get', {body: JSON.stringify(documents)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
     describe('searchDocuments', () => {
+      let store;
+      let getState;
+      let state;
+      beforeEach(() => {
+        state = {properties: [{name: 'author', active: true}]};
+        store = {library: {filters: Immutable.fromJS(state)}};
+        getState = jasmine.createSpy('getState').and.returnValue(store);
+      });
+
       it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
-        actions.searchDocuments({searchTerm: 'batman', joker: true})(dispatch)
+        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&joker=true')).toBe(true);
+          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D')).toBe(true);
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should remove from the search the filters that are not active', (done) => {
+        state.properties[0].active = false;
+        store.library.filters = Immutable.fromJS(state);
+        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
+        .then(() => {
+          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D')).toBe(true);
           expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
           done();
         })
@@ -92,7 +116,7 @@ describe('libraryActions', () => {
       });
 
       it('should dispatch a HIDE_SUGGESTIONS action', (done) => {
-        actions.searchDocuments({searchTerm: 'batman', joker: true})(dispatch)
+        actions.searchDocuments({searchTerm: 'batman'})(dispatch, getState)
         .then(() => {
           expect(dispatch).toHaveBeenCalledWith({type: types.HIDE_SUGGESTIONS});
           done();

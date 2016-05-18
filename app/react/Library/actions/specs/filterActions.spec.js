@@ -9,12 +9,17 @@ describe('filterActions', () => {
   let templates = ['templates'];
   let thesauris = ['thesauris'];
   let documentTypes = {a: true, b: false};
-  let libraryFilters = [{name: 'author'}, {name: 'country'}];
+  let libraryFilters;
   let dispatch;
   let getState;
+  let store;
+  let search;
+  let state;
 
   beforeEach(() => {
-    let state = {
+    libraryFilters = [{name: 'author'}, {name: 'country'}];
+    search = {searchTerm: '', filters: {author: 'RR Martin', country: ''}};
+    state = {
       documentTypes,
       templates,
       thesauris,
@@ -22,16 +27,12 @@ describe('filterActions', () => {
       allDocumentTypes: false
     };
 
-    let store = {
-      library: {
-        filters: Immutable.fromJS(state)
-      },
-      search: {searchTerm: '', filters: {author: 'RR Martin', country: ''}}
-    };
+    store = {library: {filters: Immutable.fromJS(state)}, search};
+
     spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
     dispatch = jasmine.createSpy('dispatch');
     spyOn(formActions, 'change').and.returnValue('FILTERS_UPDATED');
-    getState = jasmine.createSpy('dispatch').and.returnValue(store);
+    getState = jasmine.createSpy('getState').and.returnValue(store);
   });
 
   describe('filterDocumentType', () => {
@@ -59,6 +60,44 @@ describe('filterActions', () => {
       actions.filterAllDocumentTypes(true)(dispatch, getState);
       expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: 'RR Martin', country: ''});
       expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
+    });
+  });
+
+  describe('toggleFilter', () => {
+    describe('when a property is not active', () => {
+      it('should activate it', () => {
+        actions.toggleFilter('author')(dispatch, getState);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: types.UPDATE_LIBRARY_FILTERS,
+          libraryFilters: [{name: 'author', active: true},
+          {name: 'country'}]
+        });
+      });
+    });
+
+    describe('when a property is active', () => {
+      it('should deactivate it', () => {
+        state.properties[0].active = true;
+        store.library.filters = Immutable.fromJS(state);
+
+        actions.toggleFilter('author')(dispatch, getState);
+        expect(dispatch).toHaveBeenCalledWith({
+          type: types.UPDATE_LIBRARY_FILTERS,
+          libraryFilters: [{name: 'author', active: false},
+          {name: 'country'}]
+        });
+      });
+    });
+  });
+
+  describe('activateFilter', () => {
+    it('should activate the filter', () => {
+      actions.activateFilter('author')(dispatch, getState);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.UPDATE_LIBRARY_FILTERS,
+        libraryFilters: [{name: 'author', active: true},
+        {name: 'country'}]
+      });
     });
   });
 });

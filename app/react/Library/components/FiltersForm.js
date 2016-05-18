@@ -6,6 +6,7 @@ import {Field, Form} from 'react-redux-form';
 import Select, {SelectField} from 'app/DocumentForm/components/Select';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
+import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
 
 export class FiltersForm extends Component {
 
@@ -15,18 +16,19 @@ export class FiltersForm extends Component {
       <div className="filters-box">
         <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments}>
         {fields.map((property, index) => {
+          let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
           if (property.type === 'select') {
             return (
               <FormGroup key={index}>
                 <SelectField model={`search.filters.${property.name}`} >
-                  <ul className="search__filter">
+                  <ul className={propertyClass}>
                     <li>
                       {property.label}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher switcher-active"></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </li>
                     <li className="wide">
-                      <Select options={property.options} />
+                      <Select options={property.options} onChange={() => this.props.activateFilter(property.name)} />
                     </li>
                   </ul>
                 </SelectField>
@@ -36,13 +38,15 @@ export class FiltersForm extends Component {
           return (
             <FormGroup key={index}>
               <Field model={`search.filters.${property.name}`} >
-                <ul className="search__filter">
+                <ul className={propertyClass}>
                   <li>
                     {property.label}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher switcher-active"></figure>
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                   </li>
-                  <li className="wide"><input className="form-control" /></li>
+                  <li className="wide">
+                    <input className="form-control" onChange={() => this.props.activateFilter(property.name)} />
+                  </li>
                 </ul>
               </Field>
             </FormGroup>
@@ -77,6 +81,8 @@ export class FiltersForm extends Component {
 FiltersForm.propTypes = {
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,
+  toggleFilter: PropTypes.func,
+  activateFilter: PropTypes.func,
   search: PropTypes.object,
   documentTypes: PropTypes.object
 };
@@ -90,7 +96,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments}, dispatch);
+  return bindActionCreators({searchDocuments, toggleFilter, activateFilter}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);
