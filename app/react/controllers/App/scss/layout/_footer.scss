@@ -1,7 +1,9 @@
 footer {
+	z-index: 2;
 	background: $c-primary-dark;
 	padding: 15px;
 	color: $c-primary-light;
+	margin-top: 30px;
 
 	h5 {
 		text-transform: uppercase;
