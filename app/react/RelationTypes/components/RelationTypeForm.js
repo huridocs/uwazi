@@ -28,10 +28,10 @@ export class RelationTypeForm extends Component {
           <div className="well relationType">
             <Form model="relationType" onSubmit={this.props.saveRelationType} validators={this.validation()}>
               <div className="relationType-buttons">
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
                 <button type="submit" className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save Relation Type
                 </button>
-                <Link to="/metadata" className="btn btn-default">Cancel</Link>
               </div>
               <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
                 <Field model="relationType.name">

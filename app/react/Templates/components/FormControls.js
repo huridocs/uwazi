@@ -21,7 +21,8 @@ export class FormControls extends Component {
   render() {
     return (
       <form onSubmit={this.submit.bind(this)}>
-        <Link to="/metadata" className="btn btn-default">Cancel</Link>
+        <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+        &nbsp;
         <button className="btn btn-success save-template">
           <i className="fa fa-save"/> Save Template
         </button>

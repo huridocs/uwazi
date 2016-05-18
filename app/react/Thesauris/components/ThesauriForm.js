@@ -21,10 +21,10 @@ export class ThesauriForm extends Component {
           <div className="well thesauri">
             <form onSubmit={handleSubmit(this.props.saveThesauri)} >
               <div className="thesauri-buttons">
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
                 <button className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save Thesauri
                 </button>
-                <Link to="/metadata" className="btn btn-default">Cancel</Link>
               </div>
               <div className={'form-group thesauri-name' + (submitFailed && fields.name.invalid ? ' has-error' : '')}>
                 <label htmlFor="thesauriName" className="control-label">Thesauri name</label>
