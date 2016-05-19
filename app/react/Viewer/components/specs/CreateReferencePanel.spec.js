@@ -37,7 +37,7 @@ describe('CreateReferencePanel', () => {
   });
 
   it('should render SearchResults passing the results, searching flag and selected element', () => {
-    props.results = ['results'];
+    props.results = Immutable.fromJS(['results']);
     props.searching = false;
     props.selected = 'selected';
     render();
