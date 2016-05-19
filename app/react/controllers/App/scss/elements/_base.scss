@@ -3,8 +3,25 @@ body {
 	color: $c-black;
 	font-family: $f-regular;
 	font-size: $f-size;
+	position: relative;
+	padding-top: 60px;
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
 }
 
 label {
 	font-weight: normal;
+}
+
+dl {
+	margin-bottom: 5px;
+	background: $c-grey-light;
+	padding: 15px;
+}
+dt {
+	font-size: $f-size-sm;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	line-height: 2em;
 }

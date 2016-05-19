@@ -31,9 +31,15 @@
 		height: 145px;
 	}
 	.item-snippets {
-		display: none;
 		margin-top: 15px;
+		padding-left: 15px;
 		font-style: italic;
+		position: relative;
+		.fa {
+			position: absolute;
+			left: 0;
+			top: 1px;
+		}
 		b {
 			background: #FFFFC5;
 			color: orange;
@@ -109,6 +115,11 @@
 		bottom: 0;
 		padding: 15px 25px;
 	}
+	aside & {
+		position: relative;
+		padding: 15px 0;
+		margin-top: 15px;
+	}
 
 	.fa {
 		margin: 0 6px;
@@ -127,6 +138,10 @@
 	border-radius: 50%;
 	border: 1px solid $c-grey-light;
 	background: $c-white;
+	&:hover {
+		background-color: $c-grey-dark;
+		color: $c-white;
+	}
 }
 
 .item-group-load-more {

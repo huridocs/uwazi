@@ -11,31 +11,39 @@ export class FormConfigInput extends Component {
   render() {
     const {fields: {label, required, filter, type}} = this.props;
     return (
-      <form className="row" onChange={() => {
+      <form onChange={() => {
         setTimeout(() => {
           this.props.updateProperty(this.props.values, this.props.index);
         });
       }}>
-        <div className={'form-group col-sm-3' + (label.touched && label.invalid ? ' has-error' : '')}>
-          <label className="control-label">Label</label>
-          <input className="form-control" type="text" {...label} onChange={(e) => label.onChange(e)}/>
-        </div>
-        <div className="col-sm-6">
-          Behaviour
-          <div className="form-group">
-            <div>
-              <label className="control-label">
-                <input type="checkbox" {...required} /> Required
-              </label>
+        <div className="row">
+          <div className="col-sm-4">
+            <div className={'input-group ' + (label.touched && label.invalid ? ' has-error' : '')}>
+              <span className="input-group-addon">Label</span>
+              <input className="form-control" type="text" {...label} onChange={(e) => label.onChange(e)}/>
             </div>
-            <div>
-              <label className="control-label">
-                <input type="checkbox" {...filter}/> Use this field for filtering results
-              </label>
+          </div>
+          <div className="col-sm-4">
+            <div className="input-group">
+              <span className="input-group-addon">
+                <input id={'required' + this.props.index} type="checkbox" {...required} />
+              </span>
+              <label htmlFor={'required' + this.props.index} className="form-control">Required field</label>
             </div>
           </div>
         </div>
-        <FilterSuggestions label={label.value} type={type.value} filter={filter.value} />
+        <div className="well">
+          <div className="row">
+            <div className="col-sm-4">
+              <input type="checkbox" {...filter}/>
+              &nbsp;
+              <label>Use as library filter</label><small>This property will be used togheter for filtering with other equal to him.</small>
+            </div>
+            <div className="col-sm-8">
+              <FilterSuggestions label={label.value} type={type.value} filter={filter.value} />
+            </div>
+          </div>
+        </div>
       </form>
     );
   }

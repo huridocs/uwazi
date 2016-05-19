@@ -4,6 +4,7 @@
 }
 .form-control {
 	height: 32px;
+	margin-bottom: 5px;
 }
 .input-group {
 	label {
@@ -15,14 +16,29 @@
 	}
 }
 
+.error {
+	display: none;
+}
 .has-error {
 		.input-group-addon {
 			color: #ED353D;
 			border-color: #ED353D;
 			background: #FFCED0;
+			position: relative;
 		}
 		.form-control {
 			border-color: #ED353D;
+		}
+		.error {
+			color: #ED353D;
+			position: absolute;
+			left: 0%;
+			top: 115%;
+			font-size: $f-size-sm;
+			display: block;
+			.fa {
+				margin-right: 3px;
+			}
 		}
 }
 

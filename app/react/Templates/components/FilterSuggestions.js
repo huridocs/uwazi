@@ -3,14 +3,6 @@ import {connect} from 'react-redux';
 
 export class FilterSuggestions extends Component {
 
-  formatNames(matches) {
-    return matches.reduce((names, match) => {
-      names.push(match.template);
-      return names;
-    }, [])
-    .join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
-  }
-
   findSameLabelProperties(label, templates, currentTemplateId) {
     return templates
     .filter((template) => template._id !== currentTemplateId)
@@ -26,59 +18,84 @@ export class FilterSuggestions extends Component {
     .filter((match) => match);
   }
 
+  getTypeIcon(type) {
+    let icon;
+    switch (type) {
+    case 'checkbox':
+      icon = 'fa fa-check-square-o';
+      break;
+    case 'select':
+      icon = 'fa fa-list';
+      break;
+    case 'list':
+      icon = 'fa fa-list';
+      break;
+    case 'date':
+      icon = 'fa fa-calendar';
+      break;
+    default:
+      icon = 'fa fa-font';
+    }
 
-  renderPerfectMatch(matches) {
-    return <p className="text-primary">
-      <i className="fa fa-thumbs-o-up" aria-hidden="true"></i>&nbsp;
-      This property will be used as filter in addition to the same property in <strong>{this.formatNames(matches)}</strong>.
-    </p>;
+    return icon;
   }
 
-  renderDifferentTypeMatch(matches) {
-    let otherType = matches[0].property.type;
-    return <p className="text-warning">
-      <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;
-      This property has the same label as other in <strong>{this.formatNames(matches)}</strong>,
-      but not the same type ({otherType}) and won&#39;t be used together for filtering.
-    </p>;
+  renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index) {
+    let activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
+    let title = 'This property has the same configuration and will be used together.';
+    if (contentConflict) {
+      title = 'This property has different Thesauri and wont\'t be used together';
+    }
+
+    if (typeConflict) {
+      title = 'This property has different Type and wont\'t be used together';
+    }
+    let icon = this.getTypeIcon(propertyMatch.property.type);
+    let type = propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1);
+    if (type === 'Input') {
+      type = 'Text';
+    }
+    return <div key={index} className={activeClass} title={title}>
+            <span>
+              <i className="fa fa-file-o"></i> {propertyMatch.template}
+            </span>
+            <i className="fa fa-angle-right"></i>
+            <span className={typeConflict ? 'conflict' : ''}>
+              <i className={icon}></i>{type}
+            </span>
+            {(() => {
+              if (hasThesauri) {
+                let thesauri = this.getThesauriName(propertyMatch.property.content);
+                return <span>
+                        <i className="fa fa-angle-right"></i>
+                        <span className={contentConflict ? 'conflict' : ''}>
+                          <i className="fa fa-book"></i>Thesauri: {thesauri}
+                        </span>
+                       </span>;
+              }
+            })()}
+            <i className="fa fa-info-circle"></i>
+          </div>;
   }
 
-  renderDifferentContentMatch(matches) {
-    let otherThesauri = this.props.thesauris.find((thesauri) => {
-      return thesauri._id === matches[0].property.content;
+  getThesauriName(thesauriId) {
+    return this.props.thesauris.find((thesauri) => {
+      return thesauri._id === thesauriId;
     }).name;
-    return <p className="text-warning">
-      <i className="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;
-      This property has the same label and type as other in <strong>{this.formatNames(matches)}</strong>,
-      but not the same thesauri ({otherThesauri}) and won&#39;t be used together for filtering.
-    </p>;
   }
 
   filterSuggestions() {
-    if (!this.props.filter) {
-      return;
-    }
     let label = this.props.label;
     let type = this.props.type;
     let content = this.props.content;
 
-    let filterMatches = this.findSameLabelProperties(label, this.props.templates, this.props.parentTemplateId);
-
-    let perfectMatches = filterMatches.filter((match) => match.property.type === type && match.property.content === content);
-
-    if (perfectMatches.length) {
-      return this.renderPerfectMatch(perfectMatches);
-    }
-
-    let differentType = filterMatches.filter((match) => match.property.type !== type);
-    if (differentType.length) {
-      return this.renderDifferentTypeMatch(differentType);
-    }
-
-    let differentContent = filterMatches.filter((match) => match.property.type === type && match.property.content !== content);
-    if (differentContent.length) {
-      return this.renderDifferentContentMatch(differentContent);
-    }
+    return this.findSameLabelProperties(label, this.props.templates, this.props.parentTemplateId)
+    .map((propertyMatch, index) => {
+      let typeConflict = propertyMatch.property.type !== type;
+      let contentConflict = propertyMatch.property.content !== content;
+      let hasThesauri = typeof content !== 'undefined';
+      return this.renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index);
+    });
   }
 
   render() {

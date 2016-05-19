@@ -27,6 +27,10 @@ header ul .btn .fa {
   left: 25%
 }
 
+.error {
+  display: inherit;
+}
+
 .item-metadata .item-shortcut .fa {
   margin: 0;
 }
@@ -61,4 +65,8 @@ header ul .btn .fa {
 
 .filters-box .no-filters {
   display: block;
+}
+
+.well .col-sm-8 {
+  min-height: 61px;
 }

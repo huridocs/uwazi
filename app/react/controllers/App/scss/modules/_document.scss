@@ -26,46 +26,26 @@
 		text-decoration: none !important;
 		border-bottom: 1px dotted $c-grey;
 		color: $c-black;
-		.relation-button {
-			display: block;
-			position: absolute;
-			background: $c-white;
-			right: 0;
-			width: 31px;
-			height: 31px;
-			line-height: 31px;
-			text-align: center;
-			border-radius: 50%;
-			box-shadow: $shadow;
-			border: 1px solid $c-grey;
-			color: $c-grey-dark;
-			transform: translateY(-100%) translateX(50%);
-			font-size: $f-size-sm;
-			.fa {
-				margin-right: 2px;
-			}
-		}
+		&:hover,
 		&.is-active {
-			background: #FFFFC5;
-			color: orange;
-			.relation-button {
-				background: #FFFFC5;
-				color: orange;
-				border-color: orange
-			}
+			background: #EEC5FF;
+			color: purple;
+			border-color: purple;
 		}
-		&:hover {
-			background: #FFFFC5;
-			color: orange;
-			border-color: orange;
-			.relation-button {
-				background: #FFFFC5;
-				color: orange;
-				border-color: orange;
-			}
-			.relation-dialog {
-				opacity: 1;
-			}
+		&:after {
+			display: inline-block;
+			content: '';
+			position: absolute;
+			left: 100%;
+			background: #EEC5FF;
+			width: 10px;
+			height: 40px;
+			transform: translateY(-50%);
+		}
+		&:hover:after,
+		&.is-active:after {
+			background: purple;
+			box-shadow: 3px 0px 8px -2px $c-grey;
 		}
 	}
 
@@ -99,15 +79,19 @@
 				border-color: $c-success;
 			}
 		}
+		.is-active &.is-active {
+			background: #44DAF3;
+			color: $c-white;
+		}
 		&.is-relation {
-			background: #FFFFC5;
-			color: orange;
-			border-color: orange;
+			background: #EEC5FF;
+			color: purple;
+			border-bottom: 1px dotted purple;
 			span {
 				opacity: 1;
-				background: #FFFFC5;
-				color: orange;
-				border-color: orange;
+				background: #EEC5FF;
+				color: purple;
+				border-color: purple;
 			}
 		}
 	}
@@ -207,12 +191,12 @@
 		padding: 15px 0px;
 		margin: 0 -2px 15px;
 		overflow-y: scroll;
-		height: 60%;
+		height: 100%;
 	}
 	.item {
 		height: auto;
 		margin-bottom: 5px;
-		padding: 15px;
+		padding: 15px 15px 0;
 		border-color: $c-white;
 		&:after {
 			content: '\f00c';

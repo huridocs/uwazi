@@ -15,4 +15,30 @@ aside {
 			}
 		}
 	}
+	.fa-close {
+		position: absolute;
+		top: 15px;
+		right: 15px;
+		font-size: 18px;
+		color: $c-grey;
+	}
+	h2 {
+		font-size: $f-size-sm;
+		padding-left: 20px;
+		position: relative;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		small {
+			position: absolute;
+			top: -2px;
+			left: 0;
+			height: 16px;
+			line-height: 15px;
+			border: 1px solid $c-grey;
+			color: $c-grey-dark;
+			width: 16px;
+			text-align: center;
+			border-radius: 50%;
+		}
+	}
 }
