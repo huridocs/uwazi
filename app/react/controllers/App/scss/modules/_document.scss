@@ -154,15 +154,17 @@
 }
 
 .create-modal {
-	position: fixed;
+	position: absolute;
 	right: 0;
-	top: 60px;
+	top: 0;
 	bottom: 0;
 	background: $c-primary-lighten;
 	width: 400px;
 	padding: 15px;
 	transform: translateX(100%);
 	transition: all 500ms;
+	overflow-y: scroll;
+	padding-bottom: 111px; /* footer height (magic number) */
 	&.is-active {
 		transform: translateX(0);
 	}

@@ -3,9 +3,9 @@
 @import "../../controllers/App/scss/config/_typography.scss";
 
 .side-panel {
-	position: fixed;
+	position: absolute;
 	right: 0;
-	top: 60px;
+	top: 0;
 	bottom: 0;
 	border-left: 1px dotted $c-grey;
 	width: 400px;
