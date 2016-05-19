@@ -175,7 +175,6 @@
   transform: translateX(100%);
   transition: all 500ms;
   overflow-y: scroll;
-	padding-bottom: 111px; /* footer height (magic number) */
   &.is-active {
     transform: translateX(0);
   }
