@@ -21,9 +21,9 @@ export class ViewMetadataPanel extends Component {
             <dd>{doc.documentType}</dd>
           </dl>
 
-          {doc.metadata.map((property) => {
+          {doc.metadata.map((property, index) => {
             return (
-              <dl>
+              <dl key={index}>
                 <dt>{property.label}</dt>
                 <dd>{property.value}</dd>
               </dl>
