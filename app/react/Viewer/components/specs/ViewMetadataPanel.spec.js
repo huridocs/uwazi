@@ -13,7 +13,7 @@ describe('ViewMetadataPanel', () => {
 
   beforeEach(() => {
     props = {
-      doc: {}
+      doc: {metadata: []}
     };
   });
 

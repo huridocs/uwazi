@@ -5,7 +5,7 @@ describe('document helpers', () => {
     {_id: '1', properties: [
       {name: 'author', filter: false, type: 'text'}
     ]},
-    {_id: '2', properties: [
+    {_id: '2', name: 'template name', properties: [
       {name: 'author', type: 'text', label: 'authorLabel'},
       {name: 'country', type: 'select', content: 'abc1', label: 'countryLabel'},
       {name: 'language', type: 'text', label: 'languageLabel'}
@@ -25,9 +25,10 @@ describe('document helpers', () => {
   }};
 
   describe('prepareMetadata', () => {
-    it('should prepare metadata with label and thesauri values', () => {
+    it('should prepare doc with document_type, metadata with label and thesauri values', () => {
       expect(helpers.prepareMetadata(doc, templates, thesauris)).toEqual({
         title: 'doc title',
+        documentType: 'template name',
         template: '2',
         metadata: [
           {label: 'authorLabel', value: 'authorValue'},
@@ -42,6 +43,7 @@ describe('document helpers', () => {
         expect(helpers.prepareMetadata(doc, [], thesauris)).toEqual({
           title: 'doc title',
           template: '2',
+          documentType: '',
           metadata: []
         });
       });

@@ -10,7 +10,26 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open}>
         <h1>{doc.title}</h1>
-        <i className='fa fa-close close-modal'></i>
+        <i className="fa fa-close close-modal"></i>
+        <div className="view">
+          <dl>
+            <dt>Document title</dt>
+            <dd>{doc.title}</dd>
+          </dl>
+          <dl>
+            <dt>Document type</dt>
+            <dd>{doc.documentType}</dd>
+          </dl>
+
+          {doc.metadata.map((property) => {
+            return (
+              <dl>
+                <dt>{property.label}</dt>
+                <dd>{property.value}</dd>
+              </dl>
+              );
+          })}
+        </div>
       </SidePanel>
     );
   }

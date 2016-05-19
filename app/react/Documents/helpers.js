@@ -1,7 +1,7 @@
 export default {
   prepareMetadata(doc, templates, thesauris) {
     if (!templates.length) {
-      return Object.assign({}, doc, {metadata: []});
+      return Object.assign({}, doc, {metadata: [], documentType: ''});
     }
 
     let template = templates.find(t => t._id === doc.template);
@@ -13,6 +13,6 @@ export default {
       return {label: property.label, value};
     });
 
-    return Object.assign({}, doc, {metadata: metadata});
+    return Object.assign({}, doc, {metadata: metadata, documentType: template.name});
   }
 };
