@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 
-import Select, {SelectField} from 'app/DocumentForm/components/Select';
+import Select, {SelectField} from 'app/Forms/components/Select';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -40,9 +40,11 @@ export class FiltersForm extends Component {
               <Field model={`search.filters.${property.name}`} >
                 <ul className={propertyClass}>
                   <li>
-                    {property.label}
-                    {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                    <label>
+                      {property.label}
+                      {property.required ? <span className="required">*</span> : ''}
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                    </label>
                   </li>
                   <li className="wide">
                     <input className="form-control" onChange={() => this.props.activateFilter(property.name)} />

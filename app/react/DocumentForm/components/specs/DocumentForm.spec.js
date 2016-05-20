@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
 import {DocumentForm} from 'app/DocumentForm/components/DocumentForm';
-import Select from 'app/DocumentForm/components/Select';
+import {Select} from 'app/Forms';
 import {Form, Field} from 'react-redux-form';
 
 
