@@ -1,53 +1,53 @@
 import {actions as formActions} from 'react-redux-form';
 
-export function loadDocument(oldDoc, templates) {
+export function loadDocument(form, doc, templates) {
   return function (dispatch) {
     //test
-    let doc = Object.assign({}, oldDoc);
+    let newDoc = Object.assign({}, doc);
     //
-    if (!doc.template) {
-      doc.template = templates[0]._id;
+    if (!newDoc.template) {
+      newDoc.template = templates[0]._id;
     }
 
-    if (!doc.metadata) {
-      doc.metadata = {};
+    if (!newDoc.metadata) {
+      newDoc.metadata = {};
     }
 
-    let template = templates.find((t) => t._id === doc.template);
+    let template = templates.find((t) => t._id === newDoc.template);
     template.properties.forEach((property) => {
-      if (!doc.metadata[property.name]) {
-        doc.metadata[property.name] = '';
+      if (!newDoc.metadata[property.name]) {
+        newDoc.metadata[property.name] = '';
       }
     });
 
-    dispatch(formActions.load('document', doc));
-    dispatch(formActions.setInitial('document'));
+    dispatch(formActions.load(form, newDoc));
+    dispatch(formActions.setInitial(form));
   };
 }
 
-export function changeTemplate(oldDoc, template) {
+export function changeTemplate(form, doc, template) {
   return function (dispatch) {
     let propertyNames = [];
     //test
-    let doc = Object.assign({}, oldDoc);
-    doc.metadata = Object.assign({}, oldDoc.metadata);
+    let newDoc = Object.assign({}, doc);
+    newDoc.metadata = Object.assign({}, doc.metadata);
     //test
     template.properties.forEach((property) => {
-      if (!doc.metadata[property.name]) {
-        doc.metadata[property.name] = '';
+      if (!newDoc.metadata[property.name]) {
+        newDoc.metadata[property.name] = '';
       }
       propertyNames.push(property.name);
     });
 
-    Object.keys(doc.metadata).forEach((propertyName) => {
+    Object.keys(newDoc.metadata).forEach((propertyName) => {
       if (propertyNames.indexOf(propertyName) === -1) {
-        delete doc.metadata[propertyName];
+        delete newDoc.metadata[propertyName];
       }
     });
 
-    doc.template = template._id;
+    newDoc.template = template._id;
 
-    dispatch(formActions.merge('document', doc));
-    dispatch(formActions.setInitial('document'));
+    dispatch(formActions.merge(form, newDoc));
+    dispatch(formActions.setInitial(form));
   };
 }

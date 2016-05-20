@@ -19,7 +19,7 @@ export class UploadDoc extends Component {
     if (active) {
       return this.props.finishEdit();
     }
-    this.props.loadDocument(doc, this.props.templates.toJS());
+    this.props.loadDocument('uploads.document', doc, this.props.templates.toJS());
     this.props.editDocument(doc);
   }
 

@@ -13,6 +13,7 @@ export class DocumentForm extends Component {
     let templates = this.props.templates.toJS();
     let thesauris = this.props.thesauris.toJS();
     let template = templates.find((t) => t._id === document.template);
+    const {model} = this.props;
 
     //test
     if (!template) {
@@ -25,11 +26,11 @@ export class DocumentForm extends Component {
     });
 
     return (
-      <Form id='documentForm' model="document" onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
+      <Form id='documentForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
         <FormGroup {...state.fields.title}>
           <label>Document title <span className="required">*</span></label>
-          <FormField model="document.title">
+          <FormField model={`${model}.title`}>
             <textarea />
           </FormField>
         </FormGroup>
@@ -40,7 +41,7 @@ export class DocumentForm extends Component {
           <FormField>
             <Select options={templateOptions}
               onChange={(e) => {
-                this.props.changeTemplate(document, templates.find((t) => t._id === e.target.value));
+                this.props.changeTemplate(model, document, templates.find((t) => t._id === e.target.value));
               }}
             />
           </FormField>
@@ -48,12 +49,12 @@ export class DocumentForm extends Component {
 
         {template.properties.map((property, index) => {
           return (
-            <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
+            <FormGroup key={index} {...state.fields[`${model}.${property.name}`]} submitFailed={state.submitFailed}>
               <label>
                 {property.label}
                 {property.required ? <span className="required">*</span> : ''}
               </label>
-              <FormField model={`document.metadata.${property.name}`} >
+              <FormField model={`${model}.metadata.${property.name}`} >
                 {(() => {
                   if (property.type === 'select') {
                     return <Select options={thesauris.find((t) => t._id === property.content).values} />;
@@ -72,6 +73,7 @@ export class DocumentForm extends Component {
 
 DocumentForm.propTypes = {
   document: PropTypes.object,
+  model: PropTypes.string.isRequired,
   state: PropTypes.object,
   templates: PropTypes.object,
   thesauris: PropTypes.object,
@@ -79,14 +81,10 @@ DocumentForm.propTypes = {
   onSubmit: PropTypes.func
 };
 
-DocumentForm.contextTypes = {
-  store: PropTypes.object
-};
-
-function mapStateToProps(state) {
+function mapStateToProps({uploads}) {
   return {
-    document: state.document,
-    state: state.documentForm
+    document: uploads.document,
+    state: uploads.documentForm
   };
 }
 
