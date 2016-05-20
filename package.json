@@ -29,6 +29,7 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
+    "react-addons-shallow-compare": "^15.0.2",
     "batarange": "0.2.0",
     "body-parser": "^1.14.1",
     "bootstrap": "^3.3.6",
