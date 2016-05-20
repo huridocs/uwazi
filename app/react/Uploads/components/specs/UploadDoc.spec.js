@@ -124,7 +124,7 @@ describe('UploadDoc', () => {
 
       component.find(RowList.Item).simulate('click');
       expect(props.editDocument).toHaveBeenCalledWith(props.doc.toJS());
-      expect(props.loadDocument).toHaveBeenCalledWith('uploadsForm', props.doc.toJS(), props.templates.toJS());
+      expect(props.loadDocument).toHaveBeenCalledWith('uploads.document', props.doc.toJS(), props.templates.toJS());
     });
 
     describe('when clicking on the same document being edited', () => {
