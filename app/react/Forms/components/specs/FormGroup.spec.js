@@ -4,7 +4,7 @@ import {shallow} from 'enzyme';
 import FormGroup from '../FormGroup';
 import FormField from '../FormField';
 
-fdescribe('FormGroup', () => {
+describe('FormGroup', () => {
   let component;
   let props;
 

@@ -3,8 +3,8 @@ import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
 import {DocumentForm} from 'app/DocumentForm/components/DocumentForm';
-import {Select} from 'app/Forms';
-import {Form, Field} from 'react-redux-form';
+import {Form} from 'react-redux-form';
+import {FormField, Select} from 'app/Forms';
 
 
 describe('DocumentForm', () => {
@@ -40,7 +40,7 @@ describe('DocumentForm', () => {
 
   it('should render title field as a textarea', () => {
     render();
-    let title = component.find('textarea').closest(Field);
+    let title = component.find('textarea').closest(FormField);
     expect(title.props().model).toEqual('document.title');
   });
 

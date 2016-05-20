@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import FormField, {FieldController} from '../FormField';
 
-fdescribe('FormField', () => {
+describe('FormField', () => {
   let component;
   let props;
 

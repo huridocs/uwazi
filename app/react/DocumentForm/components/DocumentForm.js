@@ -55,6 +55,9 @@ export class DocumentForm extends Component {
               </label>
               <FormField model={`document.metadata.${property.name}`} >
                 {(() => {
+                  if (property.type === 'select') {
+                    return <Select options={thesauris.find((t) => t._id === property.content).values} />;
+                  }
                   return <input />;
                 })()}
               </FormField>
