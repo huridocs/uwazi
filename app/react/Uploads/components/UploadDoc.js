@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {editDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
-import {loadDocument} from 'app/DocumentForm/actions/actions';
+import {loadDocument} from 'app/Documents/actions/actions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {Link} from 'react-router';
 

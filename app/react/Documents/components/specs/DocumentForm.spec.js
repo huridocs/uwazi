@@ -2,10 +2,9 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {DocumentForm} from 'app/DocumentForm/components/DocumentForm';
+import {DocumentForm} from '../DocumentForm';
 import {Form} from 'react-redux-form';
 import {FormField, Select} from 'app/Forms';
-
 
 describe('DocumentForm', () => {
   let component;

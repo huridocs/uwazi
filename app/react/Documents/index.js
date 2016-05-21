@@ -1,5 +1,7 @@
-import helpers from 'app/Documents/helpers';
+import helpers from './helpers';
+import DocumentForm from './components/DocumentForm';
 
 export {
-  helpers
+  helpers,
+  DocumentForm
 };

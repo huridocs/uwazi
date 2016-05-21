@@ -2,8 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Form} from 'react-redux-form';
-import {changeTemplate} from 'app/DocumentForm/actions/actions';
-import validator from 'app/DocumentForm/utils/documentValidator';
+
+import {changeTemplate} from '../actions/actions';
+import validator from '../utils/documentValidator';
 
 import {FormGroup, FormField, Select} from 'app/Forms';
 

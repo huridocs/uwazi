@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsList from 'app/Uploads/components/UploadsList';
 import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
-import MetadataRequiredModal from 'app/Uploads/components/MetadataRequiredModal';
 import ReadyToPublishModal from 'app/Uploads/components/ReadyToPublishModal';
 import UploadFailedModal from 'app/Uploads/components/UploadFailedModal';
 import ConfirmDocumentDeleteModal from 'app/Uploads/components/ConfirmDocumentDeleteModal';
@@ -40,7 +39,6 @@ export class UploadsSection extends Component {
         </main>
         <ContextMenu />
         <UploadsFormPanel />
-        <MetadataRequiredModal />
         <ReadyToPublishModal />
         <UploadFailedModal />
         <ConfirmDocumentDeleteModal />

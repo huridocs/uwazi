@@ -1,4 +1,4 @@
-import * as actions from 'app/DocumentForm/actions/actions';
+import * as actions from '../actions';
 import {actions as formActions} from 'react-redux-form';
 
 describe('documentFormActions', () => {

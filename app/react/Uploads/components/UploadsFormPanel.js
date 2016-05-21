@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {saveDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import SidePanel from 'app/Layout/SidePanel';
-import DocumentForm from 'app/DocumentForm/components/DocumentForm';
+import {DocumentForm} from 'app/Documents';
 
 export class UploadsFormPanel extends Component {
   submit(doc) {
