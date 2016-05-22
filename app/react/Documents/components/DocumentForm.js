@@ -1,9 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 import {Form} from 'react-redux-form';
 
-import {changeTemplate} from '../actions/actions';
 import validator from '../utils/documentValidator';
 
 import {FormGroup, FormField, Select} from 'app/Forms';
@@ -69,7 +66,6 @@ export class DocumentForm extends Component {
       </Form>
     );
   }
-
 }
 
 DocumentForm.propTypes = {
@@ -82,15 +78,4 @@ DocumentForm.propTypes = {
   onSubmit: PropTypes.func
 };
 
-function mapStateToProps({uploads}) {
-  return {
-    document: uploads.document,
-    state: uploads.documentForm
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({changeTemplate}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentForm);
+export default DocumentForm;

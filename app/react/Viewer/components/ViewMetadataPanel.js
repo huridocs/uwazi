@@ -3,12 +3,15 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {helpers} from 'app/Documents';
 
+import DocumentForm from '../containers/DocumentForm';
+
 export class ViewMetadataPanel extends Component {
   render() {
     const {doc} = this.props;
 
     return (
       <SidePanel open={this.props.open}>
+        <DocumentForm />
         <h1>{doc.title}</h1>
         <i className="fa fa-close close-modal"></i>
         <div className="view">

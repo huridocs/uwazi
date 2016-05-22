@@ -9,7 +9,6 @@ import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMe
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 import UploadsMenu from 'app/Uploads/components/UploadsMenu';
 import LibraryMenu from 'app/Library/components/LibraryMenu';
-import 'app/ContextMenu/scss/contextMenu.scss';
 
 export class ContextMenu extends Component {
   renderMenu() {

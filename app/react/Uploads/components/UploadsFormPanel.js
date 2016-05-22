@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {saveDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import SidePanel from 'app/Layout/SidePanel';
-import {DocumentForm} from 'app/Documents';
+import DocumentForm from '../containers/DocumentForm';
 
 export class UploadsFormPanel extends Component {
   submit(doc) {
@@ -17,7 +17,7 @@ export class UploadsFormPanel extends Component {
       <SidePanel {...sidePanelprops}>
         <h1>{this.props.title}</h1>
         <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
-        <DocumentForm model="uploads.document" templates={this.props.templates} thesauris={this.props.thesauris} onSubmit={this.submit.bind(this)}/>
+        <DocumentForm onSubmit={this.submit.bind(this)}/>
       </SidePanel>
     );
   }
@@ -27,8 +27,6 @@ UploadsFormPanel.propTypes = {
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
   finishEdit: PropTypes.func,
-  templates: PropTypes.object,
-  thesauris: PropTypes.object,
   title: PropTypes.string
 };
 
@@ -36,8 +34,6 @@ const mapStateToProps = ({uploads}) => {
   let uiState = uploads.uiState;
   return {
     open: typeof uiState.get('documentBeingEdited') === 'string',
-    templates: uploads.templates,
-    thesauris: uploads.thesauris,
     title: uploads.document.title
   };
 };
