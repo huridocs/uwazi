@@ -63,6 +63,25 @@ describe('filterActions', () => {
     });
   });
 
+  describe('resetFilters', () => {
+    it('should set all filters to an empty string', () => {
+      actions.resetFilters()(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: '', country: ''});
+      expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
+    });
+
+    it('should deactivate all the properties', () => {
+      actions.resetFilters()(dispatch, getState);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.UPDATE_LIBRARY_FILTERS,
+        libraryFilters: [
+          {name: 'author', active: false},
+          {name: 'country', active: false}
+        ]
+      });
+    });
+  });
+
   describe('toggleFilter', () => {
     describe('when a property is not active', () => {
       it('should activate it', () => {
