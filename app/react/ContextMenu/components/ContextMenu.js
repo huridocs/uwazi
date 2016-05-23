@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {openMenu, closeMenu} from 'app/ContextMenu/actions/contextMenuActions';
 import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
+import MetadataPanelMenu from 'app/Viewer/components/MetadataPanelMenu';
 import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
@@ -17,6 +18,9 @@ export class ContextMenu extends Component {
     }
     if (this.props.type === 'ViewerDefaultMenu') {
       return <ViewerDefaultMenu active={this.props.open} />;
+    }
+    if (this.props.type === 'MetadataPanelMenu') {
+      return <MetadataPanelMenu />;
     }
     if (this.props.type === 'ViewerSaveReferenceMenu') {
       return <ViewerSaveReferenceMenu />;

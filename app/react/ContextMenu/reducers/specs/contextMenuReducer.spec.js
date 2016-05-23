@@ -81,6 +81,16 @@ describe('contextMenuReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
+  fdescribe('OPEN_PANEL with viewMetadataPanel', () => {
+    it('should set type to ViewMetadataMenu', () => {
+      let currentState = Immutable.fromJS({type: null});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.OPEN_PANEL, panel: 'viewMetadataPanel'});
+      let expected = Immutable.fromJS({type: 'MetadataPanelMenu'});
+
+      expect(newState).toBeImmutable();
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
   describe('OPEN_PANEL with referencePanel', () => {
     it('should set type to ViewerSaveReferenceMenu', () => {
       let currentState = Immutable.fromJS({type: null});

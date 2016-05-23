@@ -3,13 +3,14 @@ import {shallow} from 'enzyme';
 
 import {ContextMenu} from 'app/ContextMenu/components/ContextMenu';
 import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
+import MetadataPanelMenu from 'app/Viewer/components/MetadataPanelMenu';
 import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
 import UploadsMenu from 'app/Uploads/components/UploadsMenu';
 import LibraryMenu from 'app/Library/components/LibraryMenu';
 
-describe('ContextMenu', () => {
+fdescribe('ContextMenu', () => {
   let component;
 
   let render = (withProps = {}) => {
@@ -101,6 +102,14 @@ describe('ContextMenu', () => {
         render(props);
 
         expect(component.find(ViewerSaveTargetReferenceMenu).length).toBe(1);
+      });
+    });
+    fdescribe('when type is MetadataPanelMenu', () => {
+      it('should render this menu', () => {
+        let props = {type: 'MetadataPanelMenu'};
+        render(props);
+
+        expect(component.find(MetadataPanelMenu).length).toBe(1);
       });
     });
     describe('when type is LibraryMenu', () => {

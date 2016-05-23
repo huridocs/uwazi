@@ -15,7 +15,7 @@ export default combineReducers({
   references,
   uiState,
   docForm: modelReducer('documentViewer.docForm'),
-  docFormState: formReducer('documentViewer.docFormState'),
+  docFormState: formReducer('documentViewer.docForm'),
   results: createReducer('viewer/documentResults', []),
   templates: createReducer('viewer/templates', []),
   thesauris: createReducer('viewer/thesauris', [])

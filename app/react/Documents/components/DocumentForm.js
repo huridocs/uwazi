@@ -33,7 +33,6 @@ export class DocumentForm extends Component {
           </FormField>
         </FormGroup>
 
-
         <FormGroup>
           <label>Document Type <span className="required">*</span></label>
           <FormField>

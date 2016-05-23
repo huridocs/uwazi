@@ -9,7 +9,8 @@ const initialState = {open: false, menu: null};
 
 const panels = {
   referencePanel: 'ViewerSaveReferenceMenu',
-  targetReferencePanel: 'ViewerSaveTargetReferenceMenu'
+  targetReferencePanel: 'ViewerSaveTargetReferenceMenu',
+  viewMetadataPanel: 'MetadataPanelMenu'
 };
 
 export default function contextMenuReducer(state = initialState, action = {}) {

@@ -1,3 +1,5 @@
-import ContextMenu from 'app/ContextMenu/components/ContextMenu';
-
+import ContextMenu from './components/ContextMenu';
+import * as MenuButtons from './components/Buttons';
 export default ContextMenu;
+
+export {MenuButtons};
