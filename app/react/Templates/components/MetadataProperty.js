@@ -28,7 +28,11 @@ export class MetadataProperty extends Component {
     const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, errors} = this.props;
     let propertyClass = 'list-group-item';
 
-    if (errors.properties && this.hasError(errors.properties[index])) {
+    let touched = this.props.fields.properties.reduce((isTouched, property) => {
+      return isTouched || property.touched;
+    }, false);
+
+    if (touched && errors.properties && this.hasError(errors.properties[index])) {
       propertyClass += ' error';
     }
 
@@ -37,7 +41,11 @@ export class MetadataProperty extends Component {
     }
 
     let iconClass = 'fa fa-font';
-    if (this.props.type === 'select' || this.props.type === 'list') {
+    if (this.props.type === 'select') {
+      iconClass = 'fa fa-sort';
+    }
+
+    if (this.props.type === 'list') {
       iconClass = 'fa fa-list';
     }
 
@@ -52,7 +60,7 @@ export class MetadataProperty extends Component {
     return connectDragSource(connectDropTarget(
       <li className={propertyClass}>
         <div>
-           <i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}
+           <span className="property-name"><i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
            <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() =>
              this.props.removeProperty('RemovePropertyModal', index)}
            >
@@ -75,6 +83,7 @@ MetadataProperty.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
+  fields: PropTypes.object,
   errors: PropTypes.object,
   isDragging: PropTypes.bool.isRequired,
   localID: PropTypes.any.isRequired,

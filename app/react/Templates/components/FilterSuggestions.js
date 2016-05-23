@@ -25,7 +25,7 @@ export class FilterSuggestions extends Component {
       icon = 'fa fa-check-square-o';
       break;
     case 'select':
-      icon = 'fa fa-list';
+      icon = 'fa fa-sort';
       break;
     case 'list':
       icon = 'fa fa-list';

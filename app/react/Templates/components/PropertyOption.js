@@ -11,8 +11,12 @@ export class PropertyOption extends Component {
     const {label} = this.props;
     let iconClass = 'fa fa-font';
 
-    if (this.props.type === 'select' || this.props.type === 'list') {
+    if (this.props.type === 'list') {
       iconClass = 'fa fa-list';
+    }
+
+    if (this.props.type === 'select') {
+      iconClass = 'fa fa-sort';
     }
 
     if (this.props.type === 'date') {

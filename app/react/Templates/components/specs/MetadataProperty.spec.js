@@ -27,10 +27,10 @@ function sourceTargetTestContext(Target, Source, actions) {
       render() {
         const identity = x => x;
         let targetProps = {
-          label: 'target', errors: {}, index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}
+          label: 'target', errors: {}, index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}, fields: {properties: []}
         };
         let sourceProps = {
-          label: 'source', errors: {}, type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false, form: {}
+          label: 'source', errors: {}, type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false, form: {}, fields: {properties: []}
         };
         return <div>
                 <Target {...targetProps} {...actions}/>
@@ -61,6 +61,7 @@ describe('MetadataProperty', () => {
         localID: 'id',
         form: {},
         errors: {},
+        fields: {properties: []},
         removeProperty,
         editProperty
       };
@@ -128,7 +129,7 @@ describe('MetadataProperty', () => {
     describe('dragSource', () => {
       beforeEach(() => {
         let TestComponent = wrapInTestContext(dragSource);
-        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', form: {}});
+        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', form: {}, fields: {properties: []}});
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });
