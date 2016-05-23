@@ -35,9 +35,10 @@ export class FormConfigInput extends Component {
         <div className="well">
           <div className="row">
             <div className="col-sm-4">
-              <input type="checkbox" {...filter}/>
+              <input id={'filter' + this.props.index} type="checkbox" {...filter}/>
               &nbsp;
-              <label>Use as library filter</label><small>This property will be used togheter for filtering with other equal to him.</small>
+              <label htmlFor={'filter' + this.props.index}>Use as library filter</label>
+              <small>This property will be used togheter for filtering with other equal to him.</small>
             </div>
             <div className="col-sm-8">
               <FilterSuggestions label={label.value} type={type.value} filter={filter.value} />

@@ -14,6 +14,41 @@ export class FiltersForm extends Component {
     let fields = this.props.fields.toJS();
     return (
       <div className="filters-box">
+        {(() => {
+          let documentTypes = this.props.documentTypes.toJS();
+          let templates = this.props.templates.toJS();
+          let types = Object.keys(documentTypes);
+          let filtering = types.reduce((result, key) => {
+            return result || documentTypes[key];
+          }, false);
+
+          let formatedTypes = templates.reduce((result, template) => {
+            if (documentTypes[template._id]) {
+              result.push(template.name);
+            }
+            return result;
+          }, []).join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
+
+          if (!filtering) {
+            return <div className="empty-state select-type">
+                    <i className="fa fa-arrow-up"></i><b>Filter the results</b>
+                    <p>Select at least one type of document to start filtering the results.</p>
+                  </div>;
+          }
+
+          if (filtering && fields.length === 0) {
+            return <div className="empty-state no-filters">
+                    <i className="fa fa-close"></i><b>No common filters</b>
+                    <p>The combination of document types has no filters in common.</p>
+                  </div>;
+          }
+
+          if (filtering && fields.length > 0) {
+            return <div className="title">
+                    <i className="fa fa-tag"></i>Common filters for<b> {formatedTypes}</b>
+                  </div>;
+          }
+        })()}
         <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments}>
         {fields.map((property, index) => {
           let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
@@ -53,32 +88,13 @@ export class FiltersForm extends Component {
             );
         })}
         </Form>
-        {(() => {
-          let documentTypes = this.props.documentTypes.toJS();
-          let filtering = Object.keys(documentTypes).reduce((result, key) => {
-            return result || documentTypes[key];
-          }, false);
-
-          if (!filtering) {
-            return <div className="empty-state select-type">
-                    <i className="fa fa-arrow-up"></i><b>Filter the results</b>
-                    <p>Select at least one type of document to start filtering the results.</p>
-                  </div>;
-          }
-
-          if (filtering && fields.length === 0) {
-            return <div className="empty-state no-filters">
-                    <i className="fa fa-close"></i><b>No common filters</b>
-                    <p>The combination of document types has no filters in common.</p>
-                  </div>;
-          }
-        })()}
       </div>
     );
   }
 }
 
 FiltersForm.propTypes = {
+  templates: PropTypes.object,
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,
   toggleFilter: PropTypes.func,
@@ -90,6 +106,7 @@ FiltersForm.propTypes = {
 export function mapStateToProps(state) {
   return {
     fields: state.library.filters.get('properties'),
+    templates: state.library.filters.get('templates'),
     search: state.search,
     documentTypes: state.library.filters.get('documentTypes')
   };

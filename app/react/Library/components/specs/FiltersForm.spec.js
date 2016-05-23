@@ -14,6 +14,7 @@ describe('FiltersForm', () => {
       searchDocuments: jasmine.createSpy('searchDocuments'),
       fields: Immutable.fromJS([{author: {initialValue: 'Philip K. Dick'}}]),
       documentTypes: Immutable.fromJS({}),
+      templates: Immutable.fromJS([]),
       search: {searchTerm: 'Batman'}
     };
     component = shallow(<FiltersForm {...props}/>);

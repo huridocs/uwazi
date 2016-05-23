@@ -66,6 +66,12 @@ header ul .btn .fa {
 
 .filters-box .no-filters {
   display: block;
+
+  .fa-close {
+    position: inherit;
+    color: inherit;
+    color: #616E70;
+  }
 }
 
 .well .col-sm-8 {
