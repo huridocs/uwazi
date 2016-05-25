@@ -7,7 +7,7 @@ const FieldController = createFieldClass({
 
 class FormField extends Component {
   render() {
-    let field = React.cloneElement(this.props.children, {className: 'form-control'});
+    let field = React.cloneElement(this.props.children);
     if (this.props.model) {
       field = <FieldController model={this.props.model}>{field}</FieldController>;
     }

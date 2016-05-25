@@ -1,14 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {DragSource, DropTarget} from 'react-dnd';
 import {bindActionCreators} from 'redux';
-import {reduxForm} from 'redux-form';
+import {connect} from 'react-redux';
 
 import {editProperty} from 'app/Templates/actions/uiActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
-import validate from 'app/Templates/components/ValidateTemplate';
 
 export class MetadataProperty extends Component {
 
@@ -25,37 +24,19 @@ export class MetadataProperty extends Component {
   }
 
   render() {
-    const {inserting, label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, errors} = this.props;
+    const {label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, inserting} = this.props;
     let propertyClass = 'list-group-item';
-
-    let touched = this.props.fields.properties.reduce((isTouched, property) => {
-      return isTouched || property.touched;
-    }, false);
-
-    if (touched && errors.properties && this.hasError(errors.properties[index])) {
-      propertyClass += ' error';
-    }
 
     if (isDragging || inserting) {
       propertyClass += ' dragging';
     }
 
-    let iconClass = 'fa fa-font';
-    if (this.props.type === 'select') {
-      iconClass = 'fa fa-sort';
-    }
-
-    if (this.props.type === 'list') {
-      iconClass = 'fa fa-list';
-    }
-
-    if (this.props.type === 'date') {
-      iconClass = 'fa fa-calendar';
-    }
-
-    if (this.props.type === 'checkbox') {
-      iconClass = 'fa fa-check-square-o';
-    }
+    let iconClass = {
+      select: 'fa fa-sort',
+      list: 'fa fa-list',
+      date: 'fa fa-calendar',
+      checkbox: 'fa fa-check-square-o'
+    }[this.props.type] || 'fa fa-font';
 
     return connectDragSource(connectDropTarget(
       <li className={propertyClass}>
@@ -83,8 +64,6 @@ MetadataProperty.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
-  fields: PropTypes.object,
-  errors: PropTypes.object,
   isDragging: PropTypes.bool.isRequired,
   localID: PropTypes.any.isRequired,
   type: PropTypes.string,
@@ -92,8 +71,7 @@ MetadataProperty.propTypes = {
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
   editingProperty: PropTypes.string,
-  editProperty: PropTypes.func,
-  form: PropTypes.object
+  editProperty: PropTypes.func
 };
 
 
@@ -147,13 +125,5 @@ const mapStateToProps = (state) => {
 };
 
 export {dragSource, dropTarget};
-let form = reduxForm({
-  form: 'template',
-  fields: ['properties[]'],
-  readonly: true,
-  destroyOnUnmount: false,
-  validate
-},
-mapStateToProps, mapDispatchToProps)(dragSource);
 
-export default form;
+export default connect(mapStateToProps, mapDispatchToProps)(dragSource);
