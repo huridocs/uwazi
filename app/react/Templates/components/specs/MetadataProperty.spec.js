@@ -30,7 +30,8 @@ function sourceTargetTestContext(Target, Source, actions) {
           label: 'target', errors: {}, index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}, fields: {properties: []}
         };
         let sourceProps = {
-          label: 'source', errors: {}, type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false, form: {}, fields: {properties: []}
+          label: 'source', errors: {}, type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false,
+          form: {}, fields: {properties: []}
         };
         return <div>
                 <Target {...targetProps} {...actions}/>
