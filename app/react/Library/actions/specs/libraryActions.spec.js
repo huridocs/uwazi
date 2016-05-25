@@ -20,19 +20,30 @@ describe('libraryActions', () => {
   });
 
   describe('setTemplates', () => {
-    let documentTypes = {typea: true, typeb: true};
+    let documentTypes = {typea: true, typeb: false};
     let libraryFilters = 'generated filters';
+    let dispatch;
+    let getState;
+    let filters = {
+      documentTypes,
+      properties: ['library properties']
+    };
 
     beforeEach(() => {
       spyOn(libraryHelper, 'generateDocumentTypes').and.returnValue(documentTypes);
       spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
+      dispatch = jasmine.createSpy('dispatch');
+      getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters)}});
     });
 
-    it('should return a SET_LIBRARY_TEMPLATES action ', () => {
-      let action = actions.setTemplates(templates, thesauris);
+    it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
+      actions.setTemplates(templates, thesauris)(dispatch, getState);
       expect(libraryHelper.generateDocumentTypes).toHaveBeenCalledWith(templates);
-      expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, documentTypes, thesauris);
-      expect(action).toEqual({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.SET_LIBRARY_TEMPLATES,
+        templates, thesauris, documentTypes,
+        libraryFilters: ['library properties']
+      });
     });
   });
 

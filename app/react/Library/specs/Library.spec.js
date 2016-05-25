@@ -8,6 +8,7 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import createStore from 'app/store';
 import * as actionTypes from 'app/Library/actions/actionTypes';
+import * as libraryActions from '../actions/libraryActions';
 
 describe('Library', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
@@ -70,6 +71,7 @@ describe('Library', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
+      spyOn(libraryActions, 'setTemplates');
       instance.setReduxState({library: {documents, filters: {templates: templates.rows, thesauris: thesauris.rows}}});
     });
 
@@ -78,13 +80,8 @@ describe('Library', () => {
     });
 
     it('should call setTemplates with the templates and thesauris', () => {
-      expect(context.store.dispatch)
-      .toHaveBeenCalledWith({
-        type: actionTypes.SET_LIBRARY_TEMPLATES,
-        templates: templates.rows,
-        thesauris: thesauris.rows,
-        documentTypes: Object({abc1: false, abc2: false}),
-        libraryFilters: [ ]});
+      expect(libraryActions.setTemplates)
+      .toHaveBeenCalledWith(templates.rows, thesauris.rows);
     });
   });
 });

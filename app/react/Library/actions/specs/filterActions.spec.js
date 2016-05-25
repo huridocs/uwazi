@@ -66,18 +66,16 @@ describe('filterActions', () => {
   describe('resetFilters', () => {
     it('should set all filters to an empty string', () => {
       actions.resetFilters()(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: '', country: ''});
+      expect(formActions.change).toHaveBeenCalledWith('search.filters', {});
       expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
     });
 
-    it('should deactivate all the properties', () => {
+    it('should deactivate all the properties and documentTypes', () => {
       actions.resetFilters()(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
-        type: types.UPDATE_LIBRARY_FILTERS,
-        libraryFilters: [
-          {name: 'author', active: false},
-          {name: 'country', active: false}
-        ]
+        type: types.SET_LIBRARY_FILTERS,
+        libraryFilters: [],
+        documentTypes: {a: false, b: false}
       });
     });
   });

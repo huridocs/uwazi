@@ -76,13 +76,4 @@ describe('filtersReducer', () => {
       expect(newState.toJS().allDocumentTypes).toBe(false);
     });
   });
-
-  describe('UPDATE_LIBRARY_FILTERS', () => {
-    it('should set the new properties to the state', () => {
-      const state = Immutable.fromJS({documentTypes: {}, properties: []});
-      libraryFilters = ['NEW_FILTERS'];
-      let newState = filtersReducer(state, {type: types.UPDATE_LIBRARY_FILTERS, libraryFilters});
-      expect(newState.get('properties').toJS()).toEqual(libraryFilters);
-    });
-  });
 });
