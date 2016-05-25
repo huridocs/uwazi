@@ -79,7 +79,9 @@ describe('libraryActions', () => {
       backend
       .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
       .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D', 'get', {body: JSON.stringify(documents)})
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D', 'get',
+            {body: JSON.stringify(documents)}
+           )
       .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get', {body: JSON.stringify(documents)});
       dispatch = jasmine.createSpy('dispatch');
     });
@@ -97,7 +99,8 @@ describe('libraryActions', () => {
       it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D')).toBe(true);
+          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D'))
+          .toBe(true);
           expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
           done();
         })
