@@ -1,9 +1,12 @@
 import helpers from './helpers';
 import DocumentForm from './components/DocumentForm';
+import DocumentsAPI from './DocumentsAPI';
 import * as actions from './actions/actions';
 
-export {
+export default {
   helpers,
   actions,
-  DocumentForm
+  api: DocumentsAPI
 };
+
+export {DocumentForm};

@@ -10,7 +10,7 @@ import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTarge
 import UploadsMenu from 'app/Uploads/components/UploadsMenu';
 import LibraryMenu from 'app/Library/components/LibraryMenu';
 
-fdescribe('ContextMenu', () => {
+describe('ContextMenu', () => {
   let component;
 
   let render = (withProps = {}) => {
@@ -104,7 +104,7 @@ fdescribe('ContextMenu', () => {
         expect(component.find(ViewerSaveTargetReferenceMenu).length).toBe(1);
       });
     });
-    fdescribe('when type is MetadataPanelMenu', () => {
+    describe('when type is MetadataPanelMenu', () => {
       it('should render this menu', () => {
         let props = {type: 'MetadataPanelMenu'};
         render(props);

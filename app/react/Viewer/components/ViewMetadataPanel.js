@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
-import {helpers} from 'app/Documents';
+import documents from 'app/Documents';
 
 import DocumentForm from '../containers/DocumentForm';
 
@@ -46,7 +46,7 @@ ViewMetadataPanel.propTypes = {
 const mapStateToProps = ({documentViewer}) => {
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
-    doc: helpers.prepareMetadata(documentViewer.document, documentViewer.templates.toJS(), documentViewer.thesauris.toJS())
+    doc: documents.helpers.prepareMetadata(documentViewer.document, documentViewer.templates.toJS(), documentViewer.thesauris.toJS())
   };
 };
 
