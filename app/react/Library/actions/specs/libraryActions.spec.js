@@ -6,7 +6,6 @@ import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
-import documents from 'app/Documents';
 
 describe('libraryActions', () => {
   let documentCollection = [{name: 'Secret list of things'}];
@@ -77,12 +76,12 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
+      .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
+      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
       .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D', 'get',
-            {body: JSON.stringify(documents)}
+            {body: JSON.stringify(documentCollection)}
            )
-      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get', {body: JSON.stringify(documents)});
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get', {body: JSON.stringify(documentCollection)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -101,7 +100,7 @@ describe('libraryActions', () => {
         .then(() => {
           expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D'))
           .toBe(true);
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
           done();
         })
         .catch(done.fail);
@@ -113,7 +112,7 @@ describe('libraryActions', () => {
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
           expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D')).toBe(true);
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
           done();
         })
         .catch(done.fail);
