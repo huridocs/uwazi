@@ -197,11 +197,16 @@ describe('documents', () => {
   describe('search', () => {
     it('should perform a search on all fields', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      documents.search({searchTerm: 'searchTerm', filters: {property1: 'value1', property2: 'value2'}})
+      documents.search({
+        searchTerm: 'searchTerm',
+        filters: {property1: 'value1', property2: 'value2'},
+        types: ['ruling']
+      })
       .then((results) => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
         .filterMetadata({property1: 'value1', property2: 'value2'})
+        .filterByTemplate(['ruling'])
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
@@ -212,12 +217,18 @@ describe('documents', () => {
 
     it('should sort if sort is present', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      documents.search({searchTerm: 'searchTerm', filters: {property1: 'value1', property2: 'value2'}, sort: 'title', order: 'asc'})
+      documents.search({
+        searchTerm: 'searchTerm',
+        filters: {property1: 'value1', property2: 'value2'},
+        sort: 'title',
+        order: 'asc',
+        types: ['ruling']
+      })
       .then((results) => {
-
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
         .filterMetadata({property1: 'value1', property2: 'value2'})
+        .filterByTemplate(['ruling'])
         .sort('title', 'asc').query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});

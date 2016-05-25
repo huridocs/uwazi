@@ -125,18 +125,19 @@ describe('documents', () => {
     it('should search documents and return the results', (done) => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
       let filtersValue = JSON.stringify({property: 'property'});
-      let req = {query: {searchTerm: 'test', filters: filtersValue}};
+      let types = JSON.stringify(['ruling', 'judgement']);
+      let req = {query: {searchTerm: 'test', filters: filtersValue, types}};
 
       routes.get('/api/documents/search', req)
       .then((response) => {
-        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', filters: {property: 'property'}});
+        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement']});
         expect(response).toEqual('results');
         done();
       })
       .catch(done.fail);
     });
 
-    describe('when has no filters', () => {
+    describe('when has no filters or types', () => {
       it('should search documents and return the results', (done) => {
         spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
         let req = {query: {}};

@@ -53,6 +53,22 @@ export default function () {
       return this;
     },
 
+    filterByTemplate(templates = []) {
+      if (templates.length) {
+        let match = {bool: {
+          should: [],
+          minimum_should_match: 1
+        }};
+
+        templates.forEach((templateId) => {
+          match.bool.should.push({match: {'doc.template': templateId}});
+        });
+
+        baseQuery.filter.bool.must.push(match);
+      }
+      return this;
+    },
+
     highlight(fields) {
       baseQuery.highlight = {
         pre_tags : ['<b>'],

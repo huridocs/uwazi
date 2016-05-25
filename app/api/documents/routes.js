@@ -24,6 +24,9 @@ export default (app) => {
     if (req.query.filters) {
       req.query.filters = JSON.parse(req.query.filters);
     }
+    if (req.query.types) {
+      req.query.types = JSON.parse(req.query.types);
+    }
     return documents.search(req.query)
     .then(results => res.json(results));
   });

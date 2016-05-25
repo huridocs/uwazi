@@ -46,7 +46,9 @@ export function setOverSuggestions(boolean) {
 
 export function searchDocuments(readOnlySearch) {
   return (dispatch, getState) => {
-    let properties = getState().library.filters.toJS().properties;
+    let state = getState().library.filters.toJS();
+    let properties = state.properties;
+    let documentTypes = state.documentTypes;
 
     let search = Object.assign({}, readOnlySearch);
     search.filters = Object.assign({}, readOnlySearch.filters);
@@ -56,6 +58,14 @@ export function searchDocuments(readOnlySearch) {
         delete search.filters[property.name];
       }
     });
+
+    search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
+      if (documentTypes[type]) {
+        selectedTypes.push(type);
+      }
+
+      return selectedTypes;
+    }, []);
 
     return api.search(search)
     .then((documents) => {
