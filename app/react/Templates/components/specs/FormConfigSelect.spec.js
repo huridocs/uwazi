@@ -13,21 +13,10 @@ describe('FormConfigSelect', () => {
       fields: {label: {}, content: {}, required: {}, filter: {}, type: {}},
       values: {value: 'some value'},
       thesauris: [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}],
-      index: 0,
-      updateProperty: jasmine.createSpy('updateProperty')
+      index: 0
     };
 
     component = shallow(<FormConfigSelect {...props}/>);
-  });
-
-  describe('when form changes', () => {
-    it('should updateProperty', (done) => {
-      component.find('form').simulate('change');
-      setTimeout(() => {
-        expect(props.updateProperty).toHaveBeenCalledWith(props.values, props.index);
-        done();
-      });
-    });
   });
 
   it('should render thesauri as options in content select', () => {

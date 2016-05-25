@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import {actions as formActions} from 'react-redux-form';
 
 import * as types from 'app/Templates/actions/actionTypes';
 import {notify} from 'app/Notifications';
@@ -25,20 +26,18 @@ export function updateTemplate(template) {
   };
 }
 
-export function addProperty(config = {}, index = 0) {
-  config.localID = ID();
-  return {
-    type: types.ADD_PROPERTY,
-    config,
-    index
+export function addProperty(property = {}, index = 0) {
+  property.localID = ID();
+  return function (dispatch, getState) {
+    let properties = getState().template.model.properties.slice(0);
+    properties.splice(index, 0, property);
+    dispatch(formActions.change('template.model.properties', properties));
   };
 }
 
-export function updateProperty(config, index) {
-  return {
-    type: types.UPDATE_PROPERTY,
-    config,
-    index
+export function inserted(index) {
+  return function (dispatch) {
+    dispatch(formActions.change(`template.model.properties[${index}].inserting`, null));
   };
 }
 
@@ -57,10 +56,8 @@ export function removeProperty(index) {
 }
 
 export function reorderProperty(originIndex, targetIndex) {
-  return {
-    type: types.REORDER_PROPERTY,
-    originIndex,
-    targetIndex
+  return function (dispatch) {
+    dispatch(formActions.move('template.model.properties', originIndex, targetIndex));
   };
 }
 

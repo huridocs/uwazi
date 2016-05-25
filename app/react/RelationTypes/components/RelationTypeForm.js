@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
-import {Field, Form} from 'react-redux-form';
+import {Field, Form, actions as formActions} from 'react-redux-form';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import {actions as formActions} from 'react-redux-form';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {saveRelationType, resetRelationType} from 'app/RelationTypes/actions/relationTypeActions';

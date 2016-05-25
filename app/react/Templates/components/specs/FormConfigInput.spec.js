@@ -13,7 +13,6 @@ describe('FormConfigInput', () => {
       fields: {label: {value: label}, required: {}, filter: {value: true}, type: {value: type}},
       values: {label, type, filter: true},
       index: 0,
-      updateProperty: jasmine.createSpy('updateProperty'),
       parentTemplateId: 'template1',
       templates: [
         {_id: 'template1', properties: [
@@ -35,17 +34,6 @@ describe('FormConfigInput', () => {
   }
 
   beforeEach(renderComponent);
-
-  describe('when form changes', () => {
-    it('should updateProperty', (done) => {
-      component.find('form').simulate('change');
-
-      setTimeout(() => {
-        expect(props.updateProperty).toHaveBeenCalledWith(props.values, props.index);
-        done();
-      });
-    });
-  });
 
   describe('initialValues', () => {
     it('should map the correct field to the props', () => {
