@@ -1,29 +1,52 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-
 import SidePanel from 'app/Layout/SidePanel';
+import documents from 'app/Documents';
+
+import DocumentForm from '../containers/DocumentForm';
 
 export class ViewMetadataPanel extends Component {
   render() {
-    let sidePanelprops = {open: this.props.open};
+    const {doc} = this.props;
+
     return (
-      <SidePanel {...sidePanelprops}>
-        <h1>METADATA</h1>
+      <SidePanel open={this.props.open}>
+        <DocumentForm />
+        <h1>{doc.title}</h1>
+        <i className="fa fa-close close-modal"></i>
+        <div className="view">
+          <dl>
+            <dt>Document title</dt>
+            <dd>{doc.title}</dd>
+          </dl>
+          <dl>
+            <dt>Document type</dt>
+            <dd>{doc.documentType}</dd>
+          </dl>
+
+          {doc.metadata.map((property, index) => {
+            return (
+              <dl key={index}>
+                <dt>{property.label}</dt>
+                <dd>{property.value}</dd>
+              </dl>
+              );
+          })}
+        </div>
       </SidePanel>
     );
   }
 }
 
 ViewMetadataPanel.propTypes = {
-  open: PropTypes.bool,
-  references: PropTypes.array,
-  highlightReference: PropTypes.func
+  doc: PropTypes.object,
+  open: PropTypes.bool
 };
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
   return {
-    open: uiState.panel === 'viewMetadataPanel'
+    open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
+    doc: documents.helpers.prepareMetadata(documentViewer.document, documentViewer.templates.toJS(), documentViewer.thesauris.toJS())
   };
 };
 

@@ -1,5 +1,5 @@
 
-import validator, {required} from 'app/DocumentForm/utils/documentValidator';
+import validator, {required} from '../documentValidator';
 
 describe('documentValidator', () => {
   let fieldsTemplate = [

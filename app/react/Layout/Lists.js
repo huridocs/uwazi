@@ -26,7 +26,7 @@ let ProgressBar = ({progress}) => {
         <span>{message}</span>
       </span>
       <div className="progress">
-        <div className="progress-bar progress-bar-striped" style={{width: `${progress}%`}} />
+        <div className="progress-bar progress-bar-striped active" style={{width: `${progress}%`}} />
       </div>
     </div>
   );

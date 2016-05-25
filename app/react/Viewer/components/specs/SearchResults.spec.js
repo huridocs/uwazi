@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
 import SearchResults from 'app/Viewer/components/SearchResults';
@@ -10,7 +11,7 @@ describe('SearchResults', () => {
 
   beforeEach(() => {
     props = {
-      results: [{title: 'result1', _id: 'id1'}, {title: 'result2', _id: 'id2'}],
+      results: Immutable.fromJS([{title: 'result1', _id: 'id1'}, {title: 'result2', _id: 'id2'}]),
       onClick: jasmine.createSpy('onClick')
     };
   });

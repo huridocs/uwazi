@@ -68,7 +68,7 @@ describe('documentActions', () => {
 
         const expectedActions = [
           {type: types.VIEWER_SEARCHING},
-          {type: types.SET_VIEWER_RESULTS, results: 'documents'}
+          {type: 'viewer/documentResults/SET', value: 'documents'}
         ];
         const store = mockStore({});
 

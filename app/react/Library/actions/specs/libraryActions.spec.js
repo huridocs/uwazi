@@ -6,16 +6,17 @@ import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import documents from 'app/Documents';
 
 describe('libraryActions', () => {
-  let documents = [{name: 'Secret list of things'}];
+  let documentCollection = [{name: 'Secret list of things'}];
   let templates = [{name: 'Decision'}, {name: 'Ruling'}];
   let thesauris = [{_id: 'abc1'}];
 
   describe('setDocuments', () => {
     it('should return a SET_DOCUMENTS action ', () => {
-      let action = actions.setDocuments(documents);
-      expect(action).toEqual({type: types.SET_DOCUMENTS, documents});
+      let action = actions.setDocuments(documentCollection);
+      expect(action).toEqual({type: types.SET_DOCUMENTS, documents: documentCollection});
     });
   });
 
@@ -129,7 +130,7 @@ describe('libraryActions', () => {
       it('should perform a search and dispatch a SET_SUGGESTIONS action with the result ', (done) => {
         actions.getSuggestions('batman')(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_SUGGESTIONS, suggestions: documents});
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_SUGGESTIONS, suggestions: documentCollection});
           done();
         })
         .catch(done.fail);

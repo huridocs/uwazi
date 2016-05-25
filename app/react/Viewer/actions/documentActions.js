@@ -1,6 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import api from 'app/utils/api';
 import {viewerSearching} from 'app/Viewer/actions/uiActions';
+import {actions} from 'app/BasicReducer';
 
 export function setDocument(document, html) {
   return {
@@ -46,10 +47,7 @@ export function viewerSearchDocuments(searchTerm) {
 
     return api.get('documents/search?searchTerm=' + searchTerm)
     .then((response) => {
-      dispatch({
-        type: types.SET_VIEWER_RESULTS,
-        results: response.json
-      });
+      dispatch(actions.set('viewer/documentResults', response.json));
     });
   };
 }

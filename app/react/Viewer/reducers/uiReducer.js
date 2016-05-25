@@ -44,9 +44,9 @@ export default function (state = initialState, action = {}) {
     return state.set('reference', Immutable.fromJS({})).set('panel', false);
   }
 
-  if (action.type === types.SET_VIEWER_RESULTS) {
+  if (action.type === 'viewer/documentResults/SET') {
     let newState = state;
-    let selectedInResults = action.results.find((result) => result._id === state.getIn(['reference', 'targetDocument']));
+    let selectedInResults = action.value.find((result) => result._id === state.getIn(['reference', 'targetDocument']));
     if (!selectedInResults) {
       newState = state.deleteIn(['reference', 'targetDocument']);
     }
