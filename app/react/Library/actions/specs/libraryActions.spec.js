@@ -81,7 +81,8 @@ describe('libraryActions', () => {
       .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D', 'get',
             {body: JSON.stringify(documentCollection)}
            )
-      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get', {body: JSON.stringify(documentCollection)});
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get',
+            {body: JSON.stringify(documentCollection)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
