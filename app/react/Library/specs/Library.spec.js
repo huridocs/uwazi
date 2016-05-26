@@ -19,13 +19,9 @@ describe('Library', () => {
   let instance;
   let context;
   let props = {};
-  let store;
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    store = {
-      library: {documents: Immutable.fromJS([])}
-    };
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<Library {...props}/>, {context});
     instance = component.instance();
