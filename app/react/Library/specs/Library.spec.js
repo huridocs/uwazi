@@ -1,6 +1,7 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import {APIURL} from 'app/config';
 import Library from 'app/Library/Library';
@@ -18,16 +19,20 @@ describe('Library', () => {
   let instance;
   let context;
   let props = {};
+  let store;
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
+    store = {
+      library: {documents: Immutable.fromJS([])}
+    };
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<Library {...props}/>, {context});
     instance = component.instance();
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/search?prop1=prop1', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
@@ -66,6 +71,22 @@ describe('Library', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('when there store is already populated with documents', () => {
+      it('should return the store values', (done) => {
+        createStore({library: {documents: Immutable.fromJS(['doc1', 'doc2'])}});
+        Library.requestState()
+        .then((state) => {
+          expect(state.library.documents).toEqual(['doc1', 'doc2']);
+          expect(state.library.filters.templates).toEqual(templates.rows);
+          expect(state.library.filters.documentTypes).toEqual({abc1: false, abc2: false});
+          expect(state.library.filters.allDocumentTypes).toBe(false);
+          expect(state.library.filters.thesauris).toEqual(thesauris.rows);
+          done();
+        })
+        .catch(done.fail);
+      });
     });
   });
 
