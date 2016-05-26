@@ -8,13 +8,13 @@
     margin-right: 15px;
 
     .form-control {
-      font-size: 20px;
-      border: 1px solid transparent;
-      background: 0;
+      font-size: 18px;
+      border: 1px solid #DDD;
+      background: #FFF;
       box-shadow: none;
       &:hover {
         border: 1px solid #DDD;
-        cursor: pointer;
+        cursor: text;
       }
       &:focus,
       &:active {
