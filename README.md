@@ -26,3 +26,5 @@
 - launch application: `foreman start`, the app will be available after few seconds on localhost:3000
 - test api: `node test_api.js`
 - test react: `karma start`
+
+=)
