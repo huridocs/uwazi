@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {openPanel} from 'app/Viewer/actions/uiActions';
 
 export class ViewerDefaultMenu extends Component {
+
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>

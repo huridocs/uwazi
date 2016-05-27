@@ -1,15 +1,16 @@
 import React from 'react';
 
 import RouteHandler from 'app/controllers/App/RouteHandler';
-import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryFilters from 'app/Library/components/LibraryFilters';
-import {enterLibrary, setDocuments, setTemplates} from 'app/Library/actions/libraryActions';
-import {libraryFilters, generateDocumentTypes} from 'app/Library/helpers/libraryFilters';
-import documentsAPI from 'app/Library/DocumentsAPI';
+import DocumentsList from './components/DocumentsList';
+import LibraryFilters from './components/LibraryFilters';
+import {enterLibrary, setDocuments, setTemplates} from './actions/libraryActions';
+import {libraryFilters, generateDocumentTypes} from './helpers/libraryFilters';
+import documentsAPI from './DocumentsAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
-import SearchBar from 'app/Library/components/SearchBar';
-import ContextMenu from 'app/ContextMenu/components/ContextMenu';
+import SearchBar from './components/SearchBar';
+import ContextMenu from 'app/ContextMenu';
+import LibraryMenu from './components/LibraryMenu';
 import {store} from 'app/store';
 
 export default class Library extends RouteHandler {
@@ -52,7 +53,9 @@ export default class Library extends RouteHandler {
     return <div className="row panels-layout">
               <DocumentsList />
               <LibraryFilters />
-              <ContextMenu />
+              <ContextMenu>
+                <LibraryMenu/>
+              </ContextMenu>
             </div>;
   }
 }

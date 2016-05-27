@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import TargetDocument from 'app/Viewer/components/TargetDocument';
-import ContextMenu from 'app/ContextMenu/components/ContextMenu';
+import ContextMenu from 'app/ContextMenu';
 import {Viewer} from 'app/Viewer/components/Viewer';
 
 describe('Viewer', () => {

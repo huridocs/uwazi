@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {actions} from 'app/Documents';
+import documents from 'app/Documents';
 import {MenuButtons} from 'app/ContextMenu';
 
 export class MetadataPanelMenu extends Component {
@@ -46,7 +46,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadDocument: actions.loadDocument}, dispatch);
+  return bindActionCreators({loadDocument: documents.actions.loadDocument}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataPanelMenu);

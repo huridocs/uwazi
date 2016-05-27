@@ -1,14 +1,17 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import UploadBox from 'app/Uploads/components/UploadBox';
-import UploadsList from 'app/Uploads/components/UploadsList';
-import UploadsFormPanel from 'app/Uploads/components/UploadsFormPanel';
-import ReadyToPublishModal from 'app/Uploads/components/ReadyToPublishModal';
-import UploadFailedModal from 'app/Uploads/components/UploadFailedModal';
-import ConfirmDocumentDeleteModal from 'app/Uploads/components/ConfirmDocumentDeleteModal';
-import ContextMenu from 'app/ContextMenu/components/ContextMenu';
-import {enterUploads} from 'app/Uploads/actions/uploadsActions';
+import ContextMenu from 'app/ContextMenu';
+
+import {enterUploads} from '../actions/uploadsActions';
+
+import UploadBox from './UploadBox';
+import UploadsList from './UploadsList';
+import UploadsFormPanel from './UploadsFormPanel';
+import ReadyToPublishModal from './ReadyToPublishModal';
+import UploadFailedModal from './UploadFailedModal';
+import ConfirmDocumentDeleteModal from './ConfirmDocumentDeleteModal';
+import UploadsMenu from './UploadsMenu';
 
 import io from 'socket.io-client';
 
@@ -37,11 +40,14 @@ export class UploadsSection extends Component {
           <UploadBox />
           <UploadsList socket={this.socket}/>
         </main>
-        <ContextMenu />
         <UploadsFormPanel />
         <ReadyToPublishModal />
         <UploadFailedModal />
         <ConfirmDocumentDeleteModal />
+
+        <ContextMenu>
+          <UploadsMenu />
+        </ContextMenu>
       </div>
     );
   }
