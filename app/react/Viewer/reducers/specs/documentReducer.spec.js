@@ -29,4 +29,15 @@ describe('documentReducer', () => {
       expect(newState).toEqual({pages: [], css: ''});
     });
   });
+
+  describe('VIEWER_UPDATE_DOCUMENT', () => {
+    it('should merge document', () => {
+      let newState = documentReducer(
+        {metadata: {test: 'test'}},
+        {type: types.VIEWER_UPDATE_DOCUMENT, doc: {metadata: {test2: 'test2', test: 'newOne'}}}
+      );
+
+      expect(newState).toEqual({metadata: {test2: 'test2', test: 'newOne'}});
+    });
+  });
 });

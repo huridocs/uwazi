@@ -1,7 +1,10 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import api from 'app/utils/api';
+
 import {viewerSearching} from 'app/Viewer/actions/uiActions';
 import {actions} from 'app/BasicReducer';
+import documents from 'app/Documents';
+import {notify} from 'app/Notifications';
 
 export function setDocument(document, html) {
   return {
@@ -20,6 +23,16 @@ export function resetDocumentViewer() {
 export function loadDefaultViewerMenu() {
   return {
     type: types.LOAD_DEFAULT_VIEWER_MENU
+  };
+}
+
+export function saveDocument(doc) {
+  return function (dispatch) {
+    return documents.api.save(doc)
+    .then(() => {
+      dispatch(notify('Document updated', 'success'));
+      dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
+    });
   };
 }
 

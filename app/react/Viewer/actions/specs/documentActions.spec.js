@@ -2,9 +2,12 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 
+import {mockID} from 'shared/uniqueID.js';
+import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
-import * as actions from 'app/Viewer/actions/documentActions';
-import * as types from 'app/Viewer/actions/actionTypes';
+import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import * as actions from '../documentActions';
+import * as types from '../actionTypes';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -37,6 +40,7 @@ describe('documentActions', () => {
 
   describe('async actions', () => {
     beforeEach(() => {
+      mockID();
       backend.restore();
       backend
       .mock(APIURL + 'documents/search?searchTerm=term', 'GET', {body: JSON.stringify('documents')})
@@ -74,6 +78,27 @@ describe('documentActions', () => {
 
         store.dispatch(actions.viewerSearchDocuments(searchTerm))
         .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('saveDocument', () => {
+      it('should save the document and dispatch a notification on success', (done) => {
+        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        let doc = {name: 'doc'};
+
+        const expectedActions = [
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
+          {type: types.VIEWER_UPDATE_DOCUMENT, doc}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.saveDocument(doc))
+        .then(() => {
+          expect(documents.api.save).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

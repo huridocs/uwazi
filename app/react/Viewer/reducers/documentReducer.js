@@ -7,6 +7,10 @@ export default function template(state = initialState, action = {}) {
     return Object.assign({}, action.html, action.document);
   }
 
+  if (action.type === types.VIEWER_UPDATE_DOCUMENT) {
+    return Object.assign(state, action.doc);
+  }
+
   if (action.type === types.RESET_DOCUMENT_VIEWER) {
     return initialState;
   }

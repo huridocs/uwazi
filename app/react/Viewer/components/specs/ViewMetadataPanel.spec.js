@@ -46,7 +46,8 @@ describe('ViewMetadataPanel', () => {
         document: {},
         references: Immutable.fromJS(['reference']),
         templates: Immutable.fromJS(['template']),
-        thesauris: Immutable.fromJS(['thesauris'])
+        thesauris: Immutable.fromJS(['thesauris']),
+        docForm: {}
       }
     };
 
