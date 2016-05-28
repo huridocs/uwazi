@@ -1,5 +1,6 @@
 import * as actions from 'app/Library/actions/filterActions';
 import * as types from 'app/Library/actions/actionTypes';
+import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
 import Immutable from 'immutable';
 
@@ -77,6 +78,15 @@ describe('filterActions', () => {
         libraryFilters: [],
         documentTypes: {a: false, b: false}
       });
+    });
+
+    it('should perform a search with the filters reset', () => {
+      let searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
+      spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
+      actions.resetFilters()(dispatch, getState);
+
+      expect(libraryActions.searchDocuments).toHaveBeenCalledWith(search);
+      expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);
     });
   });
 

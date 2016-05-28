@@ -1,5 +1,6 @@
 import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
 
 function updateModelFilters(dispatch, getState, libraryFilters) {
@@ -54,6 +55,7 @@ export function resetFilters() {
 
     dispatch(formActions.change('search.filters', {}));
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters: []});
+    libraryActions.searchDocuments(getState().search)(dispatch, getState);
   };
 }
 
