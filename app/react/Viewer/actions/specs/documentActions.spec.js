@@ -93,7 +93,9 @@ describe('documentActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: types.VIEWER_UPDATE_DOCUMENT, doc}
+          {type: types.VIEWER_UPDATE_DOCUMENT, doc},
+          {type: 'rrf/reset', model: 'documentViewer.docForm'},
+          {type: 'viewer/doc/SET', value: 'response'}
         ];
         const store = mockStore({});
 
