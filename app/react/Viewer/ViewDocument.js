@@ -23,7 +23,8 @@ export default class ViewDocument extends RouteHandler {
     .then(([doc, docHTML, references, templates, thesauris]) => {
       return {
         documentViewer: {
-          document: Object.assign({}, docHTML.json, doc.json.rows[0]),
+          doc: doc.json.rows[0],
+          docHTML: docHTML.json,
           references,
           templates,
           thesauris
@@ -33,8 +34,9 @@ export default class ViewDocument extends RouteHandler {
   }
 
   setReduxState({documentViewer}) {
-    this.context.store.dispatch(setDocument(documentViewer.document, null));
     this.context.store.dispatch(setReferences(documentViewer.references));
+    this.context.store.dispatch(actions.set('viewer/doc', documentViewer.doc));
+    this.context.store.dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));
     this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
     this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
   }

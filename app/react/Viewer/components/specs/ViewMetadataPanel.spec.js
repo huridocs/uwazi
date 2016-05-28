@@ -4,6 +4,7 @@ import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 import documents from 'app/Documents';
 
+import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
 
@@ -37,13 +38,26 @@ describe('ViewMetadataPanel', () => {
     });
   });
 
+  describe('onSubmit', () => {
+    it('should saveDocument', () => {
+      props.saveDocument = jasmine.createSpy('saveDocument');
+      props.docBeingEdited = true;
+      render();
+
+      let doc = 'doc';
+      component.find(DocumentForm).simulate('submit', doc);
+
+      expect(props.saveDocument).toHaveBeenCalledWith(doc);
+    });
+  });
+
   describe('PanelContainer', () => {
     let state = {
       documentViewer: {
         uiState: Immutable.fromJS({
           panel: ''
         }),
-        document: {},
+        doc: Immutable.fromJS({}),
         references: Immutable.fromJS(['reference']),
         templates: Immutable.fromJS(['template']),
         thesauris: Immutable.fromJS(['thesauris']),
@@ -62,7 +76,7 @@ describe('ViewMetadataPanel', () => {
     it('should prepare doc with template and thesauris', () => {
       renderContainer();
       expect(documents.helpers.prepareMetadata).toHaveBeenCalledWith(
-        state.documentViewer.document,
+        state.documentViewer.doc.toJS(),
         state.documentViewer.templates.toJS(),
         state.documentViewer.thesauris.toJS()
       );

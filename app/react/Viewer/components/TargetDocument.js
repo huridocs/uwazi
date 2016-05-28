@@ -4,10 +4,11 @@ import {bindActionCreators} from 'redux';
 import Document from 'app/Viewer/components/Document';
 import {setTargetSelection, unsetTargetSelection} from 'app/Viewer/actions/selectionActions';
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
+  let uiState = documentViewer.uiState.toJS();
   return {
-    document: state.documentViewer.targetDocument,
+    doc: documentViewer.targetDoc,
+    docHTML: documentViewer.targetDocHTML,
     selection: uiState.reference.targetRange,
     references: [],
     className: 'targetDocument',

@@ -42,7 +42,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
   return {
     reference: state.documentViewer.uiState.toJS().reference,
-    sourceDocument: state.documentViewer.document._id
+    sourceDocument: state.documentViewer.doc.get('_id')
   };
 }
 

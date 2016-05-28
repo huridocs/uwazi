@@ -31,7 +31,7 @@ describe('Viewer', () => {
 
   it('should add  show-target-document className when targetDocument loaded', () => {
     props.panelIsOpen = true;
-    props.targetDocument = true;
+    props.targetDoc = true;
     render();
     expect(component.find('.document-viewer').hasClass('show-target-document')).toBe(true);
     expect(component.find('.document-viewer').hasClass('with-panel')).toBe(false);

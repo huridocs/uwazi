@@ -42,31 +42,33 @@ export class Document extends Component {
   }
 
   render() {
-    const {document} = this.props;
+    const doc = this.props.doc.toJS();
+    const docHTML = this.props.docHTML.toJS();
 
     return (
       <div>
         <div
-          className={'_' + document._id + ' document ' + this.props.className}
+          className={'_' + doc._id + ' document ' + this.props.className}
           ref={(ref) => this.pagesContainer = ref}
           onMouseUp={this.handleMouseUp.bind(this)}
           onTouchEnd={this.handleMouseUp.bind(this)}
           onClick={this.handleClick.bind(this)}
           onMouseOver={this.handleOver.bind(this)}
         >
-        {document.pages.map((page, index) => {
+        {docHTML.pages.map((page, index) => {
           let html = {__html: page};
           return <div key={index} dangerouslySetInnerHTML={html} />;
         })}
         </div>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: document.css}}></style>
+        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
       </div>
     );
   }
 }
 
 Document.propTypes = {
-  document: PropTypes.object,
+  doc: PropTypes.object,
+  docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,

@@ -2,10 +2,16 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import documents from 'app/Documents';
+import {bindActionCreators} from 'redux';
+import {saveDocument} from '../actions/documentActions';
 
 import DocumentForm from '../containers/DocumentForm';
 
 export class ViewMetadataPanel extends Component {
+  submit(doc) {
+    this.props.saveDocument(doc);
+  }
+
   render() {
     const {doc, docBeingEdited} = this.props;
 
@@ -14,7 +20,7 @@ export class ViewMetadataPanel extends Component {
         <i className="fa fa-close close-modal" />
         {(() => {
           if (docBeingEdited) {
-            return <DocumentForm />;
+            return <DocumentForm onSubmit={this.submit.bind(this)} />;
           }
           return (
             <div>
@@ -48,16 +54,21 @@ export class ViewMetadataPanel extends Component {
 
 ViewMetadataPanel.propTypes = {
   doc: PropTypes.object,
-  docBeingEdited: PropTypes.object,
-  open: PropTypes.bool
+  docBeingEdited: PropTypes.bool,
+  open: PropTypes.bool,
+  saveDocument: PropTypes.func
 };
 
 const mapStateToProps = ({documentViewer}) => {
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
-    doc: documents.helpers.prepareMetadata(documentViewer.document, documentViewer.templates.toJS(), documentViewer.thesauris.toJS()),
-    docBeingEdited: documentViewer.docForm._id
+    doc: documents.helpers.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS()),
+    docBeingEdited: !!documentViewer.docForm._id
   };
 };
 
-export default connect(mapStateToProps)(ViewMetadataPanel);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({saveDocument}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);

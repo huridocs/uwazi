@@ -53,7 +53,8 @@ describe('documentActions', () => {
         let targetId = 'targetId';
 
         const expectedActions = [
-          {type: types.SET_TARGET_DOCUMENT, document: {target: 'document'}, html: 'html'}
+          {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
+          {type: 'viewer/targetDocHTML/SET', value: 'html'}
         ];
         const store = mockStore({});
 

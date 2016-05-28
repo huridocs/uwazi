@@ -16,8 +16,9 @@ describe('SourceDocument', function () {
         reference: {sourceRange: {selection: 'selection'}},
         highlightedReference: 'highlightedReference'
       }),
-      document: {name: 'document'},
-      targetDocument: {},
+      doc: {name: 'document'},
+      docHTML: {name: 'html'},
+      targetDoc: {},
       references: Immutable.fromJS([{reference: 'reference'}])
     }
   };
@@ -31,7 +32,8 @@ describe('SourceDocument', function () {
     render();
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});
-    expect(props.document.name).toBe('document');
+    expect(props.doc.name).toBe('document');
+    expect(props.docHTML.name).toBe('html');
     expect(props.references).toEqual([{reference: 'reference'}]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);
@@ -39,7 +41,7 @@ describe('SourceDocument', function () {
   });
 
   it('should pass executeOnClickHandler true if target document is loaded', () => {
-    state.documentViewer.targetDocument = {_id: 'id'};
+    state.documentViewer.targetDoc = {_id: 'id'};
     render();
 
     let props = component.props();

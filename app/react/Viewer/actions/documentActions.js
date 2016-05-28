@@ -38,18 +38,13 @@ export function saveDocument(doc) {
 
 export function loadTargetDocument(id) {
   return function (dispatch) {
-    // dispatch(viewerSearching());
-
     return Promise.all([
       api.get('documents?_id=' + id),
       api.get('documents/html?_id=' + id)
     ])
-    .then((response) => {
-      dispatch({
-        type: types.SET_TARGET_DOCUMENT,
-        document: response[0].json.rows[0],
-        html: response[1].json
-      });
+    .then(([docResponse, htmlResponse]) => {
+      dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
+      dispatch(actions.set('viewer/targetDocHTML', htmlResponse.json));
     });
   };
 }

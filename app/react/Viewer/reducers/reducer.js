@@ -10,8 +10,10 @@ import {modelReducer, formReducer} from 'react-redux-form';
 
 
 export default combineReducers({
-  document,
-  targetDocument,
+  doc: createReducer('viewer/doc', {}),
+  docHTML: createReducer('viewer/docHTML', {pages: []}),
+  targetDoc: createReducer('viewer/targetDoc', {}),
+  targetDocHTML: createReducer('viewer/targetDocHTML', {pages: []}),
   references,
   uiState,
   docForm: modelReducer('documentViewer.docForm'),

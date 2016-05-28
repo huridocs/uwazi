@@ -31,7 +31,7 @@ export class Viewer extends Component {
     if (this.props.panelIsOpen) {
       className = 'document-viewer with-panel';
     }
-    if (this.props.targetDocument) {
+    if (this.props.targetDoc) {
       className = 'document-viewer show-target-document';
     }
 
@@ -61,18 +61,18 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
-  targetDocument: PropTypes.bool
+  targetDoc: PropTypes.bool
 };
 
 Viewer.contextTypes = {
   store: PropTypes.object
 };
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
+  let uiState = documentViewer.uiState.toJS();
   return {
     panelIsOpen: !!uiState.panel,
-    targetDocument: !!state.documentViewer.targetDocument._id
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 
