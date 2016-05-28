@@ -1,6 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import refenrecesAPI from 'app/Viewer/referencesAPI';
 import {notify} from 'app/Notifications';
+import {actions} from 'app/BasicReducer';
 
 export function setReferences(references) {
   return {
@@ -17,6 +18,9 @@ export function saveReference(reference) {
         type: types.ADD_CREATED_REFERENCE,
         reference: referenceCreated
       });
+
+      dispatch(actions.unset('viewer/targetDoc'));
+      dispatch(actions.unset('viewer/targetDocHTML'));
 
       dispatch(notify('saved successfully !', 'success'));
     });

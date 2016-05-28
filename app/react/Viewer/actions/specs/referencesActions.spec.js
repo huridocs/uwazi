@@ -39,6 +39,8 @@ describe('referencesActions', () => {
 
         const expectedActions = [
           {type: types.ADD_CREATED_REFERENCE, reference: {_id: 'referenceCreated'}},
+          {type: 'viewer/targetDoc/UNSET'},
+          {type: 'viewer/targetDocHTML/UNSET'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}
         ];
 
