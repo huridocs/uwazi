@@ -17,6 +17,7 @@ export class ViewMetadataPanel extends Component {
 
     return (
       <SidePanel open={this.props.open}>
+        <h1>{doc.title}</h1>
         <i className="fa fa-close close-modal" />
         {(() => {
           if (docBeingEdited) {
@@ -24,7 +25,6 @@ export class ViewMetadataPanel extends Component {
           }
           return (
             <div>
-              <h1>{doc.title}</h1>
               <div className="view">
                 <dl>
                   <dt>Document title</dt>
