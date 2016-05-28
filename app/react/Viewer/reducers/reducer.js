@@ -1,6 +1,5 @@
 import {combineReducers} from 'redux';
 
-import document from './documentReducer';
 import references from './referencesReducer';
 import uiState from './uiReducer';
 import targetDocument from './targetDocumentReducer';

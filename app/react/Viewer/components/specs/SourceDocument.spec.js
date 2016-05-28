@@ -18,7 +18,7 @@ describe('SourceDocument', function () {
       }),
       doc: {name: 'document'},
       docHTML: {name: 'html'},
-      targetDoc: {},
+      targetDoc: Immutable.fromJS({}),
       references: Immutable.fromJS([{reference: 'reference'}])
     }
   };
@@ -41,7 +41,7 @@ describe('SourceDocument', function () {
   });
 
   it('should pass executeOnClickHandler true if target document is loaded', () => {
-    state.documentViewer.targetDoc = {_id: 'id'};
+    state.documentViewer.targetDoc = Immutable.fromJS({_id: 'id'});
     render();
 
     let props = component.props();

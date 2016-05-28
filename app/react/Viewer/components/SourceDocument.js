@@ -14,7 +14,7 @@ const mapStateToProps = ({documentViewer}) => {
     references: documentViewer.references.toJS(),
     className: 'sourceDocument',
     highlightedReference: uiState.highlightedReference,
-    executeOnClickHandler: !!documentViewer.targetDoc._id
+    executeOnClickHandler: !!documentViewer.targetDoc.get('_id')
   };
 };
 
