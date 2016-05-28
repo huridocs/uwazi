@@ -23,9 +23,9 @@ describe('documentReducer', () => {
     });
   });
 
-  describe('SET_TARGET_DOCUMENT', () => {
+  describe('viewer/targetDocHTML/SET', () => {
     it('should set panel to false', () => {
-      let newState = uiReducer(Immutable.fromJS({panel: 'apanel'}), {type: types.SET_TARGET_DOCUMENT});
+      let newState = uiReducer(Immutable.fromJS({panel: 'apanel'}), {type: 'viewer/targetDocHTML/SET'});
       let expected = Immutable.fromJS({panel: false});
 
       expect(newState).toEqualImmutable(expected);

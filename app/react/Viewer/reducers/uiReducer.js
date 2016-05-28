@@ -36,7 +36,7 @@ export default function (state = initialState, action = {}) {
     return state.setIn(['reference', 'sourceRange'], null).set('panel', false);
   }
 
-  if (action.type === types.SET_TARGET_DOCUMENT) {
+  if (action.type === 'viewer/targetDocHTML/SET') {
     return state.set('panel', false);
   }
 

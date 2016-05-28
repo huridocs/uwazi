@@ -15,6 +15,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from './ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
 import MetadataPanelMenu from './MetadataPanelMenu';
+import {actions} from 'app/BasicReducer';
 
 export class Viewer extends Component {
 
@@ -24,6 +25,10 @@ export class Viewer extends Component {
 
   componentWillUnmount() {
     this.context.store.dispatch(resetDocumentViewer());
+    this.context.store.dispatch(actions.unset('viewer/doc'));
+    this.context.store.dispatch(actions.unset('viewer/docHTML'));
+    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
+    this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
   }
 
   render() {
