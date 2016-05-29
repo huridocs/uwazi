@@ -110,6 +110,19 @@ describe('Document', () => {
       instance.text = Text(instance.pagesContainer);
     });
 
+    describe('when props.disableTextSelection', () => {
+      it('should no execute onTextSelected', () => {
+        props.disableTextSelection = true;
+        render();
+        spyOn(instance, 'onTextSelected');
+        instance.text = Text(instance.pagesContainer);
+        spyOn(instance.text, 'selected').and.returnValue(true);
+
+        component.find('.document').simulate('mouseup');
+        expect(instance.onTextSelected).not.toHaveBeenCalled();
+      });
+    });
+
     describe('when text selected', () => {
       it('should call onTextSelected', () => {
         spyOn(instance, 'onTextSelected');

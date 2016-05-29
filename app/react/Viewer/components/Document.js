@@ -6,6 +6,10 @@ import 'app/Viewer/scss/document.scss';
 
 export class Document extends Component {
   handleMouseUp() {
+    if(this.props.disableTextSelection) {
+      return;
+    }
+
     if (!this.text.selected()) {
       this.props.unsetSelection();
       return;
@@ -77,7 +81,8 @@ Document.propTypes = {
   references: PropTypes.array,
   className: PropTypes.string,
   onClick: PropTypes.func,
-  executeOnClickHandler: PropTypes.bool
+  executeOnClickHandler: PropTypes.bool,
+  disableTextSelection: PropTypes.bool
 };
 
 export default Document;

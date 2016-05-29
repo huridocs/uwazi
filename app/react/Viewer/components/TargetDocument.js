@@ -12,7 +12,8 @@ const mapStateToProps = ({documentViewer}) => {
     selection: uiState.reference.targetRange,
     references: [],
     className: 'targetDocument',
-    highlightReference: () => {}
+    highlightReference: () => {},
+    disableTextSelection: false
   };
 };
 
