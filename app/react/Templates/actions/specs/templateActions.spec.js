@@ -27,6 +27,7 @@ describe('templateActions', () => {
     spyOn(formActions, 'change');
     spyOn(formActions, 'move');
     spyOn(formActions, 'remove');
+    spyOn(formActions, 'reset');
   });
 
   describe('addProperty()', () => {
@@ -37,13 +38,6 @@ describe('templateActions', () => {
         {name: 'property1'},
         {name: 'property2'}
       ]);
-    });
-  });
-
-  describe('updateTemplate()', () => {
-    it('should return an UPDATE_TEMPLATE type action with template passed', () => {
-      let action = actions.updateTemplate({name: 'test'});
-      expect(action).toEqual({type: types.UPDATE_TEMPLATE, template: {name: 'test'}});
     });
   });
 
@@ -64,17 +58,10 @@ describe('templateActions', () => {
     });
   });
 
-  describe('setTemplate()', () => {
-    it('should return a SET_TEMPLATE type action with the template passed', () => {
-      let action = actions.setTemplate('template');
-      expect(action).toEqual({type: types.SET_TEMPLATE, template: 'template'});
-    });
-  });
-
   describe('resetTemplate()', () => {
-    it('should return a RESET_TEMPLATE type action with the template passed', () => {
-      let action = actions.resetTemplate();
-      expect(action).toEqual({type: types.RESET_TEMPLATE});
+    it('should reset the form model', () => {
+      actions.resetTemplate()(dispatch);
+      expect(formActions.reset).toHaveBeenCalledWith('template.model');
     });
   });
 

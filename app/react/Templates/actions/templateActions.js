@@ -1,4 +1,3 @@
-import Immutable from 'immutable';
 import {actions as formActions} from 'react-redux-form';
 
 import * as types from 'app/Templates/actions/actionTypes';
@@ -7,22 +6,8 @@ import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 
 export function resetTemplate() {
-  return {
-    type: types.RESET_TEMPLATE
-  };
-}
-
-export function setTemplate(template) {
-  return {
-    type: types.SET_TEMPLATE,
-    template
-  };
-}
-
-export function updateTemplate(template) {
-  return {
-    type: types.UPDATE_TEMPLATE,
-    template
+  return function (dispatch) {
+    dispatch(formActions.reset('template.model'));
   };
 }
 
