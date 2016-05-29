@@ -29,7 +29,7 @@ export class DocumentForm extends Component {
         <FormGroup {...state.fields.title}>
           <label>Document title <span className="required">*</span></label>
           <FormField model={`${model}.title`}>
-            <textarea />
+            <textarea className="form-control"/>
           </FormField>
         </FormGroup>
 
@@ -56,7 +56,7 @@ export class DocumentForm extends Component {
                   if (property.type === 'select') {
                     return <Select options={thesauris.find((t) => t._id === property.content).values} />;
                   }
-                  return <input />;
+                  return <input className="form-control"/>;
                 })()}
               </FormField>
             </FormGroup>
