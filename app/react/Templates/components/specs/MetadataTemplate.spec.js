@@ -6,8 +6,10 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
+import {Form, actions as formActions} from 'react-redux-form';
 
-import MetadataTemplate, {MetadataTemplate as DumbComponent, dropTarget} from 'app/Templates/components/MetadataTemplate';
+import {MetadataTemplate, dropTarget} from 'app/Templates/components/MetadataTemplate';
+import {FormField} from 'app/Forms';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import {dragSource} from 'app/Templates/components/PropertyOption';
 
@@ -17,22 +19,12 @@ function sourceTargetTestContext(Target, Source, actions) {
       render() {
         const identity = x => x;
         let properties = [{label: 'childTarget', localID: 'childId', inserting: true}];
-        let targetProps = {properties: properties, connectDropTarget: identity};
-        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity};
+        let targetProps = {properties: properties, connectDropTarget: identity, formState: {fields: {}}};
+        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity, formState: {fields: {}}};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
               </div>;
-      }
-    }
-  );
-}
-
-function wrapInTestContext(DecoratedComponent) {
-  return DragDropContext(TestBackend)(
-    class TestContextContainer extends Component {
-      render() {
-        return <DecoratedComponent {...this.props} />;
       }
     }
   );
@@ -45,7 +37,7 @@ describe('MetadataTemplate', () => {
     props.properties = properties;
     let store = createStore(() => {
       return {
-        template: {model: formModel, uiState: Immutable.fromJS({templates: []})},
+        template: {model: formModel, formState: {fields: {name: {}, properties: []}}, uiState: Immutable.fromJS({templates: []})},
         form: {template: {}},
         modals: Immutable.fromJS({})
       };
@@ -54,54 +46,62 @@ describe('MetadataTemplate', () => {
     return result;
   }
 
-  let TestComponent;
-  beforeEach(() => {
-    TestComponent = wrapInTestContext(MetadataTemplate);
-  });
-
-  it('should have mapped actions into props', () => {
-    let component = renderComponent(TestComponent);
-    let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
-
-    expect(template.props.inserted).toEqual(jasmine.any(Function));
-    expect(template.props.addProperty).toEqual(jasmine.any(Function));
-  });
-
-  it('should have mapped store into props', () => {
-    let component = renderComponent(TestComponent, {}, [{label: 'field', localID: 'id2'}]);
-    let wrappedComponent = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
-
-    expect(wrappedComponent.props.properties).toEqual([{label: 'field', localID: 'id2'}]);
-  });
-
   describe('render()', () => {
-    describe('when fields is empty', () => {
-      it('should render a blank state', () => {
-        let component = renderComponent(TestComponent, {label: 'test', index: 1, localID: 'id'});
-        let blankState = TestUtils.findRenderedDOMComponentWithClass(component, 'no-properties');
-
-        expect(blankState.innerHTML).toContain('start');
-      });
+    it('should render the template name field', () => {
+      let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
+      let component = shallow(<MetadataTemplate {...props} />);
+      expect(component.find(FormField).node.props.model).toBe('template.model.name');
     });
 
-    it('should add isOver className to the span when isOver', () => {
-      let props = {properties: [], isOver: false, connectDropTarget: (x) => x};
-      let component = shallow(<DumbComponent {...props} />);
-      expect(component.find('.no-properties').length).toBe(1);
-
-      props = {properties: [], isOver: true, connectDropTarget: (x) => x};
-      component = shallow(<DumbComponent {...props} />);
-      expect(component.find('.no-properties.isOver').length).toBe(1);
+    describe('when fields is empty', () => {
+      it('should render a blank state', () => {
+        let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
+        let component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find('.no-properties').length).toBe(1);
+      });
     });
 
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
-        let component = renderComponent(TestComponent,
-          {properties: []}, [{label: 'property1', localID: '1'}, {label: 'property2', localID: '2'}]
-        );
-        let properties = TestUtils.scryRenderedComponentsWithType(component, MetadataProperty);
+        let props = {properties: [{label: 'country'}, {label: 'author'}], connectDropTarget: (x) => x, formState: {fields: {}}};
+        let component = shallow(<MetadataTemplate {...props} />);
+        expect(component.find(MetadataProperty).length).toBe(2);
+      });
+    });
 
-        expect(properties.length).toBe(2);
+    describe('onSubmit', () => {
+      describe('when the form is valid', () => {
+        it('should call saveTemplate', () => {
+          let saveTemplate = jasmine.createSpy('saveTemplate');
+          let props = {
+            properties: [{label: 'country'}, {label: 'author'}],
+            connectDropTarget: (x) => x,
+            formState: {fields: {}, valid: true},
+            saveTemplate
+          };
+          let component = shallow(<MetadataTemplate {...props} />);
+          component.find(Form).simulate('submit');
+          expect(saveTemplate).toHaveBeenCalled();
+        });
+      });
+
+      describe('when the form is invalid', () => {
+        it('should call saveTemplate', () => {
+          let saveTemplate = jasmine.createSpy('saveTemplate');
+          let setSubmitFailed = jasmine.createSpy('setSubmitFailed');
+          let props = {
+            properties: [{label: 'country'}, {label: 'author'}],
+            connectDropTarget: (x) => x,
+            formState: {fields: {}, valid: false},
+            saveTemplate,
+            setSubmitFailed
+          };
+          let component = shallow(<MetadataTemplate {...props} />);
+          spyOn(formActions, 'setSubmitFailed');
+          component.find(Form).simulate('submit');
+          expect(saveTemplate).not.toHaveBeenCalled();
+          expect(setSubmitFailed).toHaveBeenCalledWith('template.model');
+        });
       });
     });
   });
@@ -114,7 +114,7 @@ describe('MetadataTemplate', () => {
 
     beforeEach(() => {
       let TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);
-      component = renderComponent(TestDragAndDropContext, {}, [{}]);
+      component = renderComponent(TestDragAndDropContext, {}, [{label: ''}]);
       backend = component.getManager().getBackend();
       monitor = component.getManager().getMonitor();
     });

@@ -52,9 +52,7 @@ export class FilterSuggestions extends Component {
     }
     let icon = this.getTypeIcon(propertyMatch.property.type);
     let type = propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1);
-    if (type === 'Input') {
-      type = 'Text';
-    }
+
     return <div key={index} className={activeClass} title={title}>
             <span>
               <i className="fa fa-file-o"></i> {propertyMatch.template}
@@ -64,7 +62,7 @@ export class FilterSuggestions extends Component {
               <i className={icon}></i>{type}
             </span>
             {(() => {
-              if (hasThesauri) {
+              if (hasThesauri && propertyMatch.property.content) {
                 let thesauri = this.getThesauriName(propertyMatch.property.content);
                 return <span>
                         <i className="fa fa-angle-right"></i>
@@ -79,7 +77,7 @@ export class FilterSuggestions extends Component {
   }
 
   getThesauriName(thesauriId) {
-    return this.props.thesauris.find((thesauri) => {
+    return this.props.uiState.toJS().thesauris.find((thesauri) => {
       return thesauri._id === thesauriId;
     }).name;
   }
@@ -88,8 +86,8 @@ export class FilterSuggestions extends Component {
     let label = this.props.label;
     let type = this.props.type;
     let content = this.props.content;
-    
-    return this.findSameLabelProperties(label, this.props.templates, this.props.parentTemplateId)
+
+    return this.findSameLabelProperties(label, this.props.uiState.toJS().templates, this.props.parentTemplateId)
     .map((propertyMatch, index) => {
       let typeConflict = propertyMatch.property.type !== type;
       let contentConflict = propertyMatch.property.content !== content;
@@ -110,16 +108,14 @@ FilterSuggestions.propTypes = {
   type: PropTypes.string,
   filter: PropTypes.any,
   parentTemplateId: PropTypes.string,
-  templates: PropTypes.array,
-  thesauris: PropTypes.array,
+  uiState: PropTypes.object,
   content: PropTypes.string
 };
 
 export function mapStateToProps(state) {
   return {
-    templates: state.template.uiState.toJS().templates,
-    parentTemplateId: state.template.model._id,
-    thesauris: state.template.uiState.toJS().thesauris
+    uiState: state.template.uiState,
+    parentTemplateId: state.template.model._id
   };
 }
 

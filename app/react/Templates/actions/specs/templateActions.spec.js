@@ -66,9 +66,9 @@ describe('templateActions', () => {
   });
 
   describe('removeProperty', () => {
-    it('should return a REMOVE_FIELD type action with index passed', () => {
-      actions.removeProperty(2)(dispatch);
-      expect(formActions.remove).toHaveBeenCalledWith('template.model.properties', 2);
+    it('should remove the property from the model', () => {
+      actions.removeProperty(1)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.model.properties', [{name: 'property1'}]);
     });
   });
 
