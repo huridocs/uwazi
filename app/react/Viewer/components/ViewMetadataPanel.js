@@ -7,6 +7,7 @@ import {saveDocument} from '../actions/documentActions';
 import {closePanel} from '../actions/uiActions';
 
 import DocumentForm from '../containers/DocumentForm';
+import {ShowDocument} from 'app/Documents';
 
 export class ViewMetadataPanel extends Component {
   submit(doc) {
@@ -24,29 +25,7 @@ export class ViewMetadataPanel extends Component {
           if (docBeingEdited) {
             return <DocumentForm onSubmit={this.submit.bind(this)} />;
           }
-          return (
-            <div>
-              <div className="view">
-                <dl>
-                  <dt>Document title</dt>
-                  <dd>{doc.title}</dd>
-                </dl>
-                <dl>
-                  <dt>Document type</dt>
-                  <dd>{doc.documentType}</dd>
-                </dl>
-
-                {doc.metadata.map((property, index) => {
-                  return (
-                    <dl key={index}>
-                      <dt>{property.label}</dt>
-                      <dd>{property.value}</dd>
-                    </dl>
-                    );
-                })}
-              </div>
-            </div>
-            );
+          return <ShowDocument doc={doc}/>;
         })()}
       </SidePanel>
     );

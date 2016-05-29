@@ -1,5 +1,6 @@
 import helpers from './helpers';
 import DocumentForm from './components/DocumentForm';
+import ShowDocument from './components/ShowDocument';
 import DocumentsAPI from './DocumentsAPI';
 import * as actions from './actions/actions';
 
@@ -9,4 +10,4 @@ export default {
   api: DocumentsAPI
 };
 
-export {DocumentForm};
+export {DocumentForm, ShowDocument};
