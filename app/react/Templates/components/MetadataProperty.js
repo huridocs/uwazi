@@ -42,13 +42,13 @@ export class MetadataProperty extends Component {
       <li className={propertyClass}>
         <div>
            <span className="property-name"><i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
-           <button className="btn btn-danger btn-xs pull-right property-remove" onClick={() =>
+           <button type="button" className="btn btn-danger btn-xs pull-right property-remove" onClick={() =>
              this.props.removeProperty('RemovePropertyModal', index)}
            >
             <i className="fa fa-trash"></i> Delete
           </button>
           &nbsp;
-          <button className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(localID)}>
+          <button type="button" className="btn btn-default btn-xs pull-right property-edit" onClick={() => this.props.editProperty(localID)}>
             <i className="fa fa-pencil"></i> Edit
           </button>
         </div>

@@ -59,7 +59,7 @@ describe('EditTemplate', () => {
     });
   });
 
-  fdescribe('setReduxState()', () => {
+  describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       spyOn(formActions, 'load').and.returnValue('TEMPLATE MODEL LOADED');
       instance.setReduxState({template: {model: 'template_data', uiState: {thesauris: 'thesauris', templates: 'templates'}}});

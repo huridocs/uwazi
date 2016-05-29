@@ -35,6 +35,14 @@ export function addProperty(property = {}, index = 0) {
   };
 }
 
+export function updateProperty(property, index) {
+  return function (dispatch, getState) {
+    let properties = getState().template.model.properties.slice(0);
+    properties.splice(index, 1, property);
+    dispatch(formActions.change('template.model.properties', properties));
+  };
+}
+
 export function inserted(index) {
   return function (dispatch) {
     dispatch(formActions.change(`template.model.properties[${index}].inserting`, null));
@@ -49,9 +57,8 @@ export function selectProperty(index) {
 }
 
 export function removeProperty(index) {
-  return {
-    type: types.REMOVE_PROPERTY,
-    index
+  return function (dispatch) {
+    dispatch(formActions.remove('template.model.properties', index));
   };
 }
 
@@ -62,12 +69,8 @@ export function reorderProperty(originIndex, targetIndex) {
 }
 
 export function saveTemplate(data) {
-  let templateData = Immutable.fromJS(data).updateIn(['properties'], (properties) => {
-    return properties.map((property) => property.delete('idToRender'));
-  }).toJS();
-
   return function (dispatch) {
-    return api.save(templateData)
+    return api.save(data)
     .then((response) => {
       dispatch({
         type: types.TEMPLATE_SAVED,

@@ -1,11 +1,13 @@
 import React, {Component, PropTypes} from 'react';
-// import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {FormField, Select} from 'app/Forms';
+import {connect} from 'react-redux';
 
 export class FormConfigSelect extends Component {
   render() {
-    const {index} = this.props;
-
+    const {index, ui, model} = this.props;
+    const thesauris = ui.toJS().thesauris;
+    
     return (
       <div>
         <div className="row">
@@ -21,7 +23,7 @@ export class FormConfigSelect extends Component {
             <div className="input-group">
               <span className="input-group-addon">Thesauri</span>
               <FormField model={`template.model.properties[${index}].content`}>
-                <Select options={[]} />
+                <Select options={thesauris} optionsLabel="name" optionsValue="_id" />
               </FormField>
             </div>
           </div>
@@ -47,7 +49,7 @@ export class FormConfigSelect extends Component {
               <small>This property will be used togheter for filtering with other equal to him.</small>
             </div>
             <div className="col-sm-8">
-              Filter suggestions commented
+              <FilterSuggestions {...model} />
             </div>
           </div>
         </div>
@@ -56,13 +58,17 @@ export class FormConfigSelect extends Component {
   }
 }
 
-// <FilterSuggestions label={label.value} type={type.value} filter={filter.value} content={content.value} />
-
 FormConfigSelect.propTypes = {
-  fields: PropTypes.object,
-  values: PropTypes.object,
-  thesauris: PropTypes.array,
+  ui: PropTypes.object,
+  model: PropTypes.object,
   index: PropTypes.number
 };
 
-export default FormConfigSelect;
+export function mapStateToProps(state, props) {
+  return {
+    model: state.template.model.properties[props.index],
+    ui: state.template.uiState
+  };
+}
+
+export default connect(mapStateToProps)(FormConfigSelect);
