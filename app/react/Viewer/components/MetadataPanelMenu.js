@@ -11,9 +11,14 @@ export class MetadataPanelMenu extends Component {
       <div>
         {(() => {
           if (this.props.docForm && this.props.docForm._id) {
+            let disabled = true;
+            if (this.props.formState.dirty) {
+              disabled = false;
+            }
+
             return (
-              <MenuButtons.Main>
-                <button type="submit" form="documentForm">
+              <MenuButtons.Main disabled={disabled} >
+                <button type="submit" form="documentForm" disabled={disabled}>
                   <i className="fa fa-save"></i>
                 </button>
               </MenuButtons.Main>
@@ -34,6 +39,7 @@ MetadataPanelMenu.propTypes = {
   templates: PropTypes.object,
   doc: PropTypes.object,
   docForm: PropTypes.object,
+  formState: PropTypes.object,
   loadDocument: PropTypes.func
 };
 
@@ -41,7 +47,8 @@ const mapStateToProps = ({documentViewer}) => {
   return {
     doc: documentViewer.doc,
     templates: documentViewer.templates,
-    docForm: documentViewer.docForm
+    docForm: documentViewer.docForm,
+    formState: documentViewer.docFormState
   };
 };
 

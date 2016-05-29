@@ -33,12 +33,43 @@ describe('MetadataPanelMenu', () => {
         docForm: {_id: 1},
         doc: Immutable.fromJS({_id: 1}),
         templates: {templates: 'tempaltes'},
-        saveDocument: jasmine.createSpy('saveDocument')
+        saveDocument: jasmine.createSpy('saveDocument'),
+        formState: {dirty: false}
       };
       render();
 
       let button = component.find(MenuButtons.Main).find('button');
       expect(button.props().form).toBe('documentForm');
+    });
+
+    describe('when form is pristine', () => {
+      it('should disable the buttons', () => {
+        props = {
+          docForm: {_id: 1},
+          formState: {dirty: false}
+        };
+        render();
+
+        let mainButton = component.find(MenuButtons.Main);
+        expect(mainButton.props().disabled).toBe(true);
+        let submitButton = component.find(MenuButtons.Main).find('button');
+        expect(submitButton.props().disabled).toBe(true);
+      });
+    });
+
+    describe('when form is dirty', () => {
+      it('should not disable the buttons', () => {
+        props = {
+          docForm: {_id: 1},
+          formState: {dirty: true}
+        };
+        render();
+
+        let mainButton = component.find(MenuButtons.Main);
+        expect(mainButton.props().disabled).toBe(false);
+        let submitButton = mainButton.find('button');
+        expect(submitButton.props().disabled).toBe(false);
+      });
     });
   });
 });
