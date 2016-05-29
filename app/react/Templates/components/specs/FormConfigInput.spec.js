@@ -1,19 +1,17 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
 
-import {FormConfigInput, mapStateToProps} from 'app/Templates/components/FormConfigInput';
+import {FormConfigInput} from 'app/Templates/components/FormConfigInput';
+import {FormField} from 'app/Forms';
 
 describe('FormConfigInput', () => {
   let component;
   let props;
 
-  function renderComponent(label = 'test', type = 'checkbox') {
+  function renderComponent(label = 'test', type = 'text') {
     props = {
-      fields: {label: {value: label}, required: {}, filter: {value: true}, type: {value: type}},
-      values: {label, type, filter: true},
+      type,
       index: 0,
-      parentTemplateId: 'template1',
       templates: [
         {_id: 'template1', properties: [
           {localID: 1, label: label, filter: true, type},
@@ -35,29 +33,10 @@ describe('FormConfigInput', () => {
 
   beforeEach(renderComponent);
 
-  describe('initialValues', () => {
-    it('should map the correct field to the props', () => {
-      let state = {
-        template: {
-          data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]}),
-          uiState: Immutable.fromJS({})
-        }
-      };
-      props = {index: 0};
-      expect(mapStateToProps(state, props).initialValues).toEqual({label: 'first property'});
-    });
-  });
-
-  describe('validation', () => {
-    it('should return an error when the label is empty', () => {
-      let state = {
-        template: {
-          data: Immutable.fromJS({name: '', properties: [{label: ''}, {label: 'second property'}]}),
-          uiState: Immutable.fromJS({})
-        }
-      };
-      props = {index: 0};
-      expect(mapStateToProps(state, props).validate()).toEqual({label: 'Required'});
-    });
+  it('should render FormFields with the correct models', () => {
+    const formFields = component.find(FormField);
+    expect(formFields.nodes[0].props.model).toBe('template.model.properties[0].label');
+    expect(formFields.nodes[1].props.model).toBe('template.model.properties[0].required');
+    expect(formFields.nodes[2].props.model).toBe('template.model.properties[0].filter');
   });
 });

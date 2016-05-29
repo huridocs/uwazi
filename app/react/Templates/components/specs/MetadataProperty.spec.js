@@ -115,10 +115,10 @@ describe('MetadataProperty', () => {
 
     function renderComponent(ComponentToRender, props) {
       let result;
-      let templateData = Immutable.fromJS({name: '', properties: [{}, {}, {}]});
+      let templateData = {name: '', properties: [{}, {}, {}]};
       store = createStore(() => {
         return {
-          template: {data: templateData, uiState: Immutable.fromJS({templates: []})},
+          template: {model: templateData, uiState: Immutable.fromJS({templates: []})},
           form: {template: {}},
           modals: Immutable.fromJS({})
         };

@@ -1,11 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-// import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {FormField} from 'app/Forms';
+import {connect} from 'react-redux';
 
 export class FormConfigInput extends Component {
 
   render() {
-    const {index} = this.props;
+    const {index, model} = this.props;
     return (
       <div>
         <div className="row">
@@ -21,10 +22,10 @@ export class FormConfigInput extends Component {
             <div className="input-group">
               <span className="input-group-addon">
                 <FormField model={`template.model.properties[${index}].required`}>
-                  <input id={'required' + this.props.index} type="checkbox" className="asd"/>
+                  <input id={'required' + index} type="checkbox" className="asd"/>
                 </FormField>
               </span>
-              <label htmlFor={'required' + this.props.index} className="form-control">Required field</label>
+              <label htmlFor={'required' + index} className="form-control">Required field</label>
             </div>
           </div>
         </div>
@@ -39,7 +40,7 @@ export class FormConfigInput extends Component {
               <small>This property will be used togheter for filtering with other equal to him.</small>
             </div>
             <div className="col-sm-8">
-              Filter suggestions commented
+              <FilterSuggestions {...model} />
             </div>
           </div>
         </div>
@@ -48,13 +49,15 @@ export class FormConfigInput extends Component {
   }
 }
 
-// <FilterSuggestions label={label.value} type={type.value} filter={filter.value} />
-
 FormConfigInput.propTypes = {
-  fields: PropTypes.object,
-  values: PropTypes.object,
+  model: PropTypes.object,
   index: PropTypes.number
 };
 
+export function mapStateToProps(state, props) {
+  return {
+    model: state.template.model.properties[props.index]
+  };
+}
 
-export default FormConfigInput;
+export default connect(mapStateToProps)(FormConfigInput);

@@ -6,18 +6,23 @@ import {Form} from 'react-redux-form';
 import {FormField} from 'app/Forms';
 import {Link} from 'react-router';
 
-import {inserted, addProperty} from 'app/Templates/actions/templateActions';
+import {inserted, addProperty, saveTemplate, resetTemplate} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 
 export class MetadataTemplate extends Component {
+
+  componentWillUnmount () {
+    this.props.resetTemplate();
+  }
+
   render() {
     const {connectDropTarget, isOver} = this.props;
 
     return connectDropTarget(
       <div>
-        <Form model="template.model" className="metadataTemplate panel-default panel">
-          <RemovePropertyConfirm />
+        <RemovePropertyConfirm />
+        <Form model="template.model" onSubmit={this.props.saveTemplate} className="metadataTemplate panel-default panel">
           <div className="metadataTemplate-heading panel-heading">
             <div className="form-group">
               <FormField model="template.model.name">
@@ -51,6 +56,7 @@ export class MetadataTemplate extends Component {
 
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
+  resetTemplate: PropTypes.func.isRequired,
   properties: PropTypes.array,
   isOver: PropTypes.bool
 };
@@ -87,7 +93,7 @@ const mapStateToProps = ({template}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({inserted, addProperty}, dispatch);
+  return bindActionCreators({inserted, addProperty, saveTemplate, resetTemplate}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dropTarget);

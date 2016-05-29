@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
+import {actions as formActions} from 'react-redux-form';
 
 import {APIURL} from 'app/config.js';
 import * as actions from 'app/Templates/actions/templateActions';
@@ -12,20 +13,30 @@ import {mockID} from 'shared/uniqueID';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('templatesActions', () => {
+describe('templateActions', () => {
+  let dispatch;
+  let getState;
+  let formModel;
   beforeEach(() => {
     mockID();
+    formModel = {
+      template: {model: {properties: [{name: 'property1'}, {name: 'property2'}]}}
+    };
+    dispatch = jasmine.createSpy('dispatch');
+    getState = jasmine.createSpy('getState').and.returnValue(formModel);
+    spyOn(formActions, 'change');
+    spyOn(formActions, 'move');
+    spyOn(formActions, 'remove');
   });
 
   describe('addProperty()', () => {
-    it('should return an ADD_PROPERTY type action with config, unique config.id and index passed', () => {
-      let action = actions.addProperty({name: 'test'}, 'index !');
-      expect(action).toEqual({type: types.ADD_PROPERTY, config: {name: 'test', localID: 'unique_id'}, index: 'index !'});
-    });
-
-    it('should return default config object and index if nothing passed', () => {
-      let action = actions.addProperty();
-      expect(action).toEqual({type: types.ADD_PROPERTY, config: {localID: 'unique_id'}, index: 0});
+    it('should add the property to the form model with a unique id in the index provided', () => {
+      actions.addProperty({name: 'property3'}, 0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.model.properties', [
+        {name: 'property3', localID: 'unique_id'},
+        {name: 'property1'},
+        {name: 'property2'}
+      ]);
     });
   });
 
@@ -37,10 +48,12 @@ describe('templatesActions', () => {
   });
 
   describe('updateProperty()', () => {
-    it('should return an UPDATE_PROPERTY type action with the new property config', () => {
-      let config = {name: 'super name'};
-      let action = actions.updateProperty(config, 2);
-      expect(action).toEqual({type: types.UPDATE_PROPERTY, config: {name: 'super name'}, index: 2});
+    it('should update the property in the index provided', () => {
+      actions.updateProperty({name: 'new name'}, 0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.model.properties', [
+        {name: 'new name'},
+        {name: 'property2'}
+      ]);
     });
   });
 
@@ -67,15 +80,15 @@ describe('templatesActions', () => {
 
   describe('removeProperty', () => {
     it('should return a REMOVE_FIELD type action with index passed', () => {
-      let action = actions.removeProperty(55);
-      expect(action).toEqual({type: types.REMOVE_PROPERTY, index: 55});
+      actions.removeProperty(2)(dispatch);
+      expect(formActions.remove).toHaveBeenCalledWith('template.model.properties', 2);
     });
   });
 
   describe('reorderProperty', () => {
-    it('should return a REORDER_PROPERTY type action with origin and target indexes', () => {
-      let action = actions.reorderProperty(1, 2);
-      expect(action).toEqual({type: types.REORDER_PROPERTY, originIndex: 1, targetIndex: 2});
+    it('should reorder the properties in the form model', () => {
+      actions.reorderProperty(1, 2)(dispatch);
+      expect(formActions.move).toHaveBeenCalledWith('template.model.properties', 1, 2);
     });
   });
 

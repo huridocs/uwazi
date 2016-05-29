@@ -88,7 +88,7 @@ export class FilterSuggestions extends Component {
     let label = this.props.label;
     let type = this.props.type;
     let content = this.props.content;
-
+    
     return this.findSameLabelProperties(label, this.props.templates, this.props.parentTemplateId)
     .map((propertyMatch, index) => {
       let typeConflict = propertyMatch.property.type !== type;
@@ -118,7 +118,7 @@ FilterSuggestions.propTypes = {
 export function mapStateToProps(state) {
   return {
     templates: state.template.uiState.toJS().templates,
-    parentTemplateId: state.template.data.toJS()._id,
+    parentTemplateId: state.template.model._id,
     thesauris: state.template.uiState.toJS().thesauris
   };
 }

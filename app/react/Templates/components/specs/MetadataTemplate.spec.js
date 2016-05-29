@@ -41,10 +41,11 @@ function wrapInTestContext(DecoratedComponent) {
 describe('MetadataTemplate', () => {
   function renderComponent(ComponentToRender, props = {}, properties = []) {
     let result;
-    let templateData = Immutable.fromJS({name: '', properties: properties});
+    let formModel = {name: '', properties: properties};
+    props.properties = properties;
     let store = createStore(() => {
       return {
-        template: {data: templateData, uiState: Immutable.fromJS({templates: []})},
+        template: {model: formModel, uiState: Immutable.fromJS({templates: []})},
         form: {template: {}},
         modals: Immutable.fromJS({})
       };
@@ -62,12 +63,12 @@ describe('MetadataTemplate', () => {
     let component = renderComponent(TestComponent);
     let template = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
-    expect(template.props.updateProperty).toEqual(jasmine.any(Function));
+    expect(template.props.inserted).toEqual(jasmine.any(Function));
     expect(template.props.addProperty).toEqual(jasmine.any(Function));
   });
 
   it('should have mapped store into props', () => {
-    let component = renderComponent(TestComponent, null, [{label: 'field', localID: 'id2'}]);
+    let component = renderComponent(TestComponent, {}, [{label: 'field', localID: 'id2'}]);
     let wrappedComponent = TestUtils.findRenderedComponentWithType(component, MetadataTemplate).getWrappedInstance();
 
     expect(wrappedComponent.props.properties).toEqual([{label: 'field', localID: 'id2'}]);
@@ -106,7 +107,7 @@ describe('MetadataTemplate', () => {
   });
 
   describe('dropTarget', () => {
-    let actions = jasmine.createSpyObj(['updateProperty', 'addProperty']);
+    let actions = jasmine.createSpyObj('actions', ['inserted', 'addProperty']);
     let backend;
     let component;
     let monitor;
@@ -136,13 +137,14 @@ describe('MetadataTemplate', () => {
       it('should updateProperty removing "inserting" flag on item index', () => {
         let target = TestUtils.findRenderedComponentWithType(component, dropTarget);
         let source = TestUtils.findRenderedComponentWithType(component, dragSource);
+        let index = 0;
 
         backend.simulateBeginDrag([source.getHandlerId()]);
-        monitor.getItem().index = 0;
+        monitor.getItem().index = index;
         backend.simulateHover([target.getHandlerId()]);
         backend.simulateDrop();
 
-        expect(actions.updateProperty).toHaveBeenCalledWith({label: 'childTarget', localID: 'childId', inserting: null}, 0);
+        expect(actions.inserted).toHaveBeenCalledWith(index);
       });
     });
   });
