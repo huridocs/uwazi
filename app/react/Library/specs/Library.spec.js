@@ -28,7 +28,7 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'documents/search?prop1=prop1', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
@@ -71,7 +71,7 @@ describe('Library', () => {
 
     describe('when there store is already populated with documents', () => {
       it('should return the store values', (done) => {
-        createStore({library: {documents: Immutable.fromJS(['doc1', 'doc2'])}});
+        createStore({search: {prop1: 'prop1'}, library: {documents: Immutable.fromJS(['doc1', 'doc2'])}});
         Library.requestState()
         .then((state) => {
           expect(state.library.documents).toEqual(['doc1', 'doc2']);

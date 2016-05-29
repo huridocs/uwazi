@@ -20,7 +20,7 @@ export default class Library extends RouteHandler {
   }
 
   static requestState() {
-    return Promise.all([documentsAPI.search(), templatesAPI.get(), thesaurisAPI.get()])
+    return Promise.all([documentsAPI.search(store.getState().search), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       let docs = documents;
       let documentTypes = generateDocumentTypes(templates);
