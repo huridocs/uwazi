@@ -5,6 +5,7 @@ import {DropTarget} from 'react-dnd';
 import {Form} from 'react-redux-form';
 import {FormField} from 'app/Forms';
 import {Link} from 'react-router';
+import {actions as formActions} from 'react-redux-form';
 
 import {inserted, addProperty, saveTemplate} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
@@ -12,16 +13,37 @@ import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfir
 
 export class MetadataTemplate extends Component {
 
+  nameValidation() {
+    return {required: (val) => val.trim() !== ''};
+  }
+
+  handleSubmit(template) {
+    if (!this.props.formState.valid) {
+      this.props.setSubmitFailed('template.model');
+      return;
+    }
+
+    this.props.saveTemplate(template);
+  }
+
   render() {
-    const {connectDropTarget, isOver} = this.props;
+    const {connectDropTarget, formState} = this.props;
+    let nameGroupClass = 'template-name form-group';
+    if (formState.fields.name && !formState.fields.name.valid && (formState.submitFailed || formState.fields.name.dirty)) {
+      nameGroupClass += ' has-error';
+    }
 
     return connectDropTarget(
       <div>
         <RemovePropertyConfirm />
-        <Form model="template.model" onSubmit={this.props.saveTemplate} className="metadataTemplate panel-default panel">
+        <Form
+          model="template.model"
+          onSubmit={this.handleSubmit.bind(this)}
+          className="metadataTemplate panel-default panel"
+        >
           <div className="metadataTemplate-heading panel-heading">
-            <div className="template-name form-group">
-              <FormField model="template.model.name">
+            <div className={nameGroupClass}>
+              <FormField model="template.model.name" validators={this.nameValidation()}>
                 <input placeholder="Template name" className="form-control"/>
               </FormField>
             </div>
@@ -35,7 +57,7 @@ export class MetadataTemplate extends Component {
           <ul className="metadataTemplate-list list-group">
             {(() => {
               if (this.props.properties.length === 0) {
-                return <div className={'no-properties' + (isOver ? ' isOver' : '')}>
+                return <div className="no-properties">
                         <i className="fa fa-clone"></i>Drag properties here to start
                       </div>;
               }
@@ -52,9 +74,10 @@ export class MetadataTemplate extends Component {
 
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
+  formState: PropTypes.object,
   saveTemplate: PropTypes.func,
-  properties: PropTypes.array,
-  isOver: PropTypes.bool
+  setSubmitFailed: PropTypes.func,
+  properties: PropTypes.array
 };
 
 const target = {
@@ -77,19 +100,21 @@ const target = {
   }
 };
 
-let dropTarget = DropTarget('METADATA_OPTION', target, (connector, monitor) => ({
-  connectDropTarget: connector.dropTarget(),
-  isOver: monitor.isOver()
+let dropTarget = DropTarget('METADATA_OPTION', target, (connector) => ({
+  connectDropTarget: connector.dropTarget()
 }))(MetadataTemplate);
 
 export {dropTarget};
 
 const mapStateToProps = ({template}) => {
-  return {properties: template.model.properties};
+  return {
+    properties: template.model.properties,
+    formState: template.formState
+  };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({inserted, addProperty, saveTemplate}, dispatch);
+  return bindActionCreators({inserted, addProperty, saveTemplate, setSubmitFailed: formActions.setSubmitFailed}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dropTarget);

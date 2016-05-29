@@ -5,15 +5,37 @@ import {connect} from 'react-redux';
 
 export class FormConfigInput extends Component {
 
+  validation() {
+    return {
+      required: (val) => val.trim() !== '',
+      duplicated: (val) => {
+        return this.props.model.properties.reduce((validity, prop) => {
+          let differemtLabel = prop.localID !== this.props.localID && prop.label !== val;
+          return validity && differemtLabel;
+        }, true);
+      }
+    };
+  }
+
   render() {
-    const {index, model} = this.props;
+    const {index, model, formState} = this.props;
+    const ptoperty = model.properties[index];
+    let labelClass = 'input-group';
+    let labelKey = `properties.${index}.label`;
+    if (
+      formState.fields[labelKey] &&
+      !formState.fields[labelKey].valid &&
+      (formState.submitFailed || formState.fields[labelKey].dirty || formState.fields[labelKey].errors.duplicated)) {
+      labelClass += ' has-error';
+    }
+
     return (
       <div>
         <div className="row">
           <div className="col-sm-4">
-            <div className="input-group">
+            <div className={labelClass}>
               <span className="input-group-addon">Label</span>
-              <FormField model={`template.model.properties[${index}].label`}>
+              <FormField model={`template.model.properties[${index}].label`} validators={this.validation()}>
                 <input className="form-control" />
               </FormField>
             </div>
@@ -40,7 +62,7 @@ export class FormConfigInput extends Component {
               <small>This property will be used togheter for filtering with other equal to him.</small>
             </div>
             <div className="col-sm-8">
-              <FilterSuggestions {...model} />
+              <FilterSuggestions {...ptoperty} />
             </div>
           </div>
         </div>
@@ -51,12 +73,15 @@ export class FormConfigInput extends Component {
 
 FormConfigInput.propTypes = {
   model: PropTypes.object,
-  index: PropTypes.number
+  index: PropTypes.number,
+  formState: PropTypes.object,
+  localID: PropTypes.string
 };
 
-export function mapStateToProps(state, props) {
+export function mapStateToProps({template}) {
   return {
-    model: state.template.model.properties[props.index]
+    model: template.model,
+    formState: template.formState
   };
 }
 

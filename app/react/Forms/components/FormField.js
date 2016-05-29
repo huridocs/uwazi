@@ -9,7 +9,7 @@ class FormField extends Component {
   render() {
     let field = React.cloneElement(this.props.children);
     if (this.props.model) {
-      field = <FieldController model={this.props.model}>{field}</FieldController>;
+      field = <FieldController model={this.props.model} validators={this.props.validators}>{field}</FieldController>;
     }
 
     return field;
@@ -18,7 +18,8 @@ class FormField extends Component {
 
 FormField.propTypes = {
   model: PropTypes.string,
-  children: PropTypes.object.isRequired
+  children: PropTypes.object.isRequired,
+  validators: PropTypes.object
 };
 
 export default FormField;

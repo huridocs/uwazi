@@ -24,9 +24,10 @@ export class MetadataProperty extends Component {
   }
 
   render() {
-    const {label, connectDragSource, isDragging, connectDropTarget, editingProperty, index, localID, inserting} = this.props;
-    let propertyClass = 'list-group-item';
+    const {label, connectDragSource, isDragging, connectDropTarget, uiState, index, localID, inserting} = this.props;
+    const editingProperty = uiState.toJS().editingProperty;
 
+    let propertyClass = 'list-group-item';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
     }
@@ -70,7 +71,7 @@ MetadataProperty.propTypes = {
   label: PropTypes.string.isRequired,
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
-  editingProperty: PropTypes.string,
+  uiState: PropTypes.object,
   editProperty: PropTypes.func
 };
 
@@ -120,7 +121,7 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = (state) => {
   return {
-    editingProperty: state.template.uiState.toJS().editingProperty
+    uiState: state.template.uiState
   };
 };
 

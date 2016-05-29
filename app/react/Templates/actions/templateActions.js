@@ -42,8 +42,10 @@ export function selectProperty(index) {
 }
 
 export function removeProperty(index) {
-  return function (dispatch) {
-    dispatch(formActions.remove('template.model.properties', index));
+  return function (dispatch, getState) {
+    let properties = getState().template.model.properties.slice(0);
+    properties.splice(index, 1);
+    dispatch(formActions.change('template.model.properties', properties));
   };
 }
 

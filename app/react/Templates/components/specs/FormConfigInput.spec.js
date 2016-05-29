@@ -8,35 +8,43 @@ describe('FormConfigInput', () => {
   let component;
   let props;
 
-  function renderComponent(label = 'test', type = 'text') {
+  beforeEach(() => {
     props = {
-      type,
+      type: 'text',
       index: 0,
-      templates: [
-        {_id: 'template1', properties: [
-          {localID: 1, label: label, filter: true, type},
-          {localID: 2, label: 'something else'}
-        ]},
-        {_id: 'template2', name: 'Template 2', properties: [
-          {label: 'Date', type: 'date', filter: true},
-          {label: 'Author', type: 'text', filter: true}
-        ]},
-        {_id: 'template3', name: 'Template 3', properties: [
-          {label: 'Date', type: 'date', filter: true},
-          {label: 'Keywords', type: 'text', filter: true}
-        ]}
-      ]
+      model: {properties: [{lable: ''}]},
+      formState: {fields: {'properties.0.label': {valid: true, dirty: false}}}
     };
-
-    component = shallow(<FormConfigInput {...props}/>);
-  }
-
-  beforeEach(renderComponent);
+  });
 
   it('should render FormFields with the correct models', () => {
+    component = shallow(<FormConfigInput {...props}/>);
     const formFields = component.find(FormField);
     expect(formFields.nodes[0].props.model).toBe('template.model.properties[0].label');
     expect(formFields.nodes[1].props.model).toBe('template.model.properties[0].required');
     expect(formFields.nodes[2].props.model).toBe('template.model.properties[0].filter');
+  });
+
+  describe('validation', () => {
+    it('should render the label without errors', () => {
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find('.has-error').length).toBe(0);
+    });
+  });
+
+  describe('when the field is invalid and dirty or the form is submited', () => {
+    it('should render the label with errors', () => {
+      props.formState.fields['properties.0.label'].valid = false;
+      props.formState.fields['properties.0.label'].dirty = true;
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
+    });
+
+    it('should render the label with errors', () => {
+      props.formState.fields['properties.0.label'].valid = false;
+      props.formState.submitFailed = true;
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
+    });
   });
 });
