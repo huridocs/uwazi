@@ -2,6 +2,12 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 
 describe('Viewer uiActions', () => {
+  describe('closePanel()', () => {
+    it('should return a CLOSE_PANEL with panel passed', () => {
+      let action = actions.closePanel();
+      expect(action).toEqual({type: types.CLOSE_PANEL});
+    });
+  });
   describe('openPanel()', () => {
     it('should return a OPEN_PANEL with panel passed', () => {
       let action = actions.openPanel('a panel');

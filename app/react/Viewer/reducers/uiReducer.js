@@ -36,7 +36,7 @@ export default function (state = initialState, action = {}) {
     return state.setIn(['reference', 'sourceRange'], null).set('panel', false);
   }
 
-  if (action.type === 'viewer/targetDocHTML/SET') {
+  if (action.type === 'viewer/targetDocHTML/SET' || action.type === types.CLOSE_PANEL) {
     return state.set('panel', false);
   }
 

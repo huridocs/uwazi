@@ -14,6 +14,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('CLOSE_PANEL', () => {
+    it('should set panel = false', () => {
+      let newState = uiReducer(Immutable.fromJS({panel: 'somePanel'}), {type: types.CLOSE_PANEL});
+      let expected = Immutable.fromJS({panel: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('OPEN_PANEL', () => {
     it('should set panel = to the panel passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_PANEL, panel: 'a panel'});

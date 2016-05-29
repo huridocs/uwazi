@@ -4,6 +4,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import documents from 'app/Documents';
 import {bindActionCreators} from 'redux';
 import {saveDocument} from '../actions/documentActions';
+import {closePanel} from '../actions/uiActions';
 
 import DocumentForm from '../containers/DocumentForm';
 
@@ -18,7 +19,7 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open}>
         <h1>{doc.title}</h1>
-        <i className="fa fa-close close-modal" />
+        <i className="fa fa-close close-modal" onClick={this.props.closePanel}/>
         {(() => {
           if (docBeingEdited) {
             return <DocumentForm onSubmit={this.submit.bind(this)} />;
@@ -56,7 +57,8 @@ ViewMetadataPanel.propTypes = {
   doc: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
-  saveDocument: PropTypes.func
+  saveDocument: PropTypes.func,
+  closePanel: PropTypes.func
 };
 
 const mapStateToProps = ({documentViewer}) => {
@@ -68,7 +70,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveDocument}, dispatch);
+  return bindActionCreators({saveDocument, closePanel}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);

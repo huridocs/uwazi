@@ -1,6 +1,12 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import {actions} from 'app/BasicReducer';
 
+export function closePanel() {
+  return {
+    type: types.CLOSE_PANEL
+  };
+}
+
 export function openPanel(panel) {
   return {
     type: types.OPEN_PANEL,
