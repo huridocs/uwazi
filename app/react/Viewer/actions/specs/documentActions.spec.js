@@ -53,7 +53,8 @@ describe('documentActions', () => {
         let targetId = 'targetId';
 
         const expectedActions = [
-          {type: types.SET_TARGET_DOCUMENT, document: {target: 'document'}, html: 'html'}
+          {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
+          {type: 'viewer/targetDocHTML/SET', value: 'html'}
         ];
         const store = mockStore({});
 
@@ -92,7 +93,9 @@ describe('documentActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: types.VIEWER_UPDATE_DOCUMENT, doc}
+          {type: types.VIEWER_UPDATE_DOCUMENT, doc},
+          {type: 'rrf/reset', model: 'documentViewer.docForm'},
+          {type: 'viewer/doc/SET', value: 'response'}
         ];
         const store = mockStore({});
 

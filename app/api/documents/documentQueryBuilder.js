@@ -2,7 +2,7 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'doc.title', 'doc.processed', 'doc.creationDate', 'doc.template']
+      include: [ 'doc.title', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata']
     },
     from: 0,
     size: 100,

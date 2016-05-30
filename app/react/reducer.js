@@ -12,9 +12,7 @@ import relationTypes from 'app/RelationTypes/reducers/relationTypesReducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 
-import documents from 'app/Library/reducers/documentsReducer';
-import libraryUI from 'app/Library/reducers/uiReducer';
-import libraryFilters from 'app/Library/reducers/filtersReducer';
+import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import uploads from 'app/Uploads/reducers/reducer';
 
@@ -27,11 +25,7 @@ export default combineReducers({
     data: template,
     uiState: templateUI
   }),
-  library: combineReducers({
-    documents: documents,
-    ui: libraryUI,
-    filters: libraryFilters
-  }),
+  library,
   thesauri,
   thesauris,
   relationTypes,

@@ -40,11 +40,11 @@ ViewMetadataPanel.propTypes = {
   closePanel: PropTypes.func
 };
 
-const mapStateToProps = ({documentViewer}) => {
+const mapStateToProps = ({library}) => {
   return {
-    open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
-    doc: documents.helpers.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS()),
-    docBeingEdited: !!documentViewer.docForm._id
+    open: library.uiState.get('metadataPanel').get('_id'),
+    doc: documents.helpers.prepareMetadata(library.uiState.get('metadataPanel').toJS(), library.ui.templates.toJS(), library.ui.thesauris.toJS()),
+    docBeingEdited: !!library.docForm._id
   };
 };
 

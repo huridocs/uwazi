@@ -15,6 +15,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from './ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
 import MetadataPanelMenu from './MetadataPanelMenu';
+import {actions} from 'app/BasicReducer';
 
 export class Viewer extends Component {
 
@@ -24,6 +25,10 @@ export class Viewer extends Component {
 
   componentWillUnmount() {
     this.context.store.dispatch(resetDocumentViewer());
+    this.context.store.dispatch(actions.unset('viewer/doc'));
+    this.context.store.dispatch(actions.unset('viewer/docHTML'));
+    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
+    this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
   }
 
   render() {
@@ -31,7 +36,7 @@ export class Viewer extends Component {
     if (this.props.panelIsOpen) {
       className = 'document-viewer with-panel';
     }
-    if (this.props.targetDocument) {
+    if (this.props.targetDoc) {
       className = 'document-viewer show-target-document';
     }
 
@@ -61,18 +66,18 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
-  targetDocument: PropTypes.bool
+  targetDoc: PropTypes.bool
 };
 
 Viewer.contextTypes = {
   store: PropTypes.object
 };
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
+  let uiState = documentViewer.uiState.toJS();
   return {
     panelIsOpen: !!uiState.panel,
-    targetDocument: !!state.documentViewer.targetDocument._id
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 

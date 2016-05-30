@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import Text from 'app/Viewer/utils/Text';
 import {Document} from 'app/Viewer/components/Document.js';
@@ -8,24 +9,23 @@ describe('Document', () => {
   let component;
   let instance;
 
-  let document = {
-    _id: 'documentId',
-    pages: ['page1', 'page2', 'page3'],
-    css: 'css'
-  };
-
   let props;
 
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
-      onClick: jasmine.createSpy('onClick')
+      onClick: jasmine.createSpy('onClick'),
+      doc: Immutable.fromJS({_id: 'documentId'}),
+      docHTML: Immutable.fromJS({
+        pages: ['page1', 'page2', 'page3'],
+        css: 'css'
+      })
     };
   });
 
   let render = () => {
-    component = shallow(<Document {...props} document={document}/>);
+    component = shallow(<Document {...props}/>);
     instance = component.instance();
   };
 
@@ -108,6 +108,19 @@ describe('Document', () => {
     beforeEach(() => {
       render();
       instance.text = Text(instance.pagesContainer);
+    });
+
+    describe('when props.disableTextSelection', () => {
+      it('should no execute onTextSelected', () => {
+        props.disableTextSelection = true;
+        render();
+        spyOn(instance, 'onTextSelected');
+        instance.text = Text(instance.pagesContainer);
+        spyOn(instance.text, 'selected').and.returnValue(true);
+
+        component.find('.document').simulate('mouseup');
+        expect(instance.onTextSelected).not.toHaveBeenCalled();
+      });
     });
 
     describe('when text selected', () => {

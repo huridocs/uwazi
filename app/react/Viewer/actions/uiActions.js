@@ -1,4 +1,11 @@
 import * as types from 'app/Viewer/actions/actionTypes';
+import {actions} from 'app/BasicReducer';
+
+export function closePanel() {
+  return {
+    type: types.CLOSE_PANEL
+  };
+}
 
 export function openPanel(panel) {
   return {
@@ -14,8 +21,10 @@ export function viewerSearching() {
 }
 
 export function resetReferenceCreation() {
-  return {
-    type: types.RESET_REFERENCE_CREATION
+  return function (dispatch) {
+    dispatch({type: types.RESET_REFERENCE_CREATION});
+    dispatch(actions.unset('viewer/targetDoc'));
+    dispatch(actions.unset('viewer/targetDocHTML'));
   };
 }
 

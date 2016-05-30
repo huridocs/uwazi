@@ -31,7 +31,7 @@ describe('Viewer', () => {
 
   it('should add  show-target-document className when targetDocument loaded', () => {
     props.panelIsOpen = true;
-    props.targetDocument = true;
+    props.targetDoc = true;
     render();
     expect(component.find('.document-viewer').hasClass('show-target-document')).toBe(true);
     expect(component.find('.document-viewer').hasClass('with-panel')).toBe(false);
@@ -57,6 +57,10 @@ describe('Viewer', () => {
       render();
       component.unmount();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'RESET_DOCUMENT_VIEWER'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDocHTML/UNSET'});
     });
   });
 });

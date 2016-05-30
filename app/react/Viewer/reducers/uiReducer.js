@@ -3,6 +3,8 @@ import * as types from 'app/Viewer/actions/actionTypes';
 
 const initialState = {reference: {}};
 
+let unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
+
 export default function (state = initialState, action = {}) {
   if (action.type === types.HIGHLIGHT_REFERENCE) {
     return state.set('highlightedReference', action.reference);
@@ -33,10 +35,14 @@ export default function (state = initialState, action = {}) {
   }
 
   if (action.type === types.UNSET_SELECTION) {
-    return state.setIn(['reference', 'sourceRange'], null).set('panel', false);
+    let newState = state.setIn(['reference', 'sourceRange'], null);
+    if (unsetPanelsWhenUnsetSelections.indexOf(state.get('panel')) !== -1) {
+      return newState.set('panel', false);
+    }
+    return newState;
   }
 
-  if (action.type === types.SET_TARGET_DOCUMENT) {
+  if (action.type === 'viewer/targetDocHTML/SET' || action.type === types.CLOSE_PANEL) {
     return state.set('panel', false);
   }
 

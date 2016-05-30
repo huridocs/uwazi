@@ -40,13 +40,14 @@ describe('ViewDocument', () => {
     it('should request for the document passed, the thesauris and return an object to fit in the state', (done) => {
       ViewDocument.requestState({documentId: 'documentId'})
       .then((response) => {
-        let documentResponse = response.documentViewer.document;
+        let documentResponse = response.documentViewer.doc;
+        let html = response.documentViewer.docHTML;
         let referencesResponse = response.documentViewer.references;
         let templatesResponse = response.documentViewer.templates;
         let thesaurisResponse = response.documentViewer.thesauris;
 
         expect(documentResponse._id).toBe('1');
-        expect(documentResponse.html).toBe('html');
+        expect(html).toEqual(docHTML);
         expect(referencesResponse).toEqual(references);
         expect(templatesResponse).toEqual(templates.rows);
         expect(thesaurisResponse).toEqual(thesauris.rows);
@@ -58,9 +59,15 @@ describe('ViewDocument', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({documentViewer: {document: 'document', references: 'references', templates: 'templates', thesauris: 'thesauris'}});
+      instance.setReduxState({documentViewer:
+                             {doc: 'doc', docHTML: 'docHTML', references: 'references', templates: 'templates', thesauris: 'thesauris'}
+      });
+
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: 'references'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_DOCUMENT', document: 'document', html: null});
+      //expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_DOCUMENT', document: 'document', html: null});
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/SET', value: 'doc'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/SET', value: 'docHTML'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/SET', value: 'templates'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/SET', value: 'thesauris'});
     });
