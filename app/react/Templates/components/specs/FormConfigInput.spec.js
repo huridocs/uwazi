@@ -13,7 +13,7 @@ describe('FormConfigInput', () => {
       type: 'text',
       index: 0,
       model: {properties: [{lable: ''}]},
-      formState: {fields: {'properties.0.label': {valid: true, dirty: false}}}
+      formState: {fields: {'properties.0.label': {valid: true, dirty: false, errors: {}}}}
     };
   });
 

@@ -53,7 +53,7 @@ const optionSource = {
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
     if (!dropResult) {
-      return props.removeProperty(item.index);
+      props.removeProperty(item.index);
     }
   }
 };
