@@ -6,7 +6,7 @@ import 'app/Viewer/scss/document.scss';
 
 export class Document extends Component {
   handleMouseUp() {
-    if(this.props.disableTextSelection) {
+    if (this.props.disableTextSelection) {
       return;
     }
 

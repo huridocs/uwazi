@@ -2,7 +2,6 @@ import {combineReducers} from 'redux';
 
 import references from './referencesReducer';
 import uiState from './uiReducer';
-import targetDocument from './targetDocumentReducer';
 
 import createReducer from 'app/BasicReducer';
 import {modelReducer, formReducer} from 'react-redux-form';

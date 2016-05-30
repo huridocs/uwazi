@@ -4,7 +4,6 @@ import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';
-import {setDocument} from 'app/Viewer/actions/documentActions';
 import Viewer from 'app/Viewer/components/Viewer';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
