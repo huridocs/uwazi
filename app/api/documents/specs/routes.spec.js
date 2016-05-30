@@ -45,7 +45,8 @@ describe('documents', () => {
       routes.get('/api/documents')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
         done();
       })
       .catch(console.log);
@@ -72,7 +73,8 @@ describe('documents', () => {
       routes.get('/api/documents/newest')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
         done();
       })
       .catch(console.log);
@@ -84,7 +86,8 @@ describe('documents', () => {
       routes.get('/api/documents/relevant')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
         done();
       })
       .catch(console.log);

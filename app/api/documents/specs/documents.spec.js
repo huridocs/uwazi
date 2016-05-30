@@ -143,7 +143,8 @@ describe('documents', () => {
       documents.getUploadsByUser(user)
       .then((response) => {
         expect(response.rows.length).toBe(1);
-        expect(response.rows[0]).toEqual({title: 'unpublished', _id: 'd0298a48d1221c5ceb53c4879301508f'});
+        expect(response.rows[0].title).toBe('unpublished');
+        expect(response.rows[0]._id).toBe('d0298a48d1221c5ceb53c4879301508f');
         done();
       })
       .catch(catchErrors(done));
