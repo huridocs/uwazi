@@ -75,6 +75,7 @@
     "validate.js": "^0.9.0"
   },
   "devDependencies": {
+    "couchdb-dump": "^2.2.1",
     "babel-istanbul-loader": "^0.1.0",
     "babel-loader": "^6.2.1",
     "babel-plugin-react-transform": "^2.0.0",
