@@ -44,11 +44,11 @@ export default (app) => {
 
   app.get('/api/documents', (req, res) => {
     let id = '';
-    let url = dbUrl + '/_design/documents/_view/list';
+    let url = dbUrl + '/_design/documents/_view/docs';
 
     if (req.query && req.query._id) {
       id = '?key="' + req.query._id + '"';
-      url = dbUrl + '/_design/documents/_view/all' + id;
+      url = dbUrl + '/_design/documents/_view/docs' + id;
     }
 
     request.get(url)
