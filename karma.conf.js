@@ -35,6 +35,7 @@ karmaConfig = {
     'karma-coverage'
   ],
   browserNoActivityTimeout: 100000,
+  browserDisconnectTimeout: 10000,
   preprocessors: {
     'tests.webpack.js': [ 'webpack', 'sourcemap' ]
   },
