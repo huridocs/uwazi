@@ -10,8 +10,8 @@ export class FormConfigSelect extends Component {
       required: (val) => val.trim() !== '',
       duplicated: (val) => {
         return this.props.model.properties.reduce((validity, prop) => {
-          let differemtLabel = prop.localID !== this.props.localID && prop.label !== val;
-          return validity && differemtLabel;
+          let differentLabel = prop.localID === this.props.formKey || prop.label !== val;
+          return validity && differentLabel;
         }, true);
       }
     };
@@ -28,9 +28,10 @@ export class FormConfigSelect extends Component {
 
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
+    let duplicatedLabel = formState.fields[labelKey] && formState.fields[labelKey].errors.duplicated;
     if (formState.fields[labelKey] &&
       !formState.fields[labelKey].valid &&
-      (formState.submitFailed || formState.fields[labelKey].dirty || formState.fields[labelKey].errors.duplicated)) {
+      (formState.submitFailed || formState.fields[labelKey].dirty || duplicatedLabel)) {
       labelClass += ' has-error';
     }
 
@@ -45,7 +46,16 @@ export class FormConfigSelect extends Component {
         <div className="row">
           <div className="col-sm-4">
             <div className={labelClass}>
-              <span className="input-group-addon">Label</span>
+              <span className="input-group-addon">
+              {(() => {
+                if (duplicatedLabel) {
+                  return <span>
+                          Duplicated&nbsp;
+                          </span>;
+                }
+              })()}
+              Label
+              </span>
               <FormField model={`template.model.properties[${index}].label`} validators={this.nameValidation()}>
                 <input className="form-control"/>
               </FormField>
@@ -95,7 +105,7 @@ FormConfigSelect.propTypes = {
   model: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
-  localID: PropTypes.string
+  formKey: PropTypes.string
 };
 
 export function mapStateToProps(state) {

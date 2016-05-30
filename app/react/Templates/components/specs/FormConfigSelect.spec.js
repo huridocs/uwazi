@@ -17,8 +17,8 @@ describe('FormConfigSelect', () => {
       index: 0,
       model: {properties: []},
       formState: {fields: {
-        'properties.0.label': {valid: true, dirty: false},
-        'properties.0.content': {valid: true, dirty: false}
+        'properties.0.label': {valid: true, dirty: false, errors: {}},
+        'properties.0.content': {valid: true, dirty: false, errors: {}}
       }}
     };
   });

@@ -24,12 +24,18 @@ export class MetadataProperty extends Component {
   }
 
   render() {
-    const {label, connectDragSource, isDragging, connectDropTarget, uiState, index, localID, inserting} = this.props;
+    const {label, connectDragSource, isDragging, connectDropTarget, uiState, index, localID, inserting, formState} = this.props;
     const editingProperty = uiState.toJS().editingProperty;
 
     let propertyClass = 'list-group-item';
     if (isDragging || inserting) {
       propertyClass += ' dragging';
+    }
+
+    let labelError = formState.fields[`properties.${index}.label`] && !formState.fields[`properties.${index}.label`].valid;
+    let contentError = formState.fields[`properties.${index}.content`] && !formState.fields[`properties.${index}.content`].valid;
+    if (labelError || contentError) {
+      propertyClass += ' error';
     }
 
     let iconClass = {
@@ -90,7 +96,9 @@ const target = {
       item.index = 0;
       return props.addProperty({label: item.label, type: item.type, inserting: true}, item.index);
     }
-
+    if (dragIndex === hoverIndex) {
+      return;
+    }
     props.reorderProperty(dragIndex, hoverIndex);
     monitor.getItem().index = hoverIndex;
   }
@@ -121,7 +129,8 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = (state) => {
   return {
-    uiState: state.template.uiState
+    uiState: state.template.uiState,
+    formState: state.template.formState
   };
 };
 

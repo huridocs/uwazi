@@ -3,9 +3,9 @@ import {connect} from 'react-redux';
 
 export class FilterSuggestions extends Component {
 
-  findSameLabelProperties(label, templates, currentTemplateId) {
+  findSameLabelProperties(label, templates) {
     return templates
-    .filter((template) => template._id !== currentTemplateId)
+    .filter((template) => template._id !== this.props.model._id)
     .map((template) => {
       let property = template.properties.find((prop) => {
         return prop.label.toLowerCase() === label.toLowerCase() & prop.filter;
@@ -82,23 +82,48 @@ export class FilterSuggestions extends Component {
     }).name;
   }
 
-  filterSuggestions() {
-    let label = this.props.label;
-    let type = this.props.type;
-    let content = this.props.content;
-
-    return this.findSameLabelProperties(label, this.props.uiState.toJS().templates, this.props.parentTemplateId)
+  filterSuggestions(label, type, content, hasThesauri) {
+    return this.findSameLabelProperties(label, this.props.uiState.toJS().templates)
     .map((propertyMatch, index) => {
       let typeConflict = propertyMatch.property.type !== type;
       let contentConflict = propertyMatch.property.content !== content;
-      let hasThesauri = typeof content !== 'undefined';
       return this.renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index);
     });
   }
 
   render() {
+    let label = this.props.label;
+    let type = this.props.type;
+    let content = this.props.content;
+    let hasThesauri = typeof content !== 'undefined';
+    let activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
+    let title = 'This is the current property and will be used togheter with equal properties.';
+    let icon = this.getTypeIcon(type);
+
+
     return <div className="filter-suggestions col-sm-12">
-            {this.filterSuggestions()}
+    <div className={activeClass} title={title}>
+            <span>
+              <i className="fa fa-file-o"></i> {this.props.model.name}
+            </span>
+            <i className="fa fa-angle-right"></i>
+            <span>
+              <i className={icon}></i>{type}
+            </span>
+            {(() => {
+              if (hasThesauri) {
+                let thesauri = this.getThesauriName(content);
+                return <span>
+                        <i className="fa fa-angle-right"></i>
+                        <span>
+                          <i className="fa fa-book"></i>Thesauri: {thesauri}
+                        </span>
+                       </span>;
+              }
+            })()}
+            <i className="fa fa-info-circle"></i>
+          </div>
+            {this.filterSuggestions(label, type, content, hasThesauri)}
            </div>;
   }
 }
@@ -107,7 +132,7 @@ FilterSuggestions.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
   filter: PropTypes.any,
-  parentTemplateId: PropTypes.string,
+  model: PropTypes.object,
   uiState: PropTypes.object,
   content: PropTypes.string
 };
@@ -115,7 +140,7 @@ FilterSuggestions.propTypes = {
 export function mapStateToProps(state) {
   return {
     uiState: state.template.uiState,
-    parentTemplateId: state.template.model._id
+    model: state.template.model
   };
 }
 
