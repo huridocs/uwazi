@@ -32,7 +32,7 @@ export class CreateReferencePanel extends Component {
 
 CreateReferencePanel.propTypes = {
   open: PropTypes.bool,
-  results: PropTypes.array,
+  results: PropTypes.object,
   searching: PropTypes.bool,
   selected: PropTypes.string,
   selectTargetDocument: PropTypes.func

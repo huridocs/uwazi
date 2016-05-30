@@ -3,37 +3,15 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {openMenu, closeMenu} from 'app/ContextMenu/actions/contextMenuActions';
-import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
-import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
-import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
-import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
-import UploadsMenu from 'app/Uploads/components/UploadsMenu';
-import LibraryMenu from 'app/Library/components/LibraryMenu';
-import 'app/ContextMenu/scss/contextMenu.scss';
 
 export class ContextMenu extends Component {
-  renderMenu() {
-    if (this.props.type === 'ViewerTextSelectedMenu') {
-      return <ViewerTextSelectedMenu active={this.props.open} />;
-    }
-    if (this.props.type === 'ViewerDefaultMenu') {
-      return <ViewerDefaultMenu active={this.props.open} />;
-    }
-    if (this.props.type === 'ViewerSaveReferenceMenu') {
-      return <ViewerSaveReferenceMenu />;
-    }
-    if (this.props.type === 'ViewerSaveTargetReferenceMenu') {
-      return <ViewerSaveTargetReferenceMenu />;
-    }
-    if (this.props.type === 'UploadsMenu') {
-      return <UploadsMenu active={this.props.open} />;
-    }
-    if (this.props.type === 'LibraryMenu') {
-      return <LibraryMenu />;
-    }
-  }
-
   render() {
+    let children = React.Children.map(this.props.children, child => child) || [];
+    let SubMenu = children.filter(child => {
+      return child.type.name === this.props.type || child.type.WrappedComponent && child.type.WrappedComponent.name === this.props.type;
+    });
+    SubMenu = React.Children.map(SubMenu, (child) => React.cloneElement(child, {active: this.props.open}));
+
     return (
       <div
         className={'float-btn btn-fixed ' + (this.props.open ? 'active' : '')}
@@ -41,17 +19,23 @@ export class ContextMenu extends Component {
         onMouseLeave={this.props.closeMenu}
         onClick={this.props.closeMenu}
       >
-        {this.renderMenu()}
+        {SubMenu}
       </div>
     );
   }
 }
 
+let childrenType = PropTypes.oneOfType([
+  PropTypes.object,
+  PropTypes.array
+]);
+
 ContextMenu.propTypes = {
   open: PropTypes.bool,
   type: PropTypes.string,
   openMenu: PropTypes.func,
-  closeMenu: PropTypes.func
+  closeMenu: PropTypes.func,
+  children: childrenType
 };
 
 const mapStateToProps = (state) => {

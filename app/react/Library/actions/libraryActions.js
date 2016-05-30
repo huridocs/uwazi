@@ -19,9 +19,12 @@ export function setDocuments(documents) {
 }
 
 export function setTemplates(templates, thesauris) {
-  let documentTypes = libraryHelper.generateDocumentTypes(templates);
-  let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes, thesauris);
-  return {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters};
+  return function (dispatch, getState) {
+    let filtersState = getState().library.filters.toJS();
+    let documentTypes = Object.assign(libraryHelper.generateDocumentTypes(templates), filtersState.documentTypes);
+    let libraryFilters = filtersState.properties;
+    dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
+  };
 }
 
 export function setPreviewDoc(docId) {
@@ -46,7 +49,9 @@ export function setOverSuggestions(boolean) {
 
 export function searchDocuments(readOnlySearch) {
   return (dispatch, getState) => {
-    let properties = getState().library.filters.toJS().properties;
+    let state = getState().library.filters.toJS();
+    let properties = state.properties;
+    let documentTypes = state.documentTypes;
 
     let search = Object.assign({}, readOnlySearch);
     search.filters = Object.assign({}, readOnlySearch.filters);
@@ -56,6 +61,14 @@ export function searchDocuments(readOnlySearch) {
         delete search.filters[property.name];
       }
     });
+
+    search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
+      if (documentTypes[type]) {
+        selectedTypes.push(type);
+      }
+
+      return selectedTypes;
+    }, []);
 
     return api.search(search)
     .then((documents) => {

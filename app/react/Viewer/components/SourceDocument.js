@@ -5,15 +5,17 @@ import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions'
 import {resetReferenceCreation, highlightReference} from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
+  let uiState = documentViewer.uiState.toJS();
   return {
     selection: uiState.reference.sourceRange,
-    document: state.documentViewer.document,
-    references: state.documentViewer.references.toJS(),
+    doc: documentViewer.doc,
+    docHTML: documentViewer.docHTML,
+    references: documentViewer.references.toJS(),
     className: 'sourceDocument',
     highlightedReference: uiState.highlightedReference,
-    executeOnClickHandler: !!state.documentViewer.targetDocument._id
+    executeOnClickHandler: !!documentViewer.targetDoc.get('_id'),
+    disableTextSelection: documentViewer.uiState.get('panel') === 'viewMetadataPanel'
   };
 };
 

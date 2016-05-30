@@ -14,6 +14,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('CLOSE_PANEL', () => {
+    it('should set panel = false', () => {
+      let newState = uiReducer(Immutable.fromJS({panel: 'somePanel'}), {type: types.CLOSE_PANEL});
+      let expected = Immutable.fromJS({panel: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('OPEN_PANEL', () => {
     it('should set panel = to the panel passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_PANEL, panel: 'a panel'});
@@ -23,9 +32,9 @@ describe('documentReducer', () => {
     });
   });
 
-  describe('SET_TARGET_DOCUMENT', () => {
+  describe('viewer/targetDocHTML/SET', () => {
     it('should set panel to false', () => {
-      let newState = uiReducer(Immutable.fromJS({panel: 'apanel'}), {type: types.SET_TARGET_DOCUMENT});
+      let newState = uiReducer(Immutable.fromJS({panel: 'apanel'}), {type: 'viewer/targetDocHTML/SET'});
       let expected = Immutable.fromJS({panel: false});
 
       expect(newState).toEqualImmutable(expected);
@@ -50,9 +59,9 @@ describe('documentReducer', () => {
     });
   });
 
-  describe('SET_VIEWER_RESULTS', () => {
+  describe('viewer/documentResults/SET', () => {
     it('should set viewerSearching = false', () => {
-      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_VIEWER_RESULTS, results: []});
+      let newState = uiReducer(Immutable.fromJS({}), {type: 'viewer/documentResults/SET', value: []});
       let expected = Immutable.fromJS({viewerSearching: false});
 
       expect(newState).toEqualImmutable(expected);
@@ -61,7 +70,7 @@ describe('documentReducer', () => {
     it('should mantain targetDocument if in results', () => {
       let newState = uiReducer(Immutable.fromJS(
         {reference: {targetDocument: 'targetId'}}),
-        {type: types.SET_VIEWER_RESULTS, results: [{_id: 'targetId'}, {_id: 'anotherId'}]}
+        {type: 'viewer/documentResults/SET', value: [{_id: 'targetId'}, {_id: 'anotherId'}]}
       );
       let expected = Immutable.fromJS({reference: {targetDocument: 'targetId'}, viewerSearching: false});
 
@@ -71,7 +80,7 @@ describe('documentReducer', () => {
     it('should remove targetDocument if not in results', () => {
       let newState = uiReducer(Immutable.fromJS(
         {reference: {targetDocument: 'notInResultsId'}}),
-        {type: types.SET_VIEWER_RESULTS, results: [{_id: 'targetId'}]}
+        {type: 'viewer/documentResults/SET', value: [{_id: 'targetId'}]}
       );
       let expected = Immutable.fromJS({reference: {}, viewerSearching: false});
 
@@ -98,11 +107,24 @@ describe('documentReducer', () => {
   });
 
   describe('UNSET_SELECTION', () => {
-    it('should set panel = false and sourceRange to null', () => {
-      let newState = uiReducer(Immutable.fromJS({panel: true, reference: {sourceRange: 'sourceRange'}}), {type: types.UNSET_SELECTION});
-      let expected = Immutable.fromJS({panel: false, reference: {sourceRange: null}});
+    it('should set sourceRange to null', () => {
+      let newState = uiReducer(Immutable.fromJS({reference: {sourceRange: 'sourceRange'}}), {type: types.UNSET_SELECTION});
+      let expected = Immutable.fromJS({reference: {sourceRange: null}});
 
       expect(newState).toEqualImmutable(expected);
+    });
+
+    describe('when panel is referencePanel or targetReferencePanel', () => {
+      it('should set panel = false', () => {
+        let newState = uiReducer(Immutable.fromJS({panel: 'referencePanel'}), {type: types.UNSET_SELECTION});
+        expect(newState.get('panel')).toBe(false);
+
+        newState = uiReducer(Immutable.fromJS({panel: 'targetReferencePanel'}), {type: types.UNSET_SELECTION});
+        expect(newState.get('panel')).toBe(false);
+
+        newState = uiReducer(Immutable.fromJS({panel: 'otherPanel'}), {type: types.UNSET_SELECTION});
+        expect(newState.get('panel')).toBe('otherPanel');
+      });
     });
   });
 

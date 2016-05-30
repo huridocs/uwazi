@@ -2,7 +2,9 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
+import documents from 'app/Documents';
 
+import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
 
@@ -12,6 +14,7 @@ describe('ViewMetadataPanel', () => {
 
   beforeEach(() => {
     props = {
+      doc: {metadata: []}
     };
   });
 
@@ -35,22 +38,49 @@ describe('ViewMetadataPanel', () => {
     });
   });
 
+  describe('onSubmit', () => {
+    it('should saveDocument', () => {
+      props.saveDocument = jasmine.createSpy('saveDocument');
+      props.docBeingEdited = true;
+      render();
+
+      let doc = 'doc';
+      component.find(DocumentForm).simulate('submit', doc);
+
+      expect(props.saveDocument).toHaveBeenCalledWith(doc);
+    });
+  });
+
   describe('PanelContainer', () => {
     let state = {
       documentViewer: {
         uiState: Immutable.fromJS({
           panel: ''
         }),
-        references: Immutable.fromJS(['reference'])
+        doc: Immutable.fromJS({}),
+        references: Immutable.fromJS(['reference']),
+        templates: Immutable.fromJS(['template']),
+        thesauris: Immutable.fromJS(['thesauris']),
+        docForm: {}
       }
     };
 
     const mockStore = configureMockStore([]);
 
     let renderContainer = () => {
+      spyOn(documents.helpers, 'prepareMetadata');
       let store = mockStore(state);
       component = shallow(<PanelContainer />, {context: {store}});
     };
+
+    it('should prepare doc with template and thesauris', () => {
+      renderContainer();
+      expect(documents.helpers.prepareMetadata).toHaveBeenCalledWith(
+        state.documentViewer.doc.toJS(),
+        state.documentViewer.templates.toJS(),
+        state.documentViewer.thesauris.toJS()
+      );
+    });
 
     it('should be closed when panel is not viewMetadataPanel', () => {
       renderContainer();

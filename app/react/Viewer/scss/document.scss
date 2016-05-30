@@ -3,6 +3,8 @@
 @import "../../controllers/App/scss/config/_typography.scss";
 
 .document-viewer {
+  overflow-y: scroll;
+  height: 100%;
   transform: translateX(0%);
   transition: all 500ms;
   &.with-panel{

@@ -1,13 +1,21 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {loadDefaultViewerMenu, resetDocumentViewer} from 'app/Viewer/actions/documentActions';
-import SourceDocument from 'app/Viewer/components/SourceDocument';
-import TargetDocument from 'app/Viewer/components/TargetDocument';
-import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
-import ContextMenu from 'app/ContextMenu/components/ContextMenu';
-import ViewReferencesPanel from 'app/Viewer/components/ViewReferencesPanel';
-import ViewMetadataPanel from 'app/Viewer/components/ViewMetadataPanel';
+import ContextMenu from 'app/ContextMenu';
+
+import {loadDefaultViewerMenu, resetDocumentViewer} from '../actions/documentActions';
+import SourceDocument from './SourceDocument';
+import TargetDocument from './TargetDocument';
+import CreateReferencePanel from './CreateReferencePanel';
+import ViewReferencesPanel from './ViewReferencesPanel';
+import ViewMetadataPanel from './ViewMetadataPanel';
+
+import ViewerDefaultMenu from './ViewerDefaultMenu';
+import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
+import ViewerSaveReferenceMenu from './ViewerSaveReferenceMenu';
+import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
+import MetadataPanelMenu from './MetadataPanelMenu';
+import {actions} from 'app/BasicReducer';
 
 export class Viewer extends Component {
 
@@ -17,6 +25,10 @@ export class Viewer extends Component {
 
   componentWillUnmount() {
     this.context.store.dispatch(resetDocumentViewer());
+    this.context.store.dispatch(actions.unset('viewer/doc'));
+    this.context.store.dispatch(actions.unset('viewer/docHTML'));
+    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
+    this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
   }
 
   render() {
@@ -24,9 +36,10 @@ export class Viewer extends Component {
     if (this.props.panelIsOpen) {
       className = 'document-viewer with-panel';
     }
-    if (this.props.targetDocument) {
+    if (this.props.targetDoc) {
       className = 'document-viewer show-target-document';
     }
+
     return (
       <div>
         <main className={className + ' col-sm-8 col-sm-offset-2'}>
@@ -37,7 +50,14 @@ export class Viewer extends Component {
         <CreateReferencePanel />
         <ViewReferencesPanel />
         <ViewMetadataPanel />
-        <ContextMenu />
+
+        <ContextMenu>
+          <ViewerDefaultMenu/>
+          <ViewerTextSelectedMenu/>
+          <ViewerSaveReferenceMenu/>
+          <ViewerSaveTargetReferenceMenu/>
+          <MetadataPanelMenu/>
+        </ContextMenu>
       </div>
     );
   }
@@ -46,18 +66,18 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
-  targetDocument: PropTypes.bool
+  targetDoc: PropTypes.bool
 };
 
 Viewer.contextTypes = {
   store: PropTypes.object
 };
 
-const mapStateToProps = (state) => {
-  let uiState = state.documentViewer.uiState.toJS();
+const mapStateToProps = ({documentViewer}) => {
+  let uiState = documentViewer.uiState.toJS();
   return {
     panelIsOpen: !!uiState.panel,
-    targetDocument: !!state.documentViewer.targetDocument._id
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 

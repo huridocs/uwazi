@@ -3,9 +3,9 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {editDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
-import {loadDocument} from 'app/DocumentForm/actions/actions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {Link} from 'react-router';
+import documents from 'app/Documents';
 
 export class UploadDoc extends Component {
   showModal(modal, e) {
@@ -19,7 +19,7 @@ export class UploadDoc extends Component {
     if (active) {
       return this.props.finishEdit();
     }
-    this.props.loadDocument(doc, this.props.templates.toJS());
+    this.props.loadDocument('uploads.document', doc, this.props.templates.toJS());
     this.props.editDocument(doc);
   }
 
@@ -116,7 +116,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, editDocument, loadDocument, showModal}, dispatch);
+  return bindActionCreators({finishEdit, editDocument, loadDocument: documents.actions.loadDocument, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

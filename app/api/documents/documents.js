@@ -25,7 +25,7 @@ export default {
   },
 
   search(query) {
-    let documentsQuery = queryBuilder().fullTextSearch(query.searchTerm).filterMetadata(query.filters);
+    let documentsQuery = queryBuilder().fullTextSearch(query.searchTerm).filterMetadata(query.filters).filterByTemplate(query.types);
 
     if (query.sort) {
       documentsQuery.sort(query.sort, query.order);

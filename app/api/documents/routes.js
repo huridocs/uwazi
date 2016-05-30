@@ -24,6 +24,9 @@ export default (app) => {
     if (req.query.filters) {
       req.query.filters = JSON.parse(req.query.filters);
     }
+    if (req.query.types) {
+      req.query.types = JSON.parse(req.query.types);
+    }
     return documents.search(req.query)
     .then(results => res.json(results));
   });
@@ -41,11 +44,11 @@ export default (app) => {
 
   app.get('/api/documents', (req, res) => {
     let id = '';
-    let url = dbUrl + '/_design/documents/_view/list';
+    let url = dbUrl + '/_design/documents/_view/docs';
 
     if (req.query && req.query._id) {
       id = '?key="' + req.query._id + '"';
-      url = dbUrl + '/_design/documents/_view/all' + id;
+      url = dbUrl + '/_design/documents/_view/docs' + id;
     }
 
     request.get(url)

@@ -1,5 +1,6 @@
 import * as actions from 'app/Library/actions/filterActions';
 import * as types from 'app/Library/actions/actionTypes';
+import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
 import Immutable from 'immutable';
 
@@ -66,19 +67,26 @@ describe('filterActions', () => {
   describe('resetFilters', () => {
     it('should set all filters to an empty string', () => {
       actions.resetFilters()(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: '', country: ''});
+      expect(formActions.change).toHaveBeenCalledWith('search.filters', {});
       expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
     });
 
-    it('should deactivate all the properties', () => {
+    it('should deactivate all the properties and documentTypes', () => {
       actions.resetFilters()(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
-        type: types.UPDATE_LIBRARY_FILTERS,
-        libraryFilters: [
-          {name: 'author', active: false},
-          {name: 'country', active: false}
-        ]
+        type: types.SET_LIBRARY_FILTERS,
+        libraryFilters: [],
+        documentTypes: {a: false, b: false}
       });
+    });
+
+    it('should perform a search with the filters reset', () => {
+      let searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
+      spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
+      actions.resetFilters()(dispatch, getState);
+
+      expect(libraryActions.searchDocuments).toHaveBeenCalledWith(search);
+      expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);
     });
   });
 

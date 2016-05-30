@@ -2,10 +2,9 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {DocumentForm} from 'app/DocumentForm/components/DocumentForm';
-import Select from 'app/DocumentForm/components/Select';
-import {Form, Field} from 'react-redux-form';
-
+import {DocumentForm} from '../DocumentForm';
+import {Form} from 'react-redux-form';
+import {FormField, Select} from 'app/Forms';
 
 describe('DocumentForm', () => {
   let component;
@@ -24,7 +23,8 @@ describe('DocumentForm', () => {
       thesauris: Immutable.fromJS([{_id: 'thesauriId', name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
-      state: {fields: {title: {prop: 'prop'}}}
+      state: {fields: {title: {prop: 'prop'}}},
+      model: 'document'
     };
   });
 
@@ -40,7 +40,7 @@ describe('DocumentForm', () => {
 
   it('should render title field as a textarea', () => {
     render();
-    let title = component.find('textarea').closest(Field);
+    let title = component.find('textarea').closest(FormField);
     expect(title.props().model).toEqual('document.title');
   });
 
@@ -55,7 +55,7 @@ describe('DocumentForm', () => {
       render();
       let template = component.find(Select).first();
       template.simulate('change', {target: {value: '2'}});
-      expect(props.changeTemplate).toHaveBeenCalledWith(props.document, props.templates.toJS()[1]);
+      expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.document, props.templates.toJS()[1]);
     });
   });
 

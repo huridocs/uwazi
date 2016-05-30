@@ -1,15 +1,22 @@
 import {combineReducers} from 'redux';
 
-import document from 'app/Viewer/reducers/documentReducer';
-import references from 'app/Viewer/reducers/referencesReducer';
-import uiState from 'app/Viewer/reducers/uiReducer';
-import results from 'app/Viewer/reducers/resultsReducer';
-import targetDocument from 'app/Viewer/reducers/targetDocumentReducer';
+import references from './referencesReducer';
+import uiState from './uiReducer';
+
+import createReducer from 'app/BasicReducer';
+import {modelReducer, formReducer} from 'react-redux-form';
+
 
 export default combineReducers({
-  document,
-  targetDocument,
+  doc: createReducer('viewer/doc', {}),
+  docHTML: createReducer('viewer/docHTML', {pages: []}),
+  targetDoc: createReducer('viewer/targetDoc', {}),
+  targetDocHTML: createReducer('viewer/targetDocHTML', {pages: []}),
   references,
   uiState,
-  results
+  docForm: modelReducer('documentViewer.docForm'),
+  docFormState: formReducer('documentViewer.docForm'),
+  results: createReducer('viewer/documentResults', []),
+  templates: createReducer('viewer/templates', []),
+  thesauris: createReducer('viewer/thesauris', [])
 });

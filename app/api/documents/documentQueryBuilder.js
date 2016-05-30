@@ -2,7 +2,7 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'doc.title', 'doc.processed', 'doc.creationDate', 'doc.template']
+      include: [ 'doc.title', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata']
     },
     from: 0,
     size: 100,
@@ -50,6 +50,22 @@ export default function () {
         match[`doc.metadata.${property}`] = filters[property];
         baseQuery.filter.bool.must.push({match});
       });
+      return this;
+    },
+
+    filterByTemplate(templates = []) {
+      if (templates.length) {
+        let match = {bool: {
+          should: [],
+          minimum_should_match: 1
+        }};
+
+        templates.forEach((templateId) => {
+          match.bool.should.push({match: {'doc.template': templateId}});
+        });
+
+        baseQuery.filter.bool.must.push(match);
+      }
       return this;
     },
 

@@ -1,4 +1,4 @@
-import * as actions from 'app/DocumentForm/actions/actions';
+import * as actions from '../actions';
 import {actions as formActions} from 'react-redux-form';
 
 describe('documentFormActions', () => {
@@ -10,11 +10,11 @@ describe('documentFormActions', () => {
       let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
 
 
-      actions.loadDocument(doc, templates)(dispatch);
+      actions.loadDocument('formNamespace', doc, templates)(dispatch);
 
       let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: ''}};
       expect(dispatch).toHaveBeenCalledWith('formload');
-      expect(formActions.load).toHaveBeenCalledWith('document', expectedDoc);
+      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
 
     it('should should set the first template if document has no template', () => {
@@ -25,13 +25,13 @@ describe('documentFormActions', () => {
       let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
 
 
-      actions.loadDocument(doc, templates)(dispatch);
+      actions.loadDocument('formNamespace', doc, templates)(dispatch);
 
       let expectedDoc = {title: 'test', metadata: {test: '', newProp: ''}, template: 'templateId'};
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(dispatch).toHaveBeenCalledWith('forminitial');
-      expect(formActions.load).toHaveBeenCalledWith('document', expectedDoc);
-      expect(formActions.setInitial).toHaveBeenCalledWith('document');
+      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
     });
   });
 
@@ -44,12 +44,12 @@ describe('documentFormActions', () => {
       let template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp'}]};
 
 
-      actions.changeTemplate(doc, template)(dispatch);
+      actions.changeTemplate('formNamespace', doc, template)(dispatch);
 
       let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: 'test', newProp: ''}};
       expect(dispatch).toHaveBeenCalledWith('formMerge');
-      expect(formActions.merge).toHaveBeenCalledWith('document', expectedDoc);
-      expect(formActions.setInitial).toHaveBeenCalledWith('document');
+      expect(formActions.merge).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
     });
   });
 });

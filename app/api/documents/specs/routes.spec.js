@@ -44,8 +44,9 @@ describe('documents', () => {
     it('should return a list of documents returned from the list view', (done) => {
       routes.get('/api/documents')
       .then((response) => {
-        expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows.length).toBe(7);
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
         done();
       })
       .catch(console.log);
@@ -72,7 +73,8 @@ describe('documents', () => {
       routes.get('/api/documents/newest')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
         done();
       })
       .catch(console.log);
@@ -84,7 +86,8 @@ describe('documents', () => {
       routes.get('/api/documents/relevant')
       .then((response) => {
         expect(response.rows.length).toBe(2);
-        expect(response.rows[0]).toEqual({title: 'Batman finishes', _id: '8202c463d6158af8065022d9b5014a18'});
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
         done();
       })
       .catch(console.log);
@@ -125,18 +128,19 @@ describe('documents', () => {
     it('should search documents and return the results', (done) => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
       let filtersValue = JSON.stringify({property: 'property'});
-      let req = {query: {searchTerm: 'test', filters: filtersValue}};
+      let types = JSON.stringify(['ruling', 'judgement']);
+      let req = {query: {searchTerm: 'test', filters: filtersValue, types}};
 
       routes.get('/api/documents/search', req)
       .then((response) => {
-        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', filters: {property: 'property'}});
+        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement']});
         expect(response).toEqual('results');
         done();
       })
       .catch(done.fail);
     });
 
-    describe('when has no filters', () => {
+    describe('when has no filters or types', () => {
       it('should search documents and return the results', (done) => {
         spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
         let req = {query: {}};

@@ -30,7 +30,7 @@ describe('referencesActions', () => {
       mockID();
       backend.restore();
       backend
-      .mock(APIURL + 'references', 'POST', {body: JSON.stringify({id: 'createdID'})});
+      .mock(APIURL + 'references', 'POST', {body: JSON.stringify({_id: 'referenceCreated'})});
     });
 
     describe('saveReference', () => {
@@ -38,7 +38,9 @@ describe('referencesActions', () => {
         let reference = {reference: 'reference'};
 
         const expectedActions = [
-          {type: types.ADD_CREATED_REFERENCE, reference: {reference: 'reference', _id: 'createdID'}},
+          {type: types.ADD_CREATED_REFERENCE, reference: {_id: 'referenceCreated'}},
+          {type: 'viewer/targetDoc/UNSET'},
+          {type: 'viewer/targetDocHTML/UNSET'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}
         ];
 

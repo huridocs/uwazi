@@ -8,31 +8,42 @@ import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 
 describe('libraryActions', () => {
-  let documents = [{name: 'Secret list of things'}];
+  let documentCollection = [{name: 'Secret list of things'}];
   let templates = [{name: 'Decision'}, {name: 'Ruling'}];
   let thesauris = [{_id: 'abc1'}];
 
   describe('setDocuments', () => {
     it('should return a SET_DOCUMENTS action ', () => {
-      let action = actions.setDocuments(documents);
-      expect(action).toEqual({type: types.SET_DOCUMENTS, documents});
+      let action = actions.setDocuments(documentCollection);
+      expect(action).toEqual({type: types.SET_DOCUMENTS, documents: documentCollection});
     });
   });
 
   describe('setTemplates', () => {
-    let documentTypes = 'generated document types';
+    let documentTypes = {typea: true, typeb: false};
     let libraryFilters = 'generated filters';
+    let dispatch;
+    let getState;
+    let filters = {
+      documentTypes,
+      properties: ['library properties']
+    };
 
     beforeEach(() => {
       spyOn(libraryHelper, 'generateDocumentTypes').and.returnValue(documentTypes);
       spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
+      dispatch = jasmine.createSpy('dispatch');
+      getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters)}});
     });
 
-    it('should return a SET_LIBRARY_TEMPLATES action ', () => {
-      let action = actions.setTemplates(templates, thesauris);
+    it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
+      actions.setTemplates(templates, thesauris)(dispatch, getState);
       expect(libraryHelper.generateDocumentTypes).toHaveBeenCalledWith(templates);
-      expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, 'generated document types', thesauris);
-      expect(action).toEqual({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.SET_LIBRARY_TEMPLATES,
+        templates, thesauris, documentTypes,
+        libraryFilters: ['library properties']
+      });
     });
   });
 
@@ -76,10 +87,13 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D', 'get', {body: JSON.stringify(documents)})
-      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D', 'get', {body: JSON.stringify(documents)});
+      .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
+      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D', 'get',
+            {body: JSON.stringify(documentCollection)}
+           )
+      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get',
+            {body: JSON.stringify(documentCollection)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -88,7 +102,7 @@ describe('libraryActions', () => {
       let getState;
       let state;
       beforeEach(() => {
-        state = {properties: [{name: 'author', active: true}]};
+        state = {properties: [{name: 'author', active: true}], documentTypes: {decision: true, ruling: false}};
         store = {library: {filters: Immutable.fromJS(state)}};
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
@@ -96,8 +110,9 @@ describe('libraryActions', () => {
       it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D')).toBe(true);
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
+          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%22author%22%3A%22batman%22%7D&types=%5B%22decision%22%5D'))
+          .toBe(true);
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
           done();
         })
         .catch(done.fail);
@@ -108,8 +123,8 @@ describe('libraryActions', () => {
         store.library.filters = Immutable.fromJS(state);
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D')).toBe(true);
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents});
+          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D')).toBe(true);
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
           done();
         })
         .catch(done.fail);
@@ -129,7 +144,7 @@ describe('libraryActions', () => {
       it('should perform a search and dispatch a SET_SUGGESTIONS action with the result ', (done) => {
         actions.getSuggestions('batman')(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_SUGGESTIONS, suggestions: documents});
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_SUGGESTIONS, suggestions: documentCollection});
           done();
         })
         .catch(done.fail);

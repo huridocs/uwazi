@@ -1,13 +1,24 @@
 #app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   padding-top: 60px;
   overflow: hidden;
 }
 
 header {
   width: 100%;
+}
+
+.container-fluid {
+  margin-right: 0;
+  margin-left: 0;
+  flex: 1;
+  height: 100%;
+}
+
+.app-content > div {
+  height: 100%;
 }
 
 .panel-footer {
@@ -76,4 +87,8 @@ header ul .btn .fa {
 
 .well .col-sm-8 {
   min-height: 61px;
+}
+
+.search__filter > li label {
+  font-weight: bold;
 }

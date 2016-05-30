@@ -16,7 +16,8 @@ describe('TargetDocument', function () {
       uiState: Immutable.fromJS({
         reference: {targetRange: {selection: 'selection'}}
       }),
-      targetDocument: {name: 'document'}
+      targetDoc: Immutable.fromJS({name: 'document'}),
+      targetDocHTML: Immutable.fromJS({pages: 'pages', css: 'css'})
     }
   };
 
@@ -29,7 +30,8 @@ describe('TargetDocument', function () {
     render();
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});
-    expect(props.document.name).toBe('document');
+    expect(props.doc.toJS().name).toBe('document');
+    expect(props.docHTML.toJS()).toEqual({pages: 'pages', css: 'css'});
     expect(props.references).toEqual([]);
     expect(props.className).toBe('targetDocument');
   });

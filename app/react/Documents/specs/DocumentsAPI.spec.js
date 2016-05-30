@@ -1,4 +1,4 @@
-import documentsAPI from 'app/Library/DocumentsAPI';
+import documentsAPI from '../DocumentsAPI';
 import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 

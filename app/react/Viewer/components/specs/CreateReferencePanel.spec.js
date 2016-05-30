@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
 import {CreateReferencePanel} from 'app/Viewer/components/CreateReferencePanel';
@@ -11,7 +12,7 @@ describe('CreateReferencePanel', () => {
 
   beforeEach(() => {
     props = {
-      results: []
+      results: Immutable.fromJS([])
     };
   });
 
@@ -36,7 +37,7 @@ describe('CreateReferencePanel', () => {
   });
 
   it('should render SearchResults passing the results, searching flag and selected element', () => {
-    props.results = ['results'];
+    props.results = Immutable.fromJS(['results']);
     props.searching = false;
     props.selected = 'selected';
     render();

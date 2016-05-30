@@ -1,11 +1,5 @@
 export default {
   docs: [
-    {_id: '_design/relationtypes',
-      language: 'javascript',
-      views: {
-        all: {map: 'function(doc) {\nif(doc.type === "relationtype")\t\n  emit(doc._id, doc);\n}'}
-      }
-    },
     {
       _id: '8202c463d6158af8065022d9b5014a18',
       type: 'relationtype',

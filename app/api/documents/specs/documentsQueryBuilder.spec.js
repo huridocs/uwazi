@@ -39,6 +39,22 @@ describe('documentQueryBuilder', () => {
     });
   });
 
+  describe('filterByTemplate', () => {
+    it('should add a match to get only documents that match with the templates', () => {
+      let query = queryBuilder().filterByTemplate(['template1', 'template2']).query();
+      let expectedMatcher = {
+        bool: {
+          should: [
+             {match: {'doc.template': 'template1'}},
+             {match: {'doc.template': 'template2'}}
+          ],
+          minimum_should_match: 1
+        }
+      };
+      expect(query.filter.bool.must[1]).toEqual(expectedMatcher);
+    });
+  });
+
   describe('fullTextSearch', () => {
     it('should do a multi_match on default fields', () => {
       let query = queryBuilder().fullTextSearch('term').query();

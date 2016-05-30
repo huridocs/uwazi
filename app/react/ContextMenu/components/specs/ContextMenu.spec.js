@@ -1,19 +1,26 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {shallow} from 'enzyme';
+import {connect} from 'react-redux';
 
 import {ContextMenu} from 'app/ContextMenu/components/ContextMenu';
-import ViewerDefaultMenu from 'app/Viewer/components/ViewerDefaultMenu';
-import ViewerTextSelectedMenu from 'app/Viewer/components/ViewerTextSelectedMenu';
-import ViewerSaveReferenceMenu from 'app/Viewer/components/ViewerSaveReferenceMenu';
-import ViewerSaveTargetReferenceMenu from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
-import UploadsMenu from 'app/Uploads/components/UploadsMenu';
-import LibraryMenu from 'app/Library/components/LibraryMenu';
+
+let SubMenu = () => {
+  return <div/>;
+};
+
+class SubMenu2 extends Component {
+  render() {
+    return <div/>;
+  }
+}
+
+let SubMenu2Container = connect()(SubMenu2);
 
 describe('ContextMenu', () => {
   let component;
 
   let render = (withProps = {}) => {
-    component = shallow(<ContextMenu {...withProps}/>);
+    component = shallow(<ContextMenu {...withProps}><SubMenu/><SubMenu2Container/></ContextMenu>);
   };
 
   describe('when props.open is false', () => {
@@ -69,55 +76,24 @@ describe('ContextMenu', () => {
         expect(component.find('div').children().length).toBe(0);
       });
     });
-    describe('when type is ViewerDefaultMenu', () => {
-      it('should render this menu', () => {
-        let props = {type: 'ViewerDefaultMenu', open: true};
+
+    describe('when type is SubMenu and is open', () => {
+      it('should render this menu with active true', () => {
+        let props = {type: 'SubMenu', open: true};
         render(props);
 
-        expect(component.find(ViewerDefaultMenu).length).toBe(1);
-        expect(component.find(ViewerDefaultMenu).props().active).toBe(true);
+        expect(component.find(SubMenu).length).toBe(1);
+        expect(component.find(SubMenu).props().active).toBe(true);
       });
     });
-    describe('when type is ViewerTextSelectedMenu', () => {
-      it('should render this menu', () => {
-        let props = {type: 'ViewerTextSelectedMenu', open: false};
+
+    describe('when type is SubMenu2', () => {
+      it('should render SubMenu2Container', () => {
+        let props = {type: 'SubMenu2', open: false};
         render(props);
 
-        expect(component.find(ViewerTextSelectedMenu).length).toBe(1);
-        expect(component.find(ViewerTextSelectedMenu).props().active).toBe(false);
-      });
-    });
-    describe('when type is ViewerSaveReferenceMenu', () => {
-      it('should render this menu', () => {
-        let props = {type: 'ViewerSaveReferenceMenu'};
-        render(props);
-
-        expect(component.find(ViewerSaveReferenceMenu).length).toBe(1);
-      });
-    });
-    describe('when type is ViewerSaveTargetReferenceMenu', () => {
-      it('should render this menu', () => {
-        let props = {type: 'ViewerSaveTargetReferenceMenu'};
-        render(props);
-
-        expect(component.find(ViewerSaveTargetReferenceMenu).length).toBe(1);
-      });
-    });
-    describe('when type is LibraryMenu', () => {
-      it('should render this menu', () => {
-        let props = {type: 'LibraryMenu', open: true};
-        render(props);
-
-        expect(component.find(LibraryMenu).length).toBe(1);
-      });
-    });
-    describe('when type is UploadsMenu', () => {
-      it('should render this menu', () => {
-        let props = {type: 'UploadsMenu', open: true};
-        render(props);
-
-        expect(component.find(UploadsMenu).length).toBe(1);
-        expect(component.find(UploadsMenu).props().active).toBe(true);
+        expect(component.find(SubMenu2Container).length).toBe(1);
+        expect(component.find(SubMenu2Container).props().active).toBe(false);
       });
     });
   });

@@ -35,6 +35,7 @@ karmaConfig = {
     'karma-coverage'
   ],
   browserNoActivityTimeout: 100000,
+  browserDisconnectTimeout: 10000,
   preprocessors: {
     'tests.webpack.js': [ 'webpack', 'sourcemap' ]
   },
@@ -55,7 +56,7 @@ karmaConfig = {
 
 module.exports = function (config) {
   if (config.ci) {
-    karmaConfig.browsers = ['Firefox', 'Chrome', 'PhantomJS'];
+    karmaConfig.browsers = ['Firefox', 'Chrome'];
     karmaConfig.singleRun = true;
     karmaConfig.reporters.push('coverage');
     karmaConfig.webpack.module.preLoaders = [{

@@ -1,6 +1,7 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import {APIURL} from 'app/config';
 import Library from 'app/Library/Library';
@@ -8,6 +9,7 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import RouteHandler from 'app/controllers/App/RouteHandler';
 import createStore from 'app/store';
 import * as actionTypes from 'app/Library/actions/actionTypes';
+import * as libraryActions from '../actions/libraryActions';
 
 describe('Library', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
@@ -66,10 +68,27 @@ describe('Library', () => {
       })
       .catch(done.fail);
     });
+
+    describe('when there store is already populated with documents', () => {
+      it('should return the store values', (done) => {
+        createStore({search: {prop1: 'prop1'}, library: {documents: Immutable.fromJS(['doc1', 'doc2'])}});
+        Library.requestState()
+        .then((state) => {
+          expect(state.library.documents).toEqual(['doc1', 'doc2']);
+          expect(state.library.filters.templates).toEqual(templates.rows);
+          expect(state.library.filters.documentTypes).toEqual({abc1: false, abc2: false});
+          expect(state.library.filters.allDocumentTypes).toBe(false);
+          expect(state.library.filters.thesauris).toEqual(thesauris.rows);
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
   });
 
   describe('setReduxState()', () => {
     beforeEach(() => {
+      spyOn(libraryActions, 'setTemplates');
       instance.setReduxState({library: {documents, filters: {templates: templates.rows, thesauris: thesauris.rows}}});
     });
 
@@ -78,13 +97,8 @@ describe('Library', () => {
     });
 
     it('should call setTemplates with the templates and thesauris', () => {
-      expect(context.store.dispatch)
-      .toHaveBeenCalledWith({
-        type: actionTypes.SET_LIBRARY_TEMPLATES,
-        templates: templates.rows,
-        thesauris: thesauris.rows,
-        documentTypes: Object({abc1: false, abc2: false}),
-        libraryFilters: [ ]});
+      expect(libraryActions.setTemplates)
+      .toHaveBeenCalledWith(templates.rows, thesauris.rows);
     });
   });
 });
