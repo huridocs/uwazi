@@ -38,6 +38,20 @@ describe('ViewMetadataPanel', () => {
     });
   });
 
+  describe('close', () => {
+    it('should close panel and reset form', () => {
+      props.closePanel = jasmine.createSpy('closePanel');
+      props.resetForm = jasmine.createSpy('resetForm');
+      props.docBeingEdited = true;
+      render();
+
+      component.find('i').simulate('click');
+
+      expect(props.closePanel).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalledWith('documentViewer.docForm');
+    });
+  });
+
   describe('onSubmit', () => {
     it('should saveDocument', () => {
       props.saveDocument = jasmine.createSpy('saveDocument');

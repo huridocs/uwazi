@@ -5,11 +5,17 @@ import documents from 'app/Documents';
 import {bindActionCreators} from 'redux';
 import {saveDocument} from '../actions/documentActions';
 import {closePanel} from '../actions/uiActions';
+import {actions as formActions} from 'react-redux-form';
 
 import DocumentForm from '../containers/DocumentForm';
 import {ShowDocument} from 'app/Documents';
 
 export class ViewMetadataPanel extends Component {
+  close() {
+    this.props.resetForm('documentViewer.docForm');
+    this.props.closePanel();
+  }
+
   submit(doc) {
     this.props.saveDocument(doc);
   }
@@ -20,7 +26,7 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open}>
         <h1>{doc.title}</h1>
-        <i className="fa fa-close close-modal" onClick={this.props.closePanel}/>
+        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         {(() => {
           if (docBeingEdited) {
             return <DocumentForm onSubmit={this.submit.bind(this)} />;
@@ -37,7 +43,8 @@ ViewMetadataPanel.propTypes = {
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
-  closePanel: PropTypes.func
+  closePanel: PropTypes.func,
+  resetForm: PropTypes.func
 };
 
 const mapStateToProps = ({documentViewer}) => {
@@ -49,7 +56,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveDocument, closePanel}, dispatch);
+  return bindActionCreators({saveDocument, closePanel, resetForm: formActions.reset}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);
