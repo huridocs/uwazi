@@ -6,7 +6,6 @@ import backend from 'fetch-mock';
 import {APIURL} from 'app/config.js';
 import NewTemplate from 'app/Templates/NewTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
-// import RouteHandler from 'app/controllers/App/RouteHandler';
 
 describe('NewTemplate', () => {
   let component;

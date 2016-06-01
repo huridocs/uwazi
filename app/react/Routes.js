@@ -1,13 +1,12 @@
 import React from 'react';
 import {Route, IndexRoute} from 'react-router';
 
-import App from './controllers/App/App';
-import NoMatch from './controllers/App/NoMatch';
+import App from 'app/App/App';
+import NoMatch from 'app/App/NoMatch';
 
-import Login from './controllers/Users/Login';
-import MyAccount from './controllers/Users/MyAccount';
+import Login from 'app/Users/Login';
+import MyAccount from 'app/Users/MyAccount';
 
-// import Viewer from './controllers/Viewer/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Uploads from 'app/Uploads/UploadsRoute';
 

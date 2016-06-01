@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import App from '../App.js';
-import {events} from '../../../utils/index';
+import {events} from 'app/utils/index';
 import TestController from './TestController';
 
 describe('App', () => {

@@ -3,7 +3,7 @@ import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config.js';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 

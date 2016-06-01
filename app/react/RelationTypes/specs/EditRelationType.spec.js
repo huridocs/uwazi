@@ -5,7 +5,7 @@ import {shallow} from 'enzyme';
 import {APIURL} from 'app/config.js';
 import EditRelationType from 'app/RelationTypes/EditRelationType';
 import RelationTypeForm from 'app/RelationTypes/components/RelationTypeForm';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import * as relationTypesActions from 'app/RelationTypes/actions/relationTypesActions';
 
 describe('EditRelationType', () => {

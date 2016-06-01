@@ -1,9 +1,7 @@
 import React from 'react';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import backend from 'fetch-mock';
-// import TestUtils from 'react-addons-test-utils';
-import {APIURL} from '../../../config.js';
-// import Immutable from 'immutable';
+import {APIURL} from '../../config.js';
 import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
 

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import {browserHistory} from 'react-router';
 import Login from '../Login.js';
-import {events} from '../../../utils/index';
+import {events} from 'app/utils';
 import backend from 'fetch-mock';
 import MockProvider from '../../App/specs/MockProvider';
 

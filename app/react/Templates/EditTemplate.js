@@ -6,7 +6,7 @@ import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import {setTemplate} from 'app/Templates/actions/templateActions';
 import {setTemplates} from 'app/Templates/actions/templatesActions';
 import {setThesauris} from 'app/Templates/actions/uiActions';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
 
 let prepareTemplate = (template) => {

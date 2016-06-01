@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react';
 import fetch from 'isomorphic-fetch';
-import RouteHandler from '../App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import Helmet from 'react-helmet';
-import Alert from '../../components/Elements/Alert';
+import Alert from 'app/components/Elements/Alert';
 
 class MyAccount extends RouteHandler {
 

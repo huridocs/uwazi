@@ -1,13 +1,12 @@
 import fetch from 'isomorphic-fetch';
 import React, {Component, PropTypes} from 'react';
 
-import {events} from '../../utils/index';
+import {events} from 'app/utils';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import './scss/styles.scss';
 import './scss/fixes.scss';
-//import './scss/alerts.scss';
 
 import Helmet from 'react-helmet';
 import Notifications from 'app/Notifications';

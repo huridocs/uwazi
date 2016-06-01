@@ -9,7 +9,7 @@ import {setRelationTypes, checkRelationTypeCanBeDeleted} from 'app/RelationTypes
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import CantDeleteTemplateAlert from 'app/Metadata/components/CantDeleteTemplateAlert';
 import DeleteTemplateConfirm from 'app/Metadata/components/DeleteTemplateConfirm';
 import CantDeleteRelationType from 'app/Metadata/components/CantDeleteRelationType';
