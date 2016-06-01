@@ -33,7 +33,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           connectDragSource: identity,
           isDragging: false,
           uiState: Immutable.fromJS({}),
-          formState: {fields: []}
+          formState: {fields: [], errors: {}}
         };
         let sourceProps = {
           label: 'source',
@@ -42,7 +42,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           connectDragSource: identity,
           isDragging: false,
           uiState: Immutable.fromJS({}),
-          formState: {fields: []}
+          formState: {fields: [], errors: {}}
         };
         return <div>
                 <Target {...targetProps} {...actions}/>
@@ -71,7 +71,7 @@ describe('MetadataProperty', () => {
         label: 'test',
         index: 1,
         localID: 'id',
-        formState: {fields: []},
+        formState: {fields: [], errors: {}},
         removeProperty,
         editProperty,
         uiState: Immutable.fromJS({editingProperty: ''})
@@ -131,7 +131,7 @@ describe('MetadataProperty', () => {
           template: {
             data: templateData,
             uiState: Immutable.fromJS({templates: []}),
-            formState: {fields: []}
+            formState: {fields: [], errors: {}}
           },
           modals: Immutable.fromJS({})
         };
@@ -143,7 +143,7 @@ describe('MetadataProperty', () => {
     describe('dragSource', () => {
       beforeEach(() => {
         let TestComponent = wrapInTestContext(dragSource);
-        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}), formState: {fields: []}});
+        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}), formState: {fields: [], errors: {}}});
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });

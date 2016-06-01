@@ -6,7 +6,8 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
-import {Form, actions as formActions} from 'react-redux-form';
+import {modelReducer, formReducer} from 'react-redux-form';
+import {combineReducers} from 'redux';
 
 import {MetadataTemplate, dropTarget} from 'app/Templates/components/MetadataTemplate';
 import {FormField} from 'app/Forms';
@@ -19,8 +20,8 @@ function sourceTargetTestContext(Target, Source, actions) {
       render() {
         const identity = x => x;
         let properties = [{label: 'childTarget', localID: 'childId', inserting: true}];
-        let targetProps = {properties: properties, connectDropTarget: identity, formState: {fields: {}}};
-        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity, formState: {fields: {}}};
+        let targetProps = {properties: properties, connectDropTarget: identity, formState: {fields: {}, errors: {}}};
+        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity, formState: {fields: {}, errors: {}}};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -35,13 +36,23 @@ describe('MetadataTemplate', () => {
     let result;
     let formModel = {name: '', properties: properties};
     props.properties = properties;
-    let store = createStore(() => {
-      return {
-        template: {data: formModel, formState: {fields: {name: {}, properties: []}}, uiState: Immutable.fromJS({templates: []})},
-        form: {template: {}},
-        modals: Immutable.fromJS({})
-      };
-    });
+    let initialData = {
+      template: {data: formModel, uiState: Immutable.fromJS({templates: []})},
+      form: {template: {}},
+      modals: Immutable.fromJS({})
+    };
+    let store = createStore(
+      combineReducers({template:
+        combineReducers({
+          data: modelReducer('template.data', formModel),
+          formState: formReducer('template.data'),
+          uiState: () => initialData.template.uiState
+        }),
+        form: () => initialData.form,
+        modals: () => initialData.modals
+      }),
+      initialData
+    );
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props} index={1}/></Provider>);
     return result;
   }
@@ -66,42 +77,6 @@ describe('MetadataTemplate', () => {
         let props = {properties: [{label: 'country'}, {label: 'author'}], connectDropTarget: (x) => x, formState: {fields: {}}};
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
-      });
-    });
-
-    describe('onSubmit', () => {
-      describe('when the form is valid', () => {
-        it('should call saveTemplate', () => {
-          let saveTemplate = jasmine.createSpy('saveTemplate');
-          let props = {
-            properties: [{label: 'country'}, {label: 'author'}],
-            connectDropTarget: (x) => x,
-            formState: {fields: {}, valid: true},
-            saveTemplate
-          };
-          let component = shallow(<MetadataTemplate {...props} />);
-          component.find(Form).simulate('submit');
-          expect(saveTemplate).toHaveBeenCalled();
-        });
-      });
-
-      describe('when the form is invalid', () => {
-        it('should call saveTemplate', () => {
-          let saveTemplate = jasmine.createSpy('saveTemplate');
-          let setSubmitFailed = jasmine.createSpy('setSubmitFailed');
-          let props = {
-            properties: [{label: 'country'}, {label: 'author'}],
-            connectDropTarget: (x) => x,
-            formState: {fields: {}, valid: false},
-            saveTemplate,
-            setSubmitFailed
-          };
-          let component = shallow(<MetadataTemplate {...props} />);
-          spyOn(formActions, 'setSubmitFailed');
-          component.find(Form).simulate('submit');
-          expect(saveTemplate).not.toHaveBeenCalled();
-          expect(setSubmitFailed).toHaveBeenCalledWith('template.data');
-        });
       });
     });
   });
