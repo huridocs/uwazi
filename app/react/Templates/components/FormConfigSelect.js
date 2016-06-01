@@ -9,7 +9,7 @@ export class FormConfigSelect extends Component {
     return {
       required: (val) => val.trim() !== '',
       duplicated: (val) => {
-        return this.props.model.properties.reduce((validity, prop) => {
+        return this.props.data.properties.reduce((validity, prop) => {
           let differentLabel = prop.localID === this.props.formKey || prop.label !== val;
           return validity && differentLabel;
         }, true);
@@ -22,9 +22,9 @@ export class FormConfigSelect extends Component {
   }
 
   render() {
-    const {index, ui, model, formState} = this.props;
+    const {index, ui, data, formState} = this.props;
     const thesauris = ui.toJS().thesauris;
-    const ptoperty = model.properties[index];
+    const ptoperty = data.properties[index];
 
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
@@ -56,7 +56,7 @@ export class FormConfigSelect extends Component {
               })()}
               Label
               </span>
-              <FormField model={`template.model.properties[${index}].label`} validators={this.nameValidation()}>
+              <FormField model={`template.data.properties[${index}].label`} validators={this.nameValidation()}>
                 <input className="form-control"/>
               </FormField>
             </div>
@@ -64,7 +64,7 @@ export class FormConfigSelect extends Component {
           <div className="col-sm-4">
             <div className={contentClass}>
               <span className="input-group-addon">Thesauri</span>
-              <SelectField model={`template.model.properties[${index}].content`}>
+              <SelectField model={`template.data.properties[${index}].content`}>
                 <Select options={thesauris} optionsLabel="name" optionsValue="_id" validators={this.contentValidation()}/>
               </SelectField>
             </div>
@@ -72,7 +72,7 @@ export class FormConfigSelect extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <FormField model={`template.model.properties[${index}].required`}>
+                <FormField model={`template.data.properties[${index}].required`}>
                   <input id={'required' + this.props.index} type="checkbox"/>
                 </FormField>
               </span>
@@ -83,7 +83,7 @@ export class FormConfigSelect extends Component {
         <div className="well">
           <div className="row">
             <div className="col-sm-4">
-              <FormField model={`template.model.properties[${index}].filter`}>
+              <FormField model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
               &nbsp;
@@ -102,7 +102,7 @@ export class FormConfigSelect extends Component {
 
 FormConfigSelect.propTypes = {
   ui: PropTypes.object,
-  model: PropTypes.object,
+  data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string
@@ -110,7 +110,7 @@ FormConfigSelect.propTypes = {
 
 export function mapStateToProps(state) {
   return {
-    model: state.template.model,
+    data: state.template.data,
     ui: state.template.uiState,
     formState: state.template.formState
   };

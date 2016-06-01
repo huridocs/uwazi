@@ -129,7 +129,7 @@ describe('MetadataProperty', () => {
       store = createStore(() => {
         return {
           template: {
-            model: templateData,
+            data: templateData,
             uiState: Immutable.fromJS({templates: []}),
             formState: {fields: []}
           },

@@ -10,16 +10,17 @@ import {actions as formActions} from 'react-redux-form';
 import {inserted, addProperty, saveTemplate} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
+import validator from './ValidateTemplate';
 
 export class MetadataTemplate extends Component {
 
-  nameValidation() {
-    return {required: (val) => val.trim() !== ''};
+  validation() {
+    return {name: {required: true}};
   }
 
   handleSubmit(template) {
     if (!this.props.formState.valid) {
-      this.props.setSubmitFailed('template.model');
+      this.props.setSubmitFailed('template.data');
       return;
     }
 
@@ -33,42 +34,41 @@ export class MetadataTemplate extends Component {
       nameGroupClass += ' has-error';
     }
 
-    return connectDropTarget(
-      <div>
-        <RemovePropertyConfirm />
-        <Form
-          model="template.model"
-          onSubmit={this.handleSubmit.bind(this)}
-          className="metadataTemplate panel-default panel"
-        >
-          <div className="metadataTemplate-heading panel-heading">
-            <div className={nameGroupClass}>
-              <FormField model="template.model.name" validators={this.nameValidation()}>
-                <input placeholder="Template name" className="form-control"/>
-              </FormField>
-            </div>
-            &nbsp;
-            <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
-            &nbsp;
-            <button type="submit" className="btn btn-success save-template">
-              <i className="fa fa-save"/> Save Template
-            </button>
-          </div>
-          <ul className="metadataTemplate-list list-group">
-            {(() => {
-              if (this.props.properties.length === 0) {
-                return <div className="no-properties">
-                        <i className="fa fa-clone"></i>Drag properties here to start
-                      </div>;
-              }
-            })()}
-            {this.props.properties.map((config, index) => {
-              return <MetadataProperty {...config} key={config.localID} index={index}/>;
-            })}
-          </ul>
-        </Form>
-      </div>
-    );
+    return <div>
+            <RemovePropertyConfirm />
+            <Form
+              model="template.data"
+              onSubmit={this.handleSubmit.bind(this)}
+              className="metadataTemplate panel-default panel"
+              validators={validator(this.props.properties)}
+            >
+              <div className="metadataTemplate-heading panel-heading">
+                <div className={nameGroupClass}>
+                  <FormField model="template.data.name">
+                    <input placeholder="Template name" className="form-control"/>
+                  </FormField>
+                </div>
+                &nbsp;
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
+                <button type="submit" className="btn btn-success save-template">
+                  <i className="fa fa-save"/> Save Template
+                </button>
+              </div>
+              {connectDropTarget(<ul className="metadataTemplate-list list-group">
+                {(() => {
+                  if (this.props.properties.length === 0) {
+                    return <div className="no-properties">
+                            <i className="fa fa-clone"></i>Drag properties here to start
+                          </div>;
+                  }
+                })()}
+                {this.props.properties.map((config, index) => {
+                  return <MetadataProperty {...config} key={config.localID} index={index}/>;
+                })}
+              </ul>)}
+            </Form>
+          </div>;
   }
 }
 
@@ -108,7 +108,7 @@ export {dropTarget};
 
 const mapStateToProps = ({template}) => {
   return {
-    properties: template.model.properties,
+    properties: template.data.properties,
     formState: template.formState
   };
 };

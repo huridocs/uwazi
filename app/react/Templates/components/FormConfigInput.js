@@ -5,21 +5,9 @@ import {connect} from 'react-redux';
 
 export class FormConfigInput extends Component {
 
-  validation() {
-    return {
-      required: (val) => val.trim() !== '',
-      duplicated: (val) => {
-        return this.props.model.properties.reduce((validity, prop) => {
-          let differentLabel = prop.localID === this.props.formKey || prop.label !== val;
-          return validity && differentLabel;
-        }, true);
-      }
-    };
-  }
-
   render() {
-    const {index, model, formState} = this.props;
-    const ptoperty = model.properties[index];
+    const {index, data, formState} = this.props;
+    const ptoperty = data.properties[index];
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
     let duplicatedLabel = formState.fields[labelKey] && formState.fields[labelKey].errors.duplicated;
@@ -45,7 +33,7 @@ export class FormConfigInput extends Component {
                 })()}
                 Label
               </span>
-              <FormField model={`template.model.properties[${index}].label`} validators={this.validation()}>
+              <FormField model={`template.data.properties[${index}].label`}>
                 <input className="form-control" />
               </FormField>
             </div>
@@ -53,7 +41,7 @@ export class FormConfigInput extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <FormField model={`template.model.properties[${index}].required`}>
+                <FormField model={`template.data.properties[${index}].required`}>
                   <input id={'required' + index} type="checkbox" className="asd"/>
                 </FormField>
               </span>
@@ -64,7 +52,7 @@ export class FormConfigInput extends Component {
         <div className="well">
           <div className="row">
             <div className="col-sm-4">
-              <FormField model={`template.model.properties[${index}].filter`}>
+              <FormField model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
               &nbsp;
@@ -82,7 +70,7 @@ export class FormConfigInput extends Component {
 }
 
 FormConfigInput.propTypes = {
-  model: PropTypes.object,
+  data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string
@@ -90,7 +78,7 @@ FormConfigInput.propTypes = {
 
 export function mapStateToProps({template}) {
   return {
-    model: template.model,
+    data: template.data,
     formState: template.formState
   };
 }

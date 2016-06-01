@@ -1,39 +1,32 @@
-export function validateProperty(property = {}, allProperties = []) {
-  let errors = {};
-  if (!property.label) {
-    errors.label = 'Required';
-  }
-
-  let otherPropertyLabels = allProperties.filter((p) => p.localID !== property.localID).map((p) => p.label.toLowerCase());
-  if (property.label && otherPropertyLabels.indexOf(property.label.toLowerCase()) !== -1) {
-    errors.label = 'Duplicated';
-  }
-
-  let isSelect = property.type === 'list' || property.type === 'select';
-  if (isSelect && !property.content) {
-    errors.content = 'Required';
-  }
-
-  return errors;
+export function validateName() {
+  return {
+    required: (val) => val && val.trim() !== ''
+  };
 }
 
-export function validateName(values) {
-  let errors = {};
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-
-  return errors;
+export function validateProperty(property, index, properties) {
+  let validator = {};
+  validator[`properties.${index}.label`] = {
+    required: (val) => val && val.trim() !== '',
+    duplicated: (val) => {
+      return properties.reduce((validity, prop) => {
+        let differentLabel = prop.localID === this.props.formKey || prop.label !== val;
+        return validity && differentLabel;
+      }, true);
+    }
+  };
+  return validator;
 }
 
-export default function validate(values) {
-  let errors = validateName(values);
+export default function validate(properties) {
+  let validator = {
+    name: validateName()
+  };
 
-  errors.properties = [];
-  values.properties.forEach((property, index) => {
-    errors.properties[index] = validateProperty(property, values.properties);
+  properties.forEach((property, index) => {
+    validator = Object.assign(validator, validateProperty(property, index, properties));
   });
 
-  return errors;
+  console.log(validator);
+  return validator;
 }
