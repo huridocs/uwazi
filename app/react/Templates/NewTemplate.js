@@ -6,7 +6,7 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import {setThesauris} from 'app/Templates/actions/uiActions';
 import {setTemplates} from 'app/Templates/actions/templatesActions';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 
 export default class NewTemplate extends RouteHandler {
 

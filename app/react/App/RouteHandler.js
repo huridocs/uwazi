@@ -1,5 +1,5 @@
 import {Component, PropTypes} from 'react';
-import api from '../../utils/api';
+import api from 'app/utils/api';
 
 class RouteHandler extends Component {
 

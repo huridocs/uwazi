@@ -7,11 +7,10 @@ import Doc from 'app/Library/components/Doc';
 
 describe('DocumentsList', () => {
   let component;
-  let documents;
   let props;
+  let documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
 
   beforeEach(() => {
-    documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
     props = {documents};
   });
 
@@ -39,7 +38,7 @@ describe('DocumentsList', () => {
     it('should contain the documents', () => {
       let store = {
         library: {
-          documents: Immutable.fromJS(documents),
+          documents: documents,
           ui: Immutable.fromJS({filtersPanel: 'panel'})
         }
       };

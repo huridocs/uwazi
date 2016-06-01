@@ -2,7 +2,7 @@ import React from 'react';
 
 import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';
 import Viewer from 'app/Viewer/components/Viewer';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';

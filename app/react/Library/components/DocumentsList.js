@@ -7,7 +7,7 @@ import {RowList} from 'app/Layout/Lists';
 
 export class DocumentsList extends Component {
   render() {
-    let documents = this.props.documents;
+    let documents = this.props.documents.toJS();
     return (
       <main className={'document-viewer ' + (this.props.filtersPanel ? 'col-xs-12 col-sm-8 col-md-9 is-active' : 'col-xs-12')}>
         <div className="sort-by">
@@ -17,7 +17,7 @@ export class DocumentsList extends Component {
           </div>
         </div>
         <RowList>
-          {documents.map((doc, index) => <Doc {...doc.toJS()} key={index} />)}
+          {documents.map((doc, index) => <Doc {...doc} key={index} />)}
         </RowList>
       </main>
     );

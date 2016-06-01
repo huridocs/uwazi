@@ -1,6 +1,6 @@
 import React from 'react';
 
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
 
 export default class NewThesauri extends RouteHandler {
