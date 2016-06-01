@@ -32,9 +32,7 @@ export class MetadataProperty extends Component {
       propertyClass += ' dragging';
     }
 
-    let labelError = formState.fields[`properties.${index}.label`] && !formState.fields[`properties.${index}.label`].valid;
-    let contentError = formState.fields[`properties.${index}.content`] && !formState.fields[`properties.${index}.content`].valid;
-    if (labelError || contentError) {
+    if (formState.errors[`properties.${index}.label.required`] || formState.errors[`properties.${index}.label.duplicated`]) {
       propertyClass += ' error';
     }
 
@@ -78,7 +76,8 @@ MetadataProperty.propTypes = {
   inserting: PropTypes.bool,
   removeProperty: PropTypes.func,
   uiState: PropTypes.object,
-  editProperty: PropTypes.func
+  editProperty: PropTypes.func,
+  formState: PropTypes.object
 };
 
 

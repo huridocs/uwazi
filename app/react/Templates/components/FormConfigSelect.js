@@ -5,18 +5,6 @@ import {connect} from 'react-redux';
 
 export class FormConfigSelect extends Component {
 
-  nameValidation() {
-    return {
-      required: (val) => val.trim() !== '',
-      duplicated: (val) => {
-        return this.props.data.properties.reduce((validity, prop) => {
-          let differentLabel = prop.localID === this.props.formKey || prop.label !== val;
-          return validity && differentLabel;
-        }, true);
-      }
-    };
-  }
-
   contentValidation() {
     return {required: (val) => val.trim() !== ''};
   }
@@ -28,17 +16,10 @@ export class FormConfigSelect extends Component {
 
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
-    let duplicatedLabel = formState.fields[labelKey] && formState.fields[labelKey].errors.duplicated;
-    if (formState.fields[labelKey] &&
-      !formState.fields[labelKey].valid &&
-      (formState.submitFailed || formState.fields[labelKey].dirty || duplicatedLabel)) {
+    let requiredLabel = formState.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
-    }
-
-    let contentClass = 'input-group';
-    let contentKey = `properties.${index}.content`;
-    if (formState.fields[contentKey] && !formState.fields[contentKey].valid && (formState.submitFailed || formState.fields[contentKey].dirty)) {
-      contentClass += ' has-error';
     }
 
     return (
@@ -47,25 +28,18 @@ export class FormConfigSelect extends Component {
           <div className="col-sm-4">
             <div className={labelClass}>
               <span className="input-group-addon">
-              {(() => {
-                if (duplicatedLabel) {
-                  return <span>
-                          Duplicated&nbsp;
-                          </span>;
-                }
-              })()}
               Label
               </span>
-              <FormField model={`template.data.properties[${index}].label`} validators={this.nameValidation()}>
+              <FormField model={`template.data.properties[${index}].label`}>
                 <input className="form-control"/>
               </FormField>
             </div>
           </div>
           <div className="col-sm-4">
-            <div className={contentClass}>
+            <div className="input-group">
               <span className="input-group-addon">Thesauri</span>
               <SelectField model={`template.data.properties[${index}].content`}>
-                <Select options={thesauris} optionsLabel="name" optionsValue="_id" validators={this.contentValidation()}/>
+                <Select options={thesauris} optionsLabel="name" optionsValue="_id"/>
               </SelectField>
             </div>
           </div>
@@ -80,6 +54,17 @@ export class FormConfigSelect extends Component {
             </div>
           </div>
         </div>
+        {(() => {
+          if (duplicatedLabel) {
+            return <div className="row has-error">
+                    <div className="col-sm-4">
+                    <i className="fa fa-exclamation-triangle"></i>
+                      &nbsp;
+                      Duplicated label
+                    </div>
+                  </div>;
+          }
+        })()}
         <div className="well">
           <div className="row">
             <div className="col-sm-4">

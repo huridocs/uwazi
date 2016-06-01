@@ -1,32 +1,39 @@
-export function validateName() {
+function validateName() {
   return {
     required: (val) => val && val.trim() !== ''
   };
 }
 
-export function validateProperty(property, index, properties) {
-  let validator = {};
-  validator[`properties.${index}.label`] = {
-    required: (val) => val && val.trim() !== '',
-    duplicated: (val) => {
-      return properties.reduce((validity, prop) => {
-        let differentLabel = prop.localID === this.props.formKey || prop.label !== val;
-        return validity && differentLabel;
-      }, true);
-    }
-  };
-  return validator;
+export function validateDuplicatedLabel(property, properties) {
+  return properties.reduce((validity, prop) => {
+    let differentLabel = prop.localID === property.localID || prop.label !== property.label;
+    return validity && differentLabel;
+  }, true);
 }
 
-export default function validate(properties) {
+export default function (properties) {
   let validator = {
+    '': {},
     name: validateName()
   };
 
   properties.forEach((property, index) => {
-    validator = Object.assign(validator, validateProperty(property, index, properties));
+    validator[''][`properties.${index}.label.required`] = (template) => {
+      if (!template.properties[index]) {
+        return true;
+      }
+      let label = template.properties[index].label;
+      return label && label.trim() !== '';
+    };
+
+    validator[''][`properties.${index}.label.duplicated`] = (template) => {
+      if (!template.properties[index]) {
+        return true;
+      }
+      let prop = template.properties[index];
+      return validateDuplicatedLabel(prop, template.properties);
+    };
   });
 
-  console.log(validator);
   return validator;
 }

@@ -10,11 +10,9 @@ export class FormConfigInput extends Component {
     const ptoperty = data.properties[index];
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
-    let duplicatedLabel = formState.fields[labelKey] && formState.fields[labelKey].errors.duplicated;
-    if (
-      formState.fields[labelKey] &&
-      !formState.fields[labelKey].valid &&
-      (formState.submitFailed || formState.fields[labelKey].dirty || duplicatedLabel)) {
+    let requiredLabel = formState.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
 
@@ -24,13 +22,6 @@ export class FormConfigInput extends Component {
           <div className="col-sm-4">
             <div className={labelClass}>
               <span className="input-group-addon">
-                {(() => {
-                  if (duplicatedLabel) {
-                    return <span>
-                            Duplicated&nbsp;
-                            </span>;
-                  }
-                })()}
                 Label
               </span>
               <FormField model={`template.data.properties[${index}].label`}>
@@ -49,6 +40,17 @@ export class FormConfigInput extends Component {
             </div>
           </div>
         </div>
+        {(() => {
+          if (duplicatedLabel) {
+            return <div className="row validation-error">
+                    <div className="col-sm-4">
+                      <i className="fa fa-exclamation-triangle"></i>
+                      &nbsp;
+                      Duplicated label
+                    </div>
+                  </div>;
+          }
+        })()}
         <div className="well">
           <div className="row">
             <div className="col-sm-4">

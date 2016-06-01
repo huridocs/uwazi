@@ -14,19 +14,6 @@ import validator from './ValidateTemplate';
 
 export class MetadataTemplate extends Component {
 
-  validation() {
-    return {name: {required: true}};
-  }
-
-  handleSubmit(template) {
-    if (!this.props.formState.valid) {
-      this.props.setSubmitFailed('template.data');
-      return;
-    }
-
-    this.props.saveTemplate(template);
-  }
-
   render() {
     const {connectDropTarget, formState} = this.props;
     let nameGroupClass = 'template-name form-group';
@@ -38,9 +25,9 @@ export class MetadataTemplate extends Component {
             <RemovePropertyConfirm />
             <Form
               model="template.data"
-              onSubmit={this.handleSubmit.bind(this)}
+              onSubmit={this.props.saveTemplate}
               className="metadataTemplate panel-default panel"
-              validators={validator(this.props.properties)}
+              validators={validator(this.props.properties, this.props.setErrors)}
             >
               <div className="metadataTemplate-heading panel-heading">
                 <div className={nameGroupClass}>
@@ -76,7 +63,7 @@ MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   formState: PropTypes.object,
   saveTemplate: PropTypes.func,
-  setSubmitFailed: PropTypes.func,
+  setErrors: PropTypes.func,
   properties: PropTypes.array
 };
 
@@ -114,7 +101,7 @@ const mapStateToProps = ({template}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({inserted, addProperty, saveTemplate, setSubmitFailed: formActions.setSubmitFailed}, dispatch);
+  return bindActionCreators({inserted, addProperty, saveTemplate, setErrors: formActions.setErrors}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dropTarget);

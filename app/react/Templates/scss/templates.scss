@@ -54,8 +54,12 @@
   }
 }
 
+.validation-error {
+  color: #ED353D;
+}
+
 .panel {
-  >.list-group {
+  .list-group {
     .list-group-item {
 
       .btn {
@@ -63,6 +67,7 @@
       }
 
       &.error {
+        display: inherit;
         border-bottom: 1px solid #ED353D;
 
         .property-name, .property-name .fa {
