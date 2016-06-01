@@ -13,7 +13,15 @@ describe('FormConfigInput', () => {
       type: 'text',
       index: 0,
       data: {properties: [{lable: ''}]},
-      formState: {fields: {'properties.0.label': {valid: true, dirty: false, errors: {}}}}
+      formState: {
+        fields: {
+          'properties.0.label': {valid: true, dirty: false, errors: {}}
+        },
+        errors: {
+          'properties.0.label.required': false,
+          'properties.0.label.duplicated': false
+        }
+      }
     };
   });
 
@@ -34,14 +42,14 @@ describe('FormConfigInput', () => {
 
   describe('when the field is invalid and dirty or the form is submited', () => {
     it('should render the label with errors', () => {
-      props.formState.fields['properties.0.label'].valid = false;
+      props.formState.errors['properties.0.label.required'] = true;
       props.formState.fields['properties.0.label'].dirty = true;
       component = shallow(<FormConfigInput {...props}/>);
       expect(component.find('.has-error').length).toBe(1);
     });
 
     it('should render the label with errors', () => {
-      props.formState.fields['properties.0.label'].valid = false;
+      props.formState.errors['properties.0.label.required'] = true;
       props.formState.submitFailed = true;
       component = shallow(<FormConfigInput {...props}/>);
       expect(component.find('.has-error').length).toBe(1);

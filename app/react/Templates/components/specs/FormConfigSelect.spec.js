@@ -16,10 +16,15 @@ describe('FormConfigSelect', () => {
       ui: Immutable.fromJS({thesauris}),
       index: 0,
       data: {properties: []},
-      formState: {fields: {
-        'properties.0.label': {valid: true, dirty: false, errors: {}},
-        'properties.0.content': {valid: true, dirty: false, errors: {}}
-      }}
+      formState: {
+        fields: {
+          'properties.0.label': {valid: true, dirty: false, errors: {}}
+        },
+        errors: {
+          'properties.0.label.required': false,
+          'properties.0.label.duplicated': false
+        }
+      }
     };
   });
 
@@ -47,22 +52,15 @@ describe('FormConfigSelect', () => {
 
   describe('when the fields are invalid and dirty or the form is submited', () => {
     it('should render the label with errors', () => {
-      props.formState.fields['properties.0.label'].valid = false;
+      props.formState.errors['properties.0.label.required'] = true;
       props.formState.fields['properties.0.label'].dirty = true;
       component = shallow(<FormConfigSelect {...props}/>);
       expect(component.find('.has-error').length).toBe(1);
     });
 
     it('should render the label with errors', () => {
-      props.formState.fields['properties.0.label'].valid = false;
+      props.formState.errors['properties.0.label.required'] = true;
       props.formState.submitFailed = true;
-      component = shallow(<FormConfigSelect {...props}/>);
-      expect(component.find('.has-error').length).toBe(1);
-    });
-
-    it('should render the content with errors', () => {
-      props.formState.fields['properties.0.content'].valid = false;
-      props.formState.fields['properties.0.content'].dirty = true;
       component = shallow(<FormConfigSelect {...props}/>);
       expect(component.find('.has-error').length).toBe(1);
     });
