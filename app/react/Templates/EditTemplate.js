@@ -30,7 +30,7 @@ export default class EditTemplate extends RouteHandler {
       let template = Object.assign({}, templates.find((tmpl) => tmpl._id === templateId));
       return {
         template: {
-          model: prepareTemplate(template),
+          data: prepareTemplate(template),
           uiState: {thesauris, templates}
         }
       };
@@ -38,7 +38,7 @@ export default class EditTemplate extends RouteHandler {
   }
 
   setReduxState({template}) {
-    this.context.store.dispatch(formActions.load('template.model', template.model));
+    this.context.store.dispatch(formActions.load('template.data', template.data));
     this.context.store.dispatch(setThesauris(template.uiState.thesauris));
     this.context.store.dispatch(setTemplates(template.uiState.templates));
   }

@@ -20,7 +20,7 @@ describe('templateActions', () => {
   beforeEach(() => {
     mockID();
     formModel = {
-      template: {model: {properties: [{name: 'property1'}, {name: 'property2'}]}}
+      template: {data: {properties: [{name: 'property1'}, {name: 'property2'}]}}
     };
     dispatch = jasmine.createSpy('dispatch');
     getState = jasmine.createSpy('getState').and.returnValue(formModel);
@@ -31,9 +31,9 @@ describe('templateActions', () => {
   });
 
   describe('addProperty()', () => {
-    it('should add the property to the form model with a unique id in the index provided', () => {
+    it('should add the property to the form data with a unique id in the index provided', () => {
       actions.addProperty({name: 'property3'}, 0)(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('template.model.properties', [
+      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
         {name: 'property3', localID: 'unique_id'},
         {name: 'property1'},
         {name: 'property2'}
@@ -44,7 +44,7 @@ describe('templateActions', () => {
   describe('updateProperty()', () => {
     it('should update the property in the index provided', () => {
       actions.updateProperty({name: 'new name'}, 0)(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('template.model.properties', [
+      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
         {name: 'new name'},
         {name: 'property2'}
       ]);
@@ -59,23 +59,23 @@ describe('templateActions', () => {
   });
 
   describe('resetTemplate()', () => {
-    it('should reset the form model', () => {
+    it('should reset the form data', () => {
       actions.resetTemplate()(dispatch);
-      expect(formActions.reset).toHaveBeenCalledWith('template.model');
+      expect(formActions.reset).toHaveBeenCalledWith('template.data');
     });
   });
 
   describe('removeProperty', () => {
-    it('should remove the property from the model', () => {
+    it('should remove the property from the data', () => {
       actions.removeProperty(1)(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('template.model.properties', [{name: 'property1'}]);
+      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [{name: 'property1'}]);
     });
   });
 
   describe('reorderProperty', () => {
-    it('should reorder the properties in the form model', () => {
+    it('should reorder the properties in the form data', () => {
       actions.reorderProperty(1, 2)(dispatch);
-      expect(formActions.move).toHaveBeenCalledWith('template.model.properties', 1, 2);
+      expect(formActions.move).toHaveBeenCalledWith('template.data.properties', 1, 2);
     });
   });
 

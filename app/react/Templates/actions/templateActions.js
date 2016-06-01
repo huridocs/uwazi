@@ -7,30 +7,30 @@ import ID from 'shared/uniqueID';
 
 export function resetTemplate() {
   return function (dispatch) {
-    dispatch(formActions.reset('template.model'));
+    dispatch(formActions.reset('template.data'));
   };
 }
 
 export function addProperty(property = {}, index = 0) {
   property.localID = ID();
   return function (dispatch, getState) {
-    let properties = getState().template.model.properties.slice(0);
+    let properties = getState().template.data.properties.slice(0);
     properties.splice(index, 0, property);
-    dispatch(formActions.change('template.model.properties', properties));
+    dispatch(formActions.change('template.data.properties', properties));
   };
 }
 
 export function updateProperty(property, index) {
   return function (dispatch, getState) {
-    let properties = getState().template.model.properties.slice(0);
+    let properties = getState().template.data.properties.slice(0);
     properties.splice(index, 1, property);
-    dispatch(formActions.change('template.model.properties', properties));
+    dispatch(formActions.change('template.data.properties', properties));
   };
 }
 
 export function inserted(index) {
   return function (dispatch) {
-    dispatch(formActions.change(`template.model.properties[${index}].inserting`, null));
+    dispatch(formActions.change(`template.data.properties[${index}].inserting`, null));
   };
 }
 
@@ -43,16 +43,16 @@ export function selectProperty(index) {
 
 export function removeProperty(index) {
   return function (dispatch, getState) {
-    let properties = getState().template.model.properties.slice(0);
-    dispatch(formActions.move('template.model.properties', index, properties.length - 1));
+    let properties = getState().template.data.properties.slice(0);
+    dispatch(formActions.move('template.data.properties', index, properties.length - 1));
     properties.splice(index, 1);
-    dispatch(formActions.change('template.model.properties', properties));
+    dispatch(formActions.change('template.data.properties', properties));
   };
 }
 
 export function reorderProperty(originIndex, targetIndex) {
   return function (dispatch) {
-    dispatch(formActions.move('template.model.properties', originIndex, targetIndex));
+    dispatch(formActions.move('template.data.properties', originIndex, targetIndex));
   };
 }
 

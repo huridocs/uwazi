@@ -37,7 +37,7 @@ describe('MetadataTemplate', () => {
     props.properties = properties;
     let store = createStore(() => {
       return {
-        template: {model: formModel, formState: {fields: {name: {}, properties: []}}, uiState: Immutable.fromJS({templates: []})},
+        template: {data: formModel, formState: {fields: {name: {}, properties: []}}, uiState: Immutable.fromJS({templates: []})},
         form: {template: {}},
         modals: Immutable.fromJS({})
       };
@@ -50,7 +50,7 @@ describe('MetadataTemplate', () => {
     it('should render the template name field', () => {
       let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
       let component = shallow(<MetadataTemplate {...props} />);
-      expect(component.find(FormField).node.props.model).toBe('template.model.name');
+      expect(component.find(FormField).node.props.model).toBe('template.data.name');
     });
 
     describe('when fields is empty', () => {
@@ -100,7 +100,7 @@ describe('MetadataTemplate', () => {
           spyOn(formActions, 'setSubmitFailed');
           component.find(Form).simulate('submit');
           expect(saveTemplate).not.toHaveBeenCalled();
-          expect(setSubmitFailed).toHaveBeenCalledWith('template.model');
+          expect(setSubmitFailed).toHaveBeenCalledWith('template.data');
         });
       });
     });

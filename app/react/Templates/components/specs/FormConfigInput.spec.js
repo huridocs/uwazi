@@ -12,17 +12,17 @@ describe('FormConfigInput', () => {
     props = {
       type: 'text',
       index: 0,
-      model: {properties: [{lable: ''}]},
+      data: {properties: [{lable: ''}]},
       formState: {fields: {'properties.0.label': {valid: true, dirty: false, errors: {}}}}
     };
   });
 
-  it('should render FormFields with the correct models', () => {
+  it('should render FormFields with the correct datas', () => {
     component = shallow(<FormConfigInput {...props}/>);
     const formFields = component.find(FormField);
-    expect(formFields.nodes[0].props.model).toBe('template.model.properties[0].label');
-    expect(formFields.nodes[1].props.model).toBe('template.model.properties[0].required');
-    expect(formFields.nodes[2].props.model).toBe('template.model.properties[0].filter');
+    expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
+    expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
+    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].filter');
   });
 
   describe('validation', () => {

@@ -5,7 +5,7 @@ export class FilterSuggestions extends Component {
 
   findSameLabelProperties(label, templates) {
     return templates
-    .filter((template) => template._id !== this.props.model._id)
+    .filter((template) => template._id !== this.props.data._id)
     .map((template) => {
       let property = template.properties.find((prop) => {
         return prop.label.toLowerCase() === label.toLowerCase() & prop.filter;
@@ -104,7 +104,7 @@ export class FilterSuggestions extends Component {
     return <div className="filter-suggestions col-sm-12">
     <div className={activeClass} title={title}>
             <span>
-              <i className="fa fa-file-o"></i> {this.props.model.name}
+              <i className="fa fa-file-o"></i> {this.props.data.name}
             </span>
             <i className="fa fa-angle-right"></i>
             <span>
@@ -132,7 +132,7 @@ FilterSuggestions.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
   filter: PropTypes.any,
-  model: PropTypes.object,
+  data: PropTypes.object,
   uiState: PropTypes.object,
   content: PropTypes.string
 };
@@ -140,7 +140,7 @@ FilterSuggestions.propTypes = {
 export function mapStateToProps(state) {
   return {
     uiState: state.template.uiState,
-    model: state.template.model
+    data: state.template.data
   };
 }
 

@@ -41,7 +41,7 @@ describe('EditTemplate', () => {
     it('should request templates and thesauris, and return templates, thesauris and find the editing template', (done) => {
       EditTemplate.requestState({templateId: 'abc2'})
       .then((response) => {
-        expect(response.template.model._id).toEqual('abc2');
+        expect(response.template.data._id).toEqual('abc2');
         expect(response.template.uiState.thesauris).toEqual(thesauris);
         expect(response.template.uiState.templates.length).toBe(2);
         done();
@@ -52,7 +52,7 @@ describe('EditTemplate', () => {
     it('should prepare the template properties with unique ids', (done) => {
       EditTemplate.requestState({templateId: 'abc2'})
       .then((response) => {
-        expect(response.template.model.properties[0]).toEqual({label: 'label3', localID: 'unique_id'});
+        expect(response.template.data.properties[0]).toEqual({label: 'label3', localID: 'unique_id'});
         done();
       })
       .catch(done.fail);
@@ -62,8 +62,8 @@ describe('EditTemplate', () => {
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       spyOn(formActions, 'load').and.returnValue('TEMPLATE MODEL LOADED');
-      instance.setReduxState({template: {model: 'template_data', uiState: {thesauris: 'thesauris', templates: 'templates'}}});
-      expect(formActions.load).toHaveBeenCalledWith('template.model', 'template_data');
+      instance.setReduxState({template: {data: 'template_data', uiState: {thesauris: 'thesauris', templates: 'templates'}}});
+      expect(formActions.load).toHaveBeenCalledWith('template.data', 'template_data');
       expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATE MODEL LOADED');
 
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
