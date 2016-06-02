@@ -4,28 +4,13 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import {removeProperty} from 'app/Templates/actions/templateActions';
+import Icons from './Icons';
 
 export class PropertyOption extends Component {
   render() {
     const {connectDragSource} = this.props;
     const {label} = this.props;
-    let iconClass = 'fa fa-font';
-
-    if (this.props.type === 'list') {
-      iconClass = 'fa fa-list';
-    }
-
-    if (this.props.type === 'select') {
-      iconClass = 'fa fa-sort';
-    }
-
-    if (this.props.type === 'date') {
-      iconClass = 'fa fa-calendar';
-    }
-
-    if (this.props.type === 'checkbox') {
-      iconClass = 'fa fa-check-square-o';
-    }
+    let iconClass = Icons[this.props.type] || 'fa fa-font';
 
     return (
       connectDragSource(
