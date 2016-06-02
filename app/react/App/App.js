@@ -17,7 +17,7 @@ class App extends Component {
     super(props, context);
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
-    this.state = {user: context.getUser(), showmenu: false};
+    this.state = {showmenu: false};
   }
 
   toggleMenu() {
@@ -70,7 +70,7 @@ class App extends Component {
                 <div className="col-sm-5">
                   {this.renderTools()}
                 </div>
-                <Menu className="nav nav-pills col-sm-4" user={this.state.user}/>
+                <Menu className="nav nav-pills col-sm-4" />
               </div>
             </div>
           </header>
