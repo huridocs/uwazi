@@ -30,13 +30,13 @@ export class UploadsSection extends Component {
   }
 
   render() {
-    let className = 'document-viewer';
+    let className = 'document-viewer col-xs-12';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel';
+      className = 'document-viewer with-panel col-xs-8';
     }
     return (
       <div className="row">
-        <main className={'col-sm-8 col-sm-offset-2 ' + className}>
+        <main className={className}>
           <UploadBox />
           <UploadsList socket={this.socket}/>
         </main>

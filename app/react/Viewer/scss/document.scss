@@ -7,9 +7,9 @@
   height: 100%;
   transform: translateX(0%);
   transition: all 500ms;
-  &.with-panel{
+  /*&.with-panel{
     transform: translateX(-20%);
-  }
+  }*/
   &.show-target-document{
     transform: translateX(-100%);
   }

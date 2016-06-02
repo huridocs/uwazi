@@ -2,7 +2,7 @@
 	transform: translateX(0%);
 	transition: all 500ms;
 	&.is-active {
-		transform: translateX(-20%);
+		//transform: translateX(-20%);
 	}
 	&.is-active-2 {
 		transform: translateX(-100%);
