@@ -25,8 +25,8 @@ export class ConfirmDocumentDeleteModal extends Component {
       <Modal isOpen={!!doc} type="danger">
 
         <Modal.Body>
-          <p>There was a problem uploading the selected document</p>
-          <p><strong>{doc.title}</strong></p>
+          <h4>Confirm deletion</h4>
+          <p>Are you sure you want to delete the document: {doc.title}</p>
         </Modal.Body>
 
         <Modal.Footer>
