@@ -152,7 +152,7 @@
 	transition: right 500ms, opacity 0ms;
 	width: 33%;
 }
-
+/*
 .create-modal {
 	position: absolute;
 	right: 0;
@@ -164,7 +164,7 @@
 	transform: translateX(100%);
 	transition: all 500ms;
 	overflow-y: scroll;
-	padding-bottom: 0px; /* footer height (magic number) */
+	padding-bottom: 0px; /* footer height (magic number) * /
 	&.is-active {
 		transform: translateX(0);
 	}
@@ -273,3 +273,4 @@
 		}
 	}
 }
+*/
