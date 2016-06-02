@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import documents from 'app/Documents';
 import {MenuButtons} from 'app/ContextMenu';
+import {NeedAuthorization} from 'app/Auth';
 
 export class MetadataPanelMenu extends Component {
   render() {
@@ -25,9 +26,11 @@ export class MetadataPanelMenu extends Component {
               );
           }
           return (
-            <MenuButtons.Main onClick={() => this.props.loadDocument('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
-              <i className="fa fa-pencil"></i>
-            </MenuButtons.Main>
+            <NeedAuthorization>
+              <MenuButtons.Main onClick={() => this.props.loadDocument('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
+                <i className="fa fa-pencil"></i>
+              </MenuButtons.Main>
+            </NeedAuthorization>
             );
         })()}
       </div>
