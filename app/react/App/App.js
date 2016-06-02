@@ -1,8 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import React, {Component, PropTypes} from 'react';
 
-import {events} from 'app/utils';
-
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import './scss/styles.scss';
@@ -20,30 +18,6 @@ class App extends Component {
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
     this.state = {user: context.getUser(), showmenu: false};
-    events.on('login', () => {
-      this.fetchUser();
-    });
-  }
-
-  fetchUser() {
-    return this.fetch('/api/user', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'same-origin'
-    })
-    .then((response) => response.json())
-    .then((response) => {
-      this.setState({user: response});
-    });
-  }
-
-  renderChildren() {
-    return React.Children.map(this.props.children, (child) => {
-      return React.cloneElement(child, {user: this.state.user});
-    });
   }
 
   toggleMenu() {
@@ -101,7 +75,7 @@ class App extends Component {
             </div>
           </header>
           <div className="app-content container-fluid">
-            {this.renderChildren()}
+            {this.props.children}
           </div>
         </div>
         <footer>
