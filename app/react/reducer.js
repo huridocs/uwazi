@@ -15,6 +15,7 @@ import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import uploads from 'app/Uploads/reducers/reducer';
+import auth from 'app/Auth/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
 
@@ -36,5 +37,6 @@ export default combineReducers({
   contextMenu,
   modals,
   uploads,
+  auth,
   search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });
