@@ -19,7 +19,11 @@ class Menu extends Component {
         <NeedAuthorization>
           <li><Link to='/my_account' className="btn"><i className="fa fa-user"></i>{user.username}</Link></li>
         </NeedAuthorization>
-        <li><Link to='/login' className="btn"><i className="fa fa-power-off"></i>Login</Link></li>
+        {(() => {
+          if (!user._id) {
+            return <li><Link to='/login' className="btn"><i className="fa fa-power-off"></i>Login</Link></li>;
+          }
+        })()}
       </ul>
     );
   }
