@@ -107,9 +107,15 @@ function handleRoute(res, renderProps, req) {
 
   if (routeProps.__redux) {
     api.authorize(cookie);
-    return routeProps.requestState(renderProps.params).then((initialData) => {
+    return Promise.all([
+      routeProps.requestState(renderProps.params),
+      api.get('user')
+    ])
+    .then(([initialData, user]) => {
+      initialData.user = user.json;
       renderPage(initialData, true);
-    }).catch(console.log);
+    })
+    .catch(console.log);
   }
   if (routeProps.requestState) {
     //return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage).catch(console.log);
