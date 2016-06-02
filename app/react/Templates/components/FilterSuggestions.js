@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import Icons from './Icons';
 
 export class FilterSuggestions extends Component {
 
@@ -19,25 +20,7 @@ export class FilterSuggestions extends Component {
   }
 
   getTypeIcon(type) {
-    let icon;
-    switch (type) {
-    case 'checkbox':
-      icon = 'fa fa-check-square-o';
-      break;
-    case 'select':
-      icon = 'fa fa-sort';
-      break;
-    case 'list':
-      icon = 'fa fa-list';
-      break;
-    case 'date':
-      icon = 'fa fa-calendar';
-      break;
-    default:
-      icon = 'fa fa-font';
-    }
-
-    return icon;
+    return Icons[type] || 'fa fa-font';
   }
 
   renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index) {
@@ -59,7 +42,7 @@ export class FilterSuggestions extends Component {
             </span>
             <i className="fa fa-angle-right"></i>
             <span className={typeConflict ? 'conflict' : ''}>
-              <i className={icon}></i>{type}
+              <i className={icon}></i> {type}
             </span>
             {(() => {
               if (hasThesauri && propertyMatch.property.content) {
@@ -108,7 +91,7 @@ export class FilterSuggestions extends Component {
             </span>
             <i className="fa fa-angle-right"></i>
             <span>
-              <i className={icon}></i>{type}
+              <i className={icon}></i> {type[0].toUpperCase() + type.slice(1)}
             </span>
             {(() => {
               if (hasThesauri) {

@@ -6,8 +6,9 @@ import {connect} from 'react-redux';
 import {editProperty} from 'app/Templates/actions/uiActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
-import FormConfigInput from 'app/Templates/components/FormConfigInput';
-import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
+import FormConfigInput from './FormConfigInput';
+import FormConfigSelect from './FormConfigSelect';
+import Icons from './Icons';
 
 export class MetadataProperty extends Component {
 
@@ -36,12 +37,7 @@ export class MetadataProperty extends Component {
       propertyClass += ' error';
     }
 
-    let iconClass = {
-      select: 'fa fa-sort',
-      list: 'fa fa-list',
-      date: 'fa fa-calendar',
-      checkbox: 'fa fa-check-square-o'
-    }[this.props.type] || 'fa fa-font';
+    let iconClass = Icons[this.props.type] || 'fa fa-font';
 
     return connectDragSource(connectDropTarget(
       <li className={propertyClass}>

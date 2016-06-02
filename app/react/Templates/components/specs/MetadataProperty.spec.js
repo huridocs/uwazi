@@ -125,7 +125,7 @@ describe('MetadataProperty', () => {
 
     function renderComponent(ComponentToRender, props) {
       let result;
-      let templateData = {name: '', properties: [{label: ''}, {label: ''}, {label: ''}]};
+      let templateData = {name: '', properties: [{label: '', type: 'text'}, {label: '', type: 'text'}, {label: '', type: 'text'}]};
       store = createStore(() => {
         return {
           template: {
