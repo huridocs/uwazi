@@ -34,7 +34,7 @@ export class LibraryFilters extends Component {
           <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
           <i className="fa fa-close close-modal" onClick={this.props.hideFilters}></i>
           <ul className="search__filter search__filter--type">
-            <li>Filter by document type:</li>
+            <li>Document type</li>
             <li>
               <input
                 onClick={this.handleFilterAllDocuments.bind(this)}
