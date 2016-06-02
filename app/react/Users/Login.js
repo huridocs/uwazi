@@ -47,8 +47,6 @@ Login.propTypes = {
   login: PropTypes.func
 };
 
-export default Login;
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({login: auth.actions.login}, dispatch);
 }
