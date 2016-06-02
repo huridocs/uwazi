@@ -32,17 +32,17 @@ export class Viewer extends Component {
   }
 
   render() {
-    let className = 'document-viewer';
+    let className = 'document-viewer col-xs-12';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel';
+      className = 'document-viewer with-panel col-xs-8';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document';
+      className = 'document-viewer show-target-document col-xs-12';
     }
 
     return (
       <div>
-        <main className={className + ' col-sm-8 col-sm-offset-2'}>
+        <main className={className}>
           <SourceDocument />
           <TargetDocument />
         </main>

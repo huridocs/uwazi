@@ -9,10 +9,10 @@
   transition: all 500ms;
   /*&.with-panel{
     transform: translateX(-20%);
-  }*/
+  }
   &.show-target-document{
     transform: translateX(-100%);
-  }
+  }*/
 }
 
 .document {
@@ -133,14 +133,20 @@
   }
 }
 
+.document {
+  max-width: 800px;
+  margin: auto;
+}
+
 .document.targetDocument {
   position: relative;
-  transform: translateX(100%);
+  //transform: translateX(100%);
 }
 
 .document-viewer.show-target-document {
   .sourceDocument {
     position: absolute;
+    right: 90%;
     opacity: 0.3;
     &:hover {
       opacity: 1;
