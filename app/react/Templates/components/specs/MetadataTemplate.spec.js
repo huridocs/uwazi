@@ -21,7 +21,8 @@ function sourceTargetTestContext(Target, Source, actions) {
         const identity = x => x;
         let properties = [{label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}];
         let targetProps = {properties: properties, connectDropTarget: identity, formState: {fields: {}, errors: {}}};
-        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity, formState: {fields: {}, errors: {}}};
+        let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity,
+          formState: {fields: {}, errors: {}}};
         return <div>
                 <Target {...targetProps} {...actions}/>
                 <Source {...sourceProps} />
@@ -74,7 +75,8 @@ describe('MetadataTemplate', () => {
 
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
-        let props = {properties: [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}], connectDropTarget: (x) => x, formState: {fields: {}}};
+        let props = {properties: [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}],
+          connectDropTarget: (x) => x, formState: {fields: {}}};
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
       });

@@ -143,7 +143,8 @@ describe('MetadataProperty', () => {
     describe('dragSource', () => {
       beforeEach(() => {
         let TestComponent = wrapInTestContext(dragSource);
-        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}), formState: {fields: [], errors: {}}});
+        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}),
+                                    formState: {fields: [], errors: {}}});
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });
