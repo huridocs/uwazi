@@ -2,75 +2,67 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {FormConfigSelect, mapStateToProps} from 'app/Templates/components/FormConfigSelect';
+import {FormConfigSelect} from 'app/Templates/components/FormConfigSelect';
+import {FormField, Select, SelectField} from 'app/Forms';
 
 describe('FormConfigSelect', () => {
   let component;
+  let thesauris;
   let props;
 
   beforeEach(() => {
+    thesauris = [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}];
     props = {
-      fields: {label: {}, content: {}, required: {}, filter: {}, type: {}},
-      values: {value: 'some value'},
-      thesauris: [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}],
+      ui: Immutable.fromJS({thesauris}),
       index: 0,
-      updateProperty: jasmine.createSpy('updateProperty')
-    };
-
-    component = shallow(<FormConfigSelect {...props}/>);
-  });
-
-  describe('when form changes', () => {
-    it('should updateProperty', (done) => {
-      component.find('form').simulate('change');
-      setTimeout(() => {
-        expect(props.updateProperty).toHaveBeenCalledWith(props.values, props.index);
-        done();
-      });
-    });
-  });
-
-  it('should render thesauri as options in content select', () => {
-    let options = component.find('select').find('option');
-
-    expect(options.last().text()).toBe('thesauri2');
-    expect(options.last().props().value).toBe(2);
-  });
-
-  describe('mapStateToProps', () => {
-    let state = {
-      template: {
-        data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]}),
-        uiState: Immutable.fromJS({thesauris: []})
+      data: {properties: []},
+      formState: {
+        fields: {
+          'properties.0.label': {valid: true, dirty: false, errors: {}}
+        },
+        errors: {
+          'properties.0.label.required': false,
+          'properties.0.label.duplicated': false
+        }
       }
     };
+  });
 
-    describe('initialValues', () => {
-      it('should map the correct field to the props', () => {
-        expect(mapStateToProps(state, props).initialValues).toEqual({label: 'first property'});
-      });
+  it('should render fields with the correct datas', () => {
+    component = shallow(<FormConfigSelect {...props}/>);
+    const formFields = component.find(FormField);
+    expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
+    expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
+    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].filter');
+
+    expect(component.find(SelectField).node.props.model).toBe('template.data.properties[0].content');
+  });
+
+  it('should render the select with the thesauris', () => {
+    component = shallow(<FormConfigSelect {...props}/>);
+    expect(component.find(Select).node.props.options).toEqual(thesauris);
+  });
+
+  describe('validation', () => {
+    it('should render the label without errors', () => {
+      component = shallow(<FormConfigSelect {...props}/>);
+      expect(component.find('.has-error').length).toBe(0);
+    });
+  });
+
+  describe('when the fields are invalid and dirty or the form is submited', () => {
+    it('should render the label with errors', () => {
+      props.formState.errors['properties.0.label.required'] = true;
+      props.formState.fields['properties.0.label'].dirty = true;
+      component = shallow(<FormConfigSelect {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
     });
 
-    describe('validation', () => {
-      it('should return an error when the label is empty', () => {
-        state = {
-          template: {
-            data: Immutable.fromJS({name: '', properties: [{label: ''}, {label: 'second property'}]}),
-            uiState: Immutable.fromJS({thesauris: []})
-          }
-        };
-        expect(mapStateToProps(state, props).validate()).toEqual({label: 'Required'});
-      });
-
-      it('should return an error when the content is empty', () => {
-        state = {
-          template: {
-            data: Immutable.fromJS({name: 'test', properties: [{label: 'first_property', content: '', type: 'list'}, {label: 'second property'}]}),
-            uiState: Immutable.fromJS({thesauris: []})
-          }
-        };
-        expect(mapStateToProps(state, props).validate()).toEqual({content: 'Required'});
-      });
+    it('should render the label with errors', () => {
+      props.formState.errors['properties.0.label.required'] = true;
+      props.formState.submitFailed = true;
+      component = shallow(<FormConfigSelect {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
     });
   });
 });

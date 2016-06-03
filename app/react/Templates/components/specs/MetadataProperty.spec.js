@@ -7,7 +7,7 @@ import {createStore} from 'redux';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
-import {MetadataProperty as DumbComponent, dragSource, dropTarget} from 'app/Templates/components/MetadataProperty';
+import {MetadataProperty, dragSource, dropTarget} from 'app/Templates/components/MetadataProperty';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 
@@ -27,11 +27,22 @@ function sourceTargetTestContext(Target, Source, actions) {
       render() {
         const identity = x => x;
         let targetProps = {
-          label: 'target', errors: {}, index: 1, localID: 'target', connectDragSource: identity, isDragging: false, form: {}, fields: {properties: []}
+          label: 'target',
+          index: 1,
+          localID: 'target',
+          connectDragSource: identity,
+          isDragging: false,
+          uiState: Immutable.fromJS({}),
+          formState: {fields: [], errors: {}}
         };
         let sourceProps = {
-          label: 'source', errors: {}, type: 'type', index: 2, localID: 'source', connectDragSource: identity, isDragging: false,
-          form: {}, fields: {properties: []}
+          label: 'source',
+          type: 'type',
+          index: 2, localID: 'source',
+          connectDragSource: identity,
+          isDragging: false,
+          uiState: Immutable.fromJS({}),
+          formState: {fields: [], errors: {}}
         };
         return <div>
                 <Target {...targetProps} {...actions}/>
@@ -60,14 +71,13 @@ describe('MetadataProperty', () => {
         label: 'test',
         index: 1,
         localID: 'id',
-        form: {},
-        errors: {},
-        fields: {properties: []},
+        formState: {fields: [], errors: {}},
         removeProperty,
-        editProperty
+        editProperty,
+        uiState: Immutable.fromJS({editingProperty: ''})
       };
 
-      component = shallow(<DumbComponent {...props}/>);
+      component = shallow(<MetadataProperty {...props}/>);
     });
 
     describe('when marked as inserting', () => {
@@ -115,11 +125,14 @@ describe('MetadataProperty', () => {
 
     function renderComponent(ComponentToRender, props) {
       let result;
-      let templateData = Immutable.fromJS({name: '', properties: [{}, {}, {}]});
+      let templateData = {name: '', properties: [{label: '', type: 'text'}, {label: '', type: 'text'}, {label: '', type: 'text'}]};
       store = createStore(() => {
         return {
-          template: {data: templateData, uiState: Immutable.fromJS({templates: []})},
-          form: {template: {}},
+          template: {
+            data: templateData,
+            uiState: Immutable.fromJS({templates: []}),
+            formState: {fields: [], errors: {}}
+          },
           modals: Immutable.fromJS({})
         };
       });
@@ -130,7 +143,7 @@ describe('MetadataProperty', () => {
     describe('dragSource', () => {
       beforeEach(() => {
         let TestComponent = wrapInTestContext(dragSource);
-        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', form: {}, fields: {properties: []}});
+        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}), formState: {fields: [], errors: {}}});
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });

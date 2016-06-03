@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as actions from 'app/Templates/actions/actionTypes';
 
-const initialState = {thesauris: [], propertyBeingDeleted: null};
+const initialState = {thesauris: [], templates: [], propertyBeingDeleted: null};
 
 export default function templatesUI(state = initialState, action = {}) {
   if (action.type === actions.EDIT_PROPERTY) {

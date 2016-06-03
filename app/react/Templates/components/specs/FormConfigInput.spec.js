@@ -1,75 +1,58 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
 
-import {FormConfigInput, mapStateToProps} from 'app/Templates/components/FormConfigInput';
+import {FormConfigInput} from 'app/Templates/components/FormConfigInput';
+import {FormField} from 'app/Forms';
 
 describe('FormConfigInput', () => {
   let component;
   let props;
 
-  function renderComponent(label = 'test', type = 'checkbox') {
+  beforeEach(() => {
     props = {
-      fields: {label: {value: label}, required: {}, filter: {value: true}, type: {value: type}},
-      values: {label, type, filter: true},
+      type: 'text',
       index: 0,
-      updateProperty: jasmine.createSpy('updateProperty'),
-      parentTemplateId: 'template1',
-      templates: [
-        {_id: 'template1', properties: [
-          {localID: 1, label: label, filter: true, type},
-          {localID: 2, label: 'something else'}
-        ]},
-        {_id: 'template2', name: 'Template 2', properties: [
-          {label: 'Date', type: 'date', filter: true},
-          {label: 'Author', type: 'text', filter: true}
-        ]},
-        {_id: 'template3', name: 'Template 3', properties: [
-          {label: 'Date', type: 'date', filter: true},
-          {label: 'Keywords', type: 'text', filter: true}
-        ]}
-      ]
+      data: {properties: [{lable: ''}]},
+      formState: {
+        fields: {
+          'properties.0.label': {valid: true, dirty: false, errors: {}}
+        },
+        errors: {
+          'properties.0.label.required': false,
+          'properties.0.label.duplicated': false
+        }
+      }
     };
-
-    component = shallow(<FormConfigInput {...props}/>);
-  }
-
-  beforeEach(renderComponent);
-
-  describe('when form changes', () => {
-    it('should updateProperty', (done) => {
-      component.find('form').simulate('change');
-
-      setTimeout(() => {
-        expect(props.updateProperty).toHaveBeenCalledWith(props.values, props.index);
-        done();
-      });
-    });
   });
 
-  describe('initialValues', () => {
-    it('should map the correct field to the props', () => {
-      let state = {
-        template: {
-          data: Immutable.fromJS({name: '', properties: [{label: 'first property'}, {label: 'second property'}]}),
-          uiState: Immutable.fromJS({})
-        }
-      };
-      props = {index: 0};
-      expect(mapStateToProps(state, props).initialValues).toEqual({label: 'first property'});
-    });
+  it('should render FormFields with the correct datas', () => {
+    component = shallow(<FormConfigInput {...props}/>);
+    const formFields = component.find(FormField);
+    expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
+    expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
+    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].filter');
   });
 
   describe('validation', () => {
-    it('should return an error when the label is empty', () => {
-      let state = {
-        template: {
-          data: Immutable.fromJS({name: '', properties: [{label: ''}, {label: 'second property'}]}),
-          uiState: Immutable.fromJS({})
-        }
-      };
-      props = {index: 0};
-      expect(mapStateToProps(state, props).validate()).toEqual({label: 'Required'});
+    it('should render the label without errors', () => {
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find('.has-error').length).toBe(0);
+    });
+  });
+
+  describe('when the field is invalid and dirty or the form is submited', () => {
+    it('should render the label with errors', () => {
+      props.formState.errors['properties.0.label.required'] = true;
+      props.formState.fields['properties.0.label'].dirty = true;
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
+    });
+
+    it('should render the label with errors', () => {
+      props.formState.errors['properties.0.label.required'] = true;
+      props.formState.submitFailed = true;
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
     });
   });
 });
