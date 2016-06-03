@@ -3,6 +3,7 @@ import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
 import fetch from 'isomorphic-fetch';
 import {db_url as dbUrl} from '../../config/database.js';
+import SHA256 from 'crypto-js/sha256';
 
 describe('users routes', () => {
   beforeEach((done) => {
@@ -30,7 +31,7 @@ describe('users routes', () => {
       fetch(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(response => response.json())
       .then(user => {
-        let req = {body:{'_id': user._id, '_rev': user._rev, 'password': 'new_password'}};
+        let req = {body: {_id: user._id, _rev: user._rev, password: 'new_password'}};
         post(req, res);
       });
 
@@ -40,7 +41,7 @@ describe('users routes', () => {
         fetch(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
         .then(response => response.json())
         .then(user => {
-          expect(user.password).toBe('new_password');
+          expect(user.password).toBe(SHA256('new_password').toString());
           expect(user.username).toBe('admin');
           done();
         });
