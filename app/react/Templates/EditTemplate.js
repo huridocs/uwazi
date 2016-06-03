@@ -4,7 +4,6 @@ import {actions as formActions} from 'react-redux-form';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
-import {setTemplate} from 'app/Templates/actions/templateActions';
 import {setTemplates} from 'app/Templates/actions/templatesActions';
 import {setThesauris} from 'app/Templates/actions/uiActions';
 import RouteHandler from 'app/App/RouteHandler';
