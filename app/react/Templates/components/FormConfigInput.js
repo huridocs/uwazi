@@ -58,11 +58,12 @@ export class FormConfigInput extends Component {
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
               &nbsp;
-              <label htmlFor={'filter' + this.props.index}>Use as filter</label>
-              <small>
-                This property will be used for filtering the library results.
-                When properties match in equal name and field type with other document types, they will be combined for filtering.
-              </small>
+              <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
+              When properties match in equal name and field type with other document types, they will be combined for filtering.">
+                Use as filter
+                &nbsp;
+                <i className="fa fa-question-circle"></i>
+              </label>
             </div>
             <div className="col-sm-8">
               <FilterSuggestions {...ptoperty} />
