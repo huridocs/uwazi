@@ -56,7 +56,9 @@
 
 .validation-error {
   color: #ED353D;
-  margin-top: 5px;
+  position: relative;
+  top: 3px;
+  height: 0;
 }
 
 .panel {
@@ -70,6 +72,11 @@
       &.error {
         display: inherit;
         border-bottom: 1px solid #ED353D;
+        margin-bottom: -1px;
+
+        &:last-child {
+          border-bottom: 1px solid #ED353D;
+        }
 
         .property-name, .property-name .fa {
           color: #ED353D;
