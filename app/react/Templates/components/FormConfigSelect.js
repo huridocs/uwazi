@@ -50,7 +50,7 @@ export class FormConfigSelect extends Component {
                   <input id={'required' + this.props.index} type="checkbox"/>
                 </FormField>
               </span>
-              <label htmlFor={'required' + this.props.index} className="form-control">Required field</label>
+              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
             </div>
           </div>
         </div>
@@ -72,8 +72,11 @@ export class FormConfigSelect extends Component {
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
               &nbsp;
-              <label htmlFor={'filter' + this.props.index}>Use as library filter</label>
-              <small>This property will be used togheter for filtering with other equal to him.</small>
+              <label htmlFor={'filter' + this.props.index}>Use as filter</label>
+              <small>
+                This property will be used for filtering the library results.
+                When properties match in equal name and field type with other document types, they will be combined for filtering.
+              </small>
             </div>
             <div className="col-sm-8">
               <FilterSuggestions {...ptoperty} />
