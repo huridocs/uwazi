@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import {APIURL} from 'app/config';
 import Library from 'app/Library/Library';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import createStore from 'app/store';
 import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';

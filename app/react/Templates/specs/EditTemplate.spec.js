@@ -5,7 +5,7 @@ import {shallow} from 'enzyme';
 import {APIURL} from 'app/config.js';
 import EditTemplate from 'app/Templates/EditTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import {mockID} from 'shared/uniqueID';
 
 describe('EditTemplate', () => {

@@ -1,10 +1,10 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes, Component} from 'react';
 import fetch from 'isomorphic-fetch';
-import RouteHandler from '../App/RouteHandler';
 import Helmet from 'react-helmet';
-import Alert from '../../components/Elements/Alert';
+import Alert from 'app/components/Elements/Alert';
+import {connect} from 'react-redux';
 
-class MyAccount extends RouteHandler {
+export class MyAccount extends Component {
 
   constructor(props, context) {
     super(props, context);
@@ -78,4 +78,8 @@ MyAccount.propTypes = {
   user: PropTypes.object
 };
 
-export default MyAccount;
+export function mapStateToProps({user}) {
+  return {user};
+}
+
+export default connect(mapStateToProps)(MyAccount);

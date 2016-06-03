@@ -2,7 +2,7 @@ import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 import MockProvider from '../../App/specs/MockProvider';
 
-import MyAccount from '../MyAccount.js';
+import {MyAccount} from '../MyAccount.js';
 
 describe('MyAccount', () => {
   let component;

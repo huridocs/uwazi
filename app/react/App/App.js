@@ -1,13 +1,10 @@
 import fetch from 'isomorphic-fetch';
 import React, {Component, PropTypes} from 'react';
 
-import {events} from '../../utils/index';
-
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import './scss/styles.scss';
 import './scss/fixes.scss';
-//import './scss/alerts.scss';
 
 import Helmet from 'react-helmet';
 import Notifications from 'app/Notifications';
@@ -20,31 +17,7 @@ class App extends Component {
     super(props, context);
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
-    this.state = {user: context.getUser(), showmenu: false};
-    events.on('login', () => {
-      this.fetchUser();
-    });
-  }
-
-  fetchUser() {
-    return this.fetch('/api/user', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'same-origin'
-    })
-    .then((response) => response.json())
-    .then((response) => {
-      this.setState({user: response});
-    });
-  }
-
-  renderChildren() {
-    return React.Children.map(this.props.children, (child) => {
-      return React.cloneElement(child, {user: this.state.user});
-    });
+    this.state = {showmenu: false};
   }
 
   toggleMenu() {
@@ -97,12 +70,12 @@ class App extends Component {
                 <div className="col-sm-5">
                   {this.renderTools()}
                 </div>
-                <Menu className="nav nav-pills col-sm-4" user={this.state.user}/>
+                <Menu className="nav nav-pills col-sm-4" />
               </div>
             </div>
           </header>
           <div className="app-content container-fluid">
-            {this.renderChildren()}
+            {this.props.children}
           </div>
         </div>
         <footer>

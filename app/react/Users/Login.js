@@ -1,11 +1,12 @@
-import {events} from '../../utils/index';
+import {Component, PropTypes} from 'react';
 import template from './templates/login.js';
-import api from '../../utils/api';
 import {browserHistory} from 'react-router';
-import RouteHandler from '../App/RouteHandler';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
+import auth from 'app/Auth';
 
-class Login extends RouteHandler {
+export class Login extends Component {
 
   constructor(props, context) {
     super(props, context);
@@ -26,10 +27,9 @@ class Login extends RouteHandler {
   submit(e) {
     e.preventDefault();
 
-    return api.post('login', this.state.credentials)
+    return this.props.login(this.state.credentials)
     .then(() => {
       this.setState({error: false});
-      events.emit('login');
       browserHistory.push('/');
     })
     .catch(() => {
@@ -43,4 +43,12 @@ class Login extends RouteHandler {
   }
 }
 
-export default Login;
+Login.propTypes = {
+  login: PropTypes.func
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({login: auth.actions.login}, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(Login);

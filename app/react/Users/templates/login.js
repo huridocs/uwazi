@@ -1,7 +1,7 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import '../scss/login.scss';
-import Alert from '../../../components/Elements/Alert.js';
+import Alert from '../../components/Elements/Alert.js';
 
 export default function () {
   return (

@@ -7,13 +7,11 @@ import UploadDoc from 'app/Uploads/components/UploadDoc';
 
 describe('DocumentsList', () => {
   let component;
-  let documents;
   let props;
   let socket = new SocketMock();
+  let documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
 
   beforeEach(() => {
-    documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
-
     let conversionComplete = jasmine.createSpy('conversionComplete');
     let updateDocument = jasmine.createSpy('updateDocument');
     props = {documents, socket, conversionComplete, updateDocument};
@@ -23,8 +21,8 @@ describe('DocumentsList', () => {
   it('should render a UploadDoc element for each document', () => {
     let docs = component.find(UploadDoc);
     expect(docs.length).toBe(2);
-    expect(docs.first().props().doc).toBe(documents.get(0));
-    expect(docs.last().props().doc).toBe(documents.get(1));
+    expect(docs.first().props().doc).toEqual(documents.get(0));
+    expect(docs.last().props().doc).toEqual(documents.get(1));
   });
 
   describe('when socket event documentProcessed', () => {
@@ -45,7 +43,7 @@ describe('DocumentsList', () => {
     it('should contain the documents', () => {
       let store = {
         uploads: {
-          documents: Immutable.fromJS(documents)
+          documents
         }
       };
       let state = mapStateToProps(store);

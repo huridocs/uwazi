@@ -6,9 +6,9 @@ import {Router, match, RouterContext} from 'react-router';
 import Helmet from 'react-helmet';
 import Routes from './Routes';
 import {Provider} from 'react-redux';
-import CustomProvider from './controllers/App/Provider';
-import Root from './controllers/App/Root';
-import NoMatch from './controllers/App/NoMatch';
+import CustomProvider from './App/Provider';
+import Root from './App/Root';
+import NoMatch from './App/NoMatch';
 import {isClient, getPropsFromRoute} from './utils';
 import store from './store';
 import api from 'app/utils/api';
@@ -107,9 +107,15 @@ function handleRoute(res, renderProps, req) {
 
   if (routeProps.__redux) {
     api.authorize(cookie);
-    return routeProps.requestState(renderProps.params).then((initialData) => {
+    return Promise.all([
+      routeProps.requestState(renderProps.params),
+      api.get('user')
+    ])
+    .then(([initialData, user]) => {
+      initialData.user = user.json;
       renderPage(initialData, true);
-    }).catch(console.log);
+    })
+    .catch(console.log);
   }
   if (routeProps.requestState) {
     //return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage).catch(console.log);
