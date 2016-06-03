@@ -21,7 +21,7 @@ describe('thesauris', () => {
   }
 
   describe('add thesauri', () => {
-    it('should add a new thesauri, add tow values then delete it', (done) => {
+    it('should add a new thesauri, add two values then delete it', (done) => {
       var thesauri_name = 'Test sauri'
       nightmare = thesauris.addThesauri(nightmare, thesauri_name);
       thesauris.addValuesToThesauri(nightmare, thesauri_name)
