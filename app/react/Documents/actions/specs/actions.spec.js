@@ -37,8 +37,8 @@ describe('documentFormActions', () => {
 
   describe('changeTemplate', () => {
     it('should change the document template and remove/add metadata properties', () => {
-      spyOn(formActions, 'merge').and.returnValue('formMerge');
       spyOn(formActions, 'setInitial').and.returnValue('forminitial');
+      spyOn(formActions, 'change').and.returnValue('formMerge');
       let dispatch = jasmine.createSpy('dispatch');
       let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
       let template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp'}]};
@@ -48,8 +48,8 @@ describe('documentFormActions', () => {
 
       let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: 'test', newProp: ''}};
       expect(dispatch).toHaveBeenCalledWith('formMerge');
-      expect(formActions.merge).toHaveBeenCalledWith('formNamespace', expectedDoc);
       expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
+      expect(formActions.change).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
   });
 });
