@@ -2,6 +2,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import {actions as formActions} from 'react-redux-form';
+import Immutable from 'immutable';
 
 import {APIURL} from 'app/config.js';
 import * as actions from 'app/Templates/actions/templateActions';
@@ -20,7 +21,12 @@ describe('templateActions', () => {
   beforeEach(() => {
     mockID();
     formModel = {
-      template: {data: {properties: [{name: 'property1'}, {name: 'property2'}]}}
+      template: {
+        data: {properties: [{name: 'property1'}, {name: 'property2'}]},
+        uiState: Immutable.fromJS({
+          thesauris: [{_id: 'first_thesauri_id'}, {_id: 2}]
+        })
+      }
     };
     dispatch = jasmine.createSpy('dispatch');
     getState = jasmine.createSpy('getState').and.returnValue(formModel);
@@ -38,6 +44,17 @@ describe('templateActions', () => {
         {name: 'property1'},
         {name: 'property2'}
       ]);
+    });
+
+    describe('when property its a select', () => {
+      it('should should add as first thesauri as default value', () => {
+        actions.addProperty({name: 'property3', type: 'select'}, 0)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+          {name: 'property3', type: 'select', localID: 'unique_id', content: 'first_thesauri_id'},
+          {name: 'property1'},
+          {name: 'property2'}
+        ]);
+      });
     });
   });
 
