@@ -27,7 +27,7 @@ export class ConfirmCloseForm extends Component {
 
         <Modal.Body>
           <h4>Confirm</h4>
-          <p>All changes will be lost, are you sure you want to proceed ?</p>
+          <p>All changes will be lost, are you sure you want to proceed?</p>
         </Modal.Body>
 
         <Modal.Footer>
