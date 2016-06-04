@@ -38,6 +38,13 @@ describe('document helpers', () => {
       });
     });
 
+    describe('when a select has no value', () => {
+      it('should not throw an error', () => {
+        doc.metadata.country = null;
+        expect(helpers.prepareMetadata.bind(null, doc, templates, thesauris)).not.toThrow();
+      });
+    });
+
     describe('when no templates provided', () => {
       it('should return the document with empty metadata', () => {
         expect(helpers.prepareMetadata(doc, [], thesauris)).toEqual({
