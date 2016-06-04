@@ -140,7 +140,9 @@
 
 .document.targetDocument {
   position: relative;
-  //transform: translateX(100%);
+  transform: translateX(1000px);
+  opacity: 0;
+  transition: all 500ms;
 }
 
 .document-viewer.show-target-document {
@@ -155,6 +157,7 @@
   }
   .targetDocument {
     opacity: 1;
+    transform: translateX(0px);
   }
 }
 
