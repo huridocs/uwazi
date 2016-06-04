@@ -15,6 +15,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ViewerSaveReferenceMenu from './ViewerSaveReferenceMenu';
 import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
 import MetadataPanelMenu from './MetadataPanelMenu';
+import ConfirmCloseForm from './ConfirmCloseForm';
 import {actions} from 'app/BasicReducer';
 
 export class Viewer extends Component {
@@ -47,6 +48,7 @@ export class Viewer extends Component {
           <TargetDocument />
         </main>
 
+        <ConfirmCloseForm />
         <CreateReferencePanel />
         <ViewReferencesPanel />
         <ViewMetadataPanel />

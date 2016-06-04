@@ -14,7 +14,8 @@ describe('ViewMetadataPanel', () => {
 
   beforeEach(() => {
     props = {
-      doc: {metadata: []}
+      doc: {metadata: []},
+      showModal: jasmine.createSpy('showModal')
     };
   });
 
@@ -35,6 +36,32 @@ describe('ViewMetadataPanel', () => {
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);
+    });
+  });
+
+  describe('close', () => {
+    describe('when form is dirty', () => {
+      it('should showModal ConfirmCloseForm', () => {
+        props.formState = {dirty: true};
+        render();
+        component.find('i').simulate('click');
+        expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
+      });
+    });
+
+    describe('when form is not dirty', () => {
+      it('should close panel and reset form', () => {
+        props.closePanel = jasmine.createSpy('closePanel');
+        props.resetForm = jasmine.createSpy('resetForm');
+        props.formState = {dirty: false};
+        props.docBeingEdited = true;
+        render();
+
+        component.find('i').simulate('click');
+
+        expect(props.closePanel).toHaveBeenCalled();
+        expect(props.resetForm).toHaveBeenCalledWith('documentViewer.docForm');
+      });
     });
   });
 

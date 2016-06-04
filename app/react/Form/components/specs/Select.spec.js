@@ -37,4 +37,21 @@ describe('Select', () => {
     expect(optionElements.last().props().value).toBe('option2');
     expect(optionElements.last().text()).toBe('Option2');
   });
+
+  describe('different key name for label and value', () => {
+    beforeEach(() => {
+      options = [{name: 'Option1', id: 'option1'}, {name: 'Option2', id: 'option2'}];
+      component = shallow(<Select label='special select' options={options} optionsValue="id" optionsLabel="name"/>);
+    });
+
+    it('should render the options', () => {
+      let optionElements = component.find('option');
+
+      expect(optionElements.length).toBe(2);
+      expect(optionElements.first().props().value).toBe('option1');
+      expect(optionElements.first().text()).toBe('Option1');
+      expect(optionElements.last().props().value).toBe('option2');
+      expect(optionElements.last().text()).toBe('Option2');
+    });
+  });
 });

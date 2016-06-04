@@ -17,35 +17,36 @@ export class FiltersForm extends Component {
         {(() => {
           let documentTypes = this.props.documentTypes.toJS();
           let templates = this.props.templates.toJS();
-          let types = Object.keys(documentTypes);
-          let filtering = types.reduce((result, key) => {
-            return result || documentTypes[key];
-          }, false);
-
-          let formatedTypes = templates.reduce((result, template) => {
+          let activeTypes = templates.reduce((result, template) => {
             if (documentTypes[template._id]) {
               result.push(template.name);
             }
             return result;
-          }, []).join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
+          }, []);
+          let formatedTypes = activeTypes.join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
 
-          if (!filtering) {
+          if (activeTypes.length === 0) {
             return <div className="empty-state select-type">
                     <i className="fa fa-arrow-up"></i><b>Filter the results</b>
                     <p>Select at least one type of document to start filtering the results.</p>
                   </div>;
           }
 
-          if (filtering && fields.length === 0) {
+          if (activeTypes.length > 0 && fields.length === 0) {
             return <div className="empty-state no-filters">
                     <i className="fa fa-close"></i><b>No common filters</b>
                     <p>The combination of document types has no filters in common.</p>
                   </div>;
           }
 
-          if (filtering && fields.length > 0) {
+          if (activeTypes.length > 1 && fields.length > 0) {
             return <div className="title">
                     <i className="fa fa-tag"></i>Common filters for<b> {formatedTypes}</b>
+                  </div>;
+          }
+          if (activeTypes.length === 1 && fields.length > 0) {
+            return <div className="title">
+                    <i className="fa fa-tag"></i>Filters for<b> {formatedTypes}</b>
                   </div>;
           }
         })()}

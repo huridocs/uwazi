@@ -1,0 +1,90 @@
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 60px;
+  overflow: hidden;
+}
+
+header {
+  width: 100%;
+}
+
+.container-fluid {
+  margin-right: 0;
+  margin-left: 0;
+  flex: 1;
+  height: 100%;
+}
+
+.app-content > div {
+  height: 100%;
+}
+
+.panel-footer {
+  display: block;
+}
+
+.btn .fa {
+  margin-right: 0;
+}
+
+header ul .btn .fa {
+    margin-right: 5px;
+}
+
+.alert {
+  display: block;
+  width: 50%;
+  left: 25%
+}
+
+.error {
+  display: inherit;
+}
+
+.item-metadata .item-shortcut .fa {
+  margin: 0;
+}
+
+.float-btn__sec a {
+  text-decoration: none;
+  color: black;
+}
+
+.float-btn__sec button, .float-btn__main button, .search-suggestions-all button {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.float-btn__main button {
+  width: 100%;
+}
+
+.search-suggestions-all button {
+  width: 100%;
+  text-align: left;
+}
+
+.item-shortcut {
+  color: #616E70;
+}
+
+.upload-box a {
+  cursor: pointer;
+}
+
+.filters-box .no-filters {
+  display: block;
+
+  .fa-close {
+    position: inherit;
+    color: inherit;
+    color: #616E70;
+  }
+}
+
+.search__filter > li label {
+  font-weight: bold;
+}

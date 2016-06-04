@@ -4,7 +4,7 @@ import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config';
 import UploadsRoute from 'app/Uploads/UploadsRoute';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Uploads/actions/actionTypes.js';
 
 describe('UploadsRoute', () => {

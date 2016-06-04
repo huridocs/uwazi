@@ -4,11 +4,13 @@ import {createFieldClass, controls} from 'react-redux-form';
 export class Select extends Component {
 
   render() {
-    const {options} = this.props;
+    let {options, optionsValue, optionsLabel} = this.props;
+    optionsValue = optionsValue || 'value';
+    optionsLabel = optionsLabel || 'label';
     return (
         <select className="form-control" onChange={this.props.onChange} value={this.props.value}>
         {options.map((option, index) => {
-          return <option key={index} value={option.value}>{option.label}</option>;
+          return <option key={index} value={option[optionsValue]}>{option[optionsLabel]}</option>;
         })}
         </select>
     );
@@ -20,7 +22,9 @@ Select.propTypes = {
   onChange: PropTypes.func,
   label: PropTypes.string,
   options: PropTypes.array,
-  value: PropTypes.string
+  value: PropTypes.string,
+  optionsValue: PropTypes.string,
+  optionsLabel: PropTypes.string
 };
 
 export default Select;

@@ -1,11 +1,12 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
+import {actions as formActions} from 'react-redux-form';
 
 import {APIURL} from 'app/config.js';
 import EditTemplate from 'app/Templates/EditTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import {mockID} from 'shared/uniqueID';
 
 describe('EditTemplate', () => {
@@ -60,8 +61,11 @@ describe('EditTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
+      spyOn(formActions, 'load').and.returnValue('TEMPLATE MODEL LOADED');
       instance.setReduxState({template: {data: 'template_data', uiState: {thesauris: 'thesauris', templates: 'templates'}}});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATE', template: 'template_data'});
+      expect(formActions.load).toHaveBeenCalledWith('template.data', 'template_data');
+      expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATE MODEL LOADED');
+
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATES', templates: 'templates'});
     });

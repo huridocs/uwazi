@@ -23,7 +23,7 @@ describe('DocumentForm', () => {
       thesauris: Immutable.fromJS([{_id: 'thesauriId', name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
-      state: {fields: {title: {prop: 'prop'}}},
+      state: {fields: {title: {titleProp: 'prop'}, 'metadata.field1': {field1Prop: 'prop'}}},
       model: 'document'
     };
   });
@@ -57,6 +57,15 @@ describe('DocumentForm', () => {
       template.simulate('change', {target: {value: '2'}});
       expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.document, props.templates.toJS()[1]);
     });
+  });
+
+  it('should pass the field state to every fields', () => {
+    render();
+    let FormGroup = component.findWhere((node) => node.props().titleProp === 'prop');
+    expect(FormGroup.length).toBe(1);
+
+    FormGroup = component.findWhere((node) => node.props().field1Prop === 'prop');
+    expect(FormGroup.length).toBe(1);
   });
 
   it('should render dynamic fields based on the template selected', () => {

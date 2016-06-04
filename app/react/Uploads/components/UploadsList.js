@@ -24,7 +24,7 @@ export class UploadsList extends Component {
 
     return (
       <RowList>
-        {documents.map((doc) => <UploadDoc doc={doc} key={doc.get('_id')}/>)}
+        {documents.map(doc => <UploadDoc doc={doc} key={doc.get('_id')}/>).toJS()}
       </RowList>
     );
   }

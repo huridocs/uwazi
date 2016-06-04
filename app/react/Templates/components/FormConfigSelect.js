@@ -1,90 +1,108 @@
 import React, {Component, PropTypes} from 'react';
-import {bindActionCreators} from 'redux';
-import {reduxForm} from 'redux-form';
-import {validateProperty} from 'app/Templates/components/ValidateTemplate';
-
-import {updateProperty} from 'app/Templates/actions/templateActions';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import {FormField, Select, SelectField} from 'app/Forms';
+import {connect} from 'react-redux';
 
 export class FormConfigSelect extends Component {
+
+  contentValidation() {
+    return {required: (val) => val.trim() !== ''};
+  }
+
   render() {
-    const {fields: {label, content, required, filter, type}} = this.props;
+    const {index, ui, data, formState} = this.props;
+    const thesauris = ui.toJS().thesauris;
+    const ptoperty = data.properties[index];
+
+    let labelClass = 'input-group';
+    let labelKey = `properties.${index}.label`;
+    let requiredLabel = formState.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    if (requiredLabel || duplicatedLabel) {
+      labelClass += ' has-error';
+    }
+
     return (
-      <form onChange={() => {
-        setTimeout(() => {
-          this.props.updateProperty(this.props.values, this.props.index);
-        });
-      }}>
+      <div>
         <div className="row">
           <div className="col-sm-4">
-            <div className={'input-group' + (label.touched && label.invalid ? ' has-error' : '')}>
-              <span className="input-group-addon">Label</span>
-              <input className="form-control" type="text" {...label} />
+            <div className={labelClass}>
+              <span className="input-group-addon">
+              Label
+              </span>
+              <FormField model={`template.data.properties[${index}].label`}>
+                <input className="form-control"/>
+              </FormField>
             </div>
           </div>
           <div className="col-sm-4">
-            <div className={'input-group' + (content.touched && content.invalid ? ' has-error' : '')}>
+            <div className="input-group">
               <span className="input-group-addon">Thesauri</span>
-              <select value='' className="form-control" type="text" {...content}>
-                <option value='' disabled>Select thesauri</option>
-                {this.props.thesauris.map((thesauri) => {
-                  return <option key={thesauri._id} value={thesauri._id}>{thesauri.name}</option>;
-                })}
-              </select>
+              <SelectField model={`template.data.properties[${index}].content`}>
+                <Select options={thesauris} optionsLabel="name" optionsValue="_id"/>
+              </SelectField>
             </div>
           </div>
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <input id={'required' + this.props.index} type="checkbox" {...required} />
+                <FormField model={`template.data.properties[${index}].required`}>
+                  <input id={'required' + this.props.index} type="checkbox"/>
+                </FormField>
               </span>
-              <label htmlFor={'required' + this.props.index} className="form-control">Required field</label>
+              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
             </div>
           </div>
         </div>
+        {(() => {
+          if (duplicatedLabel) {
+            return <div className="row has-error">
+                    <div className="col-sm-4">
+                    <i className="fa fa-exclamation-triangle"></i>
+                      &nbsp;
+                      Duplicated label
+                    </div>
+                  </div>;
+          }
+        })()}
         <div className="well">
           <div className="row">
             <div className="col-sm-4">
-              <input id={'filter' + this.props.index} type="checkbox" {...filter}/>
+              <FormField model={`template.data.properties[${index}].filter`}>
+                <input id={'filter' + this.props.index} type="checkbox"/>
+              </FormField>
               &nbsp;
-              <label htmlFor={'filter' + this.props.index}>Use as library filter</label>
-              <small>This property will be used togheter for filtering with other equal to him.</small>
+              <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
+              When properties match in equal name and field type with other document types, they will be combined for filtering.">
+                Use as filter
+                &nbsp;
+                <i className="fa fa-question-circle"></i>
+              </label>
             </div>
             <div className="col-sm-8">
-              <FilterSuggestions label={label.value} type={type.value} filter={filter.value} content={content.value} />
+              <FilterSuggestions {...ptoperty} />
             </div>
           </div>
         </div>
-      </form>
+      </div>
     );
   }
 }
 
 FormConfigSelect.propTypes = {
-  fields: PropTypes.object,
-  updateProperty: PropTypes.func,
-  values: PropTypes.object,
-  thesauris: PropTypes.array,
-  index: PropTypes.number
+  ui: PropTypes.object,
+  data: PropTypes.object,
+  index: PropTypes.number,
+  formState: PropTypes.object,
+  formKey: PropTypes.string
 };
 
-export function mapStateToProps(state, props) {
-  let properties = state.template.data.toJS().properties;
+export function mapStateToProps(state) {
   return {
-    initialValues: properties[props.index],
-    thesauris: state.template.uiState.toJS().thesauris,
-    fields: ['label', 'content', 'required', 'filter', 'type'],
-    validate: () => {
-      return validateProperty(properties[props.index], properties);
-    }
+    data: state.template.data,
+    ui: state.template.uiState,
+    formState: state.template.formState
   };
 }
 
-let form = reduxForm({form: 'template'},
-mapStateToProps,
-(dispatch) => {
-  return bindActionCreators({updateProperty}, dispatch);
-}
-)(FormConfigSelect);
-
-export default form;
+export default connect(mapStateToProps)(FormConfigSelect);

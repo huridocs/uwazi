@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import {actions as formActions} from 'react-redux-form';
 
 import * as types from 'app/Templates/actions/actionTypes';
 import {notify} from 'app/Notifications';
@@ -6,39 +6,35 @@ import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 
 export function resetTemplate() {
-  return {
-    type: types.RESET_TEMPLATE
+  return function (dispatch) {
+    dispatch(formActions.reset('template.data'));
   };
 }
 
-export function setTemplate(template) {
-  return {
-    type: types.SET_TEMPLATE,
-    template
+export function addProperty(property = {}, index = 0) {
+  property.localID = ID();
+  return function (dispatch, getState) {
+    if (property.type === 'select') {
+      property.content = getState().template.uiState.toJS().thesauris[0]._id;
+    }
+
+    let properties = getState().template.data.properties.slice(0);
+    properties.splice(index, 0, property);
+    dispatch(formActions.change('template.data.properties', properties));
   };
 }
 
-export function updateTemplate(template) {
-  return {
-    type: types.UPDATE_TEMPLATE,
-    template
+export function updateProperty(property, index) {
+  return function (dispatch, getState) {
+    let properties = getState().template.data.properties.slice(0);
+    properties.splice(index, 1, property);
+    dispatch(formActions.change('template.data.properties', properties));
   };
 }
 
-export function addProperty(config = {}, index = 0) {
-  config.localID = ID();
-  return {
-    type: types.ADD_PROPERTY,
-    config,
-    index
-  };
-}
-
-export function updateProperty(config, index) {
-  return {
-    type: types.UPDATE_PROPERTY,
-    config,
-    index
+export function inserted(index) {
+  return function (dispatch) {
+    dispatch(formActions.change(`template.data.properties[${index}].inserting`, null));
   };
 }
 
@@ -50,27 +46,23 @@ export function selectProperty(index) {
 }
 
 export function removeProperty(index) {
-  return {
-    type: types.REMOVE_PROPERTY,
-    index
+  return function (dispatch, getState) {
+    let properties = getState().template.data.properties.slice(0);
+    dispatch(formActions.move('template.data.properties', index, properties.length - 1));
+    properties.splice(index, 1);
+    dispatch(formActions.change('template.data.properties', properties));
   };
 }
 
 export function reorderProperty(originIndex, targetIndex) {
-  return {
-    type: types.REORDER_PROPERTY,
-    originIndex,
-    targetIndex
+  return function (dispatch) {
+    dispatch(formActions.move('template.data.properties', originIndex, targetIndex));
   };
 }
 
 export function saveTemplate(data) {
-  let templateData = Immutable.fromJS(data).updateIn(['properties'], (properties) => {
-    return properties.map((property) => property.delete('idToRender'));
-  }).toJS();
-
   return function (dispatch) {
-    return api.save(templateData)
+    return api.save(data)
     .then((response) => {
       dispatch({
         type: types.TEMPLATE_SAVED,

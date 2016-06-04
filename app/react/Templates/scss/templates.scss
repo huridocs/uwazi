@@ -1,26 +1,17 @@
-@import "../../controllers/App/scss/config/_colors.scss";
+@import "../../App/scss/config/_colors.scss";
 
 .metadataTemplate-heading {
   display: flex;
 
-  > form:first-child {
+  .template-name {
     flex: 1;
     margin-right: 15px;
 
     .form-control {
       font-size: 18px;
-      border: 1px solid #DDD;
-      background: #FFF;
-      box-shadow: none;
-      &:hover {
-        border: 1px solid #DDD;
-        cursor: text;
-      }
-      &:focus,
-      &:active {
-        border: 1px solid #CCC;
-        background: #FFF;
-      }
+      line-height: 23px;
+      padding: 9px 12px;
+      margin-bottom: 0;
     }
   }
   .form-group {
@@ -63,8 +54,15 @@
   }
 }
 
+.validation-error {
+  color: #ED353D;
+  position: relative;
+  top: 3px;
+  height: 0;
+}
+
 .panel {
-  >.list-group {
+  .list-group {
     .list-group-item {
 
       .btn {
@@ -72,7 +70,13 @@
       }
 
       &.error {
+        display: inherit;
         border-bottom: 1px solid #ED353D;
+        margin-bottom: -1px;
+
+        &:last-child {
+          border-bottom: 1px solid #ED353D;
+        }
 
         .property-name, .property-name .fa {
           color: #ED353D;

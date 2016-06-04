@@ -2,8 +2,7 @@ import {combineReducers} from 'redux';
 import {reducer as reduxForm} from 'redux-form';
 
 import templates from 'app/Templates/reducers/templatesReducer';
-import template from 'app/Templates/reducers/templateReducer';
-import templateUI from 'app/Templates/reducers/uiReducer';
+import template from 'app/Templates/reducers/reducer';
 import {reducer as notificationsReducer} from 'app/Notifications';
 
 import thesauri from 'app/Thesauris/reducers/thesauriReducer';
@@ -15,17 +14,15 @@ import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import uploads from 'app/Uploads/reducers/reducer';
+import user from 'app/Auth/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
 
 export default combineReducers({
   notifications: notificationsReducer,
   form: reduxForm,
-  template: combineReducers({
-    data: template,
-    uiState: templateUI
-  }),
   library,
+  template,
   thesauri,
   thesauris,
   relationTypes,
@@ -36,5 +33,6 @@ export default combineReducers({
   contextMenu,
   modals,
   uploads,
+  user,
   search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });

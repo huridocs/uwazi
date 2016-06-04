@@ -8,7 +8,7 @@ describe('uiReducer', () => {
   describe('when state is undefined', () => {
     it('should return initial state', () => {
       let newState = reducer();
-      expect(newState).toEqual(Immutable.fromJS({thesauris: [], propertyBeingDeleted: null}));
+      expect(newState).toEqual(Immutable.fromJS({thesauris: [], templates: [], propertyBeingDeleted: null}));
     });
   });
 

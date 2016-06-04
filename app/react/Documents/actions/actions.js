@@ -47,7 +47,7 @@ export function changeTemplate(form, doc, template) {
 
     newDoc.template = template._id;
 
-    dispatch(formActions.merge(form, newDoc));
     dispatch(formActions.setInitial(form));
+    dispatch(formActions.change(form, newDoc));
   };
 }

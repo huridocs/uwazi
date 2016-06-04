@@ -1,6 +1,8 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
+import {actions as formActions} from 'react-redux-form';
+import Immutable from 'immutable';
 
 import {APIURL} from 'app/config.js';
 import * as actions from 'app/Templates/actions/templateActions';
@@ -12,35 +14,57 @@ import {mockID} from 'shared/uniqueID';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('templatesActions', () => {
+describe('templateActions', () => {
+  let dispatch;
+  let getState;
+  let formModel;
   beforeEach(() => {
     mockID();
+    formModel = {
+      template: {
+        data: {properties: [{name: 'property1'}, {name: 'property2'}]},
+        uiState: Immutable.fromJS({
+          thesauris: [{_id: 'first_thesauri_id'}, {_id: 2}]
+        })
+      }
+    };
+    dispatch = jasmine.createSpy('dispatch');
+    getState = jasmine.createSpy('getState').and.returnValue(formModel);
+    spyOn(formActions, 'change');
+    spyOn(formActions, 'move');
+    spyOn(formActions, 'remove');
+    spyOn(formActions, 'reset');
   });
 
   describe('addProperty()', () => {
-    it('should return an ADD_PROPERTY type action with config, unique config.id and index passed', () => {
-      let action = actions.addProperty({name: 'test'}, 'index !');
-      expect(action).toEqual({type: types.ADD_PROPERTY, config: {name: 'test', localID: 'unique_id'}, index: 'index !'});
+    it('should add the property to the form data with a unique id in the index provided', () => {
+      actions.addProperty({name: 'property3'}, 0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+        {name: 'property3', localID: 'unique_id'},
+        {name: 'property1'},
+        {name: 'property2'}
+      ]);
     });
 
-    it('should return default config object and index if nothing passed', () => {
-      let action = actions.addProperty();
-      expect(action).toEqual({type: types.ADD_PROPERTY, config: {localID: 'unique_id'}, index: 0});
-    });
-  });
-
-  describe('updateTemplate()', () => {
-    it('should return an UPDATE_TEMPLATE type action with template passed', () => {
-      let action = actions.updateTemplate({name: 'test'});
-      expect(action).toEqual({type: types.UPDATE_TEMPLATE, template: {name: 'test'}});
+    describe('when property its a select', () => {
+      it('should should add as first thesauri as default value', () => {
+        actions.addProperty({name: 'property3', type: 'select'}, 0)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+          {name: 'property3', type: 'select', localID: 'unique_id', content: 'first_thesauri_id'},
+          {name: 'property1'},
+          {name: 'property2'}
+        ]);
+      });
     });
   });
 
   describe('updateProperty()', () => {
-    it('should return an UPDATE_PROPERTY type action with the new property config', () => {
-      let config = {name: 'super name'};
-      let action = actions.updateProperty(config, 2);
-      expect(action).toEqual({type: types.UPDATE_PROPERTY, config: {name: 'super name'}, index: 2});
+    it('should update the property in the index provided', () => {
+      actions.updateProperty({name: 'new name'}, 0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+        {name: 'new name'},
+        {name: 'property2'}
+      ]);
     });
   });
 
@@ -51,31 +75,24 @@ describe('templatesActions', () => {
     });
   });
 
-  describe('setTemplate()', () => {
-    it('should return a SET_TEMPLATE type action with the template passed', () => {
-      let action = actions.setTemplate('template');
-      expect(action).toEqual({type: types.SET_TEMPLATE, template: 'template'});
-    });
-  });
-
   describe('resetTemplate()', () => {
-    it('should return a RESET_TEMPLATE type action with the template passed', () => {
-      let action = actions.resetTemplate();
-      expect(action).toEqual({type: types.RESET_TEMPLATE});
+    it('should reset the form data', () => {
+      actions.resetTemplate()(dispatch);
+      expect(formActions.reset).toHaveBeenCalledWith('template.data');
     });
   });
 
   describe('removeProperty', () => {
-    it('should return a REMOVE_FIELD type action with index passed', () => {
-      let action = actions.removeProperty(55);
-      expect(action).toEqual({type: types.REMOVE_PROPERTY, index: 55});
+    it('should remove the property from the data', () => {
+      actions.removeProperty(1)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [{name: 'property1'}]);
     });
   });
 
   describe('reorderProperty', () => {
-    it('should return a REORDER_PROPERTY type action with origin and target indexes', () => {
-      let action = actions.reorderProperty(1, 2);
-      expect(action).toEqual({type: types.REORDER_PROPERTY, originIndex: 1, targetIndex: 2});
+    it('should reorder the properties in the form data', () => {
+      actions.reorderProperty(1, 2)(dispatch);
+      expect(formActions.move).toHaveBeenCalledWith('template.data.properties', 1, 2);
     });
   });
 

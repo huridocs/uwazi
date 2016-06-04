@@ -1,6 +1,6 @@
 import React from 'react';
 
-import RouteHandler from 'app/controllers/App/RouteHandler';
+import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from './components/DocumentsList';
 import LibraryFilters from './components/LibraryFilters';
 import {enterLibrary, setDocuments, setTemplates} from './actions/libraryActions';
