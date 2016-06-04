@@ -34,10 +34,10 @@ export class Viewer extends Component {
   render() {
     let className = 'document-viewer col-xs-12';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel col-xs-8';
+      className = 'document-viewer with-panel col-xs-12 col-sm-8 col-md-9';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document col-xs-12';
+      className = 'document-viewer show-target-document col-xs-12 col-sm-8 col-md-9';
     }
 
     return (

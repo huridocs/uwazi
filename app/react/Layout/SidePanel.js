@@ -4,7 +4,7 @@ import './scss/sidepanel.scss';
 export class SidePanel extends Component {
   render() {
     return (
-      <aside className={'create-modal col-sm-4 side-panel ' + (this.props.open ? 'is-active' : 'is-hidden')}>
+      <aside className={'create-modal col-sm-4 col-md-3 side-panel ' + (this.props.open ? 'is-active' : 'is-hidden')}>
         {this.props.children}
       </aside>
     );
