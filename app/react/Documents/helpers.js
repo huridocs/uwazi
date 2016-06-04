@@ -3,7 +3,7 @@ export default {
 
     let template = templates.find(t => t._id === doc.template);
 
-    if (!template || !thesauris.length) {
+    if (!template) {
       return Object.assign({}, doc, {metadata: [], documentType: ''});
     }
 
