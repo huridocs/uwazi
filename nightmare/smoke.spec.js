@@ -105,4 +105,21 @@ fdescribe('Smoke test', () => {
     });
   });
 
+  describe('metadata view', () => {
+    describe('document type section', () => {
+      it('should check document type section presence', (done) => {
+        login(nightmare, url)
+        .wait(50)
+        .click('a[href="/metadata"]')
+        .wait(50)
+        .evaluate(getInnerText, '.document .panel-heading')
+        .end()
+        .then(function(innerText){
+          console.log('Document type presence ✓');
+          expect(innerText).toBe('Document type')
+        })
+        .then(done)
+      })
+    });
+  });
 });
