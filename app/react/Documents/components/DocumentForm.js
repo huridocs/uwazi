@@ -37,6 +37,7 @@ export class DocumentForm extends Component {
           <label>Document Type <span className="required">*</span></label>
           <FormField>
             <Select options={templateOptions}
+              value={template._id}
               onChange={(e) => {
                 this.props.changeTemplate(model, document, templates.find((t) => t._id === e.target.value));
               }}
@@ -46,7 +47,7 @@ export class DocumentForm extends Component {
 
         {template.properties.map((property, index) => {
           return (
-            <FormGroup key={index} {...state.fields[`${model}.${property.name}`]} submitFailed={state.submitFailed}>
+            <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
               <label>
                 {property.label}
                 {property.required ? <span className="required">*</span> : ''}
