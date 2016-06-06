@@ -64,11 +64,9 @@ export function saveTemplate(data) {
   return function (dispatch) {
     return api.save(data)
     .then((response) => {
-      dispatch({
-        type: types.TEMPLATE_SAVED,
-        data: response
-      });
+      dispatch({type: types.TEMPLATE_SAVED, data: response});
 
+      dispatch(formActions.merge('template.data', {_id: response.id, _rev: response.rev}));
       dispatch(notify('saved successfully !', 'success'));
     });
   };
