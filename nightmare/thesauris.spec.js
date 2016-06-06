@@ -1,31 +1,26 @@
 import Nightmare from 'nightmare';
-import * as thesauris from './helpers/thesauris.js'
-import url from './helpers/url.js';
-
-var getInnerText = (selector) => {
-  return document.querySelector(selector).innerText;
-}
+import * as thesauris from './helpers/thesauris.js';
 
 describe('thesauris', () => {
   let nightmare;
 
   beforeEach(() => {
-      nightmare = new Nightmare({show: true}).viewport(1100, 600);
-  })
+    nightmare = new Nightmare({show: true}).viewport(1100, 600);
+  });
 
-  var catchError = (done) => {
+  let catchError = (done) => {
     return (error) => {
       expect(error).toBe(null);
       done();
-    }
-  }
+    };
+  };
 
   describe('add thesauri', () => {
     it('should add a new thesauri, add two values then delete it', (done) => {
-      var thesauri_name = 'Test sauri'
-      nightmare = thesauris.addThesauri(nightmare, thesauri_name);
-      thesauris.addValuesToThesauri(nightmare, thesauri_name)
-      thesauris.deleteThesauri(nightmare, thesauri_name)
+      let thesauriName = 'Test sauri';
+      nightmare = thesauris.addThesauri(nightmare, thesauriName);
+      thesauris.addValuesToThesauri(nightmare, thesauriName);
+      thesauris.deleteThesauri(nightmare, thesauriName)
       .wait(50)
       .end()
       .then(done)

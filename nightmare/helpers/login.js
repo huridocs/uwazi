@@ -1,19 +1,19 @@
-import url from './url.js';
+import config from './config.js';
 
-export function login(nightmare){
+export function login(nightmare) {
   return nightmare
-        .goto(url + '/login')
+        .goto(config.url + '/login')
         .insert('input[name="username"]', 'admin')
         .insert('input[name="password"]', 'admin')
         .click('button[type="submit"]')
-        .wait(100)
+        .wait(100);
 }
 
-export function invalidLogin(nightmare){
+export function invalidLogin(nightmare) {
   return nightmare
-        .goto(url + '/login')
+        .goto(config.url + '/login')
         .insert('input[name="username"]', 'wrong')
         .insert('input[name="password"]', 'pass')
         .click('button[type="submit"]')
-        .wait(100)
+        .wait(100);
 }

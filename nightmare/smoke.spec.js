@@ -1,125 +1,117 @@
 import Nightmare from 'nightmare';
-import {login, invalidLogin} from './helpers/login.js'
-import url from './helpers/url.js';
+import {login} from './helpers/login.js';
+import config from './helpers/config.js';
 
 
 fdescribe('Smoke test', () => {
-  let nightmare;
+  let nightmare = new Nightmare({show: true}).viewport(1100, 600);
 
-  beforeEach(() => {
-    nightmare = new Nightmare({show: true}).viewport(1100, 600);
-  })
-
-  var getInnerText = (selector) => {
+  let getInnerText = (selector) => {
     return document.querySelector(selector).innerText;
-  }
+  };
 
-  var catchError = (done) => {
-    return (error) => {
-      expect(error).toBe(null);
-      done();
-    }
-  }
+  // let catchError = (done) => {
+  //   return (error) => {
+  //     expect(error).toBe(null);
+  //     done();
+  //   };
+  // };
 
   describe('login success', () => {
     it('should redirect to home page', (done) => {
-      login(nightmare, url)
+      login(nightmare, config.url)
       .url()
-      .end()
       .then((url) => {
         expect(url).toBe('http://localhost:3000/');
         done();
-      })
+      });
     });
   });
 
-  describe('form errors', () => {
-    it('should show error message', (done) => {
-      invalidLogin(nightmare, url)
-      .evaluate(getInnerText, '.alert-message')
-      .end()
-      .then((innerText) => {
-        expect(innerText).toBe('Invalid password or username');
-        done();
-      })
-      .catch(catchError(done));
-    });
-  });
-
-  describe('navigation buttons', () => {
+  describe('my_account', () => {
     it('should check if user/admin nav button works', (done) => {
-      login(nightmare, url)
-      .goto(url)
+      nightmare
       .click('.fa-user')
-      .wait(50)
+      .wait(config.waitTime)
       .url()
-      .end()
       .then((url) => {
-        console.log('user ✓');
         expect(url).toBe('http://localhost:3000/my_account');
         done();
-      })
-    });
-
-    it('should check if uploads nav button works', (done) => {
-      login(nightmare, url)
-      .goto(url)
-      .click('a[href="/uploads"]')
-      .wait(50)
-      .url()
-      .end()
-      .then((url) => {
-        console.log('uploads ✓');
-        expect(url).toBe('http://localhost:3000/uploads');
-        done();
-      })
-    });
-
-    it('should check if library nav button works', (done) => {
-      login(nightmare, url)
-      .goto(url + '/metadata')
-      .wait(50)
-      .click('a[href="/"]')
-      .wait(50)
-      .url()
-      .end()
-      .then((url) => {
-        console.log('library ✓');
-        expect(url).toBe('http://localhost:3000/');
-        done();
-      })
-    });
-
-    it('should check if metadata nav button works', (done) => {
-      login(nightmare, url)
-      .goto(url)
-      .click('a[href="/metadata"]')
-      .wait(50)
-      .url()
-      .end()
-      .then((url) => {
-        console.log('metadata ✓');
-        expect(url).toBe('http://localhost:3000/metadata');
-        done();
-      })
+      });
     });
   });
 
-  describe('metadata view', () => {
-    describe('document type section', () => {
-      it('should check document type section presence', (done) => {
-        login(nightmare, url)
-        .wait(50)
-        .click('a[href="/metadata"]')
-        .wait(50)
-        .evaluate(getInnerText, '.document .panel-heading')
-        .end()
-        .then(function(innerText){
-          console.log('Document type presence ✓');
-          expect(innerText).toBe('Document type')
-        })
-        .then(done)
-      })
+  describe('uploads', () => {
+    it('should check if uploads nav button works', (done) => {
+      nightmare
+      .click('a[href="/uploads"]')
+      .wait(config.waitTime)
+      .url()
+      .then((url) => {
+        expect(url).toBe('http://localhost:3000/uploads');
+        done();
+      });
     });
+
+    describe('when the user clicks in a document', () => {
+      it('a side panel with the metadata form appears, then close it by clicking on the same document', () => {
+        nightmare
+        .click('.document-viewer .item-name')
+        .wait(config.waitTime)
+        .click('.document-viewer .item-name')
+        .wait(config.waitTime);
+      });
+
+      it('a side panel with the metadata form appears, then close it by clicking on the panel cross', () => {
+        nightmare
+        .click('.document-viewer .item-name')
+        .wait(config.waitTime)
+        .click('.side-panel .close-modal')
+        .wait(config.waitTime);
+      });
+
+      it('a side panel with the metadata form appears, click on the next document then close it', () => {
+        nightmare
+        .click('.document-viewer .item-name')
+        .click('.document-viewer li:nth-child(2) .item-name')
+        .click('.side-panel .close-modal')
+        .wait(config.waitTime);
+      });
+
+      it('a side panel with the metadata form appears, click the gear drop down menu', () => {
+        nightmare
+        .click('.document-viewer .item-name')
+        .wait(config.waitTime)
+        .mouseover('.fa-gears')
+        .wait(config.waitTime)
+        .click('.side-panel .close-modal')
+        .wait(config.waitTime);
+      });
+    });
+    describe('item-metadata', () => {
+      describe('when the user clicks the document-metadata of a document', () => {
+        it('a window showing the status of a document should appear', () => {
+          nightmare
+          .click('.item-metadata')
+          .click('.cancel-button')
+          .wait(config.waitTime);
+        });
+      });
+    });
+  });
+
+  describe('document-viewer', () => {
+    describe('when the user clicks the file icon of a document', () => {
+      it('should open the document', () => {
+        nightmare
+        .evaluate(getInnerText, '.document-viewer .item-name')
+        .click('.fa-file-o');
+      });
+    });
+  });
+
+  it('should close the browser', (done) => {
+    nightmare.end()
+    .then(done);
   });
 });
