@@ -52,8 +52,17 @@ export default function (container) {
       }
     },
 
+    isSelectionOnContainer() {
+      let node = window.getSelection().parentNode;
+      while (node && node !== this.container && node.nodeName !== 'BODY') {
+        node = node.parentNode;
+      }
+
+      return node === this.container;
+    },
+
     removeSelection() {
-      if (!this.selected()) {
+      if (!this.selected() || !this.isSelectionOnContainer()) {
         return;
       }
       if (window.getSelection) {
