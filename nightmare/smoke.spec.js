@@ -6,17 +6,6 @@ import config from './helpers/config.js';
 fdescribe('Smoke test', () => {
   let nightmare = new Nightmare({show: true}).viewport(1100, 600);
 
-  // let getInnerText = (selector) => {
-  //   return document.querySelector(selector).innerText;
-  // };
-
-  // let catchError = (done) => {
-  //   return (error) => {
-  //     expect(error).toBe(null);
-  //     done();
-  //   };
-  // };
-
   describe('login success', () => {
     it('should redirect to home page', (done) => {
       login(nightmare, 'admin', 'admin')
