@@ -12,6 +12,20 @@ describe('uiReducer', () => {
     });
   });
 
+  describe('SAVING_TEMPLATE', () => {
+    it('should set savingTemplate true', () => {
+      let newState = reducer(Immutable.fromJS({}), {type: actions.SAVING_TEMPLATE});
+      expect(newState).toEqualImmutable(Immutable.fromJS({savingTemplate: true}));
+    });
+  });
+
+  describe('TEMPLATE_SAVED', () => {
+    it('should set savingTemplate false', () => {
+      let newState = reducer(Immutable.fromJS({}), {type: actions.TEMPLATE_SAVED});
+      expect(newState).toEqualImmutable(Immutable.fromJS({savingTemplate: false}));
+    });
+  });
+
   describe('EDIT_PROPERTY', () => {
     it('should set editingProperty to the action id', () => {
       let newState = reducer(Immutable.fromJS({}), {type: actions.EDIT_PROPERTY, id: 'test id'});

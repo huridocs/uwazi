@@ -112,6 +112,7 @@ describe('templateActions', () => {
         ]};
 
         const expectedActions = [
+          {type: types.SAVING_TEMPLATE},
           {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', id: 'id', rev: 'rev'}},
           {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}},
           {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}

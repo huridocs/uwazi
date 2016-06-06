@@ -38,7 +38,7 @@ export class MetadataTemplate extends Component {
                 &nbsp;
                 <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
-                <button type="submit" className="btn btn-success save-template">
+                <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
                   <i className="fa fa-save"/> Save
                 </button>
               </div>
@@ -63,6 +63,7 @@ MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   formState: PropTypes.object,
   saveTemplate: PropTypes.func,
+  savingTemplate: PropTypes.bool,
   setErrors: PropTypes.func,
   properties: PropTypes.array
 };
@@ -96,6 +97,7 @@ export {dropTarget};
 const mapStateToProps = ({template}) => {
   return {
     properties: template.data.properties,
+    savingTemplate: template.uiState.get('savingTemplate'),
     formState: template.formState
   };
 };

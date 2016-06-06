@@ -62,6 +62,7 @@ export function reorderProperty(originIndex, targetIndex) {
 
 export function saveTemplate(data) {
   return function (dispatch) {
+    dispatch({type: types.SAVING_TEMPLATE});
     return api.save(data)
     .then((response) => {
       dispatch({type: types.TEMPLATE_SAVED, data: response});

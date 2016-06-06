@@ -17,5 +17,13 @@ export default function templatesUI(state = initialState, action = {}) {
     return state.set('templates', action.templates);
   }
 
+  if (action.type === actions.SAVING_TEMPLATE) {
+    return state.set('savingTemplate', true);
+  }
+
+  if (action.type === actions.TEMPLATE_SAVED) {
+    return state.set('savingTemplate', false);
+  }
+
   return Immutable.fromJS(state);
 }

@@ -59,6 +59,16 @@ describe('MetadataTemplate', () => {
   }
 
   describe('render()', () => {
+    it('should disable send button when saving the template', () => {
+      let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
+      let component = shallow(<MetadataTemplate {...props} />);
+      expect(component.find('button').props().disabled).toBe(false);
+
+      props = {savingTemplate: true, properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
+      component = shallow(<MetadataTemplate {...props} />);
+      expect(component.find('button').props().disabled).toBe(true);
+    });
+
     it('should render the template name field', () => {
       let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
       let component = shallow(<MetadataTemplate {...props} />);
