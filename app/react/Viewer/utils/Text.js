@@ -12,8 +12,11 @@ export default function (container) {
     },
 
     getSelection() {
-      let range = window.getSelection().getRangeAt(0);
-      return TextRange.serialize(range, container);
+      let selection = window.getSelection();
+      let range = selection.getRangeAt(0);
+      let serializedRange = TextRange.serialize(range, container);
+      serializedRange.text = selection.toString();
+      return serializedRange;
     },
 
     highlight(referenceId) {

@@ -24,11 +24,11 @@ describe('Text', () => {
 
   describe('getSelection', () => {
     it('should return a serialized selection', () => {
-      spyOn(TextRange, 'serialize').and.returnValue('serializedRange');
+      spyOn(TextRange, 'serialize').and.returnValue({start: 1, end: 10});
       let range = mockRangeSelection('text');
 
       let serializedRange = text.getSelection();
-      expect(serializedRange).toEqual('serializedRange');
+      expect(serializedRange).toEqual({start: 1, end: 10, text: 'text'});
       expect(TextRange.serialize).toHaveBeenCalledWith(range, document);
     });
   });
