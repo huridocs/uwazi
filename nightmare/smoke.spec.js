@@ -19,7 +19,7 @@ fdescribe('Smoke test', () => {
 
   describe('login success', () => {
     it('should redirect to home page', (done) => {
-      login(nightmare, config.url)
+      login(nightmare, 'admin', 'admin')
       .url()
       .then((url) => {
         expect(url).toBe('http://localhost:3000/');
@@ -102,10 +102,20 @@ fdescribe('Smoke test', () => {
 
   describe('document-viewer', () => {
     describe('when the user clicks the file icon of a document', () => {
-      it('should open the document', () => {
+      it('should open the document', (done) => {
+        // let listTitle;
         nightmare
-        .evaluate(getInnerText, '.document-viewer .item-name')
-        .click('.fa-file-o');
+        .evaluate(getInnerText, '.document-viewer li:nth-child(2) .item-name')
+        .then((innerText) => {
+          expect('231 99 Avocats Sans Frontières (on behalf of Gaëtan Bwampamye) Burundi').toBe(innerText);
+        });
+        nightmare
+        .click('.fa-file-o')
+        .evaluate(getInnerText, '.document div:nth-child(5+6) .h1')
+        .then((innerText) => {
+          expect('231 99 Avocats Sans Frontières (on behalf of Gaëtan Bwampamye) Burundi').toBe(innerText);
+          done();
+        });
       });
     });
   });

@@ -1,6 +1,5 @@
 import Nightmare from 'nightmare';
 import {login, invalidLogin} from './helpers/login.js';
-import config from './helpers/config.js';
 
 describe('login', () => {
   let nightmare;
@@ -22,7 +21,7 @@ describe('login', () => {
 
   describe('login success', () => {
     it('should redirect to home page', (done) => {
-      login(nightmare, config.url)
+      login(nightmare, 'admin', 'admin')
       .url()
       .end()
       .then((url) => {
@@ -34,7 +33,7 @@ describe('login', () => {
 
   describe('form errors', () => {
     it('should show error message', (done) => {
-      invalidLogin(nightmare, config.url)
+      invalidLogin(nightmare, 'wrong', 'wrong')
       .evaluate(getInnerText, '.alert-message')
       .end()
       .then((innerText) => {
