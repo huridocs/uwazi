@@ -1,6 +1,6 @@
 import React from 'react';
-import TestUtils from 'react-addons-test-utils';
-import MockProvider from '../../App/specs/MockProvider';
+import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import {MyAccount} from '../MyAccount.js';
 
@@ -15,8 +15,12 @@ describe('MyAccount', () => {
 
   function instantiateComponent(response) {
     fetchMock = jasmine.createSpy('fetchMock').and.returnValue(Promise.resolve(response));
-    user = {_id: 1234, _rev: 789, username: 'SelinaKyle'};
-    TestUtils.renderIntoDocument(<MockProvider><MyAccount ref={(ref) => component = ref} fetch={fetchMock} user={user}/></MockProvider>);
+    user = Immutable.fromJS({_id: 1234, _rev: 789, username: 'SelinaKyle'});
+    let props = {
+      fetch: fetchMock,
+      user
+    };
+    component = shallow(<MyAccount {...props} />).instance();
   }
 
   beforeEach(() => instantiateComponent(res));
