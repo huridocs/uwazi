@@ -24,7 +24,7 @@ export default function () {
       return baseQuery;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['doc.fullText', 'doc.metadata.*', 'doc.title']) {
+    fullTextSearch(term, fieldsToSearch = ['doc.fullText', 'doc.metadata.*', 'doc.title^10']) {
       if (term) {
         baseQuery.query = {
           multi_match: {
