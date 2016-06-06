@@ -57,8 +57,9 @@ export class MyAccount extends Component {
       return;
     }
 
-    let user = this.props.user;
+    let user = this.props.user.toJS();
     user.password = this.state.password;
+
     return this.fetch('/api/users', {method: 'POST',
                       headers: {
                         Accept: 'application/json',
