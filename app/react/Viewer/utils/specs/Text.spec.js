@@ -34,40 +34,58 @@ describe('Text', () => {
   });
 
   describe('simulateSelection', () => {
-    it('should wrap the range with a span.fake-selection', () => {
-      spyOn(wrapper, 'wrap').and.returnValue('fakeSelection');
-      spyOn(TextRange, 'restore').and.returnValue('restoredRange');
-      spyOn(text, 'removeSelection');
-      spyOn(text, 'removeSimulatedSelection');
+    describe('when there is no selection', () => {
+      it('should wrap the range with a span.fake-selection', () => {
+        spyOn(wrapper, 'wrap').and.returnValue('fakeSelection');
+        spyOn(TextRange, 'restore').and.returnValue('restoredRange');
+        spyOn(text, 'selected').and.returnValue(false);
+        spyOn(text, 'removeSimulatedSelection');
 
-      text.simulateSelection('range');
+        text.simulateSelection('range');
 
-      let elementWrapper = document.createElement('span');
-      elementWrapper.classList.add('fake-selection');
+        let elementWrapper = document.createElement('span');
+        elementWrapper.classList.add('fake-selection');
 
-      expect(TextRange.restore).toHaveBeenCalledWith('range', document);
-      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
-      expect(text.fakeSelection).toBe('fakeSelection');
-      expect(text.removeSelection).toHaveBeenCalled();
-      expect(text.removeSimulatedSelection).toHaveBeenCalled();
+        expect(TextRange.restore).toHaveBeenCalledWith('range', document);
+        expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
+        expect(text.fakeSelection).toBe('fakeSelection');
+        expect(text.removeSimulatedSelection).toHaveBeenCalled();
+      });
     });
 
     describe('when selection passed is null', () => {
-      it('should remove current fakeSelection', () => {
+      it('should only remove current fakeSelection', () => {
         spyOn(text, 'removeSimulatedSelection');
+        spyOn(wrapper, 'wrap');
         text.simulateSelection(null);
 
         expect(text.removeSimulatedSelection).toHaveBeenCalled();
+        expect(wrapper.wrap).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when there is text selected', () => {
+      it('should only remove current fakeSelection', () => {
+        spyOn(text, 'removeSimulatedSelection');
+        spyOn(wrapper, 'wrap');
+        spyOn(text, 'selected').and.returnValue(true);
+
+        text.simulateSelection({});
+
+        expect(text.removeSimulatedSelection).toHaveBeenCalled();
+        expect(wrapper.wrap).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('removeSimulatedSelection', () => {
-    it('should unwrap fake selection and set fakeSelection to null', () => {
+    it('should unwrap fake selection, fakeSelection to null and remove real selection', () => {
       let unwrap = jasmine.createSpy('unwrap');
+      spyOn(text, 'removeSelection');
       text.fakeSelection = {unwrap};
       text.removeSimulatedSelection();
 
+      expect(text.removeSelection).toHaveBeenCalled();
       expect(unwrap).toHaveBeenCalled();
       expect(text.fakeSelection).toBe(null);
     });

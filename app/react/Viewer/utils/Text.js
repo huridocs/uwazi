@@ -34,7 +34,7 @@ export default function (container) {
 
     simulateSelection(range) {
       this.removeSimulatedSelection();
-      if (!range) {
+      if (!range || this.selected()) {
         return;
       }
 
@@ -42,11 +42,11 @@ export default function (container) {
       let elementWrapper = document.createElement('span');
       elementWrapper.classList.add('fake-selection');
       this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
-      this.removeSelection();
     },
 
     removeSimulatedSelection() {
       if (this.fakeSelection) {
+        this.removeSelection();
         this.fakeSelection.unwrap();
         this.fakeSelection = null;
       }
