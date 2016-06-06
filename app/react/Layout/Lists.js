@@ -55,7 +55,7 @@ ItemFooter.Label = ItemLabel;
 ItemFooter.ProgressBar = ProgressBar;
 
 let RowList = ({children}) => {
-  return <div className="item-group row">{children}</div>;
+  return <div className="row"><div className="item-group">{children}</div></div>;
 };
 
 let RowListItem = ({children, status, onClick, active}) => {

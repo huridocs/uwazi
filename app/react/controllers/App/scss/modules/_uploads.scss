@@ -1,4 +1,7 @@
 .upload-box {
+	display: block;
+	margin: auto;
+	max-width: 960px;
 	border: 1px dashed $c-grey;
 	text-align: center;
 	padding: 45px;
