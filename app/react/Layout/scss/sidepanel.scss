@@ -8,10 +8,10 @@
 	top: 60px;
 	bottom: 0;
 	border-left: 1px dotted $c-grey;
-	width: 400px;
 	padding: 15px;
 	transition: all 500ms;
 	overflow-y: scroll;
+	background: $c-primary-lighten;
 
 	&.is-active {
 		transform: translateX(0);

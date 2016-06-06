@@ -7,12 +7,6 @@
   height: 100%;
   transform: translateX(0%);
   transition: all 500ms;
-  &.with-panel{
-    transform: translateX(-20%);
-  }
-  &.show-target-document{
-    transform: translateX(-100%);
-  }
 }
 
 .document {
@@ -133,14 +127,22 @@
   }
 }
 
+.document {
+  max-width: 800px;
+  margin: auto;
+}
+
 .document.targetDocument {
   position: relative;
-  transform: translateX(100%);
+  transform: translateX(1000px);
+  opacity: 0;
+  transition: all 500ms;
 }
 
 .document-viewer.show-target-document {
   .sourceDocument {
     position: absolute;
+    right: 90%;
     opacity: 0.3;
     &:hover {
       opacity: 1;
@@ -149,6 +151,7 @@
   }
   .targetDocument {
     opacity: 1;
+    transform: translateX(0px);
   }
 }
 
@@ -164,109 +167,4 @@
   opacity: 0;
   transition: right 500ms, opacity 0ms;
   width: 33%;
-}
-
-.create-modal {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  border-left: 1px dotted $c-grey;
-  width: 400px;
-  padding: 15px;
-  transform: translateX(100%);
-  transition: all 500ms;
-  overflow-y: scroll;
-  &.is-active {
-    transform: translateX(0);
-  }
-
-  h1 {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: $f-size-lg;
-  }
-  .item-group {
-    padding: 15px 0px;
-    margin: 0 -2px 15px;
-    overflow-y: scroll;
-    height: 60%;
-  }
-  .item {
-    height: auto;
-    margin-bottom: 5px;
-    padding: 15px;
-    border-color: $c-white;
-    &:after {
-      content: '\f00c';
-      font-family: FontAwesome;
-      position: absolute;
-      top: 30%;
-      left: 42%;
-      font-size: 40px;
-      color: $c-success;
-      opacity: 0;
-      transition: 500ms all;
-    }
-    &.is-selected {
-      background: $c-primary-lighten;
-      color: $c-primary-light;
-      border: 1px solid $c-primary-light;
-      &:after {
-        opacity: 1;
-        top: -5px;
-      }
-      &:before {
-        display: none;
-      }
-    }
-    .item-name {
-      font-size: $f-size;
-    }
-  }
-}
-
-.ref-modal {
-  position: fixed;
-  right: 0;
-  top: 60px;
-  bottom: 0;
-  border-left: 1px dotted $c-grey;
-  width: 400px;
-  padding: 15px;
-  transform: translateX(100%);
-  transition: all 500ms;
-  &.is-active {
-    transform: translateX(0);
-  }
-
-  h1 {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: $f-size-lg;
-  }
-  .item-group {
-    padding: 15px 0px;
-    margin: 0 -2px 15px;
-    overflow-y: scroll;
-    height: 80%;
-  }
-  .item {
-    height: auto;
-    margin-bottom: 5px;
-    padding: 15px;
-    border-color: $c-white;
-
-    &.is-selected {
-      &:before {
-        display: none;
-      }
-    }
-    &.leave {
-      opacity: 0;
-    }
-    .item-name {
-      font-size: $f-size;
-    }
-  }
 }

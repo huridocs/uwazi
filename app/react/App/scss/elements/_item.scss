@@ -2,12 +2,12 @@
 	list-style-type: none;
 	padding-bottom: 15px;
 	@include desktop {
-		margin-left: -4px;
-		margin-right: -4px;
-
+		padding: 0 11px;
+    display: block;
+    margin: auto;
+    max-width: 960px;
 		li {
 			position: static;
-			//height: 140px;
 			padding: 0 4px;
 		}
 	}
@@ -168,7 +168,11 @@
 
 .sort-by {
 	text-align: center;
+	padding: 0 15px;
 	@include desktop {
+		display: block;
+    margin: auto;
+    max-width: 960px;
 		text-align: right;
 		#documents-counter {
 			text-align: left;
