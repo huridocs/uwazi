@@ -42,7 +42,7 @@ export class Viewer extends Component {
     }
 
     return (
-      <div>
+      <div className="row">
         <main className={className}>
           <SourceDocument />
           <TargetDocument />
