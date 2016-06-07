@@ -6,6 +6,10 @@ import config from './helpers/config.js';
 fdescribe('Smoke test', () => {
   let nightmare = new Nightmare({show: true}).viewport(1100, 600);
 
+  let getInnerText = (selector) => {
+    return document.querySelector(selector).innerText;
+  };
+
   describe('login success', () => {
     it('should redirect to home page', (done) => {
       login(nightmare, 'admin', 'admin')
@@ -84,6 +88,22 @@ fdescribe('Smoke test', () => {
           .click('.item-metadata')
           .click('.cancel-button')
           .wait(config.waitTime);
+        });
+      });
+    });
+  });
+
+  describe('document-viewer', () => {
+    describe('when the user clicks the file icon of a document', () => {
+      it('should open the document', (done) => {
+        nightmare
+        .click('.fa-file-o')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.document div')
+        .then((innerText) => {
+          expect(innerText).not.toBe('');
+          expect(typeof innerText).not.toBe('undefined');
+          done();
         });
       });
     });
