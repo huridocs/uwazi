@@ -41,7 +41,7 @@ export class Document extends Component {
 
   componentDidUpdate() {
     this.text.renderReferences(this.props.references);
-    this.text.simulateSelection(this.props.selection);
+    this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
   }
 
@@ -82,7 +82,8 @@ Document.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
   executeOnClickHandler: PropTypes.bool,
-  disableTextSelection: PropTypes.bool
+  disableTextSelection: PropTypes.bool,
+  forceSimulateSelection: PropTypes.bool
 };
 
 export default Document;

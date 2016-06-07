@@ -32,9 +32,9 @@ export default function (container) {
       this.highlightedReference = referenceId;
     },
 
-    simulateSelection(range) {
+    simulateSelection(range, force) {
       this.removeSimulatedSelection();
-      if (!range || this.selected()) {
+      if (!range || this.selected() && !force) {
         return;
       }
 
@@ -53,7 +53,7 @@ export default function (container) {
     },
 
     isSelectionOnContainer() {
-      let node = window.getSelection().parentNode;
+      let node = window.getSelection().baseNode;
       while (node && node !== this.container && node.nodeName !== 'BODY') {
         node = node.parentNode;
       }
