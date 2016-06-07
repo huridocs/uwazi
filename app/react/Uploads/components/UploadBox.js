@@ -31,8 +31,12 @@ export class UploadBox extends Component {
     return (
       <Dropzone style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
         <div className="upload-box">
-          <i className="fa fa-upload"></i>
-          <a>Upload your document</a>
+          <p className="upload-box_title">
+            <i className="fa fa-upload"></i>
+            <span>Drag and drop your files</span>
+          </p>
+          <a className="upload-box_link">or click here for browsing your local files</a>
+          <p className="upload-box_files">Supported formats: PDF</p>
         </div>
       </Dropzone>
     );

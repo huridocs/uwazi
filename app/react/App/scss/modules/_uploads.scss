@@ -4,19 +4,27 @@
 	max-width: 960px;
 	border: 1px dashed $c-grey;
 	text-align: center;
-	padding: 45px;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
+	padding: 45px 45px 30px 45px;
 	color: $c-grey-dark;
 	margin-bottom: 30px;
-	/*cursor: pointer;
-	font-size: $f-size-lg;
-	&:hover a {
-		text-decoration: underline;
-	}
-	*/
-	a {
+	&_title {
 		color: $c-grey-dark;
+		font-size: $f-size-lg;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: bold;
+	}
+	&_link {
+		color: $c-grey-dark;
+		border-bottom: 1px dotted $c-grey;
+		&:hover {
+			border-color: $c-grey-dark;
+			text-decoration: none;
+		}
+	}
+	&_files {
+		margin: 30px 0 0;
+		opacity: 0.5;
 	}
 
 	.fa {
