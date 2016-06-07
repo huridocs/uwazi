@@ -106,6 +106,16 @@ fdescribe('Smoke test', () => {
           done();
         });
       });
+
+      it('should be a menu on the bottom right', (done) => {
+        nightmare
+        .wait(2000)
+        .visible('.float-btn__sec')
+        .then((visible) => {
+          expect(visible).toBe(true);
+          done();
+        });
+      });
     });
   });
 
