@@ -10,9 +10,17 @@ fdescribe('Smoke test', () => {
     return document.querySelector(selector).innerText;
   };
 
+  // let catchError = (done) => {
+  //   return (error) => {
+  //     expect(error).toBe(null);
+  //     done();
+  //   };
+  // };
+
   describe('login success', () => {
     it('should redirect to home page', (done) => {
       login(nightmare, 'admin', 'admin')
+      .wait(config.waitTime)
       .url()
       .then((url) => {
         expect(url).toBe('http://localhost:3000/');
@@ -107,12 +115,12 @@ fdescribe('Smoke test', () => {
         });
       });
 
-      it('should be a menu on the bottom right', (done) => {
+      it('there should be a menu on the bottom right of the document', (done) => {
         nightmare
-        .wait(2000)
-        .visible('.float-btn__sec')
-        .then((visible) => {
-          expect(visible).toBe(true);
+        .wait(config.waitTime)
+        .exists('.float-btn__sec')
+        .then((exists) => {
+          expect(exists).toBe(true);
           done();
         });
       });
