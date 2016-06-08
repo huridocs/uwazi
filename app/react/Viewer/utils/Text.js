@@ -32,9 +32,9 @@ export default function (container) {
       this.highlightedReference = referenceId;
     },
 
-    simulateSelection(range) {
+    simulateSelection(range, force) {
       this.removeSimulatedSelection();
-      if (!range) {
+      if (!range || this.selected() && !force) {
         return;
       }
 
@@ -42,18 +42,27 @@ export default function (container) {
       let elementWrapper = document.createElement('span');
       elementWrapper.classList.add('fake-selection');
       this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
-      this.removeSelection();
     },
 
     removeSimulatedSelection() {
       if (this.fakeSelection) {
+        this.removeSelection();
         this.fakeSelection.unwrap();
         this.fakeSelection = null;
       }
     },
 
+    isSelectionOnContainer() {
+      let node = window.getSelection().baseNode;
+      while (node && node !== this.container && node.nodeName !== 'BODY') {
+        node = node.parentNode;
+      }
+
+      return node === this.container;
+    },
+
     removeSelection() {
-      if (!this.selected()) {
+      if (!this.selected() || !this.isSelectionOnContainer()) {
         return;
       }
       if (window.getSelection) {

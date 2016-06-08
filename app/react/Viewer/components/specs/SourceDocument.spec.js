@@ -40,6 +40,23 @@ describe('SourceDocument', function () {
     expect(props.highlightedReference).toBe('highlightedReference');
   });
 
+  it('should forceSimulateSelection when showing panels referencePanel or targetReferencePanel', () => {
+    state.documentViewer.uiState = state.documentViewer.uiState.set('panel', 'referencePanel');
+    render();
+    let props = component.props();
+    expect(props.forceSimulateSelection).toBe(true);
+
+    state.documentViewer.uiState = state.documentViewer.uiState.set('panel', 'targetReferencePanel');
+    render();
+    props = component.props();
+    expect(props.forceSimulateSelection).toBe(true);
+
+    state.documentViewer.uiState = state.documentViewer.uiState.set('panel', 'otherPanel');
+    render();
+    props = component.props();
+    expect(props.forceSimulateSelection).toBe(false);
+  });
+
   it('should pass executeOnClickHandler true if target document is loaded', () => {
     state.documentViewer.targetDoc = Immutable.fromJS({_id: 'id'});
     render();

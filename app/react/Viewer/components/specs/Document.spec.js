@@ -165,6 +165,7 @@ describe('Document', () => {
       props.selection = {selection: 'selection'};
       props.highlightedReference = 'highlightedReference';
       props.references = [{reference: 'reference'}];
+      props.forceSimulateSelection = 'forceSimulateSelection';
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
@@ -182,7 +183,7 @@ describe('Document', () => {
       it('should simulateSelection', () => {
         instance.componentDidUpdate();
 
-        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'});
+        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, 'forceSimulateSelection');
       });
 
       it('should render the references', () => {
