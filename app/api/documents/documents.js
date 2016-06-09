@@ -5,6 +5,7 @@ import queryBuilder from './documentQueryBuilder';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import date from 'api/utils/date.js';
+import sanitizeResponse from '../utils/sanitizeResponse';
 
 export default {
   save(doc, user) {
@@ -107,6 +108,17 @@ export default {
     return request.post(dbURL, conversion)
     .then((response) => {
       return response.json;
+    });
+  },
+
+  list(keys) {
+    let url = `${dbURL}/_design/documents/_view/list`;
+    if (keys) {
+      url += `?keys=${JSON.stringify(keys)}`;
+    }
+    return request.get(url)
+    .then((response) => {
+      return sanitizeResponse(response.json);
     });
   }
 };

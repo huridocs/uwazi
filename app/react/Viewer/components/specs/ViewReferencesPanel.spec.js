@@ -12,8 +12,12 @@ describe('ViewReferencesPanel', () => {
 
   beforeEach(() => {
     props = {
-      references: [{_id: 'ref1'}, {_id: 'ref2'}],
-      highlightReference: jasmine.createSpy('highlightReference')
+      references: Immutable.fromJS([{_id: 'ref1', relationType: 'rel1'}, {_id: 'ref2', relationType: 'rel1'}]),
+      referencedDocuments: Immutable.fromJS([]),
+      relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
+      highlightReference: jasmine.createSpy('highlightReference'),
+      activateReference: jasmine.createSpy('activateReference'),
+      uiState: Immutable.fromJS({})
     };
   });
 
@@ -25,7 +29,7 @@ describe('ViewReferencesPanel', () => {
     render();
 
     expect(component.find(SidePanel).length).toBe(1);
-    expect(component.find(SidePanel).props().open).toBeUndefined();
+    expect(component.find(SidePanel).props().open).toBe(false);
   });
 
   describe('when mouseenter on a reference', () => {
@@ -44,9 +48,17 @@ describe('ViewReferencesPanel', () => {
     });
   });
 
+  describe('when click a reference', () => {
+    it('should activate it', () => {
+      render();
+      component.find('li').last().simulate('click');
+      expect(props.activateReference).toHaveBeenCalledWith('ref2');
+    });
+  });
+
   describe('when props.referencePanel', () => {
     it('should open SidePanel', () => {
-      props.open = true;
+      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel'});
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);
@@ -73,18 +85,7 @@ describe('ViewReferencesPanel', () => {
     it('should should map props', () => {
       renderContainer();
       let containerProps = component.props();
-      expect(containerProps.references).toEqual(['reference']);
-    });
-
-    it('should be closed when panel is not ViewReferencesPanel', () => {
-      renderContainer();
-      expect(component.props().open).toBe(false);
-    });
-
-    it('should be open when panel is ViewReferencesPanel', () => {
-      state.documentViewer.uiState.set('panel', 'viewReferencesPanel');
-      renderContainer();
-      expect(component.props().open).toBe(false);
+      expect(containerProps.references).toEqual(state.documentViewer.references);
     });
   });
 });

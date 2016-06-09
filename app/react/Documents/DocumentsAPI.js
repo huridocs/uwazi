@@ -45,6 +45,14 @@ export default {
     });
   },
 
+  list(keys) {
+    let url = 'documents/list';
+    return api.get(url, {keys: keys})
+    .then((response) => {
+      return response.json.rows;
+    });
+  },
+
   save(thesauri) {
     return api.post('documents', thesauri)
     .then((response) => {

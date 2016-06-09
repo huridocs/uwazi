@@ -10,6 +10,10 @@ export default function (state = initialState, action = {}) {
     return state.set('highlightedReference', action.reference);
   }
 
+  if (action.type === types.ACTIVE_REFERENCE) {
+    return state.set('activeReference', action.reference);
+  }
+
   if (action.type === types.OPEN_PANEL) {
     return state.set('panel', action.panel);
   }

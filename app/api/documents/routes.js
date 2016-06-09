@@ -1,7 +1,6 @@
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
-import sanitizeResponse from '../utils/sanitizeResponse';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
@@ -17,6 +16,15 @@ export default (app) => {
 
   app.get('/api/documents/count_by_template', (req, res) => {
     return documents.countByTemplate(req.query.templateId)
+    .then(results => res.json(results));
+  });
+
+  app.get('/api/documents/list', (req, res) => {
+    let keys;
+    if (req.query.keys) {
+      keys = JSON.parse(req.query.keys);
+    }
+    return documents.list(keys)
     .then(results => res.json(results));
   });
 
@@ -59,22 +67,6 @@ export default (app) => {
         response.json.rows[0].fonts = '';
       }
       res.json(response.json);
-    })
-    .catch(console.log);
-  });
-
-  app.get('/api/documents/newest', (req, res) => {
-    request.get(dbUrl + '/_design/documents/_view/list')
-    .then(response => {
-      res.json(sanitizeResponse(response.json));
-    })
-    .catch(console.log);
-  });
-
-  app.get('/api/documents/relevant', (req, res) => {
-    request.get(`${dbUrl}/_design/documents/_view/list`)
-    .then(response => {
-      res.json(sanitizeResponse(response.json));
     })
     .catch(console.log);
   });

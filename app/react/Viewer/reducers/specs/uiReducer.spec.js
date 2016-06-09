@@ -166,6 +166,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('ACTIVE_REFERENCE', () => {
+    it('should set highlightedReference to reference id passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.ACTIVE_REFERENCE, reference: 'reference'});
+      let expected = Immutable.fromJS({activeReference: 'reference'});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('RESET_DOCUMENT_VIEWER', () => {
     it('should set initialState', () => {
       let newState = uiReducer(Immutable.fromJS({targetDocument: 1, panel: true}), {type: types.RESET_DOCUMENT_VIEWER});
