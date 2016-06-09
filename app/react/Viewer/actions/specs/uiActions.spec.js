@@ -1,7 +1,6 @@
 import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
-import mockRangeSelection from 'app/utils/mockRangeSelection';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {

@@ -54,7 +54,9 @@ export class ViewReferencesPanel extends Component {
                   data-id={reference._id}
                   >
                     <div className="item-name">
-                      <Link to={'/document/' + reference.targetDocument} className="item-name">{this.documentTitle(reference.targetDocument, referencedDocuments)}</Link>
+                      <Link to={'/document/' + reference.targetDocument} className="item-name">
+                        {this.documentTitle(reference.targetDocument, referencedDocuments)}
+                      </Link>
                       {(() => {
                         if (reference.targetRange) {
                           return <div className="item-snippets">

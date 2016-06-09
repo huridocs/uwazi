@@ -58,7 +58,7 @@ describe('ViewReferencesPanel', () => {
 
   describe('when props.referencePanel', () => {
     it('should open SidePanel', () => {
-      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel'})
+      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel'});
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);

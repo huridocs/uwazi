@@ -1,7 +1,6 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
-import Text from 'app/Viewer/utils/Text';
 
 export function closePanel() {
   return {
