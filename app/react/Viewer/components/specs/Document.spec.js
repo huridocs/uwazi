@@ -59,7 +59,7 @@ fdescribe('Document', () => {
       it('should execute onClick', () => {
         props.executeOnClickHandler = true;
         render();
-        component.find('.document').simulate('click');
+        component.find('.document').simulate('click', {target: {}});
 
         expect(props.onClick).toHaveBeenCalled();
       });
@@ -68,8 +68,19 @@ fdescribe('Document', () => {
       it('should not execute onClick', () => {
         props.executeOnClickHandler = false;
         render();
-        component.find('.document').simulate('click');
+        component.find('.document').simulate('click', {target: {}});
 
+        expect(props.onClick).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when the target is a reference', () => {
+      it('should active the reference', () => {
+        props.executeOnClickHandler = true;
+        props.activateReference = jasmine.createSpy('activateReference');
+        render();
+        component.find('.document').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+        expect(props.activateReference).toHaveBeenCalledWith('referenceId');
         expect(props.onClick).not.toHaveBeenCalled();
       });
     });

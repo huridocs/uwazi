@@ -33,36 +33,6 @@
     font-weight: bold;
   }
 
-  a.reference {
-    text-decoration: none !important;
-    background: rgba(110,0,255,0.20);
-    color: $c-black;
-    cursor: pointer;
-    .relation-button {
-      display: block;
-      position: absolute;
-      background: $c-white;
-      right: 0;
-      width: 31px;
-      height: 31px;
-      line-height: 31px;
-      text-align: center;
-      border-radius: 50%;
-      box-shadow: $shadow;
-      border: 1px solid $c-grey;
-      color: $c-grey-dark;
-      transform: translateY(-100%) translateX(50%);
-      font-size: $f-size-sm;
-      .fa {
-        margin-right: 2px;
-      }
-    }
-    &.highlighted, &.highlighted a.reference {
-      background: #A478DE;
-      color: #FFFFFF;
-    }
-  }
-
   b {
     font-weight: normal;
     .creation-button {

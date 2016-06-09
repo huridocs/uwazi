@@ -103,7 +103,7 @@ describe('Text', () => {
     let elementWrapper = (id) => {
       let element = document.createElement('a');
       element.classList.add('reference');
-      element.setAttribute('x-id', id);
+      element.setAttribute('data-id', id);
       return element;
     };
 
@@ -186,6 +186,46 @@ describe('Text', () => {
     describe('when passing null', () => {
       it('should not throw an error', () => {
         expect(text.highlight.bind(text, null)).not.toThrow();
+      });
+    });
+  });
+
+  describe('activate', () => {
+    let createElement = () => {
+      return document.createElement('a');
+    };
+
+    beforeEach(() => {
+      text.renderedReferences = {
+        reference1: {
+          nodes: [createElement(), createElement()]
+        },
+        reference2: {
+          nodes: [createElement(), createElement(), createElement()]
+        }
+      };
+    });
+
+    it('should add class is-active to all nodes of a reference', () => {
+      text.activate('reference2');
+
+      expect(text.renderedReferences.reference2.nodes[0].className).toBe('is-active');
+      expect(text.renderedReferences.reference2.nodes[1].className).toBe('is-active');
+    });
+
+    it('should toggle activate when new reference is passed', () => {
+      text.activate('reference2');
+      text.activate('reference1');
+
+      expect(text.renderedReferences.reference2.nodes[0].className).toBe('');
+      expect(text.renderedReferences.reference2.nodes[1].className).toBe('');
+      expect(text.renderedReferences.reference1.nodes[0].className).toBe('is-active');
+      expect(text.renderedReferences.reference1.nodes[1].className).toBe('is-active');
+    });
+
+    describe('when passing null', () => {
+      it('should not throw an error', () => {
+        expect(text.activate.bind(text, null)).not.toThrow();
       });
     });
   });

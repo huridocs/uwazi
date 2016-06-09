@@ -17,15 +17,18 @@ export class Document extends Component {
     this.onTextSelected();
   }
 
-  handleClick() {
+  handleClick(e) {
+    if (e.target.className && e.target.className.indexOf('reference') !== -1) {
+      return this.props.activateReference(e.target.getAttribute('data-id'));
+    }
     if (this.props.executeOnClickHandler) {
       this.props.onClick();
     }
   }
 
   handleOver(e) {
-    if (e.target.className === 'reference') {
-      return this.props.highlightReference(e.target.getAttribute('x-id'));
+    if (e.target.className && e.target.className.indexOf('reference') !== -1) {
+      return this.props.highlightReference(e.target.getAttribute('data-id'));
     }
 
     this.props.highlightReference(null);
@@ -43,6 +46,7 @@ export class Document extends Component {
     this.text.renderReferences(this.props.references);
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
+    this.text.active(this.props.activeReference);
   }
 
   render() {
@@ -76,7 +80,9 @@ Document.propTypes = {
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,
+  activateReference: PropTypes.func,
   highlightedReference: PropTypes.string,
+  activeReference: PropTypes.string,
   selection: PropTypes.object,
   references: PropTypes.array,
   className: PropTypes.string,

@@ -35,6 +35,22 @@ export default function (container) {
       this.highlightedReference = referenceId;
     },
 
+    activate(referenceId) {
+      if (this.activeReference) {
+        this.renderedReferences[this.activeReference].nodes.forEach((node) => {
+          node.classList.remove('is-active');
+        });
+      }
+
+      if (referenceId) {
+        this.renderedReferences[referenceId].nodes.forEach((node) => {
+          node.classList.add('is-active');
+        });
+      }
+
+      this.activeReference = referenceId;
+    },
+
     simulateSelection(range, force) {
       this.removeSimulatedSelection();
       if (!range || this.selected() && !force) {
@@ -87,7 +103,7 @@ export default function (container) {
         let restoredRange = TextRange.restore(reference.sourceRange, container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
-        elementWrapper.setAttribute('x-id', reference._id);
+        elementWrapper.setAttribute('data-id', reference._id);
         this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 

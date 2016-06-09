@@ -7,6 +7,7 @@ import {setReferences} from 'app/Viewer/actions/referencesActions';
 import Viewer from 'app/Viewer/components/Viewer';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
 
 export default class ViewDocument extends RouteHandler {
@@ -17,16 +18,18 @@ export default class ViewDocument extends RouteHandler {
       api.get('documents/html', {_id: documentId}),
       referencesAPI.get(documentId),
       templatesAPI.get(),
-      thesaurisAPI.get()
+      thesaurisAPI.get(),
+      relationTypesAPI.get()
     ])
-    .then(([doc, docHTML, references, templates, thesauris]) => {
+    .then(([doc, docHTML, references, templates, thesauris, relationTypes]) => {
       return {
         documentViewer: {
           doc: doc.json.rows[0],
           docHTML: docHTML.json,
           references,
           templates,
-          thesauris
+          thesauris,
+          relationTypes
         }
       };
     });
@@ -37,6 +40,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));
     this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
     this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
+    this.context.store.dispatch(actions.set('viewer/relationTypes', documentViewer.relationTypes));
     this.context.store.dispatch(setReferences(documentViewer.references));
   }
 

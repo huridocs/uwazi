@@ -13,7 +13,7 @@ export class CreateReferencePanel extends Component {
   render() {
     let sidePanelprops = {open: this.props.open};
     return (
-      <SidePanel {...sidePanelprops}>
+      <SidePanel {...sidePanelprops} className="create-reference">
         <h1>Create document reference</h1>
 
         <ViewerSearchForm />

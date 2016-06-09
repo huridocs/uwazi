@@ -13,6 +13,7 @@ const mapStateToProps = ({documentViewer}) => {
     references: [],
     className: 'targetDocument',
     highlightReference: () => {},
+    activateReference: () => {},
     disableTextSelection: false
   };
 };
