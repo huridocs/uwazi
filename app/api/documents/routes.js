@@ -1,7 +1,6 @@
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
-import sanitizeResponse from '../utils/sanitizeResponse';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
@@ -21,7 +20,11 @@ export default (app) => {
   });
 
   app.get('/api/documents/list', (req, res) => {
-    return documents.list(req.query.keys)
+    let keys;
+    if (req.query.keys) {
+      keys = JSON.parse(req.query.keys);
+    }
+    return documents.list(keys)
     .then(results => res.json(results));
   });
 

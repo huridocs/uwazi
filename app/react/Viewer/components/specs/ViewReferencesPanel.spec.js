@@ -13,6 +13,7 @@ describe('ViewReferencesPanel', () => {
   beforeEach(() => {
     props = {
       references: Immutable.fromJS([{_id: 'ref1', relationType: 'rel1'}, {_id: 'ref2', relationType: 'rel1'}]),
+      referencedDocuments: Immutable.fromJS([]),
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
       highlightReference: jasmine.createSpy('highlightReference'),
       activateReference: jasmine.createSpy('activateReference'),

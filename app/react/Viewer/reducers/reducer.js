@@ -19,5 +19,6 @@ export default combineReducers({
   results: createReducer('viewer/documentResults', []),
   templates: createReducer('viewer/templates', []),
   thesauris: createReducer('viewer/thesauris', []),
-  relationTypes: createReducer('viewer/relationTypes', [])
+  relationTypes: createReducer('viewer/relationTypes', []),
+  referencedDocuments: createReducer('viewer/referencedDocuments', [])
 });

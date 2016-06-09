@@ -7,12 +7,14 @@ describe('DocumentsAPI', () => {
   let searchResponse = [{documents: 'search'}];
   let filteredSearchResult = [{documents: 'Alfred'}];
   let singleResponse = [{documents: 'single'}];
+  let listResponse = [{documents: 'list'}];
 
   beforeEach(() => {
     backend.restore();
     backend
     .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
     .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(searchResponse)})
+    .mock(APIURL + 'documents/list?keys=%5B%221%22%2C%222%22%5D', 'GET', {body: JSON.stringify({rows: listResponse})})
     .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify({rows: 'uploads'})})
     .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
     .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
@@ -52,6 +54,17 @@ describe('DocumentsAPI', () => {
         })
         .catch(done.fail);
       });
+    });
+  });
+
+  describe('list()', () => {
+    it('should request documents list', (done) => {
+      documentsAPI.list(['1', '2'])
+      .then((response) => {
+        expect(response).toEqual(listResponse);
+        done();
+      })
+      .catch(done.fail);
     });
   });
 

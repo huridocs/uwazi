@@ -24,7 +24,7 @@ export default {
     let parentVisibleScroll = parent.scrollHeight - parent.offsetHeight;
     let elementPositionInParent = parent.scrollHeight - elementOffsetToParent;
 
-    let scrollTop = parentVisibleScroll - elementPositionInParent + options.offset + element.scrollHeight * 2;
+    let scrollTop = parentVisibleScroll - elementPositionInParent + options.offset + element.scrollHeight + (parent.offsetHeight - element.offsetHeight) / 2;
 
     let start = Date.now();
     let timeout = window.setInterval(() => {

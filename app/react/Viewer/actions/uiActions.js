@@ -1,6 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
+import Text from 'app/Viewer/utils/Text';
 
 export function closePanel() {
   return {
@@ -44,7 +45,7 @@ export function highlightReference(reference) {
 }
 
 export function activateReference(reference) {
-  scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer', {offset: 200});
+  scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer');
   scroller.to(`.document-references .item[data-id="${reference}"]`, '.document-references');
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});

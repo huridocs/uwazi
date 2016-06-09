@@ -17,10 +17,18 @@ export class ViewReferencesPanel extends Component {
     }
   }
 
+  documentTitle(id, referencedDocuments) {
+    let docu = referencedDocuments.find((doc) => doc._id === id);
+    if (docu) {
+      return docu.title;
+    }
+  }
+
   render() {
     const uiState = this.props.uiState.toJS();
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
     const relationTypes = this.props.relationTypes.toJS();
+    const referencedDocuments = this.props.referencedDocuments.toJS();
 
     return (
       <SidePanel {...sidePanelprops} className="document-references">
@@ -46,7 +54,7 @@ export class ViewReferencesPanel extends Component {
                   data-id={reference._id}
                   >
                     <div className="item-name">
-                      <Link to={'/document/' + reference.targetDocument} className="item-name">Mock title</Link>
+                      <Link to={'/document/' + reference.targetDocument} className="item-name">{this.documentTitle(reference.targetDocument, referencedDocuments)}</Link>
                       {(() => {
                         if (reference.targetRange) {
                           return <div className="item-snippets">
@@ -72,6 +80,7 @@ export class ViewReferencesPanel extends Component {
 ViewReferencesPanel.propTypes = {
   uiState: PropTypes.object,
   references: PropTypes.object,
+  referencedDocuments: PropTypes.object,
   relationTypes: PropTypes.object,
   highlightReference: PropTypes.func,
   activateReference: PropTypes.func,
@@ -82,6 +91,7 @@ const mapStateToProps = (state) => {
   return {
     uiState: state.documentViewer.uiState,
     references: state.documentViewer.references,
+    referencedDocuments: state.documentViewer.referencedDocuments,
     relationTypes: state.documentViewer.relationTypes
   };
 };

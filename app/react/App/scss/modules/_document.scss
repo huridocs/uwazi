@@ -72,17 +72,17 @@
     text-decoration: none !important;
     color: $c-black;
     padding: 4px 0 0px;
-    &:after {
-      display: inline-block;
-      content: '';
-      position: absolute;
-      left: 100%;
-      background: $c-grey;
-      width: 4px;
-      height: 40px;
-      transform: translateY(-50%);
-      transition: width 300ms;
-    }
+    // &:after {
+    //   display: inline-block;
+    //   content: '';
+    //   position: absolute;
+    //   left: 100%;
+    //   background: $c-grey;
+    //   width: 4px;
+    //   height: 40px;
+    //   transform: translateY(-50%);
+    //   transition: width 300ms;
+    // }
 
     // is-hover
     &.highlighted {

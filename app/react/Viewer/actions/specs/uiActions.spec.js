@@ -1,6 +1,7 @@
 import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
+import mockRangeSelection from 'app/utils/mockRangeSelection';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
@@ -56,7 +57,7 @@ describe('Viewer uiActions', () => {
 
     it('should scroll to the elements', () => {
       actions.activateReference('id')(dispatch);
-      expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer', {offset: 200});
+      expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
       expect(scroller.to).toHaveBeenCalledWith('.document-references .item[data-id="id"]', '.document-references');
     });
   });
