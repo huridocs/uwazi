@@ -16,6 +16,7 @@
 .filters-box {
 	.empty-state {
 		color: $c-grey-dark;
+		background: $c-grey-light;
 		text-align: center;
 		padding: 45px;
 
@@ -98,7 +99,6 @@
 }
 
 .search__filter--type {
-	border-bottom: 1px dotted $c-grey-dark;
 	background: transparent;
 
 	input,
