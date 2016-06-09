@@ -55,7 +55,7 @@ export class DocumentForm extends Component {
               <FormField model={`${model}.metadata.${property.name}`} >
                 {(() => {
                   if (property.type === 'select') {
-                    return <Select options={thesauris.find((t) => t._id === property.content).values} />;
+                    return <Select optionsValue='id' options={thesauris.find((t) => t._id.toString() === property.content.toString()).values} />;
                   }
                   return <input className="form-control"/>;
                 })()}

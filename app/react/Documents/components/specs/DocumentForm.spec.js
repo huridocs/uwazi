@@ -12,7 +12,7 @@ describe('DocumentForm', () => {
   let props;
 
   beforeEach(() => {
-    fieldsTemplate = [{name: 'field1', label: 'label1'}, {name: 'field2', label: 'label2', type: 'select', content: 'thesauriId'}];
+    fieldsTemplate = [{name: 'field1', label: 'label1'}, {name: 'field2', label: 'label2', type: 'select', content: '2'}];
 
     props = {
       document: {_id: 'docId', template: 'templateId', title: 'testTitle', metadata: {field1: 'field1value', field2: 'field2value'}},
@@ -20,7 +20,7 @@ describe('DocumentForm', () => {
         {name: 'template1', _id: 'templateId', properties: fieldsTemplate},
         {name: 'template2', _id: '2', properties: [{name: 'field3'}]}
       ]),
-      thesauris: Immutable.fromJS([{_id: 'thesauriId', name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
+      thesauris: Immutable.fromJS([{_id: 2, name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
       state: {fields: {title: {titleProp: 'prop'}, 'metadata.field1': {field1Prop: 'prop'}}},
@@ -77,6 +77,7 @@ describe('DocumentForm', () => {
     let selectField = component.findWhere((node) => node.props().model === 'document.metadata.field2');
     let select = selectField.find(Select);
     expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
+    expect(select.props().optionsValue).toEqual('id');
   });
 
   describe('submit', () => {
