@@ -12,8 +12,11 @@ export default function (container) {
     },
 
     getSelection() {
-      let range = window.getSelection().getRangeAt(0);
-      return TextRange.serialize(range, container);
+      let selection = window.getSelection();
+      let range = selection.getRangeAt(0);
+      let serializedRange = TextRange.serialize(range, container);
+      serializedRange.text = selection.toString();
+      return serializedRange;
     },
 
     highlight(referenceId) {
@@ -30,6 +33,22 @@ export default function (container) {
       }
 
       this.highlightedReference = referenceId;
+    },
+
+    activate(referenceId) {
+      if (this.activeReference) {
+        this.renderedReferences[this.activeReference].nodes.forEach((node) => {
+          node.classList.remove('is-active');
+        });
+      }
+
+      if (referenceId) {
+        this.renderedReferences[referenceId].nodes.forEach((node) => {
+          node.classList.add('is-active');
+        });
+      }
+
+      this.activeReference = referenceId;
     },
 
     simulateSelection(range, force) {
@@ -84,7 +103,7 @@ export default function (container) {
         let restoredRange = TextRange.restore(reference.sourceRange, container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
-        elementWrapper.setAttribute('x-id', reference._id);
+        elementWrapper.setAttribute('data-id', reference._id);
         this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 

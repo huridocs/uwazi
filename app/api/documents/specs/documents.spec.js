@@ -259,4 +259,31 @@ describe('documents', () => {
       .catch(done.fail);
     });
   });
+
+  describe('list', () => {
+    it('should return a list of documents with the title', (done) => {
+      documents.list()
+      .then((results) => {
+        expect(results.rows.length).toBe(7);
+        expect(results.rows[0].title).toBe('Batman finishes');
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    describe('when giving a list of keys', () => {
+      it('should return only those documents', (done) => {
+        documents.list(['8202c463d6158af8065022d9b5014ccb', 'd0298a48d1221c5ceb53c4879301507f'])
+        .then((results) => {
+          expect(results.rows.length).toBe(2);
+          expect(results.rows[0].title).toBe('Penguin almost done');
+          done();
+        })
+        .catch((error) => {
+          console.log(error);
+          done();
+        });
+      });
+    });
+  });
 });

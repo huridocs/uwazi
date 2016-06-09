@@ -18,5 +18,7 @@ export default combineReducers({
   docFormState: formReducer('documentViewer.docForm'),
   results: createReducer('viewer/documentResults', []),
   templates: createReducer('viewer/templates', []),
-  thesauris: createReducer('viewer/thesauris', [])
+  thesauris: createReducer('viewer/thesauris', []),
+  relationTypes: createReducer('viewer/relationTypes', []),
+  referencedDocuments: createReducer('viewer/referencedDocuments', [])
 });

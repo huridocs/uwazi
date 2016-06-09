@@ -1,151 +1,172 @@
 .document-viewer {
-	transform: translateX(0%);
-	transition: all 500ms;
-	&.is-active-2 {
-		transform: translateX(-100%);
-	}
+  transform: translateX(0%);
+  transition: all 500ms;
+  &.is-active-2 {
+    transform: translateX(-100%);
+  }
 }
 .document-article {
-	padding: 80px 120px;
-	background: $c-white;
-	border-radius: 0 !important;
-	border-bottom: 1px solid $c-grey;
-	box-shadow: $shadow;
-	position: relative;
-	font-size: $f-size-lg;
-	font-family: sans-serif;
+  padding: 80px 120px;
+  background: $c-white;
+  border-radius: 0 !important;
+  border-bottom: 1px solid $c-grey;
+  box-shadow: $shadow;
+  position: relative;
+  font-size: $f-size-lg;
+  font-family: sans-serif;
 
-	h1, h2, h3, h4, h5, h6 {
-		font-weight: bold;
-	}
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+  }
 
-	a {
-		text-decoration: none !important;
-		border-bottom: 1px dotted $c-grey;
-		color: $c-black;
-		&:hover,
-		&.is-active {
-			background: #EEC5FF;
-			color: purple;
-			border-color: purple;
-		}
-		&:after {
-			display: inline-block;
-			content: '';
-			position: absolute;
-			left: 100%;
-			background: #EEC5FF;
-			width: 10px;
-			height: 40px;
-			transform: translateY(-50%);
-		}
-		&:hover:after,
-		&.is-active:after {
-			background: purple;
-			box-shadow: 3px 0px 8px -2px $c-grey;
-		}
-	}
+  b {
+    font-weight: normal;
+    .creation-button {
+      opacity: 0;
+      display: block;
+      position: absolute;
+      background: $c-white;
+      right: 0;
+      width: 31px;
+      height: 31px;
+      line-height: 31px;
+      text-align: center;
+      border-radius: 50%;
+      box-shadow: $shadow;
+      border: 1px solid $c-grey;
+      color: $c-grey-dark;
+      transform: translateY(-100%) translateX(50%);
+      font-size: $f-size-sm;
+      cursor: pointer;
+    }
+    &.is-active {
+      background: $c-primary-light;
+      padding: 4px 0 0;
+      span {
+        opacity: 1;
+        background: $c-success-light;
+        color: $c-success;
+        border-color: $c-success;
+      }
+    }
+    .is-active &.is-active {
+      background: #44DAF3;
+      color: $c-white;
+    }
+    &.is-relation {
+      background: #EEC5FF;
+      color: purple;
+      border-bottom: 1px dotted purple;
+      span {
+        opacity: 1;
+        background: #EEC5FF;
+        color: purple;
+        border-color: purple;
+      }
+    }
+  }
+}
 
-	b {
-		font-weight: normal;
-		.creation-button {
-			opacity: 0;
-			display: block;
-			position: absolute;
-			background: $c-white;
-			right: 0;
-			width: 31px;
-			height: 31px;
-			line-height: 31px;
-			text-align: center;
-			border-radius: 50%;
-			box-shadow: $shadow;
-			border: 1px solid $c-grey;
-			color: $c-grey-dark;
-			transform: translateY(-100%) translateX(50%);
-			font-size: $f-size-sm;
-			cursor: pointer;
-		}
-		&.is-active {
-			background: $c-primary-light;
-			padding: 4px 0 0;
-			span {
-				opacity: 1;
-				background: $c-success-light;
-				color: $c-success;
-				border-color: $c-success;
-			}
-		}
-		.is-active &.is-active {
-			background: #44DAF3;
-			color: $c-white;
-		}
-		&.is-relation {
-			background: #EEC5FF;
-			color: purple;
-			border-bottom: 1px dotted purple;
-			span {
-				opacity: 1;
-				background: #EEC5FF;
-				color: purple;
-				border-color: purple;
-			}
-		}
-	}
+.document {
+  a.reference {
+    text-decoration: none !important;
+    color: $c-black;
+    padding: 4px 0 0px;
+    // &:after {
+    //   display: inline-block;
+    //   content: '';
+    //   position: absolute;
+    //   left: 100%;
+    //   background: $c-grey;
+    //   width: 4px;
+    //   height: 40px;
+    //   transform: translateY(-50%);
+    //   transition: width 300ms;
+    // }
+
+    // is-hover
+    &.highlighted {
+      background: $c-primary-light;
+      color: $c-primary;
+    }
+    &.highlighted:after {
+      background: $c-primary;
+      box-shadow: 3px 0px 8px -2px $c-grey;
+    }
+
+    // is-active
+    &.is-active {
+      background: #D9FFD9;
+      color: #8BC74C;
+    }
+    &.is-active:after {
+      background: #8BC74C;
+      box-shadow: 3px 0px 8px -2px $c-grey;
+    }
+  }
 }
 
 .comments-button {
-	display: block;
-	position: absolute;
-	background: $c-white;
-	right: -35px;
-	width: 31px;
-	height: 31px;
-	line-height: 31px;
-	text-align: center;
-	border-radius: 50%;
-	box-shadow: $shadow;
-	border: 1px solid $c-grey;
-	color: $c-grey-dark;
-	transform: translateY(-100%) translateX(50%);
-	font-size: $f-size-sm;
-	.fa {
-		margin-right: 2px;
-	}
+  display: block;
+  position: absolute;
+  background: $c-white;
+  right: -35px;
+  width: 31px;
+  height: 31px;
+  line-height: 31px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: $shadow;
+  border: 1px solid $c-grey;
+  color: $c-grey-dark;
+  transform: translateY(-100%) translateX(50%);
+  font-size: $f-size-sm;
+  .fa {
+    margin-right: 2px;
+  }
 }
 
 .document-article-2 {
-	position: fixed;
-	top: 30px;
-	left: 100%;
-	right: -100%;
-	opacity: 0;
+  position: fixed;
+  top: 30px;
+  left: 100%;
+  right: -100%;
+  opacity: 0;
 }
 
 .document-viewer.is-active-2 {
-	.document-article {
-		opacity: 0.3;
-		&:hover {
-			opacity: 1;
-			cursor: pointer;
-		}
-	}
-	.document-article-2 {
-		opacity: 1;
-	}
+  .document-article {
+    opacity: 0.3;
+    &:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
+  .document-article-2 {
+    opacity: 1;
+  }
 }
 
-
-
 .relation-dialog {
-	position: absolute;
-	right: -30px;
-	transform: translateX(100%) translateY(-30%);
-	background: $c-primary-lighten !important;
-	border: 1px solid $c-grey !important;
-	color: $c-black !important;
-	padding: 5px 10px;
-	opacity: 0;
-	transition: right 500ms, opacity 0ms;
-	width: 33%;
+  position: absolute;
+  right: -30px;
+  transform: translateX(100%) translateY(-30%);
+  background: $c-primary-lighten !important;
+  border: 1px solid $c-grey !important;
+  color: $c-black !important;
+  padding: 5px 10px;
+  opacity: 0;
+  transition: right 500ms, opacity 0ms;
+  width: 33%;
+}
+
+.document-references {
+  .item {
+    &.relationship-hover {
+      border-left-color: $c-primary;
+    }
+    &.relationship-active {
+      border-left-color: #8BC74C;
+    }
+  }
 }

@@ -3,27 +3,69 @@
 @import "../../App/scss/config/_typography.scss";
 
 .side-panel {
-	position: fixed;
-	right: 0;
-	top: 60px;
-	bottom: 0;
-	border-left: 1px dotted $c-grey;
-	padding: 15px;
-	transition: all 500ms;
-	overflow-y: scroll;
-	background: $c-primary-lighten;
+  position: fixed;
+  right: 0;
+  top: 60px;
+  bottom: 0;
+  border-left: 1px dotted $c-grey;
+  padding: 15px;
+  transition: all 500ms;
+  overflow-y: scroll;
+  background: $c-primary-lighten;
 
-	&.is-active {
-		transform: translateX(0);
-	}
+  &.is-active {
+    transform: translateX(0);
+  }
 
   &.is-hidden {
     transform: translateX(100%);
   }
 
-	h1 {
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		font-size: $f-size-lg;
-	}
+  h1 {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: $f-size-lg;
+  }
+
+  .item-group {
+    padding: 15px 0px;
+    margin: 0 -2px 15px;
+    height: 100%;
+  }
+  .item {
+    height: auto;
+    margin-bottom: 5px;
+    padding: 15px;
+    border-color: $c-white;
+    &:after {
+      content: '\f00c';
+      font-family: FontAwesome;
+      position: absolute;
+      top: 30%;
+      left: 42%;
+      font-size: 40px;
+      color: $c-success;
+      opacity: 0;
+      transition: 500ms all;
+    }
+    &.is-selected {
+      background: $c-primary-lighten;
+      color: $c-primary-light;
+      border: 1px solid $c-primary-light;
+      &:after {
+        opacity: 1;
+        top: -5px;
+      }
+      &:before {
+        display: none;
+      }
+    }
+    .item-name {
+      font-size: $f-size;
+    }
+    & {
+      border-left: 3px solid $c-white;
+      transition: all 0ms;
+    }
+  }
 }

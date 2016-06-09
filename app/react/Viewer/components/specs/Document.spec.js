@@ -59,7 +59,7 @@ fdescribe('Document', () => {
       it('should execute onClick', () => {
         props.executeOnClickHandler = true;
         render();
-        component.find('.document').simulate('click');
+        component.find('.document').simulate('click', {target: {}});
 
         expect(props.onClick).toHaveBeenCalled();
       });
@@ -68,9 +68,33 @@ fdescribe('Document', () => {
       it('should not execute onClick', () => {
         props.executeOnClickHandler = false;
         render();
-        component.find('.document').simulate('click');
+        component.find('.document').simulate('click', {target: {}});
 
         expect(props.onClick).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when the target is a reference', () => {
+      it('should active the reference', () => {
+        props.executeOnClickHandler = true;
+        props.activateReference = jasmine.createSpy('activateReference');
+        render();
+        instance.text = {selected: jasmine.createSpy('selected').and.returnValue(false)};
+        component.find('.document').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+        expect(props.activateReference).toHaveBeenCalledWith('referenceId');
+        expect(props.onClick).not.toHaveBeenCalled();
+      });
+
+      describe('when text is selected', () => {
+        it('should not active the reference', () => {
+          props.executeOnClickHandler = true;
+          props.activateReference = jasmine.createSpy('activateReference');
+          render();
+          instance.text = {selected: jasmine.createSpy('selected').and.returnValue(true)};
+          component.find('.document').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+          expect(props.activateReference).not.toHaveBeenCalledWith('referenceId');
+          expect(props.onClick).toHaveBeenCalled();
+        });
       });
     });
   });
@@ -182,8 +206,7 @@ fdescribe('Document', () => {
     describe('componentDidUpdate', () => {
       it('should simulateSelection', () => {
         instance.componentDidUpdate();
-
-        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, true);
+        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, props.forceSimulateSelection);
       });
 
       it('should render the references', () => {

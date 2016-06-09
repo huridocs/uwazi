@@ -68,29 +68,20 @@ describe('documents', () => {
     });
   });
 
-  describe('/api/documents/newest', () => {
-    it('should return a list of documents returned from the list view', (done) => {
-      routes.get('/api/documents/newest')
-      .then((response) => {
-        expect(response.rows.length).toBe(2);
-        expect(response.rows[0].title).toEqual('Batman finishes');
-        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
-        done();
-      })
-      .catch(console.log);
-    });
-  });
+  describe('/api/documents/list', () => {
+    it('return the list from documents passing the keys', (done) => {
+      let req = {
+        query: {keys: ['1', '2']}
+      };
 
-  describe('/api/documents/relevant', () => {
-    it('should return a list of documents returned from the list view', (done) => {
-      routes.get('/api/documents/relevant')
-      .then((response) => {
-        expect(response.rows.length).toBe(2);
-        expect(response.rows[0].title).toEqual('Batman finishes');
-        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
+      spyOn(documents, 'list').and.returnValue(new Promise((resolve) => resolve('document')));
+      routes.get('/api/documents/list', req)
+      .then((document) => {
+        expect(document).toBe('document');
+        expect(documents.list).toHaveBeenCalledWith(req.query.keys);
         done();
       })
-      .catch(console.log);
+      .catch(done.fail);
     });
   });
 
