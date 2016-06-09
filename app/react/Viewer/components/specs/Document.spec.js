@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import Text from 'app/Viewer/utils/Text';
 import {Document} from 'app/Viewer/components/Document.js';
 
-describe('Document', () => {
+fdescribe('Document', () => {
   let component;
   let instance;
 
@@ -165,7 +165,7 @@ describe('Document', () => {
       props.selection = {selection: 'selection'};
       props.highlightedReference = 'highlightedReference';
       props.references = [{reference: 'reference'}];
-      props.forceSimulateSelection = 'forceSimulateSelection';
+      props.forceSimulateSelection = true;
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
@@ -183,7 +183,7 @@ describe('Document', () => {
       it('should simulateSelection', () => {
         instance.componentDidUpdate();
 
-        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, 'forceSimulateSelection');
+        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, true);
       });
 
       it('should render the references', () => {
