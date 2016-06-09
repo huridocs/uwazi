@@ -18,7 +18,7 @@ export class Document extends Component {
   }
 
   handleClick(e) {
-    if (e.target.className && e.target.className.indexOf('reference') !== -1) {
+    if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
       return this.props.activateReference(e.target.getAttribute('data-id'));
     }
     if (this.props.executeOnClickHandler) {
