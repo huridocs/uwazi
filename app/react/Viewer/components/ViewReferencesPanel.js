@@ -18,7 +18,6 @@ export class ViewReferencesPanel extends Component {
   }
 
   render() {
-
     const uiState = this.props.uiState.toJS();
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
     const relationTypes = this.props.relationTypes.toJS();
@@ -32,11 +31,11 @@ export class ViewReferencesPanel extends Component {
             return this.props.references.toJS().map((reference, index) => {
               let itemClass = '';
               if (uiState.highlightedReference === reference._id) {
-                itemClass = 'relationship-hover'
+                itemClass = 'relationship-hover';
               }
 
               if (uiState.activeReference === reference._id) {
-                itemClass = 'relationship-active'
+                itemClass = 'relationship-active';
               }
               return (
                 <li key={index}
@@ -58,7 +57,6 @@ export class ViewReferencesPanel extends Component {
                     </div>
                     <div className="item-metadata">
                     {this.relationType(reference.relationType, relationTypes)}
-                    Supports
                     <Link to={'/document/' + reference.targetDocument} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
                     </div>
                 </li>
@@ -72,7 +70,7 @@ export class ViewReferencesPanel extends Component {
 }
 
 ViewReferencesPanel.propTypes = {
-  open: PropTypes.bool,
+  uiState: PropTypes.object,
   references: PropTypes.object,
   relationTypes: PropTypes.object,
   highlightReference: PropTypes.func,

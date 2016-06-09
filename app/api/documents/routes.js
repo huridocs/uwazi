@@ -20,6 +20,11 @@ export default (app) => {
     .then(results => res.json(results));
   });
 
+  app.get('/api/documents/list', (req, res) => {
+    return documents.list(req.query.keys)
+    .then(results => res.json(results));
+  });
+
   app.get('/api/documents/search', (req, res) => {
     if (req.query.filters) {
       req.query.filters = JSON.parse(req.query.filters);
@@ -59,22 +64,6 @@ export default (app) => {
         response.json.rows[0].fonts = '';
       }
       res.json(response.json);
-    })
-    .catch(console.log);
-  });
-
-  app.get('/api/documents/newest', (req, res) => {
-    request.get(dbUrl + '/_design/documents/_view/list')
-    .then(response => {
-      res.json(sanitizeResponse(response.json));
-    })
-    .catch(console.log);
-  });
-
-  app.get('/api/documents/relevant', (req, res) => {
-    request.get(`${dbUrl}/_design/documents/_view/list`)
-    .then(response => {
-      res.json(sanitizeResponse(response.json));
     })
     .catch(console.log);
   });
