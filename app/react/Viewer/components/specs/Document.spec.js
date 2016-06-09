@@ -193,8 +193,7 @@ fdescribe('Document', () => {
     describe('componentDidUpdate', () => {
       it('should simulateSelection', () => {
         instance.componentDidUpdate();
-
-        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, true);
+        expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, props.forceSimulateSelection);
       });
 
       it('should render the references', () => {

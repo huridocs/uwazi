@@ -46,7 +46,7 @@ export class Document extends Component {
     this.text.renderReferences(this.props.references);
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
-    this.text.active(this.props.activeReference);
+    this.text.activate(this.props.activeReference);
   }
 
   render() {
