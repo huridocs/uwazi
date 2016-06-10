@@ -26,6 +26,10 @@ export default function (state = initialState, action = {}) {
     return state.set('reference', Immutable.fromJS({}));
   }
 
+  if (action.type === types.SET_RELATION_TYPE) {
+    return state.setIn(['reference', 'relationType'], action.relationType);
+  }
+
   if (action.type === types.SET_SELECTION) {
     return state.setIn(['reference', 'sourceRange'], action.sourceRange);
   }

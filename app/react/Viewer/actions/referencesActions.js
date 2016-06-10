@@ -4,6 +4,13 @@ import documentsAPI from 'app/Documents/DocumentsAPI';
 import {notify} from 'app/Notifications';
 import {actions} from 'app/BasicReducer';
 
+export function setRelationType(relationType) {
+  return {
+    type: types.SET_RELATION_TYPE,
+    relationType
+  };
+}
+
 export function setReferences(references) {
   return {
     type: types.SET_REFERENCES,

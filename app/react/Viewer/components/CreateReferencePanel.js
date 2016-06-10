@@ -8,14 +8,24 @@ import SidePanel from 'app/Layout/SidePanel';
 import ViewerSearchForm from 'app/Viewer/components/ViewerSearchForm';
 import SearchResults from 'app/Viewer/components/SearchResults';
 import {selectTargetDocument} from 'app/Viewer/actions/uiActions';
+import {setRelationType} from 'app/Viewer/actions/referencesActions';
+import {Select} from 'app/Forms';
 
 export class CreateReferencePanel extends Component {
   render() {
-    let sidePanelprops = {open: this.props.open};
+    const relationTypes = this.props.relationTypes.toJS();
     return (
-      <SidePanel {...sidePanelprops} className="create-reference">
+      <SidePanel open={this.props.open} className="create-reference">
         <h1>Create document reference</h1>
 
+        <div className="relationship-steps">
+          <h2>Select relationship type<small>1</small></h2>
+        </div>
+        <Select optionsValue="_id" optionsLabel="name" options={relationTypes} onChange={e => this.props.setRelationType(e.target.value)}/>
+
+        <div className="relationship-steps">
+          <h2>Select document<small>2</small></h2>
+        </div>
         <ViewerSearchForm />
 
         <SearchResults
@@ -35,7 +45,9 @@ CreateReferencePanel.propTypes = {
   results: PropTypes.object,
   searching: PropTypes.bool,
   selected: PropTypes.string,
-  selectTargetDocument: PropTypes.func
+  selectTargetDocument: PropTypes.func,
+  setRelationType: PropTypes.func,
+  relationTypes: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
@@ -44,12 +56,13 @@ const mapStateToProps = (state) => {
     open: uiState.panel === 'referencePanel' || uiState.panel === 'targetReferencePanel',
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,
-    selected: uiState.reference.targetDocument
+    selected: uiState.reference.targetDocument,
+    relationTypes: state.documentViewer.relationTypes
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({selectTargetDocument}, dispatch);
+  return bindActionCreators({selectTargetDocument, setRelationType}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateReferencePanel);

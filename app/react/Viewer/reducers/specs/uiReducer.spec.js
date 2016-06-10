@@ -97,6 +97,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('SET_RELATION_TYPE', () => {
+    it('should set sourceRange passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_RELATION_TYPE, relationType: 'type'});
+      let expected = Immutable.fromJS({reference: {relationType: 'type'}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('SET_SELECTION', () => {
     it('should set sourceRange passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_SELECTION, sourceRange: 'sourceRange'});

@@ -13,7 +13,8 @@ export class ViewerSaveReferenceMenu extends Component {
     let referenceReady = !validate(reference, {
       sourceDocument: {presence: true},
       targetDocument: {presence: true},
-      sourceRange: {presence: true}
+      sourceRange: {presence: true},
+      relationType: {presence: true}
     });
 
     return (

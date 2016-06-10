@@ -16,7 +16,8 @@ describe('ViewerSaveTargetReferenceMenu', () => {
     props = {
       loadTargetDocument: jasmine.createSpy('loadTargetDocument'),
       reference: {
-        targetDocument: 'targetId'
+        targetDocument: 'targetId',
+        relationType: 'relation'
       }
     };
     render();
@@ -68,7 +69,8 @@ describe('ViewerSaveTargetReferenceMenu', () => {
           reference: {
             sourceRange: 'range',
             targetDocument: 'target',
-            targetRange: 'targetRange'
+            targetRange: 'targetRange',
+            relationType: 'relation'
           },
           sourceDocument: 'source',
           targetDocument: 'target'
@@ -82,7 +84,8 @@ describe('ViewerSaveTargetReferenceMenu', () => {
           sourceRange: 'range',
           targetDocument: 'target',
           targetRange: 'targetRange',
-          sourceDocument: 'source'
+          sourceDocument: 'source',
+          relationType: 'relation'
         });
       });
     });

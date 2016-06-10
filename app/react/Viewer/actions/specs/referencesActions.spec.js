@@ -19,6 +19,12 @@ describe('referencesActions', () => {
       expect(action).toEqual({type: types.SET_REFERENCES, references: 'references'});
     });
   });
+  describe('setRelationType()', () => {
+    it('should return a SET_RELATION_TYPE type with the type', () => {
+      let action = actions.setRelationType('type');
+      expect(action).toEqual({type: types.SET_RELATION_TYPE, relationType: 'type'});
+    });
+  });
   describe('setReferences()', () => {
     it('should return a SET_REFERENCES type action with the references', () => {
       let action = actions.setReferences('references');

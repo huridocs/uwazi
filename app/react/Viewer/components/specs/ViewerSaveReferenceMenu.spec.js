@@ -17,7 +17,8 @@ describe('ViewerSaveReferenceMenu', () => {
       saveReference: jasmine.createSpy('saveReference'),
       reference: {
         sourceRange: 'range',
-        targetDocument: 'target'
+        targetDocument: 'target',
+        relationType: 'relation'
       },
       sourceDocument: 'source'
     };
@@ -29,11 +30,12 @@ describe('ViewerSaveReferenceMenu', () => {
     expect(props.saveReference).toHaveBeenCalledWith({
       sourceRange: 'range',
       targetDocument: 'target',
-      sourceDocument: 'source'
+      sourceDocument: 'source',
+      relationType: 'relation'
     });
   });
 
-  it('should render a default button when reference its not complete', () => {
+  it('should render a disabled button when reference its not complete', () => {
     props = {
       saveReference: jasmine.createSpy('saveReference'),
       reference: {

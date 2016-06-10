@@ -20,7 +20,7 @@ export class ViewerSaveTargetReferenceMenu extends Component {
   render() {
     let disabled = true;
     let className = 'fa-arrow-right';
-    if (this.props.reference.targetDocument && !this.props.targetDocument) {
+    if (this.props.reference.targetDocument && !this.props.targetDocument && this.props.reference.relationType) {
       disabled = false;
     }
     if (this.props.targetDocument) {
