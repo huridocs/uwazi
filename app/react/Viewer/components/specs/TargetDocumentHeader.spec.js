@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {TargetDocumentHeader} from 'app/Viewer/components/TargetDocumentHeader.js';
 
-fdescribe('TargetDocumentHeader', () => {
+describe('TargetDocumentHeader', () => {
   let component;
   let props;
 
