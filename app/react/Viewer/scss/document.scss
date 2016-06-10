@@ -10,7 +10,7 @@
 }
 
 .document {
-  & > div {
+  div.page {
     background: $c-white;
     border-radius: 0 !important;
     border-bottom: 1px solid $c-grey;

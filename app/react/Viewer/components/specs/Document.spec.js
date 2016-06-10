@@ -42,7 +42,7 @@ describe('Document', () => {
 
   it('should render every pagen inside a div ', () => {
     render();
-    let pages = component.find('.document').children();
+    let pages = component.find('.pages').children();
     expect(pages.first().props().dangerouslySetInnerHTML).toEqual({__html: 'page1'});
     expect(pages.last().props().dangerouslySetInnerHTML).toEqual({__html: 'page3'});
   });
@@ -59,7 +59,7 @@ describe('Document', () => {
       it('should execute onClick', () => {
         props.executeOnClickHandler = true;
         render();
-        component.find('.document').simulate('click', {target: {}});
+        component.find('.pages').simulate('click', {target: {}});
 
         expect(props.onClick).toHaveBeenCalled();
       });
@@ -68,7 +68,7 @@ describe('Document', () => {
       it('should not execute onClick', () => {
         props.executeOnClickHandler = false;
         render();
-        component.find('.document').simulate('click', {target: {}});
+        component.find('.pages').simulate('click', {target: {}});
 
         expect(props.onClick).not.toHaveBeenCalled();
       });
@@ -80,7 +80,7 @@ describe('Document', () => {
         props.activateReference = jasmine.createSpy('activateReference');
         render();
         instance.text = {selected: jasmine.createSpy('selected').and.returnValue(false)};
-        component.find('.document').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+        component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
         expect(props.activateReference).toHaveBeenCalledWith('referenceId');
         expect(props.onClick).not.toHaveBeenCalled();
       });
@@ -91,7 +91,7 @@ describe('Document', () => {
           props.activateReference = jasmine.createSpy('activateReference');
           render();
           instance.text = {selected: jasmine.createSpy('selected').and.returnValue(true)};
-          component.find('.document').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+          component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
           expect(props.activateReference).not.toHaveBeenCalledWith('referenceId');
           expect(props.onClick).toHaveBeenCalled();
         });
@@ -113,7 +113,7 @@ describe('Document', () => {
         props.highlightReference = jasmine.createSpy('highlightReference');
         render();
 
-        component.find('.document').simulate('mouseover', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
+        component.find('.pages').simulate('mouseover', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
         expect(props.highlightReference).toHaveBeenCalledWith('referenceId');
       });
     });
@@ -122,7 +122,7 @@ describe('Document', () => {
         props.highlightReference = jasmine.createSpy('highlightReference');
         render();
 
-        component.find('.document').simulate('mouseover', {target: {className: '', getAttribute: () => ''}});
+        component.find('.pages').simulate('mouseover', {target: {className: '', getAttribute: () => ''}});
         expect(props.highlightReference).toHaveBeenCalledWith(null);
       });
     });
@@ -142,7 +142,7 @@ describe('Document', () => {
         instance.text = Text(instance.pagesContainer);
         spyOn(instance.text, 'selected').and.returnValue(true);
 
-        component.find('.document').simulate('mouseup');
+        component.find('.pages').simulate('mouseup');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
       });
     });
@@ -152,11 +152,11 @@ describe('Document', () => {
         spyOn(instance, 'onTextSelected');
         spyOn(instance.text, 'selected').and.returnValue(true);
 
-        component.find('.document').simulate('mouseup');
+        component.find('.pages').simulate('mouseup');
         expect(instance.onTextSelected).toHaveBeenCalled();
 
         instance.onTextSelected.calls.reset();
-        component.find('.document').simulate('touchend');
+        component.find('.pages').simulate('touchend');
         expect(instance.onTextSelected).toHaveBeenCalled();
       });
     });
@@ -165,7 +165,7 @@ describe('Document', () => {
       it('should unsetSelection', () => {
         spyOn(instance.text, 'selected').and.returnValue(false);
 
-        component.find('.document').simulate('mouseup');
+        component.find('.pages').simulate('mouseup');
 
         expect(props.unsetSelection).toHaveBeenCalled();
       });
@@ -174,11 +174,11 @@ describe('Document', () => {
         spyOn(instance, 'onTextSelected');
         spyOn(instance.text, 'selected').and.returnValue(false);
 
-        component.find('.document').simulate('mouseup');
+        component.find('.pages').simulate('mouseup');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
 
         instance.onTextSelected.calls.reset();
-        component.find('.document').simulate('touchend');
+        component.find('.pages').simulate('touchend');
         expect(instance.onTextSelected).not.toHaveBeenCalled();
       });
     });
