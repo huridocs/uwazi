@@ -13,18 +13,22 @@ export class ViewerSaveTargetReferenceMenu extends Component {
       reference.sourceDocument = this.props.sourceDocument;
       return this.props.saveReference(reference);
     }
-    if (this.props.reference.targetDocument) {
+    if (this.props.reference.targetDocument && !this.props.targetDocument) {
       this.props.loadTargetDocument(this.props.reference.targetDocument);
     }
   }
   render() {
     let disabled = true;
     let className = 'fa-arrow-right';
-    if (this.props.reference.targetDocument) {
+    if (this.props.reference.targetDocument && !this.props.targetDocument) {
       disabled = false;
     }
-    if (this.props.reference.targetRange) {
+    if (this.props.targetDocument) {
       className = 'fa-save';
+    }
+
+    if (this.props.targetDocument && this.props.reference.targetRange) {
+      disabled = false;
     }
     return (
       <div>
