@@ -2,6 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {ViewerSaveReferenceMenu} from 'app/Viewer/components/ViewerSaveReferenceMenu';
+import {MenuButtons} from 'app/ContextMenu';
 
 describe('ViewerSaveReferenceMenu', () => {
   let component;
@@ -21,8 +22,10 @@ describe('ViewerSaveReferenceMenu', () => {
       sourceDocument: 'source'
     };
     render();
-    component.find('.float-btn__main').simulate('click');
 
+    let button = component.find(MenuButtons.Main);
+    expect(button.props().disabled).toBe(false);
+    button.simulate('click');
     expect(props.saveReference).toHaveBeenCalledWith({
       sourceRange: 'range',
       targetDocument: 'target',
@@ -41,7 +44,9 @@ describe('ViewerSaveReferenceMenu', () => {
     };
     render();
 
-    component.find('.float-btn__main').simulate('click');
+    let button = component.find(MenuButtons.Main);
+    expect(button.props().disabled).toBe(true);
+    button.simulate('click');
     expect(props.saveReference).not.toHaveBeenCalled();
   });
 });
