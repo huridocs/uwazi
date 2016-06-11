@@ -21,7 +21,14 @@ export class CreateReferencePanel extends Component {
         <div className="relationship-steps">
           <h2>Select relationship type<small>1</small></h2>
         </div>
-        <Select optionsValue="_id" optionsLabel="name" options={relationTypes} onChange={e => this.props.setRelationType(e.target.value)}/>
+
+        <Select
+          blankLabel="Relationship type"
+          optionsValue="_id"
+          optionsLabel="name"
+          options={relationTypes}
+          onChange={e => this.props.setRelationType(e.target.value)}
+        />
 
         <div className="relationship-steps">
           <h2>Select document<small>2</small></h2>

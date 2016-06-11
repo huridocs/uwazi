@@ -37,6 +37,18 @@ describe('Select', () => {
     expect(optionElements.last().text()).toBe('Option2');
   });
 
+  describe('when passing blankLabel', () => {
+    it('should render a blank label opton with blank value', () => {
+      props.blankLabel = 'blank';
+      render();
+
+      let optionElements = component.find('option');
+      expect(optionElements.length).toBe(3);
+      expect(optionElements.first().props().value).toBe('');
+      expect(optionElements.first().text()).toBe('blank');
+    });
+  });
+
   describe('different key name for label and value', () => {
     beforeEach(() => {
       props = {
