@@ -10,17 +10,9 @@ fdescribe('Smoke test', () => {
     return document.querySelector(selector).innerText;
   };
 
-  // let catchError = (done) => {
-  //   return (error) => {
-  //     expect(error).toBe(null);
-  //     done();
-  //   };
-  // };
-
   describe('login success', () => {
     it('should redirect to home page', (done) => {
       login(nightmare, 'admin', 'admin')
-      .wait(config.waitTime)
       .url()
       .then((url) => {
         expect(url).toBe('http://localhost:3000/');
@@ -55,38 +47,53 @@ fdescribe('Smoke test', () => {
     });
 
     describe('when the user clicks in a document', () => {
-      it('a side panel with the metadata form appears, then close it by clicking on the same document', () => {
+      it('a side panel with the metadata form appears', (done) => {
         nightmare
         .click('.document-viewer .item-name')
-        .wait(config.waitTime)
-        .click('.document-viewer .item-name')
-        .wait(config.waitTime);
+        .exists('.side-panel.is-active')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        });
       });
 
-      it('a side panel with the metadata form appears, then close it by clicking on the panel cross', () => {
+      it('should close the side-panel by clicking on the panel cross', (done) => {
         nightmare
-        .click('.document-viewer .item-name')
-        .wait(config.waitTime)
         .click('.side-panel .close-modal')
-        .wait(config.waitTime);
+        .exists('.side-panel.is-hidden')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        });
       });
 
-      it('a side panel with the metadata form appears, click on the next document then close it', () => {
+      it('the bottom right menu becomes disabled before user click on a document', (done) => {
         nightmare
-        .click('.document-viewer .item-name')
-        .click('.document-viewer li:nth-child(2) .item-name')
-        .click('.side-panel .close-modal')
-        .wait(config.waitTime);
+        .exists('.float-btn__main.disabled')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        });
       });
 
-      it('a side panel with the metadata form appears, click the gear drop down menu', () => {
+      it('the bottom right menu becomes active when user click on a document', (done) => {
         nightmare
         .click('.document-viewer .item-name')
-        .wait(config.waitTime)
-        .mouseover('.fa-gears')
-        .wait(config.waitTime)
-        .click('.side-panel .close-modal')
-        .wait(config.waitTime);
+        .exists('.float-btn__main.cta')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        });
+      });
+
+      it('when the bottom right menu becomes active child elements become active on rollover', (done) => {
+        nightmare
+        .mouseover('.float-btn__main.cta')
+        .exists('.float-btn.btn-fixed.active')
+        .then((exists) => {
+          expect(exists).toBe(true);
+          done();
+        });
       });
     });
     describe('item-metadata', () => {
@@ -117,10 +124,93 @@ fdescribe('Smoke test', () => {
 
       it('there should be a menu on the bottom right of the document', (done) => {
         nightmare
-        .wait(config.waitTime)
-        .exists('.float-btn__sec')
+        .mouseover('.float-btn__main')
+        .exists('.float-btn.btn-fixed.active')
         .then((exists) => {
           expect(exists).toBe(true);
+          done();
+        });
+      });
+
+      it('the bottom right of the document menu should become active on rollover', (done) => {
+        nightmare
+        .mouseover('.float-btn.btn-fixed')
+        .exists('.float-btn.btn-fixed.active')
+        .then((exists) => {
+          expect(exists).toBe(true);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('library', () => {
+    it('should check if library nav button works', (done) => {
+      nightmare
+      .click('.fa-th')
+      .wait(config.waitTime)
+      .url()
+      .then((url) => {
+        expect(url).toBe('http://localhost:3000/');
+        done();
+      });
+    });
+
+    describe('bottom right floating menu', () => {
+      it('should check if the bottom right menu appear by clicking its icon', (done) => {
+        nightmare
+        .click('.float-btn__main')
+        .wait(config.waitTime)
+        .exists('.side-panel.is-active')
+        .then((exists) => {
+          expect(exists).toBe(true);
+          done();
+        });
+      });
+
+      it('should check if the bottom right menu checkbox for select all works', (done) => {
+        nightmare
+        .click('.float-btn__main.cta')
+        .click('.search__filter.search__filter--type input')
+        .evaluate(getInnerText, '.filters-box .title')
+        .then((innerText) => {
+          expect(innerText).toBe('Common filters for Decision, Ruling and Judgement');
+          done();
+        });
+      });
+
+      it('should untick all then check if the bottom right menu checkbox for decision works', (done) => {
+        nightmare
+        .click('.search__filter.search__filter--type input')
+        .click('.search__filter.search__filter--type li:nth-child(3) input')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.filters-box .title')
+        .then((innerText) => {
+          expect(innerText).toBe('Filters for Decision');
+          done();
+        });
+      });
+
+      it('should untick all then check if the bottom right menu checkbox for ruling works', (done) => {
+        nightmare
+        .click('.search__filter.search__filter--type li:nth-child(3) input')
+        .click('.search__filter.search__filter--type li:nth-child(4) input')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.filters-box .title')
+        .then((innerText) => {
+          expect(innerText).toBe('Filters for Ruling');
+          done();
+        });
+      });
+
+      it('should untick all then check if the bottom right menu checkbox for judgement works', (done) => {
+        nightmare
+        .click('.search__filter.search__filter--type li:nth-child(4) input')
+        .click('.search__filter.search__filter--type li:nth-child(5) input')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.filters-box .title')
+        .then((innerText) => {
+          expect(innerText).toBe('Filters for Judgement');
           done();
         });
       });
