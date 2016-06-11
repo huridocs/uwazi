@@ -37,7 +37,7 @@ fdescribe('Smoke test', () => {
   describe('uploads', () => {
     it('should check if uploads nav button works', (done) => {
       nightmare
-      .click('a[href="/uploads"]')
+      .click('.nav .fa-cloud-upload')
       .wait(config.waitTime)
       .url()
       .then((url) => {
@@ -147,7 +147,7 @@ fdescribe('Smoke test', () => {
   describe('library', () => {
     it('should check if library nav button works', (done) => {
       nightmare
-      .click('.fa-th')
+      .click('.nav .fa-th')
       .wait(config.waitTime)
       .url()
       .then((url) => {
@@ -211,6 +211,42 @@ fdescribe('Smoke test', () => {
         .evaluate(getInnerText, '.filters-box .title')
         .then((innerText) => {
           expect(innerText).toBe('Filters for Judgement');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('metadata', () => {
+    it('should check if metadata nav button works', (done) => {
+      nightmare
+      .click('.nav .fa-list-alt')
+      .wait(config.waitTime)
+      .url()
+      .then((url) => {
+        expect(url).toBe('http://localhost:3000/metadata');
+        done();
+      });
+    });
+    describe('document type section', () => {
+      it('should click the 1st of Document Type section', (done) => {
+        nightmare
+        .click('.panel .fa-pencil')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.app-content .col-sm-3 h1')
+        .then((innerText) => {
+          expect(innerText).toBe('CONSTRUCTION BLOCKS');
+          done();
+        });
+      });
+
+      it('should click the back button to go back to /metadata', (done) => {
+        nightmare
+        .click('.panel-heading .fa-arrow-left')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/metadata');
           done();
         });
       });
