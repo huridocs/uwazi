@@ -15,7 +15,7 @@ describe('Smoke test', () => {
       login(nightmare, 'admin', 'admin')
       .url()
       .then((url) => {
-        expect(url).toBe('http://localhost:3000/');
+        expect(url).toBe(config.url + '/');
         done();
       });
     });
@@ -28,7 +28,7 @@ describe('Smoke test', () => {
       .wait(config.waitTime)
       .url()
       .then((url) => {
-        expect(url).toBe('http://localhost:3000/my_account');
+        expect(url).toBe(config.url + '/my_account');
         done();
       });
     });
@@ -41,7 +41,7 @@ describe('Smoke test', () => {
       .wait(config.waitTime)
       .url()
       .then((url) => {
-        expect(url).toBe('http://localhost:3000/uploads');
+        expect(url).toBe(config.url + '/uploads');
         done();
       });
     });
@@ -113,7 +113,7 @@ describe('Smoke test', () => {
       it('should open the document', (done) => {
         nightmare
         .click('.fa-file-o')
-        .wait(config.waitTime)
+        .wait(config.waitLongTime)
         .evaluate(getInnerText, '.document div')
         .then((innerText) => {
           expect(innerText).not.toBe('');
@@ -151,7 +151,7 @@ describe('Smoke test', () => {
       .wait(config.waitTime)
       .url()
       .then((url) => {
-        expect(url).toBe('http://localhost:3000/');
+        expect(url).toBe(config.url + '/');
         done();
       });
     });
@@ -224,7 +224,7 @@ describe('Smoke test', () => {
       .wait(config.waitTime)
       .url()
       .then((url) => {
-        expect(url).toBe('http://localhost:3000/metadata');
+        expect(url).toBe(config.url + '/metadata');
         done();
       });
     });
@@ -246,7 +246,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/metadata');
+          expect(url).toBe(config.url + '/metadata');
           done();
         });
       });
@@ -257,7 +257,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/templates/new');
+          expect(url).toBe(config.url + '/templates/new');
           done();
         });
       });
@@ -268,7 +268,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/metadata');
+          expect(url).toBe(config.url + '/metadata');
           done();
         });
       });
@@ -292,7 +292,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/metadata');
+          expect(url).toBe(config.url + '/metadata');
           done();
         });
       });
@@ -303,7 +303,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/relationtypes/new');
+          expect(url).toBe(config.url + '/relationtypes/new');
           done();
         });
       });
@@ -314,7 +314,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/metadata');
+          expect(url).toBe(config.url + '/metadata');
           done();
         });
       });
@@ -338,7 +338,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/metadata');
+          expect(url).toBe(config.url + '/metadata');
           done();
         });
       });
@@ -349,7 +349,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/thesauris/new');
+          expect(url).toBe(config.url + '/thesauris/new');
           done();
         });
       });
@@ -360,7 +360,7 @@ describe('Smoke test', () => {
         .wait(config.waitTime)
         .url()
         .then((url) => {
-          expect(url).toBe('http://localhost:3000/metadata');
+          expect(url).toBe(config.url + '/metadata');
           done();
         });
       });

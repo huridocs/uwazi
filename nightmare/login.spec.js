@@ -1,5 +1,6 @@
 import Nightmare from 'nightmare';
 import {login} from './helpers/login.js';
+import config from './helpers/config.js';
 
 describe('login', () => {
   let nightmare;
@@ -21,11 +22,14 @@ describe('login', () => {
 
   describe('login success', () => {
     it('should redirect to home page', (done) => {
+      nightmare
+      .goto(config.url + '/logout');
       login(nightmare, 'admin', 'admin')
+      .wait(config.waitTime)
       .url()
       .end()
       .then((url) => {
-        expect(url).toBe('http://localhost:3000/');
+        expect(url).toBe(config.url + '/');
         done();
       });
     });
