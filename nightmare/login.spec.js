@@ -1,5 +1,5 @@
 import Nightmare from 'nightmare';
-import {login, invalidLogin} from './helpers/login.js';
+import {login} from './helpers/login.js';
 
 describe('login', () => {
   let nightmare;
@@ -33,7 +33,7 @@ describe('login', () => {
 
   describe('form errors', () => {
     it('should show error message', (done) => {
-      invalidLogin(nightmare, 'wrong', 'wrong')
+      login(nightmare, 'wrong', 'wrong')
       .evaluate(getInnerText, '.alert-message')
       .end()
       .then((innerText) => {

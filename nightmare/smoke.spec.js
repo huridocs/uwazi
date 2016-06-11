@@ -3,7 +3,7 @@ import {login} from './helpers/login.js';
 import config from './helpers/config.js';
 
 
-fdescribe('Smoke test', () => {
+describe('Smoke test', () => {
   let nightmare = new Nightmare({show: true}).viewport(1100, 600);
 
   let getInnerText = (selector) => {
@@ -231,7 +231,7 @@ fdescribe('Smoke test', () => {
     describe('document type section', () => {
       it('should click the 1st of Document Type section', (done) => {
         nightmare
-        .click('.panel .fa-pencil')
+        .click('.row.metadata .col-sm-4 a')
         .wait(config.waitTime)
         .evaluate(getInnerText, '.app-content .col-sm-3 h1')
         .then((innerText) => {
@@ -243,6 +243,120 @@ fdescribe('Smoke test', () => {
       it('should click the back button to go back to /metadata', (done) => {
         nightmare
         .click('.panel-heading .fa-arrow-left')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/metadata');
+          done();
+        });
+      });
+
+      it('should click the add document type button', (done) => {
+        nightmare
+        .click('.row.metadata .col-sm-4 .fa-plus')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/templates/new');
+          done();
+        });
+      });
+
+      it('should click the back button to go back to /metadata', (done) => {
+        nightmare
+        .click('.fa-arrow-left')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/metadata');
+          done();
+        });
+      });
+    });
+
+    describe('relation types section', () => {
+      it('should click the 1st of relation types section', (done) => {
+        nightmare
+        .click('.row.metadata .col-sm-4:nth-child(2) a')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.control-label')
+        .then((innerText) => {
+          expect(innerText).toBe('Relation Type name');
+          done();
+        });
+      });
+
+      it('should click the back button to go back to /metadata', (done) => {
+        nightmare
+        .click('.fa-arrow-left')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/metadata');
+          done();
+        });
+      });
+
+      it('should click the add relation type button', (done) => {
+        nightmare
+        .click('.row.metadata .col-sm-4:nth-child(2) .fa-plus')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/relationtypes/new');
+          done();
+        });
+      });
+
+      it('should click the back button to go back to /metadata', (done) => {
+        nightmare
+        .click('.fa-arrow-left')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/metadata');
+          done();
+        });
+      });
+    });
+
+    describe('thesauris section', () => {
+      it('should click the 1st of thesauris section', (done) => {
+        nightmare
+        .click('.row.metadata .col-sm-4:nth-child(3) a')
+        .wait(config.waitTime)
+        .evaluate(getInnerText, '.control-label')
+        .then((innerText) => {
+          expect(innerText).toBe('Thesauri name');
+          done();
+        });
+      });
+
+      it('should click the back button to go back to /metadata', (done) => {
+        nightmare
+        .click('.fa-arrow-left')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/metadata');
+          done();
+        });
+      });
+
+      it('should click the add thesauri button', (done) => {
+        nightmare
+        .click('.row.metadata .col-sm-4:nth-child(3) .fa-plus')
+        .wait(config.waitTime)
+        .url()
+        .then((url) => {
+          expect(url).toBe('http://localhost:3000/thesauris/new');
+          done();
+        });
+      });
+
+      it('should click the back button to go back to /metadata', (done) => {
+        nightmare
+        .click('.fa-arrow-left')
         .wait(config.waitTime)
         .url()
         .then((url) => {

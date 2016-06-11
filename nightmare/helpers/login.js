@@ -6,5 +6,5 @@ export function login(nightmare, userName, userPassword) {
         .insert('input[name="username"]', userName)
         .insert('input[name="password"]', userPassword)
         .click('button[type="submit"]')
-        .wait(100);
+        .wait(config.waitTime);
 }
