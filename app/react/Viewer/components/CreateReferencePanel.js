@@ -23,6 +23,7 @@ export class CreateReferencePanel extends Component {
         </div>
 
         <Select
+          value={this.props.relationType}
           placeholder="Select relationship type..."
           optionsValue="_id"
           optionsLabel="name"
@@ -54,7 +55,8 @@ CreateReferencePanel.propTypes = {
   selected: PropTypes.string,
   selectTargetDocument: PropTypes.func,
   setRelationType: PropTypes.func,
-  relationTypes: PropTypes.object
+  relationTypes: PropTypes.object,
+  relationType: PropTypes.string
 };
 
 const mapStateToProps = (state) => {
@@ -64,6 +66,7 @@ const mapStateToProps = (state) => {
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,
     selected: uiState.reference.targetDocument,
+    relationType: uiState.reference.relationType || '',
     relationTypes: state.documentViewer.relationTypes
   };
 };
