@@ -37,9 +37,9 @@ describe('Select', () => {
     expect(optionElements.last().text()).toBe('Option2');
   });
 
-  describe('when passing blankLabel', () => {
+  describe('when passing placeholder', () => {
     it('should render a blank label opton with blank value', () => {
-      props.blankLabel = 'blank';
+      props.placeholder = 'blank';
       render();
 
       let optionElements = component.find('option');

@@ -23,7 +23,7 @@ export class CreateReferencePanel extends Component {
         </div>
 
         <Select
-          blankLabel="Relationship type"
+          placeholder="Select relationship type..."
           optionsValue="_id"
           optionsLabel="name"
           options={relationTypes}
