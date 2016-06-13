@@ -9,6 +9,3 @@ export default class NewThesauri extends RouteHandler {
     return <ThesauriForm />;
   }
 }
-
-//when all components are integrated with redux we can remove this
-NewThesauri.__redux = true;

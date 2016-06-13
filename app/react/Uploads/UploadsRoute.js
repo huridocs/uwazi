@@ -27,6 +27,3 @@ export default class UploadsRoute extends RouteHandler {
     return <UploadsSection />;
   }
 }
-
-//when all components are integrated with redux we can remove this
-UploadsRoute.__redux = true;

@@ -38,6 +38,3 @@ export default class NewTemplate extends RouteHandler {
 NewTemplate.contextTypes = {
   store: PropTypes.object.isRequired
 };
-
-//when all components are integrated with redux we can remove this
-NewTemplate.__redux = true;

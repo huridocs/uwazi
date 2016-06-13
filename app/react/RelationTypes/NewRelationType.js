@@ -9,6 +9,3 @@ export default class NewRelationType extends RouteHandler {
     return <RelationTypeForm />;
   }
 }
-
-//when all components are integrated with redux we can remove this
-NewRelationType.__redux = true;

@@ -22,6 +22,3 @@ export default class EditRelationType extends RouteHandler {
     return <RelationTypeForm />;
   }
 }
-
-//when all components are integrated with redux we can remove this
-EditRelationType.__redux = true;

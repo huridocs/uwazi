@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import Text from 'app/Viewer/utils/Text';
 import {Document} from 'app/Viewer/components/Document.js';
 
-fdescribe('Document', () => {
+describe('Document', () => {
   let component;
   let instance;
 

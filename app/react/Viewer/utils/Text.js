@@ -20,13 +20,13 @@ export default function (container) {
     },
 
     highlight(referenceId) {
-      if (this.highlightedReference) {
+      if (this.highlightedReference && this.renderedReferences[this.highlightedReference]) {
         this.renderedReferences[this.highlightedReference].nodes.forEach((node) => {
           node.classList.remove('highlighted');
         });
       }
 
-      if (referenceId) {
+      if (referenceId && this.renderedReferences[referenceId]) {
         this.renderedReferences[referenceId].nodes.forEach((node) => {
           node.classList.add('highlighted');
         });
@@ -36,13 +36,13 @@ export default function (container) {
     },
 
     activate(referenceId) {
-      if (this.activeReference) {
+      if (this.activeReference && this.renderedReferences[this.activeReference]) {
         this.renderedReferences[this.activeReference].nodes.forEach((node) => {
           node.classList.remove('is-active');
         });
       }
 
-      if (referenceId) {
+      if (referenceId && this.renderedReferences[referenceId]) {
         this.renderedReferences[referenceId].nodes.forEach((node) => {
           node.classList.add('is-active');
         });

@@ -44,6 +44,16 @@ export default class ViewDocument extends RouteHandler {
     });
   }
 
+  emptyState() {
+    this.context.store.dispatch(actions.unset('viewer/doc'));
+    this.context.store.dispatch(actions.unset('viewer/docHTML'));
+    this.context.store.dispatch(actions.unset('viewer/templates'));
+    this.context.store.dispatch(actions.unset('viewer/thesauris'));
+    this.context.store.dispatch(actions.unset('viewer/relationTypes'));
+    this.context.store.dispatch(actions.unset('viewer/referencedDocuments'));
+    this.context.store.dispatch(setReferences([]));
+  }
+
   setReduxState({documentViewer}) {
     this.context.store.dispatch(actions.set('viewer/doc', documentViewer.doc));
     this.context.store.dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));

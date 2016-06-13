@@ -47,6 +47,3 @@ export default class EditTemplate extends RouteHandler {
   }
 
 }
-
-//when all components are integrated with redux we can remove this
-EditTemplate.__redux = true;
