@@ -59,6 +59,3 @@ export default class Library extends RouteHandler {
             </div>;
   }
 }
-
-//when all components are integrated with redux we can remove this
-Library.__redux = true;

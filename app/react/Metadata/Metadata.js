@@ -106,9 +106,6 @@ export class Metadata extends RouteHandler {
   }
 }
 
-//when all components are integrated with redux we can remove this
-Metadata.__redux = true;
-
 Metadata.propTypes = {
   templates: PropTypes.array,
   thesauris: PropTypes.array,
