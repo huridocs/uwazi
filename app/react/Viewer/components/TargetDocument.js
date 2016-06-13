@@ -1,7 +1,8 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import Document from 'app/Viewer/components/Document';
+import Document from './Document';
+import TargetDocumentHeader from './TargetDocumentHeader';
 import {setTargetSelection, unsetTargetSelection} from 'app/Viewer/actions/selectionActions';
 
 const mapStateToProps = ({documentViewer}) => {
@@ -14,7 +15,8 @@ const mapStateToProps = ({documentViewer}) => {
     className: 'targetDocument',
     highlightReference: () => {},
     activateReference: () => {},
-    disableTextSelection: false
+    disableTextSelection: false,
+    header: TargetDocumentHeader
   };
 };
 

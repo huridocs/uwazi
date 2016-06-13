@@ -53,20 +53,26 @@ export class Document extends Component {
     const doc = this.props.doc.toJS();
     const docHTML = this.props.docHTML.toJS();
 
+    const Header = this.props.header || function () {
+      return false;
+    };
+
     return (
       <div>
-        <div
-          className={'_' + doc._id + ' document ' + this.props.className}
-          ref={(ref) => this.pagesContainer = ref}
-          onMouseUp={this.handleMouseUp.bind(this)}
-          onTouchEnd={this.handleMouseUp.bind(this)}
-          onClick={this.handleClick.bind(this)}
-          onMouseOver={this.handleOver.bind(this)}
-        >
-        {docHTML.pages.map((page, index) => {
-          let html = {__html: page};
-          return <div key={index} dangerouslySetInnerHTML={html} />;
-        })}
+        <div className={'_' + doc._id + ' document ' + this.props.className} >
+          <Header/>
+          <div className="pages"
+            ref={(ref) => this.pagesContainer = ref}
+            onMouseUp={this.handleMouseUp.bind(this)}
+            onTouchEnd={this.handleMouseUp.bind(this)}
+            onClick={this.handleClick.bind(this)}
+            onMouseOver={this.handleOver.bind(this)}
+          >
+            {docHTML.pages.map((page, index) => {
+              let html = {__html: page};
+              return <div className='page' key={index} dangerouslySetInnerHTML={html} />;
+            })}
+          </div>
         </div>
         <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
       </div>
@@ -80,6 +86,7 @@ Document.propTypes = {
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,
+  header: PropTypes.func,
   activateReference: PropTypes.func,
   highlightedReference: PropTypes.string,
   activeReference: PropTypes.string,

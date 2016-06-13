@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {saveReference} from 'app/Viewer/actions/referencesActions';
 import validate from 'validate.js';
+import {MenuButtons} from 'app/ContextMenu';
 
 export class ViewerSaveReferenceMenu extends Component {
   render() {
@@ -12,18 +13,19 @@ export class ViewerSaveReferenceMenu extends Component {
     let referenceReady = !validate(reference, {
       sourceDocument: {presence: true},
       targetDocument: {presence: true},
-      sourceRange: {presence: true}
+      sourceRange: {presence: true},
+      relationType: {presence: true}
     });
 
     return (
       <div>
-        <div onClick={() => {
+        <MenuButtons.Main disabled={!referenceReady} onClick={() => {
           if (referenceReady) {
             this.props.saveReference(reference);
           }
-        }} className="float-btn__main">
-          <i className={'fa ' + (referenceReady ? 'fa-save' : 'fa-hand-pointer-o')}></i>
-        </div>
+        }} >
+          <i className="fa fa-save"></i>
+        </MenuButtons.Main>
       </div>
     );
   }

@@ -10,6 +10,10 @@ export default function (state = initialState, action = {}) {
     return state.set('highlightedReference', action.reference);
   }
 
+  if (action.type === types.DEACTIVATE_REFERENCE) {
+    return state.remove('activeReference');
+  }
+
   if (action.type === types.ACTIVE_REFERENCE) {
     return state.set('activeReference', action.reference);
   }
@@ -24,6 +28,10 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === types.RESET_REFERENCE_CREATION) {
     return state.set('reference', Immutable.fromJS({}));
+  }
+
+  if (action.type === types.SET_RELATION_TYPE) {
+    return state.setIn(['reference', 'relationType'], action.relationType);
   }
 
   if (action.type === types.SET_SELECTION) {

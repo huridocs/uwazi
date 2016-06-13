@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {saveReference} from 'app/Viewer/actions/referencesActions';
 import {loadTargetDocument} from 'app/Viewer/actions/documentActions';
+import {MenuButtons} from 'app/ContextMenu';
 
 export class ViewerSaveTargetReferenceMenu extends Component {
   handleClick() {
@@ -12,25 +13,28 @@ export class ViewerSaveTargetReferenceMenu extends Component {
       reference.sourceDocument = this.props.sourceDocument;
       return this.props.saveReference(reference);
     }
-    if (this.props.reference.targetDocument) {
+    if (this.props.reference.targetDocument && !this.props.targetDocument) {
       this.props.loadTargetDocument(this.props.reference.targetDocument);
     }
   }
   render() {
-    let className = 'fa-hand-pointer-o';
-    if (this.props.reference.targetDocument) {
-      className = 'fa-arrow-right';
+    let disabled = true;
+    let className = 'fa-arrow-right';
+    if (this.props.reference.targetDocument && !this.props.targetDocument && this.props.reference.relationType) {
+      disabled = false;
     }
-    if (this.props.reference.targetRange) {
+    if (this.props.targetDocument) {
       className = 'fa-save';
+    }
+
+    if (this.props.targetDocument && this.props.reference.targetRange) {
+      disabled = false;
     }
     return (
       <div>
-        <div
-        onClick={() => this.handleClick()}
-        className="float-btn__main">
+        <MenuButtons.Main disabled={disabled} onClick={() => this.handleClick()}>
           <i className={'fa ' + className}></i>
-        </div>
+        </MenuButtons.Main>
       </div>
     );
   }

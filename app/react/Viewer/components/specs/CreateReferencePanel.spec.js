@@ -5,6 +5,7 @@ import {shallow} from 'enzyme';
 import {CreateReferencePanel} from 'app/Viewer/components/CreateReferencePanel';
 import SidePanel from 'app/Layout/SidePanel';
 import SearchResults from 'app/Viewer/components/SearchResults';
+import {Select} from 'app/Forms';
 
 describe('CreateReferencePanel', () => {
   let component;
@@ -12,7 +13,8 @@ describe('CreateReferencePanel', () => {
 
   beforeEach(() => {
     props = {
-      results: Immutable.fromJS([])
+      results: Immutable.fromJS([]),
+      relationTypes: Immutable.fromJS([])
     };
   });
 
@@ -33,6 +35,20 @@ describe('CreateReferencePanel', () => {
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);
+    });
+  });
+
+  describe('when relationType select changes', () => {
+    it('should setRelationType', () => {
+      props.setRelationType = jasmine.createSpy('setRelationType');
+      render();
+
+      let select = component.find(Select);
+
+      expect(select.props().optionsValue).toBe('_id');
+      expect(select.props().optionsLabel).toBe('name');
+      select.simulate('change', {target: {value: 'value'}});
+      expect(props.setRelationType).toHaveBeenCalled();
     });
   });
 

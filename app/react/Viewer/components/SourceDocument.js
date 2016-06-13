@@ -16,7 +16,8 @@ const mapStateToProps = ({documentViewer}) => {
     highlightedReference: uiState.highlightedReference,
     activeReference: uiState.activeReference,
     executeOnClickHandler: !!documentViewer.targetDoc.get('_id'),
-    disableTextSelection: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
+    disableTextSelection: documentViewer.uiState.get('panel') === 'viewMetadataPanel'
+      || documentViewer.uiState.get('panel') === 'viewReferencesPanel',
     forceSimulateSelection: documentViewer.uiState.get('panel') === 'targetReferencePanel'
       || documentViewer.uiState.get('panel') === 'referencePanel'
   };

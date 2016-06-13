@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 
 let Main = ({children, onClick, disabled}) => {
   return (
-    <div className={'float-btn__main cta ' + (disabled ? 'disabled' : '')} onClick={onClick}>
+    <div className={'float-btn__main ' + (disabled ? 'disabled' : 'cta')} onClick={onClick}>
       {children}
     </div>
   );

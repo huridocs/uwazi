@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 
 import SidePanel from 'app/Layout/SidePanel';
-import {highlightReference, closePanel, activateReference} from 'app/Viewer/actions/uiActions';
+import {highlightReference, closePanel, activateReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -24,6 +24,11 @@ export class ViewReferencesPanel extends Component {
     }
   }
 
+  close() {
+    this.props.closePanel();
+    this.props.deactivateReference();
+  }
+
   render() {
     const uiState = this.props.uiState.toJS();
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
@@ -33,7 +38,7 @@ export class ViewReferencesPanel extends Component {
     return (
       <SidePanel {...sidePanelprops} className="document-references">
         <h1>DOCUMENT RELATIONSHIPS ({this.props.references.toJS().length})</h1>
-        <i className="fa fa-close close-modal" onClick={this.props.closePanel}></i>
+        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
         <div className="item-group">
           {(() => {
             return this.props.references.toJS().map((reference, index) => {
@@ -66,10 +71,9 @@ export class ViewReferencesPanel extends Component {
                       })()}
                     </div>
                     <div className="item-metadata">
-                    {this.relationType(reference.relationType, relationTypes)}
-                    <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                      <i className="fa fa-file-o"></i>
-                    </Link>
+                      <span className="label label-default">{this.relationType(reference.relationType, relationTypes)}</span>
+                      <Link to={'/document/' + reference.targetDocument}
+                        onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
                     </div>
                 </li>
                 );
@@ -88,6 +92,7 @@ ViewReferencesPanel.propTypes = {
   relationTypes: PropTypes.object,
   highlightReference: PropTypes.func,
   activateReference: PropTypes.func,
+  deactivateReference: PropTypes.func,
   closePanel: PropTypes.func
 };
 
@@ -101,7 +106,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({highlightReference, closePanel, activateReference}, dispatch);
+  return bindActionCreators({highlightReference, closePanel, activateReference, deactivateReference}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewReferencesPanel);

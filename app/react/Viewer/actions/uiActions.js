@@ -43,6 +43,12 @@ export function highlightReference(reference) {
   };
 }
 
+export function deactivateReference() {
+  return {
+    type: types.DEACTIVATE_REFERENCE
+  };
+}
+
 export function activateReference(reference) {
   scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer');
   scroller.to(`.document-references .item[data-id="${reference}"]`, '.document-references');

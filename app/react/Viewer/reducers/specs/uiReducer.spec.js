@@ -97,6 +97,15 @@ describe('documentReducer', () => {
     });
   });
 
+  describe('SET_RELATION_TYPE', () => {
+    it('should set sourceRange passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_RELATION_TYPE, relationType: 'type'});
+      let expected = Immutable.fromJS({reference: {relationType: 'type'}});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('SET_SELECTION', () => {
     it('should set sourceRange passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.SET_SELECTION, sourceRange: 'sourceRange'});
@@ -161,6 +170,15 @@ describe('documentReducer', () => {
     it('should set highlightedReference to reference id passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.HIGHLIGHT_REFERENCE, reference: 'reference'});
       let expected = Immutable.fromJS({highlightedReference: 'reference'});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('ACTIVE_REFERENCE', () => {
+    it('should set highlightedReference to reference id passed', () => {
+      let newState = uiReducer(Immutable.fromJS({activeReference: 'reference'}), {type: types.DEACTIVATE_REFERENCE});
+      let expected = Immutable.fromJS({});
 
       expect(newState).toEqualImmutable(expected);
     });

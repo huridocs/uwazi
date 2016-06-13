@@ -17,6 +17,8 @@ describe('ViewReferencesPanel', () => {
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
       highlightReference: jasmine.createSpy('highlightReference'),
       activateReference: jasmine.createSpy('activateReference'),
+      deactivateReference: jasmine.createSpy('deactivateReference'),
+      closePanel: jasmine.createSpy('closePanel'),
       uiState: Immutable.fromJS({})
     };
   });
@@ -30,6 +32,16 @@ describe('ViewReferencesPanel', () => {
 
     expect(component.find(SidePanel).length).toBe(1);
     expect(component.find(SidePanel).props().open).toBe(false);
+  });
+
+  describe('on Close panel', () => {
+    it('should close panel and deactivate reference', () => {
+      render();
+
+      component.find('.close-modal').simulate('click');
+      expect(props.closePanel).toHaveBeenCalled();
+      expect(props.deactivateReference).toHaveBeenCalled();
+    });
   });
 
   describe('when mouseenter on a reference', () => {

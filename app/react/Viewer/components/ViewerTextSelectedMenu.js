@@ -8,17 +8,15 @@ export class ViewerTextSelectedMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
+        <div className="float-btn__sec" onClick={this.props.openPanel.bind(null, 'targetReferencePanel')}>
+          <span>Relationship to a paragraph</span>
+          <i className="fa fa-paragraph"></i>
+        </div>
         <div onClick={this.props.openPanel.bind(null, 'referencePanel')} className="float-btn__sec">
-          <span>Reference to a document</span>
+          <span>Relationship to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
-        <div className="float-btn__sec" onClick={this.props.openPanel.bind(null, 'targetReferencePanel')}>
-          <span>Reference to a paragraph</span>
-          <i className="fa fa-file-text-o"></i>
-        </div>
-        <div className="float-btn__sec"><span>Write a comment</span><i className="fa fa-comment"></i></div>
-        <div className="float-btn__sec"><span>Add to bookmarks</span><i className="fa fa-bookmark"></i></div>
-        <div className="float-btn__main"><i className="fa fa-plus"></i></div>
+        <div className="float-btn__main cta"><i className="fa fa-plus"></i></div>
       </div>
     );
   }
