@@ -41,6 +41,13 @@ describe('Viewer uiActions', () => {
     });
   });
 
+  describe('deactivateReference', () => {
+    it('should dispatch a DEACTIVATE_REFERENCE with id', () => {
+      let action = actions.deactivateReference('id');
+      expect(action).toEqual({type: types.DEACTIVATE_REFERENCE});
+    });
+  });
+
   describe('activateReference()', () => {
     let dispatch;
     beforeEach(() => {

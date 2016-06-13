@@ -10,6 +10,10 @@ export default function (state = initialState, action = {}) {
     return state.set('highlightedReference', action.reference);
   }
 
+  if (action.type === types.DEACTIVATE_REFERENCE) {
+    return state.remove('activeReference');
+  }
+
   if (action.type === types.ACTIVE_REFERENCE) {
     return state.set('activeReference', action.reference);
   }

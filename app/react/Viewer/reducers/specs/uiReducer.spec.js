@@ -177,6 +177,15 @@ describe('documentReducer', () => {
 
   describe('ACTIVE_REFERENCE', () => {
     it('should set highlightedReference to reference id passed', () => {
+      let newState = uiReducer(Immutable.fromJS({activeReference: 'reference'}), {type: types.DEACTIVATE_REFERENCE});
+      let expected = Immutable.fromJS({});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('ACTIVE_REFERENCE', () => {
+    it('should set highlightedReference to reference id passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.ACTIVE_REFERENCE, reference: 'reference'});
       let expected = Immutable.fromJS({activeReference: 'reference'});
 
