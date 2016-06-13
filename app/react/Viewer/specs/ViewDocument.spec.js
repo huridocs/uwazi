@@ -89,4 +89,17 @@ describe('ViewDocument', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/referencedDocuments/SET', value: 'referencedDocuments'});
     });
   });
+
+  describe('emptyState()', () => {
+    it('should unset the state', () => {
+      instance.emptyState();
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: []});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/relationTypes/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/referencedDocuments/UNSET'});
+    });
+  });
 });

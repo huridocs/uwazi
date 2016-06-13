@@ -1,5 +1,4 @@
 import {Component, PropTypes} from 'react';
-import api from 'app/utils/api';
 
 class RouteHandler extends Component {
 
@@ -7,8 +6,7 @@ class RouteHandler extends Component {
     return Promise.resolve({});
   }
 
-  static emptyState() {
-    return {};
+  emptyState() {
   }
 
   static renderTools() {}
@@ -19,35 +17,26 @@ class RouteHandler extends Component {
     return result;
   }
 
-  constructor(props, context) {
+  constructor(props) {
     super(props);
 
     if (!this.isRenderedFromServer() && this.setReduxState) {
-      this.constructor.requestState(this.props.params)
-      .then((response) => {
-        this.setReduxState(response);
-      });
-      return;
+      this.getClientState(this.props);
     }
+  }
 
-    //// DEPRECATED
-    if (this.constructor.__redux) {
-      return;
+  getClientState(props) {
+    this.constructor.requestState(props.params)
+    .then((response) => {
+      this.setReduxState(response);
+    });
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.params !== this.props.params) {
+      this.emptyState();
+      this.getClientState(props);
     }
-
-    this.state = context.getInitialData();
-
-    if (!this.state || this.state && Object.keys(this.state).length === 0 && JSON.stringify(this.state) === JSON.stringify({})) {
-      this.state = this.constructor.emptyState();
-    }
-
-    if (!this.isRenderedFromServer()) {
-      this.constructor.requestState(this.props.params, api)
-      .then((response) => {
-        this.setState(response);
-      });
-    }
-    ////
   }
 }
 

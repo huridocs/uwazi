@@ -173,6 +173,10 @@ describe('Text', () => {
       expect(text.renderedReferences.reference2.nodes[1].className).toBe('highlighted');
     });
 
+    it('should handle unexistant references', () => {
+      expect(text.highlight.bind(text, 'reference_unexistant')).not.toThrow();
+    });
+
     it('should toggle highlighting when new reference is passed', () => {
       text.highlight('reference2');
       text.highlight('reference1');
@@ -211,6 +215,10 @@ describe('Text', () => {
 
       expect(text.renderedReferences.reference2.nodes[0].className).toBe('is-active');
       expect(text.renderedReferences.reference2.nodes[1].className).toBe('is-active');
+    });
+
+    it('should handle unexistant references', () => {
+      expect(text.activate.bind(text, 'reference_unexistant')).not.toThrow();
     });
 
     it('should toggle activate when new reference is passed', () => {

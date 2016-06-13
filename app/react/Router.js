@@ -105,7 +105,7 @@ function handleRoute(res, renderProps, req) {
     cookie = serialize(req.cookies);
   }
 
-  if (routeProps.__redux) {
+  if (routeProps.requestState) {
     api.authorize(cookie);
     return Promise.all([
       routeProps.requestState(renderProps.params),
@@ -117,9 +117,7 @@ function handleRoute(res, renderProps, req) {
     })
     .catch(console.log);
   }
-  if (routeProps.requestState) {
-    //return routeProps.requestState(renderProps.params, instanceApi(cookie)).then(renderPage).catch(console.log);
-  }
+  
   renderPage();
 }
 

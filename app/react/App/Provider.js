@@ -28,7 +28,6 @@ class CustomProvider extends Component {
     return renderedFromServer;
   }
 
-
   getInitialData() {
     let data = this.data;
     delete this.data;
