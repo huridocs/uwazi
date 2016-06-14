@@ -16,7 +16,7 @@ export class CreateReferencePanel extends Component {
     const relationTypes = this.props.relationTypes.toJS();
     return (
       <SidePanel open={this.props.open} className="create-reference">
-        <h1>Create document reference</h1>
+        <h1>Create Connection</h1>
 
         <div className="relationship-steps">
           <h2>Select relationship type<small>1</small></h2>
