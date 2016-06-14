@@ -19,12 +19,12 @@ export class CreateReferencePanel extends Component {
         <h1>Create Connection</h1>
 
         <div className="relationship-steps">
-          <h2>Select relationship type<small>1</small></h2>
+          <h2>Connection type<small>1</small></h2>
         </div>
 
         <Select
           value={this.props.relationType}
-          placeholder="Select relationship type..."
+          placeholder="Connection type..."
           optionsValue="_id"
           optionsLabel="name"
           options={relationTypes}
