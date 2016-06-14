@@ -22,6 +22,9 @@ aside {
 		font-size: 18px;
 		color: $c-grey;
 		cursor: pointer;
+		&:hover {
+			color: $c-grey-dark;
+		}
 	}
 	h2 {
 		font-size: $f-size-sm;
