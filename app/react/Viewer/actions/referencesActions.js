@@ -3,6 +3,7 @@ import refenrecesAPI from 'app/Viewer/referencesAPI';
 import documentsAPI from 'app/Documents/DocumentsAPI';
 import {notify} from 'app/Notifications';
 import {actions} from 'app/BasicReducer';
+import * as uiActions from './uiActions';
 
 export function setRelationType(relationType) {
   return {
@@ -32,6 +33,7 @@ export function saveReference(reference) {
           dispatch(actions.unset('viewer/targetDoc'));
           dispatch(actions.unset('viewer/targetDocHTML'));
 
+          dispatch(uiActions.activateReference(referenceCreated._id));
           dispatch(notify('saved successfully !', 'success'));
         }),
         documentsAPI.list([reference.targetDocument])

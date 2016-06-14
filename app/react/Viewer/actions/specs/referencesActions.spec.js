@@ -8,6 +8,7 @@ import {APIURL} from 'app/config.js';
 import * as actions from 'app/Viewer/actions/referencesActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import scroller from 'app/Viewer/utils/Scroller';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -35,6 +36,7 @@ describe('referencesActions', () => {
   describe('async actions', () => {
     beforeEach(() => {
       mockID();
+      spyOn(scroller, 'to');
       backend.restore();
       backend
       .mock(APIURL + 'references', 'POST', {body: JSON.stringify({_id: 'referenceCreated'})})
@@ -49,6 +51,8 @@ describe('referencesActions', () => {
           {type: types.ADD_CREATED_REFERENCE, reference: {_id: 'referenceCreated'}},
           {type: 'viewer/targetDoc/UNSET'},
           {type: 'viewer/targetDocHTML/UNSET'},
+          {type: 'ACTIVE_REFERENCE', reference: 'referenceCreated'},
+          {type: 'OPEN_PANEL', panel: 'viewReferencesPanel'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}},
           {type: 'viewer/referencedDocuments/SET', value: [{_id: '1'}, {_id: '2'}]}
         ];
