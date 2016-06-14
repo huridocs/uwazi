@@ -12,6 +12,7 @@
   transition: all 500ms;
   overflow-y: scroll;
   background: $c-primary-lighten;
+  max-width: 400px;
 
   &.is-active {
     transform: translateX(0);
