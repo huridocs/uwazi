@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
+import {setSelection} from 'app/Viewer/actions/selectionActions';
 import {resetReferenceCreation, highlightReference, activateReference} from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
 
@@ -24,7 +24,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  let actions = {setSelection, unsetSelection, onClick: resetReferenceCreation, highlightReference, activateReference};
+  let actions = {setSelection, unsetSelection: () => {}, onClick: resetReferenceCreation, highlightReference, activateReference};
   return bindActionCreators(actions, dispatch);
 }
 

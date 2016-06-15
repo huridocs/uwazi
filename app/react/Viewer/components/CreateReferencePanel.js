@@ -7,24 +7,30 @@ import 'app/Viewer/scss/createmodal.scss';
 import SidePanel from 'app/Layout/SidePanel';
 import ViewerSearchForm from 'app/Viewer/components/ViewerSearchForm';
 import SearchResults from 'app/Viewer/components/SearchResults';
-import {selectTargetDocument} from 'app/Viewer/actions/uiActions';
+import {selectTargetDocument, closePanel} from 'app/Viewer/actions/uiActions';
 import {setRelationType} from 'app/Viewer/actions/referencesActions';
 import {Select} from 'app/Forms';
+import {showModal} from 'app/Modals/actions/modalActions';
 
 export class CreateReferencePanel extends Component {
+  close() {
+    this.props.showModal('ConfirmCloseReferenceForm', this.props.reference);
+  }
+
   render() {
     const relationTypes = this.props.relationTypes.toJS();
     return (
       <SidePanel open={this.props.open} className="create-reference">
-        <h1>Create document reference</h1>
+        <h1>Create Connection</h1>
+        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
 
         <div className="relationship-steps">
-          <h2>Select relationship type<small>1</small></h2>
+          <h2>Connection type<small>1</small></h2>
         </div>
 
         <Select
           value={this.props.relationType}
-          placeholder="Select relationship type..."
+          placeholder="Connection type..."
           optionsValue="_id"
           optionsLabel="name"
           options={relationTypes}
@@ -51,9 +57,12 @@ export class CreateReferencePanel extends Component {
 CreateReferencePanel.propTypes = {
   open: PropTypes.bool,
   results: PropTypes.object,
+  reference: PropTypes.object,
   searching: PropTypes.bool,
   selected: PropTypes.string,
   selectTargetDocument: PropTypes.func,
+  closePanel: PropTypes.func,
+  showModal: PropTypes.func,
   setRelationType: PropTypes.func,
   relationTypes: PropTypes.object,
   relationType: PropTypes.string
@@ -63,6 +72,7 @@ const mapStateToProps = (state) => {
   let uiState = state.documentViewer.uiState.toJS();
   return {
     open: uiState.panel === 'referencePanel' || uiState.panel === 'targetReferencePanel',
+    reference: uiState.reference,
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,
     selected: uiState.reference.targetDocument,
@@ -72,7 +82,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({selectTargetDocument, setRelationType}, dispatch);
+  return bindActionCreators({selectTargetDocument, setRelationType, closePanel, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateReferencePanel);

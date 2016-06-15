@@ -9,11 +9,11 @@ export class ViewerTextSelectedMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <div className="float-btn__sec" onClick={this.props.openPanel.bind(null, 'targetReferencePanel')}>
-          <span>Relationship to a paragraph</span>
+          <span>Connect to a paragraph</span>
           <i className="fa fa-paragraph"></i>
         </div>
         <div onClick={this.props.openPanel.bind(null, 'referencePanel')} className="float-btn__sec">
-          <span>Relationship to a document</span>
+          <span>Connect to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
         <div className="float-btn__main cta"><i className="fa fa-plus"></i></div>
