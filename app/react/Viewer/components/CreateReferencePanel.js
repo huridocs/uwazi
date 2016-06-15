@@ -7,16 +7,21 @@ import 'app/Viewer/scss/createmodal.scss';
 import SidePanel from 'app/Layout/SidePanel';
 import ViewerSearchForm from 'app/Viewer/components/ViewerSearchForm';
 import SearchResults from 'app/Viewer/components/SearchResults';
-import {selectTargetDocument} from 'app/Viewer/actions/uiActions';
+import {selectTargetDocument, closePanel} from 'app/Viewer/actions/uiActions';
 import {setRelationType} from 'app/Viewer/actions/referencesActions';
 import {Select} from 'app/Forms';
 
 export class CreateReferencePanel extends Component {
+  close() {
+    this.props.closePanel();
+  }
+
   render() {
     const relationTypes = this.props.relationTypes.toJS();
     return (
       <SidePanel open={this.props.open} className="create-reference">
         <h1>Create Connection</h1>
+        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
 
         <div className="relationship-steps">
           <h2>Connection type<small>1</small></h2>
@@ -54,6 +59,7 @@ CreateReferencePanel.propTypes = {
   searching: PropTypes.bool,
   selected: PropTypes.string,
   selectTargetDocument: PropTypes.func,
+  closePanel: PropTypes.func,
   setRelationType: PropTypes.func,
   relationTypes: PropTypes.object,
   relationType: PropTypes.string
@@ -72,7 +78,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({selectTargetDocument, setRelationType}, dispatch);
+  return bindActionCreators({selectTargetDocument, setRelationType, closePanel}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateReferencePanel);
