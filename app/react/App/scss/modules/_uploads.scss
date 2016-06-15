@@ -1,35 +1,85 @@
 .upload-box {
-	display: block;
-	margin: auto;
-	max-width: 960px;
-	border: 1px dashed $c-grey;
-	text-align: center;
-	padding: 45px 45px 30px 45px;
-	color: $c-grey-dark;
-	margin-bottom: 30px;
-	&_title {
-		color: $c-grey-dark;
-		font-size: $f-size-lg;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		font-weight: bold;
-	}
-	&_link {
-		color: $c-grey-dark;
-		border-bottom: 1px dotted $c-grey;
-		&:hover {
-			border-color: $c-grey-dark;
-			text-decoration: none;
-		}
-	}
-	&_files {
-		margin: 30px 0 0;
-		opacity: 0.5;
-	}
+  display: block;
+  position: relative;
+  max-width: 960px;
+  padding: 25px 45px 20px 60px;
+  margin: auto;
+  margin-bottom: 30px;
+  text-align: center;
+  color: $c-grey-dark;
+  border: 1px dashed $c-grey;
 
-	.fa {
-		margin-right: 5px;
-	}
+  @media (max-width: 767px) {
+    padding: 25px;
+  }
+
+  &_wrapper {
+    display: inline-block;
+    position: relative;
+    text-align: left;
+  }
+
+  &_icon {
+    display: inline-block;
+    margin-right: 2px;
+    font-size: $f-size-lg;
+    color: $c-grey-dark;
+  }
+
+  &_title {
+    display: inline-block;
+    margin: 0;
+    margin-right: 5px;
+    color: $c-grey-dark;
+
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  &_link {
+    display: inline-block;
+    color: $c-grey-dark;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    @media (max-width: 767px) {
+      display: inline;
+    }
+
+  }
+
+  &_cta {
+    margin: 0 5px;
+    text-transform: lowercase;
+    border-bottom: 1px dotted $c-grey-dark;
+
+    &:hover {
+      color: $c-black;
+      border-bottom: 1px solid $c-grey-dark;
+    }
+
+    @media (max-width: 767px) {
+      margin: 0;
+      text-transform: none;
+      border-bottom: 0;
+    }
+  }
+
+  &_or {
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  &_formats {
+    @media (max-width: 767px) {
+      display: block;
+    }
+  }
 }
 
 .is-uploaded {
