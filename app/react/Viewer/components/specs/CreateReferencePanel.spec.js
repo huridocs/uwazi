@@ -14,13 +14,23 @@ describe('CreateReferencePanel', () => {
   beforeEach(() => {
     props = {
       results: Immutable.fromJS([]),
-      relationTypes: Immutable.fromJS([])
+      relationTypes: Immutable.fromJS([]),
+      showModal: jasmine.createSpy('showModal'),
+      reference: {}
     };
   });
 
   let render = () => {
     component = shallow(<CreateReferencePanel {...props}/>);
   };
+
+  describe('close button', () => {
+    it('should open confirm modal', () => {
+      render();
+      component.find('i.close-modal').simulate('click');
+      expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseReferenceForm', props.reference);
+    });
+  });
 
   it('should render a SidePanel', () => {
     render();
