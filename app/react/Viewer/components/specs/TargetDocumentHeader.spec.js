@@ -11,7 +11,7 @@ describe('TargetDocumentHeader', () => {
     props = {
       unset: jasmine.createSpy('unset'),
       unsetTargetSelection: jasmine.createSpy('unsetTargetSelection'),
-      unsetSelection: jasmine.createSpy('unsetTargetSelection')
+      openPanel: jasmine.createSpy('openPanel')
     };
   });
 
@@ -26,7 +26,7 @@ describe('TargetDocumentHeader', () => {
       expect(props.unset).toHaveBeenCalledWith('viewer/targetDoc');
       expect(props.unset).toHaveBeenCalledWith('viewer/targetDocHTML');
       expect(props.unsetTargetSelection).toHaveBeenCalled();
-      expect(props.unsetSelection).toHaveBeenCalled();
+      expect(props.openPanel).toHaveBeenCalledWith('targetReferencePanel');
     });
   });
 });
