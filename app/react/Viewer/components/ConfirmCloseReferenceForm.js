@@ -2,7 +2,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {actions as formActions} from 'react-redux-form';
 
 import {closePanel, resetReferenceCreation} from '../actions/uiActions';
 import {hideModal} from 'app/Modals/actions/modalActions';

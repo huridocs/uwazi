@@ -1,8 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import Modal from 'app/Layout/Modal';
-
 import {ConfirmCloseReferenceForm} from '../ConfirmCloseReferenceForm';
 
 describe('ConfirmCloseReferenceForm', () => {
