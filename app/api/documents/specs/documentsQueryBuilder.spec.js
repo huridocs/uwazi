@@ -62,7 +62,7 @@ describe('documentQueryBuilder', () => {
         multi_match: {
           query: 'term',
           type: 'phrase_prefix',
-          fields: ['doc.fullText', 'doc.metadata.*', 'doc.title^5']
+          fields: ['doc.fullText', 'doc.metadata.*', 'doc.title']
         }
       });
     });
