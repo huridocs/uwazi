@@ -6,7 +6,7 @@ import {Link} from 'react-router';
 import 'app/Thesauris/scss/thesauris.scss';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import {saveThesauri} from 'app/Thesauris/actions/thesauriActions';
+import {saveThesauri, addValue, removeValue} from 'app/Thesauris/actions/thesauriActions';
 
 export class ThesauriForm extends Component {
 
@@ -32,7 +32,11 @@ export class ThesauriForm extends Component {
       <div className="row thesauri">
         <main className="col-sm-12">
           <div className="well thesauri">
-            <Form model="thesauri.data" onSubmit={this.props.saveThesauri} validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}>
+            <Form
+              model="thesauri.data"
+              onSubmit={this.props.saveThesauri}
+              validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
+            >
               <div className="thesauri-buttons">
                 <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
                 <button className="btn btn-success save-template">
@@ -51,13 +55,13 @@ export class ThesauriForm extends Component {
                 return <FormGroup key={index}>
                         <Field model={`thesauri.data.values[${index}].label`}>
                           <input className="form-control" type="text"/>
-                          <a className="btn btn-danger">Delete</a>
+                          <a className="btn btn-danger" onClick={this.props.removeValue.bind(null, index)}>Delete</a>
                         </Field>
                       </FormGroup>;
               })}
               </div>
             </Form>
-            <button className="btn btn-success"><i className="fa fa-plus"></i>Add value</button>
+            <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add value</button>
           </div>
         </main>
       </div>
@@ -68,7 +72,8 @@ export class ThesauriForm extends Component {
 ThesauriForm.propTypes = {
   resetForm: PropTypes.func,
   saveThesauri: PropTypes.func,
-  resetThesauri: PropTypes.func,
+  addValue: PropTypes.func,
+  removeValue: PropTypes.func,
   thesauris: PropTypes.object,
   thesauri: PropTypes.object,
   state: PropTypes.object
@@ -83,7 +88,7 @@ export function mapStateToProps(state) {
 }
 
 function bindActions(dispatch) {
-  return bindActionCreators({saveThesauri, resetThesauri, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({saveThesauri, addValue, removeValue, resetForm: formActions.reset}, dispatch);
 }
 
 let form = connect(mapStateToProps, bindActions)(ThesauriForm);

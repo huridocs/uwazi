@@ -5,14 +5,20 @@ import {mockID} from 'shared/uniqueID';
 import thunk from 'redux-thunk';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
+import {actions as formActions} from 'react-redux-form';
 
 import * as actions from 'app/Thesauris/actions/thesauriActions';
 import * as types from 'app/Thesauris/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 
 describe('thesaurisActions', () => {
+  let dispatch;
+  let getState;
+
   beforeEach(() => {
     mockID();
+    dispatch = jasmine.createSpy('dispatch');
+    getState = jasmine.createSpy('getState').and.returnValue({thesauri: {data: {values: [{label: 'something'}]}}});
     backend.restore();
     backend
     .mock(APIURL + 'thesauris', 'post', {body: JSON.stringify({testBackendResult: 'ok'})});
@@ -35,6 +41,22 @@ describe('thesaurisActions', () => {
       .catch(done.fail);
 
       expect(JSON.parse(backend.lastOptions(APIURL + 'thesauris').body)).toEqual(thesauri);
+    });
+  });
+
+  describe('addValue()', () => {
+    it('should add an empty value to the thesauri', () => {
+      spyOn(formActions, 'change');
+      actions.addValue()(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', [{label: 'something'}, {label: ''}]);
+    });
+  });
+
+  describe('removeValue()', () => {
+    it('should add an empty value to the thesauri', () => {
+      spyOn(formActions, 'change');
+      actions.removeValue(0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', []);
     });
   });
 });
