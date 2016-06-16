@@ -13,6 +13,10 @@
   overflow-y: scroll;
   background: $c-primary-lighten;
 
+  @media (max-width: 767px) {
+    max-width: 400px;
+  }
+
   &.is-active {
     transform: translateX(0);
   }
