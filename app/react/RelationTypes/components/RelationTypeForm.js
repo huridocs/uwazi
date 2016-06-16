@@ -13,9 +13,16 @@ export class RelationTypeForm extends Component {
     this.props.resetForm('relationType');
   }
 
-  validation() {
+  validation(relationTypes, id) {
     return {
-      name: {required: (val) => val.trim() !== ''}
+      name: {
+        required: (val) => val.trim() !== '',
+        duplicated: (val) => {
+          return !relationTypes.find((relationType) => {
+            return relationType._id !== id && relationType.name.trim().toLowerCase() === val.trim().toLowerCase();
+          });
+        }
+      }
     };
   }
 
@@ -24,7 +31,11 @@ export class RelationTypeForm extends Component {
       <div className="row relationType">
         <main className="col-sm-12">
           <div className="well relationType">
-            <Form model="relationType" onSubmit={this.props.saveRelationType} validators={this.validation()}>
+            <Form
+              model="relationType"
+              onSubmit={this.props.saveRelationType}
+              validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
+            >
               <div className="relationType-buttons">
                 <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
                 <button type="submit" className="btn btn-success save-template">
@@ -47,6 +58,7 @@ export class RelationTypeForm extends Component {
 
 RelationTypeForm.propTypes = {
   relationType: PropTypes.object.isRequired,
+  relationTypes: PropTypes.object,
   saveRelationType: PropTypes.func,
   resetRelationType: PropTypes.func,
   resetForm: PropTypes.func,
@@ -56,6 +68,7 @@ RelationTypeForm.propTypes = {
 export function mapStateToProps(state) {
   return {
     relationType: state.relationType,
+    relationTypes: state.relationTypes,
     state: state.relationTypeForm
   };
 }

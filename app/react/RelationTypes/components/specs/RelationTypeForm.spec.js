@@ -10,6 +10,7 @@ describe('RelationTypeForm', () => {
   beforeEach(() => {
     props = {
       relationType: {name: 'test'},
+      relationTypes: Immutable.fromJS([]),
       resetForm: jasmine.createSpy('resetForm'),
       handleSubmit: jasmine.createSpy('handleSubmit'),
       state: {fields: []}
