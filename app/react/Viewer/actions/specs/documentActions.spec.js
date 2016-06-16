@@ -2,6 +2,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 
+import api from 'app/utils/api';
 import {mockID} from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
@@ -43,7 +44,7 @@ describe('documentActions', () => {
       mockID();
       backend.restore();
       backend
-      .mock(APIURL + 'documents/search?searchTerm=term', 'GET', {body: JSON.stringify('documents')})
+      .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
       .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
       .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')});
     });
@@ -71,6 +72,8 @@ describe('documentActions', () => {
       it('should searchDocuments with passed searchTerm', (done) => {
         let searchTerm = 'term';
 
+        spyOn(api, 'get').and.returnValue(Promise.resolve({json: 'documents'}));
+
         const expectedActions = [
           {type: types.VIEWER_SEARCHING},
           {type: 'viewer/documentResults/SET', value: 'documents'}
@@ -79,6 +82,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.viewerSearchDocuments(searchTerm))
         .then(() => {
+          expect(api.get).toHaveBeenCalledWith('documents/search', {searchTerm: 'term', fields: ['doc.title']});
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

@@ -35,6 +35,9 @@ export default (app) => {
     if (req.query.types) {
       req.query.types = JSON.parse(req.query.types);
     }
+    if (req.query.fields) {
+      req.query.fields = JSON.parse(req.query.fields);
+    }
     return documents.search(req.query)
     .then(results => res.json(results));
   });

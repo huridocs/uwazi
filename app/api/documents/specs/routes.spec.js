@@ -120,11 +120,14 @@ describe('documents', () => {
       spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
       let filtersValue = JSON.stringify({property: 'property'});
       let types = JSON.stringify(['ruling', 'judgement']);
-      let req = {query: {searchTerm: 'test', filters: filtersValue, types}};
+      let fields = JSON.stringify(['field1', 'field2']);
+      let req = {query: {searchTerm: 'test', filters: filtersValue, types, fields}};
 
       routes.get('/api/documents/search', req)
       .then((response) => {
-        expect(documents.search).toHaveBeenCalledWith({searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement']});
+        expect(documents.search).toHaveBeenCalledWith(
+          {searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement'], fields: ['field1', 'field2']}
+        );
         expect(response).toEqual('results');
         done();
       })

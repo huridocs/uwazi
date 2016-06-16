@@ -56,7 +56,12 @@ export function viewerSearchDocuments(searchTerm) {
   return function (dispatch) {
     dispatch(viewerSearching());
 
-    return api.get('documents/search?searchTerm=' + searchTerm)
+    let search = {
+      searchTerm,
+      fields: ['doc.title']
+    };
+
+    return api.get('documents/search', search)
     .then((response) => {
       dispatch(actions.set('viewer/documentResults', response.json));
     });

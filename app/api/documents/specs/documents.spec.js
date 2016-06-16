@@ -201,11 +201,12 @@ describe('documents', () => {
       documents.search({
         searchTerm: 'searchTerm',
         filters: {property1: 'value1', property2: 'value2'},
+        fields: ['field'],
         types: ['ruling']
       })
       .then((results) => {
         let expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm')
+        .fullTextSearch('searchTerm', ['field'])
         .filterMetadata({property1: 'value1', property2: 'value2'})
         .filterByTemplate(['ruling'])
         .query();
