@@ -24,6 +24,7 @@ export default (app) => {
     if (req.query.keys) {
       keys = JSON.parse(req.query.keys);
     }
+
     return documents.list(keys)
     .then(results => res.json(results));
   });

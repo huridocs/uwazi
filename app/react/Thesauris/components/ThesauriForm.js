@@ -1,46 +1,76 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
-import {reduxForm} from 'redux-form';
+import {Field, Form, actions as formActions} from 'react-redux-form';
+import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import 'app/Thesauris/scss/thesauris.scss';
 
-import {saveThesauri, resetThesauri} from 'app/Thesauris/actions/thesauriActions';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
+import {saveThesauri, addValue, removeValue} from 'app/Thesauris/actions/thesauriActions';
 
 export class ThesauriForm extends Component {
 
   componentWillUnmount() {
-    this.props.resetThesauri();
+    this.props.resetForm('thesauri.data');
+  }
+
+  validation(thesauris, id) {
+    return {
+      name: {
+        required: (val) => val.trim() !== '',
+        duplicated: (val) => {
+          return !thesauris.find((thesauri) => {
+            return thesauri._id !== id && thesauri.name.trim().toLowerCase() === val.trim().toLowerCase();
+          });
+        }
+      }
+    };
   }
 
   render() {
-    const {fields, handleSubmit, submitFailed} = this.props;
-
     return (
       <div className="row thesauri">
         <main className="col-sm-12">
           <div className="well thesauri">
-            <form onSubmit={handleSubmit(this.props.saveThesauri)} >
+            <Form
+              model="thesauri.data"
+              onSubmit={this.props.saveThesauri}
+              validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
+            >
               <div className="thesauri-buttons">
                 <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
                 <button className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save Thesauri
                 </button>
               </div>
-              <div className={'form-group thesauri-name' + (submitFailed && fields.name.invalid ? ' has-error' : '')}>
+              <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+              <Field model="thesauri.data.name">
                 <label htmlFor="thesauriName" className="control-label">Thesauri name</label>
-                <input id="thesauriName" className="form-control" type="text" {...fields.name}/>
-              </div>
+                <input id="thesauriName" className="form-control" type="text" />
+              </Field>
+              {(() => {
+                if (this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                  return <div className="validation-error">
+                            <i className="fa fa-exclamation-triangle"></i>
+                            &nbsp;
+                            Duplicated name
+                        </div>;
+                }
+              })()}
+              </FormGroup>
               <div>Values</div>
               <div className="thesauri-values">
-              {fields.values.map((value, index) => {
-                return <div key={index} className="form-group">
-                        <input className="form-control" type="text" {...value.label} />
-                        <a className="btn btn-danger" onClick={() => fields.values.removeField(index)}>Delete</a>
-                      </div>;
+              {this.props.thesauri.values.map((value, index) => {
+                return <FormGroup key={index}>
+                        <Field model={`thesauri.data.values[${index}].label`}>
+                          <input className="form-control" type="text"/>
+                          <a className="btn btn-danger" onClick={this.props.removeValue.bind(null, index)}>Delete</a>
+                        </Field>
+                      </FormGroup>;
               })}
               </div>
-            </form>
-            <button onClick={() => fields.values.addField()} className="btn btn-success"><i className="fa fa-plus"></i>Add value</button>
+            </Form>
+            <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add value</button>
           </div>
         </main>
       </div>
@@ -49,38 +79,27 @@ export class ThesauriForm extends Component {
 }
 
 ThesauriForm.propTypes = {
-  fields: PropTypes.object.isRequired,
+  resetForm: PropTypes.func,
   saveThesauri: PropTypes.func,
-  resetThesauri: PropTypes.func,
-  values: PropTypes.object,
-  handleSubmit: PropTypes.func,
-  submitFailed: PropTypes.bool
-};
-
-const validate = (values) => {
-  let errors = {};
-
-  if (!values.name) {
-    errors.name = 'Required';
-  }
-
-  return errors;
+  addValue: PropTypes.func,
+  removeValue: PropTypes.func,
+  thesauris: PropTypes.object,
+  thesauri: PropTypes.object,
+  state: PropTypes.object
 };
 
 export function mapStateToProps(state) {
-  let fields = ['name', 'values[].label', 'values[].id', '_id', '_rev'];
   return {
-    fields: fields,
-    initialValues: state.thesauri.toJS(),
-    validate,
-    onSubmit: saveThesauri
+    thesauri: state.thesauri.data,
+    thesauris: state.thesauris,
+    state: state.thesauri.formState
   };
 }
 
 function bindActions(dispatch) {
-  return bindActionCreators({saveThesauri, resetThesauri}, dispatch);
+  return bindActionCreators({saveThesauri, addValue, removeValue, resetForm: formActions.reset}, dispatch);
 }
 
-let form = reduxForm({form: 'thesauri'}, mapStateToProps, bindActions)(ThesauriForm);
+let form = connect(mapStateToProps, bindActions)(ThesauriForm);
 
 export default form;

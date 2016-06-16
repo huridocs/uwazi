@@ -9,9 +9,10 @@ describe('ThesauriForm', () => {
   let component;
   beforeEach(() => {
     props = {
-      fields: {name: {}, values: []},
-      resetThesauri: jasmine.createSpy('resetThesauri'),
-      handleSubmit: jasmine.createSpy('handleSubmit')
+      thesauri: {name: 'thesauri name', values: []},
+      state: {fields: []},
+      resetForm: jasmine.createSpy('resetForm'),
+      thesauris: Immutable.fromJS([{name: 'Countries'}])
     };
 
     component = shallow(<ThesauriForm {...props}/>);
@@ -20,7 +21,7 @@ describe('ThesauriForm', () => {
   describe('when unmount', () => {
     it('shoould call resetThesauri', () => {
       component.unmount();
-      expect(props.resetThesauri).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalled();
     });
   });
 
@@ -28,23 +29,17 @@ describe('ThesauriForm', () => {
     let state;
     beforeEach(() => {
       state = {
-        thesauri: Immutable.fromJS({name: 'thesauri name', values: []})
+        thesauri: {
+          data: {name: 'thesauri name', values: []},
+          state: 'thesauri form state'
+        },
+        thesauris: Immutable.fromJS([{name: 'Countries'}])
       };
     });
 
     it('should map the thesauri to initialValues', () => {
-      expect(mapStateToProps(state).initialValues).toEqual({name: 'thesauri name', values: []});
-    });
-
-    it('should map the fields', () => {
-      expect(mapStateToProps(state).fields).toEqual(['name', 'values[].label', 'values[].id', '_id', '_rev']);
-    });
-
-    describe('validation', () => {
-      it('should add an error if the template has no name', () => {
-        let errors = mapStateToProps(state).validate({name: '', values: []});
-        expect(errors.name).toBe('Required');
-      });
+      expect(mapStateToProps(state).thesauri).toEqual({name: 'thesauri name', values: []});
+      expect(mapStateToProps(state).thesauris).toEqual(Immutable.fromJS([{name: 'Countries'}]));
     });
   });
 });

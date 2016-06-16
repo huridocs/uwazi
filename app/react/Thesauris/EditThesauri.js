@@ -10,18 +10,15 @@ export default class EditThesauri extends RouteHandler {
   static requestState({thesauriId}) {
     return api.get(thesauriId)
     .then((thesauris) => {
-      return {thesauri: thesauris[0]};
+      return {thesauri: {data: thesauris[0]}};
     });
   }
 
   setReduxState({thesauri}) {
-    this.context.store.dispatch(editThesauri(thesauri));
+    this.context.store.dispatch(editThesauri(thesauri.data));
   }
 
   render() {
     return <ThesauriForm />;
   }
 }
-
-//when all components are integrated with redux we can remove this
-EditThesauri.__redux = true;

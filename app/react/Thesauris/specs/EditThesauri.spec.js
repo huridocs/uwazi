@@ -10,7 +10,6 @@ import RouteHandler from 'app/App/RouteHandler';
 describe('EditThesauri', () => {
   let thesauri = {name: 'Countries', values: [{id: '1', label: 'label1'}, {id: '2', label: 'label2'}]};
   let component;
-  let instance;
   let props = jasmine.createSpyObj(['editThesauri']);
   let context;
 
@@ -18,7 +17,6 @@ describe('EditThesauri', () => {
     RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<EditThesauri {...props}/>, {context});
-    instance = component.instance();
 
     backend.restore();
     backend
@@ -33,17 +31,10 @@ describe('EditThesauri', () => {
     it('should request the thesauris using the param thesauriId', (done) => {
       EditThesauri.requestState({thesauriId: 'thesauriId'})
       .then((state) => {
-        expect(state).toEqual({thesauri});
+        expect(state).toEqual({thesauri: {data: thesauri}});
         done();
       })
       .catch(done.fail);
-    });
-  });
-
-  describe('setReduxState()', () => {
-    it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({thesauri});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'EDIT_THESAURI', thesauri});
     });
   });
 });

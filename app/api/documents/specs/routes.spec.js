@@ -71,14 +71,14 @@ describe('documents', () => {
   describe('/api/documents/list', () => {
     it('return the list from documents passing the keys', (done) => {
       let req = {
-        query: {keys: ['1', '2']}
+        query: {keys: JSON.stringify(['1', '2'])}
       };
 
       spyOn(documents, 'list').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.get('/api/documents/list', req)
       .then((document) => {
         expect(document).toBe('document');
-        expect(documents.list).toHaveBeenCalledWith(req.query.keys);
+        expect(documents.list).toHaveBeenCalledWith(['1', '2']);
         done();
       })
       .catch(done.fail);
