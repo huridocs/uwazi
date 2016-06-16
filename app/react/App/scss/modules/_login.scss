@@ -1,0 +1,23 @@
+.login-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 60px;
+}
+
+.login-title {
+  width: 240px;
+  margin: 0 auto 30px;
+  display: block;
+}
+
+.login-password {
+  position: relative;
+  margin-bottom: 45px;
+  .required {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    text-align: center;
+  }
+}

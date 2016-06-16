@@ -50,7 +50,7 @@ describe('Login', () => {
       it('should set error false', (done) => {
         instance.state.error = true;
 
-        instance.submit(new Event('submit'))
+        instance.submit()
         .then(() => {
           expect(instance.state.error).toBe(false);
           done();
