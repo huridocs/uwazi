@@ -48,6 +48,15 @@ export class ThesauriForm extends Component {
                 <label htmlFor="thesauriName" className="control-label">Thesauri name</label>
                 <input id="thesauriName" className="form-control" type="text" />
               </Field>
+              {(() => {
+                if (this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                  return <div className="validation-error">
+                            <i className="fa fa-exclamation-triangle"></i>
+                            &nbsp;
+                            Duplicated name
+                        </div>;
+                }
+              })()}
               </FormGroup>
               <div>Values</div>
               <div className="thesauri-values">

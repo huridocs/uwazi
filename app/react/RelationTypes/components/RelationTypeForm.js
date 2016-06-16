@@ -48,6 +48,15 @@ export class RelationTypeForm extends Component {
                     <input id="relationTypeName" className="form-control" type="text"/>
                 </Field>
               </FormGroup>
+              {(() => {
+                if (this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                  return <div className="validation-error">
+                            <i className="fa fa-exclamation-triangle"></i>
+                            &nbsp;
+                            Duplicated name
+                        </div>;
+                }
+              })()}
             </Form>
           </div>
         </main>
