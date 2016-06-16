@@ -21,7 +21,7 @@
 
   &_icon {
     display: inline-block;
-    margin-right: 2px;
+    margin-right: 5px;
     font-size: $f-size-lg;
     color: $c-grey-dark;
   }
@@ -76,8 +76,11 @@
   }
 
   &_formats {
+    margin: 0 0 0 15px;
+    opacity: .5;
     @media (max-width: 767px) {
       display: block;
+      margin: 0;
     }
   }
 }
