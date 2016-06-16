@@ -5,11 +5,14 @@ function toParams(data) {
     return '';
   }
   return '?' + Object.keys(data).reduce((params, key) => {
-    let value = data[key] || '';
-    if (typeof value === 'object') {
-      value = JSON.stringify(value);
+    if (typeof data[key] === 'undefined' || data[key] === null) {
+      return params;
     }
-    params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+
+    if (typeof data[key] === 'object') {
+      data[key] = JSON.stringify(data[key]);
+    }
+    params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
     return params;
   }, []).join('&');
 }

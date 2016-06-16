@@ -10,7 +10,6 @@ describe('RelationTypeForm', () => {
   beforeEach(() => {
     props = {
       relationType: {name: 'test'},
-      resetRelationType: jasmine.createSpy('resetRelationType'),
       resetForm: jasmine.createSpy('resetForm'),
       handleSubmit: jasmine.createSpy('handleSubmit'),
       state: {fields: []}
@@ -22,7 +21,6 @@ describe('RelationTypeForm', () => {
   describe('when unmount', () => {
     it('shoould call resetRelationType', () => {
       component.unmount();
-      expect(props.resetRelationType).toHaveBeenCalled();
       expect(props.resetForm).toHaveBeenCalled();
     });
   });

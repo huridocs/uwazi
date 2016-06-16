@@ -69,6 +69,17 @@ describe('relationtypes', () => {
       });
     });
 
+    describe('when its duplicated', () => {
+      it('should return an error', (done) => {
+        let relationtype = {name: 'Against'};
+        return relationtypes.save(relationtype)
+        .then((result) => {
+          expect(result.error).toBe('duplicated_entry');
+          done();
+        }).catch(catchErrors(done));
+      });
+    });
+
     describe('delete()', () => {
       it('should remove it from the database and return true', (done) => {
         request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)

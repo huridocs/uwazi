@@ -5,7 +5,7 @@ import templates from 'app/Templates/reducers/templatesReducer';
 import template from 'app/Templates/reducers/reducer';
 import {reducer as notificationsReducer} from 'app/Notifications';
 
-import thesauri from 'app/Thesauris/reducers/thesauriReducer';
+import thesauri from 'app/Thesauris/reducers/reducer';
 import thesauris from 'app/Thesauris/reducers/thesaurisReducer';
 import relationTypes from 'app/RelationTypes/reducers/relationTypesReducer';
 import documentViewer from 'app/Viewer/reducers/reducer';

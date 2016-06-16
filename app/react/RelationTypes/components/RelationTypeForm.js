@@ -10,7 +10,6 @@ import {saveRelationType, resetRelationType} from 'app/RelationTypes/actions/rel
 export class RelationTypeForm extends Component {
 
   componentWillUnmount() {
-    this.props.resetRelationType();
     this.props.resetForm('relationType');
   }
 

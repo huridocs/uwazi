@@ -3,13 +3,17 @@ import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Thesauris/actions/thesaurisActions';
 import * as types from 'app/Thesauris/actions/actionTypes';
+import {actions as formActions} from 'react-redux-form';
 
 describe('thesaurisActions', () => {
   describe('editThesauri', () => {
-    it('should return an EDIT_THESAURI action ', () => {
+    it('should set the thesauri in the form ', () => {
       let thesauri = {name: 'Secret list of things', values: []};
-      let action = actions.editThesauri(thesauri);
-      expect(action).toEqual({type: types.EDIT_THESAURI, thesauri});
+      let dispatch = jasmine.createSpy('dispatch');
+      spyOn(formActions, 'load');
+      actions.editThesauri(thesauri)(dispatch);
+    
+      expect(formActions.load).toHaveBeenCalledWith('thesauri.data', thesauri);
     });
   });
 
