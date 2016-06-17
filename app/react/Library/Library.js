@@ -11,6 +11,7 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
 import ContextMenu from 'app/ContextMenu';
 import LibraryMenu from './components/LibraryMenu';
+import ViewMetadataPanel from './components/ViewMetadataPanel';
 import {store} from 'app/store';
 
 export default class Library extends RouteHandler {
@@ -53,6 +54,7 @@ export default class Library extends RouteHandler {
     return <div className="row panels-layout">
               <DocumentsList />
               <LibraryFilters />
+              <ViewMetadataPanel />
               <ContextMenu>
                 <LibraryMenu/>
               </ContextMenu>

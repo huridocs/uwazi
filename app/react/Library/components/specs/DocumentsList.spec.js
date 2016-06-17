@@ -27,11 +27,20 @@ describe('DocumentsList', () => {
     expect(component.find('main').hasClass('is-active')).toBe(true);
   });
 
+  it('should be active when a document is selected', () => {
+    render();
+    expect(component.find('main').hasClass('is-active')).toBe(false);
+
+    props.selectedDocument = {_id: 'selected'};
+    render();
+    expect(component.find('main').hasClass('is-active')).toBe(true);
+  });
+
   it('should render a Doc element for each document', () => {
     render();
     let docs = component.find(Doc);
     expect(docs.length).toBe(2);
-    expect(docs.first().props().title).toBe('Document one');
+    expect(docs.first().props().doc.title).toBe('Document one');
   });
 
   describe('maped state', () => {
@@ -39,11 +48,11 @@ describe('DocumentsList', () => {
       let store = {
         library: {
           documents: documents,
-          ui: Immutable.fromJS({filtersPanel: 'panel'})
+          ui: Immutable.fromJS({filtersPanel: 'panel', selectedDocument: 'selected'})
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({documents, filtersPanel: 'panel'});
+      expect(state).toEqual({documents, filtersPanel: 'panel', selectedDocument: 'selected'});
     });
   });
 });

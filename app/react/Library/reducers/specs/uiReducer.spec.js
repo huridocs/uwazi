@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
 import uiReducer from 'app/Library/reducers/uiReducer';
+import * as actions from 'app/Library/actions/libraryActions';
 import 'jasmine-immutablejs-matchers';
 
 describe('uiReducer', () => {
@@ -11,6 +12,20 @@ describe('uiReducer', () => {
     it('returns initial', () => {
       let newState = uiReducer();
       expect(newState).toEqual(initialState);
+    });
+  });
+
+  describe('selectDocument', () => {
+    it('should set selected document', () => {
+      let newState = uiReducer(initialState, actions.selectDocument({_id: 'document'}));
+      expect(newState.get('selectedDocument').get('_id')).toBe('document');
+    });
+  });
+
+  describe('unselectDocument', () => {
+    it('should set selected document', () => {
+      let newState = uiReducer(Immutable.fromJS({selectDocument: 'document'}), actions.unselectDocument());
+      expect(newState.toJS().selectedDocument).not.toBeDefined();
     });
   });
 

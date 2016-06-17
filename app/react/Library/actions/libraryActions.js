@@ -6,6 +6,16 @@ export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
 }
 
+export function selectDocument(doc) {
+  return {
+    type: types.SELECT_DOCUMENT,
+    doc
+  };
+}
+export function unselectDocument() {
+  return {type: types.UNSELECT_DOCUMENT};
+}
+
 export function showFilters() {
   return {type: types.SHOW_FILTERS};
 }

@@ -13,6 +13,14 @@ export default function ui(state = initialState, action = {}) {
     return newState;
   }
 
+  if (action.type === types.SELECT_DOCUMENT) {
+    return state.set('selectedDocument', Immutable.fromJS(action.doc));
+  }
+
+  if (action.type === types.UNSELECT_DOCUMENT) {
+    return state.remove('selectedDocument');
+  }
+
   if (action.type === types.HIDE_FILTERS) {
     return state.set('filtersPanel', false);
   }
