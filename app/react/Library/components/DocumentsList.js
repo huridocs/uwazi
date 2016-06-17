@@ -9,7 +9,7 @@ export class DocumentsList extends Component {
   render() {
     let documents = this.props.documents.toJS();
     return (
-      <main className={'document-viewer ' + (this.props.filtersPanel ? 'col-xs-12 col-sm-8 is-active' : 'col-xs-12')}>
+      <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'col-xs-12 col-sm-8 is-active' : 'col-xs-12')}>
         <div className="sort-by">
           <div className="row">
             <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>
@@ -17,7 +17,7 @@ export class DocumentsList extends Component {
           </div>
         </div>
         <RowList>
-          {documents.map((doc, index) => <Doc {...doc} key={index} />)}
+          {documents.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
       </main>
     );
@@ -26,13 +26,15 @@ export class DocumentsList extends Component {
 
 DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
-  filtersPanel: PropTypes.bool
+  filtersPanel: PropTypes.bool,
+  selectedDocument: PropTypes.object
 };
 
 export function mapStateToProps(state) {
   return {
     documents: state.library.documents,
-    filtersPanel: state.library.ui.get('filtersPanel')
+    filtersPanel: state.library.ui.get('filtersPanel'),
+    selectedDocument: state.library.ui.get('selectedDocument')
   };
 }
 
