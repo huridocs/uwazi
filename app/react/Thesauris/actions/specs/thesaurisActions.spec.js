@@ -12,7 +12,7 @@ describe('thesaurisActions', () => {
       let dispatch = jasmine.createSpy('dispatch');
       spyOn(formActions, 'load');
       actions.editThesauri(thesauri)(dispatch);
-    
+
       expect(formActions.load).toHaveBeenCalledWith('thesauri.data', thesauri);
     });
   });

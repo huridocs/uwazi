@@ -60,13 +60,13 @@ export class FilterSuggestions extends Component {
   }
 
   getThesauriName(thesauriId) {
-    return this.props.uiState.toJS().thesauris.find((thesauri) => {
+    return this.props.thesauris.toJS().find((thesauri) => {
       return thesauri._id === thesauriId;
     }).name;
   }
 
   filterSuggestions(label, type, content, hasThesauri) {
-    return this.findSameLabelProperties(label, this.props.uiState.toJS().templates)
+    return this.findSameLabelProperties(label, this.props.templates.toJS())
     .map((propertyMatch, index) => {
       let typeConflict = propertyMatch.property.type !== type;
       let contentConflict = propertyMatch.property.content !== content;
@@ -116,13 +116,15 @@ FilterSuggestions.propTypes = {
   type: PropTypes.string,
   filter: PropTypes.any,
   data: PropTypes.object,
-  uiState: PropTypes.object,
+  templates: PropTypes.object,
+  thesauris: PropTypes.object,
   content: PropTypes.string
 };
 
 export function mapStateToProps(state) {
   return {
-    uiState: state.template.uiState,
+    templates: state.templates,
+    thesauris: state.thesauris,
     data: state.template.data
   };
 }

@@ -150,10 +150,24 @@ describe('templates', () => {
       });
     });
 
+    describe('when the template name exists', () => {
+      it('should return the error', (done) => {
+        let template = {name: 'template_test'};
+        templates.save(template)
+        .then(() => {
+          done.fail('should return an error');
+        })
+        .catch((error) => {
+          expect(error.json).toBe('duplicated_entry');
+          done();
+        });
+      });
+    });
+
     describe('when there is a db error', () => {
       it('should return the error', (done) => {
         spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-        let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'};
+        let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''};
         templates.save(badTemplate)
         .then(() => {
           done.fail('should return an error');

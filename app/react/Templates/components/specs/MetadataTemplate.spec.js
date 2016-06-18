@@ -19,8 +19,9 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let properties = [{label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}];
-        let targetProps = {properties: properties, connectDropTarget: identity, formState: {fields: {}, errors: {}}};
+        let template = {properties: [{label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}], _id: 1};
+        let templates = Immutable.fromJS([]);
+        let targetProps = {template, templates, connectDropTarget: identity, formState: {fields: {}, errors: {}}};
         let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity,
           formState: {fields: {}, errors: {}}};
         return <div>
@@ -38,8 +39,9 @@ describe('MetadataTemplate', () => {
     let formModel = {name: '', properties: properties};
     props.properties = properties;
     let initialData = {
-      template: {data: formModel, uiState: Immutable.fromJS({templates: []})},
+      template: {data: formModel},
       form: {template: {}},
+      templates: Immutable.fromJS({templates: []}),
       modals: Immutable.fromJS({})
     };
     let store = createStore(
@@ -47,8 +49,11 @@ describe('MetadataTemplate', () => {
         combineReducers({
           data: modelReducer('template.data', formModel),
           formState: formReducer('template.data'),
-          uiState: () => initialData.template.uiState
+          uiState: () => {
+            return Immutable.fromJS({editProperty: ''});
+          }
         }),
+        templates: () => Immutable.fromJS([]),
         form: () => initialData.form,
         modals: () => initialData.modals
       }),
@@ -59,25 +64,24 @@ describe('MetadataTemplate', () => {
   }
 
   describe('render()', () => {
+    let props = {template: {properties: []}, connectDropTarget: (x) => x, formState: {fields: {}}, templates: Immutable.fromJS([])};
+
     it('should disable send button when saving the template', () => {
-      let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
       let component = shallow(<MetadataTemplate {...props} />);
       expect(component.find('button').props().disabled).toBe(false);
 
-      props = {savingTemplate: true, properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
+      props.savingTemplate = true;
       component = shallow(<MetadataTemplate {...props} />);
       expect(component.find('button').props().disabled).toBe(true);
     });
 
     it('should render the template name field', () => {
-      let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
       let component = shallow(<MetadataTemplate {...props} />);
       expect(component.find(FormField).node.props.model).toBe('template.data.name');
     });
 
     describe('when fields is empty', () => {
       it('should render a blank state', () => {
-        let props = {properties: [], connectDropTarget: (x) => x, formState: {fields: {}}};
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find('.no-properties').length).toBe(1);
       });
@@ -85,8 +89,7 @@ describe('MetadataTemplate', () => {
 
     describe('when has fields', () => {
       it('should render all fields as MetadataProperty', () => {
-        let props = {properties: [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}],
-          connectDropTarget: (x) => x, formState: {fields: {}}};
+        props.template.properties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
       });

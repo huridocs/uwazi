@@ -27,13 +27,22 @@ export class MetadataTemplate extends Component {
               model="template.data"
               onSubmit={this.props.saveTemplate}
               className="metadataTemplate panel-default panel"
-              validators={validator(this.props.properties, this.props.setErrors)}
+              validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
             >
               <div className="metadataTemplate-heading panel-heading">
                 <div className={nameGroupClass}>
                   <FormField model="template.data.name">
                     <input placeholder="Template name" className="form-control"/>
                   </FormField>
+                  {(() => {
+                    if (this.props.formState.fields.name && this.props.formState.fields.name.errors.duplicated) {
+                      return <div className="validation-error">
+                                <i className="fa fa-exclamation-triangle"></i>
+                                &nbsp;
+                                Duplicated name
+                            </div>;
+                    }
+                  })()}
                 </div>
                 &nbsp;
                 <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
@@ -44,13 +53,13 @@ export class MetadataTemplate extends Component {
               </div>
               {connectDropTarget(<ul className="metadataTemplate-list list-group">
                 {(() => {
-                  if (this.props.properties.length === 0) {
+                  if (this.props.template.properties.length === 0) {
                     return <div className="no-properties">
                             <i className="fa fa-clone"></i>Drag properties here to start
                           </div>;
                   }
                 })()}
-                {this.props.properties.map((config, index) => {
+                {this.props.template.properties.map((config, index) => {
                   return <MetadataProperty {...config} key={config.localID} index={index}/>;
                 })}
               </ul>)}
@@ -65,7 +74,8 @@ MetadataTemplate.propTypes = {
   saveTemplate: PropTypes.func,
   savingTemplate: PropTypes.bool,
   setErrors: PropTypes.func,
-  properties: PropTypes.array
+  template: PropTypes.object,
+  templates: PropTypes.object
 };
 
 const target = {
@@ -76,14 +86,14 @@ const target = {
   drop(props, monitor) {
     let item = monitor.getItem();
 
-    let propertyAlreadyAdded = props.properties[item.index];
+    let propertyAlreadyAdded = props.template.properties[item.index];
 
     if (propertyAlreadyAdded) {
       props.inserted(item.index);
       return;
     }
 
-    props.addProperty({label: item.label, type: item.type}, props.properties.length);
+    props.addProperty({label: item.label, type: item.type}, props.template.properties.length);
     return {name: 'container'};
   }
 };
@@ -94,11 +104,12 @@ let dropTarget = DropTarget('METADATA_OPTION', target, (connector) => ({
 
 export {dropTarget};
 
-const mapStateToProps = ({template}) => {
+const mapStateToProps = (state) => {
   return {
-    properties: template.data.properties,
-    savingTemplate: template.uiState.get('savingTemplate'),
-    formState: template.formState
+    template: state.template.data,
+    templates: state.templates,
+    savingTemplate: state.template.uiState.get('savingTemplate'),
+    formState: state.template.formState
   };
 };
 

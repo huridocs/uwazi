@@ -117,7 +117,7 @@ function handleRoute(res, renderProps, req) {
     })
     .catch(console.log);
   }
-  
+
   renderPage();
 }
 
