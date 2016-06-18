@@ -42,8 +42,8 @@ describe('EditTemplate', () => {
       EditTemplate.requestState({templateId: 'abc2'})
       .then((response) => {
         expect(response.template.data._id).toEqual('abc2');
-        expect(response.template.uiState.thesauris).toEqual(thesauris);
-        expect(response.template.uiState.templates.length).toBe(2);
+        expect(response.thesauris).toEqual(thesauris);
+        expect(response.templates.length).toBe(2);
         done();
       })
       .catch(done.fail);
@@ -62,7 +62,7 @@ describe('EditTemplate', () => {
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       spyOn(formActions, 'load').and.returnValue('TEMPLATE MODEL LOADED');
-      instance.setReduxState({template: {data: 'template_data', uiState: {thesauris: 'thesauris', templates: 'templates'}}});
+      instance.setReduxState({template: {data: 'template_data'}, thesauris: 'thesauris', templates: 'templates'});
       expect(formActions.load).toHaveBeenCalledWith('template.data', 'template_data');
       expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATE MODEL LOADED');
 

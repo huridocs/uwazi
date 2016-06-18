@@ -28,10 +28,10 @@ describe('library helper', () => {
         let filters = libraryFilters(templates, documentTypes, thesauris);
         expect(filters)
         .toEqual([
-                  {name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']},
-                  {name: 'date', filter: true, type: 'text'},
-                  {name: 'language', filter: true, type: 'text'}
-                ]);
+          {name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']},
+          {name: 'date', filter: true, type: 'text'},
+          {name: 'language', filter: true, type: 'text'}
+        ]);
       });
     });
 

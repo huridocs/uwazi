@@ -5,7 +5,7 @@ import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import {setTemplates} from 'app/Templates/actions/templatesActions';
-import {setThesauris} from 'app/Templates/actions/uiActions';
+import {setThesauris} from 'app/Thesauris/actions/thesaurisActions';
 import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
 
@@ -29,17 +29,18 @@ export default class EditTemplate extends RouteHandler {
       let template = Object.assign({}, templates.find((tmpl) => tmpl._id === templateId));
       return {
         template: {
-          data: prepareTemplate(template),
-          uiState: {thesauris, templates}
-        }
+          data: prepareTemplate(template)
+        },
+        thesauris,
+        templates
       };
     });
   }
 
-  setReduxState({template}) {
+  setReduxState({template, thesauris, templates}) {
     this.context.store.dispatch(formActions.load('template.data', template.data));
-    this.context.store.dispatch(setThesauris(template.uiState.thesauris));
-    this.context.store.dispatch(setTemplates(template.uiState.templates));
+    this.context.store.dispatch(setThesauris(thesauris));
+    this.context.store.dispatch(setTemplates(templates));
   }
 
   render() {

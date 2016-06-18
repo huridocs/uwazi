@@ -1,5 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 import backend from 'fetch-mock';
 
@@ -33,9 +32,8 @@ describe('NewTemplate', () => {
     it('should request the thesauris and templates to fit in the state', (done) => {
       NewTemplate.requestState()
       .then((response) => {
-        let state = response.template.uiState.toJS();
-        expect(state.thesauris).toEqual(thesauris);
-        expect(state.templates).toEqual(templates);
+        expect(response.thesauris).toEqual(thesauris);
+        expect(response.templates).toEqual(templates);
         done();
       })
       .catch(done.fail);
@@ -44,7 +42,7 @@ describe('NewTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setThesauri with thesauri passed', () => {
-      instance.setReduxState({template: {uiState: Immutable.fromJS({thesauris: 'thesauris', templates: 'templates'})}});
+      instance.setReduxState({thesauris: 'thesauris', templates: 'templates'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATES', templates: 'templates'});
     });

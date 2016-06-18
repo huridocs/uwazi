@@ -1,6 +1,11 @@
-function validateName() {
+function validateName(templates, id) {
   return {
-    required: (val) => val && val.trim() !== ''
+    required: (val) => val && val.trim() !== '',
+    duplicated: (val) => {
+      return !templates.find((template) => {
+        return template._id !== id && template.name.trim().toLowerCase() === val.trim().toLowerCase();
+      });
+    }
   };
 }
 
@@ -11,10 +16,10 @@ export function validateDuplicatedLabel(property, properties) {
   }, true);
 }
 
-export default function (properties) {
+export default function (properties, templates, id) {
   let validator = {
     '': {},
-    name: validateName()
+    name: validateName(templates, id)
   };
 
   properties.forEach((property, index) => {

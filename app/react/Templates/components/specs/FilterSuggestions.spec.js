@@ -38,7 +38,8 @@ describe('FilterSuggestions', () => {
       filter: true,
       content,
       data: {name: 'Current template', _id: 'template1'},
-      uiState: Immutable.fromJS({thesauris, templates})
+      templates: Immutable.fromJS(templates),
+      thesauris: Immutable.fromJS(thesauris)
     };
 
     component = shallow(<FilterSuggestions {...props}/>);

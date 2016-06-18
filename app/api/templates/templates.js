@@ -4,8 +4,24 @@ import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './util
 import documents from 'api/documents/documents';
 import validateTemplate from 'api/templates/validateTemplate';
 
+let checkDuplicated = (template) => {
+  return request.get(`${dbURL}/_design/templates/_view/all`)
+  .then((response) => {
+    let duplicated = response.json.rows.find((entry) => {
+      let sameEntity = entry.id === template._id;
+      let sameName = entry.value.name.trim().toLowerCase() === template.name.trim().toLowerCase();
+      return sameName && !sameEntity;
+    });
+
+    if (duplicated) {
+      return Promise.reject({json: 'duplicated_entry'});
+    }
+  });
+};
+
 let save = (template) => {
-  return validateTemplate(template)
+  return checkDuplicated(template)
+  .then(() => validateTemplate(template))
   .then(() => request.post(dbURL, template))
   .then((response) => {
     return response.json;

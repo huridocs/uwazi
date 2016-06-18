@@ -33,6 +33,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           connectDragSource: identity,
           isDragging: false,
           uiState: Immutable.fromJS({}),
+          templates: Immutable.fromJS([]),
           formState: {fields: [], errors: {}}
         };
         let sourceProps = {
@@ -42,6 +43,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           connectDragSource: identity,
           isDragging: false,
           uiState: Immutable.fromJS({}),
+          templates: Immutable.fromJS([]),
           formState: {fields: [], errors: {}}
         };
         return <div>
@@ -74,7 +76,8 @@ describe('MetadataProperty', () => {
         formState: {fields: [], errors: {}},
         removeProperty,
         editProperty,
-        uiState: Immutable.fromJS({editingProperty: ''})
+        uiState: Immutable.fromJS({editingProperty: ''}),
+        templates: Immutable.fromJS([])
       };
 
       component = shallow(<MetadataProperty {...props}/>);
@@ -133,6 +136,7 @@ describe('MetadataProperty', () => {
             uiState: Immutable.fromJS({templates: []}),
             formState: {fields: [], errors: {}}
           },
+          templates: Immutable.fromJS([]),
           modals: Immutable.fromJS({})
         };
       });
