@@ -1,0 +1,13 @@
+.admin-content {
+  padding-top: 30px;
+}
+.admin-title {
+  font-size: $f-size-lg;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 30px 0;
+  text-align: center;
+  small {
+    font-size: $f-size-lg;
+  }
+}

@@ -15,6 +15,7 @@ import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import uploads from 'app/Uploads/reducers/reducer';
 import user from 'app/Auth/reducer';
+import users from 'app/Users/reducers/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
 
@@ -34,5 +35,6 @@ export default combineReducers({
   modals,
   uploads,
   user,
+  users,
   search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });
