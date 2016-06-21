@@ -7,11 +7,12 @@
   right: 0;
   top: 60px;
   bottom: 0;
-  border-left: 1px dotted $c-grey;
   padding: 15px;
   transition: all 500ms;
   overflow-y: scroll;
-  background: $c-primary-lighten;
+  border-left: 1px solid $c-grey;
+  box-shadow: $shadow-active;
+  background-color: darken($c-primary-lighten, 2%);
 
   @media (max-width: 767px) {
     max-width: 400px;

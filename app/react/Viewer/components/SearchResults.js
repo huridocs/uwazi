@@ -13,7 +13,6 @@ export class SearchResults extends Component {
                 <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}
                      key={index} onClick={() => this.props.onClick(result._id)}>
                   <div className="item-info">
-                    {/*<span className="item-type item-type-0">Document</span>*/}
                     <div className="item-name">{result.title}</div>
                   </div>
                   <div className="item-actions">

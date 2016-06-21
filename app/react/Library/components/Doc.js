@@ -31,14 +31,11 @@ export class Doc extends Component {
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)}>
         <div className="item-info">
-          {/*<span className="item-type item-type-0">Document</span>*/}
           <ItemName>{title}</ItemName>
         </div>
         <ItemFooter>
-          {/*
           <ItemFooter.Label>{type}</ItemFooter.Label>
           <ItemFooter.Label><UTCToLocal utc={creationDate}/></ItemFooter.Label>
-          */}
           <Link to={documentViewUrl} className="item-shortcut"><i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i></Link>
         </ItemFooter>
       </RowList.Item>
