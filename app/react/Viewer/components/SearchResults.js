@@ -10,11 +10,16 @@ export class SearchResults extends Component {
             }
             return this.props.results.toJS().map((result, index) => {
               return (
-                <li key={index} onClick={() => this.props.onClick(result._id)}>
-                  <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}>
-                    <span className="item-name">{result.title}</span>
+                <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}
+                     key={index} onClick={() => this.props.onClick(result._id)}>
+                  <div className="item-info">
+                    <span className="item-type item-type-0">Document</span>
+                    <div className="item-name">{result.title}</div>
                   </div>
-                </li>
+                  <div className="item-actions">
+                    <div className="item-shortcut"><i className="fa fa-angle-right"></i><span>Select document</span></div>
+                  </div>
+                </div>
               );
             });
           })()}
