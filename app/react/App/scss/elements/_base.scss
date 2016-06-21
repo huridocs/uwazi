@@ -10,14 +10,8 @@ label {
 	font-weight: normal;
 }
 
-dl {
-	margin-bottom: 5px;
-	background: $c-grey-light;
-	padding: 15px;
-}
 dt {
-	font-size: $f-size-sm;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	line-height: 2em;
+  font-weight: normal;
+	font-style: italic;
+  color: $c-grey-dark;
 }

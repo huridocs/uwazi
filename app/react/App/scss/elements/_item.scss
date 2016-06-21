@@ -122,6 +122,21 @@
   font-size: $f-size-sm;
 }
 
+.item-metadata {
+  dl {
+    display: flex;
+    margin: 0;
+    padding: 3px 0;
+    font-size: $f-size-sm;
+  }
+  dt {
+    width: 90px;
+  }
+  dd {
+    width: 160px;
+  }
+}
+
 .item-actions {
 	color: $c-grey-dark;
 	border-top: 1px solid $c-grey-light;
