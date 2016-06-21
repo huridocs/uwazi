@@ -99,9 +99,28 @@
 	}
 }
 
+.item-info {
+  flex: 1;
+}
+
+.item-type {
+  position: relative;
+  top: -2px;
+  padding: 3px 3px 2px 4px;
+  margin-right: 5px;
+  font-size: $f-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $c-white;
+  border-radius: 3px;
+}
+
+.item-type-1 {
+  background-color: $c-primary;
+}
+
 .item-name {
 	display: inline;
-  flex: 1;
 	font-family: $f-special;
 	color: $c-black;
 }

@@ -30,7 +30,10 @@ export class Doc extends Component {
 
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)}>
-        <ItemName>{title}</ItemName>
+        <div className="item-info">
+          <span className="item-type item-type-1">Document</span>
+          <ItemName>{title}</ItemName>
+        </div>
         <ItemFooter>
           {/*
           <ItemFooter.Label>{type}</ItemFooter.Label>
