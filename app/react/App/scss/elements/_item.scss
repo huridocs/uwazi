@@ -15,9 +15,10 @@
 }
 
 .item {
-  display: block;
+  display: flex;
+  flex-direction: column;
 	margin: 0 5px 15px;
-	padding: 15px;
+	padding: 15px 15px 0;
 	background: $c-white;
 	border-radius: 0 !important;
 	border-bottom: 1px solid $c-grey;
@@ -99,6 +100,7 @@
 
 .item-name {
 	display: inline;
+  flex: 1;
 	font-family: $f-special;
 	color: $c-black;
 }
