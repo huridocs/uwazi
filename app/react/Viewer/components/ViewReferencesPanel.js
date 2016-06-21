@@ -59,7 +59,7 @@ export class ViewReferencesPanel extends Component {
                   data-id={reference._id}
                   >
                     <div className="item-info">
-                      <span className="item-type item-type-1">Document</span>
+                      <span className="item-type item-type-0">Document</span>
                       <div className="item-name">
                         <Link to={'/document/' + reference.targetDocument} className="item-name" onClick={e => e.stopPropagation()}>
                           {this.documentTitle(reference.targetDocument, referencedDocuments)}

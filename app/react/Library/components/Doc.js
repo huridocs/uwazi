@@ -31,7 +31,7 @@ export class Doc extends Component {
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)}>
         <div className="item-info">
-          <span className="item-type item-type-1">Document</span>
+          <span className="item-type item-type-0">Document</span>
           <ItemName>{title}</ItemName>
         </div>
         <ItemFooter>
