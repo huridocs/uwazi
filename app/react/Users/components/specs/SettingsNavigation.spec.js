@@ -30,7 +30,7 @@ describe('SettingsNavigation', () => {
     it('should set the correct section', () => {
       spyOn(actions, 'set');
       component.find('.list-group').childAt(1).simulate('click');
-      expect(props.setSection).toHaveBeenCalledWith('users/section', 'collection');
+      expect(props.setSection).toHaveBeenCalledWith('collection');
     });
   });
 });

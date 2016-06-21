@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux';
 import {reducer as reduxForm} from 'redux-form';
+import createReducer from 'app/BasicReducer';
 
 import templates from 'app/Templates/reducers/templatesReducer';
 import template from 'app/Templates/reducers/reducer';
@@ -36,5 +37,6 @@ export default combineReducers({
   uploads,
   user,
   users,
+  settings: createReducer('settings', {}),
   search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });

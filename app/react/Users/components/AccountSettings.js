@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {actions} from 'app/BasicReducer';
 
 import UsersAPI from '../UsersAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
@@ -33,9 +34,11 @@ export class AccountSettings extends Component {
 
   updateEmail(e) {
     e.preventDefault();
-    UsersAPI.save(Object.assign({}, this.props.user, {email: this.state.email}))
-    .then(() => {
+    let userData = Object.assign({}, this.props.user, {email: this.state.email});
+    UsersAPI.save(userData)
+    .then((result) => {
       this.props.notify('Email updated', 'success');
+      this.props.setUser(Object.assign(userData, {_rev: result.rev}));
     });
   }
 
@@ -49,8 +52,9 @@ export class AccountSettings extends Component {
     }
 
     UsersAPI.save(Object.assign({}, this.props.user, {password: this.state.password}))
-    .then(() => {
+    .then((result) => {
       this.props.notify('Password updated', 'success');
+      this.props.setUser(Object.assign(this.props.user, {_rev: result.rev}));
     });
     this.setState({password: '', repeatPassword: ''});
   }
@@ -116,7 +120,8 @@ export class AccountSettings extends Component {
 
 AccountSettings.propTypes = {
   user: PropTypes.object,
-  notify: PropTypes.func
+  notify: PropTypes.func,
+  setUser: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -124,7 +129,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({notify}, dispatch);
+  return bindActionCreators({setUser: actions.set.bind(null, 'users/user'), notify}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);

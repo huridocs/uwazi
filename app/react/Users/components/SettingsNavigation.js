@@ -6,7 +6,7 @@ import {actions} from 'app/BasicReducer';
 export class SettingsNavigation extends Component {
 
   handleClick(section) {
-    this.props.setSection('users/section', section);
+    this.props.setSection(section);
   }
 
   render() {
@@ -38,7 +38,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setSection: actions.set}, dispatch);
+  return bindActionCreators({setSection: actions.set.bind(null, 'users/section')}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsNavigation);

@@ -7,21 +7,18 @@ import SettingsNavigation from './components/SettingsNavigation';
 import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
 import UsersAPI from './UsersAPI';
-import SettingsAPI from './SettingsAPI';
 import {actions} from 'app/BasicReducer';
 
 export class Settings extends RouteHandler {
 
   static requestState() {
     return Promise.all([
-      UsersAPI.currentUser(),
-      SettingsAPI.get()
+      UsersAPI.currentUser()
     ])
-    .then(([user, settings]) => {
+    .then(([user]) => {
       return {
         users: {
-          user,
-          settings
+          user
         }
       };
     });

@@ -8,8 +8,8 @@ import './scss/fixes.scss';
 
 import Helmet from 'react-helmet';
 import Notifications from 'app/Notifications';
-import Menu from './Menu.js';
-import {Link} from 'react-router';
+import Menu from './Menu';
+import SiteName from './SiteName';
 
 class App extends Component {
 
@@ -58,7 +58,7 @@ class App extends Component {
         <Notifications />
         <div className="content">
           <nav>
-            <h1><Link to="/">Collection name</Link></h1>
+            <h1><SiteName/></h1>
             <button onClick={this.toggleMenu.bind(this)} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
           </nav>
           <header>
@@ -66,7 +66,7 @@ class App extends Component {
               <div className="row">
                 <i className="fa fa-filter"></i>
                 <i className="fa fa-bars"></i>
-                <h1 className="col-sm-3"><Link to="/">Collection name</Link></h1>
+                <h1 className="col-sm-3"><SiteName/></h1>
                 <div className="col-sm-5">
                   {this.renderTools()}
                 </div>

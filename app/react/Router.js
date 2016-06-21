@@ -54,7 +54,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
       </Provider>
     );
   } catch (e) {
-    // console.log(e);
+    console.trace(e);
   }
 
   const head = Helmet.rewind();
@@ -105,17 +105,22 @@ function handleRoute(res, renderProps, req) {
     cookie = serialize(req.cookies);
   }
 
+  console.log('here');
   if (routeProps.requestState) {
     api.authorize(cookie);
     return Promise.all([
       routeProps.requestState(renderProps.params),
-      api.get('user')
+      api.get('user'),
+      api.get('settings')
     ])
-    .then(([initialData, user]) => {
+    .then(([initialData, user, settings]) => {
       initialData.user = user.json;
+      initialData.settings = settings.json;
       renderPage(initialData, true);
     })
-    .catch(console.log);
+    .catch((error) => {
+      console.trace(error);
+    });
   }
 
   renderPage();
