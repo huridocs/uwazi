@@ -1,7 +1,7 @@
 $c-white: 			      #FFFFFF;
 $c-grey-lighten:      #FDFDFD;
-$c-grey-light:        #F5F5F5;
-$c-grey: 				      #D4D7DB;
+$c-grey-light:        #EEEEEE;
+$c-grey: 				      #CCCCCC;
 $c-grey-dark: 	      #616E70;
 $c-black: 			      #222222;
 
@@ -40,3 +40,7 @@ $c-danger:            $c-type-1;
 $c-danger-light:      lighten($c-type-1, 30%);
 $c-warning:           $c-type-14;
 $c-warning-light:     lighten($c-type-14, 30%);
+
+$c-shadow: 			      transparentize($c-black, .9);
+$c-shadow-dark: 			transparentize($c-black, .8);
+$c-shadow-darker: 		transparentize($c-black, .5);

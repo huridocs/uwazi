@@ -5,7 +5,7 @@ import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
 
 import Login from 'app/Users/Login';
-import MyAccount from 'app/Users/MyAccount';
+import Settings from 'app/Users/Settings';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Uploads from 'app/Uploads/UploadsRoute';
@@ -26,7 +26,7 @@ import Library from 'app/Library/Library';
 export default (
   <Route path='/' component={App}>
     <IndexRoute component={Library} />
-    <Route path='my_account' component={MyAccount} />
+    <Route path='settings' component={Settings} />
     <Route path='uploads' component={Uploads} />
     <Route path='metadata' component={Metadata} />
     <Route path='templates/new' component={NewTemplate} />

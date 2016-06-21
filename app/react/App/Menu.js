@@ -17,7 +17,7 @@ class Menu extends Component {
           <li><Link to='/uploads' className="btn"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
         </NeedAuthorization>
         <NeedAuthorization>
-          <li><Link to='/my_account' className="btn"><i className="fa fa-user"></i>{user.username}</Link></li>
+          <li><Link to='/settings' className="btn"><i className="fa fa-cog"></i>{user.username}</Link></li>
         </NeedAuthorization>
         {(() => {
           if (!user._id) {

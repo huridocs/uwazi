@@ -18,7 +18,7 @@ export class TemplateCreator extends Component {
 
   render() {
     return (
-      <div>
+      <div className="metadata">
         <main className="col-sm-9">
             <MetadataTemplate />
         </main>

@@ -4,24 +4,28 @@
 	border-bottom: 0;
 }
 
-.panel>.list-group {
-	padding: 15px 15px;
-	background: $c-grey-light;
+.panel > .list-group .list-group-item {
+    border-width: 1px 0 1px 3px;
+    border-color: $c-grey-light;
+    border-left-color: transparent;
+    outline: none;
+    box-shadow: none;
 
-	.list-group-item {
-		margin: 15px 0;
-		line-height: 22px;
-		border: 0;
-		box-shadow: $shadow;
+    &.active:hover,
+    &.active:focus {
+      background: $c-grey-lighten;
+    }
 
-		&:first-child {
-			margin-top: 0;
-		}
-		&:last-child {
-			margin-bottom: 0;
-		}
-	}
+    &.active,
+    &.active:hover,
+    &.active:focus {
+      color: $c-black;
+      background-color: $c-white;
+      border-left-color: $c-primary;
+      cursor: default;
+    }
 }
+
 
 .panel-footer {
 	text-align: center;
