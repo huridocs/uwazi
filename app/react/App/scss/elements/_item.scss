@@ -6,18 +6,19 @@
 	@include desktop {
 		padding: 0 11px;
     margin: auto;
-    max-width: 960px;
-		li {
-			position: static;
-			padding: 0 4px;
-		}
+    max-width: 930px;
 	}
+
+  .document-viewer & {
+    justify-content: center;
+    margin: 0 auto;
+  }
 }
 
 .item {
   display: flex;
   flex-direction: column;
-	margin: 0 5px 15px;
+	margin: 0 0 15px;
 	padding: 15px 15px 0;
 	background: $c-white;
 	border-radius: 3px;
@@ -27,11 +28,15 @@
 	top: 0;
 	left: 0;
 	width: 100%;
-  max-width: 300px;
+  max-width: 290px;
   min-height: 120px;
 	opacity: 1;
 	transition: all 300ms;
 	zoom: 1;
+
+  @include desktop {
+    margin: 0 5px 15px;
+  }
 
 	&:before {
 		content: " ";
@@ -186,13 +191,14 @@
 /* sort-by controller */
 
 .sort-by {
+  display: table;
+  width: 100%;
+  max-width: 930px;
+  padding: 0 15px;
+  margin: auto;
 	text-align: center;
-	padding: 0 15px;
 	@include desktop {
-		display: block;
-    margin: auto;
-    max-width: 960px;
-		text-align: right;
+    text-align: right;
 		#documents-counter {
 			text-align: left;
 		}
