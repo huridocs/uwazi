@@ -66,8 +66,8 @@ export class ViewReferencesPanel extends Component {
                         </Link>
                         {(() => {
                           if (reference.targetRange) {
-                            return <div className="item-snippets">
-                                    &gt; {reference.targetRange.text}
+                            return <div className="item-snippet">
+                                    {reference.targetRange.text}
                                    </div>;
                           }
                         })()}

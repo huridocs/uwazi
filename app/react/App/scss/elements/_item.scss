@@ -32,31 +32,7 @@
 	opacity: 1;
 	transition: all 300ms;
 	zoom: 1;
-	.item-snippets {
-		margin-top: 15px;
-		font-style: italic;
-		position: relative;
-		.fa {
-			position: absolute;
-			left: 0;
-			top: 1px;
-		}
-		b {
-			background: #FFFFC5;
-			color: orange;
-			font-weight: normal;
-			padding: 1px 2px;
-		}
-		span {
-			color: green;
-			font-style: normal;
-			text-transform: uppercase;
-			letter-spacing: 0.1em;
-			font-size: $f-size-sm;
-			margin: 0 0 3px;
-			display: block;
-		}
-	}
+
 	&:before {
 		content: " ";
 		display: block;
@@ -69,7 +45,6 @@
 		box-shadow: -3px 3px 9px -3px $c-grey;
 		transition: all 300ms;
 	}
-
 
 	&:hover{
 		cursor: pointer;
@@ -139,6 +114,12 @@
 	display: inline;
 	font-family: $f-special;
 	color: $c-black;
+}
+
+.item-snippet {
+  margin: 15px 0;
+  font-family: monospace;
+  font-size: $f-size-sm;
 }
 
 .item-actions {
