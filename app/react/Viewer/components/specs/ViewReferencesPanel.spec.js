@@ -47,7 +47,7 @@ describe('ViewReferencesPanel', () => {
   describe('when mouseenter on a reference', () => {
     it('should should highlightReference', () => {
       render();
-      component.find('li').last().simulate('mouseenter');
+      component.find('.item').last().simulate('mouseenter');
       expect(props.highlightReference).toHaveBeenCalledWith('ref2');
     });
   });
@@ -55,7 +55,7 @@ describe('ViewReferencesPanel', () => {
   describe('when mouseleave a reference', () => {
     it('should unhighlightReference', () => {
       render();
-      component.find('li').last().simulate('mouseleave');
+      component.find('.item').last().simulate('mouseleave');
       expect(props.highlightReference).toHaveBeenCalledWith(null);
     });
   });
@@ -63,7 +63,7 @@ describe('ViewReferencesPanel', () => {
   describe('when click a reference', () => {
     it('should activate it', () => {
       render();
-      component.find('li').last().simulate('click');
+      component.find('.item').last().simulate('click');
       expect(props.activateReference).toHaveBeenCalledWith('ref2');
     });
   });

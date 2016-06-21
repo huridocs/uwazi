@@ -22,7 +22,7 @@ let ProgressBar = ({progress}) => {
   return (
     <div>
       <span className="label label-info">
-        <i className={icon}></i>
+        <i className={icon}></i>&nbsp;
         <span>{message}</span>
       </span>
       <div className="progress">

@@ -49,7 +49,7 @@ export class ThesauriForm extends Component {
                 <input id="thesauriName" className="form-control" type="text" />
               </Field>
               {(() => {
-                if (this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
                   return <div className="validation-error">
                             <i className="fa fa-exclamation-triangle"></i>
                             &nbsp;

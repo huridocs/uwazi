@@ -94,7 +94,7 @@ describe('UploadDoc', () => {
         progress: 0
       };
       render();
-      expect(component.find(RowList.Item).props().status).toBe('info');
+      expect(component.find(RowList.Item).props().status).toBe('processing');
       expect(component.find(ItemFooter.ProgressBar).props().progress).toBe(0);
     });
   });
@@ -105,7 +105,7 @@ describe('UploadDoc', () => {
         doc: Immutable.fromJS({title: 'doc title', uploaded: true})
       };
       render();
-      expect(component.find(RowList.Item).props().status).toBe('info');
+      expect(component.find(RowList.Item).props().status).toBe('processing');
       expect(component.find(ItemFooter.ProgressBar).props().progress).toBe(100);
     });
   });

@@ -18,7 +18,7 @@ describe('SearchResults', () => {
 
   let render = () => {
     component = shallow(<SearchResults {...props}/>);
-    results = component.find('li');
+    results = component.find('.item-info');
   };
 
   it('should render a list with all the results', () => {
@@ -30,7 +30,7 @@ describe('SearchResults', () => {
   describe('onClick', () => {
     it('should execute props.onClick passing the id', () => {
       render();
-      results.last().simulate('click');
+      component.find('.item').last().simulate('click');
       expect(props.onClick).toHaveBeenCalledWith('id2');
     });
   });
@@ -49,7 +49,7 @@ describe('SearchResults', () => {
       props.selected = 'id1';
       render();
 
-      expect(results.first().find('.is-selected').length).toBe(1);
+      expect(component.find('.item').first().hasClass('is-selected')).toBe(true);
     });
   });
 });

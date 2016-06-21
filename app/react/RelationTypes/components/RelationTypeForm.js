@@ -49,7 +49,7 @@ export class RelationTypeForm extends Component {
                 </Field>
               </FormGroup>
               {(() => {
-                if (this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
                   return <div className="validation-error">
                             <i className="fa fa-exclamation-triangle"></i>
                             &nbsp;

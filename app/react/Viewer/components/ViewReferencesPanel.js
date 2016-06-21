@@ -79,8 +79,9 @@ export class ViewReferencesPanel extends Component {
                       </dl>
                     </div>
                     <div className="item-actions">
-                      <Link to={'/document/' + reference.targetDocument}
-                        onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i></Link>
+                      <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                        <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+                      </Link>
                     </div>
                 </div>
                 );

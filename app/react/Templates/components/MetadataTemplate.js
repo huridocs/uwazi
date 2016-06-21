@@ -35,7 +35,7 @@ export class MetadataTemplate extends Component {
                     <input placeholder="Template name" className="form-control"/>
                   </FormField>
                   {(() => {
-                    if (this.props.formState.fields.name && this.props.formState.fields.name.errors.duplicated) {
+                    if (this.props.formState.dirty && this.props.formState.fields.name && this.props.formState.fields.name.errors.duplicated) {
                       return <div className="validation-error">
                                 <i className="fa fa-exclamation-triangle"></i>
                                 &nbsp;
