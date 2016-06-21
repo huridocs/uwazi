@@ -4,13 +4,39 @@ $c-grey-light:        #F5F5F5;
 $c-grey: 				      #D4D7DB;
 $c-grey-dark: 	      #616E70;
 $c-black: 			      #222222;
-$c-primary-dark:      #09436F;
-$c-primary:           #337ab7;
-$c-primary-light:     #B6D8FB;
-$c-primary-lighten:   #F6F9FC;
-$c-secondary-dark:    #BE7F00;
+
+$c-primary:           #337AB7;
+$c-primary-lighten:   lighten($c-primary, 50%);
+$c-primary-light:     lighten($c-primary, 35%);
+$c-primary-dark:      darken($c-primary, 20%);
+
 $c-secondary:         #FFCC66;
-$c-secondary-light:   #FFD98B;
-$c-secondary-lighten: #FFEEBB;
-$c-success:           #5CB85C;
-$c-success-light:     #c2f2c2;
+$c-secondary-lighten: lighten($c-secondary, 20%);
+$c-secondary-light:   lighten($c-secondary, 10%);
+$c-secondary-dark:    darken($c-secondary, 40%);
+
+$c-type-1:  #F44336;
+$c-type-2:  #E91E63;
+$c-type-3:  #9C27B0;
+$c-type-4:  #673AB7;
+$c-type-5:  #3F51B5;
+$c-type-6:  #2196F3;
+$c-type-7:  #00BCD4;
+$c-type-8:  #009688;
+$c-type-9:  #4CAF50;
+$c-type-10: #8BC34A;
+$c-type-11: #CDDC39;
+$c-type-12: #FFEB3B;
+$c-type-13: #FFC107;
+$c-type-14: #FF9800;
+$c-type-15: #FF5722;
+$c-type-16: #795548;
+$c-type-17: #9E9E9E;
+$c-type-18: #607D8B;
+
+$c-success:           $c-type-10;
+$c-success-light:     lighten($c-type-10, 30%);
+$c-danger:            $c-type-1;
+$c-danger-light:      lighten($c-type-1, 30%);
+$c-warning:           $c-type-14;
+$c-warning-light:     lighten($c-type-14, 30%);

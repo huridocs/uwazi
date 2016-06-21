@@ -35,7 +35,7 @@ export class UploadDoc extends Component {
     let itsProcessing = doc.uploaded && typeof doc.processed === 'undefined';
 
     if (itsProcessing) {
-      status = 'info';
+      status = 'processing';
       message = 'Processing...';
       modal = '';
       progress = 100;
@@ -62,7 +62,7 @@ export class UploadDoc extends Component {
     let itsUploading = typeof this.props.progress === 'number';
 
     if (itsUploading) {
-      status = 'info';
+      status = 'processing';
       modal = '';
       progress = this.props.progress;
     }
@@ -74,7 +74,9 @@ export class UploadDoc extends Component {
 
     return (
       <RowList.Item status={status} active={active} onClick={this.editDocument.bind(this, doc, active)}>
-      <ItemName>{doc.title}</ItemName>
+      <div className="item-info">
+        <ItemName>{doc.title}</ItemName>
+      </div>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
         {(() => {
           if (itsUploading || itsProcessing) {
@@ -83,13 +85,13 @@ export class UploadDoc extends Component {
           if (doc.processed) {
             return <ItemFooter.Label status={status}>
                     {message}
-                    <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-                      <i className="fa fa-file-o"></i>
-                    </Link>
                    </ItemFooter.Label>;
           }
           return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
         })()}
+        <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+        </Link>
       </ItemFooter>
     </RowList.Item>
     );

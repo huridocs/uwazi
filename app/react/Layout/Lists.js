@@ -9,7 +9,7 @@ let ItemName = ({children}) => {
 };
 
 let ItemFooter = ({children, onClick}) => {
-  return <div className="item-metadata" onClick={onClick}>{children}</div>;
+  return <div className="item-actions" onClick={onClick}>{children}</div>;
 };
 
 let ProgressBar = ({progress}) => {
@@ -55,7 +55,7 @@ ItemFooter.Label = ItemLabel;
 ItemFooter.ProgressBar = ProgressBar;
 
 let RowList = ({children}) => {
-  return <div className="row"><div className="item-group">{children}</div></div>;
+  return <div className="item-group">{children}</div>;
 };
 
 let RowListItem = ({children, status, onClick, active}) => {
@@ -68,11 +68,9 @@ let RowListItem = ({children, status, onClick, active}) => {
   }
 
   return (
-    <li className={'col-sm-4'} onClick={onClick}>
-      <div className={'item item-status item-' + (status || 'default') + ' ' + activeClass}>
-        {children}
-      </div>
-    </li>
+    <div className={'item item-status item-' + (status || 'default') + ' ' + activeClass} onClick={onClick}>
+      {children}
+    </div>
   );
 };
 RowList.Item = RowListItem;

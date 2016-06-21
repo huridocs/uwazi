@@ -7,11 +7,12 @@
   right: 0;
   top: 60px;
   bottom: 0;
-  border-left: 1px dotted $c-grey;
   padding: 15px;
   transition: all 500ms;
   overflow-y: scroll;
-  background: $c-primary-lighten;
+  border-left: 1px solid $c-grey;
+  box-shadow: $shadow-active;
+  background-color: darken($c-primary-lighten, 2%);
 
   @media (max-width: 767px) {
     max-width: 400px;
@@ -33,44 +34,40 @@
 
   .item-group {
     padding: 15px 0px;
-    margin: 0 -2px 15px;
-    height: 100%;
+    margin: 0 -5px;
   }
   .item {
-    height: auto;
-    margin-bottom: 5px;
-    padding: 15px 15px 0 15px;
-    border-color: $c-white;
-    position: relative;
+    border-left: 3px solid $c-white;
+    transition: all 0ms;
+    max-width: 100%;
+
     &:after {
       content: '\f00c';
       font-family: FontAwesome;
       position: absolute;
-      top: 30%;
-      left: 42%;
+      top: 60%;
+      left: 50%;
       font-size: 40px;
       color: $c-success;
       opacity: 0;
-      transition: 500ms all;
+      transform: translateX(-50%) translateY(-50%);
+      transition: 225ms all;
     }
+
     &.is-selected {
       background: $c-primary-lighten;
       color: $c-primary-light;
-      border: 1px solid $c-primary-light;
+      border-color: transparent;
+      box-shadow: inset 0 0 0 1px $c-primary-light;
+
       &:after {
         opacity: 1;
-        top: -5px;
+        top: 50%;
       }
+
       &:before {
         display: none;
       }
-    }
-    .item-name {
-      font-size: $f-size;
-    }
-    & {
-      border-left: 3px solid $c-white;
-      transition: all 0ms;
     }
   }
 }

@@ -51,31 +51,38 @@ export class ViewReferencesPanel extends Component {
                 itemClass = 'relationship-active';
               }
               return (
-                <li key={index}
+                <div key={index}
                   onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
                   onMouseLeave={this.props.highlightReference.bind(null, null)}
                   onClick={this.props.activateReference.bind(null, reference._id)}
                   className={`item ${itemClass}`}
                   data-id={reference._id}
                   >
-                    <div className="item-name">
-                      <Link to={'/document/' + reference.targetDocument} className="item-name" onClick={e => e.stopPropagation()}>
-                        {this.documentTitle(reference.targetDocument, referencedDocuments)}
-                      </Link>
-                      {(() => {
-                        if (reference.targetRange) {
-                          return <div className="item-snippets">
-                                  &gt; {reference.targetRange.text}
-                                 </div>;
-                        }
-                      })()}
+                    <div className="item-info">
+                      <div className="item-name">
+                        <Link to={'/document/' + reference.targetDocument} className="item-name" onClick={e => e.stopPropagation()}>
+                          {this.documentTitle(reference.targetDocument, referencedDocuments)}
+                        </Link>
+                        {(() => {
+                          if (reference.targetRange) {
+                            return <div className="item-snippet">
+                                    {reference.targetRange.text}
+                                   </div>;
+                          }
+                        })()}
+                      </div>
                     </div>
                     <div className="item-metadata">
-                      <span className="label label-default">{this.relationType(reference.relationType, relationTypes)}</span>
-                      <Link to={'/document/' + reference.targetDocument}
-                        onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
+                      <dl>
+                        <dt>Connection type</dt>
+                        <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
+                      </dl>
                     </div>
-                </li>
+                    <div className="item-actions">
+                      <Link to={'/document/' + reference.targetDocument}
+                        onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i></Link>
+                    </div>
+                </div>
                 );
             });
           })()}
