@@ -36,6 +36,9 @@
     margin: 0 -5px;
   }
   .item {
+    border-left: 3px solid $c-white;
+    transition: all 0ms;
+    max-width: 100%;
     &:after {
       content: '\f00c';
       font-family: FontAwesome;
@@ -58,13 +61,6 @@
       &:before {
         display: none;
       }
-    }
-    .item-name {
-      font-size: $f-size;
-    }
-    & {
-      border-left: 3px solid $c-white;
-      transition: all 0ms;
     }
   }
 }
