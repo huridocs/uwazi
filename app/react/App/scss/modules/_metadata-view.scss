@@ -1,4 +1,22 @@
 aside {
+  border-left: 1px solid $c-grey;
+  .view {
+    dl {
+      padding: 15px;
+      margin: 0 -15px;
+      border-top: 1px solid $c-grey;
+    }
+    dt {
+      font-size: $f-size-lg;
+      font-style: normal;
+      font-family: $f-special;
+      color: $c-black;
+      margin-bottom: 5px;
+    }
+    dd {
+      margin: 0;
+    }
+  }
   .btn-block {
     padding: 10px 15px;
     margin: 15px 0;
