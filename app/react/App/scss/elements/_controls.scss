@@ -65,6 +65,19 @@
   }
 }
 
+.validation-error {
+  color: #ED353D;
+  position: relative;
+  top: 3px;
+  height: 0;
+
+  &-centered {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
 .btn {
   a {
     color: $c-grey-dark;

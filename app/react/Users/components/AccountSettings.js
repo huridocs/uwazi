@@ -60,14 +60,14 @@ export class AccountSettings extends Component {
   }
 
   render() {
-    return <div>
+    return <div className="account-settings">
               <div className="panel panel-default">
                 <div className="panel-heading">Email address</div>
                 <div className="panel-body">
                   <form onSubmit={this.updateEmail.bind(this)}>
                     <div className="form-group">
                       <label htmlFor="collection_name">Email</label>
-                      <input type="text" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
+                      <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
                     </div>
                     <button type="submit" className="btn btn-success">Update</button>
                   </form>
@@ -97,7 +97,7 @@ export class AccountSettings extends Component {
                     </div>
                     {(() => {
                       if (this.state.passwordError) {
-                        return <div className="validation-error">
+                        return <div className="validation-error validation-error-centered">
                                   <i className="fa fa-exclamation-triangle"></i>
                                   &nbsp;
                                   Both fields are required and should match.
