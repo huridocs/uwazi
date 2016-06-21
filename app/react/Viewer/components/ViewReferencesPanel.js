@@ -51,7 +51,7 @@ export class ViewReferencesPanel extends Component {
                 itemClass = 'relationship-active';
               }
               return (
-                <li key={index}
+                <div key={index}
                   onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
                   onMouseLeave={this.props.highlightReference.bind(null, null)}
                   onClick={this.props.activateReference.bind(null, reference._id)}
@@ -75,7 +75,7 @@ export class ViewReferencesPanel extends Component {
                       <Link to={'/document/' + reference.targetDocument}
                         onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i></Link>
                     </div>
-                </li>
+                </div>
                 );
             });
           })()}
