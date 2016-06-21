@@ -2,16 +2,68 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import UsersAPI from '../UsersAPI';
+import {notify} from 'app/Notifications/actions/notificationsActions';
+
+
 export class AccountSettings extends Component {
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = {email: props.user.email, password: '', repeatPassword: ''};
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({email: props.user.email});
+  }
+
+  emailChange(e) {
+    this.setState({email: e.target.value});
+  }
+
+  passwordChange(e) {
+    this.setState({password: e.target.value});
+    this.setState({passwordError: false});
+  }
+
+  repeatPasswordChange(e) {
+    this.setState({repeatPassword: e.target.value});
+    this.setState({passwordError: false});
+  }
+
+  updateEmail(e) {
+    e.preventDefault();
+    UsersAPI.save(Object.assign({}, this.props.user, {email: this.state.email}))
+    .then(() => {
+      this.props.notify('Email updated', 'success');
+    });
+  }
+
+  updatePassword(e) {
+    e.preventDefault();
+    let passwordsDontMatch = this.state.password !== this.state.repeatPassword;
+    let emptyPassword = this.state.password.trim() === '';
+    if (emptyPassword || passwordsDontMatch) {
+      this.setState({passwordError: true});
+      return;
+    }
+
+    UsersAPI.save(Object.assign({}, this.props.user, {password: this.state.password}))
+    .then(() => {
+      this.props.notify('Password updated', 'success');
+    });
+    this.setState({password: '', repeatPassword: ''});
+  }
+
   render() {
     return <div>
               <div className="panel panel-default">
                 <div className="panel-heading">Email address</div>
                 <div className="panel-body">
-                  <form>
+                  <form onSubmit={this.updateEmail.bind(this)}>
                     <div className="form-group">
                       <label htmlFor="collection_name">Email</label>
-                      <input type="text" className="form-control"/>
+                      <input type="text" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
                     </div>
                     <button type="submit" className="btn btn-success">Update</button>
                   </form>
@@ -20,15 +72,34 @@ export class AccountSettings extends Component {
               <div className="panel panel-default">
                 <div className="panel-heading">Change password</div>
                 <div className="panel-body">
-                  <form>
-                    <div className="form-group">
+                  <form onSubmit={this.updatePassword.bind(this)}>
+                    <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
                       <label htmlFor="password">New password</label>
-                      <input type="text" name="password" id="password" placeholder="New password" className="form-control"/>
+                      <input
+                        type="password"
+                        onChange={this.passwordChange.bind(this)}
+                        value={this.state.password}
+                        id="password"
+                        className="form-control"/>
                     </div>
-                    <div className="form-group">
-                      <label htmlFor="password">Confirm new password</label>
-                      <input type="text" name="password" id="password" placeholder="New password" className="form-control"/>
+                    <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
+                      <label htmlFor="repeatPassword">Confirm new password</label>
+                      <input
+                        type="password"
+                        onChange={this.repeatPasswordChange.bind(this)}
+                        value={this.state.repeatPassword}
+                        id="repeatPassword"
+                        className="form-control"/>
                     </div>
+                    {(() => {
+                      if (this.state.passwordError) {
+                        return <div className="validation-error">
+                                  <i className="fa fa-exclamation-triangle"></i>
+                                  &nbsp;
+                                  Both fields are required and should match.
+                              </div>;
+                      }
+                    })()}
                     <button type="submit" className="btn btn-success">Update</button>
                   </form>
                 </div>
@@ -36,7 +107,7 @@ export class AccountSettings extends Component {
               <div className="panel panel-default">
                 <div className="panel-heading">Close admin session</div>
                 <div className="panel-body">
-                  <button className="btn btn-danger"><i className="fa fa-sign-out"></i><span> Logout</span></button>
+                  <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> Logout</span></a>
                 </div>
               </div>
             </div>;
@@ -44,7 +115,16 @@ export class AccountSettings extends Component {
 }
 
 AccountSettings.propTypes = {
+  user: PropTypes.object,
+  notify: PropTypes.func
 };
 
+export function mapStateToProps(state) {
+  return {user: state.users.user.toJS()};
+}
 
-export default connect()(AccountSettings);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({notify}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);
