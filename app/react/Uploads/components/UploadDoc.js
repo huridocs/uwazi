@@ -75,7 +75,7 @@ export class UploadDoc extends Component {
     return (
       <RowList.Item status={status} active={active} onClick={this.editDocument.bind(this, doc, active)}>
       <div className="item-info">
-        <span className="item-type item-type-0">Document</span>
+        {/*<span className="item-type item-type-0">Document</span>*/}
         <ItemName>{doc.title}</ItemName>
       </div>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
