@@ -35,7 +35,7 @@ export class UploadDoc extends Component {
     let itsProcessing = doc.uploaded && typeof doc.processed === 'undefined';
 
     if (itsProcessing) {
-      status = 'info';
+      status = 'processing';
       message = 'Processing...';
       modal = '';
       progress = 100;
@@ -62,7 +62,7 @@ export class UploadDoc extends Component {
     let itsUploading = typeof this.props.progress === 'number';
 
     if (itsUploading) {
-      status = 'info';
+      status = 'processing';
       modal = '';
       progress = this.props.progress;
     }
@@ -74,7 +74,10 @@ export class UploadDoc extends Component {
 
     return (
       <RowList.Item status={status} active={active} onClick={this.editDocument.bind(this, doc, active)}>
-      <ItemName>{doc.title}</ItemName>
+      <div className="item-info">
+        <span className="item-type item-type-1">Document</span>
+        <ItemName>{doc.title}</ItemName>
+      </div>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
         {(() => {
           if (itsUploading || itsProcessing) {
