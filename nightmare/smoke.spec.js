@@ -12,8 +12,8 @@ describe('Smoke test,', () => {
   };
 
   let isElementVisible = (selector) => {
-    let element = document.querySelector(selector);
-    let rect = element.getBoundingClientRect();
+    let rect = document.querySelector(selector).getBoundingClientRect();
+
     return (
         rect.top >= 0 &&
         rect.left >= 0 &&
