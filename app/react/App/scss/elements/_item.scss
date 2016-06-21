@@ -20,7 +20,7 @@
 	margin: 0 5px 15px;
 	padding: 15px 15px 0;
 	background: $c-white;
-	border-radius: 0 !important;
+	border-radius: 3px;
 	border-bottom: 1px solid $c-grey;
 	box-shadow: $shadow;
 	position: relative;
@@ -64,7 +64,8 @@
 		top: 0;
 		right: 0;
 		border: 7px solid;
-		border-color: $c-grey-light $c-grey-light $c-white $c-white;
+		border-color: $c-primary-lighten $c-primary-lighten $c-white $c-white;
+    border-bottom-left-radius: 3px;
 		box-shadow: -3px 3px 9px -3px $c-grey;
 		transition: all 300ms;
 	}
