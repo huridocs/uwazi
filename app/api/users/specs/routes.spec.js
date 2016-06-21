@@ -36,7 +36,7 @@ describe('users routes', () => {
       });
 
       spyOn(res, 'json').and.callFake((result) => {
-        expect(result).toBe('');
+        expect(result).toBe('ok');
 
         fetch(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
         .then(response => response.json())
