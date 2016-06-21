@@ -15,7 +15,7 @@
 
 .item {
 	margin: 0 0 15px;
-	padding: 25px;
+	padding: 15px;
 	background: $c-white;
 	border-radius: 0 !important;
 	border-bottom: 1px solid $c-grey;
@@ -83,11 +83,13 @@
 	}
 
 	.label {
+    float: left;
 		margin-right: 15px;
 		font-size: $f-size-sm;
 		font-weight: normal;
 		margin-right: 5px;
 		display: inline-block;
+    line-height: 30px;
 		.fa {
 			margin-left: 0;
 		}
@@ -99,48 +101,31 @@
 	font-family: $f-special;
 	color: $c-black;
 }
-.item-metadata {
+
+.item-actions {
 	color: $c-grey-dark;
-	font-size: $f-size-sm;
 	border-top: 1px solid $c-grey-light;
-	position: relative;
-	padding: 10px 0 0;
-	z-index: 2;
-
-	@include desktop {
-		position: absolute;
-		width: 100%;
-		left: 0;
-		bottom: 0;
-		padding: 15px 25px;
-	}
-	aside & {
-		position: relative;
-		padding: 15px 0;
-		margin-top: 15px;
-	}
-
-	.fa {
-		margin: 0 6px;
-	}
+	padding: 0 15px;
+  margin: 15px -15px 0;
+  text-align: right;
 }
+
 .item-shortcut {
-	position: absolute;
-	top: 50%;
-	right: 10px;
-	transform: translateY(-50%);
-	display: block;
-	width: 32px;
-	height: 32px;
-	line-height: 30px;
-	text-align: center;
-	border-radius: 50%;
-	border: 1px solid $c-grey-light;
-	background: $c-white;
-	&:hover {
-		background-color: $c-grey-dark;
-		color: $c-white;
+	display: inline-block;
+  line-height: 30px;
+	color: $c-grey-dark;
+
+  &:hover,
+  &:focus,
+  &:active {
+		color: $c-black;
+    text-decoration: none;
 	}
+
+  span {
+    margin: 0 5px;
+    font-size: $f-size-sm;
+  }
 }
 
 .item-group-load-more {

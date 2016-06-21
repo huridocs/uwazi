@@ -9,7 +9,7 @@ let ItemName = ({children}) => {
 };
 
 let ItemFooter = ({children, onClick}) => {
-  return <div className="item-metadata" onClick={onClick}>{children}</div>;
+  return <div className="item-actions" onClick={onClick}>{children}</div>;
 };
 
 let ProgressBar = ({progress}) => {

@@ -32,9 +32,11 @@ export class Doc extends Component {
       <RowList.Item active={active} onClick={this.select.bind(this, active)}>
         <ItemName>{title}</ItemName>
         <ItemFooter>
+          {/*
           <ItemFooter.Label>{type}</ItemFooter.Label>
           <ItemFooter.Label><UTCToLocal utc={creationDate}/></ItemFooter.Label>
-          <Link to={documentViewUrl} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
+          */}
+          <Link to={documentViewUrl} className="item-shortcut"><i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i></Link>
         </ItemFooter>
       </RowList.Item>
     );

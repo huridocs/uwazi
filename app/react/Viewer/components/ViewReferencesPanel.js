@@ -70,10 +70,10 @@ export class ViewReferencesPanel extends Component {
                         }
                       })()}
                     </div>
-                    <div className="item-metadata">
+                    <div className="item-actions">
                       <span className="label label-default">{this.relationType(reference.relationType, relationTypes)}</span>
                       <Link to={'/document/' + reference.targetDocument}
-                        onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i></Link>
+                        onClick={e => e.stopPropagation()} className="item-shortcut"><i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i></Link>
                     </div>
                 </li>
                 );

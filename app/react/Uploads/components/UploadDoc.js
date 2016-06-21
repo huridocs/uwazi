@@ -83,13 +83,13 @@ export class UploadDoc extends Component {
           if (doc.processed) {
             return <ItemFooter.Label status={status}>
                     {message}
-                    <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-                      <i className="fa fa-file-o"></i>
-                    </Link>
                    </ItemFooter.Label>;
           }
           return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
         })()}
+        <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+        </Link>
       </ItemFooter>
     </RowList.Item>
     );
