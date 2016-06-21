@@ -8,7 +8,6 @@ export default app => {
   });
 
   app.get('/api/settings', (req, res) => {
-    console.log('here2');
     settings.get()
     .then((response) => res.json(response))
     .catch((e) => {

@@ -105,7 +105,6 @@ function handleRoute(res, renderProps, req) {
     cookie = serialize(req.cookies);
   }
 
-  console.log('here');
   if (routeProps.requestState) {
     api.authorize(cookie);
     return Promise.all([
