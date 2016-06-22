@@ -11,8 +11,10 @@ export class DocumentsList extends Component {
     return (
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'col-xs-12 col-sm-8 is-active' : 'col-xs-12')}>
         <div className="sort-by">
-          <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>
-          <SortButtons />
+          <div className="row">
+            <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>
+            <SortButtons />
+          </div>
         </div>
         <RowList>
           {documents.map((doc, index) => <Doc doc={doc} key={index} />)}

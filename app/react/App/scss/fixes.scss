@@ -17,6 +17,15 @@ header {
   height: 100%;
 }
 
+@media (max-width: 1023px) {
+  .col-xs-12 {
+    width: 100%;
+  }
+  .side-panel {
+    width: 400px;
+  }
+}
+
 .app-content > div {
   height: 100%;
 }
