@@ -11,7 +11,7 @@ export class AccountSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {email: props.user.email, password: '', repeatPassword: ''};
+    this.state = {email: '', password: '', repeatPassword: ''};
   }
 
   componentWillReceiveProps(props) {
