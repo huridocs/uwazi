@@ -5,7 +5,11 @@ export default {
   get() {
     return request.get(`${dbUrl}/_design/settings/_view/all`)
     .then((result) => {
-      return result.json.rows[0].value;
+      if (result.json.rows.length) {
+        return result.json.rows[0].value;
+      }
+
+      return {};
     });
   },
 
