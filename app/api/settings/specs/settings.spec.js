@@ -3,7 +3,7 @@ import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-describe('relationtypes', () => {
+describe('settings', () => {
 
   beforeEach((done) => {
     database.reset_testing_database()
@@ -19,6 +19,18 @@ describe('relationtypes', () => {
         expect(result.site_name).toBe('Uwazi');
         done();
       }).catch(catchErrors(done));
+    });
+
+    describe('if there is no settings on the DB', () => {
+      it('should return an empty object', (done) => {
+        database.reset_testing_database()
+        .then(() => database.import({}))
+        .then(() => settings.get())
+        .then((result) => {
+          expect(result).toEqual({});
+          done();
+        }).catch(catchErrors(done));
+      });
     });
   });
 
