@@ -5,7 +5,7 @@ import filtersReducer from 'app/Library/reducers/filtersReducer';
 import 'jasmine-immutablejs-matchers';
 
 describe('filtersReducer', () => {
-  const initialState = Immutable.fromJS({templates: [], properties: [], allDocumentTypes: false, documentTypes: {}});
+  const initialState = Immutable.fromJS({templates: [], properties: [], thesauris: [], allDocumentTypes: false, documentTypes: {}});
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
