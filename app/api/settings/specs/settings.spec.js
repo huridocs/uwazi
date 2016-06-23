@@ -22,7 +22,7 @@ describe('settings', () => {
     });
 
     describe('if there is no settings on the DB', () => {
-      it('should return an empy object', (done) => {
+      it('should return an empty object', (done) => {
         database.reset_testing_database()
         .then(() => database.import({}))
         .then(() => settings.get())
