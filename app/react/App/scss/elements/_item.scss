@@ -1,13 +1,13 @@
 .item-group {
   display: flex;
   flex-wrap: wrap;
+  max-width: 960px;
 	list-style-type: none;
 	padding: 0;
   margin: auto;
-  max-width: 900px;
 
   .document-viewer & {
-    justify-content: center;
+    justify-content: space-between;
     margin: 0 auto;
   }
 }
@@ -15,21 +15,30 @@
 .item {
   display: flex;
   flex-direction: column;
-	margin: 0 5px 15px;
-	padding: 15px 15px 0;
+  position: relative;
+  width: 100%;
+  min-height: 120px;
+	margin: 0 0 15px;
 	background: $c-white;
 	border-radius: 3px;
 	border-bottom: 1px solid $c-grey;
 	box-shadow: $shadow;
-	position: relative;
-	top: 0;
-	left: 0;
-	width: 100%;
-  max-width: 270px;
-  min-height: 120px;
 	opacity: 1;
 	transition: all 300ms;
 	zoom: 1;
+
+  @media (min-width: 640px) {
+    width: 49%;
+  }
+  @media (min-width: 800px) {
+    width: 32.9%;
+  }
+  @media (min-width: 1024px) {
+    width: 49%;
+  }
+  @media (min-width: 1200px) {
+    width: 32.9%;
+  }
 
 	&:before {
 		content: " ";
@@ -37,7 +46,7 @@
 		position: absolute;
 		top: 0;
 		right: 0;
-		border: 7px solid;
+		border: 6px solid;
 		border-color: $c-primary-lighten $c-primary-lighten $c-white $c-white;
     border-bottom-left-radius: 3px;
 		box-shadow: -3px 3px 9px -3px $c-grey;
@@ -72,7 +81,11 @@
 	}
 }
 
+$item-width: 260px;
+
 .item-info {
+  width: $item-width;
+  padding: 15px;
   flex: 1;
 }
 
@@ -139,7 +152,6 @@
 	color: $c-grey-dark;
 	border-top: 1px solid $c-grey-light;
 	padding: 0 15px;
-  margin: 15px -15px 0;
   text-align: right;
 }
 
@@ -186,9 +198,8 @@
 .sort-by {
   display: table;
   width: 100%;
-  max-width: 900px;
-  padding: 0 20px;
-  margin: auto;
+  max-width: 960px;
+  margin: 0 auto;
 	text-align: center;
 	@include desktop {
     text-align: right;
