@@ -134,6 +134,7 @@ $item-width: 260px;
 }
 
 .item-metadata {
+  max-width: $item-width;
   padding: 0 15px 15px;
 
   dl {

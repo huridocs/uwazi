@@ -40,7 +40,7 @@
   .item {
     border-left: 3px solid $c-white;
     transition: all 0ms;
-    max-width: 100%;
+    width: 100%;
 
     &::before {
       border-color: $c-sidebar $c-sidebar $c-white $c-white;
