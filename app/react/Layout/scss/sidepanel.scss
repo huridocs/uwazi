@@ -3,6 +3,7 @@
 @import "../../App/scss/config/_typography.scss";
 
 .side-panel {
+  $c-sidebar: darken($c-primary-lighten, 2%);
   position: fixed;
   right: 0;
   top: 60px;
@@ -12,7 +13,7 @@
   overflow-y: scroll;
   border-left: 1px solid $c-grey;
   box-shadow: $shadow-active;
-  background-color: darken($c-primary-lighten, 2%);
+  background-color: $c-sidebar;
 
   @media (max-width: 767px) {
     max-width: 400px;
@@ -40,6 +41,10 @@
     border-left: 3px solid $c-white;
     transition: all 0ms;
     max-width: 100%;
+
+    &::before {
+      border-color: $c-sidebar $c-sidebar $c-white $c-white;
+    }
 
     &:after {
       content: '\f00c';
