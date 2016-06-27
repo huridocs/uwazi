@@ -1,18 +1,3 @@
-.search {
-
-	// scrollbar example
-	&:before {
-		content: '';
-		display: block;
-		width: 5px;
-		height: 70px;
-		background: $c-grey;
-		position: absolute;
-	  top: 1px;
-	  right: 1px;
-	}
-}
-
 .filters-box {
 	.empty-state {
 		color: $c-grey-dark;
