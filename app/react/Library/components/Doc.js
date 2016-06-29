@@ -33,9 +33,14 @@ export class Doc extends Component {
         <div className="item-info">
           <ItemName>{title}</ItemName>
         </div>
+        <div className="item-metadata">
+            <dl>
+                <dt>Upload date</dt>
+                <dd><UTCToLocal utc={creationDate}/></dd>
+            </dl>
+        </div>
         <ItemFooter>
           <ItemFooter.Label>{type}</ItemFooter.Label>
-          <ItemFooter.Label><UTCToLocal utc={creationDate}/></ItemFooter.Label>
           <Link to={documentViewUrl} className="item-shortcut">
             <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
           </Link>
