@@ -125,11 +125,11 @@ AccountSettings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {user: state.users.user.toJS()};
+  return {user: state.user.toJS()};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setUser: actions.set.bind(null, 'users/user'), notify}, dispatch);
+  return bindActionCreators({setUser: actions.set.bind(null, 'auth/user'), notify}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);

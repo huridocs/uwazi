@@ -12,20 +12,14 @@ import {actions} from 'app/BasicReducer';
 export class Settings extends RouteHandler {
 
   static requestState() {
-    return Promise.all([
-      UsersAPI.currentUser()
-    ])
-    .then(([user]) => {
-      return {
-        users: {
-          user
-        }
-      };
+    return UsersAPI.currentUser()
+    .then((user) => {
+      return {user};
     });
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(actions.set('users/user', state.users.user));
+    this.context.store.dispatch(actions.set('auth/user', state.users.user));
   }
 
   render() {

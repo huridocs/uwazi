@@ -46,7 +46,7 @@ describe('Settings', () => {
     it('should get the current user', (done) => {
       Settings.requestState()
       .then((state) => {
-        expect(state.users.user).toEqual(user);
+        expect(state.user).toEqual(user);
         done();
       });
     });

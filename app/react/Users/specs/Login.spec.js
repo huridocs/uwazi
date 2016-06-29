@@ -3,7 +3,6 @@ import {shallow} from 'enzyme';
 import {browserHistory} from 'react-router';
 
 import {Login} from '../Login.js';
-import Alert from 'app/components/Elements/Alert.js';
 
 describe('Login', () => {
   let component;
@@ -16,51 +15,46 @@ describe('Login', () => {
   };
 
   beforeEach(() => {
-    props = {login: jasmine.createSpy('login').and.returnValue(Promise.resolve())};
+    props = {
+      login: jasmine.createSpy('login').and.returnValue(Promise.resolve()),
+      recoverPassword: jasmine.createSpy('recoverPassword').and.returnValue(Promise.resolve()),
+      notify: jasmine.createSpy('notify')
+    };
     render();
   });
 
   describe('on instance', () => {
-    it('should set state with blank username and password', () => {
-      expect(instance.state.credentials).toEqual({username: '', password: ''});
-    });
-
-    it('should set state with error false', () => {
-      expect(instance.state.error).toEqual(false);
-    });
-  });
-
-  describe('render', () => {
-    describe('when there is NOT an error', () => {
-      it('should NOT display an error message', () => {
-        expect(component.find(Alert).length).toBe(0);
-      });
-    });
-
-    describe('when there is an error', () => {
-      it('should display an error message', () => {
-        component.setState({error: true});
-        expect(component.find(Alert).length).toBe(1);
-      });
+    it('should set state', () => {
+      expect(instance.state).toEqual({error: false, recoverPassword: false});
     });
   });
 
   describe('submit()', () => {
-    describe('on response success', () => {
-      it('should set error false', (done) => {
-        instance.state.error = true;
+    it('should send the credentials', (done) => {
+      instance.submit('credentials')
+      .then(() => {
+        expect(props.login).toHaveBeenCalledWith('credentials');
+        done();
+      })
+      .catch(done.fail);
+    });
 
-        instance.submit()
+    describe('when recoverPassword is true', () => {
+      it('should call recoverPassword with the email', (done) => {
+        instance.state.recoverPassword = true;
+        instance.submit({username: 'email@recover.com'})
         .then(() => {
-          expect(instance.state.error).toBe(false);
+          expect(props.recoverPassword).toHaveBeenCalledWith('email@recover.com');
           done();
         })
         .catch(done.fail);
       });
+    });
 
+    describe('on response success', () => {
       it('should go to home', (done) => {
         spyOn(browserHistory, 'push');
-        instance.submit(new Event('submit'))
+        instance.submit('credentials')
         .then(() => {
           expect(browserHistory.push).toHaveBeenCalledWith('/');
           done();
@@ -81,6 +75,14 @@ describe('Login', () => {
         })
         .catch(done.fail);
       });
+    });
+  });
+
+  describe('setRecoverPassword()', () => {
+    it('should ser recoverPassword true, and error false', () => {
+      instance.setRecoverPassword();
+      expect(instance.state.error).toBe(false);
+      expect(instance.state.recoverPassword).toBe(true);
     });
   });
 });

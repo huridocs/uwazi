@@ -4,6 +4,7 @@ import backend from 'fetch-mock';
 
 import {APIURL} from 'app/config.js';
 import * as actions from '../actions';
+import * as notifications from 'app/Notifications/actions/notificationsActions';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -13,6 +14,7 @@ describe('auth actions', () => {
     backend.restore();
     backend
     .mock(APIURL + 'login', 'POST', {body: JSON.stringify({success: true})})
+    .mock(APIURL + 'recoverPassword', 'POST', {body: JSON.stringify({success: true})})
     .mock(APIURL + 'user', 'GET', {body: JSON.stringify({username: 'username'})});
   });
 
@@ -34,6 +36,19 @@ describe('auth actions', () => {
         .then(done)
         .catch(done.fail);
       });
+    });
+  });
+
+  describe('recoverPassword', () => {
+    it('should post to recoverPassword with the email', (done) => {
+      spyOn(notifications, 'notify');
+      actions.recoverPassword('email@forgot.com')(jasmine.createSpy('dispatch'))
+      .then(() => {
+        expect(backend.calls(APIURL + 'recoverPassword')[0][1].body).toEqual(JSON.stringify('email@forgot.com'));
+        expect(notifications.notify).toHaveBeenCalled();
+        done();
+      })
+      .catch(done.fail);
     });
   });
 });
