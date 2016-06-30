@@ -4,7 +4,6 @@ import {browserHistory} from 'react-router';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
-import {notify} from 'app/Notifications/actions/notificationsActions';
 
 import auth from 'app/Auth';
 
@@ -60,14 +59,18 @@ export class Login extends Component {
                   <input type="password" name="password" id="password" className="form-control"/>
                 </Field>
                   <div className="input-group-btn">
-                    <div title="Don't remember your password?" onClick={this.setRecoverPassword.bind(this)} className={'btn' + (this.state.error ? ' btn-danger' : ' btn-default')}>
+                    <div title="Don't remember your password?"
+                      onClick={this.setRecoverPassword.bind(this)} className={'btn' + (this.state.error ? ' btn-danger' : ' btn-default')}
+                    >
                       <i className="fa fa-question"></i>
                     </div>
                   </div>
               </div>
               <div className="required">Login failed</div>
             </div>
-            <button type="submit" className={'btn btn-block btn-lg ' + (this.state.recoverPassword ? 'btn-success' : 'btn-primary')}>{this.state.recoverPassword ? 'Send recovery email' : 'Login'}</button>
+            <button type="submit" className={'btn btn-block btn-lg ' + (this.state.recoverPassword ? 'btn-success' : 'btn-primary')}>
+              {this.state.recoverPassword ? 'Send recovery email' : 'Login'}
+            </button>
           </Form>
         </div>
       </div>

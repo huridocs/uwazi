@@ -1,51 +1,52 @@
-import routes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
-import fetch from 'isomorphic-fetch';
-import {db_url as dbUrl} from '../../config/database.js';
-import SHA256 from 'crypto-js/sha256';
+import userRoutes from '../routes.js';
+import users from '../users.js';
+import instrumentRoutes from 'api/utils/instrumentRoutes';
+
+
 
 describe('users routes', () => {
-  beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(() => done())
-    .catch(done.fail);
+  let routes;
+
+  beforeEach(() => {
+    routes = instrumentRoutes(userRoutes);
   });
 
-  describe('POST', () => {
-    it('should listen /api/users', () => {
-      let app = jasmine.createSpyObj('app', ['post']);
-      routes(app);
-      let args = app.post.calls.mostRecent().args;
-      expect(args[0]).toBe('/api/users');
+  describe('POST /users', () => {
+    it('should call users update with the body', (done) => {
+      spyOn(users, 'update').and.returnValue(Promise.resolve());
+      let req = {body: 'changes'};
+      routes.post('/api/users', req)
+      .then(() => {
+        expect(users.update).toHaveBeenCalledWith('changes');
+        done();
+      })
+      .catch(done.fail);
     });
+  });
 
-    it('should update user matching id and revision preserving all the other properties not sended like username', (done) => {
-      let app = jasmine.createSpyObj('app', ['post']);
-      routes(app);
-      let post = app.post.calls.mostRecent().args[2];
+  describe('POST /recoverpassword', () => {
+    it('should call users update with the body email', (done) => {
+      spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+      let req = {body: {email: 'recover@me.com'}};
+      routes.post('/api/recoverpassword', req)
+      .then(() => {
+        expect(users.recoverPassword).toHaveBeenCalledWith('recover@me.com');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
 
-      let res = {json: () => {}};
-
-      fetch(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
-      .then(response => response.json())
-      .then(user => {
-        let req = {body: {_id: user._id, _rev: user._rev, password: 'new_password'}};
-        post(req, res);
-      });
-
-      spyOn(res, 'json').and.callFake((result) => {
-        expect(result).toBe('ok');
-
-        fetch(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
-        .then(response => response.json())
-        .then(user => {
-          expect(user.password).toBe(SHA256('new_password').toString());
-          expect(user.username).toBe('admin');
-          done();
-        });
-      });
+  describe('POST /resetpassword', () => {
+    it('should call users update with the body', (done) => {
+      spyOn(users, 'resetPassword').and.returnValue(Promise.resolve());
+      let req = {body: 'changes'};
+      routes.post('/api/resetpassword', req)
+      .then(() => {
+        expect(users.resetPassword).toHaveBeenCalledWith('changes');
+        done();
+      })
+      .catch(done.fail);
     });
   });
 });

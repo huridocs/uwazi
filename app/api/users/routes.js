@@ -1,9 +1,23 @@
 import needsAuthorization from '../auth/authMiddleware';
-import Users from './Users';
+import users from './users';
 
 export default app => {
   app.post('/api/users', needsAuthorization, (req, res) => {
-    Users.update(req.body)
+    users.update(req.body)
+    .then(() => {
+      res.json('ok');
+    });
+  });
+
+  app.post('/api/recoverpassword', (req, res) => {
+    users.recoverPassword(req.body.email)
+    .then(() => {
+      res.json('ok');
+    });
+  });
+
+  app.post('/api/resetpassword', (req, res) => {
+    users.resetPassword(req.body)
     .then(() => {
       res.json('ok');
     });
