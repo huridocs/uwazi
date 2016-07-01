@@ -15,6 +15,7 @@ describe('auth actions', () => {
     backend
     .mock(APIURL + 'login', 'POST', {body: JSON.stringify({success: true})})
     .mock(APIURL + 'recoverPassword', 'POST', {body: JSON.stringify({success: true})})
+    .mock(APIURL + 'resetPassword', 'POST', {body: JSON.stringify({success: true})})
     .mock(APIURL + 'user', 'GET', {body: JSON.stringify({username: 'username'})});
   });
 
@@ -44,7 +45,20 @@ describe('auth actions', () => {
       spyOn(notifications, 'notify');
       actions.recoverPassword('email@forgot.com')(jasmine.createSpy('dispatch'))
       .then(() => {
-        expect(backend.calls(APIURL + 'recoverPassword')[0][1].body).toEqual(JSON.stringify('email@forgot.com'));
+        expect(backend.calls(APIURL + 'recoverPassword')[0][1].body).toEqual(JSON.stringify({email: 'email@forgot.com'}));
+        expect(notifications.notify).toHaveBeenCalled();
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('recoverPassword', () => {
+    it('should post to resetPassword with new password and the key', (done) => {
+      spyOn(notifications, 'notify');
+      actions.resetPassword('asd123', 'uniqueKey')(jasmine.createSpy('dispatch'))
+      .then(() => {
+        expect(backend.calls(APIURL + 'resetPassword')[0][1].body).toEqual(JSON.stringify({password: 'asd123', key: 'uniqueKey'}));
         expect(notifications.notify).toHaveBeenCalled();
         done();
       })

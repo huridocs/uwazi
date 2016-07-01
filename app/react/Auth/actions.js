@@ -14,9 +14,18 @@ export function login(credentials) {
 
 export function recoverPassword(email) {
   return function (dispatch) {
-    return api.post('recoverPassword', email)
+    return api.post('recoverPassword', {email})
     .then(() => {
       dispatch(notify('Instructions to reset your password have been send, please check your email', 'success'));
+    });
+  };
+}
+
+export function resetPassword(password, key) {
+  return function (dispatch) {
+    return api.post('resetPassword', {password, key})
+    .then(() => {
+      dispatch(notify('Password changed success', 'success'));
     });
   };
 }

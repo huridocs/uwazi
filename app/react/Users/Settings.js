@@ -19,7 +19,7 @@ export class Settings extends RouteHandler {
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(actions.set('auth/user', state.users.user));
+    this.context.store.dispatch(actions.set('auth/user', state.user));
   }
 
   render() {
