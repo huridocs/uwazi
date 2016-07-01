@@ -212,7 +212,8 @@ describe('documents', () => {
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
-        expect(results).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        expect(results.totalRows).toEqual(10);
         done();
       });
     });
@@ -234,7 +235,7 @@ describe('documents', () => {
         .sort('title', 'asc').query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
-        expect(results).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
       });
     });

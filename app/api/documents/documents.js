@@ -26,19 +26,32 @@ export default {
   },
 
   search(query) {
-    let documentsQuery = queryBuilder().fullTextSearch(query.searchTerm, query.fields).filterMetadata(query.filters).filterByTemplate(query.types);
+    let documentsQuery = queryBuilder()
+    .fullTextSearch(query.searchTerm, query.fields)
+    .filterMetadata(query.filters)
+    .filterByTemplate(query.types);
 
     if (query.sort) {
       documentsQuery.sort(query.sort, query.order);
     }
 
+    if (query.from) {
+      documentsQuery.from(query.from);
+    }
+
+    if (query.limit) {
+      documentsQuery.limit(query.limit);
+    }
+
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})
     .then((response) => {
-      return response.hits.hits.map((hit) => {
+      let rows = response.hits.hits.map((hit) => {
         let result = hit._source.doc;
         result._id = hit._id;
         return result;
       });
+
+      return {rows, totalRows: response.hits.total};
     });
   },
 
