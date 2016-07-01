@@ -3,6 +3,7 @@ import React, {Component, PropTypes} from 'react';
 import Text from 'app/Viewer/utils/Text';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
+import Loader from 'app/components/Elements/Loader';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -61,6 +62,7 @@ export class Document extends Component {
       <div>
         <div className={'_' + doc._id + ' document ' + this.props.className} >
           <Header/>
+          <Loader/>
           <div className="pages"
             ref={(ref) => this.pagesContainer = ref}
             onMouseUp={this.handleMouseUp.bind(this)}
