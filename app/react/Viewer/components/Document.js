@@ -62,7 +62,11 @@ export class Document extends Component {
       <div>
         <div className={'_' + doc._id + ' document ' + this.props.className} >
           <Header/>
-          <Loader/>
+          {(() => {
+            if (!docHTML.pages.length) {
+              return <Loader/>;
+            }
+          })()}
           <div className="pages"
             ref={(ref) => this.pagesContainer = ref}
             onMouseUp={this.handleMouseUp.bind(this)}
