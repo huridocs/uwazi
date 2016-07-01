@@ -54,7 +54,7 @@ export class ResetPassword extends Component {
                 value={this.state.repeatPassword}
                 onChange={this.repeatPasswordChange.bind(this)}
                 type="password" name="repeat-password" id="repeat-password" className="form-control"/>
-              <div className="required">Passwords don't match</div>
+              <div className="required">Passwords don&rsquo;t match</div>
             </div>
             <button type="submit" className="btn btn-block btn-lg btn-primary">
               Reset password
