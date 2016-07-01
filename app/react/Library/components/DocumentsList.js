@@ -17,13 +17,11 @@ export class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    console.log('loading!');
     this.props.loadMoreDocuments(this.props.documents.toJS().rows.length + 12);
   }
 
   componentWillReceiveProps() {
-    // console.log('not loading!');
-    // this.setState({loading: false});
+    this.setState({loading: false});
   }
 
   render() {
@@ -41,21 +39,21 @@ export class DocumentsList extends Component {
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
-        {(() => {
-          if (documents.rows.length < documents.totalRows && !this.state.loading) {
-            return <div className="row">
+          <div className="row">
             <div className="col-sm-12 text-center documents-counter">
               {documents.rows.length} of {documents.totalRows} documents
             </div>
-            <div className="col-sm-12 text-center">
-              <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">Load more</button>
-            </div>
-            </div>;
-          }
-          if (this.state.loading) {
-            return <Loader/>;
-          }
-        })()}
+            {(() => {
+              if (documents.rows.length < documents.totalRows && !this.state.loading) {
+                return <div className="col-sm-12 text-center">
+                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">Load more</button>
+                </div>;
+              }
+              if (this.state.loading) {
+                return <Loader/>;
+              }
+            })()}
+          </div>
       </main>
     );
   }
