@@ -1,10 +1,9 @@
-@import "../../../App/scss/Vars.scss";
+@import "../../../App/scss/config/colors.scss";
 
 .cs-loader {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
-  height: 100%;
   width: 100%;
 }
 
@@ -13,7 +12,7 @@
   top: 50%;
   position: absolute;
   width: 100%;
-  color: $brandColor;
+  color: $c-type-6;
   text-align: center;
 }
 
