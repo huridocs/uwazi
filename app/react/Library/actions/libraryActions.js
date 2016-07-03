@@ -57,7 +57,7 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
-export function searchDocuments(readOnlySearch) {
+export function searchDocuments(readOnlySearch, limit) {
   return (dispatch, getState) => {
     let state = getState().library.filters.toJS();
     let properties = state.properties;
@@ -80,11 +80,19 @@ export function searchDocuments(readOnlySearch) {
       return selectedTypes;
     }, []);
 
+    search.limit = limit;
+
     return api.search(search)
     .then((documents) => {
       dispatch(setDocuments(documents));
       dispatch(hideSuggestions());
     });
+  };
+}
+
+export function loadMoreDocuments(amount) {
+  return function (dispatch, getState) {
+    searchDocuments(getState().search, amount)(dispatch, getState);
   };
 }
 

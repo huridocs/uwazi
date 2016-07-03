@@ -1,24 +1,59 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
 import {RowList} from 'app/Layout/Lists';
+import {loadMoreDocuments} from 'app/Library/actions/libraryActions';
+import Loader from 'app/components/Elements/Loader';
 
 export class DocumentsList extends Component {
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = {loading: false};
+  }
+
+  loadMoreDocuments() {
+    this.setState({loading: true});
+    this.props.loadMoreDocuments(this.props.documents.toJS().rows.length + 12);
+  }
+
+  componentWillReceiveProps() {
+    this.setState({loading: false});
+  }
+
   render() {
     let documents = this.props.documents.toJS();
     return (
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'col-xs-12 col-sm-8 is-active' : 'col-xs-12')}>
         <div className="sort-by">
           <div className="row">
-            <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>
+            <p id="documents-counter" className="col-sm-7 text-left documents-counter">
+              {documents.rows.length} of {documents.totalRows} documents
+            </p>
             <SortButtons />
           </div>
         </div>
         <RowList>
-          {documents.map((doc, index) => <Doc doc={doc} key={index} />)}
+          {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
+          <div className="row">
+            <div className="col-sm-12 text-center documents-counter">
+              {documents.rows.length} of {documents.totalRows} documents
+            </div>
+            {(() => {
+              if (documents.rows.length < documents.totalRows && !this.state.loading) {
+                return <div className="col-sm-12 text-center">
+                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">Load more</button>
+                </div>;
+              }
+              if (this.state.loading) {
+                return <Loader/>;
+              }
+            })()}
+          </div>
       </main>
     );
   }
@@ -27,7 +62,8 @@ export class DocumentsList extends Component {
 DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   filtersPanel: PropTypes.bool,
-  selectedDocument: PropTypes.object
+  selectedDocument: PropTypes.object,
+  loadMoreDocuments: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -38,4 +74,9 @@ export function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(DocumentsList);
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({loadMoreDocuments}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);

@@ -12,7 +12,7 @@ import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
 
 describe('Library', () => {
-  let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
+  let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2};
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
   let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
   let component;

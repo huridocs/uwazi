@@ -5,7 +5,7 @@ export default function () {
       include: [ 'doc.title', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata']
     },
     from: 0,
-    size: 100,
+    size: 12,
     query: {
       match_all: {}
     },
