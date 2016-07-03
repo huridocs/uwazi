@@ -8,7 +8,7 @@ import Doc from 'app/Library/components/Doc';
 describe('DocumentsList', () => {
   let component;
   let props;
-  let documents = Immutable.fromJS([{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}]);
+  let documents = Immutable.fromJS({rows: [{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}], totalRows: 2});
 
   beforeEach(() => {
     props = {documents};
