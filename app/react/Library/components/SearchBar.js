@@ -39,7 +39,7 @@ export class SearchBar extends Component {
   render() {
     let {search, showSuggestions, suggestions, overSuggestions} = this.props;
     return (
-      <Form model="search" onSubmit={this.props.searchDocuments}>
+      <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
         <div className={'input-group' + (search.searchTerm ? ' active' : '')}>
           <span className="input-group-btn" onClick={this.resetSearch.bind(this)}>
             <div className="btn btn-default"><i className="fa fa-search"></i><i className="fa fa-close"></i></div>
@@ -51,6 +51,7 @@ export class SearchBar extends Component {
               className="form-control"
               onChange={this.getSuggestions.bind(this)}
               onBlur={this.props.hideSuggestions}
+              autoComplete="off"
             />
           </Field>
           <div
