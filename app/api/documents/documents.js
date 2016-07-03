@@ -6,6 +6,7 @@ import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
+import fs from 'fs';
 
 export default {
   save(doc, user) {
@@ -132,6 +133,32 @@ export default {
     return request.get(url)
     .then((response) => {
       return sanitizeResponse(response.json);
+    });
+  },
+
+  delete(id) {
+    let docsToDelete = [];
+    return request.get(`${dbURL}/${id}`)
+    .then((response) => {
+      docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
+      fs.unlink(`./uploaded_documents/${response.json.file.filename}`);
+      return request.get(`${dbURL}/_design/references/_view/by_source_document?key="${id}"`);
+    })
+    .then((response) => {
+      sanitizeResponse(response.json);
+      docsToDelete = docsToDelete.concat(response.json.rows);
+      return request.get(`${dbURL}/_design/references/_view/by_target_document?key="${id}"`);
+    })
+    .then((response) => {
+      sanitizeResponse(response.json);
+      docsToDelete = docsToDelete.concat(response.json.rows);
+    })
+    .then(() => {
+      docsToDelete.map((doc) => doc._deleted = true);
+      return request.post(`${dbURL}/_bulk_docs`, {docs: docsToDelete});
+    })
+    .then((response) => {
+      return response.json;
     });
   }
 };
