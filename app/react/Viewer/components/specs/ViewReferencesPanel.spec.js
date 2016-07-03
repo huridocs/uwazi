@@ -12,7 +12,9 @@ describe('ViewReferencesPanel', () => {
 
   beforeEach(() => {
     props = {
-      references: Immutable.fromJS([{_id: 'ref1', relationType: 'rel1'}, {_id: 'ref2', relationType: 'rel1'}]),
+      references: Immutable.fromJS([
+        {_id: 'ref1', relationType: 'rel1', sourceRange: {start: 10, end: 20}},
+        {_id: 'ref2', relationType: 'rel1', sourceRange: {start: 4, end: 8}}]),
       referencedDocuments: Immutable.fromJS([]),
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
       highlightReference: jasmine.createSpy('highlightReference'),
@@ -34,6 +36,13 @@ describe('ViewReferencesPanel', () => {
     expect(component.find(SidePanel).props().open).toBe(false);
   });
 
+  it('should render references in order', () => {
+    render();
+
+    expect(component.find('.item').first().node.props['data-id']).toBe('ref2');
+    expect(component.find('.item').last().node.props['data-id']).toBe('ref1');
+  });
+
   describe('on Close panel', () => {
     it('should close panel and deactivate reference', () => {
       render();
@@ -48,7 +57,7 @@ describe('ViewReferencesPanel', () => {
     it('should should highlightReference', () => {
       render();
       component.find('.item').last().simulate('mouseenter');
-      expect(props.highlightReference).toHaveBeenCalledWith('ref2');
+      expect(props.highlightReference).toHaveBeenCalledWith('ref1');
     });
   });
 
@@ -64,7 +73,7 @@ describe('ViewReferencesPanel', () => {
     it('should activate it', () => {
       render();
       component.find('.item').last().simulate('click');
-      expect(props.activateReference).toHaveBeenCalledWith('ref2');
+      expect(props.activateReference).toHaveBeenCalledWith('ref1');
     });
   });
 

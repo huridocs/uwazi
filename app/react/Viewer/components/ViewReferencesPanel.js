@@ -34,6 +34,9 @@ export class ViewReferencesPanel extends Component {
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
     const relationTypes = this.props.relationTypes.toJS();
     const referencedDocuments = this.props.referencedDocuments.toJS();
+    const references = this.props.references.toJS().sort((a, b) => {
+      return a.sourceRange.start - b.sourceRange.start;
+    });
 
     return (
       <SidePanel {...sidePanelprops} className="document-references">
@@ -41,7 +44,7 @@ export class ViewReferencesPanel extends Component {
         <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
         <div className="item-group">
           {(() => {
-            return this.props.references.toJS().map((reference, index) => {
+            return references.map((reference, index) => {
               let itemClass = '';
               if (uiState.highlightedReference === reference._id) {
                 itemClass = 'relationship-hover';
