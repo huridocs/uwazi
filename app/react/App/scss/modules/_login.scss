@@ -13,19 +13,20 @@
 
 .login-password {
   position: relative;
-  margin-bottom: 45px;
+  padding-bottom: 45px;
   max-height: 100px;
-  transition: max-height 300ms, margin 300ms;
+  transition: max-height 300ms, padding 300ms;
   overflow: hidden;
   .required {
     position: absolute;
-    top: 100%;
+    top: auto;
+    bottom: 0;
     left: 0;
     text-align: center;
   }
 
   &.is-hidden{
     max-height: 0;
-    margin-bottom: 0;
+    padding-bottom: 0;
   }
 }
