@@ -64,13 +64,12 @@ class App extends Component {
           <header>
             <div className="container-fluid">
               <div className="row">
-                <i className="fa fa-filter"></i>
                 <i className="fa fa-bars"></i>
-                <h1 className="col-sm-3"><SiteName/></h1>
-                <div className="col-sm-5">
+                <h1 className="col-sm-2"><SiteName/></h1>
+                <div className="col-sm-4 col-md-5">
                   {this.renderTools()}
                 </div>
-                <Menu className="nav nav-pills col-sm-4" />
+                <Menu className="nav nav-pills col-sm-6 col-md-5" />
               </div>
             </div>
           </header>

@@ -20,9 +20,10 @@ header {
 
 	.input-group {
 		line-height: 50px;
-		padding: 5px 30px;
+		padding: 5px 0px 5px 45px;
 		@include desktop {
 			padding: 5px 0;
+      margin: 0 -30px;
 		}
 
 		.btn {
@@ -98,25 +99,19 @@ header {
 	}
 
 	/* menu buttons */
-	.fa-bars,
-	.fa-filter {
-		z-index: 1;
-		position: absolute;
-		top: 0;
-		width: 42px;
-		height: 42px;
-		line-height: 42px;
-		padding: 0 15px;
+	.fa-bars {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    padding: 0 15px;
+    text-align: center;
 		@include desktop {
 			display: none;
 		}
-	}
-	.fa-bars {
-		right: 0;
-	}
-	.fa-filter {
-		left: 0;
-		text-align: right;
 	}
 }
 
