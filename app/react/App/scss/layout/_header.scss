@@ -80,15 +80,30 @@ header {
 	}
 
 	.nav-pills {
-		display: none;
-		text-align: right;
+    display: none;
 		line-height: 60px;
+    padding: 0;
+    box-shadow: $shadow;
+    &.is-active {
+      display: block;
+    }
 		@include desktop {
 			display: block;
+      text-align: right;
+      padding-right: 5px;
+      box-shadow: none;
 		}
 		> li {
-			display: inline-block;
-			float: none;
+			display: block;
+      width: 100%;
+			float: left;
+      border-top: 1px solid $c-grey-light;
+      @include desktop {
+  			display: inline-block;
+        float: none;
+        border: none;
+        width: auto;
+  		}
 		}
 		i {
 			margin-right: 3px;
