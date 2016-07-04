@@ -24,7 +24,9 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  let actions = {setSelection, unsetSelection: () => {}, onClick: resetReferenceCreation, highlightReference, activateReference};
+  let actions = {setSelection, unsetSelection: () => {
+    return {type: 'no_action'};
+  }, onClick: resetReferenceCreation, highlightReference, activateReference};
   return bindActionCreators(actions, dispatch);
 }
 
