@@ -72,7 +72,7 @@ describe('documentActions', () => {
       it('should searchDocuments with passed searchTerm', (done) => {
         let searchTerm = 'term';
 
-        spyOn(api, 'get').and.returnValue(Promise.resolve({json: 'documents'}));
+        spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: 'documents'}}));
 
         const expectedActions = [
           {type: types.VIEWER_SEARCHING},
