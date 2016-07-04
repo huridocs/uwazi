@@ -63,7 +63,7 @@ export function viewerSearchDocuments(searchTerm) {
 
     return api.get('documents/search', search)
     .then((response) => {
-      dispatch(actions.set('viewer/documentResults', response.json));
+      dispatch(actions.set('viewer/documentResults', response.json.rows));
     });
   };
 }
