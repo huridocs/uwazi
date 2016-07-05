@@ -1,13 +1,14 @@
 import React from 'react';
-import {Component, PropTypes} from 'react';
+import {PropTypes} from 'react';
 import {browserHistory} from 'react-router';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
+import RouteHandler from 'app/App/RouteHandler';
 
 import auth from 'app/Auth';
 
-export class Login extends Component {
+export class Login extends RouteHandler {
 
   constructor(props, context) {
     super(props, context);

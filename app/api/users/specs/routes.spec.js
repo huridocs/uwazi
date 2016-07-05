@@ -27,10 +27,10 @@ describe('users routes', () => {
   describe('POST /recoverpassword', () => {
     it('should call users update with the body email', (done) => {
       spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
-      let req = {body: {email: 'recover@me.com'}};
+      let req = {body: {email: 'recover@me.com'}, protocol: 'http', get: () => 'localhost'};
       routes.post('/api/recoverpassword', req)
       .then(() => {
-        expect(users.recoverPassword).toHaveBeenCalledWith('recover@me.com');
+        expect(users.recoverPassword).toHaveBeenCalledWith('recover@me.com', 'http://localhost');
         done();
       })
       .catch(done.fail);

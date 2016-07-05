@@ -10,7 +10,8 @@ export default app => {
   });
 
   app.post('/api/recoverpassword', (req, res) => {
-    users.recoverPassword(req.body.email)
+    let domain = req.protocol + '://' +req.get('host');
+    users.recoverPassword(req.body.email, domain)
     .then(() => {
       res.json('ok');
     });

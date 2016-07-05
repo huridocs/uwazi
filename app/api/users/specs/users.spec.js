@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 import {db_url as dbUrl} from '../../config/database.js';
 import SHA256 from 'crypto-js/sha256';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import mailer from 'api/utils/mailer';
 
 describe('Users', () => {
   beforeEach((done) => {
@@ -35,6 +36,11 @@ describe('Users', () => {
   });
 
   describe('recoverPassword', () => {
+
+    beforeEach(() => {
+      spyOn(mailer, 'send');
+    });
+
     it('should find the matching email create a recover password doc in the database and send an email', (done) => {
       spyOn(Date, 'now').and.returnValue(1000);
       let expectedKey = SHA256('admin@admin.com' + 1000).toString();
@@ -45,6 +51,13 @@ describe('Users', () => {
       .then(response => response.json())
       .then(recoverPasswordDoc => {
         expect(recoverPasswordDoc.rows[0].value.user).toBe('c08ef2532f0bd008ac5174b45e033c93');
+        let expectedMailOptions = {
+          from: '"Uwazi" <uwazi@development.com>',
+          to: 'admin@admin.com',
+          subject: 'Password recovery',
+          text: 'http://localhost:3000/resetpassword/ace2fe3d70340fe4bdba3b5e087b0336e37887f28ac189c8f5b7546f9c5dbdb5'
+        };
+        expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
         done();
       })
       .catch(catchErrors(done));

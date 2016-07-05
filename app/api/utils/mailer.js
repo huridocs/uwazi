@@ -12,4 +12,4 @@ export default {
       console.log('Email sent', info);
     });
   }
-}
+};

@@ -24,14 +24,16 @@ export default {
     .then((results) => {
       let user = results.json.rows.find((row) => row.value.email === email);
       if (user) {
-        let mailOptions = {
-          from: '"Uwazi" <uwazi@development.com>',
-          to: 'acasadotorres@gmail.com',
-          subject: 'Password recovery',
-          text: `http://localhost:3000/resetpassword/${key}`
-        };
-        mailer.send(mailOptions);
-        return request.post(`${dbURL}`, {key, user: user.id, type: 'recoverpassword'});
+        return request.post(`${dbURL}`, {key, user: user.id, type: 'recoverpassword'})
+        .then(() => {
+          let mailOptions = {
+            from: '"Uwazi" <uwazi@development.com>',
+            to: email,
+            subject: 'Password recovery',
+            text: `http://localhost:3000/resetpassword/${key}`
+          };
+          mailer.send(mailOptions);
+        });
       }
     });
   },
