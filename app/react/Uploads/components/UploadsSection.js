@@ -12,6 +12,7 @@ import ReadyToPublishModal from './ReadyToPublishModal';
 import UploadFailedModal from './UploadFailedModal';
 import ConfirmDocumentDeleteModal from './ConfirmDocumentDeleteModal';
 import UploadsMenu from './UploadsMenu';
+import Footer from 'app/App/Footer';
 
 import io from 'socket.io-client';
 
@@ -39,6 +40,7 @@ export class UploadsSection extends Component {
         <main className={className}>
           <UploadBox />
           <UploadsList socket={this.socket}/>
+          <Footer/>
         </main>
         <UploadsFormPanel />
         <ReadyToPublishModal />

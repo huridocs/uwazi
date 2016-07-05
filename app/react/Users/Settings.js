@@ -8,6 +8,7 @@ import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
 import UsersAPI from './UsersAPI';
 import {actions} from 'app/BasicReducer';
+import Footer from 'app/App/Footer';
 
 export class Settings extends RouteHandler {
 
@@ -25,22 +26,25 @@ export class Settings extends RouteHandler {
   render() {
     let section = this.props.section;
     return (
-      <div className="row admin-content">
-        <Helmet title="Settings" />
-        <div className="col-xs-12 col-sm-4">
-          <SettingsNavigation/>
+      <main>
+        <div className="row admin-content">
+          <Helmet title="Settings" />
+          <div className="col-xs-12 col-sm-4">
+            <SettingsNavigation/>
+          </div>
+          <div className="col-xs-12 col-sm-8">
+            {(()=>{
+              if (section === 'account') {
+                return <AccountSettings/>;
+              }
+              if (section === 'collection') {
+                return <CollectionSettings/>;
+              }
+            })()}
+          </div>
         </div>
-        <div className="col-xs-12 col-sm-8">
-          {(()=>{
-            if (section === 'account') {
-              return <AccountSettings/>;
-            }
-            if (section === 'collection') {
-              return <CollectionSettings/>;
-            }
-          })()}
-        </div>
-      </div>
+        <Footer/>
+      </main>
     );
   }
 }

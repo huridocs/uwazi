@@ -18,6 +18,7 @@ import MetadataPanelMenu from './MetadataPanelMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
 import {actions} from 'app/BasicReducer';
+import Footer from 'app/App/Footer';
 
 export class Viewer extends Component {
 
@@ -47,6 +48,7 @@ export class Viewer extends Component {
         <main className={className}>
           <SourceDocument />
           <TargetDocument />
+          <Footer/>
         </main>
 
         <ConfirmCloseForm />

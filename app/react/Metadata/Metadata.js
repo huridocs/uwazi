@@ -14,6 +14,7 @@ import CantDeleteTemplateAlert from 'app/Metadata/components/CantDeleteTemplateA
 import DeleteTemplateConfirm from 'app/Metadata/components/DeleteTemplateConfirm';
 import CantDeleteRelationType from 'app/Metadata/components/CantDeleteRelationType';
 import DeleteRelationTypeConfirm from 'app/Metadata/components/DeleteRelationTypeConfirm';
+import Footer from 'app/App/Footer';
 
 import 'app/Metadata/scss/metadata.scss';
 
@@ -34,6 +35,7 @@ export class Metadata extends RouteHandler {
 
   render() {
     return (
+      <main>
       <div className="row metadata">
         <div className="col-sm-4">
           <div className="panel panel-default">
@@ -101,7 +103,8 @@ export class Metadata extends RouteHandler {
           </div>
         </div>
       </div>
-
+      <Footer/>
+      </main>
     );
   }
 }
