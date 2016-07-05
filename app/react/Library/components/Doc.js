@@ -17,10 +17,10 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, creationDate, templateId} = this.props.doc;
+    let {title, _id, creationDate, template} = this.props.doc;
     let documentViewUrl = '/document/' + _id;
     let type = this.props.templates.toJS().reduce((result, templ) => {
-      return templ._id === templateId ? templ.name : result;
+      return templ._id === template ? templ.name : result;
     }, '');
 
     let active;
