@@ -7,6 +7,7 @@ import SortButtons from 'app/Library/components/SortButtons';
 import {RowList} from 'app/Layout/Lists';
 import {loadMoreDocuments} from 'app/Library/actions/libraryActions';
 import Loader from 'app/components/Elements/Loader';
+import Footer from 'app/App/Footer';
 
 export class DocumentsList extends Component {
 
@@ -54,6 +55,7 @@ export class DocumentsList extends Component {
               }
             })()}
           </div>
+          <Footer/>
       </main>
     );
   }
