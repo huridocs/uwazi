@@ -5,6 +5,7 @@ import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
 
 import Login from 'app/Users/Login';
+import ResetPassword from 'app/Users/ResetPassword';
 import Settings from 'app/Users/Settings';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
@@ -36,6 +37,7 @@ export default (
     <Route path='relationtypes/new' component={NewRelationType} />
     <Route path='relationtypes/edit/:relationTypeId' component={EditRelationType} />
     <Route path='login' component={Login} />
+    <Route path='resetpassword/:key' component={ResetPassword} />
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path="*" component={NoMatch} />
   </Route>

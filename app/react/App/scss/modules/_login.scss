@@ -1,0 +1,32 @@
+.login-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 60px;
+}
+
+.login-title {
+  width: 240px;
+  margin: 0 auto 30px;
+  display: block;
+}
+
+.login-password {
+  position: relative;
+  padding-bottom: 45px;
+  max-height: 100px;
+  transition: max-height 300ms, padding 300ms;
+  overflow: hidden;
+  .required {
+    position: absolute;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+  }
+
+  &.is-hidden{
+    max-height: 0;
+    padding-bottom: 0;
+  }
+}

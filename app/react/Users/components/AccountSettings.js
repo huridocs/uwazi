@@ -11,7 +11,7 @@ export class AccountSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {email: '', password: '', repeatPassword: ''};
+    this.state = {email: props.user.email, password: '', repeatPassword: ''};
   }
 
   componentWillReceiveProps(props) {
@@ -125,11 +125,11 @@ AccountSettings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {user: state.users.user.toJS()};
+  return {user: state.user.toJS()};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setUser: actions.set.bind(null, 'users/user'), notify}, dispatch);
+  return bindActionCreators({setUser: actions.set.bind(null, 'auth/user'), notify}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);

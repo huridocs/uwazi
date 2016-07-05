@@ -51,6 +51,8 @@
     "moment": "^2.13.0",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",
+    "nodemailer": "^2.4.2",
+    "nodemailer-sendmail-transport": "^1.0.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pdftohtmljs_uwazi": "0.3.7",
