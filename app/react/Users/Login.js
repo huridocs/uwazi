@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 import RouteHandler from 'app/App/RouteHandler';
+import Footer from 'app/App/Footer';
 
 import auth from 'app/Auth';
 
@@ -75,6 +76,7 @@ export class Login extends RouteHandler {
           </Form>
         </div>
       </div>
+      <Footer/>
     </div>;
   }
 }

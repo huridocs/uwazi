@@ -27,41 +27,39 @@
 }
 
 .metadata {
-	background: $c-white;
-	padding: 30px;
-	box-shadow: $shadow;
+  padding: 30px;
 
-	h1 {
-		margin-top: 0;
-		border-bottom: 1px solid $c-grey-light;
-		padding-bottom: 15px;
-		margin-bottom: 15px;
-		small {
-			font-size: $f-size-sm;
-			margin-left: 5px;
-		}
-	}
-	input {
-		padding: 5px 10px;
-	}
-  
+  h1 {
+    margin-top: 0;
+    border-bottom: 1px solid $c-grey-light;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    small {
+      font-size: $f-size-sm;
+      margin-left: 5px;
+    }
+  }
+  input {
+    padding: 5px 10px;
+  }
+
   .panel>.list-group {
-  	padding: 15px 15px;
-  	background: $c-grey-light;
+    padding: 15px 15px;
+    background: $c-grey-light;
 
-  	.list-group-item {
-  		margin: 15px 0;
-  		line-height: 22px;
-  		border: 0;
-  		box-shadow: $shadow;
+    .list-group-item {
+      margin: 15px 0;
+      line-height: 22px;
+      border: 0;
+      box-shadow: $shadow;
 
-  		&:first-child {
-  			margin-top: 0;
-  		}
-  		&:last-child {
-  			margin-bottom: 0;
-  		}
-  	}
+      &:first-child {
+        margin-top: 0;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 
   .list-group-item {
@@ -94,8 +92,8 @@
 
 .template .list-group-item .btn-default,
 .template .list-group-item .btn-danger {
-	margin-left: 5px;
-	position: relative;
-	right: -5px;
-	top: -2px;
+  margin-left: 5px;
+  position: relative;
+  right: -5px;
+  top: -2px;
 }

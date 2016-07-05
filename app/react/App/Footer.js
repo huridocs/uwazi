@@ -5,6 +5,7 @@ import {Link} from 'react-router';
 class Footer extends Component {
 
   render() {
+    console.log(this.props.user);
     return (
       <footer>
           <ul className="footer-nav">
@@ -29,12 +30,22 @@ class Footer extends Component {
             <li className="footer-nav_item">
               <Link to="/">Library</Link>
             </li>
+            <li className="footer-nav_item">
+              <Link to="/metadata">Metadata</Link>
+            </li>
+            <li className="footer-nav_item">
+              <Link to="/uploads">Uploads</Link>
+            </li>
             {(() => {
               if (!this.props.user._id) {
                 return <li className="footer-nav_item">
                         <Link to="/login">Login</Link>
                        </li>;
               }
+
+              return <li className="footer-nav_item">
+                <Link to="/settings">{this.props.user.username}</Link>
+              </li>;
             })()}
 
           </ul>
@@ -50,7 +61,7 @@ Footer.propTypes = {
 
 export function mapStateToProps(state) {
   return {
-    user: state.user,
+    user: state.user.toJS(),
     siteName: state.settings.toJS().site_name
   };
 }
