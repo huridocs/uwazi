@@ -1,7 +1,7 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import SHA256 from 'crypto-js/sha256';
-import mailer from 'api/utils/mailer';
+import mailer from '../utils/mailer';
 
 export default {
   update(userProperties) {
