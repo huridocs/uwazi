@@ -27,10 +27,10 @@ export default {
         return request.post(`${dbURL}`, {key, user: user.id, type: 'recoverpassword'})
         .then(() => {
           let mailOptions = {
-            from: '"Uwazi" <uwazi@development.com>',
+            from: '"Uwazi" <no-reply@uwazi.com>',
             to: email,
             subject: 'Password recovery',
-            text: `http://localhost:3000/resetpassword/${key}`
+            text: `To reset your password click the following link:\nhttp://localhost:3000/resetpassword/${key}`
           };
           mailer.send(mailOptions);
         });

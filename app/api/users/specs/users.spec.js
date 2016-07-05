@@ -52,10 +52,11 @@ describe('Users', () => {
       .then(recoverPasswordDoc => {
         expect(recoverPasswordDoc.rows[0].value.user).toBe('c08ef2532f0bd008ac5174b45e033c93');
         let expectedMailOptions = {
-          from: '"Uwazi" <uwazi@development.com>',
+          from: '"Uwazi" <no-reply@uwazi.com>',
           to: 'admin@admin.com',
           subject: 'Password recovery',
-          text: 'http://localhost:3000/resetpassword/ace2fe3d70340fe4bdba3b5e087b0336e37887f28ac189c8f5b7546f9c5dbdb5'
+          text: 'To reset your password click the following link:\n' +
+          'http://localhost:3000/resetpassword/ace2fe3d70340fe4bdba3b5e087b0336e37887f28ac189c8f5b7546f9c5dbdb5'
         };
         expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
         done();
