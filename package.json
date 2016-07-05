@@ -63,7 +63,7 @@
     "react-helmet": "^2.1.1",
     "react-modal": "^1.2.0",
     "react-redux": "^4.0.0",
-    "react-redux-form": "0.13.2",
+    "react-redux-form": "0.13.9",
     "react-router": "2.0.0",
     "read-multiple-files": "^1.1.1",
     "redux": "^3.0.4",
