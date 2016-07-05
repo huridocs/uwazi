@@ -1,6 +1,7 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import SHA256 from 'crypto-js/sha256';
+import mailer from 'api/utils/mailer';
 
 export default {
   update(userProperties) {
@@ -23,6 +24,13 @@ export default {
     .then((results) => {
       let user = results.json.rows.find((row) => row.value.email === email);
       if (user) {
+        let mailOptions = {
+          from: '"Uwazi" <uwazi@development.com>',
+          to: 'acasadotorres@gmail.com',
+          subject: 'Password recovery',
+          text: `http://localhost:3000/resetpassword/${key}`
+        };
+        mailer.send(mailOptions);
         return request.post(`${dbURL}`, {key, user: user.id, type: 'recoverpassword'});
       }
     });
