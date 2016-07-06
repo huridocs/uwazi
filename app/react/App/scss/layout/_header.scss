@@ -20,9 +20,8 @@ header {
 
 	.input-group {
 		line-height: 50px;
-		padding: 5px 0px 5px 45px;
+		padding: 5px 0px;
 		@include desktop {
-			padding: 5px 0;
       margin: 0 -30px;
 		}
 
@@ -116,14 +115,14 @@ header {
 	/* menu buttons */
 	.fa-bars {
     z-index: 1;
-    position: absolute;
-    top: 0;
-    left: 0;
+    float: left;
     width: 60px;
     height: 60px;
     line-height: 60px;
     padding: 0 15px;
+    margin-left: -15px;
     text-align: center;
+    cursor: pointer;
 		@include desktop {
 			display: none;
 		}

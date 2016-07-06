@@ -65,9 +65,9 @@ class App extends Component {
           <header>
             <div className="container-fluid">
               <div className="row">
-                <i className="fa fa-bars" onClick={this.toggleMenu.bind(this)}></i>
                 <h1 className="col-sm-2"><SiteName/></h1>
                 <div className="col-sm-4 col-md-5">
+                  <i className="fa fa-bars" onClick={this.toggleMenu.bind(this)}></i>
                   {this.renderTools()}
                 </div>
                 <Menu className={navClass} />
