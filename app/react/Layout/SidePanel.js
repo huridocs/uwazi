@@ -5,7 +5,7 @@ export class SidePanel extends Component {
   render() {
     let propsClass = this.props.className || '';
     return (
-      <aside className={'col-xs-10 col-sm-4 side-panel ' + propsClass + ' ' + (this.props.open ? 'is-active' : 'is-hidden')}>
+      <aside className={'side-panel ' + propsClass + ' ' + (this.props.open ? 'is-active' : 'is-hidden')}>
         {this.props.children}
       </aside>
     );

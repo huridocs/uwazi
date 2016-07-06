@@ -9,14 +9,19 @@
   top: 60px;
   bottom: 0;
   padding: 15px;
-  transition: all 500ms;
   overflow-y: scroll;
   border-left: 1px solid $c-grey;
   box-shadow: $shadow-active;
   background-color: $c-sidebar;
-
-  @media (max-width: 767px) {
-    max-width: 400px;
+  max-width: 320px;
+  width: 90%;
+  transition: transform 500ms;
+  @media(min-width: 1024px) {
+    width: 25%;
+    max-width: 9999px;
+  }
+  @media(min-width: 1200px) {
+    width: 33%;
   }
 
   &.is-active {

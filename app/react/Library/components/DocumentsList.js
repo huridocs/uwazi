@@ -9,7 +9,7 @@ export class DocumentsList extends Component {
   render() {
     let documents = this.props.documents.toJS();
     return (
-      <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'col-xs-12 col-sm-8 is-active' : 'col-xs-12')}>
+      <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
         <div className="sort-by">
           <div className="row">
             <h1 id="documents-counter" className="col-sm-7 page-title">1-12 of 39 documents for "africa"</h1>

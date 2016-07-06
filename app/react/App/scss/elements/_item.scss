@@ -1,7 +1,7 @@
 .item-group {
   display: flex;
   flex-wrap: wrap;
-  max-width: 960px;
+  max-width: 1024px;
 	list-style-type: none;
 	padding: 0;
   margin: auto;
@@ -30,13 +30,7 @@
   @media (min-width: 640px) {
     width: 49%;
   }
-  @media (min-width: 800px) {
-    width: 32.9%;
-  }
   @media (min-width: 1024px) {
-    width: 49%;
-  }
-  @media (min-width: 1200px) {
     width: 32.9%;
   }
 
@@ -81,7 +75,7 @@
 	}
 }
 
-$item-width: 260px;
+$item-width: 250px;
 
 .item-info {
   width: $item-width;
@@ -201,7 +195,7 @@ $item-width: 260px;
 .sort-by {
   display: table;
   width: 100%;
-  max-width: 960px;
+  max-width: 1024px;
   margin: 0 auto;
 	text-align: center;
 	@include desktop {
