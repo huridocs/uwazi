@@ -46,9 +46,11 @@ export class Viewer extends Component {
     return (
       <div className="row">
         <main className={className}>
-          <SourceDocument />
-          <TargetDocument />
-          <Footer/>
+          <div className="main-wrapper">
+            <SourceDocument />
+            <TargetDocument />
+            <Footer/>
+          </div>
         </main>
 
         <ConfirmCloseForm />

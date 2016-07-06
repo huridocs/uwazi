@@ -10,6 +10,12 @@ footer {
   a {
     color: $c-grey-dark;
   }
+
+  @media(min-width: 1024px) {
+    position: absolute;
+    width: 100%;
+    bottom: -15px;
+  }
 }
 
 .footer-nav {
