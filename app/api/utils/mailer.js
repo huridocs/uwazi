@@ -1,7 +1,14 @@
 import nodemailer from 'nodemailer';
-import sendmailTransport from 'nodemailer-sendmail-transport';
+import smtp from 'nodemailer-smtp-transport';
 
-let transporter = nodemailer.createTransport(sendmailTransport());
+let transporter = nodemailer.createTransport(smtp({
+  host: 'mail.gandi.net',
+  port: 587,
+  auth: {
+    user: '',
+    pass: ''
+  }
+}));
 
 export default {
   send(mailOptions) {
