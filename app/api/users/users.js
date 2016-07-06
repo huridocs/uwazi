@@ -18,7 +18,7 @@ export default {
     });
   },
 
-  recoverPassword(email) {
+  recoverPassword(email, domain) {
     let key = SHA256(email + Date.now()).toString();
     return request.get(`${dbURL}/_design/users/_view/all`)
     .then((results) => {
@@ -30,7 +30,7 @@ export default {
             from: '"Uwazi" <no-reply@uwazi.com>',
             to: email,
             subject: 'Password recovery',
-            text: `To reset your password click the following link:\nhttp://localhost:3000/resetpassword/${key}`
+            text: `To reset your password click the following link:\n${domain}/resetpassword/${key}`
           };
           mailer.send(mailOptions);
         });

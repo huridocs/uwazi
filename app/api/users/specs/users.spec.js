@@ -44,7 +44,7 @@ describe('Users', () => {
     it('should find the matching email create a recover password doc in the database and send an email', (done) => {
       spyOn(Date, 'now').and.returnValue(1000);
       let expectedKey = SHA256('admin@admin.com' + 1000).toString();
-      users.recoverPassword('admin@admin.com')
+      users.recoverPassword('admin@admin.com', 'domain')
       .then(() => {
         return fetch(`${dbUrl}/_design/recoverpassword/_view/all?key="${expectedKey}"`);
       })
@@ -56,7 +56,7 @@ describe('Users', () => {
           to: 'admin@admin.com',
           subject: 'Password recovery',
           text: 'To reset your password click the following link:\n' +
-          'http://localhost:3000/resetpassword/ace2fe3d70340fe4bdba3b5e087b0336e37887f28ac189c8f5b7546f9c5dbdb5'
+          'domain/resetpassword/ace2fe3d70340fe4bdba3b5e087b0336e37887f28ac189c8f5b7546f9c5dbdb5'
         };
         expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
         done();
