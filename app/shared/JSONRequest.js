@@ -1,6 +1,7 @@
 import 'isomorphic-fetch';
 
-function toParams(data) {
+function toParams(_data) {
+  let data = Object.assign({}, _data);
   if (!data || Object.keys(data).length === 0) {
     return '';
   }
