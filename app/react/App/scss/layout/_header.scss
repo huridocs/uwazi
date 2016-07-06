@@ -29,9 +29,9 @@ header {
 			height: 32px;
 			line-height: 32px;
 			border: 0;
-			border: 1px solid $c-grey;
+			border: 1px solid $c-grey-light;
 			border-right: 0;
-			background: $c-grey-light;
+			background: $c-grey-lighten;
 			border-radius: 0;
 			box-shadow: none;
 			color: $c-grey-dark;
@@ -52,9 +52,9 @@ header {
 			float: none;
 			background: none;
 		  border: 0;
-			border: 1px solid $c-grey;
+			border: 1px solid $c-grey-light;
 			border-left: 0;
-			background: $c-grey-light;
+			background: $c-grey-lighten;
 			border-radius: 0;
 		  box-shadow: none;
 			color: $c-black;
