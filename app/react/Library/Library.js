@@ -31,7 +31,7 @@ export default class Library extends RouteHandler {
       if (stateDocuments.length) {
         docs = stateDocuments;
       }
-
+      
       return {
         library: {
           documents: docs,

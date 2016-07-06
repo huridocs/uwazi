@@ -5,7 +5,7 @@ import documentsReducer from 'app/Library/reducers/documentsReducer';
 import 'jasmine-immutablejs-matchers';
 
 describe('documentsReducer', () => {
-  const initialState = Immutable.fromJS([]);
+  const initialState = Immutable.fromJS({rows: []});
 
   describe('when state is undefined', () => {
     it('returns initial', () => {

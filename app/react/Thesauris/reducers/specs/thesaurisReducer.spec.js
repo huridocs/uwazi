@@ -5,7 +5,7 @@ import * as types from 'app/Thesauris/actions/actionTypes';
 import thesaurisReducer from 'app/Thesauris/reducers/thesaurisReducer';
 import 'jasmine-immutablejs-matchers';
 
-describe('thesauriReducer', () => {
+describe('thesaurisReducer', () => {
   describe('when state is undefined', () => {
     it('returns initial', () => {
       let newState = thesaurisReducer();

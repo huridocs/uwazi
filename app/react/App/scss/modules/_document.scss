@@ -16,6 +16,10 @@
   &.is-active-2 {
     transform: translateX(-100%);
   }
+
+  .cs-loader {
+    height: 80px;
+  }
 }
 .document-article {
   padding: 80px 120px;
@@ -184,29 +188,29 @@
 }
 
 .relationship-steps {
-	display: flex;
-	.btn {
-		padding: 5px 10px;
-		margin: 12px 10px 12px 0;
-		font-size: 11px;
-	}
-	h2 {
-		font-size: $f-size-sm;
-		padding-left: 20px;
-		position: relative;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		small {
-			position: absolute;
-			top: -2px;
-			left: 0;
-			height: 16px;
-			line-height: 15px;
-			border: 1px solid $c-grey;
-			color: $c-grey-dark;
-			width: 16px;
-			text-align: center;
-			border-radius: 50%;
-		}
-	}
+  display: flex;
+  .btn {
+    padding: 5px 10px;
+    margin: 12px 10px 12px 0;
+    font-size: 11px;
+  }
+  h2 {
+    font-size: $f-size-sm;
+    padding-left: 20px;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    small {
+      position: absolute;
+      top: -2px;
+      left: 0;
+      height: 16px;
+      line-height: 15px;
+      border: 1px solid $c-grey;
+      color: $c-grey-dark;
+      width: 16px;
+      text-align: center;
+      border-radius: 50%;
+    }
+  }
 }

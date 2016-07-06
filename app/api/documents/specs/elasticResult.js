@@ -23,7 +23,7 @@ export default function () {
       failed: 0
     },
     hits: {
-      total: 1,
+      total: 10,
       max_score: 0.05050901,
       hits: []
     }
