@@ -1,6 +1,18 @@
 .document-viewer {
+  width: 100%;
+  padding: 15px;
   transform: translateX(0%);
   transition: all 500ms;
+
+  &.is-active {
+    @media(min-width: 1024px) {
+      width: 75%;
+    }
+    @media(min-width: 1200px) {
+      width: 66%;
+    }
+  }
+
   &.is-active-2 {
     transform: translateX(-100%);
   }
