@@ -8,7 +8,6 @@ import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
 import UsersAPI from './UsersAPI';
 import {actions} from 'app/BasicReducer';
-import Footer from 'app/App/Footer';
 
 export class Settings extends RouteHandler {
 
@@ -43,7 +42,6 @@ export class Settings extends RouteHandler {
             })()}
           </div>
         </div>
-        <Footer/>
       </main>
     );
   }

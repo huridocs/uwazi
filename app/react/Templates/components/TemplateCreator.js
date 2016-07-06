@@ -9,7 +9,6 @@ import {resetTemplate} from 'app/Templates/actions/templateActions';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
-import Footer from 'app/App/Footer';
 
 export class TemplateCreator extends Component {
 
@@ -22,7 +21,6 @@ export class TemplateCreator extends Component {
       <div className="metadata">
         <main className="col-sm-9">
             <MetadataTemplate />
-            <Footer/>
         </main>
         <aside className="col-sm-3">
           <h1>Construction blocks</h1>

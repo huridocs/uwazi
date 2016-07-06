@@ -5,7 +5,6 @@ import {Link} from 'react-router';
 class Footer extends Component {
 
   render() {
-    console.log(this.props.user);
     return (
       <footer>
           <ul className="footer-nav">
