@@ -159,5 +159,11 @@ describe('libraryActions', () => {
         .catch(done.fail);
       });
     });
+
+    describe('saveDocument', () => {
+      it('should be tested', () => {
+        expect(false).toBe(true);
+      });
+    });
   });
 });

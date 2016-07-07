@@ -26,7 +26,7 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', 'ViewerTextSelectedMenu');
   }
 
-  if (action.type === LibraryActions.ENTER_LIBRARY || action.type === LibraryActions.UNSELECT_DOCUMENT) {
+  if (action.type === LibraryActions.ENTER_LIBRARY) {
     return state.set('type', 'LibraryMenu');
   }
 
@@ -36,10 +36,6 @@ export default function contextMenuReducer(state = initialState, action = {}) {
 
   if (action.type === ViewerActions.OPEN_PANEL) {
     return state.set('type', panels[action.panel]);
-  }
-
-  if (action.type === LibraryActions.SELECT_DOCUMENT) {
-    return state.set('type', '');
   }
 
   if (action.type === ViewerActions.UNSET_SELECTION || action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU

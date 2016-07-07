@@ -1,6 +1,9 @@
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Library/DocumentsAPI';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import {notify} from 'app/Notifications';
+import {actions as formActions} from 'react-redux-form';
+import documents from 'app/Documents';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -24,8 +27,8 @@ export function hideFilters() {
   return {type: types.HIDE_FILTERS};
 }
 
-export function setDocuments(documents) {
-  return {type: types.SET_DOCUMENTS, documents};
+export function setDocuments(docs) {
+  return {type: types.SET_DOCUMENTS, documents: docs};
 }
 
 export function setTemplates(templates, thesauris) {
@@ -83,9 +86,19 @@ export function searchDocuments(readOnlySearch, limit) {
     search.limit = limit;
 
     return api.search(search)
-    .then((documents) => {
-      dispatch(setDocuments(documents));
+    .then((docs) => {
+      dispatch(setDocuments(docs));
       dispatch(hideSuggestions());
+    });
+  };
+}
+
+export function saveDocument(doc) {
+  return function (dispatch) {
+    return documents.api.save(doc)
+    .then((updatedDoc) => {
+      dispatch(notify('Document updated', 'success'));
+      dispatch(formActions.reset('library.docForm'));
     });
   };
 }

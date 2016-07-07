@@ -15,7 +15,9 @@ describe('ViewMetadataPanel', () => {
   beforeEach(() => {
     props = {
       doc: {metadata: []},
-      unselectDocument: jasmine.createSpy('unselectDocument')
+      docForm: {},
+      unselectDocument: jasmine.createSpy('unselectDocument'),
+      resetForm: jasmine.createSpy('resetForm')
     };
   });
 
@@ -44,21 +46,9 @@ describe('ViewMetadataPanel', () => {
       render();
       component.find('i').simulate('click');
       expect(props.unselectDocument).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalledWith('library.docForm');
     });
   });
-
-  //describe('onSubmit', () => {
-    //it('should saveDocument', () => {
-      //props.saveDocument = jasmine.createSpy('saveDocument');
-      //props.docBeingEdited = true;
-      //render();
-
-      //let doc = 'doc';
-      //component.find(DocumentForm).simulate('submit', doc);
-
-      //expect(props.saveDocument).toHaveBeenCalledWith(doc);
-    //});
-  //});
 
   describe('PanelContainer', () => {
     let state = {
@@ -66,6 +56,7 @@ describe('ViewMetadataPanel', () => {
         ui: Immutable.fromJS({
           selectedDocument: Immutable.fromJS({})
         }),
+        docForm: {},
         filters: Immutable.fromJS({templates: ['templates'], thesauris: ['thesauris']})
       }
     };
