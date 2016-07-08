@@ -40,11 +40,22 @@ export class LibraryMenu extends Component {
     }
 
     return (
-      <MenuButtons.Main
-        onClick={() => this.props.loadDocument('library.docForm', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
-      >
-        <i className="fa fa-pencil"></i>
-      </MenuButtons.Main>
+      <div>
+        <div onClick={true} className="float-btn__sec view-metadata">
+          <span>Download</span><i className="fa fa-list-alt"></i>
+        </div>
+        <div onClick={true} className="float-btn__sec view-metadata">
+          <span>Delete</span><i className="fa fa-list-alt"></i>
+        </div>
+        <div onClick={true} className="float-btn__sec view-metadata">
+          <span>Unpublish</span><i className="fa fa-list-alt"></i>
+        </div>
+        <MenuButtons.Main
+          onClick={() => this.props.loadDocument('library.docForm', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
+        >
+          <i className="fa fa-pencil"></i>
+        </MenuButtons.Main>
+      </div>
     );
   }
 
