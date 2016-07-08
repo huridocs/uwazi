@@ -10,7 +10,7 @@ PR check list:
 
 QA check list:
 
-- [ ] Smoke test of the functionality
+- [ ] Smoke test the functionality described in the issue
 - [ ] Smoke test potential collaterals
 - [ ] UI responsiveness
 - [ ] Tested in a browser other than chrome
