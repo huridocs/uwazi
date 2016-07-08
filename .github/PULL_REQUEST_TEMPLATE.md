@@ -16,4 +16,4 @@ QA check list:
 - [ ] Tested in a browser other than chrome
 - [ ] Code review ?
 
-Remember to check that deployment passes.
+NOTE: Make sure the build passes.
