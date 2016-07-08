@@ -12,6 +12,7 @@ import SearchBar from './components/SearchBar';
 import ContextMenu from 'app/ContextMenu';
 import LibraryMenu from './components/LibraryMenu';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
+import ConfirmCloseForm from './components/ConfirmCloseForm';
 import {store} from 'app/store';
 
 export default class Library extends RouteHandler {
@@ -31,7 +32,7 @@ export default class Library extends RouteHandler {
       if (stateDocuments.length) {
         docs = stateDocuments;
       }
-      
+
       return {
         library: {
           documents: docs,
@@ -53,6 +54,7 @@ export default class Library extends RouteHandler {
   render() {
     return <div className="row panels-layout">
               <DocumentsList />
+              <ConfirmCloseForm />
               <LibraryFilters />
               <ViewMetadataPanel />
               <ContextMenu>

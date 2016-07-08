@@ -17,7 +17,9 @@ describe('ViewMetadataPanel', () => {
       doc: {metadata: []},
       docForm: {},
       unselectDocument: jasmine.createSpy('unselectDocument'),
-      resetForm: jasmine.createSpy('resetForm')
+      resetForm: jasmine.createSpy('resetForm'),
+      showModal: jasmine.createSpy('showModal'),
+      formState: {}
     };
   });
 
@@ -47,6 +49,15 @@ describe('ViewMetadataPanel', () => {
       component.find('i').simulate('click');
       expect(props.unselectDocument).toHaveBeenCalled();
       expect(props.resetForm).toHaveBeenCalledWith('library.docForm');
+    });
+
+    describe('when the form is dirty', () => {
+      it('should open the confirmation modal', () => {
+        render();
+        props.formState.dirty = true;
+        component.find('i').simulate('click');
+        expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
+      });
     });
   });
 

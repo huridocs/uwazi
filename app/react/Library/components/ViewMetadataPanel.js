@@ -8,6 +8,7 @@ import {unselectDocument, saveDocument} from '../actions/libraryActions';
 import DocumentForm from '../containers/DocumentForm';
 import {ShowDocument} from 'app/Documents';
 import {actions as formActions} from 'react-redux-form';
+import modals from 'app/Modals';
 
 export class ViewMetadataPanel extends Component {
   submit(doc) {
@@ -15,6 +16,9 @@ export class ViewMetadataPanel extends Component {
   }
 
   close() {
+    if (this.props.formState.dirty) {
+      return this.props.showModal('ConfirmCloseForm', this.props.doc);
+    }
     this.props.unselectDocument();
     this.props.resetForm('library.docForm');
   }
@@ -43,13 +47,16 @@ ViewMetadataPanel.propTypes = {
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
   unselectDocument: PropTypes.func,
-  resetForm: PropTypes.func
+  resetForm: PropTypes.func,
+  formState: PropTypes.object,
+  showModal: PropTypes.func
 };
 
 const mapStateToProps = ({library}) => {
   return {
     open: library.ui.get('selectedDocument') ? true : false,
     docBeingEdited: !!library.docForm._id,
+    formState: library.docFormState,
     doc: documents.helpers.prepareMetadata(library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').toJS() : {},
                                            library.filters.get('templates').toJS(),
                                            library.filters.get('thesauris').toJS())
@@ -57,7 +64,7 @@ const mapStateToProps = ({library}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({unselectDocument, resetForm: formActions.reset, saveDocument}, dispatch);
+  return bindActionCreators({unselectDocument, resetForm: formActions.reset, saveDocument, showModal: modals.actions.showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);
