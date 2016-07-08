@@ -1,11 +1,19 @@
 import backend from 'fetch-mock';
 import {APIURL} from 'app/config.js';
 import Immutable from 'immutable';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import {mockID} from 'shared/uniqueID.js';
 
 import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
+import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import documents from 'app/Documents';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('libraryActions', () => {
   let documentCollection = [{name: 'Secret list of things'}];
@@ -161,8 +169,25 @@ describe('libraryActions', () => {
     });
 
     describe('saveDocument', () => {
-      it('should be tested', () => {
-        expect(false).toBe(true);
+      it('should save the document and dispatch a notification on success', (done) => {
+        mockID();
+        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        let doc = {name: 'doc'};
+
+        const expectedActions = [
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
+          {type: 'rrf/reset', model: 'library.docForm'},
+          {type: types.UPDATE_DOCUMENT, doc: 'response'}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.saveDocument(doc))
+        .then(() => {
+          expect(documents.api.save).toHaveBeenCalledWith(doc);
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
       });
     });
   });

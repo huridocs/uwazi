@@ -36,6 +36,8 @@ describe('LibraryMenu', () => {
   describe('when there is a document selected', () => {
     it('should start editing it', () => {
       props.selectedDocument = Immutable.fromJS({_id: '123'});
+      props.docForm = Immutable.fromJS({_id: '123'});
+
       render();
       component.find(MenuButtons.Main).simulate('click');
       expect(props.loadDocument).toHaveBeenCalled();

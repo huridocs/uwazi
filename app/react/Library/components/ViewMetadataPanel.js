@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import documents from 'app/Documents';
 import {bindActionCreators} from 'redux';
-import {unselectDocument} from '../actions/libraryActions';
+import {unselectDocument, saveDocument} from '../actions/libraryActions';
 
 import DocumentForm from '../containers/DocumentForm';
 import {ShowDocument} from 'app/Documents';
@@ -57,7 +57,7 @@ const mapStateToProps = ({library}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({unselectDocument, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({unselectDocument, resetForm: formActions.reset, saveDocument}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);

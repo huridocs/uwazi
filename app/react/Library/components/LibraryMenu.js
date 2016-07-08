@@ -45,7 +45,7 @@ export class LibraryMenu extends Component {
       >
         <i className="fa fa-pencil"></i>
       </MenuButtons.Main>
-      );
+    );
   }
 
   render() {
