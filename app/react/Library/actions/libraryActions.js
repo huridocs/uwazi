@@ -100,6 +100,7 @@ export function saveDocument(doc) {
       dispatch(notify('Document updated', 'success'));
       dispatch(formActions.reset('library.docForm'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(selectDocument(updatedDoc));
     });
   };
 }
