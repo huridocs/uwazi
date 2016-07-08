@@ -4,6 +4,16 @@ PR check list:
 
 - [ ] Client test
 - [ ] Server test
-- [ ] Smoke test
-- [ ] Eslint
-- [ ] Fixtures or views added
+- [ ] End-to-end test
+- [ ] Pass code linter to client and server
+- [ ] Database views added ?
+
+QA check list:
+
+- [ ] Smoke test of the functionality
+- [ ] Smoke test potential collaterals
+- [ ] UI responsiveness
+- [ ] Tested in a browser other than chrome
+- [ ] Code review ?
+
+Remember to check that deployment passes.
