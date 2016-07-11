@@ -13,7 +13,7 @@ describe('FormConfigSelect', () => {
   beforeEach(() => {
     thesauris = [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}];
     props = {
-      ui: Immutable.fromJS({thesauris}),
+      thesauris: Immutable.fromJS(thesauris),
       index: 0,
       data: {properties: []},
       formState: {

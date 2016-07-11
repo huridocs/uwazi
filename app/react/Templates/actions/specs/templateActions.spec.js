@@ -21,11 +21,9 @@ describe('templateActions', () => {
   beforeEach(() => {
     mockID();
     formModel = {
+      thesauris: Immutable.fromJS([{_id: 'first_thesauri_id'}, {_id: 2}]),
       template: {
-        data: {properties: [{name: 'property1'}, {name: 'property2'}]},
-        uiState: Immutable.fromJS({
-          thesauris: [{_id: 'first_thesauri_id'}, {_id: 2}]
-        })
+        data: {properties: [{name: 'property1'}, {name: 'property2'}]}
       }
     };
     dispatch = jasmine.createSpy('dispatch');
