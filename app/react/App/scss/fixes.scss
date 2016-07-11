@@ -27,6 +27,10 @@ header {
   }
 }
 
+.app-content {
+  overflow: hidden; 
+}
+
 .app-content > div {
   height: 100%;
 }
