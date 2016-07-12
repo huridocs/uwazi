@@ -16,5 +16,11 @@ export default function referencesReducer(state = initialState, action = {}) {
     return state.push(action.reference);
   }
 
+  if (action.type === types.REMOVE_REFERENCE) {
+    return state.filter((reference) => {
+      return reference.get('_id') !== action.reference._id;
+    });
+  }
+
   return Immutable.fromJS(state);
 }

@@ -88,4 +88,20 @@ describe('references', () => {
       });
     });
   });
+  describe('delete()', () => {
+    it('should delete the reference', (done) => {
+      request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`)
+      .then((result) => {
+        return references.delete(result.json);
+      })
+      .then(() => {
+        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
+      })
+      .catch((result) => {
+        expect(result.json.error).toBe('not_found');
+        expect(result.json.reason).toBe('deleted');
+        done();
+      });
+    });
+  });
 });

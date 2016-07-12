@@ -16,25 +16,31 @@ describe('references routes', () => {
     .then(() => database.import(fixtures))
     .then(done)
     .catch(catchErrors(done));
+
+    spyOn(references, 'save').and.returnValue(Promise.resolve());
+    spyOn(references, 'delete').and.returnValue(Promise.resolve());
   });
 
   describe('POST', () => {
     it('should save a reference', (done) => {
       let req = {body: {name: 'created_reference'}};
-      let postResponse;
 
       routes.post('/api/references', req)
-      .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/references/_view/all');
+      .then(() => {
+        expect(references.save).toHaveBeenCalledWith(req.body);
+        done();
       })
-      .then((response) => {
-        let newDoc = response.json.rows.find((template) => {
-          return template.value.name === 'created_reference';
-        });
+      .catch(catchErrors(done));
+    });
+  });
 
-        expect(newDoc.value.name).toBe('created_reference');
-        expect(newDoc.value._rev).toBe(postResponse._rev);
+  describe('DELETE', () => {
+    it('should delete the reference', (done) => {
+      let req = {query: {name: 'created_reference'}};
+
+      routes.delete('/api/references', req)
+      .then(() => {
+        expect(references.delete).toHaveBeenCalledWith(req.query);
         done();
       })
       .catch(catchErrors(done));

@@ -46,3 +46,17 @@ export function saveReference(reference) {
     );
   };
 }
+
+export function deleteReference(reference) {
+  return function (dispatch) {
+    return refenrecesAPI.delete(reference)
+    .then(() => {
+      dispatch({
+        type: types.REMOVE_REFERENCE,
+        reference
+      });
+
+      dispatch(notify('Connection deleted', 'success'));
+    });
+  };
+}

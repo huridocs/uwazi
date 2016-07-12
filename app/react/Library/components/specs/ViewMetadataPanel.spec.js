@@ -4,7 +4,6 @@ import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 import documents from 'app/Documents';
 
-//import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from '../ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
 

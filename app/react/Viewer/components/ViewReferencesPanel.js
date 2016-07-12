@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 
 import SidePanel from 'app/Layout/SidePanel';
+import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
@@ -82,6 +83,10 @@ export class ViewReferencesPanel extends Component {
                       </dl>
                     </div>
                     <div className="item-actions">
+                      <a className="item-shortcut" onClick={this.props.deleteReference.bind(this, reference)}>
+                        <i className="fa fa-unlink"></i><span>Remove connection</span>
+                      </a>
+                      &nbsp;
                       <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
                         <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
                       </Link>
@@ -104,7 +109,8 @@ ViewReferencesPanel.propTypes = {
   highlightReference: PropTypes.func,
   activateReference: PropTypes.func,
   deactivateReference: PropTypes.func,
-  closePanel: PropTypes.func
+  closePanel: PropTypes.func,
+  deleteReference: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
@@ -117,7 +123,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({highlightReference, closePanel, activateReference, deactivateReference}, dispatch);
+  return bindActionCreators({highlightReference, closePanel, activateReference, deactivateReference, deleteReference}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewReferencesPanel);

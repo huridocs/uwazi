@@ -20,6 +20,7 @@ describe('ViewReferencesPanel', () => {
       highlightReference: jasmine.createSpy('highlightReference'),
       activateReference: jasmine.createSpy('activateReference'),
       deactivateReference: jasmine.createSpy('deactivateReference'),
+      deleteReference: jasmine.createSpy('deleteReference'),
       closePanel: jasmine.createSpy('closePanel'),
       uiState: Immutable.fromJS({})
     };
