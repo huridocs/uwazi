@@ -48,6 +48,7 @@ export class LibraryMenu extends Component {
               <span>Download</span><i className="fa fa-cloud-download"></i>
             </a>
           </div>
+          
           <div onClick={() => true} className="float-btn__sec">
             <span>Delete</span><i className="fa fa-list-alt"></i>
           </div>
