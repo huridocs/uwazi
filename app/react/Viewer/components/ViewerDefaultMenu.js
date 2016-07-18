@@ -11,7 +11,7 @@ export class ViewerDefaultMenu extends Component {
       <div className={this.props.active ? 'active' : ''}>
         <div className="float-btn__sec">
           <a href={'/api/documents/download/' + this.props.doc.toJS()._id} target="_blank" >
-            <span>Download</span><i className="fa fa-list-alt"></i>
+            <span>Download</span><i className="fa fa-cloud-download"></i>
           </a>
         </div>
         <div onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')} className="float-btn__sec view-metadata">
