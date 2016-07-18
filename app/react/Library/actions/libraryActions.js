@@ -60,32 +60,36 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
+export function getDocumentsByFilter(readOnlySearch, limit, getState) {
+  let state = getState().library.filters.toJS();
+  let properties = state.properties;
+  let documentTypes = state.documentTypes;
+
+  let search = Object.assign({}, readOnlySearch);
+  search.filters = Object.assign({}, readOnlySearch.filters);
+
+  properties.forEach((property) => {
+    if (!property.active) {
+      delete search.filters[property.name];
+    }
+  });
+
+  search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
+    if (documentTypes[type]) {
+      selectedTypes.push(type);
+    }
+
+    return selectedTypes;
+  }, []);
+
+  search.limit = limit;
+
+  return api.search(search);
+}
+
 export function searchDocuments(readOnlySearch, limit) {
-  return (dispatch, getState) => {
-    let state = getState().library.filters.toJS();
-    let properties = state.properties;
-    let documentTypes = state.documentTypes;
-
-    let search = Object.assign({}, readOnlySearch);
-    search.filters = Object.assign({}, readOnlySearch.filters);
-
-    properties.forEach((property) => {
-      if (!property.active) {
-        delete search.filters[property.name];
-      }
-    });
-
-    search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
-      if (documentTypes[type]) {
-        selectedTypes.push(type);
-      }
-
-      return selectedTypes;
-    }, []);
-
-    search.limit = limit;
-
-    return api.search(search)
+  return function (dispatch, getState) {
+    return getDocumentsByFilter(readOnlySearch, limit, getState)
     .then((docs) => {
       dispatch(setDocuments(docs));
       dispatch(hideSuggestions());
