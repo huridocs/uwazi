@@ -19,8 +19,13 @@ export class Doc extends Component {
   render() {
     let {title, _id, creationDate, template} = this.props.doc;
     let documentViewUrl = '/document/' + _id;
-    let type = this.props.templates.toJS().reduce((result, templ) => {
-      return templ._id === template ? templ.name : result;
+    let typeIndex = 'item-type item-type-0';
+    let type = this.props.templates.toJS().reduce((result, templ, index) => {
+      if (templ._id === template) {
+        typeIndex = 'item-type item-type-' + index;
+        return templ.name;
+      }
+      return result;
     }, '');
 
     let active;
@@ -31,6 +36,7 @@ export class Doc extends Component {
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)}>
         <div className="item-info">
+          <span className={typeIndex}>{type}</span>
           <ItemName>{title}</ItemName>
         </div>
         <div className="item-metadata">
@@ -40,7 +46,6 @@ export class Doc extends Component {
             </dl>
         </div>
         <ItemFooter>
-          <ItemFooter.Label>{type}</ItemFooter.Label>
           <Link to={documentViewUrl} className="item-shortcut">
             <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
           </Link>
