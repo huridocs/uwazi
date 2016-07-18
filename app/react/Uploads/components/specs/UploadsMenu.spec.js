@@ -20,24 +20,6 @@ describe('ViewerDefaultMenu', () => {
     };
   });
 
-  describe('when no document selected', () => {
-    it('should be disabled', () => {
-      render();
-      expect(component.find('.float-btn__main').hasClass('disabled')).toBe(true);
-      expect(component.find('.float-btn__sec').length).toBe(0);
-      expect(component.find('.active').length).toBe(0);
-    });
-  });
-
-  describe('when document selected', () => {
-    it('should be active', () => {
-      props.documentBeingEdited = 'document';
-      render();
-      expect(component.find('.active').length).toBe(1);
-      expect(component.find('.float-btn__main').hasClass('cta')).toBe(true);
-    });
-  });
-
   describe('submit button', () => {
     it('should be rendered when document its defined', () => {
       props.doc = Immutable.fromJS({});
