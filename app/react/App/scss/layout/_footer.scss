@@ -1,18 +1,114 @@
 footer {
-	z-index: 2;
-	background: $c-primary-dark;
-	padding: 15px;
-	color: $c-primary-light;
-	display: none;
+  margin: 30px 0 0;
+  padding: 20px 0 15px;
+  text-align: left;
+  font-size: $f-size-sm;
+  color: $c-grey-dark;
+  //background: $c-white;
+  border-top: 1px solid $c-grey-light;
 
-	h5 {
-		text-transform: uppercase;
-		color: $c-primary;
-	}
-	.fa {
-		margin-right: 10px;
-	}
-	p {
-		margin-left: 23px;
-	}
+  a {
+    color: $c-grey-dark;
+  }
+
+  @media(min-width: 1024px) {
+    position: absolute;
+    width: 100%;
+    bottom: -15px;
+  }
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  line-height: 20px;
+  flex-wrap: wrap;
+
+  @media(min-width: 1024px) {
+    justify-content: center;
+  }
+
+  &_item {
+    display: inline-block;
+    padding-left: 15px;
+    @media(min-width: 1024px) {
+      padding: 0 15px;
+    }
+  }
+
+  &_separator {
+    display: inline-block;
+    padding-right: 0;
+    width: 100%;
+    height: 1px;
+    margin: 15px 0;
+    border-bottom: 1px solid $c-grey-light;
+    @media(min-width: 1024px) {
+      width: auto;
+      height: auto;
+      margin: 0;
+      border-left: 1px solid $c-grey-light;
+      border-bottom: 0;
+    }
+  }
+}
+
+.footer-powered {
+  position: relative;
+  p {
+    margin: 0;
+  }
+  &_title {
+    font-size: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 5px;
+  }
+  &_logo {
+    display: block;
+    font-size: $f-size;
+    font-weight: bold;
+    line-height: 15px;
+  }
+  &_tooltip {
+    width: 250px;
+    line-height: 1.2em;
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    padding: 15px;
+    background-color: transparentize($c-black, .25);
+    color: $c-white;
+    border-radius: 3px;
+    text-align: center;
+    &:after {
+      content: '';
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid transparentize($c-black, .25);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  &:hover &_tooltip {
+    display: block;
+  }
+}
+
+.footer-collection_name {
+  font-family: "Droid Serif", serif;
+  font-style: italic;
+  font-weight: 300;
+
+  @media(min-width: 1024px) {
+    width: auto;
+  }
 }

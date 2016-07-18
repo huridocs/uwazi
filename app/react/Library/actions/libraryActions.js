@@ -1,6 +1,9 @@
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Library/DocumentsAPI';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import {notify} from 'app/Notifications';
+import {actions as formActions} from 'react-redux-form';
+import documents from 'app/Documents';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -24,8 +27,8 @@ export function hideFilters() {
   return {type: types.HIDE_FILTERS};
 }
 
-export function setDocuments(documents) {
-  return {type: types.SET_DOCUMENTS, documents};
+export function setDocuments(docs) {
+  return {type: types.SET_DOCUMENTS, documents: docs};
 }
 
 export function setTemplates(templates, thesauris) {
@@ -57,35 +60,51 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
+export function getDocumentsByFilter(readOnlySearch, limit, getState) {
+  let state = getState().library.filters.toJS();
+  let properties = state.properties;
+  let documentTypes = state.documentTypes;
+
+  let search = Object.assign({}, readOnlySearch);
+  search.filters = Object.assign({}, readOnlySearch.filters);
+
+  properties.forEach((property) => {
+    if (!property.active) {
+      delete search.filters[property.name];
+    }
+  });
+
+  search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
+    if (documentTypes[type]) {
+      selectedTypes.push(type);
+    }
+
+    return selectedTypes;
+  }, []);
+
+  search.limit = limit;
+
+  return api.search(search);
+}
+
 export function searchDocuments(readOnlySearch, limit) {
-  return (dispatch, getState) => {
-    let state = getState().library.filters.toJS();
-    let properties = state.properties;
-    let documentTypes = state.documentTypes;
-
-    let search = Object.assign({}, readOnlySearch);
-    search.filters = Object.assign({}, readOnlySearch.filters);
-
-    properties.forEach((property) => {
-      if (!property.active) {
-        delete search.filters[property.name];
-      }
-    });
-
-    search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
-      if (documentTypes[type]) {
-        selectedTypes.push(type);
-      }
-
-      return selectedTypes;
-    }, []);
-
-    search.limit = limit;
-
-    return api.search(search)
-    .then((documents) => {
-      dispatch(setDocuments(documents));
+  return function (dispatch, getState) {
+    return getDocumentsByFilter(readOnlySearch, limit, getState)
+    .then((docs) => {
+      dispatch(setDocuments(docs));
       dispatch(hideSuggestions());
+    });
+  };
+}
+
+export function saveDocument(doc) {
+  return function (dispatch) {
+    return documents.api.save(doc)
+    .then((updatedDoc) => {
+      dispatch(notify('Document updated', 'success'));
+      dispatch(formActions.reset('library.docForm'));
+      dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(selectDocument(updatedDoc));
     });
   };
 }

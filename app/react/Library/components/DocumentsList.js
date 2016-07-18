@@ -7,6 +7,7 @@ import SortButtons from 'app/Library/components/SortButtons';
 import {RowList} from 'app/Layout/Lists';
 import {loadMoreDocuments} from 'app/Library/actions/libraryActions';
 import Loader from 'app/components/Elements/Loader';
+import Footer from 'app/App/Footer';
 
 export class DocumentsList extends Component {
 
@@ -27,7 +28,8 @@ export class DocumentsList extends Component {
   render() {
     let documents = this.props.documents.toJS();
     return (
-      <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'col-xs-12 col-sm-8 is-active' : 'col-xs-12')}>
+      <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
+        <div className="main-wrapper">
         <div className="sort-by">
           <div className="row">
             <p id="documents-counter" className="col-sm-7 text-left documents-counter">
@@ -53,6 +55,8 @@ export class DocumentsList extends Component {
                 return <Loader/>;
               }
             })()}
+          </div>
+          <Footer/>
           </div>
       </main>
     );

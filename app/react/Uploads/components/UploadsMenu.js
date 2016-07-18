@@ -34,14 +34,11 @@ export class UploadsMenu extends Component {
         })()}
         {(() => {
           if (doc) {
-            return <div className="float-btn__sec">
+            return <div className="float-btn__main cta">
               <button type="submit" form="documentForm"><span>Save metadata</span><i className="fa fa-save"></i></button>
             </div>;
           }
         })()}
-        <div className={'float-btn__main ' + (this.props.documentBeingEdited ? 'cta' : 'disabled')}>
-          <i className="fa fa-gears"></i>
-        </div>
       </div>
     );
   }

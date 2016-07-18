@@ -37,7 +37,7 @@ const optionSource = {
   endDrag(props, monitor) {
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
-    if (!dropResult) {
+    if (!dropResult && item.index) {
       props.removeProperty(item.index);
     }
   }

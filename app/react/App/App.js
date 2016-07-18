@@ -40,10 +40,12 @@ class App extends Component {
   render() {
     let menuClass = 'col-md-5 col-sm-6';
     let menuToggleClass = 'navbar-toggle ';
+    let navClass = 'nav nav-pills col-sm-6 col-md-5';
 
     if (this.state.showmenu) {
       menuClass += ' in';
       menuToggleClass += 'active';
+      navClass += ' is-active';
     }
 
     return (
@@ -59,18 +61,16 @@ class App extends Component {
         <div className="content">
           <nav>
             <h1><SiteName/></h1>
-            <button onClick={this.toggleMenu.bind(this)} type="button" className={menuToggleClass}><i className="fa fa-bars"/></button>
           </nav>
           <header>
             <div className="container-fluid">
               <div className="row">
-                <i className="fa fa-filter"></i>
-                <i className="fa fa-bars"></i>
-                <h1 className="col-sm-3"><SiteName/></h1>
-                <div className="col-sm-5">
+                <h1 className="col-sm-2"><SiteName/></h1>
+                <div className="col-sm-4 col-md-5">
+                  <i className="fa fa-bars" onClick={this.toggleMenu.bind(this)}></i>
                   {this.renderTools()}
                 </div>
-                <Menu className="nav nav-pills col-sm-4" />
+                <Menu className={navClass} />
               </div>
             </div>
           </header>
@@ -78,27 +78,6 @@ class App extends Component {
             {this.props.children}
           </div>
         </div>
-        <footer>
-          <div className="container-fluid">
-            <div className="row">
-              <div className="col-sm-3">
-                <h5> <i className="fa fa-heart-o"></i>What we do</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque eveniet labore nihil.</p>
-              </div>
-              <div className="col-sm-3">
-                <h5> <i className="fa fa-support"></i>Help center</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque eveniet labore nihil.</p>
-              </div>
-              <div className="col-sm-3">
-                <h5> <i className="fa fa-share-alt"></i>Connect with us</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque eveniet labore nihil.</p>
-              </div>
-              <div className="col-sm-3">
-                <p>Powered with Uwazi.</p>
-              </div>
-            </div>
-          </div>
-        </footer>
       </div>
     );
   }

@@ -18,6 +18,7 @@ import MetadataPanelMenu from './MetadataPanelMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
 import {actions} from 'app/BasicReducer';
+import Footer from 'app/App/Footer';
 
 export class Viewer extends Component {
 
@@ -34,19 +35,22 @@ export class Viewer extends Component {
   }
 
   render() {
-    let className = 'document-viewer col-xs-12';
+    let className = 'document-viewer';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel col-xs-12 col-sm-8';
+      className = 'document-viewer with-panel is-active';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document col-xs-12';
+      className = 'document-viewer show-target-document is-active';
     }
 
     return (
       <div className="row">
         <main className={className}>
-          <SourceDocument />
-          <TargetDocument />
+          <div className="main-wrapper">
+            <SourceDocument />
+            <TargetDocument />
+            <Footer/>
+          </div>
         </main>
 
         <ConfirmCloseForm />

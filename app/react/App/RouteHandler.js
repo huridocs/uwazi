@@ -11,6 +11,8 @@ class RouteHandler extends Component {
 
   static renderTools() {}
 
+  setReduxState() {}
+
   isRenderedFromServer() {
     let result = RouteHandler.renderedFromServer;
     RouteHandler.renderedFromServer = false;
@@ -37,6 +39,10 @@ class RouteHandler extends Component {
       this.emptyState();
       this.getClientState(props);
     }
+  }
+
+  render() {
+    return false;
   }
 }
 

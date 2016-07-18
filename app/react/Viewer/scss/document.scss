@@ -109,6 +109,10 @@
   transition: all 500ms;
 }
 
+.document.targetDocument._undefined {
+  display: none;
+}
+
 .document-viewer.show-target-document {
   .sourceDocument {
     position: absolute;

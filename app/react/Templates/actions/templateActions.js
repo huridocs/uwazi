@@ -15,7 +15,7 @@ export function addProperty(property = {}, index = 0) {
   property.localID = ID();
   return function (dispatch, getState) {
     if (property.type === 'select') {
-      property.content = getState().template.uiState.toJS().thesauris[0]._id;
+      property.content = getState().thesauris.toJS()[0]._id;
     }
 
     let properties = getState().template.data.properties.slice(0);

@@ -84,4 +84,14 @@ export default (app) => {
       res.json({error: error.json});
     });
   });
+
+  app.get('/api/documents/download/:id', (req, res) => {
+    request.get(`${dbUrl}/${req.params.id}`)
+    .then((response) => {
+      res.download('uploaded_documents/' + response.json.file.filename);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
+    });
+  });
 };

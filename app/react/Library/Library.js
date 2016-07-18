@@ -3,15 +3,15 @@ import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from './components/DocumentsList';
 import LibraryFilters from './components/LibraryFilters';
-import {enterLibrary, setDocuments, setTemplates} from './actions/libraryActions';
+import {getDocumentsByFilter, enterLibrary, setDocuments, setTemplates} from './actions/libraryActions';
 import {libraryFilters, generateDocumentTypes} from './helpers/libraryFilters';
-import documentsAPI from './DocumentsAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
 import ContextMenu from 'app/ContextMenu';
 import LibraryMenu from './components/LibraryMenu';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
+import ConfirmCloseForm from './components/ConfirmCloseForm';
 import {store} from 'app/store';
 
 export default class Library extends RouteHandler {
@@ -21,7 +21,7 @@ export default class Library extends RouteHandler {
   }
 
   static requestState() {
-    return Promise.all([documentsAPI.search(store.getState().search), templatesAPI.get(), thesaurisAPI.get()])
+    return Promise.all([getDocumentsByFilter(store.getState().search, null, store.getState), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       let docs = documents;
       let documentTypes = generateDocumentTypes(templates);
@@ -31,7 +31,7 @@ export default class Library extends RouteHandler {
       if (stateDocuments.length) {
         docs = stateDocuments;
       }
-      
+
       return {
         library: {
           documents: docs,
@@ -53,6 +53,7 @@ export default class Library extends RouteHandler {
   render() {
     return <div className="row panels-layout">
               <DocumentsList />
+              <ConfirmCloseForm />
               <LibraryFilters />
               <ViewMetadataPanel />
               <ContextMenu>

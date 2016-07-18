@@ -8,8 +8,8 @@ function mapStateToProps({library}) {
     model: 'library.docForm',
     document: library.docForm,
     state: library.docFormState,
-    templates: library.ui.templates,
-    thesauris: library.ui.thesauris
+    templates: library.filters.get('templates'),
+    thesauris: library.filters.get('thesauris')
   };
 }
 

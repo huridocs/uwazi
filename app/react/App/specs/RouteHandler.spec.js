@@ -81,4 +81,9 @@ describe('RouteHandler', () => {
       });
     });
   });
+
+  it('should have a default setReduxState method', () => {
+    component = shallow(<RouteHandler/>);
+    expect(component.instance().setReduxState).toBeDefined();
+  });
 });
