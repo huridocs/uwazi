@@ -4,6 +4,7 @@
 
 .document-viewer {
   overflow-y: scroll;
+  overflow-x: hidden;
   height: 100%;
   transform: translateX(0%);
   transition: all 500ms;
