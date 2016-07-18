@@ -28,20 +28,23 @@
 
 .metadata {
   padding: 30px;
+	overflow-y: scroll;
+  padding: 15px 0;
+  margin: 0 -15px;
 
-  h1 {
-    margin-top: 0;
-    border-bottom: 1px solid $c-grey-light;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-    small {
-      font-size: $f-size-sm;
-      margin-left: 5px;
-    }
-  }
-  input {
-    padding: 5px 10px;
-  }
+	h1 {
+		margin-top: 0;
+		border-bottom: 1px solid $c-grey-light;
+		padding-bottom: 15px;
+		margin-bottom: 15px;
+		small {
+			font-size: $f-size-sm;
+			margin-left: 5px;
+		}
+	}
+	input {
+		padding: 5px 10px;
+	}
 
   .panel>.list-group {
     padding: 15px 15px;
