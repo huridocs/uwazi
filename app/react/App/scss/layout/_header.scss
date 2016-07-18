@@ -20,9 +20,9 @@ header {
 
 	.input-group {
 		line-height: 50px;
-		padding: 5px 30px;
+		padding: 5px 0px;
 		@include desktop {
-			padding: 5px 0;
+      margin: 0 -30px;
 		}
 
 		.btn {
@@ -79,15 +79,30 @@ header {
 	}
 
 	.nav-pills {
-		display: none;
-		text-align: right;
+    display: none;
 		line-height: 60px;
+    padding: 0;
+    box-shadow: $shadow;
+    &.is-active {
+      display: block;
+    }
 		@include desktop {
 			display: block;
+      text-align: right;
+      padding-right: 5px;
+      box-shadow: none;
 		}
 		> li {
-			display: inline-block;
-			float: none;
+			display: block;
+      width: 100%;
+			float: left;
+      border-top: 1px solid $c-grey-light;
+      @include desktop {
+  			display: inline-block;
+        float: none;
+        border: none;
+        width: auto;
+  		}
 		}
 		i {
 			margin-right: 3px;
@@ -98,25 +113,19 @@ header {
 	}
 
 	/* menu buttons */
-	.fa-bars,
-	.fa-filter {
-		z-index: 1;
-		position: absolute;
-		top: 0;
-		width: 42px;
-		height: 42px;
-		line-height: 42px;
-		padding: 0 15px;
+	.fa-bars {
+    z-index: 1;
+    float: left;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    padding: 0 15px;
+    margin-left: -15px;
+    text-align: center;
+    cursor: pointer;
 		@include desktop {
 			display: none;
 		}
-	}
-	.fa-bars {
-		right: 0;
-	}
-	.fa-filter {
-		left: 0;
-		text-align: right;
 	}
 }
 
