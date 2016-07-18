@@ -132,26 +132,4 @@ describe('contextMenuReducer', () => {
       expect(newState).toEqualImmutable(expected);
     });
   });
-
-  describe('VIEWER/SELECT_DOCUMENT', () => {
-    it('should unset menu', () => {
-      let currentState = Immutable.fromJS({type: null});
-      let newState = contextMenuReducer(currentState, {type: LibraryActions.SELECT_DOCUMENT});
-      let expected = Immutable.fromJS({type: ''});
-
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
-    });
-  });
-
-  describe('VIEWER/UNSELECT_DOCUMENT', () => {
-    it('should unset menu', () => {
-      let currentState = Immutable.fromJS({type: null});
-      let newState = contextMenuReducer(currentState, {type: LibraryActions.UNSELECT_DOCUMENT});
-      let expected = Immutable.fromJS({type: 'LibraryMenu'});
-
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
-    });
-  });
 });

@@ -15,7 +15,11 @@ describe('ViewMetadataPanel', () => {
   beforeEach(() => {
     props = {
       doc: {metadata: []},
-      unselectDocument: jasmine.createSpy('unselectDocument')
+      docForm: {},
+      unselectDocument: jasmine.createSpy('unselectDocument'),
+      resetForm: jasmine.createSpy('resetForm'),
+      showModal: jasmine.createSpy('showModal'),
+      formState: {}
     };
   });
 
@@ -44,21 +48,18 @@ describe('ViewMetadataPanel', () => {
       render();
       component.find('i').simulate('click');
       expect(props.unselectDocument).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalledWith('library.docForm');
+    });
+
+    describe('when the form is dirty', () => {
+      it('should open the confirmation modal', () => {
+        render();
+        props.formState.dirty = true;
+        component.find('i').simulate('click');
+        expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
+      });
     });
   });
-
-  //describe('onSubmit', () => {
-    //it('should saveDocument', () => {
-      //props.saveDocument = jasmine.createSpy('saveDocument');
-      //props.docBeingEdited = true;
-      //render();
-
-      //let doc = 'doc';
-      //component.find(DocumentForm).simulate('submit', doc);
-
-      //expect(props.saveDocument).toHaveBeenCalledWith(doc);
-    //});
-  //});
 
   describe('PanelContainer', () => {
     let state = {
@@ -66,6 +67,7 @@ describe('ViewMetadataPanel', () => {
         ui: Immutable.fromJS({
           selectedDocument: Immutable.fromJS({})
         }),
+        docForm: {},
         filters: Immutable.fromJS({templates: ['templates'], thesauris: ['thesauris']})
       }
     };

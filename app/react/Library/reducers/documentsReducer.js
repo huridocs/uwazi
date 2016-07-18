@@ -9,5 +9,13 @@ export default function documents(state = initialState, action = {}) {
     return Immutable.fromJS(action.documents);
   }
 
+  if (action.type === types.UPDATE_DOCUMENT) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('_id') === action.doc._id;
+    });
+
+    return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
+  }
+
   return Immutable.fromJS(state);
 }
