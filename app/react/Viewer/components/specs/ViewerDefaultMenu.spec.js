@@ -1,20 +1,20 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import {ViewerDefaultMenu} from 'app/Viewer/components/ViewerDefaultMenu';
 
 describe('ViewerDefaultMenu', () => {
   let component;
-  let props;
+  let props = {};
 
   let render = () => {
+    props.doc = Immutable.fromJS({});
     component = shallow(<ViewerDefaultMenu {...props}/>);
   };
 
   it('should open viewReferencesPanel on click references button', () => {
-    props = {
-      openPanel: jasmine.createSpy('openPanel')
-    };
+    props.openPanel = jasmine.createSpy('openPanel');
     render();
 
     component.find('.view-references').simulate('click');
@@ -22,9 +22,7 @@ describe('ViewerDefaultMenu', () => {
   });
 
   it('should open viewMetadataPanel on click metadata button', () => {
-    props = {
-      openPanel: jasmine.createSpy('openPanel')
-    };
+    props.openPanel = jasmine.createSpy('openPanel');
     render();
 
     component.find('.view-metadata').simulate('click');

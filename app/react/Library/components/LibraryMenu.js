@@ -43,6 +43,11 @@ export class LibraryMenu extends Component {
     return (
       <NeedAuthorization>
         <div>
+          <div className="float-btn__sec">
+            <a href={'/api/documents/download/' + this.props.selectedDocument.toJS()._id} target="_blank" >
+              <span>Download</span><i className="fa fa-cloud-download"></i>
+            </a>
+          </div>
           <MenuButtons.Main
             onClick={() => this.props.loadDocument('library.docForm', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
           >
