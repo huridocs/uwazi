@@ -10,8 +10,8 @@ export class FormConfigSelect extends Component {
   }
 
   render() {
-    const {index, ui, data, formState} = this.props;
-    const thesauris = ui.toJS().thesauris;
+    const {index, data, formState} = this.props;
+    const thesauris = this.props.thesauris.toJS();
     const ptoperty = data.properties[index];
 
     let labelClass = 'input-group';
@@ -90,7 +90,7 @@ export class FormConfigSelect extends Component {
 }
 
 FormConfigSelect.propTypes = {
-  ui: PropTypes.object,
+  thesauris: PropTypes.object,
   data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
@@ -100,7 +100,7 @@ FormConfigSelect.propTypes = {
 export function mapStateToProps(state) {
   return {
     data: state.template.data,
-    ui: state.template.uiState,
+    thesauris: state.thesauris,
     formState: state.template.formState
   };
 }

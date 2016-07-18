@@ -54,6 +54,22 @@ describe('PropertyOption', () => {
     });
 
     describe('endDrag', () => {
+      describe('when item has no index', () => {
+        it('should not call REMOVE_FIELD', () => {
+          let props = {label: 'test', removeProperty: jasmine.createSpy(), type: 'optionType'};
+          component = renderComponent(TestComponent, props);
+          backend = component.getManager().getBackend();
+          monitor = component.getManager().getMonitor();
+
+          let option = TestUtils.findRenderedComponentWithType(component, dragSourceOption);
+          backend.simulateBeginDrag([option.getHandlerId()]);
+          monitor.getItem().index = null;
+          backend.simulateDrop();
+          backend.simulateEndDrag([option.getHandlerId()]);
+
+          expect(props.removeProperty).not.toHaveBeenCalled();
+        });
+      });
       describe('when not droped on a target and item has an index', () => {
         it('should call REMOVE_FIELD with the index', () => {
           let props = {label: 'test', removeProperty: jasmine.createSpy(), type: 'optionType'};
