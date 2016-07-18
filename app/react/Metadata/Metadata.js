@@ -34,6 +34,7 @@ export class Metadata extends RouteHandler {
 
   render() {
     return (
+      <main>
       <div className="row metadata">
         <div className="col-sm-4">
           <div className="panel panel-default">
@@ -101,7 +102,7 @@ export class Metadata extends RouteHandler {
           </div>
         </div>
       </div>
-
+      </main>
     );
   }
 }

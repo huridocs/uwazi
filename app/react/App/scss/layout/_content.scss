@@ -3,3 +3,11 @@
 	display: flex;
 	flex-direction: column;
 }
+
+@media(min-width: 1024px) {
+  .main-wrapper {
+    position: relative;
+    min-height: 100%;
+    padding-bottom: 100px;
+  }
+}
