@@ -22,6 +22,16 @@ export default app => {
     });
   });
 
+  app.get('/api/references/by_target_document/:id', (req, res) => {
+    references.getByTarget(req.params.targetDocument)
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
+    });
+  });
+
   app.get('/api/references', (req, res) => {
     if (req.query && req.query.sourceDocument) {
       references.getByDocument(req.query.sourceDocument)

@@ -63,6 +63,22 @@ describe('references routes', () => {
     });
   });
 
+  describe('GET by_target_document', () => {
+    it('should return references by targetDocument', (done) => {
+      let req = {params: {targetDocument: 'target'}};
+
+      routes.get('/api/references/by_target_document/:id', req)
+      .then((response) => {
+        let docs = response.rows;
+        expect(docs.length).toBe(2);
+        expect(docs[0].title).toBe('targetDocument');
+        expect(docs[1].title).toBe('targetDocument');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('/references/count_by_relationtype', () => {
     it('should return the number of references using a relationtype', (done) => {
       spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));
