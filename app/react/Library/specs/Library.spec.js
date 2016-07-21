@@ -71,10 +71,10 @@ describe('Library', () => {
 
     describe('when there store is already populated with documents', () => {
       it('should return the store values', (done) => {
-        createStore({search: {prop1: 'prop1'}, library: {documents: Immutable.fromJS(['doc1', 'doc2'])}});
+        createStore({search: {prop1: 'prop1'}, library: {documents: {rows: Immutable.fromJS(['doc1', 'doc2'])}}});
         Library.requestState()
         .then((state) => {
-          expect(state.library.documents).toEqual(['doc1', 'doc2']);
+          expect(state.library.documents).toEqual({rows: ['doc1', 'doc2']});
           expect(state.library.filters.templates).toEqual(templates.rows);
           expect(state.library.filters.documentTypes).toEqual({abc1: false, abc2: false});
           expect(state.library.filters.allDocumentTypes).toBe(false);

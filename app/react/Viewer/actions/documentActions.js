@@ -6,6 +6,7 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
+import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
 
 export function setDocument(document, html) {
   return {
@@ -38,6 +39,19 @@ export function saveDocument(doc) {
     });
   };
 }
+
+export function deleteDocument(doc) {
+  return function (dispatch) {
+    return documents.api.delete(doc)
+    .then(() => {
+      dispatch(notify('Document deleted', 'success'));
+      dispatch(resetDocumentViewer());
+      dispatch(removeDocument(doc));
+      dispatch(unselectDocument());
+    });
+  };
+}
+
 
 export function loadTargetDocument(id) {
   return function (dispatch) {

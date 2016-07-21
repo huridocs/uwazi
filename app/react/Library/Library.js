@@ -28,7 +28,7 @@ export default class Library extends RouteHandler {
       let properties = libraryFilters(templates, documentTypes);
       let stateDocuments = store.getState().library.documents.toJS();
 
-      if (stateDocuments.length) {
+      if (stateDocuments.rows.length) {
         docs = stateDocuments;
       }
 
