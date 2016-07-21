@@ -93,15 +93,14 @@ export default function (container) {
       }
     },
 
-    renderReferences(references) {
+    renderReferences(references, rangeProperty = 'sourceRange') {
       let ids = [];
       references.forEach((reference) => {
         ids.push(reference._id);
         if (this.renderedReferences[reference._id]) {
           return;
         }
-
-        let restoredRange = TextRange.restore(reference.sourceRange, container);
+        let restoredRange = TextRange.restore(reference[rangeProperty], container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
         elementWrapper.setAttribute('data-id', reference._id);

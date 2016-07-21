@@ -113,12 +113,22 @@ describe('Text', () => {
       spyOn(TextRange, 'restore').and.returnValue('restoredRange');
     });
 
-    it('should wrap a collection of references', () => {
+    it('should wrap a collection of references using sourceRange by default', () => {
       let references = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
 
       text.renderReferences(references);
       expect(TextRange.restore).toHaveBeenCalledWith('sourceRange1', document);
       expect(TextRange.restore).toHaveBeenCalledWith('sourceRange2', document);
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('1'), 'restoredRange');
+      expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('2'), 'restoredRange');
+    });
+
+    it('should wrap a collection of references using range property passed', () => {
+      let references = [{_id: '1', targetRange: 'targetRange1'}, {_id: '2', targetRange: 'targetRange2'}];
+
+      text.renderReferences(references, 'targetRange');
+      expect(TextRange.restore).toHaveBeenCalledWith('targetRange1', document);
+      expect(TextRange.restore).toHaveBeenCalledWith('targetRange2', document);
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('1'), 'restoredRange');
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('2'), 'restoredRange');
     });
