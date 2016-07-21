@@ -109,6 +109,21 @@ export function saveDocument(doc) {
   };
 }
 
+export function removeDocument(doc) {
+  return {type: types.REMOVE_DOCUMENT, doc};
+}
+
+export function deleteDocument(doc) {
+  return function (dispatch) {
+    return documents.api.delete(doc)
+    .then(() => {
+      dispatch(notify('Document deleted', 'success'));
+      dispatch(unselectDocument());
+      dispatch(removeDocument(doc));
+    });
+  };
+}
+
 export function loadMoreDocuments(amount) {
   return function (dispatch, getState) {
     searchDocuments(getState().search, amount)(dispatch, getState);

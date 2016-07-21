@@ -141,7 +141,11 @@ export default {
     return request.get(`${dbURL}/${id}`)
     .then((response) => {
       docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
-      fs.unlink(`./uploaded_documents/${response.json.file.filename}`);
+      let filePath = `./uploaded_documents/${response.json.file.filename}`;
+      if (fs.existsSync(filePath)) {
+        fs.unlink(filePath);
+      }
+
       return request.get(`${dbURL}/_design/references/_view/by_source_document?key="${id}"`);
     })
     .then((response) => {

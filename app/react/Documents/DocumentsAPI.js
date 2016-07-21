@@ -53,15 +53,15 @@ export default {
     });
   },
 
-  save(thesauri) {
-    return api.post('documents', thesauri)
+  save(doc) {
+    return api.post('documents', doc)
     .then((response) => {
       return response.json;
     });
   },
 
-  delete(thesauri) {
-    return api.delete('documents', thesauri)
+  delete(doc) {
+    return api.delete('documents', doc)
     .then((response) => {
       return response.json;
     });

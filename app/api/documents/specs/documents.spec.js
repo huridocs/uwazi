@@ -282,8 +282,7 @@ describe('documents', () => {
           expect(results.rows[0].title).toBe('Penguin almost done');
           done();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
           done();
         });
       });
@@ -291,7 +290,6 @@ describe('documents', () => {
   });
 
   describe('delete', () => {
-
     beforeEach(() => {
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014a18.pdf');
     });

@@ -17,5 +17,17 @@ export default function documents(state = initialState, action = {}) {
     return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
   }
 
+  if (action.type === types.REMOVE_DOCUMENT) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('_id') === action.doc._id;
+    });
+
+    if (docIndex >= 0) {
+      return state.deleteIn(['rows', docIndex]);
+    }
+
+    return state;
+  }
+
   return Immutable.fromJS(state);
 }
