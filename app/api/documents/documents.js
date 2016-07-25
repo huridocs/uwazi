@@ -135,7 +135,7 @@ export default {
       return sanitizeResponse(response.json);
     });
   },
-  
+
   deleteFile(doc) {
     let filePath = `./uploaded_documents/${doc.file.filename}`;
 
@@ -161,8 +161,11 @@ export default {
     .then((response) => {
       sanitizeResponse(response.json);
       docsToDelete = docsToDelete.concat(response.json.rows);
+      return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
     })
-    .then(() => {
+    .then((response) => {
+      sanitizeResponse(response.json);
+      docsToDelete = docsToDelete.concat(response.json.rows);
       docsToDelete.map((doc) => doc._deleted = true);
       return request.post(`${dbURL}/_bulk_docs`, {docs: docsToDelete});
     })
