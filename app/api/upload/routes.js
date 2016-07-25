@@ -5,10 +5,11 @@ import PDF from './PDF';
 import documents from 'api/documents/documents';
 import ID from 'shared/uniqueID';
 import needsAuthorization from '../auth/authMiddleware';
+import {uploadDocumentsPath} from '../config/paths';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, __dirname + '/../../../uploaded_documents/');
+    cb(null, uploadDocumentsPath);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + ID() + '.pdf');

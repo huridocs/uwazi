@@ -2,6 +2,7 @@ import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
+import {uploadDocumentsPath} from '../config/paths';
 
 export default (app) => {
   app.post('/api/documents', needsAuthorization, (req, res) => {
@@ -88,7 +89,7 @@ export default (app) => {
   app.get('/api/documents/download/:id', (req, res) => {
     request.get(`${dbUrl}/${req.params.id}`)
     .then((response) => {
-      res.download('uploaded_documents/' + response.json.file.filename);
+      res.download(uploadDocumentsPath + response.json.file.filename);
     })
     .catch((error) => {
       res.json({error: error.json});
