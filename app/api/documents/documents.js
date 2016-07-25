@@ -135,17 +135,22 @@ export default {
       return sanitizeResponse(response.json);
     });
   },
+  
+  deleteFile(doc) {
+    let filePath = `./uploaded_documents/${doc.file.filename}`;
+
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath);
+    }
+  },
 
   delete(id) {
     let docsToDelete = [];
     return request.get(`${dbURL}/${id}`)
     .then((response) => {
       docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
-      let filePath = `./uploaded_documents/${response.json.file.filename}`;
-      if (fs.existsSync(filePath)) {
-        fs.unlink(filePath);
-      }
 
+      this.deleteFile(response.json);
       return request.get(`${dbURL}/_design/references/_view/by_source_document?key="${id}"`);
     })
     .then((response) => {

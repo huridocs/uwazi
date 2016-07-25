@@ -31,8 +31,9 @@ export class Confirm extends Component {
   }
 
   render() {
+    let type = this.props.type || 'danger';
     return (
-      <Modal isOpen={this.state.isOpen || false} type={this.props.type || 'danger'}>
+      <Modal isOpen={this.state.isOpen || false} type={type}>
 
         <Modal.Body>
           <h4>{this.props.title || 'Confirm action'}</h4>
@@ -42,7 +43,7 @@ export class Confirm extends Component {
         <Modal.Footer>
           <button type="button" className="btn btn-default cancel-button"
             onClick={this.cancel.bind(this) }>Cancel</button>
-          <button type="button" className="btn btn-danger confirm-button" onClick={this.accept.bind(this)}>Accept</button>
+          <button type="button" className={'btn confirm-button btn-' + type} onClick={this.accept.bind(this)}>Accept</button>
         </Modal.Footer>
 
       </Modal>
