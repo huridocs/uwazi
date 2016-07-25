@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
+import {NeedAuthorization} from 'app/Auth';
 
 import SidePanel from 'app/Layout/SidePanel';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
@@ -93,9 +94,11 @@ export class ViewReferencesPanel extends Component {
                       </dl>
                     </div>
                     <div className="item-actions">
-                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                        <i className="fa fa-unlink"></i><span>Remove connection</span>
-                      </a>
+                      <NeedAuthorization>
+                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                          <i className="fa fa-unlink"></i><span>Delete</span>
+                        </a>
+                      </NeedAuthorization>
                       &nbsp;
                       <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
                         <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
