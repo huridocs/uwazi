@@ -12,6 +12,16 @@ export default app => {
     });
   });
 
+  app.delete('/api/references', needsAuthorization, (req, res) => {
+    references.delete(req.query)
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
+    });
+  });
+
   app.get('/api/references', (req, res) => {
     if (req.query && req.query.sourceDocument) {
       references.getByDocument(req.query.sourceDocument)

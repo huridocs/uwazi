@@ -36,5 +36,12 @@ export default {
     .then((result) => {
       return result.json;
     });
+  },
+
+  delete(reference) {
+    return request.delete(`${dbURL}/${reference._id}`, {rev: reference._rev})
+    .then((result) => {
+      return result.json;
+    });
   }
 };

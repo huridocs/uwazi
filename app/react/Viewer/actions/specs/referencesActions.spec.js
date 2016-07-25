@@ -40,6 +40,7 @@ describe('referencesActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'references', 'POST', {body: JSON.stringify({_id: 'referenceCreated'})})
+      .mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})})
       .mock(APIURL + 'documents/list?keys=%5B2%5D', 'GET', {body: JSON.stringify({rows: [{_id: '2'}]})});
     });
 
@@ -62,6 +63,28 @@ describe('referencesActions', () => {
           documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
         });
         actions.saveReference(reference)(store.dispatch, getState)
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('deleteReference', () => {
+      it('should delete the reference and dispatch a success notification', (done) => {
+        let reference = {_id: 'abc'};
+
+        const expectedActions = [
+          {type: types.REMOVE_REFERENCE, reference: reference},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Connection deleted', type: 'success', id: 'unique_id'}}
+        ];
+
+        const store = mockStore({});
+        let getState = jasmine.createSpy('getState').and.returnValue({
+          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
+        });
+        actions.deleteReference(reference)(store.dispatch, getState)
         .then(() => {
           expect(store.getActions()).toEqual(expectedActions);
         })
