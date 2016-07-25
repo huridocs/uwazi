@@ -10,6 +10,7 @@ import Helmet from 'react-helmet';
 import Notifications from 'app/Notifications';
 import Menu from './Menu';
 import SiteName from './SiteName';
+import Confirm from './Confirm';
 
 class App extends Component {
 
@@ -17,7 +18,13 @@ class App extends Component {
     super(props, context);
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
-    this.state = {showmenu: false};
+    this.state = {showmenu: false, confirmOptions: {}};
+  }
+
+  getChildContext() {
+    return {
+      confirm: this.confirm.bind(this)
+    };
   }
 
   toggleMenu() {
@@ -26,6 +33,10 @@ class App extends Component {
 
   closeMenu() {
     this.setState({showmenu: false});
+  }
+
+  confirm(options) {
+    this.setState({confirmOptions: options});
   }
 
   renderTools() {
@@ -75,6 +86,7 @@ class App extends Component {
             </div>
           </header>
           <div className="app-content container-fluid">
+            <Confirm {...this.state.confirmOptions}/>
             {this.props.children}
           </div>
         </div>
@@ -86,6 +98,10 @@ class App extends Component {
 App.propTypes = {
   fetch: PropTypes.func,
   children: PropTypes.object
+};
+
+App.childContextTypes = {
+  confirm: PropTypes.func
 };
 
 App.contextTypes = {

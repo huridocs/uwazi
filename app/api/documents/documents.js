@@ -6,6 +6,7 @@ import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
+import fs from 'fs';
 
 export default {
   save(doc, user) {
@@ -132,6 +133,44 @@ export default {
     return request.get(url)
     .then((response) => {
       return sanitizeResponse(response.json);
+    });
+  },
+
+  deleteFile(doc) {
+    let filePath = `./uploaded_documents/${doc.file.filename}`;
+
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath);
+    }
+  },
+
+  delete(id) {
+    let docsToDelete = [];
+    return request.get(`${dbURL}/${id}`)
+    .then((response) => {
+      docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
+
+      this.deleteFile(response.json);
+      return request.get(`${dbURL}/_design/references/_view/by_source_document?key="${id}"`);
+    })
+    .then((response) => {
+      sanitizeResponse(response.json);
+      docsToDelete = docsToDelete.concat(response.json.rows);
+      return request.get(`${dbURL}/_design/references/_view/by_target_document?key="${id}"`);
+    })
+    .then((response) => {
+      sanitizeResponse(response.json);
+      docsToDelete = docsToDelete.concat(response.json.rows);
+      return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
+    })
+    .then((response) => {
+      sanitizeResponse(response.json);
+      docsToDelete = docsToDelete.concat(response.json.rows);
+      docsToDelete.map((doc) => doc._deleted = true);
+      return request.post(`${dbURL}/_bulk_docs`, {docs: docsToDelete});
+    })
+    .then((response) => {
+      return response.json;
     });
   }
 };

@@ -31,4 +31,22 @@ describe('documentsReducer', () => {
       expect(newState.toJS()).toEqual({rows: [{title: '1', _id: 1}, {title: 'new title', _id: 2}]});
     });
   });
+
+  describe('REMOVE_DOCUMENT', () => {
+    it('should remove the documents from the state', () => {
+      let currentState = Immutable.fromJS({rows: [{title: '1', _id: 1}, {title: '2', _id: 2}]});
+      let newState = documentsReducer(currentState, {type: types.REMOVE_DOCUMENT, doc: {title: '1', _id: 1}});
+
+      expect(newState.toJS()).toEqual({rows: [{title: '2', _id: 2}]});
+    });
+
+    describe('when the document is not in the list', () => {
+      it('should do nothing', () => {
+        let currentState = Immutable.fromJS({rows: [{title: '1', _id: 1}, {title: '2', _id: 2}]});
+        let newState = documentsReducer(currentState, {type: types.REMOVE_DOCUMENT, doc: {title: '3', _id: 3}});
+
+        expect(newState.toJS()).toEqual({rows: [{title: '1', _id: 1}, {title: '2', _id: 2}]});
+      });
+    });
+  });
 });

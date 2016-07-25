@@ -112,5 +112,28 @@ describe('documentActions', () => {
         .catch(done.fail);
       });
     });
+
+    describe('deleteDocument', () => {
+      it('should delete the document and dispatch a notification on success', (done) => {
+        spyOn(documents.api, 'delete').and.returnValue(Promise.resolve('response'));
+        let doc = {name: 'doc'};
+
+        const expectedActions = [
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'success', id: 'unique_id'}},
+          {type: types.RESET_DOCUMENT_VIEWER},
+          {type: 'REMOVE_DOCUMENT', doc: {name: 'doc'}},
+          {type: 'VIEWER/UNSELECT_DOCUMENT'}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.deleteDocument(doc))
+        .then(() => {
+          expect(documents.api.delete).toHaveBeenCalledWith(doc);
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
   });
 });

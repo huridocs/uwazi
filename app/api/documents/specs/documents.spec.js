@@ -8,6 +8,7 @@ import request from 'shared/JSONRequest';
 import queryBuilder from 'api/documents/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
+import fs from 'fs';
 
 describe('documents', () => {
   let result;
@@ -281,10 +282,90 @@ describe('documents', () => {
           expect(results.rows[0].title).toBe('Penguin almost done');
           done();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
           done();
         });
+      });
+    });
+  });
+
+  describe('delete', () => {
+    beforeEach(() => {
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014a18.pdf');
+    });
+
+    it('should delete the document in the database', (done) => {
+      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+      .then((response) => {
+        return documents.delete(response.json._id, response.json._rev);
+      })
+      .then(() => {
+        return request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`);
+      })
+      .then(done.fail)
+      .catch((error) => {
+        expect(error.json.error).toBe('not_found');
+        expect(error.json.reason).toBe('deleted');
+        done();
+      });
+    });
+
+    it('should delete the document references', (done) => {
+      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+      .then((response) => {
+        return documents.delete(response.json._id, response.json._rev);
+      })
+      .then(() => {
+        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
+      })
+      .then(done.fail)
+      .catch((error) => {
+        expect(error.json.error).toBe('not_found');
+        expect(error.json.reason).toBe('deleted');
+        done();
+      });
+    });
+
+    it('should delete references to the document', (done) => {
+      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+      .then((response) => {
+        return documents.delete(response.json._id, response.json._rev);
+      })
+      .then(() => {
+        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`);
+      })
+      .then(done.fail)
+      .catch((error) => {
+        expect(error.json.error).toBe('not_found');
+        expect(error.json.reason).toBe('deleted');
+        done();
+      });
+    });
+
+    it('should delete the document conversion', (done) => {
+      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+      .then((response) => {
+        return documents.delete(response.json._id, response.json._rev);
+      })
+      .then(() => {
+        return request.get(`${dbURL}/a9a88a38dbd9fedc9d5051741a14a1d9`);
+      })
+      .then(done.fail)
+      .catch((error) => {
+        expect(error.json.error).toBe('not_found');
+        expect(error.json.reason).toBe('deleted');
+        done();
+      });
+    });
+
+    it('should delete the original file', (done) => {
+      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+      .then((response) => {
+        return documents.delete(response.json._id, response.json._rev);
+      })
+      .then(() => {
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014a18.pdf')).toBe(false);
+        done();
       });
     });
   });

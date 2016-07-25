@@ -77,9 +77,9 @@ export default (app) => {
   });
 
   app.delete('/api/documents', needsAuthorization, (req, res) => {
-    request.delete(`${dbUrl}/${req.query._id}`, {rev: req.query._rev})
+    documents.delete(req.query._id)
     .then((response) => {
-      res.json(response.json);
+      res.json(response);
     })
     .catch((error) => {
       res.json({error: error.json});

@@ -165,36 +165,19 @@ describe('documents', () => {
   });
 
   describe('DELETE', () => {
-    it('should delete a document', (done) => {
-      request.get(dbUrl + '/8202c463d6158af8065022d9b5014ccb')
-      .then(template => {
-        let req = {query: {_id: template.json._id, _rev: template.json._rev}};
-        return routes.delete('/api/documents', req);
-      })
-      .then((response) => {
-        expect(response.ok).toBe(true);
-        return request.get(dbUrl + '/_design/documents/_view/all');
-      })
-      .then((response) => {
-        let docs = response.json.rows;
-        expect(docs.length).toBe(6);
-        expect(docs[0].value.title).toBe('Batman finishes');
+
+    beforeEach(() => {
+      spyOn(documents, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
+    });
+
+    it('should use documents to delete it', (done) => {
+      let req = {query: {_id: 123, _rev: 456}};
+      return routes.delete('/api/documents', req)
+      .then(() => {
+        expect(documents.delete).toHaveBeenCalledWith(req.query._id);
         done();
       })
       .catch(done.fail);
-    });
-
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb', _rev: 'bad_rev'}};
-
-        routes.delete('/api/documents', req)
-        .then((response) => {
-          expect(response.error.error).toBe('bad_request');
-          done();
-        })
-        .catch(done.fail);
-      });
     });
   });
 

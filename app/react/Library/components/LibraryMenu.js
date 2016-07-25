@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 import {MenuButtons} from 'app/ContextMenu';
 import documents from 'app/Documents';
 import {NeedAuthorization} from 'app/Auth';
+import {deleteDocument} from 'app/Library/actions/libraryActions';
 
 
 import {showFilters, searchDocuments} from 'app/Library/actions/libraryActions';
@@ -28,6 +29,16 @@ export class LibraryMenu extends Component {
       );
   }
 
+  deleteDocument() {
+    this.context.confirm({
+      accept: () => {
+        this.props.deleteDocument(this.props.selectedDocument.toJS());
+      },
+      title: 'Confirm delete document',
+      message: 'Are you sure you want to delete this document?'
+    });
+  }
+
   renderDocumentMenu() {
     if (this.props.docForm._id) {
       let disabled = !this.props.docFormState.dirty;
@@ -47,6 +58,9 @@ export class LibraryMenu extends Component {
             <a href={'/api/documents/download/' + this.props.selectedDocument.toJS()._id} target="_blank" >
               <span>Download</span><i className="fa fa-cloud-download"></i>
             </a>
+          </div>
+          <div onClick={this.deleteDocument.bind(this)} className="float-btn__sec">
+            <span>Delete</span><i className="fa fa-trash"></i>
           </div>
           <MenuButtons.Main
             onClick={() => this.props.loadDocument('library.docForm', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
@@ -84,7 +98,12 @@ LibraryMenu.propTypes = {
   selectedDocument: PropTypes.object,
   loadDocument: PropTypes.func,
   docForm: PropTypes.object,
-  docFormState: PropTypes.object
+  docFormState: PropTypes.object,
+  deleteDocument: PropTypes.func
+};
+
+LibraryMenu.contextTypes = {
+  confirm: PropTypes.func
 };
 
 function mapStateToProps(state) {
@@ -101,7 +120,12 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({showFilters, searchDocuments, loadDocument: documents.actions.loadDocument}, dispatch);
+  return bindActionCreators({
+    showFilters,
+    searchDocuments,
+    loadDocument: documents.actions.loadDocument,
+    deleteDocument
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryMenu);
