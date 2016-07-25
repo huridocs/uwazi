@@ -42,6 +42,9 @@ export class Viewer extends Component {
     if (this.props.targetDoc) {
       className = 'document-viewer show-target-document is-active';
     }
+    if (this.props.referencesPanelIsOpen) {
+      className += ' references-panel-is-open';
+    }
 
     return (
       <div className="row">
@@ -74,7 +77,8 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
-  targetDoc: PropTypes.bool
+  targetDoc: PropTypes.bool,
+  referencesPanelIsOpen: PropTypes.bool
 };
 
 Viewer.contextTypes = {
@@ -85,6 +89,7 @@ const mapStateToProps = ({documentViewer}) => {
   let uiState = documentViewer.uiState.toJS();
   return {
     panelIsOpen: !!uiState.panel,
+    referencesPanelIsOpen: uiState.panel === 'viewReferencesPanel',
     targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
