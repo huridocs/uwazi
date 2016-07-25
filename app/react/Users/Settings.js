@@ -25,7 +25,6 @@ export class Settings extends RouteHandler {
   render() {
     let section = this.props.section;
     return (
-      <main>
         <div className="row admin-content">
           <Helmet title="Settings" />
           <div className="col-xs-12 col-sm-4">
@@ -42,7 +41,6 @@ export class Settings extends RouteHandler {
             })()}
           </div>
         </div>
-      </main>
     );
   }
 }
