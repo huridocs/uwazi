@@ -30,6 +30,16 @@ export class ViewReferencesPanel extends Component {
     this.props.deactivateReference();
   }
 
+  deleteReference(reference) {
+    this.context.confirm({
+      accept: () => {
+        this.props.deleteReference(reference);
+      },
+      title: 'Confirm delete connection',
+      message: 'Are you sure you want to delete this connection?'
+    });
+  }
+
   render() {
     const uiState = this.props.uiState.toJS();
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
@@ -83,7 +93,7 @@ export class ViewReferencesPanel extends Component {
                       </dl>
                     </div>
                     <div className="item-actions">
-                      <a className="item-shortcut" onClick={this.props.deleteReference.bind(this, reference)}>
+                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
                         <i className="fa fa-unlink"></i><span>Remove connection</span>
                       </a>
                       &nbsp;
@@ -111,6 +121,10 @@ ViewReferencesPanel.propTypes = {
   deactivateReference: PropTypes.func,
   closePanel: PropTypes.func,
   deleteReference: PropTypes.func
+};
+
+ViewReferencesPanel.contextTypes = {
+  confirm: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
