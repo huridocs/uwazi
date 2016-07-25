@@ -51,11 +51,13 @@ class App extends Component {
   render() {
     let menuClass = 'col-md-5 col-sm-6';
     let menuToggleClass = 'navbar-toggle ';
+    let MenuButtonClass = 'menu-button fa fa-bars';
     let navClass = 'nav nav-pills col-sm-6 col-md-5';
 
     if (this.state.showmenu) {
       menuClass += ' in';
       menuToggleClass += 'active';
+      MenuButtonClass = 'menu-button fa fa-close';
       navClass += ' is-active';
     }
 
@@ -78,7 +80,7 @@ class App extends Component {
               <div className="row">
                 <h1 className="col-sm-2"><SiteName/></h1>
                 <div className="col-sm-4 col-md-5">
-                  <i className="fa fa-bars" onClick={this.toggleMenu.bind(this)}></i>
+                  <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
                   {this.renderTools()}
                 </div>
                 <Menu className={navClass} />
