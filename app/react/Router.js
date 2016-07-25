@@ -134,7 +134,8 @@ function ServerRouter(req, res) {
                     'templates/new',
                     'templates/edit',
                     '/thesauris/new',
-                    '/thesauris/edit'
+                    '/thesauris/edit',
+                    '/settings'
                   ];
   if (!req.user && authRoutes.includes(req.url)) {
     res.redirect(302, '/login');
