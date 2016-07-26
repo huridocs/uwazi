@@ -83,7 +83,7 @@ class App extends Component {
                   <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
                   {this.renderTools()}
                 </div>
-                <Menu className={navClass} />
+                <Menu onClick={this.toggleMenu.bind(this)} className={navClass} />
               </div>
             </div>
           </header>
