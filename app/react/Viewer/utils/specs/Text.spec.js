@@ -161,7 +161,7 @@ describe('Text', () => {
     });
   });
 
-  fdescribe('highlight', () => {
+  describe('highlight', () => {
     let createElement = () => {
       return document.createElement('a');
     };
@@ -209,7 +209,7 @@ describe('Text', () => {
     });
   });
 
-  fdescribe('activate', () => {
+  describe('activate', () => {
     let createElement = () => {
       return document.createElement('a');
     };
