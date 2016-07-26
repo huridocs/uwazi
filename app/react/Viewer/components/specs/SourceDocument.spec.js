@@ -11,6 +11,7 @@ describe('SourceDocument', function () {
   const mockStore = configureMockStore([]);
 
   let state = {
+    user: Immutable.fromJS({_id: 1}),
     documentViewer: {
       uiState: Immutable.fromJS({
         reference: {sourceRange: {selection: 'selection'}},
