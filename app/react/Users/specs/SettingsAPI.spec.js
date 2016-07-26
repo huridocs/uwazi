@@ -4,7 +4,6 @@ import backend from 'fetch-mock';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('SettingsAPI', () => {
-
   beforeEach(() => {
     backend.restore();
     backend

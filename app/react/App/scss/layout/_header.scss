@@ -11,7 +11,7 @@ header {
 		font-style: italic;
 		font-weight: 300;
 		margin: 0;
-		line-height: 60px;
+		line-height: 54px;
 		display: none;
 		@include desktop {
 			display: block;
@@ -19,8 +19,7 @@ header {
 	}
 
 	.input-group {
-		line-height: 50px;
-		padding: 5px 0px;
+		line-height: 54px;
 		@include desktop {
       margin: 0 -30px;
 		}
@@ -79,17 +78,23 @@ header {
 	}
 
 	.nav-pills {
+    position: fixed;
+    top: 54px;
+    left: 0;
+    right: 0;
     display: none;
-		line-height: 60px;
+		line-height: 54px;
     padding: 0;
     box-shadow: $shadow;
+    background: $c-white;
     &.is-active {
       display: block;
     }
 		@include desktop {
+      position: relative;
+      top: 0;
 			display: block;
       text-align: right;
-      padding-right: 5px;
       box-shadow: none;
 		}
 		> li {
@@ -109,19 +114,21 @@ header {
 		}
 		a {
 			color: $c-black;
+      border-radius: 0;
 		}
 	}
 
 	/* menu buttons */
-	.fa-bars {
+	.menu-button {
     z-index: 1;
     float: left;
-    width: 60px;
-    height: 60px;
-    line-height: 60px;
+    width: 54px;
+    height: 54px;
+    line-height: 54px;
     padding: 0 15px;
     margin-left: -15px;
     text-align: center;
+    font-size: $f-size-lg;
     cursor: pointer;
 		@include desktop {
 			display: none;

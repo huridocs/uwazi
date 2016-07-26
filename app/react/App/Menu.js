@@ -8,7 +8,7 @@ class Menu extends Component {
   render() {
     const user = this.props.user.toJS();
     return (
-      <ul className={this.props.className}>
+      <ul onClick={this.props.onClick} className={this.props.className}>
         <li><Link to='/' className="btn"><i className="fa fa-th"></i>Library</Link></li>
         <NeedAuthorization>
           <li><Link to='/metadata' className="btn"><i className="fa fa-list-alt"></i>Metadata</Link></li>
@@ -31,7 +31,8 @@ class Menu extends Component {
 
 Menu.propTypes = {
   user: PropTypes.object,
-  className: PropTypes.string
+  className: PropTypes.string,
+  onClick: PropTypes.func
 };
 
 export function mapStateToProps({user}) {
