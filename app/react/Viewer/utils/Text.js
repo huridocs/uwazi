@@ -19,15 +19,28 @@ export default function (container) {
       return serializedRange;
     },
 
+    searchRenderedReference(referenceId) {
+      let reference = null;
+      Object.keys(this.renderedReferences).forEach((referencesKey) => {
+        if (this.renderedReferences[referencesKey][referenceId]) {
+          reference = this.renderedReferences[referencesKey][referenceId];
+        }
+      });
+      return reference;
+    },
+
     highlight(referenceId) {
-      if (this.highlightedReference && this.renderedReferences[this.highlightedReference]) {
-        this.renderedReferences[this.highlightedReference].nodes.forEach((node) => {
+      let reference = this.searchRenderedReference(referenceId);
+      let highlightedReference = this.searchRenderedReference(this.highlightedReference);
+
+      if (highlightedReference) {
+        highlightedReference.nodes.forEach((node) => {
           node.classList.remove('highlighted');
         });
       }
 
-      if (referenceId && this.renderedReferences[referenceId]) {
-        this.renderedReferences[referenceId].nodes.forEach((node) => {
+      if (reference) {
+        reference.nodes.forEach((node) => {
           node.classList.add('highlighted');
         });
       }
@@ -36,14 +49,17 @@ export default function (container) {
     },
 
     activate(referenceId) {
-      if (this.activeReference && this.renderedReferences[this.activeReference]) {
-        this.renderedReferences[this.activeReference].nodes.forEach((node) => {
+      let reference = this.searchRenderedReference(referenceId);
+      let activeReference = this.searchRenderedReference(this.activeReference);
+
+      if (activeReference) {
+        activeReference.nodes.forEach((node) => {
           node.classList.remove('is-active');
         });
       }
 
-      if (referenceId && this.renderedReferences[referenceId]) {
-        this.renderedReferences[referenceId].nodes.forEach((node) => {
+      if (reference) {
+        reference.nodes.forEach((node) => {
           node.classList.add('is-active');
         });
       }
@@ -95,22 +111,25 @@ export default function (container) {
 
     renderReferences(references, rangeProperty = 'sourceRange') {
       let ids = [];
+      if (!this.renderedReferences[rangeProperty]) {
+        this.renderedReferences[rangeProperty] = {};
+      }
       references.forEach((reference) => {
         ids.push(reference._id);
-        if (this.renderedReferences[reference._id]) {
+        if (this.renderedReferences[rangeProperty][reference._id]) {
           return;
         }
         let restoredRange = TextRange.restore(reference[rangeProperty], container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
         elementWrapper.setAttribute('data-id', reference._id);
-        this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
+        this.renderedReferences[rangeProperty][reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 
-      Object.keys(this.renderedReferences).forEach((id) => {
+      Object.keys(this.renderedReferences[rangeProperty]).forEach((id) => {
         if (ids.indexOf(id) === -1) {
-          this.renderedReferences[id].unwrap();
-          delete this.renderedReferences[id];
+          this.renderedReferences[rangeProperty][id].unwrap();
+          delete this.renderedReferences[rangeProperty][id];
         }
       });
     }

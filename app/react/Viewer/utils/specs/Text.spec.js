@@ -149,29 +149,34 @@ describe('Text', () => {
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('3'), 'restoredRange');
     });
 
-    it('should unwrap references that are passed', () => {
+    it('should unwrap references that are passed by propertyRange in multiple calls', () => {
       let firstReferneces = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
       let secondReferences = [{_id: '2', sourceRange: 'sourceRange2'}, {_id: '3', sourceRange: 'sourceRange3'}];
       text.renderReferences(firstReferneces);
       text.renderReferences(secondReferences);
+      text.renderReferences([], 'targetRange');
 
       expect(unwrap.calls.count()).toBe(1);
-      expect(text.renderedReferences[1]).not.toBeDefined();
+      expect(text.renderedReferences.sourceRange[1]).not.toBeDefined();
     });
   });
 
-  describe('highlight', () => {
+  fdescribe('highlight', () => {
     let createElement = () => {
       return document.createElement('a');
     };
 
     beforeEach(() => {
       text.renderedReferences = {
-        reference1: {
-          nodes: [createElement(), createElement()]
+        targetRange: {
+          reference1: {
+            nodes: [createElement(), createElement()]
+          }
         },
-        reference2: {
-          nodes: [createElement(), createElement(), createElement()]
+        sourceRange: {
+          reference2: {
+            nodes: [createElement(), createElement(), createElement()]
+          }
         }
       };
     });
@@ -179,8 +184,8 @@ describe('Text', () => {
     it('should add class highlighted to all nodes of a reference', () => {
       text.highlight('reference2');
 
-      expect(text.renderedReferences.reference2.nodes[0].className).toBe('highlighted');
-      expect(text.renderedReferences.reference2.nodes[1].className).toBe('highlighted');
+      expect(text.renderedReferences.sourceRange.reference2.nodes[0].className).toBe('highlighted');
+      expect(text.renderedReferences.sourceRange.reference2.nodes[1].className).toBe('highlighted');
     });
 
     it('should handle unexistant references', () => {
@@ -191,10 +196,10 @@ describe('Text', () => {
       text.highlight('reference2');
       text.highlight('reference1');
 
-      expect(text.renderedReferences.reference2.nodes[0].className).toBe('');
-      expect(text.renderedReferences.reference2.nodes[1].className).toBe('');
-      expect(text.renderedReferences.reference1.nodes[0].className).toBe('highlighted');
-      expect(text.renderedReferences.reference1.nodes[1].className).toBe('highlighted');
+      expect(text.renderedReferences.sourceRange.reference2.nodes[0].className).toBe('');
+      expect(text.renderedReferences.sourceRange.reference2.nodes[1].className).toBe('');
+      expect(text.renderedReferences.targetRange.reference1.nodes[0].className).toBe('highlighted');
+      expect(text.renderedReferences.targetRange.reference1.nodes[1].className).toBe('highlighted');
     });
 
     describe('when passing null', () => {
@@ -204,18 +209,22 @@ describe('Text', () => {
     });
   });
 
-  describe('activate', () => {
+  fdescribe('activate', () => {
     let createElement = () => {
       return document.createElement('a');
     };
 
     beforeEach(() => {
       text.renderedReferences = {
-        reference1: {
-          nodes: [createElement(), createElement()]
+        sourceRange: {
+          reference1: {
+            nodes: [createElement(), createElement()]
+          }
         },
-        reference2: {
-          nodes: [createElement(), createElement(), createElement()]
+        targetRange: {
+          reference2: {
+            nodes: [createElement(), createElement(), createElement()]
+          }
         }
       };
     });
@@ -223,8 +232,8 @@ describe('Text', () => {
     it('should add class is-active to all nodes of a reference', () => {
       text.activate('reference2');
 
-      expect(text.renderedReferences.reference2.nodes[0].className).toBe('is-active');
-      expect(text.renderedReferences.reference2.nodes[1].className).toBe('is-active');
+      expect(text.renderedReferences.targetRange.reference2.nodes[0].className).toBe('is-active');
+      expect(text.renderedReferences.targetRange.reference2.nodes[1].className).toBe('is-active');
     });
 
     it('should handle unexistant references', () => {
@@ -235,10 +244,10 @@ describe('Text', () => {
       text.activate('reference2');
       text.activate('reference1');
 
-      expect(text.renderedReferences.reference2.nodes[0].className).toBe('');
-      expect(text.renderedReferences.reference2.nodes[1].className).toBe('');
-      expect(text.renderedReferences.reference1.nodes[0].className).toBe('is-active');
-      expect(text.renderedReferences.reference1.nodes[1].className).toBe('is-active');
+      expect(text.renderedReferences.targetRange.reference2.nodes[0].className).toBe('');
+      expect(text.renderedReferences.targetRange.reference2.nodes[1].className).toBe('');
+      expect(text.renderedReferences.sourceRange.reference1.nodes[0].className).toBe('is-active');
+      expect(text.renderedReferences.sourceRange.reference1.nodes[1].className).toBe('is-active');
     });
 
     describe('when passing null', () => {
