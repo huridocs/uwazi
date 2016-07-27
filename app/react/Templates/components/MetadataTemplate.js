@@ -53,18 +53,28 @@ export class MetadataTemplate extends Component {
                   <i className="fa fa-save"/> Save
                 </button>
               </div>
-              {connectDropTarget(<ul className="metadataTemplate-list list-group">
-                {(() => {
-                  if (this.props.template.properties.length === 0) {
-                    return <div className="no-properties">
-                            <i className="fa fa-clone"></i>Drag properties here to start
-                          </div>;
-                  }
-                })()}
-                {this.props.template.properties.map((config, index) => {
-                  return <MetadataProperty {...config} key={config.localID} index={index}/>;
-                })}
-              </ul>)}
+
+              {connectDropTarget(
+                <ul className="metadataTemplate-list list-group">
+                  {(() => {
+                    if (this.props.template.properties.length === 0) {
+                      return <div className="no-properties">
+                              <i className="fa fa-clone"></i>Drag properties here to start
+                            </div>;
+                    }
+                  })()}
+                  {this.props.template.properties.map((config, index) => {
+                    return <MetadataProperty {...config} key={config.localID} index={index}/>;
+                  })}
+                </ul>
+              )}
+
+              <div className="panel-body">
+                <button className="btn btn-success">
+                  <i className="fa fa-plus"></i>
+                  <span>Add new field</span>
+                </button>
+              </div>
             </Form>
           </div>;
   }

@@ -94,15 +94,12 @@
         overflow: hidden;
 
         &.expand {
-          border-top: 1px solid $c-grey-light;
-          padding: 15px 0 0 30px;
-          margin-top: 15px;
           height: auto;
         }
       }
 
       &.dragging {
-        opacity: 0;
+        opacity: 0.2;
       }
     }
     .list-group-item-actions {
