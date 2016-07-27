@@ -66,11 +66,11 @@ export function getDocumentsByFilter(readOnlySearch, limit, getState) {
   let documentTypes = state.documentTypes;
 
   let search = Object.assign({}, readOnlySearch);
-  search.filters = Object.assign({}, readOnlySearch.filters);
 
+  search.filters = {};
   properties.forEach((property) => {
-    if (!property.active) {
-      delete search.filters[property.name];
+    if (property.active) {
+      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type: 'text'};
     }
   });
 
