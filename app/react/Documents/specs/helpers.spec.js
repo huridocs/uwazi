@@ -8,11 +8,12 @@ describe('document helpers', () => {
     {_id: '2', name: 'template name', properties: [
       {name: 'author', type: 'text', label: 'authorLabel'},
       {name: 'country', type: 'select', content: 'abc1', label: 'countryLabel'},
-      {name: 'language', type: 'text', label: 'languageLabel'}
+      {name: 'language', type: 'text', label: 'languageLabel'},
+      {name: 'date', type: 'date', label: 'dateLabel'}
     ]},
-    {_id: '3', properties: [
-      {name: 'author', filter: false, type: 'text'},
-      {name: 'country', filter: true, type: 'text'}
+    {_id: '3', name: 'template name', properties: [
+      {name: 'author', filter: false, type: 'text', label: 'authorLabel'},
+      {name: 'uploaded', filter: true, type: 'date', label: 'dateLabel'}
     ]}
   ];
 
@@ -21,7 +22,8 @@ describe('document helpers', () => {
   let doc = {title: 'doc title', template: '2', metadata: {
     author: 'authorValue',
     country: 'thesauriId',
-    language: 'languageValue'
+    language: 'languageValue',
+    date: '1469729080'
   }};
 
   describe('prepareMetadata', () => {
@@ -33,7 +35,8 @@ describe('document helpers', () => {
         metadata: [
           {label: 'authorLabel', value: 'authorValue'},
           {label: 'countryLabel', value: 'countryValue'},
-          {label: 'languageLabel', value: 'languageValue'}
+          {label: 'languageLabel', value: 'languageValue'},
+          {label: 'dateLabel', value: 'Jul 28, 2016'}
         ]
       });
     });

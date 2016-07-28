@@ -2,7 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
 
 const FieldController = createFieldClass({
-  Select: controls.select
+  Select: controls.select,
+  DatePicker: controls.text
 });
 
 class FormField extends Component {
