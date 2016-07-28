@@ -1,1 +1,2 @@
-export default {APIURL: 'http://localhost:3000/api/'};
+const APIURL = process.env.API_URL;
+export default {APIURL: APIURL ? APIURL : document.location['origin'] + '/api/'};
