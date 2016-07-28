@@ -10,7 +10,7 @@
 }
 
 .panel > .list-group .list-group-item {
-    border-width: 1px 0 1px 3px;
+    //border-width: 1px 0 1px 3px;
     border-color: $c-grey-light;
     border-left-color: transparent;
     outline: none;
@@ -26,7 +26,17 @@
     &.active:focus {
       color: $c-black;
       background-color: $c-white;
-      border-left-color: $c-primary;
       cursor: default;
+
+      &:before {
+        content: '';
+        display: block;
+        width: 5px;
+        background: $c-primary;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+      }
     }
 }
