@@ -53,9 +53,9 @@ export default function () {
         }
 
         if (filters[property].type === 'range') {
-          let match = {};
-          match[`doc.metadata.${property}`] = {gte: filters[property].from, lte: filters[property].to};
-          baseQuery.filter.bool.must.push({match});
+          let range = {};
+          range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+          baseQuery.filter.bool.must.push({range});
         }
       });
       return this;

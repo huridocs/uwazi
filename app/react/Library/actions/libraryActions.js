@@ -69,8 +69,12 @@ export function getDocumentsByFilter(readOnlySearch, limit, getState) {
 
   search.filters = {};
   properties.forEach((property) => {
+    let type = 'text';
+    if (property.type === 'date') {
+      type = 'range';
+    }
     if (property.active) {
-      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type: 'text'};
+      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
     }
   });
 

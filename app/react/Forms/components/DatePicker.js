@@ -15,6 +15,9 @@ export class DatePicker extends Component {
   }
 
   onChange(value) {
+    if (this.props.endOfDay) {
+      value.endOf('day');
+    }
     this.props.onChange(value.format('X'));
   }
 
@@ -32,7 +35,6 @@ export class DatePicker extends Component {
           onChange={this.onChange.bind(this)}
           selected={this.state.value}
           locale='en-gb'
-          todayButton={'Today'}
           fixedHeight
           showYearDropdown
         />
@@ -43,7 +45,8 @@ export class DatePicker extends Component {
 
 DatePicker.propTypes = {
   onChange: PropTypes.func,
-  value: PropTypes.string
+  value: PropTypes.string,
+  endOfDay: PropTypes.bool
 };
 
 export default DatePicker;

@@ -31,9 +31,9 @@ describe('documentQueryBuilder', () => {
     });
 
     it('should filter range filters', () => {
-      let query = queryBuilder().filterMetadata({property1: {from: 10, to: 20, type: 'range'}}).query();
+      let query = queryBuilder().filterMetadata({property1: {value: {from: 10, to: 20}, type: 'range'}}).query();
       expect(query.filter.bool.must[0]).toEqual({match: {'doc.published': true}});
-      expect(query.filter.bool.must[1]).toEqual({match: {'doc.metadata.property1': {gte: 10, lte: 20}}});
+      expect(query.filter.bool.must[1]).toEqual({range: {'doc.metadata.property1': {gte: 10, lte: 20}}});
     });
 
     describe('when there is no filters', () => {
