@@ -23,8 +23,8 @@ export class TemplateCreator extends Component {
             <MetadataTemplate />
         </main>
         <aside className="col-sm-3">
-          <h1>Construction blocks</h1>
           <div className="metadataTemplate-constructor panel panel-default">
+            <div className="panel-heading">Construction blocks</div>
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
               <PropertyOption label='Select' type='select'/>

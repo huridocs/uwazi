@@ -68,13 +68,7 @@ export class MetadataTemplate extends Component {
                   })}
                 </ul>
               )}
-
-              <div className="panel-body">
-                <button className="btn btn-success">
-                  <i className="fa fa-plus"></i>
-                  <span>Add new field</span>
-                </button>
-              </div>
+              
             </Form>
           </div>;
   }

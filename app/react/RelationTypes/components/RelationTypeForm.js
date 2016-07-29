@@ -30,34 +30,35 @@ export class RelationTypeForm extends Component {
     return (
       <div className="row relationType">
         <main className="col-sm-12">
-          <div className="well relationType">
-            <Form
-              model="relationType"
-              onSubmit={this.props.saveRelationType}
-              validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
-            >
-              <div className="relationType-buttons">
-                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
+          <div className="panel panel-default">
+            <div className="panel-heading relationType">
+              <Form
+                model="relationType"
+                onSubmit={this.props.saveRelationType}
+                validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
+              >
+                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+                  <Field model="relationType.name">
+                      <input id="relationTypeName" className="form-control" type="text"/>
+                  </Field>
+                </FormGroup>
+                &nbsp;
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
                 <button type="submit" className="btn btn-success save-template">
-                  <i className="fa fa-save"/> Save Relation Type
+                  <i className="fa fa-save"/> Save
                 </button>
-              </div>
-              <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-                <Field model="relationType.name">
-                    <label htmlFor="relationTypeName" className="control-label">Relation Type name</label>
-                    <input id="relationTypeName" className="form-control" type="text"/>
-                </Field>
-              </FormGroup>
-              {(() => {
-                if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                  return <div className="validation-error">
-                            <i className="fa fa-exclamation-triangle"></i>
-                            &nbsp;
-                            Duplicated name
-                        </div>;
-                }
-              })()}
-            </Form>
+                {(() => {
+                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                    return <div className="validation-error">
+                              <i className="fa fa-exclamation-triangle"></i>
+                              &nbsp;
+                              Duplicated name
+                          </div>;
+                  }
+                })()}
+              </Form>
+            </div>
           </div>
         </main>
       </div>

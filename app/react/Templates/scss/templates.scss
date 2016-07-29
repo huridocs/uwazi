@@ -29,6 +29,7 @@
     letter-spacing: 0.1em;
     border: 1px dashed #ccc;
     padding: 15px;
+    margin: 15px;
     .fa {
       margin-right: 5px;
     }
@@ -99,7 +100,7 @@
       }
 
       &.dragging {
-        opacity: 0.2;
+        opacity: 0;
       }
     }
     .list-group-item-actions {
