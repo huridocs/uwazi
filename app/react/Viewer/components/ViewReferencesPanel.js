@@ -75,9 +75,7 @@ export class ViewReferencesPanel extends Component {
                   >
                     <div className="item-info">
                       <div className="item-name">
-                        <Link to={'/document/' + reference.targetDocument} className="item-name" onClick={e => e.stopPropagation()}>
-                          {this.documentTitle(reference.targetDocument, referencedDocuments)}
-                        </Link>
+                        {this.documentTitle(reference.targetDocument, referencedDocuments)}
                         {(() => {
                           if (reference.targetRange) {
                             return <div className="item-snippet">
