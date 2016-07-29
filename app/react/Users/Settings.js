@@ -55,9 +55,7 @@ export class Settings extends RouteHandler {
                       {itemList.map(function(name){
                           return (
                             <li className="list-group-item">
-                              <a className="" href="#">{name}
-                                <small>(7 items)</small>
-                              </a>
+                              <a className="" href="#">{name}</a>
                               <div className="list-group-item-actions">
                                 <a className="btn btn-default btn-xs" href="#">
                                   <i className="fa fa-pencil"></i>
