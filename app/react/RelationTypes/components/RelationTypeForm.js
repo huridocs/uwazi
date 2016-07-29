@@ -58,7 +58,7 @@ export class RelationTypeForm extends Component {
                 &nbsp;
                 <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
                   <Field model="relationType.name">
-                      <input id="relationTypeName" className="form-control" type="text"/>
+                      <input id="relationTypeName" className="form-control" type="text" placeholder="Relation name"/>
                   </Field>
                 </FormGroup>
                 &nbsp;

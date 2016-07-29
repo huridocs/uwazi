@@ -58,7 +58,7 @@ export class ThesauriForm extends Component {
                 <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <Field model="thesauri.data.name">
-                  <input id="thesauriName" className="form-control" type="text" />
+                  <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
                 </Field>
                 &nbsp;
                 <button className="btn btn-success save-template">
@@ -82,7 +82,7 @@ export class ThesauriForm extends Component {
                   return <li className="list-group-item">
                           <FormGroup key={index}>
                             <Field model={`thesauri.data.values[${index}].label`}>
-                              <input className="form-control" type="text"/>
+                              <input className="form-control" type="text" placeholder="Item name" />
                               <a className="btn btn-xs btn-danger" onClick={this.props.removeValue.bind(null, index)}>
                                 <i className="fa fa-trash"></i> Delete
                               </a>
@@ -92,7 +92,7 @@ export class ThesauriForm extends Component {
                 })}
               </ul>
               <div className="panel-body">
-                <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add value</button>
+                <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</button>
               </div>
             </div>
           </Form>

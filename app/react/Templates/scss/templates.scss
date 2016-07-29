@@ -26,12 +26,17 @@
     color: #AFAFAF;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    border: 1px dashed #ccc;
+
     padding: 15px;
-    margin: 15px;
+    background: $c-white;
     .fa {
       margin-right: 5px;
     }
+  }
+  .no-properties-wrap {
+    display: block;
+    padding: 15px;
+    border: 1px dashed #ccc;
   }
 }
 

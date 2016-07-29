@@ -61,7 +61,7 @@ export class MetadataTemplate extends Component {
                   {(() => {
                     if (this.props.template.properties.length === 0) {
                       return <div className="no-properties">
-                              <i className="fa fa-clone"></i>Drag properties here to start
+                                <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here to start</span>
                             </div>;
                     }
                   })()}
