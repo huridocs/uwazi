@@ -8,7 +8,7 @@ import DatePicker from '../DatePicker';
 describe('DatePicker', () => {
   let component;
   let props;
-  let date = moment('1469743200', 'X');
+  let date = moment.utc('1469743200', 'X');
 
   beforeEach(() => {
     props = {
@@ -41,7 +41,7 @@ describe('DatePicker', () => {
         render();
         let input = component.find(DatePickerComponent);
         input.simulate('change', date);
-        expect(props.onChange).toHaveBeenCalledWith('1469829599');
+        expect(props.onChange).toHaveBeenCalledWith('1469750399');
       });
     });
   });

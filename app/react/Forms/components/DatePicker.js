@@ -10,20 +10,20 @@ export class DatePicker extends Component {
     super(props);
     this.state = {};
     if (props.value) {
-      this.state.value = moment(props.value, 'X');
+      this.state.value = moment.utc(props.value, 'X');
     }
   }
 
   onChange(value) {
     if (this.props.endOfDay) {
-      value.endOf('day');
+      value.utc().endOf('day');
     }
     this.props.onChange(value.format('X'));
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.value) {
-      this.setState({value: moment(newProps.value, 'X')});
+      this.setState({value: moment.utc(newProps.value, 'X')});
     }
   }
 
