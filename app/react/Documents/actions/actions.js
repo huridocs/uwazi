@@ -1,5 +1,4 @@
 import {actions as formActions} from 'react-redux-form';
-import moment from 'moment';
 
 export function loadDocument(form, doc, templates) {
   return function (dispatch) {
