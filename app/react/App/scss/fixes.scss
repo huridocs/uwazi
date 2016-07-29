@@ -37,6 +37,8 @@ header {
 
 .app-content > div {
   height: 100%;
+  padding-top: 30px;
+  overflow-y: scroll;
 }
 
 .panel-footer {
@@ -269,7 +271,7 @@ header ul .btn .fa {
   margin: 0 !important;
 }
 
-.relationType form {
+.relationType .panel-heading {
   display: flex;
 
   .form-group, input {
@@ -277,9 +279,6 @@ header ul .btn .fa {
   }
   .form-group {
     width: 100%;
-  }
-  input {
-    font-size: 18px;
   }
 }
 
@@ -291,6 +290,5 @@ header ul .btn .fa {
   }
   input {
     width: 100%;
-    font-size: 18px;
   }
 }

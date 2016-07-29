@@ -29,21 +29,38 @@ export class RelationTypeForm extends Component {
   render() {
     return (
       <div className="row relationType">
-        <main className="col-sm-12">
+        <div className="col-xs-12 col-sm-4">
           <div className="panel panel-default">
-            <div className="panel-heading relationType">
-              <Form
-                model="relationType"
-                onSubmit={this.props.saveRelationType}
-                validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
-              >
+            <div className="panel-heading">Settings</div>
+            <div className="list-group">
+              <button className="list-group-item active">Account</button>
+              <button className="list-group-item">Collection</button>
+            </div>
+          </div>
+          <div className="panel panel-default">
+            <div className="panel-heading">Metadata</div>
+            <div className="list-group">
+              <button className="list-group-item">Document types</button>
+              <button className="list-group-item active">Relation types</button>
+              <button className="list-group-item">Thesauris</button>
+            </div>
+          </div>
+        </div>
+        <main className="col-xs-12 col-sm-8">
+          <Form
+            model="relationType"
+            onSubmit={this.props.saveRelationType}
+            validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
+          >
+            <div className="panel panel-default">
+              <div className="panel-heading relationType">
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
                 <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
                   <Field model="relationType.name">
                       <input id="relationTypeName" className="form-control" type="text"/>
                   </Field>
                 </FormGroup>
-                &nbsp;
-                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <button type="submit" className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save
@@ -57,9 +74,10 @@ export class RelationTypeForm extends Component {
                           </div>;
                   }
                 })()}
-              </Form>
+              </div>
+              <div className="panel-body">Relations doesn't have content to edit.</div>
             </div>
-          </div>
+          </Form>
         </main>
       </div>
     );
