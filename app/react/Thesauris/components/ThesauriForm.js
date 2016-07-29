@@ -30,51 +30,72 @@ export class ThesauriForm extends Component {
   render() {
     return (
       <div className="row thesauri">
-        <main className="col-sm-12">
-          <div className="panel panel-default thesauri">
-          <div className="panel-heading">
-            {/** /}<Form
-              model="thesauri.data"
-              onSubmit={this.props.saveThesauri}
-              validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
-            >{/**/}
-              <Field model="thesauri.data.name">
-                <input id="thesauriName" className="form-control" type="text" />
-              </Field>
-              &nbsp;
-              <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
-              &nbsp;
-              <button className="btn btn-success save-template">
-                <i className="fa fa-save"/> Save
-              </button>
-              <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-              {(() => {
-                if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                  return <div className="validation-error">
-                            <i className="fa fa-exclamation-triangle"></i>
-                            &nbsp;
-                            Duplicated name
-                        </div>;
-                }
-              })()}
-              </FormGroup>
+        <div className="col-xs-12 col-sm-4">
+          <div className="panel panel-default">
+            <div className="panel-heading">Settings</div>
+            <div className="list-group">
+              <button className="list-group-item active">Account</button>
+              <button className="list-group-item">Collection</button>
             </div>
-            <div class="panel-body">
-              <div>Values</div>
-              <div className="thesauri-values">
-              {this.props.thesauri.values.map((value, index) => {
-                return <FormGroup key={index}>
-                        <Field model={`thesauri.data.values[${index}].label`}>
-                          <input className="form-control" type="text"/>
-                          <a className="btn btn-danger" onClick={this.props.removeValue.bind(null, index)}>Delete</a>
-                        </Field>
-                      </FormGroup>;
-              })}
+          </div>
+          <div className="panel panel-default">
+            <div className="panel-heading">Metadata</div>
+            <div className="list-group">
+              <button className="list-group-item">Document types</button>
+              <button className="list-group-item">Relation types</button>
+              <button className="list-group-item active">Thesauris</button>
+            </div>
+          </div>
+        </div>
+        <main className="col-xs-12 col-sm-8">
+          <Form
+            model="thesauri.data"
+            onSubmit={this.props.saveThesauri}
+            validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
+          >
+            <div className="panel panel-default thesauri">
+              <div className="panel-heading">
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
+                <Field model="thesauri.data.name">
+                  <input id="thesauriName" className="form-control" type="text" />
+                </Field>
+                &nbsp;
+                <button className="btn btn-success save-template">
+                  <i className="fa fa-save"/> Save
+                </button>
+                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+                {(() => {
+                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                    return <div className="validation-error">
+                              <i className="fa fa-exclamation-triangle"></i>
+                              &nbsp;
+                              Duplicated name
+                          </div>;
+                  }
+                })()}
+                </FormGroup>
               </div>
-            {/** /}</Form>{/**/}
-            <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add value</button>
-          </div>
-          </div>
+              <ul className="thesauri-values list-group">
+                <li className="list-group-item"><b>Items:</b></li>
+                {this.props.thesauri.values.map((value, index) => {
+                  return <li className="list-group-item">
+                          <FormGroup key={index}>
+                            <Field model={`thesauri.data.values[${index}].label`}>
+                              <input className="form-control" type="text"/>
+                              <a className="btn btn-xs btn-danger" onClick={this.props.removeValue.bind(null, index)}>
+                                <i className="fa fa-trash"></i> Delete
+                              </a>
+                            </Field>
+                          </FormGroup>
+                        </li> ;
+                })}
+              </ul>
+              <div className="panel-body">
+                <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add value</button>
+              </div>
+            </div>
+          </Form>
         </main>
       </div>
     );
