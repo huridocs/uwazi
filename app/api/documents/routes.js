@@ -89,7 +89,7 @@ export default (app) => {
   app.get('/api/documents/download/:id', (req, res) => {
     request.get(`${dbUrl}/${req.params.id}`)
     .then((response) => {
-      res.download(uploadDocumentsPath + response.json.file.filename);
+      res.download(uploadDocumentsPath + response.json.file.filename, response.json.file.originalname);
     })
     .catch((error) => {
       res.json({error: error.json});
