@@ -81,6 +81,7 @@ export class Document extends Component {
           </div>
         </div>
         <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
+        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.fonts}}></style>
       </div>
     );
   }
