@@ -1,3 +1,7 @@
+@import "../../App/scss/config/_colors.scss";
+@import "../../App/scss/config/_materials.scss";
+@import "../../App/scss/config/_typography.scss";
+
 #app {
   display: flex;
   flex-direction: column;
@@ -28,7 +32,7 @@ header {
 }
 
 .app-content {
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .app-content > div {
@@ -95,8 +99,19 @@ header ul .btn .fa {
   }
 }
 
+.side-panel {
+  .form-group {
+    margin: 0 -15px;
+  }
+}
 .search__filter > li label {
-  font-weight: bold;
+  font-size: $f-size-lg;
+  font-style: normal;
+  font-family: $f-special;
+  color: $c-grey-dark;
+  margin-bottom: 5px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .relationship-steps {

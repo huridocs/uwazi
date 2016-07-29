@@ -30,12 +30,12 @@
 
 .search__filter {
 	list-style-type: none;
-	margin-bottom: 5px;
+	margin: 0;
 	padding: 15px;
 	display: table;
 	width: 100%;
 	color: $c-grey-dark;
-	background: $c-grey-light;
+  border-top: 1px solid $c-grey;
 
 	&.is-active {
 		color: $c-black;
@@ -91,6 +91,11 @@
 		cursor: pointer;
 		margin: 0;
 	}
+  label {
+    font-family: $f-regular !important;
+    font-size: $f-size !important;
+    font-weight: bold;
+  }
 	.btn {
 		width: 97%;
 		margin-bottom: 5px;
