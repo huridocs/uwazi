@@ -33,7 +33,7 @@ export class RelationTypeForm extends Component {
           <div className="panel panel-default">
             <div className="panel-heading">Settings</div>
             <div className="list-group">
-              <button className="list-group-item active">Account</button>
+              <button className="list-group-item">Account</button>
               <button className="list-group-item">Collection</button>
             </div>
           </div>

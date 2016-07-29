@@ -9,7 +9,6 @@
     margin-right: 15px;
 
     .form-control {
-      font-size: 18px;
       line-height: 23px;
       padding: 9px 12px;
       margin-bottom: 0;
@@ -48,7 +47,7 @@
   }
   .list-group-item:hover {
     cursor: move;
-    border-color: #D4D7DB;
+
     .fa-clone,
     .fa-arrows-v {
       color: #777;
@@ -96,6 +95,7 @@
 
         &.expand {
           height: auto;
+          padding-top: 15px;
         }
       }
 

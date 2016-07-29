@@ -8,7 +8,7 @@ export class FormConfigInput extends Component {
   render() {
     const {index, data, formState} = this.props;
     const ptoperty = data.properties[index];
-    let labelClass = '';
+    let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.errors[labelKey + '.required'];
     let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
@@ -19,9 +19,9 @@ export class FormConfigInput extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-sm-12">
+          <div className="col-sm-6">
             <div className={labelClass}>
-              <span>
+              <span className="input-group-addon">
                 Label
               </span>
               <FormField model={`template.data.properties[${index}].label`}>
@@ -29,11 +29,15 @@ export class FormConfigInput extends Component {
               </FormField>
             </div>
           </div>
-          <div className="col-sm-12">
-              <FormField model={`template.data.properties[${index}].required`}>
-                <input id={'required' + index} type="checkbox" className="asd"/>
-              </FormField>
-              <label htmlFor={'required' + index}>Required</label>
+          <div className="col-sm-6">
+            <div className="input-group">
+              <span className="input-group-addon">
+                <FormField model={`template.data.properties[${index}].required`}>
+                  <input id={'required' + index} type="checkbox" className="asd"/>
+                </FormField>
+              </span>
+              <label htmlFor={'required' + index} className="form-control">Required</label>
+            </div>
           </div>
         </div>
         {(() => {

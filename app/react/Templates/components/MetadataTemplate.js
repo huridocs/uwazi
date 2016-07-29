@@ -30,6 +30,8 @@ export class MetadataTemplate extends Component {
               validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
             >
               <div className="metadataTemplate-heading panel-heading">
+                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
                 <div className={nameGroupClass}>
                   <FormField model="template.data.name">
                     <input placeholder="Template name" className="form-control"/>
@@ -68,7 +70,7 @@ export class MetadataTemplate extends Component {
                   })}
                 </ul>
               )}
-              
+
             </Form>
           </div>;
   }

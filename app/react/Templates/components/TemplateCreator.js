@@ -18,13 +18,30 @@ export class TemplateCreator extends Component {
 
   render() {
     return (
-      <div className="metadata">
-        <main className="col-sm-9">
+      <div className="row metadata">
+        <div className="col-xs-12 col-sm-3">
+          <div className="panel panel-default">
+            <div className="panel-heading">Settings</div>
+            <div className="list-group">
+              <button className="list-group-item">Account</button>
+              <button className="list-group-item">Collection</button>
+            </div>
+          </div>
+          <div className="panel panel-default">
+            <div className="panel-heading">Metadata</div>
+            <div className="list-group">
+              <button className="list-group-item active">Document types</button>
+              <button className="list-group-item">Relation types</button>
+              <button className="list-group-item">Thesauris</button>
+            </div>
+          </div>
+        </div>
+        <main className="col-xs-12 col-sm-7">
             <MetadataTemplate />
         </main>
-        <aside className="col-sm-3">
+        <aside className="col-xs-12 col-sm-2">
           <div className="metadataTemplate-constructor panel panel-default">
-            <div className="panel-heading">Construction blocks</div>
+            <div className="panel-heading">Blocks</div>
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
               <PropertyOption label='Select' type='select'/>

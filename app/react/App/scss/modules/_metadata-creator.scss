@@ -35,10 +35,6 @@
   }
 }
 
-.metadataTemplate-constructor {
-  margin-top: 15px;
-}
-
 .metadata {
   padding: 30px;
 	overflow-y: scroll;
@@ -70,7 +66,9 @@
     &:hover .fa-reorder {
       color: $c-grey-dark;
     }
-    .expand {}
+    .expand {
+      width: 100%;
+    }
     &.validation {
       border-bottom: 1px solid #ED353D !important;
       color: #ED353D;
