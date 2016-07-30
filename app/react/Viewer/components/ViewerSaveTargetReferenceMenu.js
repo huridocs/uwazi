@@ -13,10 +13,12 @@ export class ViewerSaveTargetReferenceMenu extends Component {
       reference.sourceDocument = this.props.sourceDocument;
       return this.props.saveReference(reference);
     }
+
     if (this.props.reference.targetDocument && !this.props.targetDocument) {
       this.props.loadTargetDocument(this.props.reference.targetDocument);
     }
   }
+
   render() {
     let disabled = true;
     let className = 'fa-arrow-right';

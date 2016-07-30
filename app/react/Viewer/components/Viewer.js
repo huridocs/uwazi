@@ -40,7 +40,7 @@ export class Viewer extends Component {
       className = 'document-viewer with-panel is-active';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document is-active';
+      className = 'document-viewer show-target-document';
     }
     if (this.props.referencesPanelIsOpen) {
       className += ' references-panel-is-open';
