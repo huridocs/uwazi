@@ -26,6 +26,7 @@ export function resetReferenceCreation() {
     dispatch({type: types.RESET_REFERENCE_CREATION});
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
+    dispatch(actions.unset('viewer/targetDocReferences'));
   };
 }
 

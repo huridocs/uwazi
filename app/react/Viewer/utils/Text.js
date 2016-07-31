@@ -100,6 +100,7 @@ export default function (container) {
         if (this.renderedReferences[reference._id]) {
           return;
         }
+
         let restoredRange = TextRange.restore(reference.sourceRange, container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');

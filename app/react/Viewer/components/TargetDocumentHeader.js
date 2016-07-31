@@ -11,6 +11,7 @@ export class TargetDocumentHeader extends Component {
   back() {
     this.props.unset('viewer/targetDoc');
     this.props.unset('viewer/targetDocHTML');
+    this.props.unset('viewer/targetDocReferences');
     this.props.unsetTargetSelection();
     this.props.openPanel('targetReferencePanel');
   }

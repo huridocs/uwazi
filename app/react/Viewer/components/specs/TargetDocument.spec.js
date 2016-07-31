@@ -17,7 +17,8 @@ describe('TargetDocument', function () {
         reference: {targetRange: {selection: 'selection'}}
       }),
       targetDoc: Immutable.fromJS({name: 'document'}),
-      targetDocHTML: Immutable.fromJS({pages: 'pages', css: 'css'})
+      targetDocHTML: Immutable.fromJS({pages: 'pages', css: 'css'}),
+      targetDocReferences: Immutable.fromJS([])
     }
   };
 

@@ -8,14 +8,15 @@ import {highlightReference, activateReference} from 'app/Viewer/actions/uiAction
 
 const mapStateToProps = ({documentViewer}) => {
   let uiState = documentViewer.uiState.toJS();
+  
   return {
     doc: documentViewer.targetDoc,
     docHTML: documentViewer.targetDocHTML,
     selection: uiState.reference.targetRange,
-    references: [],
+    references: documentViewer.targetDocReferences.toJS(),
     className: 'targetDocument',
-    highlightedReference: uiState.targetHighlightedReference,
-    activeReference: uiState.targetActiveReference,
+    highlightedReference: uiState.highlightedReference,
+    activeReference: uiState.activeReference,
     disableTextSelection: false,
     header: TargetDocumentHeader
   };

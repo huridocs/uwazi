@@ -32,6 +32,7 @@ export class Viewer extends Component {
     this.context.store.dispatch(actions.unset('viewer/docHTML'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
+    this.context.store.dispatch(actions.unset('viewer/targetDocReferences'));
   }
 
   render() {

@@ -128,12 +128,20 @@ ViewReferencesPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({documentViewer}) => {
+  let references = documentViewer.references;
+  let referencedDocuments = documentViewer.referencedDocuments;
+
+  if (documentViewer.targetDoc.get('_id')) {
+    references = documentViewer.targetDocReferences;
+    referencedDocuments = documentViewer.targetDocReferencedDocuments;
+  }
+
   return {
-    uiState: state.documentViewer.uiState,
-    references: state.documentViewer.references,
-    referencedDocuments: state.documentViewer.referencedDocuments,
-    relationTypes: state.documentViewer.relationTypes
+    uiState: documentViewer.uiState,
+    references,
+    referencedDocuments,
+    relationTypes: documentViewer.relationTypes
   };
 };
 
