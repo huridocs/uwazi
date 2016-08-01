@@ -25,13 +25,7 @@ export class ViewerSaveTargetReferenceMenu extends Component {
     if (this.props.reference.targetDocument && !this.props.targetDocument && this.props.reference.relationType) {
       disabled = false;
     }
-    if (this.props.targetDocument) {
-      className = 'fa-save';
-    }
 
-    if (this.props.targetDocument && this.props.reference.targetRange) {
-      disabled = false;
-    }
     return (
       <div>
         <MenuButtons.Main disabled={disabled} onClick={() => this.handleClick()}>

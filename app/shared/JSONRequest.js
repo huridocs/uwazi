@@ -33,7 +33,7 @@ let _fetch = (url, data, method, cookie) => {
   if (method === 'POST') {
     body = JSON.stringify(data);
   }
-  
+
   return fetch(url + params, {
     method: method,
     headers: headers,

@@ -93,7 +93,8 @@ describe('ViewReferencesPanel', () => {
         uiState: Immutable.fromJS({
           panel: ''
         }),
-        references: Immutable.fromJS(['reference'])
+        references: Immutable.fromJS(['reference']),
+        targetDoc: Immutable.fromJS({})
       }
     };
 
