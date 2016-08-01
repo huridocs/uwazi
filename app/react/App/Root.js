@@ -37,7 +37,7 @@ class Root extends Component {
             type="text/css"
           />
           <link
-          href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic|Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic|Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic|Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic|Ubuntu:400,300,300italic,400italic,500,500italic,700,700italic|Roboto+Slab:400,100,300,700|Droid+Serif:400,400italic,700,700italic|Merriweather:400,300,300italic,400italic,700,700italic,900,900italic|Lora:400,400italic,700,700italic" //eslint-disable-line
+          href="https://fonts.googleapis.com/css?family=Open+Sans|Arvo|Fira+Mono|Glegoo:700|Inconsolata|Roboto+Mono|Roboto+Slab|Source+Code+Pro|Ubuntu+Mono|Roboto|Lato|Source+Sans+Pro|Ubuntu|Roboto+Slab|Droid+Serif|Merriweather" //eslint-disable-line
           rel="stylesheet"
           type="text/css"
           />

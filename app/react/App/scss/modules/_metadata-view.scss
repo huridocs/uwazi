@@ -5,6 +5,9 @@ aside {
       margin: 0 -15px;
       border-top: 1px solid $c-grey;
     }
+    dl:first-child {
+      border-top: 0;
+    }
     dt {
       font-size: $f-size-lg;
       font-style: normal;
