@@ -6,9 +6,12 @@
 }
 
 .login-title {
-  width: 240px;
-  margin: 0 auto 30px;
+  width: 160px;
+  margin: 0 auto 60px;
   display: block;
+  img {
+    width: 100%;
+  }
 }
 
 .login-password {
