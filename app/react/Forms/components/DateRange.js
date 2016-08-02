@@ -7,14 +7,18 @@ export class DateRange extends Component {
   render() {
     return (
         <div>
-          <span>From:&nbsp;</span>
-          <DatePickerField model={this.props.fromModel} >
-            <DatePicker onChange={this.props.fromChange}/>
-          </DatePickerField>
-          <span>&nbsp;To:&nbsp;</span>
-          <DatePickerField model={this.props.toModel} >
-            <DatePicker endOfDay={true} onChange={this.props.toChange}/>
-          </DatePickerField>
+          <div className="DatePicker__From">
+            <span>From:&nbsp;</span>
+            <DatePickerField model={this.props.fromModel} >
+              <DatePicker onChange={this.props.fromChange}/>
+            </DatePickerField>
+          </div>
+          <div className="DatePicker__To">
+            <span>&nbsp;To:&nbsp;</span>
+            <DatePickerField model={this.props.toModel} >
+              <DatePicker endOfDay={true} onChange={this.props.toChange}/>
+            </DatePickerField>
+          </div>
         </div>
     );
   }
