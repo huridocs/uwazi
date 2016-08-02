@@ -10,19 +10,41 @@ export class SettingsNavigation extends Component {
   }
 
   render() {
-    return <div className="panel panel-default">
+    return <div>
+    <div className="panel panel-default">
       <div className="panel-heading">Settings</div>
-      <div className="list-group">
-        <button
-          onClick={this.handleClick.bind(this, 'account')}
-          className={'list-group-item' + (this.props.section === 'account' ? ' active' : '')}>
-          Account
-        </button>
-        <button
-        onClick={this.handleClick.bind(this, 'collection')}
-        className={'list-group-item' + (this.props.section === 'collection' ? ' active' : '')}>
-          Collection
-        </button>
+        <div className="list-group">
+          <button
+            onClick={this.handleClick.bind(this, 'account')}
+            className={'list-group-item' + (this.props.section === 'account' ? ' active' : '')}>
+            Account
+          </button>
+          <button
+          onClick={this.handleClick.bind(this, 'collection')}
+          className={'list-group-item' + (this.props.section === 'collection' ? ' active' : '')}>
+            Collection
+          </button>
+        </div>
+      </div>
+      <div className="panel panel-default">
+        <div className="panel-heading">Metadata</div>
+        <div className="list-group">
+          <button
+            onClick={this.handleClick.bind(this, 'documentTypes')}
+            className={'list-group-item' + (this.props.section === 'documentTypes' ? ' active' : '')}>
+            Document types
+          </button>
+          <button
+            onClick={this.handleClick.bind(this, 'relationTypes')}
+            className={'list-group-item' + (this.props.section === 'relationTypes' ? ' active' : '')}>
+            Relation types
+          </button>
+          <button
+            onClick={this.handleClick.bind(this, 'thesauris')}
+            className={'list-group-item' + (this.props.section === 'thesauris' ? ' active' : '')}>
+            Thesauris
+          </button>
+        </div>
       </div>
     </div>;
   }
