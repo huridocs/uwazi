@@ -3,7 +3,6 @@ import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Templates/actions/templatesActions';
 import * as types from 'app/Templates/actions/actionTypes';
-import * as modalTypes from 'app/Modals/actions/actionTypes';
 
 describe('templatesActions', () => {
   describe('setTemplates', () => {
@@ -27,23 +26,15 @@ describe('templatesActions', () => {
     });
 
     describe('checkTemplateCanBeDeleted', () => {
-      it('should show an error modal when template has documents', (done) => {
+      it('should reject a promise if the template has documents', (done) => {
         let template = {_id: 'templateWithDocuments'};
 
         actions.checkTemplateCanBeDeleted(template)(dispatch)
         .then(() => {
-          expect(dispatch.calls.count()).toBe(1);
-          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'CantDeleteTemplateAlert', data: 2});
+          expect('Promise to be rejected').toBe(false);
           done();
-        });
-      });
-      it('should show an error modal when template has documents', (done) => {
-        let template = {_id: 'templateWithoutDocuments'};
-
-        actions.checkTemplateCanBeDeleted(template)(dispatch)
-        .then(() => {
-          expect(dispatch.calls.count()).toBe(1);
-          expect(dispatch).toHaveBeenCalledWith({type: modalTypes.SHOW_MODAL, modal: 'DeleteTemplateConfirm', data: template});
+        })
+        .catch(() => {
           done();
         });
       });

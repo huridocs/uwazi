@@ -24,13 +24,12 @@ export function deleteTemplate(template) {
 }
 
 export function checkTemplateCanBeDeleted(template) {
-  return function (dispatch) {
+  return function () {
     return documentsAPI.countByTemplate(template._id)
     .then((count) => {
       if (count) {
-        return dispatch(showModal('CantDeleteTemplateAlert', count));
+        return Promise.reject();
       }
-      dispatch(showModal('DeleteTemplateConfirm', template));
     });
   };
 }
