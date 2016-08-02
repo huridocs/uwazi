@@ -8,11 +8,11 @@ import DatePicker from '../DatePicker';
 describe('DatePicker', () => {
   let component;
   let props;
-  let date = moment.utc('1469743200', 'X');
+  let date = moment.utc('2016-07-28T00:00:00+00:00');
 
   beforeEach(() => {
     props = {
-      value: '1469743200',
+      value: date.format('X'),
       onChange: jasmine.createSpy('onChange')
     };
   });
@@ -24,7 +24,7 @@ describe('DatePicker', () => {
   it('should render a DatePickerComponent with the date passed', () => {
     render();
     let input = component.find(DatePickerComponent);
-    expect(input.props().selected).toEqual(date);
+    expect(input.props().selected.toString()).toEqual(date.toString());
   });
 
   describe('onChange', () => {
@@ -32,7 +32,7 @@ describe('DatePicker', () => {
       render();
       let input = component.find(DatePickerComponent);
       input.simulate('change', date);
-      expect(props.onChange).toHaveBeenCalledWith('1469743200');
+      expect(props.onChange).toHaveBeenCalledWith('1469664000');
     });
 
     describe('when passing endOfDay flag', () => {
@@ -42,6 +42,21 @@ describe('DatePicker', () => {
         let input = component.find(DatePickerComponent);
         input.simulate('change', date);
         expect(props.onChange).toHaveBeenCalledWith('1469750399');
+      });
+    });
+
+    describe('when the value is not utc', () => {
+      it('should add the utc offset to the value', () => {
+        render();
+        let input = component.find(DatePickerComponent);
+
+        let twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00');
+        input.simulate('change', twoHoursFromUtc);
+        expect(props.onChange).toHaveBeenCalledWith('1469664000');
+
+        let twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00');
+        input.simulate('change', twoHoursAfterUtc);
+        expect(props.onChange).toHaveBeenCalledWith('1469664000');
       });
     });
   });

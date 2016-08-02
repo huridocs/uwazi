@@ -15,10 +15,12 @@ export class DatePicker extends Component {
   }
 
   onChange(value) {
+    value.add(value.utcOffset(), 'minute');
     if (this.props.endOfDay) {
       value.utc().endOf('day');
     }
-    this.props.onChange(value.format('X'));
+
+    this.props.onChange(value.utc().format('X'));
   }
 
   componentWillReceiveProps(newProps) {
