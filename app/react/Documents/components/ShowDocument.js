@@ -30,7 +30,8 @@ export class ShowDocument extends Component {
 }
 
 ShowDocument.propTypes = {
-  doc: PropTypes.object
+  doc: PropTypes.object,
+  template: PropTypes.object
 };
 
 export default ShowDocument;

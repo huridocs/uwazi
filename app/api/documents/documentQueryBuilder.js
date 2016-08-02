@@ -46,9 +46,17 @@ export default function () {
 
     filterMetadata(filters = {}) {
       Object.keys(filters).forEach((property) => {
-        let match = {};
-        match[`doc.metadata.${property}`] = filters[property];
-        baseQuery.filter.bool.must.push({match});
+        if (filters[property].type === 'text') {
+          let match = {};
+          match[`doc.metadata.${property}`] = filters[property].value;
+          baseQuery.filter.bool.must.push({match});
+        }
+
+        if (filters[property].type === 'range') {
+          let range = {};
+          range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+          baseQuery.filter.bool.must.push({range});
+        }
       });
       return this;
     },

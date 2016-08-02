@@ -53,7 +53,8 @@ export default {
       });
 
       return {rows, totalRows: response.hits.total};
-    });
+    })
+    .catch(console.log);
   },
 
   getUploadsByUser(user) {

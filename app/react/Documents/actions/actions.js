@@ -15,7 +15,7 @@ export function loadDocument(form, doc, templates) {
 
     let template = templates.find((t) => t._id === newDoc.template);
     template.properties.forEach((property) => {
-      if (!newDoc.metadata[property.name]) {
+      if (!newDoc.metadata[property.name] && property.type !== 'date') {
         newDoc.metadata[property.name] = '';
       }
     });
