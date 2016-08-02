@@ -18,7 +18,7 @@
   position: relative;
   width: 100%;
   min-height: 120px;
-  margin: 0 0 15px;
+  margin: 0 0 20px;
   top: 0;
   background: $c-white;
   border-radius: 4px;
@@ -29,10 +29,10 @@
   zoom: 1;
 
   @media (min-width: 640px) {
-    width: 49%;
+    width: 48%;
   }
   @media (min-width: 1024px) {
-    width: 32.9%;
+    width: 32.5%;
   }
 
   &:before {
@@ -52,9 +52,11 @@
     cursor: pointer;
   }
   &.is-active {
-    border-bottom-color: $c-grey;
+    border-color: $c-primary-light;
     box-shadow: $shadow;
-    top: -2px;
+    &:before {
+      box-shadow: -3px 3px 9px -3px $c-primary-light;
+    }
   }
 
   .label {
@@ -143,9 +145,14 @@ $item-width: 250px;
 
 .item-actions {
   color: $c-grey-dark;
-  border-top: 1px solid $c-grey-light;
-  padding: 0 15px;
+  background-color: $c-grey-lighten;
+  padding: 8px 16px;
   text-align: right;
+  border-radius: 4px;
+
+  .item.is-active & {
+    background-color: $c-primary-lighten;
+  }
 }
 
 .item-shortcut {

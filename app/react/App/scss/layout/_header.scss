@@ -1,6 +1,7 @@
 header {
 	background: $c-white;
-	border-bottom: 1px solid $c-grey-light;
+	border-bottom: 1px solid $c-grey;
+  box-shadow: $shadow;
 	z-index: 40;
 	position: fixed;
 	top: 0;
@@ -16,6 +17,10 @@ header {
 		@include desktop {
 			display: block;
 		}
+
+    a {
+      color: $c-black;
+    }
 	}
 
 	.input-group {
