@@ -15,6 +15,7 @@ describe('ViewDocument', () => {
   let document = {_id: '1', title: 'title'};
   let docHTML = {_id: '2', html: 'html'};
   let references = [{_id: '1', targetDocument: '1'}, {_id: '2', targetDocument: '2'}];
+  let inboundReferences = [{_id: '3', targetDocument: '3'}, {_id: '4', targetDocument: '4'}];
   let component;
   let instance;
   let context;
@@ -33,7 +34,8 @@ describe('ViewDocument', () => {
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: [document]})})
     .mock(APIURL + 'documents/list?keys=%5B%221%22%2C%222%22%5D', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'documents/html?_id=documentId', 'GET', {body: JSON.stringify(docHTML)})
-    .mock(APIURL + 'references?sourceDocument=documentId', 'GET', {body: JSON.stringify({rows: references})});
+    .mock(APIURL + 'references?sourceDocument=documentId', 'GET', {body: JSON.stringify({rows: references})})
+    .mock(APIURL + 'references/by_target_document/documentId', 'GET', {body: JSON.stringify({rows: inboundReferences})});
   });
 
   it('should render the Viewer', () => {
@@ -47,6 +49,7 @@ describe('ViewDocument', () => {
         let documentResponse = state.documentViewer.doc;
         let html = state.documentViewer.docHTML;
         let referencesResponse = state.documentViewer.references;
+        let inboundReferencesResponse = state.documentViewer.inboundReferences;
         let templatesResponse = state.documentViewer.templates;
         let thesaurisResponse = state.documentViewer.thesauris;
         let relationTypesResponse = state.documentViewer.relationTypes;
@@ -55,6 +58,7 @@ describe('ViewDocument', () => {
         expect(documentResponse._id).toBe('1');
         expect(html).toEqual(docHTML);
         expect(referencesResponse).toEqual(references);
+        expect(inboundReferencesResponse).toEqual(inboundReferences);
         expect(templatesResponse).toEqual(templates.rows);
         expect(thesaurisResponse).toEqual(thesauris.rows);
         expect(relationTypesResponse).toEqual(relationTypes.rows);
@@ -73,6 +77,7 @@ describe('ViewDocument', () => {
           doc: 'doc',
           docHTML: 'docHTML',
           references: 'references',
+          inboundReferences: 'inboundReferences',
           templates: 'templates',
           thesauris: 'thesauris',
           relationTypes: 'relationTypes',
@@ -82,6 +87,7 @@ describe('ViewDocument', () => {
 
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: 'references'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/SET', value: 'doc'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/inboundReferences/SET', value: 'inboundReferences'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/SET', value: 'docHTML'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/SET', value: 'templates'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/SET', value: 'thesauris'});
@@ -95,6 +101,7 @@ describe('ViewDocument', () => {
       instance.emptyState();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: []});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/inboundReferences/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/UNSET'});
