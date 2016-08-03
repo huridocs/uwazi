@@ -1,3 +1,4 @@
+import path from 'path';
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
@@ -89,7 +90,7 @@ export default (app) => {
   app.get('/api/documents/download/:id', (req, res) => {
     request.get(`${dbUrl}/${req.params.id}`)
     .then((response) => {
-      res.download(uploadDocumentsPath + response.json.file.filename, response.json.file.originalname);
+      res.download(uploadDocumentsPath + response.json.file.filename, response.json.title + path.extname(response.json.file.filename));
     })
     .catch((error) => {
       res.json({error: error.json});
