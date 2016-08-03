@@ -11,7 +11,7 @@ export class ShowIf extends Component {
 }
 
 ShowIf.propTypes = {
-  children: PropTypes.any,
+  children: PropTypes.object,
   if: PropTypes.bool
 };
 

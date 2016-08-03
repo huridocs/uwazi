@@ -99,7 +99,9 @@ export class ViewReferencesPanel extends Component {
                             <i className="fa fa-unlink"></i><span>Delete</span>
                           </a>
                         </NeedAuthorization>
+                      </ShowIf>
                         &nbsp;
+                      <ShowIf if={!this.props.targetDoc}>
                         <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
                           <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
                         </Link>
