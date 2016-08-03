@@ -8,6 +8,7 @@ describe('Text', () => {
   let text;
 
   beforeEach(() => {
+    document.innerHTML = '<span></span>';
     text = Text(document);
   });
 
@@ -111,6 +112,16 @@ describe('Text', () => {
       unwrap = jasmine.createSpy('unwrap');
       spyOn(wrapper, 'wrap').and.returnValue({unwrap});
       spyOn(TextRange, 'restore').and.returnValue('restoredRange');
+    });
+
+    describe('when container does not have any html', () => {
+      it('should throw an error', () => {
+        document.innerHTML = '';
+        text = Text(document);
+        let references = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
+
+        expect(text.renderReferences.bind(text, references)).toThrow();
+      });
     });
 
     it('should wrap a collection of references using sourceRange by default', () => {
