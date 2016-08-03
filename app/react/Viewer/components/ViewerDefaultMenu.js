@@ -26,7 +26,7 @@ export class ViewerDefaultMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <div className="float-btn__sec">
-          <a href={'/api/documents/download/' + this.props.doc.toJS()._id} target="_blank" >
+          <a href={'/api/documents/download?_id=' + this.props.doc.toJS()._id} target="_blank" >
             <span>Download</span><i className="fa fa-cloud-download"></i>
           </a>
         </div>
