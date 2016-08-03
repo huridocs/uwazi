@@ -45,7 +45,9 @@ export class Login extends RouteHandler {
     return <div className="content login-content">
       <div className="row">
         <div className="col-xs-12 col-sm-4 col-sm-offset-4">
-          <h1>uwazi</h1>
+          <h1 className="login-title">
+            <img src="/public/logo.svg" title="uwazi" alt="uwazi"/>
+          </h1>
           <Form onSubmit={this.submit.bind(this)} model="users.form">
             <div className={'form-group login-email' + (this.state.error ? ' has-error' : '')}>
               <Field model="users.form.username">
