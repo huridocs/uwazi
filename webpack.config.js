@@ -35,6 +35,11 @@ module.exports = {
         test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
         loaders: ['url-loader', 'img'],
         include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
+      },
+      {
+        test:/\.json$/i,
+        loaders: ['json-loader'],
+        include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
       }
     ]
   },
