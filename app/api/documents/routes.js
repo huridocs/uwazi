@@ -1,4 +1,6 @@
 import path from 'path';
+import sanitize from 'sanitize-filename';
+
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
@@ -90,7 +92,7 @@ export default (app) => {
   app.get('/api/documents/download', (req, res) => {
     request.get(`${dbUrl}/${req.query._id}`)
     .then((response) => {
-      res.download(uploadDocumentsPath + response.json.file.filename, response.json.title + path.extname(response.json.file.filename));
+      res.download(uploadDocumentsPath + response.json.file.filename, sanitize(response.json.title + path.extname(response.json.file.filename)));
     })
     .catch((error) => {
       res.json({error: error.json}, 500);
