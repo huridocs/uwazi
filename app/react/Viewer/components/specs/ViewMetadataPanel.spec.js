@@ -85,6 +85,7 @@ describe('ViewMetadataPanel', () => {
           panel: ''
         }),
         doc: Immutable.fromJS({}),
+        targetDoc: Immutable.fromJS({}),
         references: Immutable.fromJS(['reference']),
         templates: Immutable.fromJS(['template']),
         thesauris: Immutable.fromJS(['thesauris']),

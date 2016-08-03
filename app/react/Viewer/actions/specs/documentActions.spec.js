@@ -46,7 +46,9 @@ describe('documentActions', () => {
       backend
       .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
       .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
-      .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')});
+      .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')})
+      .mock(APIURL + 'references?sourceDocument=targetId', 'GET', {body: JSON.stringify({rows: []})})
+      .mock(APIURL + 'documents/list?keys=%5B%5D', 'GET', {body: JSON.stringify({rows: []})});
     });
 
     describe('loadTargetDocument', () => {
@@ -55,7 +57,9 @@ describe('documentActions', () => {
 
         const expectedActions = [
           {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
-          {type: 'viewer/targetDocHTML/SET', value: 'html'}
+          {type: 'viewer/targetDocHTML/SET', value: 'html'},
+          {type: 'viewer/targetDocReferences/SET', value: []},
+          {type: 'viewer/targetDocReferencedDocuments/SET', value: []}
         ];
         const store = mockStore({});
 

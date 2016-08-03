@@ -70,6 +70,7 @@ CreateReferencePanel.propTypes = {
 
 const mapStateToProps = (state) => {
   let uiState = state.documentViewer.uiState.toJS();
+
   return {
     open: uiState.panel === 'referencePanel' || uiState.panel === 'targetReferencePanel',
     reference: uiState.reference,

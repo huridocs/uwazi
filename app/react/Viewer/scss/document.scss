@@ -104,10 +104,7 @@
 }
 
 .document.targetDocument {
-  position: relative;
-  transform: translateX(1000px);
-  opacity: 0;
-  transition: all 500ms;
+  
 }
 
 .document.targetDocument._undefined {
@@ -116,17 +113,10 @@
 
 .document-viewer.show-target-document {
   .sourceDocument {
-    position: absolute;
-    right: 90%;
-    opacity: 0.3;
-    &:hover {
-      opacity: 1;
-      cursor: pointer;
-    }
+    display: none;
   }
   .targetDocument {
     opacity: 1;
-    transform: translateX(0px);
   }
 }
 

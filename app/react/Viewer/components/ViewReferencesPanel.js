@@ -5,6 +5,7 @@ import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
 
 import SidePanel from 'app/Layout/SidePanel';
+import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 
@@ -92,15 +93,17 @@ export class ViewReferencesPanel extends Component {
                       </dl>
                     </div>
                     <div className="item-actions">
-                      <NeedAuthorization>
-                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-unlink"></i><span>Delete</span>
-                        </a>
-                      </NeedAuthorization>
-                      &nbsp;
-                      <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                        <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
-                      </Link>
+                      <ShowIf if={!this.props.targetDoc}>
+                        <NeedAuthorization>
+                          <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                            <i className="fa fa-unlink"></i><span>Delete</span>
+                          </a>
+                        </NeedAuthorization>
+                        &nbsp;
+                        <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+                        </Link>
+                      </ShowIf>
                     </div>
                 </div>
                 );
@@ -121,19 +124,29 @@ ViewReferencesPanel.propTypes = {
   activateReference: PropTypes.func,
   deactivateReference: PropTypes.func,
   closePanel: PropTypes.func,
-  deleteReference: PropTypes.func
+  deleteReference: PropTypes.func,
+  targetDoc: PropTypes.bool
 };
 
 ViewReferencesPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({documentViewer}) => {
+  let references = documentViewer.references;
+  let referencedDocuments = documentViewer.referencedDocuments;
+
+  if (documentViewer.targetDoc.get('_id')) {
+    references = documentViewer.targetDocReferences;
+    referencedDocuments = documentViewer.targetDocReferencedDocuments;
+  }
+
   return {
-    uiState: state.documentViewer.uiState,
-    references: state.documentViewer.references,
-    referencedDocuments: state.documentViewer.referencedDocuments,
-    relationTypes: state.documentViewer.relationTypes
+    uiState: documentViewer.uiState,
+    references,
+    referencedDocuments,
+    relationTypes: documentViewer.relationTypes,
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 

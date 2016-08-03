@@ -6,6 +6,11 @@ export default {
   isVisible(selector, parentSelector) {
     let element = this.getElement(selector);
     let parent = this.getElement(parentSelector);
+
+    if (!parent || !element) {
+      return false;
+    }
+
     let elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
 
     return parent.offsetHeight + parent.scrollTop >= elementOffsetToParent + element.scrollHeight &&
@@ -19,6 +24,10 @@ export default {
     }
     let element = this.getElement(selector);
     let parent = this.getElement(parentSelector);
+
+    if (!parent || !element) {
+      return;
+    }
     let elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
 
     let parentVisibleScroll = parent.scrollHeight - parent.offsetHeight;

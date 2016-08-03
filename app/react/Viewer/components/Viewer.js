@@ -32,15 +32,16 @@ export class Viewer extends Component {
     this.context.store.dispatch(actions.unset('viewer/docHTML'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
+    this.context.store.dispatch(actions.unset('viewer/targetDocReferences'));
   }
 
   render() {
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel is-active';
+      className += ' with-panel is-active';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document is-active';
+      className += ' show-target-document';
     }
     if (this.props.referencesPanelIsOpen) {
       className += ' references-panel-is-open';

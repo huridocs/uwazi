@@ -1,5 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import api from 'app/utils/api';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import documentsAPI from 'app/Documents/DocumentsAPI';
 
 import {viewerSearching} from 'app/Viewer/actions/uiActions';
 import {actions} from 'app/BasicReducer';
@@ -55,13 +57,21 @@ export function deleteDocument(doc) {
 
 export function loadTargetDocument(id) {
   return function (dispatch) {
+    let referencesRequest = referencesAPI.get(id);
     return Promise.all([
       api.get('documents?_id=' + id),
-      api.get('documents/html?_id=' + id)
+      api.get('documents/html?_id=' + id),
+      referencesRequest,
+      referencesRequest.then((references) => {
+        let keys = references.map((reference) => reference.targetDocument);
+        return documentsAPI.list(keys);
+      })
     ])
-    .then(([docResponse, htmlResponse]) => {
+    .then(([docResponse, htmlResponse, references, referencedDocuments]) => {
       dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
       dispatch(actions.set('viewer/targetDocHTML', htmlResponse.json));
+      dispatch(actions.set('viewer/targetDocReferences', references));
+      dispatch(actions.set('viewer/targetDocReferencedDocuments', referencedDocuments));
     });
   };
 }
