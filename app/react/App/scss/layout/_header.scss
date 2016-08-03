@@ -7,6 +7,8 @@ header {
 	top: 0;
 
 	h1 {
+    float: left;
+    padding-left: 15px;
 		font-size: $f-size-lg;
 		font-family: $f-special;
 		font-style: italic;
@@ -25,16 +27,11 @@ header {
 
 	.input-group {
 		line-height: 54px;
-		@include desktop {
-      margin: 0 -30px;
-		}
 
 		.btn {
-			height: 32px;
-			line-height: 32px;
+			height: 54px;
+			line-height: 54px;
 			border: 0;
-			border: 1px solid $c-grey-light;
-			border-right: 0;
 			background: $c-white;
 			border-radius: 0;
 			box-shadow: none;
@@ -55,13 +52,12 @@ header {
 		}
 		.form-control {
 			padding: 0;
-			line-height: 32px;
+      height: 54px;
+			line-height: 54px;
 			float: none;
 			background: none;
 		  border: 0;
-			border: 1px solid $c-grey-light;
 			border-left: 0;
-			background: $c-white;
 			border-radius: 0;
 		  box-shadow: none;
 			color: $c-black;
@@ -102,6 +98,7 @@ header {
       position: relative;
       top: 0;
 			display: block;
+      float: right;
       text-align: right;
       box-shadow: none;
 		}
@@ -134,7 +131,6 @@ header {
     height: 54px;
     line-height: 54px;
     padding: 0 15px;
-    margin-left: -15px;
     text-align: center;
     font-size: $f-size-lg;
     cursor: pointer;
@@ -144,6 +140,14 @@ header {
 	}
 }
 
+.search-box {
+  display: block;
+  @include desktop {
+    float: right;
+    max-width: 33.33%;
+    margin-left: 30px;
+  }
+}
 
 .search-suggestions {
 	display: none;
