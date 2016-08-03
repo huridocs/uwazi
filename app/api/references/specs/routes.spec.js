@@ -65,7 +65,7 @@ describe('references routes', () => {
 
   describe('GET by_target_document', () => {
     it('should return references by targetDocument', (done) => {
-      let req = {params: {targetDocument: 'target'}};
+      let req = {params: {id: 'target'}};
 
       routes.get('/api/references/by_target_document/:id', req)
       .then((response) => {

@@ -23,7 +23,7 @@ export default app => {
   });
 
   app.get('/api/references/by_target_document/:id', (req, res) => {
-    references.getByTarget(req.params.targetDocument)
+    references.getByTarget(req.params.id)
     .then((response) => {
       res.json(response);
     })
