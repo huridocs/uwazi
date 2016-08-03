@@ -243,6 +243,17 @@ header ul .btn .fa {
   border-bottom-color: #FFF !important;
 }
 
+.react-datepicker__close-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.react-datepicker__close-icon::after {
+  top: 8px !important;
+  margin: 0 !important;
+}
+
 @media(max-width: 768px) {
   .react-datepicker:after {
     content: 'Cancel';

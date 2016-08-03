@@ -37,6 +37,7 @@ export class DatePicker extends Component {
           onChange={this.onChange.bind(this)}
           selected={this.state.value}
           locale='en-gb'
+          isClearable={true}
           fixedHeight
           showYearDropdown
         />
