@@ -47,8 +47,25 @@ export class ViewReferencesPanel extends Component {
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
     const relationTypes = this.props.relationTypes.toJS();
     const referencedDocuments = this.props.referencedDocuments.toJS();
-    const references = this.props.references.toJS().sort((a, b) => {
-      return a.sourceRange.start - b.sourceRange.start;
+
+    const inboundReferences = this.props.inboundReferences.toJS();
+    const references = this.props.references.toJS();
+
+    let normalizedReferences = [];
+    inboundReferences.forEach((ref) => {
+      ref.title = this.documentTitle(ref.sourceDocument, referencedDocuments);
+      ref.range = ref.targetRange;
+      normalizedReferences.push(ref);
+    });
+
+    references.forEach((ref) => {
+      ref.title = this.documentTitle(ref.targetDocument, referencedDocuments);
+      ref.range = ref.sourceRange;
+      normalizedReferences.push(ref);
+    });
+
+    const sortedReferences = normalizedReferences.sort((a, b) => {
+      return a.range.start - b.range.start;
     });
 
     return (
@@ -57,7 +74,7 @@ export class ViewReferencesPanel extends Component {
         <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
         <div className="item-group">
           {(() => {
-            return references.map((reference, index) => {
+            return sortedReferences.map((reference, index) => {
               let itemClass = '';
               if (uiState.highlightedReference === reference._id) {
                 itemClass = 'relationship-hover';
@@ -76,7 +93,13 @@ export class ViewReferencesPanel extends Component {
                   >
                     <div className="item-info">
                       <div className="item-name">
+<<<<<<< c55573428fd7959674f8447f1fbbcaa5ecc99f7d
                         {this.documentTitle(reference.targetDocument, referencedDocuments)}
+=======
+                        <Link to={'/document/' + reference.targetDocument} className="item-name" onClick={e => e.stopPropagation()}>
+                          {reference.title}
+                        </Link>
+>>>>>>> normalized references on the references panel to show inbound/outbound properly
                         {(() => {
                           if (reference.targetRange) {
                             return <div className="item-snippet">
@@ -120,6 +143,7 @@ export class ViewReferencesPanel extends Component {
 ViewReferencesPanel.propTypes = {
   uiState: PropTypes.object,
   references: PropTypes.object,
+  inboundReferences: PropTypes.object,
   referencedDocuments: PropTypes.object,
   relationTypes: PropTypes.object,
   highlightReference: PropTypes.func,
@@ -146,6 +170,7 @@ const mapStateToProps = ({documentViewer}) => {
   return {
     uiState: documentViewer.uiState,
     references,
+    inboundReferences: documentViewer.inboundReferences,
     referencedDocuments,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')

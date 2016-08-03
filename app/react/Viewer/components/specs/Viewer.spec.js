@@ -60,6 +60,8 @@ describe('Viewer', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDocHTML/UNSET'});
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/inboundReferences/UNSET'});
     });
   });
 });

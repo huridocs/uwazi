@@ -20,24 +20,29 @@ export default class ViewDocument extends RouteHandler {
       api.get('documents', {_id: documentId}),
       api.get('documents/html', {_id: documentId}),
       referencesRequest,
+      referencesAPI.getInbound(documentId),
       referencesRequest
       .then((references) => {
         let keys = references.map((reference) => reference.targetDocument);
         return documentsAPI.list(keys);
       }),
+      referencesAPI.getInbound(documentId)
+      .then((references) => {
+        let keys = references.map((reference) => reference.sourceDocument);
+        return documentsAPI.list(keys);
+      }),
       templatesAPI.get(),
       thesaurisAPI.get(),
-      relationTypesAPI.get(),
-      referencesAPI.getInbound(documentId)
+      relationTypesAPI.get()
     ])
-    .then(([doc, docHTML, references, referencedDocuments, templates, thesauris, relationTypes, inboundReferences]) => {
+    .then(([doc, docHTML, references, inboundReferences, targetDocuments, sourceDocuments, templates, thesauris, relationTypes]) => {
       return {
         documentViewer: {
           doc: doc.json.rows[0],
           docHTML: docHTML.json,
           references,
           inboundReferences,
-          referencedDocuments,
+          referencedDocuments: targetDocuments.concat(sourceDocuments),
           templates,
           thesauris,
           relationTypes
