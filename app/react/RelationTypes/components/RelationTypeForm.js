@@ -40,8 +40,8 @@ export class RelationTypeForm extends Component {
           <div className="panel panel-default">
             <div className="panel-heading">Metadata</div>
             <div className="list-group">
-              <button className="list-group-item">Document types</button>
-              <button className="list-group-item active">Relation types</button>
+              <button className="list-group-item">Documents</button>
+              <button className="list-group-item active">Connections</button>
               <button className="list-group-item">Thesauris</button>
             </div>
           </div>
@@ -75,7 +75,7 @@ export class RelationTypeForm extends Component {
                   }
                 })()}
               </div>
-              <div className="panel-body">Relations doesn't have content to edit.</div>
+              <div className="panel-body">Currently connections only need a title.</div>
             </div>
           </Form>
         </main>

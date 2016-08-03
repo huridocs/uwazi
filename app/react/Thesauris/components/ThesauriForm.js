@@ -41,8 +41,8 @@ export class ThesauriForm extends Component {
           <div className="panel panel-default">
             <div className="panel-heading">Metadata</div>
             <div className="list-group">
-              <button className="list-group-item">Document types</button>
-              <button className="list-group-item">Relation types</button>
+              <button className="list-group-item">Documents</button>
+              <button className="list-group-item">Connections</button>
               <button className="list-group-item active">Thesauris</button>
             </div>
           </div>

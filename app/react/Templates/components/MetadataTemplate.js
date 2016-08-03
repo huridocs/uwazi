@@ -58,16 +58,16 @@ export class MetadataTemplate extends Component {
 
               {connectDropTarget(
                 <ul className="metadataTemplate-list list-group">
-                  {(() => {
-                    if (this.props.template.properties.length === 0) {
-                      return <div className="no-properties">
-                                <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here to start</span>
-                            </div>;
-                    }
-                  })()}
                   {this.props.template.properties.map((config, index) => {
                     return <MetadataProperty {...config} key={config.localID} index={index}/>;
                   })}
+                  {(() => {
+
+                    return  <div className="no-properties">
+                              <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
+                            </div>;
+
+                  })()}
                 </ul>
               )}
 

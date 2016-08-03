@@ -30,8 +30,8 @@ export class TemplateCreator extends Component {
           <div className="panel panel-default">
             <div className="panel-heading">Metadata</div>
             <div className="list-group">
-              <button className="list-group-item active">Document types</button>
-              <button className="list-group-item">Relation types</button>
+              <button className="list-group-item active">Documents</button>
+              <button className="list-group-item">Connections</button>
               <button className="list-group-item">Thesauris</button>
             </div>
           </div>
@@ -41,7 +41,7 @@ export class TemplateCreator extends Component {
         </main>
         <aside className="col-xs-12 col-sm-2">
           <div className="metadataTemplate-constructor panel panel-default">
-            <div className="panel-heading">Blocks</div>
+            <div className="panel-heading">Properties</div>
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
               <PropertyOption label='Select' type='select'/>
