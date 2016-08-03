@@ -54,7 +54,7 @@ describe('DatePicker', () => {
       });
     });
 
-    fdescribe('when the value is not utc', () => {
+    describe('when the value is not utc', () => {
       it('should add the utc offset to the value', () => {
         render();
         let input = component.find(DatePickerComponent);
