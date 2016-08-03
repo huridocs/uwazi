@@ -87,13 +87,13 @@ export default (app) => {
     });
   });
 
-  app.get('/api/documents/download/:id', (req, res) => {
-    request.get(`${dbUrl}/${req.params.id}`)
+  app.get('/api/documents/download', (req, res) => {
+    request.get(`${dbUrl}/${req.query._id}`)
     .then((response) => {
       res.download(uploadDocumentsPath + response.json.file.filename, response.json.title + path.extname(response.json.file.filename));
     })
     .catch((error) => {
-      res.json({error: error.json});
+      res.json({error: error.json}, 500);
     });
   });
 };
