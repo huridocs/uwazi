@@ -1,18 +1,20 @@
-let executeRoute = (method, routePath, req = {}, app) => {
+let executeRoute = (method, routePath, req = {}, res, app) => {
   let args = app[method].calls.allArgs().find((a) => a[0] === routePath);
   if (!args) {
     throw 'Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined';
   }
   let result = new Promise((resolve, reject) => {
     let statusCode;
-    let res = {
-      json: () => {},
-      status: (code) => {
-        statusCode = code;
-      }
+
+    res.status = (code) => {
+      statusCode = code;
     };
 
-    spyOn(res, 'json').and.callFake((response) => {
+    res.download = jasmine.createSpy('download').and.callFake((response) => {
+      resolve(response);
+    });
+
+    res.json = jasmine.createSpy('json').and.callFake((response) => {
       if (statusCode) {
         response.status = statusCode;
       }
@@ -39,16 +41,16 @@ export default (route, io) => {
   route(app, io);
 
   let instrumentedRoute = {
-    get: (routePath, req) => {
-      return executeRoute('get', routePath, req, app);
+    get: (routePath, req, res = {}) => {
+      return executeRoute('get', routePath, req, res, app);
     },
 
-    delete: (routePath, req) => {
-      return executeRoute('delete', routePath, req, app);
+    delete: (routePath, req, res = {}) => {
+      return executeRoute('delete', routePath, req, res, app);
     },
 
-    post: (routePath, req) => {
-      return executeRoute('post', routePath, req, app);
+    post: (routePath, req, res = {}) => {
+      return executeRoute('post', routePath, req, res, app);
     }
   };
 

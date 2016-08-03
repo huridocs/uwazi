@@ -55,7 +55,7 @@ export class LibraryMenu extends Component {
       <NeedAuthorization>
         <div>
           <div className="float-btn__sec">
-            <a href={'/api/documents/download/' + this.props.selectedDocument.toJS()._id} target="_blank" >
+            <a href={'/api/documents/download?_id=' + this.props.selectedDocument.toJS()._id} target="_blank" >
               <span>Download</span><i className="fa fa-cloud-download"></i>
             </a>
           </div>

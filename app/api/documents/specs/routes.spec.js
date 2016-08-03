@@ -1,8 +1,6 @@
 import documentRoutes from '../routes.js';
 import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
-import request from '../../../shared/JSONRequest.js';
-import {db_url as dbUrl} from '../../config/database.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import documents from '../documents';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -165,7 +163,6 @@ describe('documents', () => {
   });
 
   describe('DELETE', () => {
-
     beforeEach(() => {
       spyOn(documents, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
@@ -194,6 +191,20 @@ describe('documents', () => {
       .then((response) => {
         expect(response).toBe('results');
         expect(documents.getUploadsByUser).toHaveBeenCalledWith(req.user);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('/download', () => {
+    it('should download the document with the titile as file name', (done) => {
+      let req = {query: {_id: '8202c463d6158af8065022d9b5014a18'}};
+      let res = {};
+
+      routes.get('/api/documents/download', req, res)
+      .then(() => {
+        expect(res.download).toHaveBeenCalledWith(jasmine.any(String), 'Batman finishes.pdf');
         done();
       })
       .catch(catchErrors(done));
