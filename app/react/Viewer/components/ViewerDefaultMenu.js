@@ -25,6 +25,7 @@ export class ViewerDefaultMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
+        {(() => {
         <div className="float-btn__sec">
           <a href={'/api/documents/download?_id=' + this.props.doc.toJS()._id} target="_blank" >
             <span>Download</span><i className="fa fa-cloud-download"></i>
@@ -36,12 +37,12 @@ export class ViewerDefaultMenu extends Component {
           </div>
         </NeedAuthorization>
         <div onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')} className="float-btn__sec view-metadata">
-          <span>View metadata</span>
+          <span>Metadata</span>
           <i className="fa fa-list-alt">
           </i>
         </div>
         <div onClick={this.props.openPanel.bind(null, 'viewReferencesPanel')} className="float-btn__sec view-references">
-          <span>View relationships</span>
+          <span>Connections</span>
           <i className="fa fa-link"></i>
         </div>
         <div className="float-btn__main"><i className="fa fa-bar-chart"></i></div>
@@ -52,7 +53,8 @@ export class ViewerDefaultMenu extends Component {
 
 const mapStateToProps = ({documentViewer}) => {
   return {
-    doc: documentViewer.doc
+    doc: documentViewer.doc,
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 

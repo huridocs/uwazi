@@ -38,10 +38,10 @@ export class Viewer extends Component {
   render() {
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel is-active';
+      className += ' with-panel is-active';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document';
+      className += ' show-target-document';
     }
     if (this.props.referencesPanelIsOpen) {
       className += ' references-panel-is-open';
