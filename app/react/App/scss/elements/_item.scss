@@ -136,10 +136,10 @@ $item-width: 250px;
     font-size: $f-size-sm;
   }
   dt {
-    width: 90px;
+    width: 100px;
   }
   dd {
-    width: 160px;
+    width: $item-width - 100px;
   }
 }
 
@@ -290,7 +290,7 @@ $item-width: 250px;
 .label-success,
 .label-warning,
 .label-danger {
-  background: $c-white;
+  background: transparent;
   padding: 0;
 }
 
