@@ -6,6 +6,7 @@ import {browserHistory} from 'react-router';
 import {openPanel} from 'app/Viewer/actions/uiActions';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {NeedAuthorization} from 'app/Auth';
+import {ShowIf} from 'app/App/ShowIf';
 
 export class ViewerDefaultMenu extends Component {
 
@@ -25,16 +26,19 @@ export class ViewerDefaultMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
-        {(() => {
-        <div className="float-btn__sec">
-          <a href={'/api/documents/download?_id=' + this.props.doc.toJS()._id} target="_blank" >
-            <span>Download</span><i className="fa fa-cloud-download"></i>
-          </a>
-        </div>
-        <NeedAuthorization>
-          <div onClick={this.deleteDocument.bind(this)} className="float-btn__sec">
-            <span>Delete</span><i className="fa fa-trash"></i>
+        <ShowIf if={!this.props.targetDoc}>
+          <div className="float-btn__sec">
+            <a href={'/api/documents/download?_id=' + this.props.doc.toJS()._id} target="_blank" >
+              <span>Download</span><i className="fa fa-cloud-download"></i>
+            </a>
           </div>
+        </ShowIf>
+        <NeedAuthorization>
+          <ShowIf if={!this.props.targetDoc}>
+            <div onClick={this.deleteDocument.bind(this)} className="float-btn__sec">
+              <span>Delete</span><i className="fa fa-trash"></i>
+            </div>
+          </ShowIf>
         </NeedAuthorization>
         <div onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')} className="float-btn__sec view-metadata">
           <span>Metadata</span>
@@ -60,6 +64,7 @@ const mapStateToProps = ({documentViewer}) => {
 
 ViewerDefaultMenu.propTypes = {
   active: PropTypes.bool,
+  targetDoc: PropTypes.bool,
   openPanel: PropTypes.func,
   doc: PropTypes.object,
   deleteDocument: PropTypes.func

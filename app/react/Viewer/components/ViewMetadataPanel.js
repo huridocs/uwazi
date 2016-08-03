@@ -54,9 +54,15 @@ ViewMetadataPanel.propTypes = {
 };
 
 const mapStateToProps = ({documentViewer}) => {
+  let doc = documents.helpers.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+
+  if (documentViewer.targetDoc.get('_id')) {
+    doc = documents.helpers.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+  }
+  
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
-    doc: documents.helpers.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS()),
+    doc,
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState
   };

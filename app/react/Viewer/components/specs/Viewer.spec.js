@@ -34,7 +34,6 @@ describe('Viewer', () => {
     props.targetDoc = true;
     render();
     expect(component.find('.document-viewer').hasClass('show-target-document')).toBe(true);
-    expect(component.find('.document-viewer').hasClass('with-panel')).toBe(false);
   });
 
   it('should render Document and ContextMenu', () => {
