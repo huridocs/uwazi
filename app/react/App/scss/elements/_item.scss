@@ -18,31 +18,32 @@
   position: relative;
   width: 100%;
   min-height: 120px;
-  margin: 0 0 15px;
+  margin: 0 0 20px;
+  top: 0;
   background: $c-white;
-  border-radius: 3px;
-  border-bottom: 1px solid $c-grey;
-  box-shadow: $shadow;
+  border-radius: 4px;
+  border: 1px solid $c-grey-light;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
   opacity: 1;
   transition: all 300ms;
   zoom: 1;
 
   @media (min-width: 640px) {
-    width: 49%;
+    width: 48%;
   }
   @media (min-width: 1024px) {
-    width: 32.9%;
+    width: 32.5%;
   }
 
   &:before {
     content: " ";
     display: block;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -1px;
+    right: -1px;
     border: 6px solid;
-    border-color: $c-primary-lighten $c-primary-lighten $c-white $c-white;
-    border-bottom-left-radius: 3px;
+    border-color: $c-background $c-background $c-white $c-white;
+    border-bottom-left-radius: 4px;
     box-shadow: -3px 3px 9px -3px $c-grey;
     transition: all 300ms;
   }
@@ -51,13 +52,10 @@
     cursor: pointer;
   }
   &.is-active {
-    box-shadow: $shadow-active;
-    top: -3px;
-  }
-  &.is-disabled {
-    opacity: 0.3;
-    &:hover {
-      opacity: 1;
+    border-color: $c-primary-light;
+    box-shadow: $shadow;
+    &:before {
+      box-shadow: -3px 3px 9px -3px $c-primary-light;
     }
   }
 
@@ -138,18 +136,26 @@ $item-width: 250px;
     font-size: $f-size-sm;
   }
   dt {
-    width: 90px;
+    width: 100px;
   }
   dd {
-    width: 160px;
+    width: $item-width - 100px;
   }
 }
 
 .item-actions {
   color: $c-grey-dark;
+  background-color: $c-grey-lighten;
   border-top: 1px solid $c-grey-light;
-  padding: 0 15px;
+  padding: 8px 16px;
   text-align: right;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+
+  .item.is-active & {
+    background-color: $c-primary-lighten;
+    border-top: 1px solid $c-primary-light;
+  }
 }
 
 .item-shortcut {
@@ -287,7 +293,7 @@ $item-width: 250px;
 .label-success,
 .label-warning,
 .label-danger {
-  background: $c-white;
+  background: transparent;
   padding: 0;
 }
 

@@ -1,6 +1,7 @@
 header {
 	background: $c-white;
 	border-bottom: 1px solid $c-grey;
+  box-shadow: $shadow;
 	z-index: 40;
 	position: fixed;
 	top: 0;
@@ -16,6 +17,10 @@ header {
 		@include desktop {
 			display: block;
 		}
+
+    a {
+      color: $c-black;
+    }
 	}
 
 	.input-group {
@@ -30,11 +35,14 @@ header {
 			border: 0;
 			border: 1px solid $c-grey-light;
 			border-right: 0;
-			background: $c-grey-lighten;
+			background: $c-white;
 			border-radius: 0;
 			box-shadow: none;
 			color: $c-grey-dark;
 			padding: 0 10px;
+      .fa-search {
+        color: $c-grey;
+      }
 		}
 		.dropdown-toggle {
 			display: none;
@@ -53,15 +61,15 @@ header {
 		  border: 0;
 			border: 1px solid $c-grey-light;
 			border-left: 0;
-			background: $c-grey-lighten;
+			background: $c-white;
 			border-radius: 0;
 		  box-shadow: none;
 			color: $c-black;
 
-			&::-webkit-input-placeholder { color: $c-grey-dark; }
-					 &:-ms-input-placeholder { color: $c-grey-dark; }
-							 &::-moz-placeholder { color: $c-grey-dark; }
-							  &:-moz-placeholder { color: $c-grey-dark; }
+			&::-webkit-input-placeholder { color: $c-grey; }
+					 &:-ms-input-placeholder { color: $c-grey; }
+							 &::-moz-placeholder { color: $c-grey; }
+							  &:-moz-placeholder { color: $c-grey; }
 		}
 
 		.btn {

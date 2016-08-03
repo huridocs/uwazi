@@ -1,6 +1,6 @@
 .document-viewer {
   width: 100%;
-  padding: 15px;
+  padding: 30px;
   transform: translateX(0%);
   transition: all 500ms;
 
@@ -96,10 +96,16 @@
 .document-references {
   .item {
     &.relationship-hover {
-      border-left-color: $c-secondary-light;
+      border-left: 3px solid $c-secondary-light;
+      .item-info, .item-metadata {
+        padding-left: 13px;
+      }
     }
     &.relationship-active {
-      border-left-color: $c-secondary;
+      border-left: 3px solid $c-secondary;
+      .item-info, .item-metadata {
+        padding-left: 13px;
+      }
     }
   }
 }

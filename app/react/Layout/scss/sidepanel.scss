@@ -3,15 +3,14 @@
 @import "../../App/scss/config/_typography.scss";
 
 .side-panel {
-  $c-sidebar: darken($c-primary-lighten, 2%);
+  $c-sidebar: darken($c-background, 0%);
   position: fixed;
   right: 0;
-  top: 54px;
-  bottom: 0;
-  padding: 15px;
+  top: 54px + 15px;
+  bottom: 15px;
+  padding: 15px 30px;
   overflow-y: scroll;
   border-left: 1px solid $c-grey;
-  box-shadow: $shadow-active;
   background-color: $c-sidebar;
   max-width: 320px;
   width: 90%;
@@ -43,7 +42,6 @@
     margin: 0 -5px;
   }
   .item {
-    border-left: 3px solid $c-white;
     transition: all 0ms;
     width: 100%;
 

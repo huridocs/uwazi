@@ -1,6 +1,6 @@
 aside {
 	padding: 0;
-	border-left: 1px dotted $c-grey-dark;
+	border-left: 1px dotted $c-grey;
 
 	h1 {
 		text-transform: uppercase;
@@ -18,7 +18,7 @@ aside {
 	.fa-close {
 		position: absolute;
 		top: 15px;
-		right: 15px;
+		right: 30px;
 		font-size: 18px;
 		color: $c-grey;
 		cursor: pointer;
