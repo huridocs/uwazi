@@ -45,6 +45,7 @@ export class Document extends Component {
 
   componentDidUpdate() {
     this.text.renderReferences(this.props.references);
+    this.text.renderReferences(this.props.inboundReferences, 'targetRange');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
@@ -99,6 +100,7 @@ Document.propTypes = {
   activeReference: PropTypes.string,
   selection: PropTypes.object,
   references: PropTypes.array,
+  inboundReferences: PropTypes.array,
   className: PropTypes.string,
   onClick: PropTypes.func,
   executeOnClickHandler: PropTypes.bool,

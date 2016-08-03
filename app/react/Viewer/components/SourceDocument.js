@@ -12,6 +12,7 @@ const mapStateToProps = ({user, documentViewer}) => {
     doc: documentViewer.doc,
     docHTML: documentViewer.docHTML,
     references: documentViewer.references.toJS(),
+    inboundReferences: documentViewer.inboundReferences.toJS(),
     className: 'sourceDocument',
     highlightedReference: uiState.highlightedReference,
     activeReference: uiState.activeReference,
