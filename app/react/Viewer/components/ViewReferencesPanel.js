@@ -94,18 +94,12 @@ export class ViewReferencesPanel extends Component {
                   >
                     <div className="item-info">
                       <div className="item-name">
-<<<<<<< c55573428fd7959674f8447f1fbbcaa5ecc99f7d
-                        {this.documentTitle(reference.targetDocument, referencedDocuments)}
-=======
-                        <Link to={'/document/' + reference.targetDocument} className="item-name" onClick={e => e.stopPropagation()}>
-                          {reference.title}
-                        </Link>
->>>>>>> normalized references on the references panel to show inbound/outbound properly
+                        {reference.title}
                         {(() => {
                           if (reference.targetRange) {
                             return <div className="item-snippet">
-                                    {reference.targetRange.text}
-                                   </div>;
+                              {reference.targetRange.text}
+                            </div>;
                           }
                         })()}
                       </div>
@@ -124,15 +118,15 @@ export class ViewReferencesPanel extends Component {
                           </a>
                         </NeedAuthorization>
                       </ShowIf>
-                        &nbsp;
+                      &nbsp;
                       <ShowIf if={!this.props.targetDoc}>
                         <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
                           <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
                         </Link>
                       </ShowIf>
                     </div>
-                </div>
-                );
+                  </div>
+                  );
             });
           })()}
         </div>
