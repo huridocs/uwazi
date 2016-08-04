@@ -85,7 +85,7 @@
   $ sudo npm install -g karma-cli
   ```
 
-- **Fixtures*
+- **Fixtures**
 
   `$ git clone https://github.com/huridocs/uwazi-fixtures.git`
 
@@ -99,7 +99,7 @@
 - **Create CouchDB views**
   cd into uwazy/couchdb and:
 
-  `$ ./restore_views.sh
+  `$ ./restore_views.sh`
 
 - launch application: `foreman start`, the app will be available after few seconds on localhost:3000
 - test api: `node test_api.js`
@@ -108,8 +108,11 @@
 #Suggestions
 
 - **IDE**
+
   -Ubuntu
+
     - SublimeText 3:
+
       In order to install the ES6 linter, you need to add to the package control the packages:
       - SublimeLinter
       - SublimeLinter-eslint
