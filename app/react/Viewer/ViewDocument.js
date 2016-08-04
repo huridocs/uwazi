@@ -51,6 +51,10 @@ export default class ViewDocument extends RouteHandler {
     });
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
     this.context.store.dispatch(actions.unset('viewer/docHTML'));

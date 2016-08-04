@@ -50,18 +50,4 @@ describe('Viewer', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'LOAD_DEFAULT_VIEWER_MENU'});
     });
   });
-
-  describe('componentWillUnmount', () => {
-    it('should resetDocumentViewer', () => {
-      render();
-      component.unmount();
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'RESET_DOCUMENT_VIEWER'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDocHTML/UNSET'});
-
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/inboundReferences/UNSET'});
-    });
-  });
 });
