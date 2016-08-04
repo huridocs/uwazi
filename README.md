@@ -5,6 +5,7 @@
 
 - **NodeJs 4.x**
     - Ubuntu
+
       ```
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
@@ -30,7 +31,7 @@
       ```
       For adding logstash bin to PATH do:
       ```
-      $ sduo vim /etc/profile.d/logstash.sh
+      $ sudo vim /etc/profile.d/logstash.sh
       ```
       Add the following line:
       `PATH=$PATH:/opt/logstash/bin`.
@@ -94,9 +95,14 @@
 - test api: `node test_api.js`
 - test react: `karma start`
 
-* if autowatch does not work, try increasing the watchers by default with: 
+* if autowatch does not work, check the max_user_watches with:
 ```
-echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+$ sysctl fs.inotify.max_user_watches
+```
+
+If the number is relatively low (bellow 200K) try increasing the watchers by default with:
+```
+$ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```
 
 =)
