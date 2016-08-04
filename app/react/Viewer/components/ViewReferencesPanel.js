@@ -94,7 +94,7 @@ export class ViewReferencesPanel extends Component {
                   >
                     <div className="item-info">
                       <div className="item-name">
-                        {reference.title}
+                        <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i> {reference.title}
                         {(() => {
                           if (reference.targetRange) {
                             return <div className="item-snippet">
