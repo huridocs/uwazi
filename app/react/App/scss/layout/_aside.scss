@@ -15,17 +15,6 @@ aside {
 			}
 		}
 	}
-	.fa-close {
-		position: absolute;
-		top: 15px;
-		right: 30px;
-		font-size: 18px;
-		color: $c-grey;
-		cursor: pointer;
-		&:hover {
-			color: $c-grey-dark;
-		}
-	}
 	h2 {
 		font-size: $f-size-sm;
 		padding-left: 20px;
