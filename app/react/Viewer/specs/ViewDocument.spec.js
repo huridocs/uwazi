@@ -98,6 +98,15 @@ describe('ViewDocument', () => {
     });
   });
 
+  describe('componentWillUnmount()', () => {
+    it('should call emptyState', () => {
+      spyOn(instance, 'emptyState');
+      instance.componentWillUnmount();
+
+      expect(instance.emptyState).toHaveBeenCalled();
+    });
+  });
+
   describe('emptyState()', () => {
     it('should unset the state', () => {
       instance.emptyState();
