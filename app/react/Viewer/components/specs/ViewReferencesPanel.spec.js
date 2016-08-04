@@ -2,7 +2,6 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
-import {Link} from 'react-router';
 
 import PanelContainer, {ViewReferencesPanel} from 'app/Viewer/components/ViewReferencesPanel';
 import SidePanel from 'app/Layout/SidePanel';
@@ -14,8 +13,8 @@ describe('ViewReferencesPanel', () => {
   beforeEach(() => {
     props = {
       references: Immutable.fromJS([
-        {_id: 'ref1', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 10, end: 20}},
-        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 4, end: 8}}]),
+        {_id: 'ref1', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 10, end: 20, text: 'text 3'}},
+        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 4, end: 8, text: 'text 4'}}]),
       inboundReferences: Immutable.fromJS([]),
       referencedDocuments: Immutable.fromJS([{title: 'doc1', _id: '1'}, {title: 'doc2', _id: '2'}]),
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
@@ -41,8 +40,8 @@ describe('ViewReferencesPanel', () => {
 
   it('should merge and render references in order with the proper document titles', () => {
     props.inboundReferences = Immutable.fromJS([
-      {_id: 'inboundRef1', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 1, end: 2}},
-      {_id: 'inboundRef2', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 11, end: 22}},
+      {_id: 'inboundRef1', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 1, end: 2, text: 'text 1'}},
+      {_id: 'inboundRef2', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 11, end: 22, text: 'text 2'}},
       {_id: 'inboundRef3', relationType: 'rel1', sourceDocument: '2'}
     ]);
 
@@ -53,15 +52,19 @@ describe('ViewReferencesPanel', () => {
 
     expect(component.find('.item').get(1).props['data-id']).toBe('inboundRef1');
     expect(component.find('.item').at(1).text()).toContain('doc2');
+    expect(component.find('.item').at(1).text()).toContain('text 1');
 
     expect(component.find('.item').get(2).props['data-id']).toBe('ref2');
     expect(component.find('.item').at(2).text()).toContain('doc1');
+    expect(component.find('.item').at(2).text()).toContain('text 4');
 
     expect(component.find('.item').get(3).props['data-id']).toBe('ref1');
     expect(component.find('.item').at(3).text()).toContain('doc1');
+    expect(component.find('.item').at(3).text()).toContain('text 3');
 
     expect(component.find('.item').get(4).props['data-id']).toBe('inboundRef2');
     expect(component.find('.item').at(4).text()).toContain('doc2');
+    expect(component.find('.item').at(4).text()).toContain('text 2');
   });
 
   describe('on Close panel', () => {

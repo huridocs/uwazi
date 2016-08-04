@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
+import Immutable from 'immutable';
 
 import SidePanel from 'app/Layout/SidePanel';
 import ShowIf from 'app/App/ShowIf';
@@ -55,13 +56,17 @@ export class ViewReferencesPanel extends Component {
     inboundReferences.forEach((ref) => {
       ref.title = this.documentTitle(ref.sourceDocument, referencedDocuments);
       ref.range = ref.targetRange || {start: 0};
+      ref.document = ref.sourceDocument;
       ref.inbound = true;
+      ref.text = ref.range.text;
       normalizedReferences.push(ref);
     });
 
     references.forEach((ref) => {
       ref.title = this.documentTitle(ref.targetDocument, referencedDocuments);
       ref.range = ref.sourceRange;
+      ref.document = ref.targetDocument;
+      ref.text = ref.range.text;
       normalizedReferences.push(ref);
     });
 
@@ -96,9 +101,9 @@ export class ViewReferencesPanel extends Component {
                       <div className="item-name">
                         <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i> {reference.title}
                         {(() => {
-                          if (reference.targetRange) {
+                          if (reference.text) {
                             return <div className="item-snippet">
-                              {reference.targetRange.text}
+                              {reference.text}
                             </div>;
                           }
                         })()}
@@ -120,7 +125,7 @@ export class ViewReferencesPanel extends Component {
                       </ShowIf>
                       &nbsp;
                       <ShowIf if={!this.props.targetDoc}>
-                        <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                        <Link to={'/document/' + reference.document} onClick={e => e.stopPropagation()} className="item-shortcut">
                           <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
                         </Link>
                       </ShowIf>
@@ -156,16 +161,18 @@ ViewReferencesPanel.contextTypes = {
 const mapStateToProps = ({documentViewer}) => {
   let references = documentViewer.references;
   let referencedDocuments = documentViewer.referencedDocuments;
+  let inboundReferences = documentViewer.inboundReferences;
 
   if (documentViewer.targetDoc.get('_id')) {
     references = documentViewer.targetDocReferences;
     referencedDocuments = documentViewer.targetDocReferencedDocuments;
+    inboundReferences = Immutable.fromJS([]);
   }
 
   return {
     uiState: documentViewer.uiState,
     references,
-    inboundReferences: documentViewer.inboundReferences,
+    inboundReferences,
     referencedDocuments,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')
