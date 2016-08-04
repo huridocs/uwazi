@@ -114,6 +114,15 @@ describe('Text', () => {
       spyOn(TextRange, 'restore').and.returnValue('restoredRange');
     });
 
+    describe('when a reference has no range to render', () => {
+      it('should not throw an error', () => {
+        let references = [{_id: '1'}];
+
+        text.renderReferences(references);
+        expect(TextRange.restore).not.toHaveBeenCalled();
+      });
+    });
+
     describe('when container does not have any html', () => {
       it('should throw an error', () => {
         document.innerHTML = '';

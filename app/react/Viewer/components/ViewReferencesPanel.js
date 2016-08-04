@@ -54,7 +54,8 @@ export class ViewReferencesPanel extends Component {
     let normalizedReferences = [];
     inboundReferences.forEach((ref) => {
       ref.title = this.documentTitle(ref.sourceDocument, referencedDocuments);
-      ref.range = ref.targetRange;
+      ref.range = ref.targetRange || {start: 0};
+      ref.inbound = true;
       normalizedReferences.push(ref);
     });
 

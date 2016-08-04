@@ -119,7 +119,7 @@ export default function (container) {
           throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
         }
         ids.push(reference._id);
-        if (this.renderedReferences[rangeProperty][reference._id]) {
+        if (this.renderedReferences[rangeProperty][reference._id] || !reference[rangeProperty]) {
           return;
         }
         let restoredRange = TextRange.restore(reference[rangeProperty], container);
