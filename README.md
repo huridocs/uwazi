@@ -122,7 +122,7 @@
       Then open a .js file and go to:
       view -> syntax -> open all current extensions as ... -> Babel -> Javascript (Babel)
 
-- if autowatch does not work, check the max_user_watches with:
+- If autowatch does not work, check the max_user_watches with:
 
   ```
   $ sysctl fs.inotify.max_user_watches
@@ -132,6 +132,13 @@
 
   ```
   $ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+  ```
+
+- If the nice 'World Globe' on the 'server listening on port...' line is not showing properly:
+
+
+  ```
+  $ sudo apt-get install ttf-ancient-fonts
   ```
 
 =)
