@@ -94,4 +94,9 @@
 - test api: `node test_api.js`
 - test react: `karma start`
 
+* if autowatch does not work, try increasing the watchers by default with: 
+```
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
 =)
