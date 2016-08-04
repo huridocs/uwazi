@@ -152,7 +152,7 @@ header {
 .search-suggestions {
 	display: none;
 	position: absolute;
-  top: 61px;
+  top: 54px;
 	left: 0;
 	width: 100%;
   background: $c-white;
@@ -160,7 +160,7 @@ header {
 	color: $c-black;
   border: 1px solid $c-grey;
 	border-top: 0;
-  padding: 15px 15px 0;
+  padding: 0 30px;
 	box-shadow: $shadow;
 	line-height: 2em;
 	&.active {
