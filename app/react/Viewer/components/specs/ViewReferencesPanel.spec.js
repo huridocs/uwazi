@@ -49,19 +49,19 @@ describe('ViewReferencesPanel', () => {
     render();
 
     expect(component.find('.item').get(0).props['data-id']).toBe('inboundRef3');
-    expect(component.find('.item').at(0).find(Link).at(0).props().children).toContain('doc2');
+    expect(component.find('.item').at(0).text()).toContain('doc2');
 
     expect(component.find('.item').get(1).props['data-id']).toBe('inboundRef1');
-    expect(component.find('.item').at(1).find(Link).at(0).props().children).toContain('doc2');
+    expect(component.find('.item').at(1).text()).toContain('doc2');
 
     expect(component.find('.item').get(2).props['data-id']).toBe('ref2');
-    expect(component.find('.item').at(2).find(Link).at(0).props().children).toContain('doc1');
+    expect(component.find('.item').at(2).text()).toContain('doc1');
 
     expect(component.find('.item').get(3).props['data-id']).toBe('ref1');
-    expect(component.find('.item').at(3).find(Link).at(0).props().children).toContain('doc1');
+    expect(component.find('.item').at(3).text()).toContain('doc1');
 
     expect(component.find('.item').get(4).props['data-id']).toBe('inboundRef2');
-    expect(component.find('.item').at(4).find(Link).at(0).props().children).toContain('doc2');
+    expect(component.find('.item').at(4).text()).toContain('doc2');
   });
 
   describe('on Close panel', () => {
