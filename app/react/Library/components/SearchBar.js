@@ -40,10 +40,7 @@ export class SearchBar extends Component {
     let {search, showSuggestions, suggestions, overSuggestions} = this.props;
     return (
       <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
-        <div className={'input-group' + (search.searchTerm ? ' active' : '')}>
-          <span className="input-group-btn" onClick={this.resetSearch.bind(this)}>
-            <div className="btn btn-default"><i className="fa fa-search"></i><i className="fa fa-close"></i></div>
-          </span>
+        <div className={'form-group' + (search.searchTerm ? ' active' : '')}>
           <Field model="search.searchTerm">
             <input
               type="text"
@@ -54,27 +51,27 @@ export class SearchBar extends Component {
               autoComplete="off"
             />
           </Field>
-          <div
-            onMouseOver={this.mouseEnter.bind(this)}
-            onMouseLeave={this.mouseOut.bind(this)}
-            className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' active' : '')}
-            >
-            {suggestions.toJS().map((suggestion, index) => {
-              let documentViewUrl = '/document/' + suggestion._id;
-              return <p key={index}>
-                <Link to={documentViewUrl}>
-                  <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <i className="fa fa-arrow-left">
-                  </i>
-                </Link>
-              </p>;
-            })}
-            <p className="search-suggestions-all">
-            <button type="submit">
-              <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
-            </button>
-            </p>
-          </div>
+        </div>
+        <div
+          onMouseOver={this.mouseEnter.bind(this)}
+          onMouseLeave={this.mouseOut.bind(this)}
+          className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' active' : '')}
+          >
+          {suggestions.toJS().map((suggestion, index) => {
+            let documentViewUrl = '/document/' + suggestion._id;
+            return <p key={index}>
+              <Link to={documentViewUrl}>
+                <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
+                <i className="fa fa-arrow-left">
+                </i>
+              </Link>
+            </p>;
+          })}
+          <p className="search-suggestions-all">
+          <button type="submit">
+            <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
+          </button>
+          </p>
         </div>
       </Form>
     );

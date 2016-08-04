@@ -25,8 +25,11 @@ header {
     }
 	}
 
-	.input-group {
-		line-height: 54px;
+	.form-group {
+    position: relative;
+    margin: 0;
+
+		/*line-height: 54px;
 
 		.btn {
 			height: 54px;
@@ -67,6 +70,7 @@ header {
 							 &::-moz-placeholder { color: $c-grey; }
 							  &:-moz-placeholder { color: $c-grey; }
 		}
+    */
 
 		.btn {
 			.fa-search { display: inline-block; }
@@ -141,10 +145,12 @@ header {
 }
 
 .search-box {
+  position: relative;
   display: block;
   @include desktop {
     float: right;
-    max-width: 33.33%;
+    width: 33.333%;
+    padding: 10px;
     margin-left: 30px;
   }
 }
@@ -153,14 +159,13 @@ header {
 	display: none;
 	position: absolute;
   top: 54px;
-	left: 0;
-	width: 100%;
+  left: 0;
   background: $c-white;
   z-index: 40;
 	color: $c-black;
   border: 1px solid $c-grey;
 	border-top: 0;
-  padding: 0 30px;
+  padding: 0 15px;
 	box-shadow: $shadow;
 	line-height: 2em;
 	&.active {
