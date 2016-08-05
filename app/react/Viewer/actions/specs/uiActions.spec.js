@@ -81,7 +81,6 @@ describe('Viewer uiActions', () => {
     it('should dispatch a call to activateReference', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id2'});
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
-      expect(dispatch).toHaveBeenCalledWith({type: types.SET_TARGET_SELECTION, targetRange: 'sourceRange'});
     });
 
     it('should dispatch a SET_TARGET_SELECTION with found range', () => {

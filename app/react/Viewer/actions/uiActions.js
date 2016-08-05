@@ -61,13 +61,12 @@ export function activateReference(reference) {
 }
 
 export function selectReference(referenceId, references) {
+  console.log('referenceId:', referenceId);
+  console.log('references:', references);
   let reference = references.find(item => item._id === referenceId);
 
   return function (dispatch) {
-    // No idea how to test this other than integrating and retesting activateReference
-    // and, even worse, the setTargetSelection which is not even on this file
     dispatch(activateReference(referenceId));
     dispatch(setTargetSelection(reference.sourceRange));
-    // ---
   };
 }
