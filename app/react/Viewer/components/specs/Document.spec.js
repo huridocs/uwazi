@@ -75,13 +75,17 @@ describe('Document', () => {
     });
 
     describe('when the target is a reference', () => {
-      it('should active the reference', () => {
+      beforeEach(() => {
+        props.references = [{reference: 'reference'}];
+      });
+
+      it('should activate the reference', () => {
         props.executeOnClickHandler = true;
         props.activateReference = jasmine.createSpy('activateReference');
         render();
         instance.text = {selected: jasmine.createSpy('selected').and.returnValue(false)};
         component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-        expect(props.activateReference).toHaveBeenCalledWith('referenceId');
+        expect(props.activateReference).toHaveBeenCalledWith('referenceId', props.references);
         expect(props.onClick).not.toHaveBeenCalled();
       });
 

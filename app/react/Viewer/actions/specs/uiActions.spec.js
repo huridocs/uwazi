@@ -68,6 +68,27 @@ describe('Viewer uiActions', () => {
     });
   });
 
+  describe('selectReference()', () => {
+    let dispatch;
+
+    beforeEach(() => {
+      dispatch = jasmine.createSpy('dispatch');
+      let references = [{_id: 'id1'}, {_id: 'id2', sourceRange: 'sourceRange'}];
+      actions.selectReference('id2', references)(dispatch);
+      dispatch.calls.argsFor(0)[0](dispatch);
+    });
+
+    it('should dispatch a call to activateReference', () => {
+      expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id2'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.SET_TARGET_SELECTION, targetRange: 'sourceRange'});
+    });
+
+    it('should dispatch a SET_TARGET_SELECTION with found range', () => {
+      expect(dispatch).toHaveBeenCalledWith({type: types.SET_TARGET_SELECTION, targetRange: 'sourceRange'});
+    });
+  });
+
   describe('resetReferenceCreation()', () => {
     it('should RESET_REFERENCE_CREATION and unset targetDocument', () => {
       let dispatch = jasmine.createSpy('dispatch');

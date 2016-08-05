@@ -1,6 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
+import {setTargetSelection} from 'app/Viewer/actions/selectionActions';
 
 export function closePanel() {
   return {
@@ -56,5 +57,17 @@ export function activateReference(reference) {
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});
     dispatch({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+  };
+}
+
+export function selectReference(referenceId, references) {
+  let reference = references.find(item => item._id === referenceId);
+
+  return function (dispatch) {
+    // No idea how to test this other than integrating and retesting activateReference
+    // and, even worse, the setTargetSelection which is not even on this file
+    dispatch(activateReference(referenceId));
+    dispatch(setTargetSelection(reference.sourceRange));
+    // ---
   };
 }
