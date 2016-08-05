@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 import DatePickerComponent from 'react-datepicker';
 import DatePicker from '../DatePicker';
 
@@ -35,6 +35,15 @@ describe('DatePicker', () => {
       expect(props.onChange).toHaveBeenCalledWith('1469664000');
     });
 
+    describe('when clearing the input', () => {
+      it('should return empty value', () => {
+        render();
+        let input = component.find(DatePickerComponent);
+        input.simulate('change');
+        expect(props.onChange).toHaveBeenCalledWith(null);
+      });
+    });
+
     describe('when passing endOfDay flag', () => {
       it('should set the value to the end of the day', () => {
         props.endOfDay = true;
@@ -50,11 +59,11 @@ describe('DatePicker', () => {
         render();
         let input = component.find(DatePickerComponent);
 
-        let twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00');
+        let twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00').tz('Europe/Madrid');
         input.simulate('change', twoHoursFromUtc);
         expect(props.onChange).toHaveBeenCalledWith('1469664000');
 
-        let twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00');
+        let twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00').tz('Europe/Madrid');
         input.simulate('change', twoHoursAfterUtc);
         expect(props.onChange).toHaveBeenCalledWith('1469664000');
       });
