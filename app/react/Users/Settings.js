@@ -18,10 +18,12 @@ export class Settings extends RouteHandler {
   static requestState() {
     return Promise.all([
       UsersAPI.currentUser(),
-      TemplatesAPI.get()
+      TemplatesAPI.get(),
+      ThesaurisAPI.get(),
+      RelationTypesAPI.get()
     ])
-    .then(([user, templates]) => {
-      return {user, templates};
+    .then(([user, templates, thesauris, relationTypes]) => {
+      return {user, templates, thesauris, relationTypes};
     });
   }
 
