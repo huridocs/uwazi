@@ -8,14 +8,20 @@ import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
 import DocumentTypesList from './components/DocumentTypesList';
 import UsersAPI from './UsersAPI';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
 
 export class Settings extends RouteHandler {
 
   static requestState() {
-    return UsersAPI.currentUser()
-    .then((user) => {
-      return {user};
+    return Promise.all([
+      UsersAPI.currentUser(),
+      TemplatesAPI.get()
+    ])
+    .then(([user, templates]) => {
+      return {user, templates};
     });
   }
 

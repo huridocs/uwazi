@@ -7,6 +7,7 @@ import SettingsNavigation from '../components/SettingsNavigation';
 import AccountSettings from '../components/AccountSettings';
 import CollectionSettings from '../components/CollectionSettings';
 import UsersAPI from '../UsersAPI';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
 
 describe('Settings', () => {
   let component;
@@ -38,15 +39,18 @@ describe('Settings', () => {
 
   describe('requestState', () => {
     let user = {name: 'doe'};
+    let templates = [{_id: 1, name: 'Decision'}];
 
     beforeEach(() => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
+      spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
     });
 
-    it('should get the current user', (done) => {
+    it('should get the current user, and metadata', (done) => {
       Settings.requestState()
       .then((state) => {
         expect(state.user).toEqual(user);
+        expect(state.templates).toEqual(templates);
         done();
       });
     });
