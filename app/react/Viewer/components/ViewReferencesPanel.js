@@ -58,7 +58,7 @@ export class ViewReferencesPanel extends Component {
       ref.range = ref.targetRange || {start: 0};
       ref.document = ref.sourceDocument;
       ref.inbound = true;
-      ref.text = ref.range.text;
+      ref.text = ref.sourceRange ? ref.sourceRange.text : '';
       normalizedReferences.push(ref);
     });
 
@@ -66,7 +66,7 @@ export class ViewReferencesPanel extends Component {
       ref.title = this.documentTitle(ref.targetDocument, referencedDocuments);
       ref.range = ref.sourceRange;
       ref.document = ref.targetDocument;
-      ref.text = ref.range.text;
+      ref.text = ref.targetRange ? ref.targetRange.text : '';
       normalizedReferences.push(ref);
     });
 

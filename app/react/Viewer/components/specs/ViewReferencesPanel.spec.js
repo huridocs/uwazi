@@ -13,8 +13,8 @@ describe('ViewReferencesPanel', () => {
   beforeEach(() => {
     props = {
       references: Immutable.fromJS([
-        {_id: 'ref1', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 10, end: 20, text: 'text 3'}},
-        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 4, end: 8, text: 'text 4'}}]),
+        {_id: 'ref1', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 10, end: 20}, targetRange: {text: 'text 3'}},
+        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 4, end: 8}, targetRange: {text: 'text 4'}}]),
       inboundReferences: Immutable.fromJS([]),
       referencedDocuments: Immutable.fromJS([{title: 'doc1', _id: '1'}, {title: 'doc2', _id: '2'}]),
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
@@ -40,8 +40,8 @@ describe('ViewReferencesPanel', () => {
 
   it('should merge and render references in order with the proper document titles', () => {
     props.inboundReferences = Immutable.fromJS([
-      {_id: 'inboundRef1', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 1, end: 2, text: 'text 1'}},
-      {_id: 'inboundRef2', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 11, end: 22, text: 'text 2'}},
+      {_id: 'inboundRef1', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 1, end: 2}, sourceRange: {text: 'text 1'}},
+      {_id: 'inboundRef2', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 11, end: 22}, sourceRange: {text: 'text 2'}},
       {_id: 'inboundRef3', relationType: 'rel1', sourceDocument: '2'}
     ]);
 
