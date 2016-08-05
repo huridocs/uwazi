@@ -61,8 +61,6 @@ export function activateReference(reference) {
 }
 
 export function selectReference(referenceId, references) {
-  console.log('referenceId:', referenceId);
-  console.log('references:', references);
   let reference = references.find(item => item._id === referenceId);
 
   return function (dispatch) {
