@@ -16,7 +16,7 @@ export class DatePicker extends Component {
 
   onChange(value) {
     if (!value) {
-      return this.props.onChange();
+      return this.props.onChange(null);
     }
     value.add(value.utcOffset(), 'minute');
     if (this.props.endOfDay) {
@@ -28,8 +28,10 @@ export class DatePicker extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.value) {
-      this.setState({value: moment.utc(newProps.value, 'X')});
+      return this.setState({value: moment.utc(newProps.value, 'X')});
     }
+
+    this.setState({value: null});
   }
 
   render() {

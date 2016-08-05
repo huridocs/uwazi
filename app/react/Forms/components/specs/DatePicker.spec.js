@@ -40,7 +40,7 @@ describe('DatePicker', () => {
         render();
         let input = component.find(DatePickerComponent);
         input.simulate('change');
-        expect(props.onChange).toHaveBeenCalledWith();
+        expect(props.onChange).toHaveBeenCalledWith(null);
       });
     });
 
