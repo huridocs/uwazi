@@ -64,7 +64,7 @@ export class FiltersForm extends Component {
                       <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </li>
                     <li className="wide">
-                      <Select options={property.options} onChange={() => this.props.activateFilter(property.name)} />
+                      <Select options={property.options} optionsValue="id" onChange={() => this.props.activateFilter(property.name)} />
                     </li>
                   </ul>
                 </SelectField>
