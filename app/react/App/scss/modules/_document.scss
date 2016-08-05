@@ -101,11 +101,20 @@
         padding-left: 13px;
       }
     }
-    &.relationship-active {
-      border-left: 3px solid $c-secondary;
+
+    &.relationship-active,
+    &.relationship-selected {
       .item-info, .item-metadata {
         padding-left: 13px;
       }
+    }
+
+    &.relationship-active {
+      border-left: 3px solid $c-secondary;
+    }
+    
+    &.relationship-selected {
+      border-left: 3px solid $c-success;
     }
   }
 }
