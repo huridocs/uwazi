@@ -97,7 +97,11 @@ export class ViewReferencesPanel extends Component {
 
               if (uiState.activeReference === reference._id) {
                 itemClass = 'relationship-active';
+                if (this.props.targetDoc) {
+                  itemClass = 'relationship-selected';
+                }
               }
+
               return (
                 <div key={index}
                   onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
