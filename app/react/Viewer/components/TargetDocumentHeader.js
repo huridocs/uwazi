@@ -24,6 +24,7 @@ export class TargetDocumentHeader extends Component {
 
     let reference = this.props.reference;
     reference.sourceDocument = this.props.sourceDocument;
+    this.props.unset('viewer/targetDocReferences');
     return this.props.saveReference(reference);
   }
 

@@ -29,6 +29,7 @@ describe('TargetDocumentHeader', () => {
       component.find('button').first().simulate('click');
       expect(props.unset).toHaveBeenCalledWith('viewer/targetDoc');
       expect(props.unset).toHaveBeenCalledWith('viewer/targetDocHTML');
+      expect(props.unset).toHaveBeenCalledWith('viewer/targetDocReferences');
       expect(props.unsetTargetSelection).toHaveBeenCalled();
       expect(props.openPanel).toHaveBeenCalledWith('targetReferencePanel');
     });
@@ -38,6 +39,7 @@ describe('TargetDocumentHeader', () => {
     it('should save the reference', () => {
       render();
       component.find('button').last().simulate('click');
+      expect(props.unset).toHaveBeenCalledWith('viewer/targetDocReferences');
       expect(props.saveReference).toHaveBeenCalledWith(props.reference);
     });
 
