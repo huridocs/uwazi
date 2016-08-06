@@ -30,9 +30,6 @@ class Footer extends Component {
               <Link to="/">Library</Link>
             </li>
             <li className="footer-nav_item">
-              <Link to="/metadata">Metadata</Link>
-            </li>
-            <li className="footer-nav_item">
               <Link to="/uploads">Uploads</Link>
             </li>
             {(() => {
@@ -43,7 +40,7 @@ class Footer extends Component {
               }
 
               return <li className="footer-nav_item">
-                <Link to="/settings">{this.props.user.username}</Link>
+                <Link to="/settings">Settings</Link>
               </li>;
             })()}
 
