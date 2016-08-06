@@ -85,7 +85,7 @@ export class ViewReferencesPanel extends Component {
 
     return (
       <SidePanel {...sidePanelprops} className="document-references">
-        <h1>CONNECTIONS ({this.props.references.toJS().length})</h1>
+        <h1>CONNECTIONS ({normalizedReferences.length})</h1>
         <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
         <div className="item-group">
           {(() => {

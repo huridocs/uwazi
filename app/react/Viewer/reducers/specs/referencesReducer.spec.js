@@ -36,7 +36,9 @@ describe('documentReducer', () => {
 
   describe('REMOVE_REFERENCE', () => {
     it('should remove reference passed', () => {
-      let newState = referencesReducer(Immutable.fromJS([{_id: 1}, {_id: 2}, {_id: 3}]), {type: types.REMOVE_REFERENCE, reference: {_id: 2}});
+      let newState = referencesReducer(Immutable.fromJS([{_id: 1}, {_id: 2}, {_id: 3}]),
+                                       {type: 'viewer/inboundReferences/REMOVE', value: {_id: 2}}
+                                      );
       let expected = Immutable.fromJS([{_id: 1}, {_id: 3}]);
 
       expect(newState).toBeImmutable();
