@@ -14,6 +14,7 @@ export default {
   },
 
   save(settings) {
+    settings.type = 'settings';
     return request.post(dbUrl, settings)
     .then((result) => {
       return result.json;
