@@ -18,6 +18,7 @@ import MetadataPanelMenu from './MetadataPanelMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
 import Footer from 'app/App/Footer';
+import ShowIf from 'app/App/ShowIf';
 
 export class Viewer extends Component {
 
@@ -41,7 +42,9 @@ export class Viewer extends Component {
       <div className="row">
         <main className={className}>
           <div className="main-wrapper">
-            <SourceDocument />
+            <ShowIf if={!this.props.targetDoc}>
+              <SourceDocument />
+            </ShowIf>
             <TargetDocument />
             <Footer/>
           </div>
