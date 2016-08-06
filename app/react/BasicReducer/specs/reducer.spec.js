@@ -34,4 +34,17 @@ describe('BasicReducer', () => {
       expect(newState2.toJS()).toEqual({defaultValue: 'default'});
     });
   });
+
+  describe('Delete', () => {
+    it('should delete an element from the array based on the id', () => {
+      let reducer1 = createReducer('namespace1', []);
+      let reducer2 = createReducer('namespace2', []);
+
+      let newState1 = reducer1([{_id: '1'}, {_id: '2'}, {_id: '3'}], actions.remove('namespace1', {_id: '2'}));
+      let newState2 = reducer2([{_id: '2'}], actions.remove('namespace1', {_id: '2'}));
+
+      expect(newState1.toJS()).toEqual([{_id: '1'}, {_id: '3'}]);
+      expect(newState2.toJS()).toEqual([{_id: '2'}]);
+    });
+  });
 });

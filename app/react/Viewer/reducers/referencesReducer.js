@@ -13,12 +13,12 @@ export default function referencesReducer(state = initialState, action = {}) {
   }
 
   if (action.type === types.ADD_CREATED_REFERENCE) {
-    return state.push(action.reference);
+    return state.push(Immutable.fromJS(action.reference));
   }
 
-  if (action.type === types.REMOVE_REFERENCE) {
+  if (action.type === 'viewer/inboundReferences/REMOVE') {
     return state.filter((reference) => {
-      return reference.get('_id') !== action.reference._id;
+      return reference.get('_id') !== action.value._id;
     });
   }
 
