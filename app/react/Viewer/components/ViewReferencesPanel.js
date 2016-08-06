@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
+import Immutable from 'immutable';
 
 import SidePanel from 'app/Layout/SidePanel';
 import ShowIf from 'app/App/ShowIf';
@@ -47,17 +48,39 @@ export class ViewReferencesPanel extends Component {
     const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
     const relationTypes = this.props.relationTypes.toJS();
     const referencedDocuments = this.props.referencedDocuments.toJS();
-    const references = this.props.references.toJS().sort((a, b) => {
-      return a.sourceRange.start - b.sourceRange.start;
+
+    const inboundReferences = this.props.inboundReferences.toJS();
+    const references = this.props.references.toJS();
+
+    let normalizedReferences = [];
+    inboundReferences.forEach((ref) => {
+      ref.title = this.documentTitle(ref.sourceDocument, referencedDocuments);
+      ref.range = ref.targetRange || {start: 0};
+      ref.document = ref.sourceDocument;
+      ref.inbound = true;
+      ref.text = ref.sourceRange ? ref.sourceRange.text : '';
+      normalizedReferences.push(ref);
+    });
+
+    references.forEach((ref) => {
+      ref.title = this.documentTitle(ref.targetDocument, referencedDocuments);
+      ref.range = ref.sourceRange;
+      ref.document = ref.targetDocument;
+      ref.text = ref.targetRange ? ref.targetRange.text : '';
+      normalizedReferences.push(ref);
+    });
+
+    const sortedReferences = normalizedReferences.sort((a, b) => {
+      return a.range.start - b.range.start;
     });
 
     return (
       <SidePanel {...sidePanelprops} className="document-references">
-        <h1>CONNECTIONS ({this.props.references.toJS().length})</h1>
+        <h1>CONNECTIONS ({normalizedReferences.length})</h1>
         <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
         <div className="item-group">
           {(() => {
-            return references.map((reference, index) => {
+            return sortedReferences.map((reference, index) => {
               let itemClass = '';
               if (uiState.highlightedReference === reference._id) {
                 itemClass = 'relationship-hover';
@@ -76,12 +99,12 @@ export class ViewReferencesPanel extends Component {
                   >
                     <div className="item-info">
                       <div className="item-name">
-                        {this.documentTitle(reference.targetDocument, referencedDocuments)}
+                        <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i> {reference.title}
                         {(() => {
-                          if (reference.targetRange) {
+                          if (reference.text) {
                             return <div className="item-snippet">
-                                    {reference.targetRange.text}
-                                   </div>;
+                              {reference.text}
+                            </div>;
                           }
                         })()}
                       </div>
@@ -100,15 +123,15 @@ export class ViewReferencesPanel extends Component {
                           </a>
                         </NeedAuthorization>
                       </ShowIf>
-                        &nbsp;
+                      &nbsp;
                       <ShowIf if={!this.props.targetDoc}>
-                        <Link to={'/document/' + reference.targetDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                        <Link to={'/document/' + reference.document} onClick={e => e.stopPropagation()} className="item-shortcut">
                           <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
                         </Link>
                       </ShowIf>
                     </div>
-                </div>
-                );
+                  </div>
+                  );
             });
           })()}
         </div>
@@ -120,6 +143,7 @@ export class ViewReferencesPanel extends Component {
 ViewReferencesPanel.propTypes = {
   uiState: PropTypes.object,
   references: PropTypes.object,
+  inboundReferences: PropTypes.object,
   referencedDocuments: PropTypes.object,
   relationTypes: PropTypes.object,
   highlightReference: PropTypes.func,
@@ -137,15 +161,18 @@ ViewReferencesPanel.contextTypes = {
 const mapStateToProps = ({documentViewer}) => {
   let references = documentViewer.references;
   let referencedDocuments = documentViewer.referencedDocuments;
+  let inboundReferences = documentViewer.inboundReferences;
 
   if (documentViewer.targetDoc.get('_id')) {
     references = documentViewer.targetDocReferences;
     referencedDocuments = documentViewer.targetDocReferencedDocuments;
+    inboundReferences = Immutable.fromJS([]);
   }
 
   return {
     uiState: documentViewer.uiState,
     references,
+    inboundReferences,
     referencedDocuments,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')

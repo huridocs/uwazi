@@ -14,6 +14,7 @@ export default combineReducers({
   targetDocHTML: createReducer('viewer/targetDocHTML', {pages: []}),
   targetDocReferences: createReducer('viewer/targetDocReferences', []),
   targetDocReferencedDocuments: createReducer('viewer/targetDocReferencedDocuments', []),
+  inboundReferences: createReducer('viewer/inboundReferences', []),
   references,
   uiState,
   docForm: modelReducer('documentViewer.docForm'),

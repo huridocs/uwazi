@@ -20,22 +20,29 @@ export default class ViewDocument extends RouteHandler {
       api.get('documents', {_id: documentId}),
       api.get('documents/html', {_id: documentId}),
       referencesRequest,
+      referencesAPI.getInbound(documentId),
       referencesRequest
       .then((references) => {
         let keys = references.map((reference) => reference.targetDocument);
+        return documentsAPI.list(keys);
+      }),
+      referencesAPI.getInbound(documentId)
+      .then((references) => {
+        let keys = references.map((reference) => reference.sourceDocument);
         return documentsAPI.list(keys);
       }),
       templatesAPI.get(),
       thesaurisAPI.get(),
       relationTypesAPI.get()
     ])
-    .then(([doc, docHTML, references, referencedDocuments, templates, thesauris, relationTypes]) => {
+    .then(([doc, docHTML, references, inboundReferences, targetDocuments, sourceDocuments, templates, thesauris, relationTypes]) => {
       return {
         documentViewer: {
           doc: doc.json.rows[0],
           docHTML: docHTML.json,
           references,
-          referencedDocuments,
+          inboundReferences,
+          referencedDocuments: targetDocuments.concat(sourceDocuments),
           templates,
           thesauris,
           relationTypes
@@ -44,9 +51,14 @@ export default class ViewDocument extends RouteHandler {
     });
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
     this.context.store.dispatch(actions.unset('viewer/docHTML'));
+    this.context.store.dispatch(actions.unset('viewer/inboundReferences'));
     this.context.store.dispatch(actions.unset('viewer/templates'));
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));
@@ -61,6 +73,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
     this.context.store.dispatch(actions.set('viewer/relationTypes', documentViewer.relationTypes));
     this.context.store.dispatch(actions.set('viewer/referencedDocuments', documentViewer.referencedDocuments));
+    this.context.store.dispatch(actions.set('viewer/inboundReferences', documentViewer.inboundReferences));
     this.context.store.dispatch(setReferences(documentViewer.references));
   }
 

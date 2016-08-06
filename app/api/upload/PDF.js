@@ -68,6 +68,8 @@ export default class PDF extends EventEmitter {
       '--page-filename %d',
       '--css-filename custom.css',
       '--optimize-text 1',
+      '--tounicode 1',
+      '--decompose-ligature 1',
       '--hdpi 96',
       '--vdpi 96',
       '--bg-format jpg']);

@@ -5,6 +5,7 @@
 
 - **NodeJs 4.x**
     - Ubuntu
+
       ```
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
@@ -30,7 +31,7 @@
       ```
       For adding logstash bin to PATH do:
       ```
-      $ sduo vim /etc/profile.d/logstash.sh
+      $ sudo vim /etc/profile.d/logstash.sh
       ```
       Add the following line:
       `PATH=$PATH:/opt/logstash/bin`.
@@ -48,6 +49,7 @@
 
 - **CouchDB and Futon**
     - Ubuntu
+
       ```
       $ sudo apt-get install software-properties-common -y
       $ sudo add-apt-repository ppa:couchdb/stable -y
@@ -57,6 +59,7 @@
 
 - **pdf2htmlEX**
     - Ubuntu
+
       ```
       $ sudo add-apt-repository ppa:coolwanglu/pdf2htmlex
       $ sudo add-apt-repository ppa:fontforge/fontforge
@@ -68,9 +71,13 @@
 #Development
 
 - **Dependencies**
+
   cd into uwazy folder and:
+
   `$ npm install` (on npm v2.x this can take a considerable time).
+
   Several globally accessible gems and npm modules are required:
+
   ```
   $ sudo gem install foreman
   $ sudo npm install -g webpack
@@ -78,9 +85,12 @@
   $ sudo npm install -g karma-cli
   ```
 
-- **Fixtures*
+- **Fixtures**
+
   `$ git clone https://github.com/huridocs/uwazi-fixtures.git`
+
   cd into uwazy-fixtures and:
+
   ```
   $ npm install
   $ ./restore.sh
@@ -88,10 +98,47 @@
 
 - **Create CouchDB views**
   cd into uwazy/couchdb and:
-  `$ ./restore_views.sh
+
+  `$ ./restore_views.sh`
 
 - launch application: `foreman start`, the app will be available after few seconds on localhost:3000
 - test api: `node test_api.js`
 - test react: `karma start`
+
+#Suggestions
+
+- **IDE**
+
+  -Ubuntu
+
+    - SublimeText 3:
+
+      In order to install the ES6 linter, you need to add to the package control the packages:
+      - SublimeLinter
+      - SublimeLinter-eslint
+      In theory, it will use the eslint from the local node_modules, and the configuration from the .eslintrc
+      In order to do JSX fromatting:
+      - Babel
+      Then open a .js file and go to:
+      view -> syntax -> open all current extensions as ... -> Babel -> Javascript (Babel)
+
+- If autowatch does not work, check the max_user_watches with:
+
+  ```
+  $ sysctl fs.inotify.max_user_watches
+  ```
+
+  If the number is relatively low (bellow 200K) try increasing the watchers by default with:
+
+  ```
+  $ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+  ```
+
+- If the nice 'World Globe' on the 'server listening on port...' line is not showing properly:
+
+
+  ```
+  $ sudo apt-get install ttf-ancient-fonts
+  ```
 
 =)

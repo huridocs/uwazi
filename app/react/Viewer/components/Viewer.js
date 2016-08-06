@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import ContextMenu from 'app/ContextMenu';
 
-import {loadDefaultViewerMenu, resetDocumentViewer} from '../actions/documentActions';
+import {loadDefaultViewerMenu} from '../actions/documentActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import CreateReferencePanel from './CreateReferencePanel';
@@ -17,22 +17,12 @@ import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
 import MetadataPanelMenu from './MetadataPanelMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
-import {actions} from 'app/BasicReducer';
 import Footer from 'app/App/Footer';
 
 export class Viewer extends Component {
 
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
-  }
-
-  componentWillUnmount() {
-    this.context.store.dispatch(resetDocumentViewer());
-    this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/docHTML'));
-    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
-    this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
-    this.context.store.dispatch(actions.unset('viewer/targetDocReferences'));
   }
 
   render() {
