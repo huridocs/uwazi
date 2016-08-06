@@ -5,14 +5,6 @@ import * as actions from 'app/Templates/actions/templatesActions';
 import * as types from 'app/Templates/actions/actionTypes';
 
 describe('templatesActions', () => {
-  describe('setTemplates', () => {
-    it('should return a SET_TEMPLATES type with templates passed', () => {
-      let templates = 'templates';
-      let action = actions.setTemplates(templates);
-      expect(action).toEqual({type: types.SET_TEMPLATES, templates: 'templates'});
-    });
-  });
-
   describe('async actions', () => {
     let dispatch;
     beforeEach(() => {
@@ -46,7 +38,7 @@ describe('templatesActions', () => {
 
         actions.deleteTemplate(template)(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.DELETE_TEMPLATE, id: 'templateId'});
+          expect(dispatch).toHaveBeenCalledWith({type: 'templates/REMOVE', value: template});
           done();
         });
       });

@@ -1,23 +1,12 @@
-import * as types from 'app/Templates/actions/actionTypes';
 import api from 'app/Templates/TemplatesAPI';
 import documentsAPI from 'app/Library/DocumentsAPI';
-
-
-export function setTemplates(templates) {
-  return {
-    type: types.SET_TEMPLATES,
-    templates
-  };
-}
+import {actions} from 'app/BasicReducer';
 
 export function deleteTemplate(template) {
   return function (dispatch) {
     return api.delete(template)
     .then(() => {
-      dispatch({
-        type: types.DELETE_TEMPLATE,
-        id: template._id
-      });
+      dispatch(actions.remove('templates', template));
     });
   };
 }

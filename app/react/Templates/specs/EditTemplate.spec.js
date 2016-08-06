@@ -66,8 +66,8 @@ describe('EditTemplate', () => {
       expect(formActions.load).toHaveBeenCalledWith('template.data', 'template_data');
       expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATE MODEL LOADED');
 
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris: 'thesauris'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_TEMPLATES', templates: 'templates'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesauris'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: 'templates'});
     });
   });
 });
