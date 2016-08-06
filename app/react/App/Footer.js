@@ -61,7 +61,7 @@ Footer.propTypes = {
 export function mapStateToProps(state) {
   return {
     user: state.user.toJS(),
-    siteName: state.settings.toJS().site_name
+    siteName: state.settings.collection.toJS().site_name
   };
 }
 

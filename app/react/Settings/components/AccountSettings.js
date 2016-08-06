@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions} from 'app/BasicReducer';
 
-import UsersAPI from '../UsersAPI';
+import UsersAPI from 'app/Users/UsersAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
 
 

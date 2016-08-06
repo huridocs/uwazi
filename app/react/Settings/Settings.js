@@ -7,7 +7,7 @@ import SettingsNavigation from './components/SettingsNavigation';
 import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
 import DocumentTypesList from './components/DocumentTypesList';
-import UsersAPI from './UsersAPI';
+import UsersAPI from 'app/Users/UsersAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
@@ -29,6 +29,9 @@ export class Settings extends RouteHandler {
 
   setReduxState(state) {
     this.context.store.dispatch(actions.set('auth/user', state.user));
+    this.context.store.dispatch(actions.set('metadata/templates', state.templates));
+    this.context.store.dispatch(actions.set('metadata/thesauris', state.thesauris));
+    this.context.store.dispatch(actions.set('metadata/relationTypes', state.relationTypes));
   }
 
   render() {
@@ -63,7 +66,7 @@ Settings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {section: state.users.section};
+  return {section: state.settings.section};
 }
 
 export default connect(mapStateToProps)(Settings);

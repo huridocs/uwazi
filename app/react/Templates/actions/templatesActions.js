@@ -1,7 +1,6 @@
 import * as types from 'app/Templates/actions/actionTypes';
 import api from 'app/Templates/TemplatesAPI';
 import documentsAPI from 'app/Library/DocumentsAPI';
-import {showModal} from 'app/Modals/actions/modalActions';
 
 
 export function setTemplates(templates) {

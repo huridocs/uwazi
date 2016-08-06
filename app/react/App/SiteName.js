@@ -13,7 +13,7 @@ SiteName.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {siteName: state.settings.toJS().site_name};
+  return {siteName: state.settings.collection.toJS().site_name};
 }
 
 export default connect(mapStateToProps)(SiteName);

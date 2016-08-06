@@ -6,7 +6,8 @@ import NoMatch from 'app/App/NoMatch';
 
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
-import Settings from 'app/Users/Settings';
+
+import Settings from 'app/Settings/Settings';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Uploads from 'app/Uploads/UploadsRoute';

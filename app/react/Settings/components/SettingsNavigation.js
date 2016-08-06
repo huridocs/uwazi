@@ -56,11 +56,11 @@ SettingsNavigation.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {section: state.users.section};
+  return {section: state.settings.section};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setSection: actions.set.bind(null, 'users/section')}, dispatch);
+  return bindActionCreators({setSection: actions.set.bind(null, 'settings/section')}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsNavigation);

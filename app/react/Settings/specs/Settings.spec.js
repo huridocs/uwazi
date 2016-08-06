@@ -6,7 +6,7 @@ import {Settings} from '../Settings';
 import SettingsNavigation from '../components/SettingsNavigation';
 import AccountSettings from '../components/AccountSettings';
 import CollectionSettings from '../components/CollectionSettings';
-import UsersAPI from '../UsersAPI';
+import UsersAPI from 'app/Users/UsersAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';

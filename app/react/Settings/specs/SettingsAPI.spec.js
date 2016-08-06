@@ -1,4 +1,4 @@
-import SettingsAPI from 'app/Users/SettingsAPI';
+import SettingsAPI from 'app/Settings/SettingsAPI';
 import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 import {catchErrors} from 'api/utils/jasmineHelpers';
