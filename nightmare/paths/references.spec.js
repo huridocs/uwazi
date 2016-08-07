@@ -6,6 +6,10 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
 
+let getInnerText = (selector) => {
+  return document.querySelector(selector).innerText;
+};
+
 fdescribe('references path', () => {
   let nightmare = new Nightmare({show: true}).viewport(1100, 600);
 
@@ -24,57 +28,101 @@ fdescribe('references path', () => {
   describe('search for document', () => {
     it('should find a document then open it', (done) => {
       nightmare
-        .wait('input[type="text"]')
-        .type('input[type="text"]', '283 03 B Kenya')
-        .wait('button[type="submit"]')
-        .click('button[type="submit"]')
-        .wait('.fa-file-o')
-        .click('.fa-file-o')
+      .wait('.item-name')
+      .evaluate(getInnerText, '.item:nth-child(2) .item-name')
+      .then((itemName) => {
+        return nightmare
+        .type('input[type="text"]', itemName)
+        .wait('.fa-arrow-left')
+        .realClick('.fa-arrow-left')
         .wait('.page')
-        .exist('.page')
+        .exists('.page')
         .then((result) => {
           expect(result).toBe(true);
           done();
-        })
-        .catch(catchErrors(done));
-      });
+        });
+      })
+      .catch(catchErrors(done));
+    });
 
-      it('select a word from the document then fill the form and click the submit button', (done) => {
-        nightmare
-        .realClick('.t span')
-        .realClick('.t span')
-        .wait('.fa-plus')
-        .mouseover('.fa-plus')
-        .wait('.float-btn.active')
-        .realClick('.fa-paragraph')
-        .wait('.create-reference .form-control')
-        .select('.create-reference select', '2dfaea9e3d65a28015632d43ca3bae32')
-        .type('.input-group input[type="text"]', '13 88 Hadjali Mohamad Algeria')
-        .realClick('.item-group .item')
-        .realClick('.float-btn.btn-fixed')
-        .wait(1000)
-        .wait('.fa-save')
-        .exist('.fa-save')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+    it('select a word from the document, fill the form and click the submit button', (done) => {
+      nightmare
+      .realClick('.t:nth-child(4)')
+      .realClick('.t:nth-child(4)')
+      .wait('.fa-plus')
+      .mouseover('.fa-plus')
+      .wait('.float-btn.active')
+      .realClick('.fa-paragraph')
+      .wait('.create-reference.is-active')
+      .select('select.form-control', 'a901de64992c1acddbbc2a930808377a')
+      .type('.input-group input[type="text"]', '334 06 Egyptian Initiative')
+      .wait(1000)
+      .realClick('.item-group .item')
+      .wait('.float-btn.btn-fixed')
+      .realClick('.float-btn.btn-fixed')
+      .wait('.document-viewer.show-target-document')
+      .exists('.document-viewer.show-target-document')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
 
-      it('select a word from the second document then click the save button', (done) => {
-        nightmare
-        .realClick('.targetDocument .page .t:nth-child(2)')
-        .realClick('.targetDocument .page .t:nth-child(2)')
-        .realClick('.fa-save')
-        .wait('.side-panel')
-        .exist('.side-panel')
+    it('should select a word from the second document then click the save button', (done) => {
+      let textToSelect = '#pf1 > div.pc.pc1.w0.h0 > div.t.m0.x0.h3.y3.ff1.fs2.fc0.sc0.ls1.ws0';
+      nightmare
+      .wait(textToSelect)
+      .realClick(textToSelect)
+      .realClick(textToSelect)
+      .wait('.fa-save')
+      .realClick('.fa-save')
+      .wait('.side-panel.document-references.is-active')
+      .exists('.side-panel.document-references.is-active')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should find the document where the relation was created and open it', (done) => {
+      nightmare
+      .goto(config.url)
+      .wait('.item-name')
+      .evaluate(getInnerText, '.item:nth-child(2) .item-name')
+      .then((itemName) => {
+        return nightmare
+        .type('input[type="text"]', itemName)
+        .wait('.fa-arrow-left')
+        .realClick('.fa-arrow-left')
+        .wait('.page')
+        .exists('.page')
         .then((result) => {
           expect(result).toBe(true);
           done();
-        })
-        .catch(catchErrors(done));
-      });
+        });
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('select the word when the relation was created from the document then delete it', (done) => {
+      let textToSelect = '.t:nth-child(4)';
+      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-references.is-active > div > div.item.relationship-active > div.item-actions > a:nth-child(1)';
+      nightmare
+      .realClick(textToSelect)
+      .realClick(textToSelect)
+      .wait(unlinkIcon)
+      .click(unlinkIcon)
+      .wait(3000)
+      // .wait('.confirm-button')
+      // .realclick('.confirm-button')
+      // .then((result) => {
+      //   expect(result).toBe(true);
+      //   done();
+      // })
+      .then(done)
+      .catch(catchErrors(done));
     });
   });
 
