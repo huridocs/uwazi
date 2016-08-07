@@ -48,9 +48,9 @@ export class Login extends RouteHandler {
           <h1 className="login-title">
             <img src="/public/logo.svg" title="uwazi" alt="uwazi"/>
           </h1>
-          <Form onSubmit={this.submit.bind(this)} model="users.form">
+          <Form onSubmit={this.submit.bind(this)} model="login.form">
             <div className={'form-group login-email' + (this.state.error ? ' has-error' : '')}>
-              <Field model="users.form.username">
+              <Field model="login.form.username">
                 <label htmlFor="username">{this.state.recoverPassword ? 'EMAIL' : 'LOGIN'}</label>
                 <input type="text" name="username" id="username" className="form-control"/>
               </Field>
@@ -58,7 +58,7 @@ export class Login extends RouteHandler {
             <div className={'form-group login-password ' + (this.state.error ? 'has-error' : '') + (this.state.recoverPassword ? ' is-hidden' : '')}>
               <label htmlFor="password">Password</label>
               <div className="input-group">
-                <Field model="users.form.password">
+                <Field model="login.form.password">
                   <input type="password" name="password" id="password" className="form-control"/>
                 </Field>
                   <div className="input-group-btn">

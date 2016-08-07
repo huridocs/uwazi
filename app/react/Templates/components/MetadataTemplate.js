@@ -47,7 +47,7 @@ export class MetadataTemplate extends Component {
                   })()}
                 </div>
                 &nbsp;
-                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
                   <i className="fa fa-save"/> Save

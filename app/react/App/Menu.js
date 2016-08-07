@@ -11,13 +11,10 @@ class Menu extends Component {
       <ul onClick={this.props.onClick} className={this.props.className}>
         <li><Link to='/' className="btn"><i className="fa fa-th"></i>Library</Link></li>
         <NeedAuthorization>
-          <li><Link to='/metadata' className="btn"><i className="fa fa-list-alt"></i>Metadata</Link></li>
-        </NeedAuthorization>
-        <NeedAuthorization>
           <li><Link to='/uploads' className="btn"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
         </NeedAuthorization>
         <NeedAuthorization>
-          <li><Link to='/settings' className="btn"><i className="fa fa-cog"></i>{user.username}</Link></li>
+          <li><Link to='/settings' className="btn"><i className="fa fa-cog"></i>Settings</Link></li>
         </NeedAuthorization>
         {(() => {
           if (!user._id) {

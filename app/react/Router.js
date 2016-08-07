@@ -114,7 +114,7 @@ function handleRoute(res, renderProps, req) {
     ])
     .then(([initialData, user, settings]) => {
       initialData.user = user.json;
-      initialData.settings = settings.json;
+      initialData.settings = {collection: settings.json};
       renderPage(initialData, true);
     })
     .catch((error) => {

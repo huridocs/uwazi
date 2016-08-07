@@ -4,8 +4,7 @@ import {actions as formActions} from 'react-redux-form';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
-import {setTemplates} from 'app/Templates/actions/templatesActions';
-import {setThesauris} from 'app/Thesauris/actions/thesaurisActions';
+import {actions} from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
 
@@ -39,8 +38,8 @@ export default class EditTemplate extends RouteHandler {
 
   setReduxState({template, thesauris, templates}) {
     this.context.store.dispatch(formActions.load('template.data', template.data));
-    this.context.store.dispatch(setThesauris(thesauris));
-    this.context.store.dispatch(setTemplates(templates));
+    this.context.store.dispatch(actions.set('thesauris', thesauris));
+    this.context.store.dispatch(actions.set('templates', templates));
   }
 
   render() {

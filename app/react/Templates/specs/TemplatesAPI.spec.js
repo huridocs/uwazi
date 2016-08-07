@@ -10,6 +10,7 @@ describe('TemplatesAPI', () => {
     backend.restore();
     backend
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: mockResponse})})
+    .mock(APIURL + 'templates/count_by_thesauri?_id=id', 'GET', {body: JSON.stringify({total: 1})})
     .mock(APIURL + 'templates?_id=templateId', 'GET', {body: JSON.stringify({rows: templateResponse})})
     .mock(APIURL + 'templates?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
@@ -56,6 +57,18 @@ describe('TemplatesAPI', () => {
       templates.delete(template)
       .then((response) => {
         expect(response).toEqual({backednResponse: 'testdelete'});
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('countByThesauri()', () => {
+    it('should request the templates using a specific thesauri', (done) => {
+      let thesauri = {_id: 'id'};
+      templates.countByThesauri(thesauri)
+      .then((response) => {
+        expect(response).toEqual({total: 1});
         done();
       })
       .catch(done.fail);

@@ -3,6 +3,7 @@ import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import templates from 'api/templates/templates';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('templates routes', () => {
   let routes;
@@ -12,7 +13,7 @@ describe('templates routes', () => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
-    .catch(done.fail);
+    .catch(catchErrors(done));
   });
 
   describe('GET', () => {
@@ -23,7 +24,7 @@ describe('templates routes', () => {
         expect(docs[0].name).toBe('template_test');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     describe('when passing id', () => {
@@ -36,7 +37,7 @@ describe('templates routes', () => {
           expect(docs[0].name).toBe('template_test2');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
 
@@ -51,7 +52,7 @@ describe('templates routes', () => {
           expect(error.error).toBe('not_found');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
   });
@@ -65,7 +66,7 @@ describe('templates routes', () => {
         expect(response).toBe('ok');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     describe('when there is a db error', () => {
@@ -77,7 +78,7 @@ describe('templates routes', () => {
           expect(response.error.error).toBe('bad_request');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
   });
@@ -93,7 +94,7 @@ describe('templates routes', () => {
         expect(templates.save).toHaveBeenCalledWith(req.body);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     describe('when there is a db error', () => {
@@ -105,8 +106,22 @@ describe('templates routes', () => {
           expect(error.error).toBe('error');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
+    });
+  });
+
+  describe('/templates/count_by_thesauri', () => {
+    it('should return the number of templates using a thesauri', (done) => {
+      spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(2));
+      let req = {query: {_id: 'abc1'}};
+      routes.get('/api/templates/count_by_thesauri', req)
+      .then((result) => {
+        expect(result).toBe(2);
+        expect(templates.countByThesauri).toHaveBeenCalledWith('abc1');
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 });

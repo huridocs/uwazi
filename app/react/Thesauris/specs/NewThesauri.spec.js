@@ -40,7 +40,7 @@ describe('NewThesauri', () => {
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       instance.setReduxState({thesauris});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_THESAURIS', thesauris});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: thesauris});
     });
   });
 });

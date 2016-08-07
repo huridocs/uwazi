@@ -1,6 +1,7 @@
-import * as types from 'app/Thesauris/actions/actionTypes';
 import api from 'app/Thesauris/ThesaurisAPI';
 import {actions as formActions} from 'react-redux-form';
+import {actions} from 'app/BasicReducer';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
 
 export function editThesauri(thesauri) {
   return function (dispatch) {
@@ -8,20 +9,22 @@ export function editThesauri(thesauri) {
   };
 }
 
-export function setThesauris(thesauris) {
-  return {
-    type: types.SET_THESAURIS,
-    thesauris
+export function deleteThesauri(thesauri) {
+  return function (dispatch) {
+    return api.delete(thesauri)
+    .then(() => {
+      dispatch(actions.remove('thesauris', thesauri));
+    });
   };
 }
 
-export function deleteThesauri(thesauri) {
-  return function (dispatch) {
-    return api.delete(thesauri).then(() => {
-      dispatch({
-        type: types.THESAURI_DELETED,
-        id: thesauri._id
-      });
+export function checkThesauriCanBeDeleted(thesauri) {
+  return function () {
+    return TemplatesAPI.countByThesauri(thesauri)
+    .then((count) => {
+      if (count) {
+        return Promise.reject();
+      }
     });
   };
 }

@@ -41,4 +41,11 @@ export default app => {
       res.json({error: error.json});
     });
   });
+
+  app.get('/api/templates/count_by_thesauri', (req, res) => {
+    templates.countByThesauri(req.query._id)
+    .then((response) => {
+      res.json(response);
+    });
+  });
 };

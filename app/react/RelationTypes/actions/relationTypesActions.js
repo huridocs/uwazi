@@ -1,8 +1,7 @@
-import * as types from 'app/RelationTypes/actions/actionTypes';
 import api from 'app/RelationTypes/RelationTypesAPI';
 import {actions as formActions} from 'react-redux-form';
 import referencesAPI from 'app/Viewer/referencesAPI';
-import {showModal} from 'app/Modals/actions/modalActions';
+import {actions} from 'app/BasicReducer';
 
 export function editRelationType(relationType) {
   return function (dispatch) {
@@ -10,33 +9,21 @@ export function editRelationType(relationType) {
   };
 }
 
-export function setRelationTypes(relationTypes) {
-  return {
-    type: types.SET_RELATION_TYPES,
-    relationTypes
-  };
-}
-
 export function deleteRelationType(relationType) {
   return function (dispatch) {
     return api.delete(relationType).then(() => {
-      dispatch({
-        type: types.RELATION_TYPE_DELETED,
-        id: relationType._id
-      });
+      dispatch(actions.remove('relationTypes', relationType));
     });
   };
 }
 
 export function checkRelationTypeCanBeDeleted(relationType) {
-  return function (dispatch) {
+  return function () {
     return referencesAPI.countByRelationType(relationType._id)
     .then((count) => {
       if (count) {
-        return dispatch(showModal('CantDeleteRelationType', count));
+        return Promise.reject();
       }
-
-      dispatch(showModal('DeleteRelationTypeConfirm', relationType));
     });
   };
 }

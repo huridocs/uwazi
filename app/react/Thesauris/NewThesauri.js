@@ -2,7 +2,7 @@ import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
-import {setThesauris} from 'app/Thesauris/actions/thesaurisActions';
+import {actions} from 'app/BasicReducer';
 import api from 'app/Thesauris/ThesaurisAPI';
 
 export default class NewThesauri extends RouteHandler {
@@ -15,7 +15,7 @@ export default class NewThesauri extends RouteHandler {
   }
 
   setReduxState({thesauris}) {
-    this.context.store.dispatch(setThesauris(thesauris));
+    this.context.store.dispatch(actions.set('thesauris', thesauris));
   }
 
   render() {

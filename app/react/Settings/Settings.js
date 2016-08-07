@@ -6,24 +6,39 @@ import RouteHandler from 'app/App/RouteHandler';
 import SettingsNavigation from './components/SettingsNavigation';
 import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
-import UsersAPI from './UsersAPI';
+import DocumentTypesList from './components/DocumentTypesList';
+import RelationTypesList from './components/RelationTypesList';
+import ThesaurisList from './components/ThesaurisList';
+import UsersAPI from 'app/Users/UsersAPI';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
 
 export class Settings extends RouteHandler {
 
   static requestState() {
-    return UsersAPI.currentUser()
-    .then((user) => {
-      return {user};
+    return Promise.all([
+      UsersAPI.currentUser(),
+      TemplatesAPI.get(),
+      ThesaurisAPI.get(),
+      RelationTypesAPI.get()
+    ])
+    .then(([user, templates, thesauris, relationTypes]) => {
+      return {user, templates, thesauris, relationTypes};
     });
   }
 
   setReduxState(state) {
     this.context.store.dispatch(actions.set('auth/user', state.user));
+    this.context.store.dispatch(actions.set('templates', state.templates));
+    this.context.store.dispatch(actions.set('thesauris', state.thesauris));
+    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
   }
 
   render() {
     let section = this.props.section;
+
     return (
         <div className="row admin-content">
           <Helmet title="Settings" />
@@ -38,6 +53,15 @@ export class Settings extends RouteHandler {
               if (section === 'collection') {
                 return <CollectionSettings/>;
               }
+              if (section === 'documentTypes') {
+                return <DocumentTypesList/>;
+              }
+              if (section === 'relationTypes') {
+                return <RelationTypesList/>;
+              }
+              if (section === 'thesauris') {
+                return <ThesaurisList/>;
+              }
             })()}
           </div>
         </div>
@@ -50,7 +74,7 @@ Settings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {section: state.users.section};
+  return {section: state.settings.section};
 }
 
 export default connect(mapStateToProps)(Settings);

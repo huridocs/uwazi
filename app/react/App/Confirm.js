@@ -41,8 +41,11 @@ export class Confirm extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <button type="button" className="btn btn-default cancel-button"
-            onClick={this.cancel.bind(this) }>Cancel</button>
+          {(() => {
+            if (!this.props.noCancel) {
+              return <button type="button" className="btn btn-default cancel-button" onClick={this.cancel.bind(this) }>Cancel</button>;
+            }
+          })()}
           <button type="button" className={'btn confirm-button btn-' + type} onClick={this.accept.bind(this)}>Accept</button>
         </Modal.Footer>
 
@@ -53,6 +56,7 @@ export class Confirm extends Component {
 
 Confirm.propTypes = {
   isOpen: PropTypes.bool,
+  noCancel: PropTypes.bool,
   accept: PropTypes.func,
   cancel: PropTypes.func,
   type: PropTypes.string,
