@@ -5,6 +5,7 @@ import SourceDocument from 'app/Viewer/components/SourceDocument';
 import TargetDocument from 'app/Viewer/components/TargetDocument';
 import ContextMenu from 'app/ContextMenu';
 import {Viewer} from 'app/Viewer/components/Viewer';
+import ShowIf from 'app/App/ShowIf';
 
 describe('Viewer', () => {
   let component;
@@ -34,6 +35,12 @@ describe('Viewer', () => {
     props.targetDoc = true;
     render();
     expect(component.find('.document-viewer').hasClass('show-target-document')).toBe(true);
+  });
+
+  it('should not render SourceDocument when targetDocument loaded', () => {
+    props.targetDoc = true;
+    render();
+    expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
   });
 
   it('should render Document and ContextMenu', () => {

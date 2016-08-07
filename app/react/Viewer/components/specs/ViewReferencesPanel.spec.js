@@ -20,6 +20,7 @@ describe('ViewReferencesPanel', () => {
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
       highlightReference: jasmine.createSpy('highlightReference'),
       activateReference: jasmine.createSpy('activateReference'),
+      selectReference: jasmine.createSpy('selectReference'),
       deactivateReference: jasmine.createSpy('deactivateReference'),
       deleteReference: jasmine.createSpy('deleteReference'),
       closePanel: jasmine.createSpy('closePanel'),
@@ -93,11 +94,28 @@ describe('ViewReferencesPanel', () => {
     });
   });
 
-  describe('when click a reference', () => {
-    it('should activate it', () => {
-      render();
-      component.find('.item').last().simulate('click');
-      expect(props.activateReference).toHaveBeenCalledWith('ref1');
+  describe('when click on a reference', () => {
+    beforeEach(() => {
+      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel', activeReference: 'ref1'});
+    });
+
+    describe('when document is source document', () => {
+      it('should activate it', () => {
+        render();
+        component.find('.item').last().simulate('click');
+        expect(props.activateReference).toHaveBeenCalledWith('ref1');
+        expect(component.find('.item').last().node.props.className).toContain('relationship-active');
+      });
+    });
+
+    describe('when document is target document', () => {
+      it('should select it', () => {
+        props.targetDoc = true;
+        render();
+        component.find('.item').last().simulate('click');
+        expect(props.selectReference).toHaveBeenCalledWith('ref1', props.references.toJS());
+        expect(component.find('.item').last().node.props.className).toContain('relationship-selected');
+      });
     });
   });
 

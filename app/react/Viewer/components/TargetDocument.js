@@ -4,11 +4,11 @@ import {bindActionCreators} from 'redux';
 import Document from './Document';
 import TargetDocumentHeader from './TargetDocumentHeader';
 import {setTargetSelection, unsetTargetSelection} from 'app/Viewer/actions/selectionActions';
-import {highlightReference, activateReference} from 'app/Viewer/actions/uiActions';
+import {highlightReference, selectReference} from 'app/Viewer/actions/uiActions';
 
 const mapStateToProps = ({documentViewer}) => {
   let uiState = documentViewer.uiState.toJS();
-  
+
   return {
     doc: documentViewer.targetDoc,
     docHTML: documentViewer.targetDocHTML,
@@ -28,7 +28,7 @@ function mapDispatchToProps(dispatch) {
     setSelection: setTargetSelection,
     unsetSelection: unsetTargetSelection,
     highlightReference,
-    activateReference
+    activateReference: selectReference
   },
   dispatch);
 }

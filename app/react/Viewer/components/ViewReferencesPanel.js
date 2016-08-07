@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 import SidePanel from 'app/Layout/SidePanel';
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
-import {highlightReference, closePanel, activateReference, deactivateReference} from 'app/Viewer/actions/uiActions';
+import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -31,6 +31,15 @@ export class ViewReferencesPanel extends Component {
   close() {
     this.props.closePanel();
     this.props.deactivateReference();
+  }
+
+  clickReference(id) {
+    if (!this.props.targetDoc) {
+      this.props.activateReference(id);
+    }
+    if (this.props.targetDoc) {
+      this.props.selectReference(id, this.props.references.toJS());
+    }
   }
 
   deleteReference(reference) {
@@ -88,12 +97,16 @@ export class ViewReferencesPanel extends Component {
 
               if (uiState.activeReference === reference._id) {
                 itemClass = 'relationship-active';
+                if (this.props.targetDoc) {
+                  itemClass = 'relationship-selected';
+                }
               }
+
               return (
                 <div key={index}
                   onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
                   onMouseLeave={this.props.highlightReference.bind(null, null)}
-                  onClick={this.props.activateReference.bind(null, reference._id)}
+                  onClick={this.clickReference.bind(this, reference._id)}
                   className={`item ${itemClass}`}
                   data-id={reference._id}
                   >
@@ -148,6 +161,7 @@ ViewReferencesPanel.propTypes = {
   relationTypes: PropTypes.object,
   highlightReference: PropTypes.func,
   activateReference: PropTypes.func,
+  selectReference: PropTypes.func,
   deactivateReference: PropTypes.func,
   closePanel: PropTypes.func,
   deleteReference: PropTypes.func,
@@ -180,7 +194,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({highlightReference, closePanel, activateReference, deactivateReference, deleteReference}, dispatch);
+  return bindActionCreators({highlightReference, closePanel, activateReference, selectReference, deactivateReference, deleteReference}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewReferencesPanel);
