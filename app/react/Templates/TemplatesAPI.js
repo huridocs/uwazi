@@ -20,6 +20,13 @@ export default {
     });
   },
 
+  countByThesauri(thesauri) {
+    return api.get('templates/count_by_thesauri', thesauri)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   delete(template) {
     return api.delete('templates', template)
     .then((response) => {

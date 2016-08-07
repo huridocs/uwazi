@@ -1,8 +1,6 @@
 import referencesRroutes from '../routes.js';
 import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
-import {db_url as dbUrl} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import references from 'api/references/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';

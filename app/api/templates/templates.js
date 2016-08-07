@@ -67,5 +67,15 @@ export default {
     .then((response) => {
       return response.json;
     });
+  },
+
+  countByThesauri(thesauriId) {
+    return request.get(`${dbURL}/_design/templates/_view/count_by_thesauri?key="${thesauriId}"`)
+    .then((response) => {
+      if (!response.json.rows.length) {
+        return 0;
+      }
+      return response.json.rows[0].value;
+    });
   }
 };

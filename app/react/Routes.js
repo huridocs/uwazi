@@ -12,8 +12,6 @@ import Settings from 'app/Settings/Settings';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Uploads from 'app/Uploads/UploadsRoute';
 
-import Metadata from 'app/Metadata/Metadata';
-
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 
@@ -30,7 +28,6 @@ export default (
     <IndexRoute component={Library} />
     <Route path='settings' component={Settings} />
     <Route path='uploads' component={Uploads} />
-    <Route path='metadata' component={Metadata} />
     <Route path='templates/new' component={NewTemplate} />
     <Route path='templates/edit/:templateId' component={EditTemplate} />
     <Route path='thesauris/new' component={NewThesauri} />
