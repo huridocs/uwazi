@@ -2,7 +2,6 @@ import backend from 'fetch-mock';
 import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Templates/actions/templatesActions';
-import * as types from 'app/Templates/actions/actionTypes';
 
 describe('templatesActions', () => {
   describe('async actions', () => {
