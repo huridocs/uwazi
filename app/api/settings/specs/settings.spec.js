@@ -12,15 +12,22 @@ describe('settings', () => {
     .catch(done.fail);
   });
 
-  describe('get()', () => {
-    it('should return settings object', (done) => {
-      settings.get()
+  describe('save()', () => {
+    it('should save the settings', (done) => {
+      let config = {site_name: 'My collection'};
+      settings.save(config)
+      .then(() => {
+        return settings.get();
+      })
       .then((result) => {
-        expect(result.site_name).toBe('Uwazi');
+        expect(result.site_name).toBe('My collection');
+        expect(result.type).toBe('settings');
         done();
       }).catch(catchErrors(done));
     });
+  });
 
+  describe('get()', () => {
     describe('if there is no settings on the DB', () => {
       it('should return an empty object', (done) => {
         database.reset_testing_database()
@@ -31,21 +38,6 @@ describe('settings', () => {
           done();
         }).catch(catchErrors(done));
       });
-    });
-  });
-
-  describe('save()', () => {
-    it('should update the settings', (done) => {
-      settings.get()
-      .then((result) => {
-        result.site_name = 'My collection';
-        return settings.save(result);
-      })
-      .then(() => settings.get())
-      .then((result) => {
-        expect(result.site_name).toBe('My collection');
-        done();
-      }).catch(catchErrors(done));
     });
   });
 });
