@@ -15,23 +15,23 @@ export class RelationTypesList extends Component {
         accept: () => {
           this.props.deleteRelationType(relationType);
         },
-        title: 'Confirm delete relation type: ' + relationType.name,
-        message: 'Are you sure you want to delete this document type?'
+        title: 'Confirm delete connection type: ' + relationType.name,
+        message: 'Are you sure you want to delete this connection type?'
       });
     })
     .catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: 'Can not delete relation type: ' + relationType.name,
-        message: 'This document type has associated connections and can not be deleted.'
+        title: 'Cannot delete connection type: ' + relationType.name,
+        message: 'This connection type is being used and cannot be deleted.'
       });
     });
   }
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Relation Types</div>
+      <div className="panel-heading">Connections</div>
       <ul className="list-group relation-types">
         {this.props.relationTypes.toJS().map((relationType, index) => {
           return <li key={index} className="list-group-item">
@@ -52,7 +52,7 @@ export class RelationTypesList extends Component {
       <div className="panel-body">
         <Link to="relationtypes/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
-          <span>Add relation type</span>
+          <span>Add connection</span>
         </Link>
       </div>
     </div>;

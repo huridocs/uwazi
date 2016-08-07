@@ -32,12 +32,12 @@ export class SettingsNavigation extends Component {
           <button
             onClick={this.handleClick.bind(this, 'documentTypes')}
             className={'list-group-item' + (this.props.section === 'documentTypes' ? ' active' : '')}>
-            Document types
+            Documents
           </button>
           <button
             onClick={this.handleClick.bind(this, 'relationTypes')}
             className={'list-group-item' + (this.props.section === 'relationTypes' ? ' active' : '')}>
-            Relation types
+            Connections
           </button>
           <button
             onClick={this.handleClick.bind(this, 'thesauris')}

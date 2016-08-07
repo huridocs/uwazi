@@ -15,23 +15,23 @@ export class ThesaurisList extends Component {
         accept: () => {
           this.props.deleteThesauri(thesauri);
         },
-        title: 'Confirm delete relation type: ' + thesauri.name,
-        message: 'Are you sure you want to delete this document type?'
+        title: 'Confirm delete thesauri: ' + thesauri.name,
+        message: 'Are you sure you want to delete this thesauri?'
       });
     })
     .catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: 'Can not delete relation type: ' + thesauri.name,
-        message: 'This document type has associated connections and can not be deleted.'
+        title: 'Cannot delete thesauri: ' + thesauri.name,
+        message: 'This thesauri is being used in document types and cannot be deleted.'
       });
     });
   }
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Relation Types</div>
+      <div className="panel-heading">Thesauris</div>
       <ul className="list-group relation-types">
         {this.props.thesauris.toJS().map((thesauri, index) => {
           return <li key={index} className="list-group-item">

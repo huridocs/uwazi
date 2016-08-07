@@ -23,15 +23,15 @@ export class DocumentTypesList extends Component {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: 'Can not delete document type: ' + template.name,
-        message: 'This document type has associated documnets and can not be deleted.'
+        title: 'Cannot delete document type: ' + template.name,
+        message: 'This document type has associated documnets and cannot be deleted.'
       });
     });
   }
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Document Types</div>
+      <div className="panel-heading">Documents</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
           return <li key={index} className="list-group-item">
@@ -52,7 +52,7 @@ export class DocumentTypesList extends Component {
       <div className="panel-body">
         <Link to="templates/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
-          <span>Add document type</span>
+          <span>Add document</span>
         </Link>
       </div>
     </div>;
