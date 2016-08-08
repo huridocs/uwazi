@@ -17,7 +17,7 @@ describe('references', () => {
     it('should return all the references in the database', (done) => {
       references.getAll()
       .then((result) => {
-        expect(result.rows.length).toBe(5);
+        expect(result.rows.length).toBe(6);
         expect(result.rows[0].type).toBe('reference');
         expect(result.rows[0].title).toBe('reference1');
         done();
@@ -27,13 +27,26 @@ describe('references', () => {
 
   describe('getByDocument()', () => {
     it('should return all the references of a document', (done) => {
-      references.getByDocument('source1')
+      references.getByDocument('source2')
       .then((result) => {
-        expect(result.rows.length).toBe(2);
-        expect(result.rows[0].sourceDocument).toBe('source1');
-        expect(result.rows[1].sourceDocument).toBe('source1');
+        expect(result.length).toBe(3);
+
+        expect(result[0].inbound).toBe(true);
+        expect(result[0].targetDocument).toBe('source2');
+        expect(result[0].range).toBe('range1');
+        expect(result[0].connectedDocument).toBe('source1');
+
+        expect(result[1].sourceDocument).toBe('source2');
+        expect(result[1].range).toBe('range2');
+        expect(result[1].connectedDocument).toBe('doc3');
+
+        expect(result[2].inbound).toBe(true);
+        expect(result[2].targetDocument).toBe('source2');
+        expect(result[2].range).toBe('range3');
+        expect(result[2].connectedDocument).toBe('source1');
         done();
-      }).catch(catchErrors(done));
+      })
+      .catch(catchErrors(done));
     });
   });
 
@@ -69,15 +82,19 @@ describe('references', () => {
 
   describe('save()', () => {
     describe('when the reference type did not exist', () => {
-      it('should create a new one and return it', (done) => {
-        references.save({title: 'This is important!', sourceDocument: 'sorce1'})
+      it('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
+        references.save({sourceDocument: 'sourceDoc', targetDocument: 'targetDoc', targetRange: 'range'})
         .then((result) => {
-          expect(result.title).toBe('This is important!');
-          expect(result.sourceDocument).toBe('sorce1');
+          expect(result.sourceDocument).toBe('sourceDoc');
+          expect(result.connectedDocument).toBe('targetDoc');
+          expect(result.range).toBe('range');
+          expect(result.inbound).toBe(false);
+
           expect(result._id).toBeDefined();
           expect(result._rev).toBeDefined();
           done();
-        }).catch(catchErrors(done));
+        })
+        .catch(catchErrors(done));
       });
     });
 
@@ -100,6 +117,7 @@ describe('references', () => {
       });
     });
   });
+
   describe('delete()', () => {
     it('should delete the reference', (done) => {
       request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`)

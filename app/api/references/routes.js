@@ -22,8 +22,8 @@ export default app => {
     });
   });
 
-  app.get('/api/references/by_target_document/:id', (req, res) => {
-    references.getByTarget(req.params.id)
+  app.get('/api/references/by_document/:id', (req, res) => {
+    references.getByDocument(req.params.id)
     .then((response) => {
       res.json(response);
     })
@@ -32,26 +32,15 @@ export default app => {
     });
   });
 
-  app.get('/api/references', (req, res) => {
-    if (req.query && req.query.sourceDocument) {
-      references.getByDocument(req.query.sourceDocument)
-      .then((response) => {
-        res.json(response);
-      })
-      .catch((error) => {
-        res.json({error: error.json});
-      });
-      return;
-    }
-
-    references.getAll()
-    .then((response) => {
-      res.json(response);
-    })
-    .catch((error) => {
-      res.json({error: error.json});
-    });
-  });
+  //app.get('/api/references', (req, res) => {
+    //references.getAll()
+    //.then((response) => {
+      //res.json(response);
+    //})
+    //.catch((error) => {
+      //res.json({error: error.json});
+    //});
+  //});
 
   app.get('/api/references/count_by_relationtype', (req, res) => {
     references.countByRelationType(req.query.relationtypeId)
