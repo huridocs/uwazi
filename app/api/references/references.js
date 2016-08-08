@@ -3,8 +3,11 @@ import request from 'shared/JSONRequest';
 import sanitizeResponse from 'api/utils/sanitizeResponse';
 
 let normalizeConnection = (connection, docId) => {
+  connection.targetRange = connection.targetRange || {text: ''};
+  connection.sourceRange = connection.sourceRange || {text: ''};
   connection.inbound = connection.targetDocument === docId;
-  connection.range = connection.inbound ? connection.sourceRange : connection.targetRange;
+  connection.range = connection.inbound ? connection.targetRange : connection.sourceRange;
+  connection.text = connection.inbound ? connection.sourceRange.text : connection.targetRange.text;
   connection.connectedDocument = connection.inbound ? connection.sourceDocument : connection.targetDocument;
   return connection;
 };
