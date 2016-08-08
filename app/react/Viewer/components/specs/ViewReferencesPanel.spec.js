@@ -13,12 +13,14 @@ describe('ViewReferencesPanel', () => {
   beforeEach(() => {
     props = {
       references: Immutable.fromJS([
-        {_id: 'ref1', relationType: 'rel1', sourceRange: {start: 10, end: 20}},
-        {_id: 'ref2', relationType: 'rel1', sourceRange: {start: 4, end: 8}}]),
-      referencedDocuments: Immutable.fromJS([]),
+        {_id: 'ref1', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 10, end: 20}, targetRange: {text: 'text 3'}},
+        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', sourceRange: {start: 4, end: 8}, targetRange: {text: 'text 4'}}]),
+      inboundReferences: Immutable.fromJS([]),
+      referencedDocuments: Immutable.fromJS([{title: 'doc1', _id: '1'}, {title: 'doc2', _id: '2'}]),
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
       highlightReference: jasmine.createSpy('highlightReference'),
       activateReference: jasmine.createSpy('activateReference'),
+      selectReference: jasmine.createSpy('selectReference'),
       deactivateReference: jasmine.createSpy('deactivateReference'),
       deleteReference: jasmine.createSpy('deleteReference'),
       closePanel: jasmine.createSpy('closePanel'),
@@ -37,11 +39,33 @@ describe('ViewReferencesPanel', () => {
     expect(component.find(SidePanel).props().open).toBe(false);
   });
 
-  it('should render references in order', () => {
+  it('should merge and render references in order with the proper document titles', () => {
+    props.inboundReferences = Immutable.fromJS([
+      {_id: 'inboundRef1', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 1, end: 2}, sourceRange: {text: 'text 1'}},
+      {_id: 'inboundRef2', relationType: 'rel1', sourceDocument: '2', targetRange: {start: 11, end: 22}, sourceRange: {text: 'text 2'}},
+      {_id: 'inboundRef3', relationType: 'rel1', sourceDocument: '2'}
+    ]);
+
     render();
 
-    expect(component.find('.item').first().node.props['data-id']).toBe('ref2');
-    expect(component.find('.item').last().node.props['data-id']).toBe('ref1');
+    expect(component.find('.item').get(0).props['data-id']).toBe('inboundRef3');
+    expect(component.find('.item').at(0).text()).toContain('doc2');
+
+    expect(component.find('.item').get(1).props['data-id']).toBe('inboundRef1');
+    expect(component.find('.item').at(1).text()).toContain('doc2');
+    expect(component.find('.item').at(1).text()).toContain('text 1');
+
+    expect(component.find('.item').get(2).props['data-id']).toBe('ref2');
+    expect(component.find('.item').at(2).text()).toContain('doc1');
+    expect(component.find('.item').at(2).text()).toContain('text 4');
+
+    expect(component.find('.item').get(3).props['data-id']).toBe('ref1');
+    expect(component.find('.item').at(3).text()).toContain('doc1');
+    expect(component.find('.item').at(3).text()).toContain('text 3');
+
+    expect(component.find('.item').get(4).props['data-id']).toBe('inboundRef2');
+    expect(component.find('.item').at(4).text()).toContain('doc2');
+    expect(component.find('.item').at(4).text()).toContain('text 2');
   });
 
   describe('on Close panel', () => {
@@ -70,11 +94,28 @@ describe('ViewReferencesPanel', () => {
     });
   });
 
-  describe('when click a reference', () => {
-    it('should activate it', () => {
-      render();
-      component.find('.item').last().simulate('click');
-      expect(props.activateReference).toHaveBeenCalledWith('ref1');
+  describe('when click on a reference', () => {
+    beforeEach(() => {
+      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel', activeReference: 'ref1'});
+    });
+
+    describe('when document is source document', () => {
+      it('should activate it', () => {
+        render();
+        component.find('.item').last().simulate('click');
+        expect(props.activateReference).toHaveBeenCalledWith('ref1');
+        expect(component.find('.item').last().node.props.className).toContain('relationship-active');
+      });
+    });
+
+    describe('when document is target document', () => {
+      it('should select it', () => {
+        props.targetDoc = true;
+        render();
+        component.find('.item').last().simulate('click');
+        expect(props.selectReference).toHaveBeenCalledWith('ref1', props.references.toJS());
+        expect(component.find('.item').last().node.props.className).toContain('relationship-selected');
+      });
     });
   });
 
@@ -93,7 +134,9 @@ describe('ViewReferencesPanel', () => {
         uiState: Immutable.fromJS({
           panel: ''
         }),
-        references: Immutable.fromJS(['reference'])
+        references: Immutable.fromJS(['reference']),
+        targetDoc: Immutable.fromJS({}),
+        inboundReferences: Immutable.fromJS(['inboundReference'])
       }
     };
 
@@ -108,6 +151,7 @@ describe('ViewReferencesPanel', () => {
       renderContainer();
       let containerProps = component.props();
       expect(containerProps.references).toEqual(state.documentViewer.references);
+      expect(containerProps.inboundReferences).toEqual(state.documentViewer.inboundReferences);
     });
   });
 });

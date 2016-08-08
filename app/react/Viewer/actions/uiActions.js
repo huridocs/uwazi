@@ -1,6 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
+import {setTargetSelection} from 'app/Viewer/actions/selectionActions';
 
 export function closePanel() {
   return {
@@ -26,6 +27,7 @@ export function resetReferenceCreation() {
     dispatch({type: types.RESET_REFERENCE_CREATION});
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
+    dispatch(actions.unset('viewer/targetDocReferences'));
   };
 }
 
@@ -55,5 +57,14 @@ export function activateReference(reference) {
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});
     dispatch({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+  };
+}
+
+export function selectReference(referenceId, references) {
+  let reference = references.find(item => item._id === referenceId);
+
+  return function (dispatch) {
+    dispatch(activateReference(referenceId));
+    dispatch(setTargetSelection(reference.sourceRange));
   };
 }

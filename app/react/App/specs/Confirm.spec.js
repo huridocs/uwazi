@@ -25,6 +25,12 @@ describe('CantDeleteTemplateAlert', () => {
     expect(component.find(Modal).props().isOpen).toBe(false);
   });
 
+  it('noCancel option should hide the cancel button', () => {
+    props.noCancel = true;
+    render();
+    expect(component.find('cancel-button').length).toBe(0);
+  });
+
   describe('when clicking ok button', () => {
     it('should call accept function', () => {
       render();

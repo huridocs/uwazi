@@ -3,7 +3,7 @@ import {Form} from 'react-redux-form';
 
 import validator from '../utils/documentValidator';
 
-import {FormGroup, FormField, Select} from 'app/Forms';
+import {FormGroup, FormField, Select, DatePicker} from 'app/Forms';
 
 export class DocumentForm extends Component {
   render() {
@@ -13,11 +13,9 @@ export class DocumentForm extends Component {
     let template = templates.find((t) => t._id === document.template);
     const {model} = this.props;
 
-    //test
     if (!template) {
       return <div />;
     }
-    //
 
     const templateOptions = templates.map((t) => {
       return {label: t.name, value: t._id};
@@ -56,6 +54,9 @@ export class DocumentForm extends Component {
                 {(() => {
                   if (property.type === 'select') {
                     return <Select optionsValue='id' options={thesauris.find((t) => t._id.toString() === property.content.toString()).values} />;
+                  }
+                  if (property.type === 'date') {
+                    return <DatePicker/>;
                   }
                   return <input className="form-control"/>;
                 })()}

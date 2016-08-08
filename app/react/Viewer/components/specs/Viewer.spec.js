@@ -5,6 +5,7 @@ import SourceDocument from 'app/Viewer/components/SourceDocument';
 import TargetDocument from 'app/Viewer/components/TargetDocument';
 import ContextMenu from 'app/ContextMenu';
 import {Viewer} from 'app/Viewer/components/Viewer';
+import ShowIf from 'app/App/ShowIf';
 
 describe('Viewer', () => {
   let component;
@@ -34,7 +35,12 @@ describe('Viewer', () => {
     props.targetDoc = true;
     render();
     expect(component.find('.document-viewer').hasClass('show-target-document')).toBe(true);
-    expect(component.find('.document-viewer').hasClass('with-panel')).toBe(false);
+  });
+
+  it('should not render SourceDocument when targetDocument loaded', () => {
+    props.targetDoc = true;
+    render();
+    expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
   });
 
   it('should render Document and ContextMenu', () => {
@@ -49,18 +55,6 @@ describe('Viewer', () => {
       render();
       component.instance().componentDidMount();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'LOAD_DEFAULT_VIEWER_MENU'});
-    });
-  });
-
-  describe('componentWillUnmount', () => {
-    it('should resetDocumentViewer', () => {
-      render();
-      component.unmount();
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'RESET_DOCUMENT_VIEWER'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDocHTML/UNSET'});
     });
   });
 });

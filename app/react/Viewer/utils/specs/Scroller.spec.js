@@ -61,6 +61,13 @@ describe('scroller', () => {
       expect(scroller.isVisible('li:nth-child(2)', 'ul')).toBe(true);
       cleanDom();
     });
+
+    describe('when an element does not exists', () => {
+      it('should returns false', () => {
+        expect(scroller.isVisible('li:nth-child(2)', 'i-dont-exists')).toBe(false);
+        expect(scroller.isVisible('i-dont-exists', 'ul')).toBe(false);
+      });
+    });
   });
 
   describe('to()', () => {
@@ -83,6 +90,14 @@ describe('scroller', () => {
       scroller.to('li:nth-child(2)', 'ul');
       expect(ul.scrollTop).toBe(80);
       cleanDom();
+    });
+
+    describe('when one of the elements does not exists', () => {
+      it('should do nothing', () => {
+        expect(scroller.to.bind(scroller, 'li:nth-child(2)', 'i-dont-exists')).not.toThrow();
+        expect(scroller.to.bind(scroller, 'i-dont-exists', 'ul')).not.toThrow();
+        cleanDom();
+      });
     });
   });
 });

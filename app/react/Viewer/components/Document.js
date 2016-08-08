@@ -20,7 +20,7 @@ export class Document extends Component {
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
-      return this.props.activateReference(e.target.getAttribute('data-id'));
+      return this.props.activateReference(e.target.getAttribute('data-id'), this.props.references);
     }
     if (this.props.executeOnClickHandler) {
       this.props.onClick();
@@ -44,6 +44,7 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
+    this.text.renderReferences(this.props.inboundReferences, 'targetRange');
     this.text.renderReferences(this.props.references);
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
@@ -81,6 +82,7 @@ export class Document extends Component {
           </div>
         </div>
         <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
+        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.fonts}}></style>
       </div>
     );
   }
@@ -98,6 +100,7 @@ Document.propTypes = {
   activeReference: PropTypes.string,
   selection: PropTypes.object,
   references: PropTypes.array,
+  inboundReferences: PropTypes.array,
   className: PropTypes.string,
   onClick: PropTypes.func,
   executeOnClickHandler: PropTypes.bool,

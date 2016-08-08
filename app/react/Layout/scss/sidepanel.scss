@@ -8,7 +8,7 @@
   right: 0;
   top: 54px;
   bottom: 0;
-  padding: 15px 30px;
+  padding: 15px;
   overflow-y: scroll;
   border-left: 1px solid $c-grey;
   background-color: $c-sidebar;
@@ -36,6 +36,21 @@
     letter-spacing: 0.05em;
     font-size: $f-size-lg;
   }
+
+  .fa-close {
+		position: absolute;
+		top: 30px;
+		right: 30px;
+		font-size: 18px;
+		color: $c-grey;
+		cursor: pointer;
+    @media(min-width: 1024px) {
+      top: 15px;
+    }
+		&:hover {
+			color: $c-grey-dark;
+		}
+	}
 
   .item-group {
     padding: 15px 0px;

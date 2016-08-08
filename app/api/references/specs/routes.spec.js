@@ -1,8 +1,6 @@
 import referencesRroutes from '../routes.js';
 import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
-import {db_url as dbUrl} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import references from 'api/references/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -57,6 +55,22 @@ describe('references routes', () => {
         expect(docs.length).toBe(2);
         expect(docs[0].title).toBe('reference1');
         expect(docs[1].title).toBe('reference3');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('GET by_target_document', () => {
+    it('should return references by targetDocument', (done) => {
+      let req = {params: {id: 'target'}};
+
+      routes.get('/api/references/by_target_document/:id', req)
+      .then((response) => {
+        let docs = response.rows;
+        expect(docs.length).toBe(2);
+        expect(docs[0].title).toBe('targetDocument');
+        expect(docs[1].title).toBe('targetDocument');
         done();
       })
       .catch(catchErrors(done));

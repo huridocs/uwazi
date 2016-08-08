@@ -1,4 +1,5 @@
 @import "../../App/scss/config/_colors.scss";
+@import "../../App/scss/config/_typography.scss";
 
 .metadataTemplate-heading {
   display: flex;
@@ -57,9 +58,21 @@
 .panel {
   .list-group {
     .list-group-item {
-
-      .btn {
+      small {
         margin-left: 5px;
+        font-size: 1em;
+        color: $c-grey-dark;
+        text-decoration: none;
+      }
+      .btn {
+        padding: 2px 4px;
+        line-height: 1em;
+        margin-left: 5px;
+
+        span {
+          margin-left: 5px;
+          font-size: $f-size-sm;
+        }
       }
 
       &.error {
@@ -91,6 +104,11 @@
       &.dragging {
         opacity: 0;
       }
+    }
+    .list-group-item-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
   }
 }

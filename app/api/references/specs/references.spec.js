@@ -17,7 +17,7 @@ describe('references', () => {
     it('should return all the references in the database', (done) => {
       references.getAll()
       .then((result) => {
-        expect(result.rows.length).toBe(3);
+        expect(result.rows.length).toBe(5);
         expect(result.rows[0].type).toBe('reference');
         expect(result.rows[0].title).toBe('reference1');
         done();
@@ -32,6 +32,18 @@ describe('references', () => {
         expect(result.rows.length).toBe(2);
         expect(result.rows[0].sourceDocument).toBe('source1');
         expect(result.rows[1].sourceDocument).toBe('source1');
+        done();
+      }).catch(catchErrors(done));
+    });
+  });
+
+  describe('getByTarget()', () => {
+    it('should return all the references with specific target document', (done) => {
+      references.getByTarget('target')
+      .then((result) => {
+        expect(result.rows.length).toBe(2);
+        expect(result.rows[0].targetDocument).toBe('target');
+        expect(result.rows[1].targetDocument).toBe('target');
         done();
       }).catch(catchErrors(done));
     });

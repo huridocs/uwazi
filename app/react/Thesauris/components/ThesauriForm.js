@@ -38,7 +38,7 @@ export class ThesauriForm extends Component {
               validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
             >
               <div className="thesauri-buttons">
-                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
+                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
                 <button className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save Thesauri
                 </button>

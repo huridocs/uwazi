@@ -32,6 +32,7 @@ export function saveReference(reference) {
 
           dispatch(actions.unset('viewer/targetDoc'));
           dispatch(actions.unset('viewer/targetDocHTML'));
+          dispatch(actions.unset('viewer/targetDocReferences'));
 
           dispatch(uiActions.activateReference(referenceCreated._id));
           dispatch(notify('saved successfully !', 'success'));
@@ -51,11 +52,7 @@ export function deleteReference(reference) {
   return function (dispatch) {
     return refenrecesAPI.delete(reference)
     .then(() => {
-      dispatch({
-        type: types.REMOVE_REFERENCE,
-        reference
-      });
-
+      dispatch(actions.remove('viewer/inboundReferences', reference));
       dispatch(notify('Connection deleted', 'success'));
     });
   };

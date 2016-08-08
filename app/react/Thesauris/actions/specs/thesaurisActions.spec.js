@@ -2,7 +2,6 @@ import backend from 'fetch-mock';
 import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Thesauris/actions/thesaurisActions';
-import * as types from 'app/Thesauris/actions/actionTypes';
 import {actions as formActions} from 'react-redux-form';
 
 describe('thesaurisActions', () => {
@@ -17,30 +16,52 @@ describe('thesaurisActions', () => {
     });
   });
 
-  describe('setThesauris', () => {
-    it('should return an SET_THESAURIS action ', () => {
-      let thesauris = [{name: 'Secret list of things', values: []}];
-      let action = actions.setThesauris(thesauris);
-      expect(action).toEqual({type: types.SET_THESAURIS, thesauris});
-    });
-  });
-
   describe('async action', () => {
     let dispatch;
 
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'thesauris?_id=thesauriId', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
+      .mock(APIURL + 'thesauris?_id=thesauriId', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})})
+      .mock(APIURL + 'templates/count_by_thesauri?_id=thesauriWithTemplates', 'GET', {body: JSON.stringify(2)})
+      .mock(APIURL + 'templates/count_by_thesauri?_id=thesauriWithoutTemplates', 'GET', {body: JSON.stringify(0)});
       dispatch = jasmine.createSpy('dispatch');
     });
 
     describe('deleteThesauri', () => {
-      it('should delete the thesauri and dispatch a THESAURI_DELETED action with the id', (done) => {
+      it('should delete the thesauri and dispatch a thesauris/REMOVE action with the thesauri', (done) => {
         let thesauri = {_id: 'thesauriId'};
         actions.deleteThesauri(thesauri)(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.THESAURI_DELETED, id: 'thesauriId'});
+          expect(dispatch).toHaveBeenCalledWith({type: 'thesauris/REMOVE', value: thesauri});
+          done();
+        });
+      });
+    });
+
+    describe('checkThesauriCanBeDeleted', () => {
+      it('should return a promise if the thesauri is NOT been use', (done) => {
+        let thesauri = {_id: 'thesauriWithoutTemplates'};
+
+        actions.checkThesauriCanBeDeleted(thesauri)(dispatch)
+        .then(() => {
+          done();
+        })
+        .catch(() => {
+          expect('Promise not to be rejected').toBe(false);
+          done();
+        });
+      });
+
+      it('should reject a promise if the thesauri IS been use', (done) => {
+        let thesauri = {_id: 'thesauriWithTemplates'};
+
+        actions.checkThesauriCanBeDeleted(thesauri)(dispatch)
+        .then(() => {
+          expect('Promise to be rejected').toBe(false);
+          done();
+        })
+        .catch(() => {
           done();
         });
       });

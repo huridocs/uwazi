@@ -4,6 +4,7 @@ import documents from 'api/documents/documents.js';
 import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('templates', () => {
   beforeEach((done) => {
@@ -197,7 +198,7 @@ describe('templates', () => {
         expect(docs[0].value.name).toBe('template_test2');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     it('should throw an error when there is documents using it', (done) => {
@@ -214,6 +215,26 @@ describe('templates', () => {
         expect(error.value).toEqual(1);
         done();
       });
+    });
+  });
+
+  describe('countByThesauri()', () => {
+    it('should return number of templates using a thesauri', (done) => {
+      templates.countByThesauri('thesauri1')
+      .then((result) => {
+        expect(result).toBe(1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should return zero when none is using it', (done) => {
+      templates.countByThesauri('not_used_relation')
+      .then((result) => {
+        expect(result).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 });

@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import ContextMenu from 'app/ContextMenu';
 
-import {loadDefaultViewerMenu, resetDocumentViewer} from '../actions/documentActions';
+import {loadDefaultViewerMenu} from '../actions/documentActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import CreateReferencePanel from './CreateReferencePanel';
@@ -17,8 +17,8 @@ import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
 import MetadataPanelMenu from './MetadataPanelMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
-import {actions} from 'app/BasicReducer';
 import Footer from 'app/App/Footer';
+import ShowIf from 'app/App/ShowIf';
 
 export class Viewer extends Component {
 
@@ -26,21 +26,13 @@ export class Viewer extends Component {
     this.context.store.dispatch(loadDefaultViewerMenu());
   }
 
-  componentWillUnmount() {
-    this.context.store.dispatch(resetDocumentViewer());
-    this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/docHTML'));
-    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
-    this.context.store.dispatch(actions.unset('viewer/targetDocHTML'));
-  }
-
   render() {
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
-      className = 'document-viewer with-panel is-active';
+      className += ' with-panel is-active';
     }
     if (this.props.targetDoc) {
-      className = 'document-viewer show-target-document is-active';
+      className += ' show-target-document';
     }
     if (this.props.referencesPanelIsOpen) {
       className += ' references-panel-is-open';
@@ -50,7 +42,9 @@ export class Viewer extends Component {
       <div className="row">
         <main className={className}>
           <div className="main-wrapper">
-            <SourceDocument />
+            <ShowIf if={!this.props.targetDoc}>
+              <SourceDocument />
+            </ShowIf>
             <TargetDocument />
             <Footer/>
           </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {AccountSettings} from '../AccountSettings';
-import UsersAPI from '../../UsersAPI';
+import UsersAPI from 'app/Users/UsersAPI';
 
 describe('AccountSettings', () => {
   let component;

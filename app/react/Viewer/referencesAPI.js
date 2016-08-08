@@ -12,6 +12,13 @@ export default {
     });
   },
 
+  getInbound(targetDocument) {
+    return api.get(`references/by_target_document/${targetDocument}`)
+    .then((response) => {
+      return response.json.rows;
+    });
+  },
+
   save(reference) {
     return api.post('references', reference)
     .then((response) => {

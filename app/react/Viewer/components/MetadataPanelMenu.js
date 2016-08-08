@@ -8,6 +8,9 @@ import {NeedAuthorization} from 'app/Auth';
 
 export class MetadataPanelMenu extends Component {
   render() {
+    if (this.props.targetDoc) {
+      return false;
+    }
     return (
       <div>
         {(() => {
@@ -43,7 +46,8 @@ MetadataPanelMenu.propTypes = {
   doc: PropTypes.object,
   docForm: PropTypes.object,
   formState: PropTypes.object,
-  loadDocument: PropTypes.func
+  loadDocument: PropTypes.func,
+  targetDoc: PropTypes.bool
 };
 
 const mapStateToProps = ({documentViewer}) => {
@@ -51,7 +55,8 @@ const mapStateToProps = ({documentViewer}) => {
     doc: documentViewer.doc,
     templates: documentViewer.templates,
     docForm: documentViewer.docForm,
-    formState: documentViewer.docFormState
+    formState: documentViewer.docFormState,
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 

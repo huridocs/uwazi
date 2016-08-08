@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 
-import Select, {SelectField} from 'app/Forms/components/Select';
+import {Select, SelectField, DateRange} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -64,10 +64,31 @@ export class FiltersForm extends Component {
                       <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </li>
                     <li className="wide">
-                      <Select options={property.options} onChange={() => this.props.activateFilter(property.name)} />
+                      <Select options={property.options} optionsValue="id" onChange={() => this.props.activateFilter(property.name)} />
                     </li>
                   </ul>
                 </SelectField>
+              </FormGroup>
+              );
+          }
+          if (property.type === 'date') {
+            return (
+              <FormGroup key={index}>
+                <ul className={propertyClass}>
+                  <li>
+                    {property.label}
+                    {property.required ? <span className="required">*</span> : ''}
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                  </li>
+                  <li className="wide">
+                    <DateRange
+                      fromModel={`search.filters.${property.name}.from`}
+                      toModel={`search.filters.${property.name}.to`}
+                      fromChange={() => this.props.activateFilter(property.name)}
+                      toChange={() => this.props.activateFilter(property.name)}
+                    />
+                  </li>
+                </ul>
               </FormGroup>
               );
           }

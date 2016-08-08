@@ -52,6 +52,7 @@ describe('referencesActions', () => {
           {type: types.ADD_CREATED_REFERENCE, reference: {_id: 'referenceCreated'}},
           {type: 'viewer/targetDoc/UNSET'},
           {type: 'viewer/targetDocHTML/UNSET'},
+          {type: 'viewer/targetDocReferences/UNSET'},
           {type: 'ACTIVE_REFERENCE', reference: 'referenceCreated'},
           {type: 'OPEN_PANEL', panel: 'viewReferencesPanel'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}},
@@ -76,7 +77,7 @@ describe('referencesActions', () => {
         let reference = {_id: 'abc'};
 
         const expectedActions = [
-          {type: types.REMOVE_REFERENCE, reference: reference},
+          {type: 'viewer/inboundReferences/REMOVE', value: reference},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Connection deleted', type: 'success', id: 'unique_id'}}
         ];
 

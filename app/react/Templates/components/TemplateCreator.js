@@ -27,9 +27,7 @@ export class TemplateCreator extends Component {
           <div className="metadataTemplate-constructor panel panel-default">
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
-              <PropertyOption label='Checkbox' type='checkbox' />
               <PropertyOption label='Select' type='select'/>
-              <PropertyOption label='List' type='list'/>
               <PropertyOption label='Date' type='date'/>
             </ul>
           </div>

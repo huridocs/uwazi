@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {actions} from 'app/BasicReducer';
-import SettingsAPI from '../SettingsAPI';
+import SettingsAPI from 'app/Settings/SettingsAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
 
 export class CollectionSettings extends Component {
@@ -50,11 +50,11 @@ CollectionSettings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {settings: state.settings.toJS()};
+  return {settings: state.settings.collection.toJS()};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setSettings: actions.set.bind(null, 'settings'), notify}, dispatch);
+  return bindActionCreators({setSettings: actions.set.bind(null, 'settings/collection'), notify}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CollectionSettings);
