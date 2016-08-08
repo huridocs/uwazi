@@ -206,6 +206,7 @@ header {
     border-top: 0;
     border-right: 0;
     border-bottom-color: transparent;
+    border-left: 1px solid $c-grey;
 
     &:focus {
       border-color: #66afe9;
