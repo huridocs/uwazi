@@ -77,6 +77,7 @@ describe('referencesActions', () => {
         let reference = {_id: 'abc'};
 
         const expectedActions = [
+          {type: 'delete local reference missing !!!!'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Connection deleted', type: 'success', id: 'unique_id'}}
         ];
 
