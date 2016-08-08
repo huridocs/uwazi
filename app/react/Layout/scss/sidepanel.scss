@@ -6,9 +6,9 @@
   $c-sidebar: darken($c-background, 0%);
   position: fixed;
   right: 0;
-  top: 54px + 15px;
-  bottom: 15px;
-  padding: 15px 30px;
+  top: 54px;
+  bottom: 0;
+  padding: 30px;
   overflow-y: scroll;
   border-left: 1px solid $c-grey;
   background-color: $c-sidebar;
@@ -16,6 +16,9 @@
   width: 90%;
   transition: transform 500ms;
   @media(min-width: 1024px) {
+    top: 54px + 15px;
+    bottom: 15px;
+    padding: 15px 30px;
     width: 25%;
     max-width: 9999px;
   }
@@ -36,6 +39,21 @@
     letter-spacing: 0.05em;
     font-size: $f-size-lg;
   }
+
+  .fa-close {
+		position: absolute;
+		top: 30px;
+		right: 30px;
+		font-size: 18px;
+		color: $c-grey;
+		cursor: pointer;
+    @media(min-width: 1024px) {
+      top: 15px;
+    }
+		&:hover {
+			color: $c-grey-dark;
+		}
+	}
 
   .item-group {
     padding: 15px 0px;
