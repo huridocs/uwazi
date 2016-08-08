@@ -79,10 +79,8 @@ class App extends Component {
             <div className="container-fluid">
               <div className="row">
                 <h1 className="logotype"><SiteName/></h1>
-                <div className={searchBoxClass}>
-                  <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
-                  {this.renderTools()}
-                </div>
+                <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
+                {this.renderTools()}
                 <Menu onClick={this.toggleMenu.bind(this)} className={navClass} />
               </div>
             </div>

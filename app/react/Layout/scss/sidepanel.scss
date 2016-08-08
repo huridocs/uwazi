@@ -6,13 +6,13 @@
   $c-sidebar: darken($c-background, 0%);
   position: fixed;
   right: 0;
-  top: 54px + 15px;
-  bottom: 15px;
+  top: 54px;
+  bottom: 0;
   padding: 15px 30px;
   overflow-y: scroll;
   border-left: 1px solid $c-grey;
   background-color: $c-sidebar;
-  max-width: 320px;
+  max-width: 320px - 54px;
   width: 90%;
   transition: transform 500ms;
   @media(min-width: 1024px) {
