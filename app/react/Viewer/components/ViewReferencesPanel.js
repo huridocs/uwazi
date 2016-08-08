@@ -179,18 +179,15 @@ ViewReferencesPanel.contextTypes = {
 const mapStateToProps = ({documentViewer}) => {
   let references = documentViewer.references;
   let referencedDocuments = documentViewer.referencedDocuments;
-  let inboundReferences = documentViewer.inboundReferences;
 
   if (documentViewer.targetDoc.get('_id')) {
     references = documentViewer.targetDocReferences;
     referencedDocuments = documentViewer.targetDocReferencedDocuments;
-    inboundReferences = Immutable.fromJS([]);
   }
 
   return {
     uiState: documentViewer.uiState,
     references,
-    inboundReferences,
     referencedDocuments,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')
