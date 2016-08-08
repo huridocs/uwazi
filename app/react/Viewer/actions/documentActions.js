@@ -63,7 +63,7 @@ export function loadTargetDocument(id) {
       api.get('documents/html?_id=' + id),
       referencesRequest,
       referencesRequest.then((references) => {
-        let keys = references.map((reference) => reference.targetDocument);
+        let keys = references.map((reference) => reference.connectedDocument);
         return documentsAPI.list(keys);
       })
     ])

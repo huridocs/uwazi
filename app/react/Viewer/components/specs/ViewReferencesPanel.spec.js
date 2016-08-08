@@ -135,8 +135,7 @@ describe('ViewReferencesPanel', () => {
           panel: ''
         }),
         references: Immutable.fromJS(['reference']),
-        targetDoc: Immutable.fromJS({}),
-        inboundReferences: Immutable.fromJS(['inboundReference'])
+        targetDoc: Immutable.fromJS({})
       }
     };
 
@@ -151,7 +150,6 @@ describe('ViewReferencesPanel', () => {
       renderContainer();
       let containerProps = component.props();
       expect(containerProps.references).toEqual(state.documentViewer.references);
-      expect(containerProps.inboundReferences).toEqual(state.documentViewer.inboundReferences);
     });
   });
 });
