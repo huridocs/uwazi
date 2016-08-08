@@ -20,8 +20,7 @@ describe('SourceDocument', function () {
       doc: {name: 'document'},
       docHTML: {name: 'html'},
       targetDoc: Immutable.fromJS({}),
-      references: Immutable.fromJS([{reference: 'reference'}]),
-      inboundReferences: Immutable.fromJS([{reference: 'inboundReference'}])
+      references: Immutable.fromJS([{reference: 'reference'}])
     }
   };
 
@@ -37,7 +36,6 @@ describe('SourceDocument', function () {
     expect(props.doc.name).toBe('document');
     expect(props.docHTML.name).toBe('html');
     expect(props.references).toEqual([{reference: 'reference'}]);
-    expect(props.inboundReferences).toEqual([{reference: 'inboundReference'}]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);
     expect(props.highlightedReference).toBe('highlightedReference');
