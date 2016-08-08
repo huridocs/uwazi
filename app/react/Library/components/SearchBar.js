@@ -39,41 +39,43 @@ export class SearchBar extends Component {
   render() {
     let {search, showSuggestions, suggestions, overSuggestions} = this.props;
     return (
-      <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
-        <div className={'form-group' + (search.searchTerm ? ' active' : '')}>
-          <Field model="search.searchTerm">
-            <input
-              type="text"
-              placeholder="Search"
-              className="form-control"
-              onChange={this.getSuggestions.bind(this)}
-              onBlur={this.props.hideSuggestions}
-              autoComplete="off"
-            />
-          </Field>
-        </div>
-        <div
-          onMouseOver={this.mouseEnter.bind(this)}
-          onMouseLeave={this.mouseOut.bind(this)}
-          className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' active' : '')}
-          >
-          {suggestions.toJS().map((suggestion, index) => {
-            let documentViewUrl = '/document/' + suggestion._id;
-            return <p key={index}>
-              <Link to={documentViewUrl}>
-                <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                <i className="fa fa-arrow-left">
-                </i>
-              </Link>
-            </p>;
-          })}
-          <p className="search-suggestions-all">
-          <button type="submit">
-            <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
-          </button>
-          </p>
-        </div>
-      </Form>
+      <div className={'search-box' + (this.props.open ? ' is-active' : '')}>
+        <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
+          <div className={'form-group' + (search.searchTerm ? ' is-active' : '')}>
+            <Field model="search.searchTerm">
+              <input
+                type="text"
+                placeholder="Search"
+                className="form-control"
+                onChange={this.getSuggestions.bind(this)}
+                onBlur={this.props.hideSuggestions}
+                autoComplete="off"
+              />
+            </Field>
+          </div>
+          <div
+            onMouseOver={this.mouseEnter.bind(this)}
+            onMouseLeave={this.mouseOut.bind(this)}
+            className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' is-active' : '')}
+            >
+            {suggestions.toJS().map((suggestion, index) => {
+              let documentViewUrl = '/document/' + suggestion._id;
+              return <p key={index}>
+                <Link to={documentViewUrl}>
+                  <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
+                  <i className="fa fa-arrow-left">
+                  </i>
+                </Link>
+              </p>;
+            })}
+            <p className="search-suggestions-all">
+            <button type="submit">
+              <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
+            </button>
+            </p>
+          </div>
+        </Form>
+      </div>
     );
   }
 }
@@ -95,7 +97,8 @@ export function mapStateToProps(state) {
     search: state.search,
     suggestions: state.library.ui.get('suggestions'),
     showSuggestions: state.library.ui.get('showSuggestions'),
-    overSuggestions: state.library.ui.get('overSuggestions')
+    overSuggestions: state.library.ui.get('overSuggestions'),
+    open: state.library.ui.get('filtersPanel')
   };
 }
 
