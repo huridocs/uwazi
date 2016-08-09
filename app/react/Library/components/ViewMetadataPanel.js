@@ -44,13 +44,13 @@ export class ViewMetadataPanel extends Component {
               <a href="#">Connections (22)</a>
             </li>
           </ul>
+          {(() => {
+            if (docBeingEdited) {
+              return <DocumentForm onSubmit={this.submit.bind(this)} />;
+            }
+            return <ShowDocument doc={doc}/>;
+          })()}
         </div>
-        {(() => {
-          if (docBeingEdited) {
-            return <DocumentForm onSubmit={this.submit.bind(this)} />;
-          }
-          return <ShowDocument doc={doc}/>;
-        })()}
       </SidePanel>
     );
   }
