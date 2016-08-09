@@ -4,7 +4,7 @@ export class ShowDocument extends Component {
   render() {
     const {doc} = this.props;
     return (
-      <div>
+      <div className="side-panel-content">
         <div className="view">
           <dl>
             <dt>Document title</dt>
