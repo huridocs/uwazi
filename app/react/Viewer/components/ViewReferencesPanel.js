@@ -59,6 +59,8 @@ export class ViewReferencesPanel extends Component {
     const referencedDocuments = this.props.referencedDocuments.toJS();
 
     const references = this.props.references.toJS().sort((a, b) => {
+      a.range.start = typeof a.range.start !== 'undefined' ? a.range.start : -1;
+      b.range.start = typeof b.range.start !== 'undefined' ? b.range.start : -1;
       return a.range.start - b.range.start;
     });
 
@@ -92,7 +94,7 @@ export class ViewReferencesPanel extends Component {
                     <div className="item-info">
                       <div className="item-name">
                         <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i>
-                        {this.documentTitle(reference.connectedDocument, referencedDocuments)}
+                        &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
                         {(() => {
                           if (reference.text) {
                             return <div className="item-snippet">
