@@ -94,8 +94,8 @@ const mapStateToProps = ({library}) => {
     docBeingEdited: !!library.metadata._id,
     formState: library.metadataForm,
     metadata: formater.prepareMetadata(library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').toJS() : {},
-                                           library.filters.get('templates').toJS(),
-                                           library.filters.get('thesauris').toJS())
+                                       library.filters.get('templates').toJS(),
+                                       library.filters.get('thesauris').toJS())
   };
 };
 
