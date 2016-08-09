@@ -126,6 +126,11 @@ header {
       border-radius: 0;
       border: 0;
       transition: all 0ms;
+
+      &:hover {
+        color: $c-white;
+        background-color: $c-primary;
+      }
 		}
 	}
 
@@ -155,7 +160,6 @@ header {
   border: 0;
   border-left: 1px solid $c-grey;
   transition: all 0ms;
-  margin-left: 15px;
   float: right;
   width: 54px;
   line-height: 54px;
@@ -163,12 +167,23 @@ header {
   background: $c-white;
   z-index: 3;
 
+  &:hover {
+    color: $c-white;
+    background-color: $c-success;
+  }
+
   &:active {
     box-shadow: none;
   }
+
   &.is-active {
     border-color: $c-white;
     margin-left: 0;
+
+    &:hover {
+      color: $c-black;
+      background-color: $c-white;
+    }
   }
 
   .fa-search { display: inline-block; }
