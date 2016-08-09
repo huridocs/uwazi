@@ -14,8 +14,9 @@ describe('ViewReferencesPanel', () => {
     props = {
       references: Immutable.fromJS([
         {_id: 'ref1', relationType: 'rel1', targetDocument: '1', range: {start: 10, end: 20}},
-        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', range: {start: 4, end: 8}},
-        {_id: 'ref3', relationType: 'rel1', targetDocument: '1', range: {start: 5, end: 8}}
+        {_id: 'ref2', relationType: 'rel1', targetDocument: '1', range: {start: 0, end: 8}},
+        {_id: 'ref3', relationType: 'rel1', targetDocument: '1', range: {start: 5, end: 8}},
+        {_id: 'ref4', relationType: 'rel1', targetDocument: '1', range: {text: ''}}
       ]),
       referencedDocuments: Immutable.fromJS([{title: 'doc1', _id: '1'}, {title: 'doc2', _id: '2'}]),
       relationTypes: Immutable.fromJS([{_id: 'rel1', name: 'Supports'}]),
@@ -43,9 +44,10 @@ describe('ViewReferencesPanel', () => {
   it('should merge and render references in order with the proper document titles', () => {
     render();
 
-    expect(component.find('.item').get(0).props['data-id']).toBe('ref2');
-    expect(component.find('.item').get(1).props['data-id']).toBe('ref3');
-    expect(component.find('.item').get(2).props['data-id']).toBe('ref1');
+    expect(component.find('.item').get(0).props['data-id']).toBe('ref4');
+    expect(component.find('.item').get(1).props['data-id']).toBe('ref2');
+    expect(component.find('.item').get(2).props['data-id']).toBe('ref3');
+    expect(component.find('.item').get(3).props['data-id']).toBe('ref1');
   });
 
   describe('on Close panel', () => {
