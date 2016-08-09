@@ -51,6 +51,17 @@ export class ViewMetadataPanel extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
+          <ul className="nav nav-tabs">
+            <li>
+              <a href="#">Table of content</a>
+            </li>
+            <li className="active">
+              <a href="#">Metadata</a>
+            </li>
+            <li>
+              <a href="#">Connections (22)</a>
+            </li>
+          </ul>
           {(() => {
             if (docBeingEdited && this.props.metadata.type === 'document') {
               return <DocumentForm onSubmit={this.submit.bind(this)} />;
