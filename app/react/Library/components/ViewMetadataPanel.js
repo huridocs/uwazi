@@ -33,6 +33,17 @@ export class ViewMetadataPanel extends Component {
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         </div>
         <div className="sidepanel-body">
+          <ul className="nav nav-tabs">
+            <li>
+              <a href="#">Table of content</a>
+            </li>
+            <li className="active">
+              <a href="#">Metadata</a>
+            </li>
+            <li>
+              <a href="#">Connections (22)</a>
+            </li>
+          </ul>
           {(() => {
             if (docBeingEdited) {
               return <DocumentForm onSubmit={this.submit.bind(this)} />;
