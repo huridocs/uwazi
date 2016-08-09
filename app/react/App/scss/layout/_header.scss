@@ -242,15 +242,30 @@ header {
 	color: $c-black;
   border: 1px solid #66afe9;
 	border-top: 0;
-  padding: 0 30px;
-	line-height: 2em;
+	line-height: 1em;
 	&.is-active {
 		display: block;
 	}
 
 	p {
 		position: relative;
+    margin: 0;
 	}
+
+  a, button {
+    color: $c-black;
+    display: block;
+    padding: 10px 30px;
+    line-height: 1.2em;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    &:hover {
+      background: $c-grey-lighten;
+      text-decoration: none;
+    }
+  }
+
 	.fa-arrow-left {
 		position: absolute;
 		top: 8px;
@@ -272,10 +287,10 @@ header {
 .search-suggestions-all {
 	font-style: italic;
 	border-top: 1px solid $c-grey;
-	cursor: pointer;
-  margin: 15px -15px 0;
-  padding: 15px;
-  display: block;
+
+  button {
+    padding: 15px 30px;
+  }
 
 	.fa {
 		margin-right: 5px;
