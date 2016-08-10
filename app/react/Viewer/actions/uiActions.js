@@ -65,6 +65,6 @@ export function selectReference(referenceId, references) {
 
   return function (dispatch) {
     dispatch(activateReference(referenceId));
-    dispatch(setTargetSelection(reference.sourceRange));
+    dispatch(setTargetSelection(reference.range));
   };
 }

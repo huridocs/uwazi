@@ -73,7 +73,7 @@ describe('Viewer uiActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      let references = [{_id: 'id1'}, {_id: 'id2', sourceRange: 'sourceRange'}];
+      let references = [{_id: 'id1'}, {_id: 'id2', range: 'range'}];
       actions.selectReference('id2', references)(dispatch);
       dispatch.calls.argsFor(0)[0](dispatch);
     });
@@ -84,7 +84,7 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SET_TARGET_SELECTION with found range', () => {
-      expect(dispatch).toHaveBeenCalledWith({type: types.SET_TARGET_SELECTION, targetRange: 'sourceRange'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.SET_TARGET_SELECTION, targetRange: 'range'});
     });
   });
 
