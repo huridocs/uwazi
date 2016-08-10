@@ -89,44 +89,43 @@ export class ViewReferencesPanel extends Component {
                   onMouseLeave={this.props.highlightReference.bind(null, null)}
                   onClick={this.clickReference.bind(this, reference._id)}
                   className={`item ${itemClass}`}
-                  data-id={reference._id}
-                  >
-                    <div className="item-info">
-                      <div className="item-name">
-                        <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i>
-                        &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
-                        {(() => {
-                          if (reference.text) {
-                            return <div className="item-snippet">
-                              {reference.text}
-                            </div>;
-                          }
-                        })()}
-                      </div>
-                    </div>
-                    <div className="item-metadata">
-                      <dl>
-                        <dt>Connection type</dt>
-                        <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
-                      </dl>
-                    </div>
-                    <div className="item-actions">
-                      <ShowIf if={!this.props.targetDoc}>
-                        <NeedAuthorization>
-                          <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                            <i className="fa fa-unlink"></i><span>Delete</span>
-                          </a>
-                        </NeedAuthorization>
-                      </ShowIf>
-                      &nbsp;
-                      <ShowIf if={!this.props.targetDoc}>
-                        <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
-                        </Link>
-                      </ShowIf>
+                  data-id={reference._id}>
+                  <div className="item-info">
+                    <div className="item-name">
+                      <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i>
+                      &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
+                      {(() => {
+                        if (reference.text) {
+                          return <div className="item-snippet">
+                            {reference.text}
+                          </div>;
+                        }
+                      })()}
                     </div>
                   </div>
-                  );
+                  <div className="item-metadata">
+                    <dl>
+                      <dt>Connection type</dt>
+                      <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
+                    </dl>
+                  </div>
+                  <div className="item-actions">
+                    <ShowIf if={!this.props.targetDoc}>
+                      <NeedAuthorization>
+                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                          <i className="fa fa-unlink"></i><span>Delete</span>
+                        </a>
+                      </NeedAuthorization>
+                    </ShowIf>
+                    &nbsp;
+                    <ShowIf if={!this.props.targetDoc}>
+                      <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                        <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+                      </Link>
+                    </ShowIf>
+                  </div>
+                </div>
+              );
             });
           })()}
         </div>
