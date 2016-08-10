@@ -7,7 +7,14 @@ import NoMatch from 'app/App/NoMatch';
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 
-import Settings from 'app/Settings/Settings';
+import {
+  Settings,
+  AccountSettings,
+  CollectionSettings,
+  DocumentTypesList,
+  RelationTypesList,
+  ThesaurisList
+} from 'app/Settings';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Uploads from 'app/Uploads/UploadsRoute';
@@ -26,14 +33,20 @@ import Library from 'app/Library/Library';
 export default (
   <Route path='/' component={App}>
     <IndexRoute component={Library} />
-    <Route path='settings' component={Settings} />
+    <Route path='settings' component={Settings}>
+      <Route path='account' component={AccountSettings} />
+      <Route path='collection' component={CollectionSettings} />
+      <Route path='documents' component={DocumentTypesList} />
+      <Route path='connections' component={RelationTypesList} />
+      <Route path='thesauris' component={ThesaurisList} />
+      <Route path='documents/new' component={NewTemplate} />
+      <Route path='documents/edit/:templateId' component={EditTemplate} />
+      <Route path='thesauris/new' component={NewThesauri} />
+      <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
+      <Route path='connections/new' component={NewRelationType} />
+      <Route path='connections/edit/:relationTypeId' component={EditRelationType} />
+    </Route>
     <Route path='uploads' component={Uploads} />
-    <Route path='templates/new' component={NewTemplate} />
-    <Route path='templates/edit/:templateId' component={EditTemplate} />
-    <Route path='thesauris/new' component={NewThesauri} />
-    <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
-    <Route path='relationtypes/new' component={NewRelationType} />
-    <Route path='relationtypes/edit/:relationTypeId' component={EditRelationType} />
     <Route path='login' component={Login} />
     <Route path='resetpassword/:key' component={ResetPassword} />
     <Route path='document/:documentId' component={ViewDocument} />

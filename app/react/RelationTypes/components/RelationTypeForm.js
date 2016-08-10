@@ -29,24 +29,6 @@ export class RelationTypeForm extends Component {
   render() {
     return (
       <div className="row relationType">
-        <div className="col-xs-12 col-sm-4">
-          <div className="panel panel-default">
-            <div className="panel-heading">Settings</div>
-            <div className="list-group">
-              <button className="list-group-item">Account</button>
-              <button className="list-group-item">Collection</button>
-            </div>
-          </div>
-          <div className="panel panel-default">
-            <div className="panel-heading">Metadata</div>
-            <div className="list-group">
-              <button className="list-group-item">Documents</button>
-              <button className="list-group-item active">Connections</button>
-              <button className="list-group-item">Thesauris</button>
-            </div>
-          </div>
-        </div>
-        <main className="col-xs-12 col-sm-8">
           <Form
             model="relationType"
             onSubmit={this.props.saveRelationType}
@@ -54,7 +36,7 @@ export class RelationTypeForm extends Component {
           >
             <div className="panel panel-default">
               <div className="panel-heading relationType">
-                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <Link to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
                   <Field model="relationType.name">
@@ -78,7 +60,6 @@ export class RelationTypeForm extends Component {
               <div className="panel-body">Currently connections only need a title.</div>
             </div>
           </Form>
-        </main>
       </div>
     );
   }

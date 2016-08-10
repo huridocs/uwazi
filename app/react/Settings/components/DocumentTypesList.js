@@ -35,9 +35,9 @@ export class DocumentTypesList extends Component {
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
           return <li key={index} className="list-group-item">
-              <Link to={'/templates/edit/' + template._id}>{template.name}</Link>
+              <Link to={'/settings/documents/edit/' + template._id}>{template.name}</Link>
               <div className="list-group-item-actions">
-                <Link to={'/templates/edit/' + template._id} className="btn btn-default btn-xs">
+                <Link to={'/settings/documents/edit/' + template._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
                   <span>Edit</span>
                 </Link>
@@ -50,7 +50,7 @@ export class DocumentTypesList extends Component {
         })}
       </ul>
       <div className="panel-body">
-        <Link to="templates/new" className="btn btn-success">
+        <Link to="/settings/documents/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           <span>Add document</span>
         </Link>

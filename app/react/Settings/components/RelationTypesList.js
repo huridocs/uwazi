@@ -35,9 +35,9 @@ export class RelationTypesList extends Component {
       <ul className="list-group relation-types">
         {this.props.relationTypes.toJS().map((relationType, index) => {
           return <li key={index} className="list-group-item">
-              <Link to={'/relationtypes/edit/' + relationType._id}>{relationType.name}</Link>
+              <Link to={'/settings/connections/edit/' + relationType._id}>{relationType.name}</Link>
               <div className="list-group-item-actions">
-                <Link to={'/relationtypes/edit/' + relationType._id} className="btn btn-default btn-xs">
+                <Link to={'/settings/connections/edit/' + relationType._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
                   <span>Edit</span>
                 </Link>
@@ -50,7 +50,7 @@ export class RelationTypesList extends Component {
         })}
       </ul>
       <div className="panel-body">
-        <Link to="relationtypes/new" className="btn btn-success">
+        <Link to="/settings/connections/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           <span>Add connection</span>
         </Link>

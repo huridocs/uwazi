@@ -30,7 +30,7 @@ export class MetadataTemplate extends Component {
               validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
             >
               <div className="metadataTemplate-heading panel-heading">
-                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <Link to="/settings/documents" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <div className={nameGroupClass}>
                   <FormField model="template.data.name">
@@ -49,8 +49,6 @@ export class MetadataTemplate extends Component {
                   })()}
                 </div>
                 &nbsp;
-                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
-                &nbsp;
                 <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
                   <i className="fa fa-save"/> Save
                 </button>
@@ -62,11 +60,9 @@ export class MetadataTemplate extends Component {
                     return <MetadataProperty {...config} key={config.localID} index={index}/>;
                   })}
                   {(() => {
-
-                    return  <div className="no-properties">
-                              <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
-                            </div>;
-
+                    return <div className="no-properties">
+                            <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
+                           </div>;
                   })()}
                 </ul>
               )}

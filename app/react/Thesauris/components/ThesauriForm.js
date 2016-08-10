@@ -30,24 +30,6 @@ export class ThesauriForm extends Component {
   render() {
     return (
       <div className="row thesauri">
-        <div className="col-xs-12 col-sm-4">
-          <div className="panel panel-default">
-            <div className="panel-heading">Settings</div>
-            <div className="list-group">
-              <button className="list-group-item">Account</button>
-              <button className="list-group-item">Collection</button>
-            </div>
-          </div>
-          <div className="panel panel-default">
-            <div className="panel-heading">Metadata</div>
-            <div className="list-group">
-              <button className="list-group-item">Documents</button>
-              <button className="list-group-item">Connections</button>
-              <button className="list-group-item active">Thesauris</button>
-            </div>
-          </div>
-        </div>
-        <main className="col-xs-12 col-sm-8">
           <Form
             model="thesauri.data"
             onSubmit={this.props.saveThesauri}
@@ -55,7 +37,7 @@ export class ThesauriForm extends Component {
           >
             <div className="panel panel-default thesauri">
               <div className="panel-heading">
-                <Link to="/metadata" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <Link to="/settings/thesauris" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <Field model="thesauri.data.name">
                   <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
@@ -79,7 +61,7 @@ export class ThesauriForm extends Component {
               <ul className="thesauri-values list-group">
                 <li className="list-group-item"><b>Items:</b></li>
                 {this.props.thesauri.values.map((value, index) => {
-                  return <li className="list-group-item">
+                  return <li key={index} className="list-group-item">
                           <FormGroup key={index}>
                             <Field model={`thesauri.data.values[${index}].label`}>
                               <input className="form-control" type="text" placeholder="Item name" />
@@ -88,15 +70,14 @@ export class ThesauriForm extends Component {
                               </a>
                             </Field>
                           </FormGroup>
-                        </li> ;
+                        </li>;
                 })}
               </ul>
               <div className="panel-body">
-                <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</button>
+                <a className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</a>
               </div>
             </div>
           </Form>
-        </main>
       </div>
     );
   }
