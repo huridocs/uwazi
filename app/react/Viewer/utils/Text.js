@@ -125,13 +125,12 @@ export default function (container) {
         this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 
-      // Is this still necessary?
-      // Object.keys(this.renderedReferences).forEach((id) => {
-      //   if (ids.indexOf(id) === -1) {
-      //     this.renderedReferences[id].unwrap();
-      //     delete this.renderedReferences[id];
-      //   }
-      // });
+      Object.keys(this.renderedReferences).forEach((id) => {
+        if (ids.indexOf(id) === -1) {
+          this.renderedReferences[id].unwrap();
+          delete this.renderedReferences[id];
+        }
+      });
     }
   };
 }
