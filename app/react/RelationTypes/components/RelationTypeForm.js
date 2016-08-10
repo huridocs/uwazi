@@ -29,37 +29,37 @@ export class RelationTypeForm extends Component {
   render() {
     return (
       <div className="row relationType">
-        <main className="col-sm-12">
-          <div className="well relationType">
-            <Form
-              model="relationType"
-              onSubmit={this.props.saveRelationType}
-              validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
-            >
-              <div className="relationType-buttons">
-                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
+          <Form
+            model="relationType"
+            onSubmit={this.props.saveRelationType}
+            validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
+          >
+            <div className="panel panel-default">
+              <div className="panel-heading relationType">
+                <Link to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
+                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+                  <Field model="relationType.name">
+                      <input id="relationTypeName" className="form-control" type="text" placeholder="Relation name"/>
+                  </Field>
+                </FormGroup>
+                &nbsp;
                 <button type="submit" className="btn btn-success save-template">
-                  <i className="fa fa-save"/> Save Relation Type
+                  <i className="fa fa-save"/> Save
                 </button>
+                {(() => {
+                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                    return <div className="validation-error">
+                              <i className="fa fa-exclamation-triangle"></i>
+                              &nbsp;
+                              Duplicated name
+                          </div>;
+                  }
+                })()}
               </div>
-              <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-                <Field model="relationType.name">
-                    <label htmlFor="relationTypeName" className="control-label">Relation Type name</label>
-                    <input id="relationTypeName" className="form-control" type="text"/>
-                </Field>
-              </FormGroup>
-              {(() => {
-                if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                  return <div className="validation-error">
-                            <i className="fa fa-exclamation-triangle"></i>
-                            &nbsp;
-                            Duplicated name
-                        </div>;
-                }
-              })()}
-            </Form>
-          </div>
-        </main>
+              <div className="panel-body">Currently connections only need a title.</div>
+            </div>
+          </Form>
       </div>
     );
   }

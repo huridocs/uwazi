@@ -19,7 +19,7 @@ export class FormConfigInput extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-sm-4">
+          <div className="col-sm-6">
             <div className={labelClass}>
               <span className="input-group-addon">
                 Label
@@ -29,7 +29,7 @@ export class FormConfigInput extends Component {
               </FormField>
             </div>
           </div>
-          <div className="col-sm-4">
+          <div className="col-sm-6">
             <div className="input-group">
               <span className="input-group-addon">
                 <FormField model={`template.data.properties[${index}].required`}>

@@ -18,13 +18,13 @@ export class TemplateCreator extends Component {
 
   render() {
     return (
-      <div className="metadata">
-        <main className="col-sm-9">
+      <div className="row metadata">
+        <main className="col-xs-12 col-sm-9">
             <MetadataTemplate />
         </main>
-        <aside className="col-sm-3">
-          <h1>Construction blocks</h1>
+        <aside className="col-xs-12 col-sm-3">
           <div className="metadataTemplate-constructor panel panel-default">
+            <div className="panel-heading">Properties</div>
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
               <PropertyOption label='Select' type='select'/>

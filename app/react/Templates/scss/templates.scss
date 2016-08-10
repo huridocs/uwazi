@@ -9,7 +9,6 @@
     margin-right: 15px;
 
     .form-control {
-      font-size: 18px;
       line-height: 23px;
       padding: 9px 12px;
       margin-bottom: 0;
@@ -27,11 +26,17 @@
     color: #AFAFAF;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    border: 1px dashed #ccc;
+
     padding: 15px;
+    background: $c-white;
     .fa {
       margin-right: 5px;
     }
+  }
+  .no-properties-wrap {
+    display: block;
+    padding: 15px;
+    border: 1px dashed #ccc;
   }
 }
 
@@ -47,7 +52,7 @@
   }
   .list-group-item:hover {
     cursor: move;
-    border-color: #D4D7DB;
+
     .fa-clone,
     .fa-arrows-v {
       color: #777;
@@ -94,10 +99,8 @@
         overflow: hidden;
 
         &.expand {
-          border-top: 1px solid $c-grey-light;
-          padding: 15px 0 0 30px;
-          margin-top: 15px;
           height: auto;
+          padding-top: 15px;
         }
       }
 
