@@ -4,7 +4,7 @@
 
 .side-panel {
   $c-sidebar: darken($c-background, 0%);
-  position: fixed;
+  position: absolute;
   right: 0;
   top: 54px;
   bottom: 0;
@@ -16,9 +16,6 @@
   width: 90%;
   transition: transform 500ms;
   @media(min-width: 1024px) {
-    top: 54px + 15px;
-    bottom: 15px;
-    padding: 15px 30px;
     width: 25%;
     max-width: 9999px;
   }
