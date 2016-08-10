@@ -12,8 +12,8 @@ $c-primary-light:     lighten($c-primary, 35%);
 $c-primary-dark:      darken($c-primary, 20%);
 
 $c-secondary:         transparentize(#FFCC66, 0);
-$c-secondary-lighten: transparentize($c-secondary, 0.75);
-$c-secondary-light:   transparentize($c-secondary, 0.85);
+$c-secondary-lighten: transparentize($c-secondary, .85);
+$c-secondary-light:   transparentize($c-secondary, .5);
 $c-secondary-dark:    darken($c-secondary, 40%);
 
 $c-type-1:            #F44336;
