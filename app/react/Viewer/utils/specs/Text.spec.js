@@ -168,17 +168,15 @@ describe('Text', () => {
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('3'), 'restoredRange');
     });
 
-    // Is this still necessary?
-    // it('should unwrap references that are passed by propertyRange in multiple calls', () => {
-    //   let firstReferneces = [{_id: '1', sourceRange: 'sourceRange1'}, {_id: '2', sourceRange: 'sourceRange2'}];
-    //   let secondReferences = [{_id: '2', sourceRange: 'sourceRange2'}, {_id: '3', sourceRange: 'sourceRange3'}];
-    //   text.renderReferences(firstReferneces);
-    //   text.renderReferences(secondReferences);
-    //   text.renderReferences([], 'targetRange');
+    it('should unwrap references that are passed in multiple calls', () => {
+      let firstReferneces = [{_id: '1', range: {start: 1}}, {_id: '2', range: {start: 2}}];
+      let secondReferences = [{_id: '2', range: {start: 2}}, {_id: '3', range: {start: 3}}];
+      text.renderReferences(firstReferneces);
+      text.renderReferences(secondReferences);
 
-    //   expect(unwrap.calls.count()).toBe(1);
-    //   expect(text.renderedReferences.sourceRange[1]).not.toBeDefined();
-    // });
+      expect(unwrap.calls.count()).toBe(1);
+      expect(text.renderedReferences[1]).not.toBeDefined();
+    });
   });
 
   describe('highlight', () => {
