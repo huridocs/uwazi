@@ -50,6 +50,13 @@ describe('ViewReferencesPanel', () => {
     expect(component.find('.item').get(3).props['data-id']).toBe('ref1');
   });
 
+  it('should disable all-document connections if targetDocument', () => {
+    props.targetDoc = true;
+    render();
+
+    expect(component.find('.item').get(0).props.className).toContain('disabled');
+  });
+
   describe('on Close panel', () => {
     it('should close panel and deactivate reference', () => {
       render();
@@ -78,7 +85,11 @@ describe('ViewReferencesPanel', () => {
 
   describe('when click on a reference', () => {
     beforeEach(() => {
-      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel', activeReference: 'ref1'});
+      props.uiState = Immutable.fromJS({
+        reference: Immutable.fromJS({targetRange: 'targetRange'}),
+        panel: 'viewReferencesPanel',
+        activeReference: 'ref1'
+      });
     });
 
     describe('when document is source document', () => {
@@ -97,6 +108,15 @@ describe('ViewReferencesPanel', () => {
         component.find('.item').last().simulate('click');
         expect(props.selectReference).toHaveBeenCalledWith('ref1', props.references.toJS());
         expect(component.find('.item').last().node.props.className).toContain('relationship-selected');
+      });
+
+      describe('when connection is to the entire document', () => {
+        it('should not select it', () => {
+          props.targetDoc = true;
+          render();
+          component.find('.item').first().simulate('click');
+          expect(props.selectReference).not.toHaveBeenCalled();
+        });
       });
     });
   });
