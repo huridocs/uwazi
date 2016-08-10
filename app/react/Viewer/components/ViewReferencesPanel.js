@@ -59,9 +59,9 @@ export class ViewReferencesPanel extends Component {
     const referencedDocuments = this.props.referencedDocuments.toJS();
 
     const references = this.props.references.toJS().sort((a, b) => {
-      a.range.start = typeof a.range.start !== 'undefined' ? a.range.start : -1;
-      b.range.start = typeof b.range.start !== 'undefined' ? b.range.start : -1;
-      return a.range.start - b.range.start;
+      let aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
+      let bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
+      return aStart - bStart;
     });
 
     return (
