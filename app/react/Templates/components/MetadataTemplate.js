@@ -30,6 +30,8 @@ export class MetadataTemplate extends Component {
               validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
             >
               <div className="metadataTemplate-heading panel-heading">
+                <Link to="/settings/documents" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
                 <div className={nameGroupClass}>
                   <FormField model="template.data.name">
                     <input placeholder="Template name" className="form-control"/>
@@ -47,24 +49,24 @@ export class MetadataTemplate extends Component {
                   })()}
                 </div>
                 &nbsp;
-                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
-                &nbsp;
                 <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
                   <i className="fa fa-save"/> Save
                 </button>
               </div>
-              {connectDropTarget(<ul className="metadataTemplate-list list-group">
-                {(() => {
-                  if (this.props.template.properties.length === 0) {
+
+              {connectDropTarget(
+                <ul className="metadataTemplate-list list-group">
+                  {this.props.template.properties.map((config, index) => {
+                    return <MetadataProperty {...config} key={config.localID} index={index}/>;
+                  })}
+                  {(() => {
                     return <div className="no-properties">
-                            <i className="fa fa-clone"></i>Drag properties here to start
-                          </div>;
-                  }
-                })()}
-                {this.props.template.properties.map((config, index) => {
-                  return <MetadataProperty {...config} key={config.localID} index={index}/>;
-                })}
-              </ul>)}
+                            <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
+                           </div>;
+                  })()}
+                </ul>
+              )}
+
             </Form>
           </div>;
   }

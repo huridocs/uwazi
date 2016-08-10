@@ -42,7 +42,7 @@ export class MetadataProperty extends Component {
     return connectDragSource(connectDropTarget(
       <li className={propertyClass}>
         <div>
-           <span className="property-name"><i className="fa fa-arrows-v"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
+           <span className="property-name"><i className="fa fa-reorder"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
            <button type="button" className="btn btn-danger btn-xs pull-right property-remove" onClick={() =>
              this.props.removeProperty('RemovePropertyModal', index)}
            >

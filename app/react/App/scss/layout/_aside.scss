@@ -1,37 +1,36 @@
 aside {
-	padding: 0;
-	border-left: 1px dotted $c-grey;
-
-	h1 {
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		font-size: $f-size-lg;
-		margin-top: 0;
-		small {
-			margin-left: 10px;
-			cursor: pointer;
-			.fa {
-				margin-right: 3px;
-			}
-		}
-	}
-	h2 {
-		font-size: $f-size-sm;
-		padding-left: 20px;
-		position: relative;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		small {
-			position: absolute;
-			top: -2px;
-			left: 0;
-			height: 16px;
-			line-height: 15px;
-			border: 1px solid $c-grey;
-			color: $c-grey-dark;
-			width: 16px;
-			text-align: center;
-			border-radius: 50%;
-		}
-	}
+  padding: 0;
+  border-left: 1px dotted $c-grey;
+  h1 {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: $f-size-lg;
+    margin-top: 0;
+    small {
+      margin-left: 10px;
+      cursor: pointer;
+      .fa {
+        margin-right: 3px;
+      }
+    }
+  }
+  h2 {
+    font-size: $f-size-sm;
+    padding-left: 20px;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    small {
+      position: absolute;
+      top: -2px;
+      left: 0;
+      height: 16px;
+      line-height: 15px;
+      border: 1px solid $c-grey;
+      color: $c-grey-dark;
+      width: 16px;
+      text-align: center;
+      border-radius: 50%;
+    }
+  }
 }
