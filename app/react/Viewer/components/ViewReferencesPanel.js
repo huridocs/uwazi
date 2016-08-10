@@ -33,12 +33,12 @@ export class ViewReferencesPanel extends Component {
     this.props.deactivateReference();
   }
 
-  clickReference(id) {
+  clickReference(reference) {
     if (!this.props.targetDoc) {
-      this.props.activateReference(id);
+      this.props.activateReference(reference._id);
     }
-    if (this.props.targetDoc) {
-      this.props.selectReference(id, this.props.references.toJS());
+    if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
+      this.props.selectReference(reference._id, this.props.references.toJS());
     }
   }
 
@@ -72,27 +72,34 @@ export class ViewReferencesPanel extends Component {
           {(() => {
             return references.map((reference, index) => {
               let itemClass = '';
+              let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
+              let referenceIcon = 'fa-sign-in';
+
               if (uiState.highlightedReference === reference._id) {
                 itemClass = 'relationship-hover';
               }
 
               if (uiState.activeReference === reference._id) {
                 itemClass = 'relationship-active';
-                if (this.props.targetDoc) {
+                if (this.props.targetDoc && this.props.uiState.toJS().reference.targetRange) {
                   itemClass = 'relationship-selected';
                 }
+              }
+
+              if (reference.inbound) {
+                referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-out';
               }
 
               return (
                 <div key={index}
                   onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
                   onMouseLeave={this.props.highlightReference.bind(null, null)}
-                  onClick={this.clickReference.bind(this, reference._id)}
-                  className={`item ${itemClass}`}
+                  onClick={this.clickReference.bind(this, reference)}
+                  className={`item ${itemClass} ${disabled ? 'disabled' : ''}`}
                   data-id={reference._id}>
                   <div className="item-info">
                     <div className="item-name">
-                      <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i>
+                      <i className={`fa ${referenceIcon}`}></i>
                       &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
                       {(() => {
                         if (reference.text) {
