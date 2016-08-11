@@ -49,6 +49,7 @@ $c-sidebar: darken($c-background, 0%);
 		font-size: 18px;
 		color: $c-grey;
 		cursor: pointer;
+    z-index: 2;
     @media(min-width: 1024px) {
       top: 15px;
     }
