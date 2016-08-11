@@ -30,10 +30,11 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel open={this.props.open}>
-        <div className="sidepanel-header">sidepanel-header</div>
-        <div className="sidepanel-body search">
+        <div className="sidepanel-header">
           <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
           <i className="fa fa-close close-modal" onClick={this.props.hideFilters}></i>
+        </div>
+        <div className="sidepanel-body search">
           <ul className="search__filter search__filter--type">
             <li>Document type</li>
             <li>
@@ -56,7 +57,6 @@ export class LibraryFilters extends Component {
           </ul>
           <FiltersForm />
         </div>
-        <div className="sidepanel-footer">sidepanel-footer</div>
       </SidePanel>
     );
   }
