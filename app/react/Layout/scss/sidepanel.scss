@@ -43,15 +43,12 @@ $c-sidebar: darken($c-background, 0%);
 
   .fa-close {
 		position: absolute;
-		top: 30px;
+		top: 15px;
 		right: 15px;
 		font-size: 18px;
 		color: $c-grey;
 		cursor: pointer;
     z-index: 2;
-    @media(min-width: 1024px) {
-      top: 15px;
-    }
 		&:hover {
 			color: $c-grey-dark;
 		}
