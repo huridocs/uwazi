@@ -114,14 +114,14 @@ fdescribe('references path', () => {
       .realClick(textToSelect)
       .wait(unlinkIcon)
       .click(unlinkIcon)
-      .wait(3000)
-      // .wait('.confirm-button')
-      // .realclick('.confirm-button')
-      // .then((result) => {
-      //   expect(result).toBe(true);
-      //   done();
-      // })
-      .then(done)
+      .wait('.modal-footer .btn-danger')
+      .realClick('.modal-footer .btn-danger')
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
       .catch(catchErrors(done));
     });
   });
