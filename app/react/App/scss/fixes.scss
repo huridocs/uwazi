@@ -37,7 +37,6 @@ header {
 
 .app-content > div {
   height: 100%;
-  padding-top: 30px;
   overflow-y: scroll;
 }
 
@@ -101,11 +100,6 @@ header ul .btn .fa {
   }
 }
 
-.side-panel {
-  .form-group {
-    margin: 0 -15px;
-  }
-}
 .search__filter > li label {
   font-size: $f-size-lg;
   font-style: normal;

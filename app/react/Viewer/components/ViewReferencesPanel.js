@@ -85,68 +85,72 @@ export class ViewReferencesPanel extends Component {
 
     return (
       <SidePanel {...sidePanelprops} className="document-references">
-        <h1>CONNECTIONS ({normalizedReferences.length})</h1>
-        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
-        <div className="item-group">
-          {(() => {
-            return sortedReferences.map((reference, index) => {
-              let itemClass = '';
-              if (uiState.highlightedReference === reference._id) {
-                itemClass = 'relationship-hover';
-              }
-
-              if (uiState.activeReference === reference._id) {
-                itemClass = 'relationship-active';
-                if (this.props.targetDoc) {
-                  itemClass = 'relationship-selected';
+        <div className="sidepanel-header">
+          <h1>CONNECTIONS ({normalizedReferences.length})</h1>
+          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
+        </div>
+        <div className="sidepanel-body">
+          <div className="item-group">
+            {(() => {
+              return sortedReferences.map((reference, index) => {
+                let itemClass = '';
+                if (uiState.highlightedReference === reference._id) {
+                  itemClass = 'relationship-hover';
                 }
-              }
 
-              return (
-                <div key={index}
-                  onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
-                  onMouseLeave={this.props.highlightReference.bind(null, null)}
-                  onClick={this.clickReference.bind(this, reference._id)}
-                  className={`item ${itemClass}`}
-                  data-id={reference._id}
-                  >
-                    <div className="item-info">
-                      <div className="item-name">
-                        <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i> {reference.title}
-                        {(() => {
-                          if (reference.text) {
-                            return <div className="item-snippet">
-                              {reference.text}
-                            </div>;
-                          }
-                        })()}
+                if (uiState.activeReference === reference._id) {
+                  itemClass = 'relationship-active';
+                  if (this.props.targetDoc) {
+                    itemClass = 'relationship-selected';
+                  }
+                }
+
+                return (
+                  <div key={index}
+                    onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
+                    onMouseLeave={this.props.highlightReference.bind(null, null)}
+                    onClick={this.clickReference.bind(this, reference._id)}
+                    className={`item ${itemClass}`}
+                    data-id={reference._id}
+                    >
+                      <div className="item-info">
+                        <div className="item-name">
+                          <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i> {reference.title}
+                          {(() => {
+                            if (reference.text) {
+                              return <div className="item-snippet">
+                                {reference.text}
+                              </div>;
+                            }
+                          })()}
+                        </div>
+                      </div>
+                      <div className="item-metadata">
+                        <dl>
+                          <dt>Connection type</dt>
+                          <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
+                        </dl>
+                      </div>
+                      <div className="item-actions">
+                        <ShowIf if={!this.props.targetDoc}>
+                          <NeedAuthorization>
+                            <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                              <i className="fa fa-unlink"></i><span>Delete</span>
+                            </a>
+                          </NeedAuthorization>
+                        </ShowIf>
+                        &nbsp;
+                        <ShowIf if={!this.props.targetDoc}>
+                          <Link to={'/document/' + reference.document} onClick={e => e.stopPropagation()} className="item-shortcut">
+                            <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+                          </Link>
+                        </ShowIf>
                       </div>
                     </div>
-                    <div className="item-metadata">
-                      <dl>
-                        <dt>Connection type</dt>
-                        <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
-                      </dl>
-                    </div>
-                    <div className="item-actions">
-                      <ShowIf if={!this.props.targetDoc}>
-                        <NeedAuthorization>
-                          <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                            <i className="fa fa-unlink"></i><span>Delete</span>
-                          </a>
-                        </NeedAuthorization>
-                      </ShowIf>
-                      &nbsp;
-                      <ShowIf if={!this.props.targetDoc}>
-                        <Link to={'/document/' + reference.document} onClick={e => e.stopPropagation()} className="item-shortcut">
-                          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
-                        </Link>
-                      </ShowIf>
-                    </div>
-                  </div>
-                  );
-            });
-          })()}
+                    );
+              });
+            })()}
+          </div>
         </div>
       </SidePanel>
     );
