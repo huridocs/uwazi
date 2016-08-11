@@ -10,7 +10,7 @@ let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
 
-fdescribe('references path', () => {
+describe('references path', () => {
   let nightmare = new Nightmare({show: true}).viewport(1100, 600);
 
   describe('login', () => {
