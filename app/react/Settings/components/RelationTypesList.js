@@ -52,6 +52,7 @@ export class RelationTypesList extends Component {
       <div className="panel-body">
         <Link to="/settings/connections/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
+          &nbsp;
           <span>Add connection</span>
         </Link>
       </div>

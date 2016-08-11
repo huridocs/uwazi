@@ -52,6 +52,7 @@ export class ThesaurisList extends Component {
       <div className="panel-body">
         <Link to="/settings/thesauris/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
+          &nbsp;
           <span>Add thesauri</span>
         </Link>
       </div>

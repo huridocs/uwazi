@@ -2,9 +2,9 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {DocumentTypesList} from '../DocumentTypesList';
+import {EntityTypesList} from '../EntityTypesList';
 
-describe('DocumentTypesList', () => {
+describe('EntityTypesList', () => {
   let component;
   let props;
   let context;
@@ -27,20 +27,20 @@ describe('DocumentTypesList', () => {
   });
 
   let render = () => {
-    component = shallow(<DocumentTypesList {...props} />, {context});
+    component = shallow(<EntityTypesList {...props} />, {context});
   };
 
   describe('render', () => {
-    it('should render a list with only the document templates, and exclude entities', () => {
+    it('should render a list with only the entity templates, and exclude documents', () => {
       render();
-      expect(component.find('ul.document-types').find('li').length).toBe(2);
+      expect(component.find('ul.document-types').find('li').length).toBe(1);
     });
   });
 
   describe('when deleting a document type', () => {
     it('should check if can be deleted', (done) => {
       render();
-      component.instance().deleteTemplate({_id: 1, name: 'Decision'})
+      component.instance().deleteTemplate({_id: 3, name: 'Judge'})
       .then(() => {
         expect(props.checkTemplateCanBeDeleted).toHaveBeenCalled();
         done();
@@ -49,7 +49,7 @@ describe('DocumentTypesList', () => {
 
     it('should confirm the action', (done) => {
       render();
-      component.instance().deleteTemplate({_id: 1, name: 'Decision'})
+      component.instance().deleteTemplate({_id: 3, name: 'Judge'})
       .then(() => {
         expect(context.confirm).toHaveBeenCalled();
         done();

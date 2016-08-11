@@ -6,7 +6,7 @@ import {deleteTemplate, checkTemplateCanBeDeleted} from 'app/Templates/actions/t
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
 
-export class DocumentTypesList extends Component {
+export class EntityTypesList extends Component {
 
   deleteTemplate(template) {
     return this.props.checkTemplateCanBeDeleted(template)
@@ -31,16 +31,16 @@ export class DocumentTypesList extends Component {
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Documents</div>
+      <div className="panel-heading">Entities</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
-          if (template.isEntity) {
+          if (!template.isEntity) {
             return false;
           }
           return <li key={index} className="list-group-item">
-              <Link to={'/settings/documents/edit/' + template._id}>{template.name}</Link>
+              <Link to={'/settings/entities/edit/' + template._id}>{template.name}</Link>
               <div className="list-group-item-actions">
-                <Link to={'/settings/documents/edit/' + template._id} className="btn btn-default btn-xs">
+                <Link to={'/settings/entities/edit/' + template._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
                   <span>Edit</span>
                 </Link>
@@ -53,24 +53,24 @@ export class DocumentTypesList extends Component {
         })}
       </ul>
       <div className="panel-body">
-        <Link to="/settings/documents/new" className="btn btn-success">
+        <Link to="/settings/entities/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>Add document</span>
+          <span>Add entity</span>
         </Link>
       </div>
     </div>;
   }
 }
 
-DocumentTypesList.propTypes = {
+EntityTypesList.propTypes = {
   templates: PropTypes.object,
   deleteTemplate: PropTypes.func,
   notify: PropTypes.func,
   checkTemplateCanBeDeleted: PropTypes.func
 };
 
-DocumentTypesList.contextTypes = {
+EntityTypesList.contextTypes = {
   confirm: PropTypes.func
 };
 
@@ -82,4 +82,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({notify, deleteTemplate, checkTemplateCanBeDeleted}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);
+export default connect(mapStateToProps, mapDispatchToProps)(EntityTypesList);
