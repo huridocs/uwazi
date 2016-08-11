@@ -31,7 +31,7 @@ export class LibraryFilters extends Component {
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">sidepanel-header</div>
-        <div className="search">
+        <div className="sidepanel-body search">
           <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
           <i className="fa fa-close close-modal" onClick={this.props.hideFilters}></i>
           <ul className="search__filter search__filter--type">
