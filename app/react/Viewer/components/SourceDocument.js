@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {setSelection} from 'app/Viewer/actions/selectionActions';
+import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
 import {resetReferenceCreation, highlightReference, activateReference} from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
 
@@ -18,16 +18,29 @@ const mapStateToProps = ({user, documentViewer}) => {
     activeReference: uiState.activeReference,
     executeOnClickHandler: !!documentViewer.targetDoc.get('_id'),
     disableTextSelection: !user.get('_id') || documentViewer.uiState.get('panel') === 'viewMetadataPanel',
+    panelIsOpen: !!documentViewer.uiState.get('panel'),
     forceSimulateSelection: documentViewer.uiState.get('panel') === 'targetReferencePanel'
       || documentViewer.uiState.get('panel') === 'referencePanel'
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  let actions = {setSelection, unsetSelection: () => {
-    return {type: 'no_action'};
-  }, onClick: resetReferenceCreation, highlightReference, activateReference};
+  let actions = {setSelection,
+    unsetSelection,
+    onClick: resetReferenceCreation,
+    highlightReference,
+    activateReference
+  };
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Document);
+function mergeProps(stateProps, dispatchProps, ownProps) {
+  return Object.assign({}, stateProps, dispatchProps, ownProps, {
+    unsetSelection: () => {
+      if (!stateProps.panelIsOpen) {
+        dispatchProps.unsetSelection();
+      }
+    }
+  });
+}
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);
