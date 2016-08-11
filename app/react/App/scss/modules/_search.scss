@@ -36,7 +36,8 @@
 	width: 100%;
 	color: $c-grey-dark;
 
-  &:not(:last-child) {
+  &:not(:last-child),
+  .form-group & {
     border-bottom: 1px solid $c-grey;
   }
 

@@ -53,10 +53,11 @@ $c-sidebar: darken($c-background, 0%);
 			color: $c-grey-dark;
 		}
 	}
-
+  .form-group {
+    margin: 0;
+  }
   .item-group {
-    padding: 15px 0px;
-    margin: 0 -5px;
+    padding: 15px;
   }
   .item {
     transition: all 0ms;

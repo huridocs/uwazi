@@ -21,33 +21,37 @@ export class CreateReferencePanel extends Component {
     const relationTypes = this.props.relationTypes.toJS();
     return (
       <SidePanel open={this.props.open} className="create-reference">
-        <h1>Create Connection</h1>
-        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
-
-        <div className="relationship-steps">
-          <h2>Connection type<small>1</small></h2>
+        <div className="sidepanel-header">
+          <h1>Create Connection</h1>
+          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
         </div>
 
-        <Select
-          value={this.props.relationType}
-          placeholder="Connection type..."
-          optionsValue="_id"
-          optionsLabel="name"
-          options={relationTypes}
-          onChange={e => this.props.setRelationType(e.target.value)}
-        />
+        <div className="sidepanel-body">
+          <div className="relationship-steps">
+            <h2>Connection type<small>1</small></h2>
+          </div>
 
-        <div className="relationship-steps">
-          <h2>Select document<small>2</small></h2>
-        </div>
-        <ViewerSearchForm />
+          <Select
+            value={this.props.relationType}
+            placeholder="Connection type..."
+            optionsValue="_id"
+            optionsLabel="name"
+            options={relationTypes}
+            onChange={e => this.props.setRelationType(e.target.value)}
+          />
 
-        <SearchResults
-          results={this.props.results}
-          searching={this.props.searching}
-          selected={this.props.selected}
-          onClick={this.props.selectTargetDocument}
-        />
+          <div className="relationship-steps">
+            <h2>Select document<small>2</small></h2>
+          </div>
+          <ViewerSearchForm />
+
+          <SearchResults
+            results={this.props.results}
+            searching={this.props.searching}
+            selected={this.props.selected}
+            onClick={this.props.selectTargetDocument}
+          />
+      </div>
 
       </SidePanel>
     );
