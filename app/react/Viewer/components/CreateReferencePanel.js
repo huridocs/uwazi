@@ -24,9 +24,7 @@ export class CreateReferencePanel extends Component {
         <div className="sidepanel-header">
           <h1>Create Connection</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
-        </div>
 
-        <div className="sidepanel-body">
           <div className="relationship-steps">
             <h2>Connection type<small>1</small></h2>
           </div>
@@ -44,7 +42,9 @@ export class CreateReferencePanel extends Component {
             <h2>Select document<small>2</small></h2>
           </div>
           <ViewerSearchForm />
+      </div>
 
+      <div className="sidepanel-body">
           <SearchResults
             results={this.props.results}
             searching={this.props.searching}
