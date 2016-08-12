@@ -78,7 +78,7 @@ export function mapStateToProps(state) {
   let props = state.library.filters.toJS();
   props.form = state.form.filters;
   props.searchTerm = state.library.ui.toJS().searchTerm;
-  props.open = state.library.ui.get('filtersPanel');
+  props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
   return props;
 }
 
