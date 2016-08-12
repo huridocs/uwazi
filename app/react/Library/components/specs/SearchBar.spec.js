@@ -56,6 +56,14 @@ describe('SearchBar', () => {
         expect(props.setOverSuggestions).toHaveBeenCalledWith(false);
       });
     });
+
+    describe('onClick', () => {
+      it('should close suggestions panel', () => {
+        component.find('button').simulate('click');
+        expect(props.setOverSuggestions).toHaveBeenCalledWith(false);
+        expect(props.hideSuggestions).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('componentWillUnmount', () => {

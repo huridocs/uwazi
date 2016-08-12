@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
-import {Field, Form, actions as formActions} from 'react-redux-form';
 
 import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
 
