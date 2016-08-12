@@ -58,14 +58,6 @@ describe('SearchBar', () => {
     });
   });
 
-  describe('the x in the input', () => {
-    it('should empty searchTerm and perform a search', () => {
-      component.find('.input-group-btn').simulate('click', {preventDefault: ()=>{}});
-      expect(props.change).toHaveBeenCalledWith('search.searchTerm', '');
-      expect(props.searchDocuments).toHaveBeenCalledWith({searchTerm: '', filters: {isBatman: true}, sort: 'title'});
-    });
-  });
-
   describe('componentWillUnmount', () => {
     it('should reset the searchTerm', () => {
       component.instance().componentWillUnmount();
@@ -78,11 +70,11 @@ describe('SearchBar', () => {
       let store = {
         search: 'search',
         library: {
-          ui: Immutable.fromJS({suggestions: 'suggestions', showSuggestions: true, overSuggestions: true})
+          ui: Immutable.fromJS({filtersPanel: true, suggestions: 'suggestions', showSuggestions: true, overSuggestions: true})
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({search: 'search', suggestions: 'suggestions', showSuggestions: true, overSuggestions: true});
+      expect(state).toEqual({open: true, search: 'search', suggestions: 'suggestions', showSuggestions: true, overSuggestions: true});
     });
   });
 });

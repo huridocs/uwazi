@@ -82,6 +82,7 @@ export class SearchBar extends Component {
 
 SearchBar.propTypes = {
   searchDocuments: PropTypes.func.isRequired,
+  open: PropTypes.bool,
   change: PropTypes.func.isRequired,
   getSuggestions: PropTypes.func.isRequired,
   hideSuggestions: PropTypes.func.isRequired,
