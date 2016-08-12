@@ -6,6 +6,8 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
 
+const searchButton = '#app > div.content > header > div > div > div > a';
+
 let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
@@ -32,6 +34,7 @@ describe('references path', () => {
       .evaluate(getInnerText, '.item:nth-child(2) .item-name')
       .then((itemName) => {
         return nightmare
+        .realClick(searchButton)
         .type('input[type="text"]', itemName)
         .wait('.fa-arrow-left')
         .realClick('.fa-arrow-left')
@@ -93,6 +96,7 @@ describe('references path', () => {
       .evaluate(getInnerText, '.item:nth-child(2) .item-name')
       .then((itemName) => {
         return nightmare
+        .realClick(searchButton)
         .type('input[type="text"]', itemName)
         .wait('.fa-arrow-left')
         .realClick('.fa-arrow-left')
@@ -106,10 +110,10 @@ describe('references path', () => {
       .catch(catchErrors(done));
     });
 
-    it('select the word when the relation was created from the document then delete it', (done) => {
+    it('select the word where the relation was created from the document then delete it', (done) => {
       let textToSelect = '.t:nth-child(4)';
-      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-references.is-active > div > div.item.relationship-active > div.item-actions > a:nth-child(1)';
-      nightmare
+      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-references.is-active > div.sidepanel-body > div > div.item.relationship-active > div.item-actions > a:nth-child(1)';
+       nightmare
       .realClick(textToSelect)
       .realClick(textToSelect)
       .wait(unlinkIcon)
