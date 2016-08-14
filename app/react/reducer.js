@@ -1,5 +1,4 @@
 import {combineReducers} from 'redux';
-import {reducer as reduxForm} from 'redux-form';
 import createReducer from 'app/BasicReducer';
 
 import template from 'app/Templates/reducers/reducer';
@@ -20,7 +19,6 @@ import {modelReducer, formReducer} from 'react-redux-form';
 
 export default combineReducers({
   notifications: notificationsReducer,
-  form: reduxForm,
   library,
   template,
   thesauri,
