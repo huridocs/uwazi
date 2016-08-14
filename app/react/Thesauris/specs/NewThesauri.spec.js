@@ -6,7 +6,7 @@ import NewThesauri from 'app/Thesauris/NewThesauri';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
 import {APIURL} from 'app/config.js';
 
-fdescribe('NewThesauri', () => {
+describe('NewThesauri', () => {
   let component;
   let instance;
   let context;
