@@ -32,16 +32,6 @@ export default app => {
     });
   });
 
-  //app.get('/api/references', (req, res) => {
-    //references.getAll()
-    //.then((response) => {
-      //res.json(response);
-    //})
-    //.catch((error) => {
-      //res.json({error: error.json});
-    //});
-  //});
-
   app.get('/api/references/count_by_relationtype', (req, res) => {
     references.countByRelationType(req.query.relationtypeId)
     .then((response) => {
