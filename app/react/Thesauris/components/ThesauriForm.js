@@ -95,7 +95,8 @@ ThesauriForm.propTypes = {
   removeValue: PropTypes.func,
   thesauris: PropTypes.object,
   thesauri: PropTypes.object,
-  state: PropTypes.object
+  state: PropTypes.object,
+  new: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
