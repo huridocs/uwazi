@@ -107,4 +107,29 @@ $c-sidebar: darken($c-background, 0%);
 .sidepanel-footer {
   bottom: 0;
   border-top: 1px solid $c-grey;
+  text-align: center;
+
+  .btn {
+    position: relative;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+  }
+  .btn-label {
+    display: none;
+    color: #444444;
+    position: absolute;
+    top: 100%;
+    font-size: 10px;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+
+  }
+  .btn:hover .btn-label {
+    display: block;
+  }
+
+  .btn-success {
+    border: 0;
+  }
 }

@@ -43,6 +43,12 @@ export class ViewMetadataPanel extends Component {
             return <ShowMetadata entity={metadata}/>;
           })()}
         </div>
+        <div className="sidepanel-footer">
+          <button className="edit-metadata btn btn-success">
+            <i className="fa fa-pencil"></i>
+            <span className="btn-label">Edit</span>
+          </button>
+        </div>
       </SidePanel>
     );
   }
