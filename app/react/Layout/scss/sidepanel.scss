@@ -124,10 +124,10 @@ $c-sidebar: darken($c-background, 0%);
     border-radius: 50%;
     width: 44px;
     height: 44px;
+    top: -5px;
   }
   .btn-label {
-    display: none;
-    color: #444444;
+    color: $c-grey;
     position: absolute;
     top: 100%;
     font-size: 10px;
@@ -136,7 +136,7 @@ $c-sidebar: darken($c-background, 0%);
 
   }
   .btn:hover .btn-label {
-    display: block;
+    color: $c-black;
   }
 
   .btn-success {
