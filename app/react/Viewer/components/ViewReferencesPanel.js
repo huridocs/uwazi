@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
-import Immutable from 'immutable';
 
 import SidePanel from 'app/Layout/SidePanel';
 import ShowIf from 'app/App/ShowIf';
@@ -76,7 +75,7 @@ export class ViewReferencesPanel extends Component {
               return references.map((reference, index) => {
                 let itemClass = '';
                 let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
-                let referenceIcon = 'fa-sign-in';
+                let referenceIcon = 'fa-sign-out';
 
                 if (uiState.highlightedReference === reference._id) {
                   itemClass = 'relationship-hover';
@@ -90,7 +89,7 @@ export class ViewReferencesPanel extends Component {
                 }
 
                 if (reference.inbound) {
-                  referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-out';
+                  referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
                 }
 
                 return (
@@ -102,7 +101,7 @@ export class ViewReferencesPanel extends Component {
                     data-id={reference._id}>
                     <div className="item-info">
                       <div className="item-name">
-                        <i className={reference.inbound ? 'fa fa-sign-in' : 'fa fa-sign-out'}></i>
+                        <i className={`fa ${referenceIcon}`}></i>
                         &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
                         {(() => {
                           if (reference.text) {

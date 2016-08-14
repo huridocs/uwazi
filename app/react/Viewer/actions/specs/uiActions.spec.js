@@ -64,7 +64,7 @@ describe('Viewer uiActions', () => {
     it('should scroll to the elements', () => {
       actions.activateReference('id')(dispatch);
       expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-      expect(scroller.to).toHaveBeenCalledWith('.document-references .item[data-id="id"]', '.document-references');
+      expect(scroller.to).toHaveBeenCalledWith('.document-references .item[data-id="id"]', '.document-references .sidepanel-body');
     });
   });
 
