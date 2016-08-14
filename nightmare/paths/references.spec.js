@@ -11,7 +11,7 @@ let getInnerText = (selector) => {
 };
 
 describe('references path', () => {
-  let nightmare = new Nightmare({show: true}).viewport(1100, 600);
+  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
     it('should log in as admin', (done) => {
