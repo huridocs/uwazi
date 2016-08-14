@@ -62,11 +62,12 @@ export class LibraryMenu extends Component {
           <div onClick={this.deleteDocument.bind(this)} className="float-btn__sec">
             <span>Delete</span><i className="fa fa-trash"></i>
           </div>
-          <MenuButtons.Main
+          {/*<MenuButtons.Main
             onClick={() => this.props.loadDocument('library.docForm', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
           >
             <i className="fa fa-pencil"></i>
-          </MenuButtons.Main>
+          </MenuButtons.Main>*/}
+          <div className="float-btn__main"><i className="fa fa-ellipsis-v"></i></div>
         </div>
       </NeedAuthorization>
     );
