@@ -6,7 +6,7 @@ import NewThesauri from 'app/Thesauris/NewThesauri';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
 import {APIURL} from 'app/config.js';
 
-describe('NewThesauri', () => {
+fdescribe('NewThesauri', () => {
   let component;
   let instance;
   let context;
@@ -22,8 +22,9 @@ describe('NewThesauri', () => {
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})});
   });
 
-  it('should render a ThesauriForm', () => {
+  it('should render a ThesauriForm with new=true', () => {
     expect(component.find(ThesauriForm).length).toBe(1);
+    expect(component.find(ThesauriForm).props().new).toBe(true);
   });
 
   describe('static requestState()', () => {
