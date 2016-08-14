@@ -33,7 +33,7 @@ EntityFormPanel.propTypes = {
 const mapStateToProps = ({uploads}) => {
   let uiState = uploads.uiState;
   return {
-    open: uiState.get('showEntityForm'),
+    open: !!uiState.get('entityBeingEdited'),
     title: uploads.entity.title
   };
 };

@@ -44,8 +44,10 @@ describe('uploadsActions', () => {
 
   describe('editDocument()', () => {
     it('should return a EDIT_UPLOADED_DOCUMENT with the document', () => {
-      let action = actions.editDocument('document');
-      expect(action).toEqual({type: types.EDIT_UPLOADED_DOCUMENT, doc: 'document'});
+      let dispatch = jasmine.createSpy('dispatch');
+      actions.editDocument('document')(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.EDIT_UPLOADED_DOCUMENT, doc: 'document'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.FINISH_EDIT_ENTITY});
     });
   });
 

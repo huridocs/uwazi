@@ -41,14 +41,14 @@ export class UploadsMenu extends Component {
               }
             })()}
             {(() => {
-              if (this.props.editignEntity) {
+              if (this.props.entityBeingEdited) {
                 return <div className="float-btn__main cta">
                   <button type="submit" form="entityForm"><span>Save</span><i className="fa fa-save"></i></button>
                 </div>;
               }
             })()}
             {(() => {
-              if (!this.props.doc && !this.props.editignEntity) {
+              if (!this.props.doc && !this.props.entityBeingEdited) {
                 return <div className="float-btn__main cta">
                   <button onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
                     <span>New Entity</span><i className="fa fa-plus"></i>
@@ -63,7 +63,7 @@ export class UploadsMenu extends Component {
 UploadsMenu.propTypes = {
   active: PropTypes.bool,
   documentBeingEdited: PropTypes.string,
-  editignEntity: PropTypes.bool,
+  entityBeingEdited: PropTypes.string,
   doc: PropTypes.object,
   showModal: PropTypes.func,
   newEntity: PropTypes.func,
@@ -75,7 +75,7 @@ function mapStateToProps(state) {
   return {
     documentBeingEdited: docId,
     doc: state.uploads.documents.find(doc => doc.get('_id') === docId),
-    editignEntity: state.uploads.uiState.get('showEntityForm'),
+    entityBeingEdited: state.uploads.uiState.get('entityBeingEdited'),
     templates: state.uploads.templates
   };
 }

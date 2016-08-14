@@ -67,7 +67,7 @@ UploadsSection.contextTypes = {
 const mapStateToProps = (state) => {
   let uiState = state.uploads.uiState.toJS();
   return {
-    panelIsOpen: !!uiState.documentBeingEdited || uiState.showEntityForm
+    panelIsOpen: !!uiState.documentBeingEdited || !!uiState.entityBeingEdited
   };
 };
 

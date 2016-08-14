@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {RowList} from 'app/Layout/Lists';
 import UploadDoc from 'app/Uploads/components/UploadDoc';
+import UploadEntity from 'app/Uploads/components/UploadEntity';
 import {conversionComplete, updateDocument} from 'app/Uploads/actions/uploadsActions';
 
 
@@ -24,7 +25,13 @@ export class UploadsList extends Component {
 
     return (
       <RowList>
-        {documents.map(doc => <UploadDoc doc={doc} key={doc.get('_id')}/>).toJS()}
+        {documents.map(doc => {
+          if (doc.get('type') === 'document') {
+            return <UploadDoc doc={doc} key={doc.get('_id')}/>;
+          }
+
+          return <UploadEntity entity={doc} key={doc.get('_id')}/>;
+        })}
       </RowList>
     );
   }
