@@ -12,7 +12,7 @@ export class EntityForm extends Component {
     let thesauris = this.props.thesauris.toJS();
     let template = templates.find((t) => t._id === entity.template);
     const {model} = this.props;
-
+    
     if (!template) {
       return <div />;
     }

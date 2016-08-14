@@ -14,5 +14,7 @@ export default combineReducers({
   progress,
   uiState,
   document: modelReducer('uploads.document'),
-  documentForm: formReducer('uploads.document')
+  documentForm: formReducer('uploads.document'),
+  entity: modelReducer('uploads.entity', {title: '', template: ''}),
+  entityForm: formReducer('uploads.entity')
 });

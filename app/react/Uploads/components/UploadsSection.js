@@ -8,6 +8,7 @@ import {enterUploads} from '../actions/uploadsActions';
 import UploadBox from './UploadBox';
 import UploadsList from './UploadsList';
 import UploadsFormPanel from './UploadsFormPanel';
+import EntityFormPanel from './EntityFormPanel';
 import ReadyToPublishModal from './ReadyToPublishModal';
 import UploadFailedModal from './UploadFailedModal';
 import ConfirmDocumentDeleteModal from './ConfirmDocumentDeleteModal';
@@ -41,6 +42,7 @@ export class UploadsSection extends Component {
           <UploadsList socket={this.socket}/>
         </main>
         <UploadsFormPanel />
+        <EntityFormPanel />
         <ReadyToPublishModal />
         <UploadFailedModal />
         <ConfirmDocumentDeleteModal />
@@ -65,7 +67,7 @@ UploadsSection.contextTypes = {
 const mapStateToProps = (state) => {
   let uiState = state.uploads.uiState.toJS();
   return {
-    panelIsOpen: !!uiState.documentBeingEdited
+    panelIsOpen: !!uiState.documentBeingEdited || uiState.showEntityForm
   };
 };
 

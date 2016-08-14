@@ -13,5 +13,13 @@ export default function uiState(state = initialState, action = {}) {
     return state.delete('documentBeingEdited');
   }
 
+  if (action.type === types.SHOW_ENTITY_FORM) {
+    return state.set('showEntityForm', true);
+  }
+
+  if (action.type === types.FINISH_EDIT_ENTITY) {
+    return state.set('showEntityForm', false);
+  }
+
   return Immutable.fromJS(state);
 }

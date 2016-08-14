@@ -2,6 +2,7 @@ import superagent from 'superagent';
 import {APIURL} from '../../config.js';
 import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
+import entitties from 'app/Entities';
 import api from '../../utils/api';
 
 export function enterUploads() {
@@ -48,6 +49,28 @@ export function setThesauris(thesauris) {
   return {
     type: types.SET_THESAURIS_UPLOADS,
     thesauris
+  };
+}
+
+export function newEntity(templates) {
+  return function (dispatch) {
+    dispatch(entitties.actions.loadEntity('uploads.entity', {title: ''}, templates));
+    dispatch({type: types.SHOW_ENTITY_FORM});
+  };
+}
+
+export function finishEditEntity() {
+  return {
+    type: types.FINISH_EDIT_ENTITY
+  };
+}
+
+export function saveEntity(entity) {
+  return function (dispatch) {
+    return api.post('entities', entity)
+    .then(() => {
+      dispatch(notify('Entity saved', 'success'));
+    });
   };
 }
 

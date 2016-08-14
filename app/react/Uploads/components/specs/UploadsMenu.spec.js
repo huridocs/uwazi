@@ -5,7 +5,7 @@ import {Link} from 'react-router';
 
 import {UploadsMenu} from 'app/Uploads/components/UploadsMenu';
 
-describe('ViewerDefaultMenu', () => {
+describe('UploadsMenu', () => {
   let component;
   let props;
 
@@ -16,7 +16,9 @@ describe('ViewerDefaultMenu', () => {
   beforeEach(() => {
     props = {
       active: true,
-      showModal: jasmine.createSpy('showModal')
+      showModal: jasmine.createSpy('showModal'),
+      templates: Immutable.fromJS([]),
+      newEntity: jasmine.createSpy('newEntity')
     };
   });
 

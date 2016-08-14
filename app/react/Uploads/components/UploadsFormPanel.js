@@ -16,7 +16,7 @@ export class UploadsFormPanel extends Component {
     return (
       <SidePanel {...sidePanelprops}>
         <div className="sidepanel-header">
-          <h1>Metadata</h1>
+          <h1>Document metadata</h1>
           <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
         </div>
         <div className="sidepanel-body">
