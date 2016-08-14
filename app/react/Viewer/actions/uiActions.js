@@ -53,7 +53,7 @@ export function deactivateReference() {
 
 export function activateReference(reference) {
   scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer');
-  scroller.to(`.document-references .item[data-id="${reference}"]`, '.document-references');
+  scroller.to(`.document-references .item[data-id="${reference}"]`, '.document-references .sidepanel-body');
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});
     dispatch({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
@@ -65,6 +65,6 @@ export function selectReference(referenceId, references) {
 
   return function (dispatch) {
     dispatch(activateReference(referenceId));
-    dispatch(setTargetSelection(reference.sourceRange));
+    dispatch(setTargetSelection(reference.range));
   };
 }
