@@ -17,7 +17,6 @@ export class ThesauriForm extends Component {
   validation(thesauris, id) {
     return {
       name: {
-        required: (val) => val.trim() !== '',
         duplicated: (val) => {
           return !thesauris.find((thesauri) => {
             return thesauri._id !== id && thesauri.name.trim().toLowerCase() === val.trim().toLowerCase();
@@ -28,6 +27,12 @@ export class ThesauriForm extends Component {
   }
 
   render() {
+    let isNew = this.props.new;
+    let id = this.props.thesauri._id;
+    if (!isNew && !id) {
+      return false;
+    }
+
     return (
       <div className="row thesauri">
           <Form
@@ -90,7 +95,8 @@ ThesauriForm.propTypes = {
   removeValue: PropTypes.func,
   thesauris: PropTypes.object,
   thesauri: PropTypes.object,
-  state: PropTypes.object
+  state: PropTypes.object,
+  new: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
@@ -102,7 +108,7 @@ export function mapStateToProps(state) {
 }
 
 function bindActions(dispatch) {
-  return bindActionCreators({saveThesauri, addValue, removeValue, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({saveThesauri, addValue, removeValue, resetForm: formActions.reset, validate: formActions.validate}, dispatch);
 }
 
 let form = connect(mapStateToProps, bindActions)(ThesauriForm);
