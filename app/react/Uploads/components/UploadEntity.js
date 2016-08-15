@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {editEntity, finishEditEntity, publishEntity} from 'app/Uploads/actions/uploadsActions';
+import {edit, finishEdit, publishEntity} from 'app/Uploads/actions/uploadsActions';
 import {Link} from 'react-router';
 import entities from 'app/Entities';
 
@@ -21,17 +21,18 @@ export class UploadEntity extends Component {
 
   edit(entity, active) {
     if (active) {
-      return this.props.finishEditEntity();
+      return this.props.finishEdit();
     }
 
-    this.props.editEntity(entity, this.props.templates.toJS());
+    this.props.loadEntity('uploads.metadata', entity, this.props.templates.toJS());
+    this.props.edit(entity);
   }
 
   render() {
     let entity = this.props.entity.toJS();
     let active;
-    if (this.props.entityBeingEdited) {
-      active = this.props.entityBeingEdited === entity._id;
+    if (this.props.metadataBeingEdited) {
+      active = this.props.metadataBeingEdited._id === entity._id;
     }
 
     return (
@@ -52,11 +53,11 @@ export class UploadEntity extends Component {
 
 UploadEntity.propTypes = {
   entity: PropTypes.object,
-  entityBeingEdited: PropTypes.string,
+  metadataBeingEdited: PropTypes.object,
   loadEntity: PropTypes.func,
-  finishEditEntity: PropTypes.func,
+  finishEdit: PropTypes.func,
   templates: PropTypes.object,
-  editEntity: PropTypes.func,
+  edit: PropTypes.func,
   publishEntity: PropTypes.func
 };
 
@@ -67,12 +68,12 @@ UploadEntity.contextTypes = {
 export function mapStateToProps(state) {
   return {
     templates: state.uploads.templates,
-    entityBeingEdited: state.uploads.uiState.get('entityBeingEdited')
+    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited')
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEditEntity, editEntity, loadEntity: entities.actions.loadEntity, publishEntity}, dispatch);
+  return bindActionCreators({finishEdit, edit, loadEntity: entities.actions.loadEntity, publishEntity}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadEntity);

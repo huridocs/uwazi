@@ -5,14 +5,22 @@ import validator from 'app/Documents/utils/documentValidator';
 
 import {FormGroup, FormField, Select, DatePicker} from 'app/Forms';
 
-export class EntityForm extends Component {
+export class MetadataForm extends Component {
   render() {
-    let {entity, state} = this.props;
-    let templates = this.props.templates.toJS().filter((template) => template.isEntity);
+    let {metadata, state} = this.props;
+    let templates = this.props.templates.toJS();
+
+    templates = templates.filter((template) => {
+      if (metadata.type === 'entity') {
+        return template.isEntity;
+      }
+      return !template.isEntity;
+    });
+
     let thesauris = this.props.thesauris.toJS();
-    let template = templates.find((t) => t._id === entity.template);
+    let template = templates.find((t) => t._id === metadata.template);
     const {model} = this.props;
-    
+
     if (!template) {
       return <div />;
     }
@@ -22,22 +30,22 @@ export class EntityForm extends Component {
     });
 
     return (
-      <Form id='entityForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
+      <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
         <FormGroup {...state.fields.title}>
-          <label>Entity title <span className="required">*</span></label>
+          <label>Title <span className="required">*</span></label>
           <FormField model={`${model}.title`}>
             <textarea className="form-control"/>
           </FormField>
         </FormGroup>
 
         <FormGroup>
-          <label>Entity Type <span className="required">*</span></label>
+          <label>Type <span className="required">*</span></label>
           <FormField>
             <Select options={templateOptions}
               value={template._id}
               onChange={(e) => {
-                this.props.changeTemplate(model, entity, templates.find((t) => t._id === e.target.value));
+                this.props.changeTemplate(model, metadata, templates.find((t) => t._id === e.target.value));
               }}
             />
           </FormField>
@@ -69,8 +77,8 @@ export class EntityForm extends Component {
   }
 }
 
-EntityForm.propTypes = {
-  entity: PropTypes.object,
+MetadataForm.propTypes = {
+  metadata: PropTypes.object,
   model: PropTypes.string.isRequired,
   state: PropTypes.object,
   templates: PropTypes.object,
@@ -79,4 +87,4 @@ EntityForm.propTypes = {
   onSubmit: PropTypes.func
 };
 
-export default EntityForm;
+export default MetadataForm;

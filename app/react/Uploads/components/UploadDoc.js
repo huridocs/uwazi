@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {editDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {edit, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {Link} from 'react-router';
 import documents from 'app/Documents';
@@ -15,12 +15,12 @@ export class UploadDoc extends Component {
     }
   }
 
-  editDocument(doc, active) {
+  edit(doc, active) {
     if (active) {
       return this.props.finishEdit();
     }
-    this.props.loadDocument('uploads.document', doc, this.props.templates.toJS());
-    this.props.editDocument(doc);
+    this.props.loadDocument('uploads.metadata', doc, this.props.templates.toJS());
+    this.props.edit(doc);
   }
 
   render() {
@@ -68,12 +68,12 @@ export class UploadDoc extends Component {
     }
 
     let active;
-    if (this.props.documentBeingEdited) {
-      active = this.props.documentBeingEdited === doc._id;
+    if (this.props.metadataBeingEdited) {
+      active = this.props.metadataBeingEdited._id === doc._id;
     }
 
     return (
-      <RowList.Item status={status} active={active} onClick={this.editDocument.bind(this, doc, active)}>
+      <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
       <div className="item-info">
         <ItemName>{doc.title}</ItemName>
       </div>
@@ -101,8 +101,8 @@ export class UploadDoc extends Component {
 UploadDoc.propTypes = {
   doc: PropTypes.object,
   progress: PropTypes.number,
-  editDocument: PropTypes.func,
-  documentBeingEdited: PropTypes.string,
+  edit: PropTypes.func,
+  metadataBeingEdited: PropTypes.object,
   loadDocument: PropTypes.func,
   finishEdit: PropTypes.func,
   showModal: PropTypes.func,
@@ -112,13 +112,13 @@ UploadDoc.propTypes = {
 export function mapStateToProps(state, props) {
   return {
     progress: state.uploads.progress.get(props.doc.get('_id')),
-    documentBeingEdited: state.uploads.uiState.get('documentBeingEdited'),
+    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited'),
     templates: state.uploads.templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, editDocument, loadDocument: documents.actions.loadDocument, showModal}, dispatch);
+  return bindActionCreators({finishEdit, edit, loadDocument: documents.actions.loadDocument, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

@@ -8,10 +8,7 @@ import {enterUploads} from '../actions/uploadsActions';
 import UploadBox from './UploadBox';
 import UploadsList from './UploadsList';
 import UploadsFormPanel from './UploadsFormPanel';
-import EntityFormPanel from './EntityFormPanel';
-import ReadyToPublishModal from './ReadyToPublishModal';
 import UploadFailedModal from './UploadFailedModal';
-import ConfirmDocumentDeleteModal from './ConfirmDocumentDeleteModal';
 import UploadsMenu from './UploadsMenu';
 
 import io from 'socket.io-client';
@@ -42,10 +39,7 @@ export class UploadsSection extends Component {
           <UploadsList socket={this.socket}/>
         </main>
         <UploadsFormPanel />
-        <EntityFormPanel />
-        <ReadyToPublishModal />
         <UploadFailedModal />
-        <ConfirmDocumentDeleteModal />
 
         <ContextMenu>
           <UploadsMenu />
@@ -67,7 +61,7 @@ UploadsSection.contextTypes = {
 const mapStateToProps = (state) => {
   let uiState = state.uploads.uiState.toJS();
   return {
-    panelIsOpen: !!uiState.documentBeingEdited || !!uiState.entityBeingEdited
+    panelIsOpen: !!uiState.metadataBeingEdited
   };
 };
 

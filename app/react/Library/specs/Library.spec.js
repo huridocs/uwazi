@@ -27,7 +27,7 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'documents/search?prop1=prop1&filters=%7B%7D&types=%5B%5D', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'search?prop1=prop1&filters=%7B%7D&types=%5B%5D', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
