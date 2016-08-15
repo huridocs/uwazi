@@ -7,7 +7,6 @@ import {loadDefaultViewerMenu} from '../actions/documentActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import CreateReferencePanel from './CreateReferencePanel';
-import ViewReferencesPanel from './ViewReferencesPanel';
 import ViewMetadataPanel from './ViewMetadataPanel';
 
 import ViewerDefaultMenu from './ViewerDefaultMenu';
@@ -53,7 +52,6 @@ export class Viewer extends Component {
         <ConfirmCloseForm />
         <ConfirmCloseReferenceForm />
         <CreateReferencePanel />
-        <ViewReferencesPanel />
         <ViewMetadataPanel />
 
         <ContextMenu>

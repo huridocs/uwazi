@@ -53,10 +53,10 @@ export function deactivateReference() {
 
 export function activateReference(reference) {
   scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer');
-  scroller.to(`.document-references .item[data-id="${reference}"]`, '.document-references .sidepanel-body');
+  scroller.to(`.document-metadata .item[data-id="${reference}"]`, '.document-metadata .sidepanel-body');
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});
-    dispatch({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+    dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
   };
 }
 
