@@ -32,6 +32,24 @@ export class ViewMetadataPanel extends Component {
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         </div>
+        <div className="sidepanel-footer">
+          <button className="edit-metadata btn btn-default">
+            <i className="fa fa-pencil"></i>
+            <span className="btn-label">Edit</span>
+          </button>
+          <button className="edit-metadata btn btn-default">
+            <i className="fa fa-cloud-download"></i>
+            <span className="btn-label">Download</span>
+          </button>
+          <button className="edit-metadata btn btn-default">
+            <i className="fa fa-trash"></i>
+            <span className="btn-label">Delete</span>
+          </button>
+          <button className="edit-metadata btn btn-success" disabled>
+            <i className="fa fa-save"></i>
+            <span className="btn-label">Save</span>
+          </button>
+        </div>
         <div className="sidepanel-body">
           {(() => {
             if (docBeingEdited) {
@@ -39,12 +57,6 @@ export class ViewMetadataPanel extends Component {
             }
             return <ShowDocument doc={doc}/>;
           })()}
-        </div>
-        <div className="sidepanel-footer">
-          <button className="edit-metadata btn btn-success">
-            <i className="fa fa-pencil"></i>
-            <span className="btn-label">Edit</span>
-          </button>
         </div>
       </SidePanel>
     );

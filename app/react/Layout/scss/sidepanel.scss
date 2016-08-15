@@ -110,14 +110,20 @@ $c-sidebar: darken($c-background, 0%);
   z-index: 1;
 }
 
+.sidepanel-footer + .sidepanel-body {
+  padding-bottom: 75px;
+}
+
 .sidepanel-header {
   top: 54px;
   border-bottom: 1px solid $c-grey;
 }
 .sidepanel-footer {
+  position: absolute;
   bottom: 0;
-  border-top: 1px solid $c-grey;
+  width: 100%;
   text-align: center;
+  background: linear-gradient(transparent, $c-grey-lighten);
 
   .btn {
     position: relative;
@@ -125,9 +131,10 @@ $c-sidebar: darken($c-background, 0%);
     width: 44px;
     height: 44px;
     top: -5px;
+    margin: 0 6px;
   }
   .btn-label {
-    color: $c-grey;
+    color: $c-grey-dark;
     position: absolute;
     top: 100%;
     font-size: 10px;
@@ -135,11 +142,23 @@ $c-sidebar: darken($c-background, 0%);
     transform: translateX(-50%) translateY(2px);
 
   }
+
   .btn:hover .btn-label {
     color: $c-black;
   }
 
   .btn-success {
     border: 0;
+  }
+
+  .btn:disabled {
+    cursor: normal;
+    background: $c-grey-light;
+    color: $c-grey;
+    border: 1px solid $c-grey;
+    opacity: 1;
+  }
+  .btn:disabled .btn-label {
+    color: $c-grey !important;
   }
 }
