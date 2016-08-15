@@ -13,6 +13,11 @@ export class SearchBar extends Component {
     this.props.getSuggestions(e.target.value);
   }
 
+  closeSuggestions() {
+    this.props.setOverSuggestions(false);
+    this.props.hideSuggestions();
+  }
+
   mouseEnter() {
     this.props.setOverSuggestions(true);
   }
@@ -69,7 +74,7 @@ export class SearchBar extends Component {
               </p>;
             })}
             <p className="search-suggestions-all">
-            <button type="submit">
+            <button type="submit" onClick={this.closeSuggestions.bind(this)}>
               <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
             </button>
             </p>
@@ -82,6 +87,7 @@ export class SearchBar extends Component {
 
 SearchBar.propTypes = {
   searchDocuments: PropTypes.func.isRequired,
+  open: PropTypes.bool,
   change: PropTypes.func.isRequired,
   getSuggestions: PropTypes.func.isRequired,
   hideSuggestions: PropTypes.func.isRequired,

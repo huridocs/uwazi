@@ -30,8 +30,10 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel open={this.props.open}>
-        <div className="search">
+        <div className="sidepanel-header">
           <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
+        </div>
+        <div className="sidepanel-body">
           <ul className="search__filter search__filter--type">
             <li>Document type</li>
             <li>
@@ -78,7 +80,7 @@ export function mapStateToProps(state) {
   let props = state.library.filters.toJS();
   props.form = state.form.filters;
   props.searchTerm = state.library.ui.toJS().searchTerm;
-  props.open = state.library.ui.get('filtersPanel');
+  props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
   return props;
 }
 

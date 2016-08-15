@@ -35,9 +35,9 @@ export class ThesaurisList extends Component {
       <ul className="list-group relation-types">
         {this.props.thesauris.toJS().map((thesauri, index) => {
           return <li key={index} className="list-group-item">
-              <Link to={'/thesauris/edit/' + thesauri._id}>{thesauri.name}</Link>
+              <Link to={'/settings/thesauris/edit/' + thesauri._id}>{thesauri.name}</Link>
               <div className="list-group-item-actions">
-                <Link to={'/thesauris/edit/' + thesauri._id} className="btn btn-default btn-xs">
+                <Link to={'/settings/thesauris/edit/' + thesauri._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
                   <span>Edit</span>
                 </Link>
@@ -50,7 +50,7 @@ export class ThesaurisList extends Component {
         })}
       </ul>
       <div className="panel-body">
-        <Link to="thesauris/new" className="btn btn-success">
+        <Link to="/settings/thesauris/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           <span>Add thesauri</span>
         </Link>

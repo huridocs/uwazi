@@ -30,49 +30,54 @@ export class ThesauriForm extends Component {
   render() {
     return (
       <div className="row thesauri">
-        <main className="col-sm-12">
-          <div className="well thesauri">
-            <Form
-              model="thesauri.data"
-              onSubmit={this.props.saveThesauri}
-              validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
-            >
-              <div className="thesauri-buttons">
-                <Link to="/settings" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
+          <Form
+            model="thesauri.data"
+            onSubmit={this.props.saveThesauri}
+            validators={this.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
+          >
+            <div className="panel panel-default thesauri">
+              <div className="panel-heading">
+                <Link to="/settings/thesauris" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                &nbsp;
+                <Field model="thesauri.data.name">
+                  <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
+                </Field>
+                &nbsp;
                 <button className="btn btn-success save-template">
-                  <i className="fa fa-save"/> Save Thesauri
+                  <i className="fa fa-save"/> Save
                 </button>
+                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+                {(() => {
+                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                    return <div className="validation-error">
+                              <i className="fa fa-exclamation-triangle"></i>
+                              &nbsp;
+                              Duplicated name
+                          </div>;
+                  }
+                })()}
+                </FormGroup>
               </div>
-              <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-              <Field model="thesauri.data.name">
-                <label htmlFor="thesauriName" className="control-label">Thesauri name</label>
-                <input id="thesauriName" className="form-control" type="text" />
-              </Field>
-              {(() => {
-                if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                  return <div className="validation-error">
-                            <i className="fa fa-exclamation-triangle"></i>
-                            &nbsp;
-                            Duplicated name
-                        </div>;
-                }
-              })()}
-              </FormGroup>
-              <div>Values</div>
-              <div className="thesauri-values">
-              {this.props.thesauri.values.map((value, index) => {
-                return <FormGroup key={index}>
-                        <Field model={`thesauri.data.values[${index}].label`}>
-                          <input className="form-control" type="text"/>
-                          <a className="btn btn-danger" onClick={this.props.removeValue.bind(null, index)}>Delete</a>
-                        </Field>
-                      </FormGroup>;
-              })}
+              <ul className="thesauri-values list-group">
+                <li className="list-group-item"><b>Items:</b></li>
+                {this.props.thesauri.values.map((value, index) => {
+                  return <li key={index} className="list-group-item">
+                          <FormGroup key={index}>
+                            <Field model={`thesauri.data.values[${index}].label`}>
+                              <input className="form-control" type="text" placeholder="Item name" />
+                              <a className="btn btn-xs btn-danger" onClick={this.props.removeValue.bind(null, index)}>
+                                <i className="fa fa-trash"></i> Delete
+                              </a>
+                            </Field>
+                          </FormGroup>
+                        </li>;
+                })}
+              </ul>
+              <div className="panel-body">
+                <a className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</a>
               </div>
-            </Form>
-            <button className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add value</button>
-          </div>
-        </main>
+            </div>
+          </Form>
       </div>
     );
   }

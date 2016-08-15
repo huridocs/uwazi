@@ -15,9 +15,13 @@ export class UploadsFormPanel extends Component {
     let sidePanelprops = {open: this.props.open};
     return (
       <SidePanel {...sidePanelprops}>
-        <h1>Metadata</h1>
-        <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
-        <DocumentForm onSubmit={this.submit.bind(this)}/>
+        <div className="sidepanel-header">
+          <h1>Metadata</h1>
+          <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
+        </div>
+        <div className="sidepanel-body">
+          <DocumentForm onSubmit={this.submit.bind(this)}/>
+        </div>
       </SidePanel>
     );
   }

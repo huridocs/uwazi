@@ -35,7 +35,11 @@
 	display: table;
 	width: 100%;
 	color: $c-grey-dark;
-  border-top: 1px solid $c-grey;
+
+  &:not(:last-child),
+  .form-group & {
+    border-bottom: 1px solid $c-grey;
+  }
 
 	&.is-active {
 		color: $c-black;

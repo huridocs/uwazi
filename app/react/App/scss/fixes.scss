@@ -37,6 +37,7 @@ header {
 
 .app-content > div {
   height: 100%;
+  overflow-y: scroll;
 }
 
 .panel-footer {
@@ -100,11 +101,6 @@ header ul .btn .fa {
   }
 }
 
-.side-panel {
-  .form-group {
-    margin: 0 -15px;
-  }
-}
 .search__filter > li label {
   font-size: $f-size-lg;
   font-style: normal;
@@ -116,11 +112,11 @@ header ul .btn .fa {
 }
 
 .relationship-steps {
-	h2 {
-		small {
+  h2 {
+    small {
       padding-left: 2px;
-		}
-	}
+    }
+  }
 
   button i {
     padding-right: 4px;
@@ -130,34 +126,35 @@ header ul .btn .fa {
   margin: 0 0 0 30px;
 }
 
-  .DatePicker__From,
-  .DatePicker__To {
-    float: left;
-    width: 100%;
-    margin-bottom: 5px;
+.DatePicker__From,
+.DatePicker__To {
+  position: relative;
+  float: left;
+  width: 100%;
+  margin-bottom: 5px;
 
-    span {
-      display: inline-block;
-      line-height: 34px;
-      width: 45px;
-      position: absolute;
-      color: #cccccc;
-      z-index: 2;
-      padding-left: 5px;
+  span {
+    display: inline-block;
+    line-height: 34px;
+    width: 45px;
+    position: absolute;
+    color: #cccccc;
+    z-index: 2;
+    padding-left: 5px;
+  }
+  .react-datepicker__input-container {
+    width: 100%;
+    input {
+      padding-left: 50px;
     }
-    .react-datepicker__input-container {
-      width: 100%;
-      input {
-        padding-left: 50px;
-      }
+  }
+  @media(min-width: 1300px) {
+    width: 49%;
+    margin-right: 2%;
+    &:last-child {
+      margin-right: 0;
     }
-    @media(min-width: 1300px) {
-      width: 49%;
-      margin-right: 2%;
-      &:last-child {
-        margin-right: 0;
-      }
-    }
+  }
 }
 
 @media(max-width: 768px) {
@@ -268,4 +265,26 @@ header ul .btn .fa {
 .react-datepicker__close-icon::after {
   top: 8px !important;
   margin: 0 !important;
+}
+
+.relationType .panel-heading {
+  display: flex;
+
+  .form-group, input {
+    margin: 0;
+  }
+  .form-group {
+    width: 100%;
+  }
+}
+
+.thesauri .panel-heading {
+  display: flex;
+
+  .form-group, input {
+    margin: 0;
+  }
+  input {
+    width: 100%;
+  }
 }

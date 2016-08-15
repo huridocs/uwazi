@@ -29,14 +29,18 @@ export class ViewMetadataPanel extends Component {
 
     return (
       <SidePanel open={this.props.open}>
-        <h1>Metadata</h1>
-        <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
-        {(() => {
-          if (docBeingEdited) {
-            return <DocumentForm onSubmit={this.submit.bind(this)} />;
-          }
-          return <ShowDocument doc={doc}/>;
-        })()}
+        <div className="sidepanel-header">
+          <h1>Metadata</h1>
+          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
+        </div>
+        <div className="sidepanel-body">
+          {(() => {
+            if (docBeingEdited) {
+              return <DocumentForm onSubmit={this.submit.bind(this)} />;
+            }
+            return <ShowDocument doc={doc}/>;
+          })()}
+        </div>
       </SidePanel>
     );
   }
@@ -59,7 +63,7 @@ const mapStateToProps = ({documentViewer}) => {
   if (documentViewer.targetDoc.get('_id')) {
     doc = documents.helpers.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
   }
-  
+
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
     doc,
