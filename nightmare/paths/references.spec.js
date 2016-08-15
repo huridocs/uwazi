@@ -108,7 +108,7 @@ describe('references path', () => {
 
     it('select the word when the relation was created from the document then delete it', (done) => {
       let textToSelect = '.t:nth-child(4)';
-      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-references.is-active > div > div.item.relationship-active > div.item-actions > a:nth-child(1)';
+      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-references.is-active > div.sidepanel-body > div > div:nth-child(1) > div.item-actions > a:nth-child(1)';
       nightmare
       .realClick(textToSelect)
       .realClick(textToSelect)
