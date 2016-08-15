@@ -69,7 +69,6 @@ export class LibraryMenu extends Component {
           >
             <i className="fa fa-pencil"></i>
           </MenuButtons.Main>
-          <div className="float-btn__main"><i className="fa fa-ellipsis-v"></i></div>
         </div>
       </NeedAuthorization>
     );
