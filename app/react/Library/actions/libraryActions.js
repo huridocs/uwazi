@@ -1,5 +1,5 @@
 import * as types from 'app/Library/actions/actionTypes';
-import api from 'app/Library/DocumentsAPI';
+import api from 'app/Search/SearchAPI';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
