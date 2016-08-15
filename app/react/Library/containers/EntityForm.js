@@ -2,16 +2,16 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import entities from 'app/Entities';
-import {saveEntity} from 'app/Uploads/actions/uploadsActions';
+import {saveEntity} from 'app/Library/actions/libraryActions';
 import MetadataForm from 'app/Templates/components/MetadataForm';
 
-function mapStateToProps({uploads}) {
+function mapStateToProps({library}) {
   return {
-    model: 'uploads.metadata',
-    metadata: uploads.metadata,
-    state: uploads.metadataForm,
-    templates: uploads.templates,
-    thesauris: uploads.thesauris
+    model: 'library.metadata',
+    metadata: library.metadata,
+    state: library.metadataForm,
+    templates: library.filters.get('templates'),
+    thesauris: library.filters.get('thesauris')
   };
 }
 

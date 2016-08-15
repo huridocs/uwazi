@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux';
 import {unselectDocument, saveDocument} from '../actions/libraryActions';
 
 import DocumentForm from '../containers/DocumentForm';
+import EntityForm from '../containers/EntityForm';
 import {ShowDocument} from 'app/Documents';
 import {actions as formActions} from 'react-redux-form';
 import modals from 'app/Modals';
@@ -17,14 +18,14 @@ export class ViewMetadataPanel extends Component {
 
   close() {
     if (this.props.formState.dirty) {
-      return this.props.showModal('ConfirmCloseForm', this.props.doc);
+      return this.props.showModal('ConfirmCloseForm', this.props.metadata);
     }
     this.props.unselectDocument();
-    this.props.resetForm('library.docForm');
+    this.props.resetForm('library.metadata');
   }
 
   render() {
-    const {doc, docBeingEdited} = this.props;
+    const {metadata, docBeingEdited} = this.props;
 
     return (
       <SidePanel open={this.props.open}>
@@ -34,10 +35,13 @@ export class ViewMetadataPanel extends Component {
         </div>
         <div className="sidepanel-body">
           {(() => {
-            if (docBeingEdited) {
+            if (docBeingEdited && this.props.metadata.type === 'document') {
               return <DocumentForm onSubmit={this.submit.bind(this)} />;
             }
-            return <ShowDocument doc={doc}/>;
+            if (docBeingEdited && this.props.metadata.type === 'entity') {
+              return <EntityForm/>;
+            }
+            return <ShowDocument doc={metadata}/>;
           })()}
         </div>
       </SidePanel>
@@ -46,7 +50,7 @@ export class ViewMetadataPanel extends Component {
 }
 
 ViewMetadataPanel.propTypes = {
-  doc: PropTypes.object,
+  metadata: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
@@ -59,9 +63,9 @@ ViewMetadataPanel.propTypes = {
 const mapStateToProps = ({library}) => {
   return {
     open: library.ui.get('selectedDocument') ? true : false,
-    docBeingEdited: !!library.docForm._id,
-    formState: library.docFormState,
-    doc: documents.helpers.prepareMetadata(library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').toJS() : {},
+    docBeingEdited: !!library.metadata._id,
+    formState: library.metadataForm,
+    metadata: documents.helpers.prepareMetadata(library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').toJS() : {},
                                            library.filters.get('templates').toJS(),
                                            library.filters.get('thesauris').toJS())
   };

@@ -20,7 +20,6 @@ export class MetadataForm extends Component {
     let thesauris = this.props.thesauris.toJS();
     let template = templates.find((t) => t._id === metadata.template);
     const {model} = this.props;
-
     if (!template) {
       return <div />;
     }

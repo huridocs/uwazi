@@ -181,7 +181,7 @@ describe('libraryActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: 'rrf/reset', model: 'library.docForm'},
+          {type: 'rrf/reset', model: 'library.metadata'},
           {type: types.UPDATE_DOCUMENT, doc: 'response'},
           {type: types.SELECT_DOCUMENT, doc: 'response'}
         ];
