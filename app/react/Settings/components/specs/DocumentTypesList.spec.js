@@ -11,7 +11,11 @@ describe('DocumentTypesList', () => {
 
   beforeEach(() => {
     props = {
-      templates: Immutable.fromJS([{_id: 1, name: 'Decision'}, {_id: 2, name: 'Ruling'}]),
+      templates: Immutable.fromJS([
+        {_id: 1, name: 'Decision'},
+        {_id: 2, name: 'Ruling'},
+        {_id: 3, name: 'Judge', isEntity: true}
+      ]),
       notify: jasmine.createSpy('notify'),
       deleteTemplate: jasmine.createSpy('deleteTemplate').and.returnValue(Promise.resolve()),
       checkTemplateCanBeDeleted: jasmine.createSpy('checkTemplateCanBeDeleted').and.returnValue(Promise.resolve())
@@ -27,7 +31,7 @@ describe('DocumentTypesList', () => {
   };
 
   describe('render', () => {
-    it('should a list with the document types', () => {
+    it('should render a list with only the document templates, and exclude entities', () => {
       render();
       expect(component.find('ul.document-types').find('li').length).toBe(2);
     });

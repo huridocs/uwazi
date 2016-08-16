@@ -28,7 +28,7 @@ export default {
   },
 
   getByTarget(docId) {
-    return request.get(`${dbURL}/_design/references/_view/by_target_document?key="${docId}"`)
+    return request.get(`${dbURL}/_design/references/_view/by_target?key="${docId}"`)
     .then((response) => {
       return sanitizeResponse(response.json);
     });

@@ -4,8 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-
-import {resetTemplate} from 'app/Templates/actions/templateActions';
+import {resetTemplate, saveTemplate, saveEntity} from 'app/Templates/actions/templateActions';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
@@ -17,10 +16,15 @@ export class TemplateCreator extends Component {
   }
 
   render() {
+    let save = this.props.saveTemplate;
+    if (this.context.router.isActive('settings/entities/new')) {
+      save = this.props.saveEntity;
+    }
+
     return (
       <div className="row metadata">
         <main className="col-xs-12 col-sm-9">
-            <MetadataTemplate />
+            <MetadataTemplate saveTemplate={save} />
         </main>
         <aside className="col-xs-12 col-sm-3">
           <div className="metadataTemplate-constructor panel panel-default">
@@ -38,11 +42,17 @@ export class TemplateCreator extends Component {
 }
 
 TemplateCreator.propTypes = {
-  resetTemplate: PropTypes.func
+  resetTemplate: PropTypes.func,
+  saveTemplate: PropTypes.func,
+  saveEntity: PropTypes.func
+};
+
+TemplateCreator.contextTypes = {
+  router: PropTypes.object
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({resetTemplate}, dispatch);
+  return bindActionCreators({resetTemplate, saveTemplate, saveEntity}, dispatch);
 }
 
 export default DragDropContext(HTML5Backend)(

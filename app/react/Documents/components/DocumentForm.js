@@ -8,7 +8,7 @@ import {FormGroup, FormField, Select, DatePicker} from 'app/Forms';
 export class DocumentForm extends Component {
   render() {
     let {document, state} = this.props;
-    let templates = this.props.templates.toJS();
+    let templates = this.props.templates.toJS().filter((template) => !template.isEntity);
     let thesauris = this.props.thesauris.toJS();
     let template = templates.find((t) => t._id === document.template);
     const {model} = this.props;

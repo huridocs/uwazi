@@ -29,9 +29,9 @@ describe('uploadsActions', () => {
   });
 
   describe('finishEdit()', () => {
-    it('should return a FINISH_UPLOADED_DOCUMENT_EDIT', () => {
+    it('should return a FINISH_EDIT_METADATA', () => {
       let action = actions.finishEdit();
-      expect(action).toEqual({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
+      expect(action).toEqual({type: types.FINISH_EDIT_METADATA});
     });
   });
 
@@ -42,10 +42,11 @@ describe('uploadsActions', () => {
     });
   });
 
-  describe('editDocument()', () => {
+  describe('edit()', () => {
     it('should return a EDIT_UPLOADED_DOCUMENT with the document', () => {
-      let action = actions.editDocument('document');
-      expect(action).toEqual({type: types.EDIT_UPLOADED_DOCUMENT, doc: 'document'});
+      let dispatch = jasmine.createSpy('dispatch');
+      actions.edit('document')(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.EDIT_METADATA, doc: 'document'});
     });
   });
 
@@ -88,7 +89,7 @@ describe('uploadsActions', () => {
         const store = mockStore({});
 
         const expectedActions = [
-          {type: types.DOCUMENT_CREATED, doc: {_id: 'test'}}
+          {type: types.ELEMENT_CREATED, doc: {_id: 'test'}}
         ];
 
         store.dispatch(actions.createDocument(newDoc))
@@ -163,7 +164,7 @@ describe('uploadsActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document published', type: 'success', id: 'unique_id'}},
-          {type: types.MOVED_TO_LIBRARY, doc: 'abc1'}
+          {type: types.MOVED_TO_LIBRARY, id: 'abc1'}
         ];
         const store = mockStore({});
 
@@ -183,7 +184,7 @@ describe('uploadsActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'success', id: 'unique_id'}},
-          {type: types.DOCUMENT_DELETED, doc: 'abc1'}
+          {type: types.ELEMENT_DELETED, id: 'abc1'}
         ];
         const store = mockStore({});
 

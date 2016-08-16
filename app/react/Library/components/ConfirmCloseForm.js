@@ -11,7 +11,7 @@ export class ConfirmCloseForm extends Component {
 
   confirm() {
     this.props.hideModal('ConfirmCloseForm');
-    this.props.resetForm('library.docForm');
+    this.props.resetForm('library.metadata');
     this.props.unselectDocument();
   }
 

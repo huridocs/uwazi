@@ -2,13 +2,28 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {saveDocument, finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {finishEdit} from 'app/Uploads/actions/uploadsActions';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentForm from '../containers/DocumentForm';
+import EntityForm from '../containers/EntityForm';
+import ShowIf from 'app/App/ShowIf';
 
 export class UploadsFormPanel extends Component {
   submit(doc) {
     this.props.saveDocument(doc);
+  }
+
+  close() {
+    if (this.props.formState.dirty) {
+      return this.context.confirm({
+        accept: () => {
+          this.props.finishEdit();
+        },
+        message: 'Are you sure you want to close the form? All the progress will be lost.'
+      });
+    }
+
+    this.props.finishEdit();
   }
 
   render() {
@@ -17,10 +32,15 @@ export class UploadsFormPanel extends Component {
       <SidePanel {...sidePanelprops}>
         <div className="sidepanel-header">
           <h1>Metadata</h1>
-          <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
+          <i className='fa fa-close close-modal' onClick={this.close.bind(this)}></i>
         </div>
         <div className="sidepanel-body">
-          <DocumentForm onSubmit={this.submit.bind(this)}/>
+          <ShowIf if={this.props.metadataType === 'document'}>
+            <DocumentForm/>
+          </ShowIf>
+          <ShowIf if={this.props.metadataType === 'entity'}>
+            <EntityForm/>
+          </ShowIf>
         </div>
       </SidePanel>
     );
@@ -31,18 +51,31 @@ UploadsFormPanel.propTypes = {
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
   finishEdit: PropTypes.func,
-  title: PropTypes.string
+  title: PropTypes.string,
+  metadataType: PropTypes.string,
+  formState: PropTypes.object
+};
+
+UploadsFormPanel.contextTypes = {
+  confirm: PropTypes.func
 };
 
 const mapStateToProps = ({uploads}) => {
   let uiState = uploads.uiState;
+  let metadataType = '';
+  if (uiState.get('metadataBeingEdited')) {
+    metadataType = uiState.get('metadataBeingEdited').type;
+  }
+
   return {
-    open: typeof uiState.get('documentBeingEdited') === 'string',
-    title: uploads.document.title
+    open: typeof uiState.get('metadataBeingEdited') === 'object',
+    metadataType,
+    title: uploads.metadata.title,
+    formState: uploads.metadataForm
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveDocument, finishEdit}, dispatch);
+  return bindActionCreators({finishEdit}, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsFormPanel);

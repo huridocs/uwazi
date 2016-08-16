@@ -12,6 +12,7 @@ import {
   AccountSettings,
   CollectionSettings,
   DocumentTypesList,
+  EntityTypesList,
   RelationTypesList,
   ThesaurisList
 } from 'app/Settings';
@@ -37,14 +38,17 @@ export default (
       <Route path='account' component={AccountSettings} />
       <Route path='collection' component={CollectionSettings} />
       <Route path='documents' component={DocumentTypesList} />
-      <Route path='connections' component={RelationTypesList} />
-      <Route path='thesauris' component={ThesaurisList} />
       <Route path='documents/new' component={NewTemplate} />
       <Route path='documents/edit/:templateId' component={EditTemplate} />
-      <Route path='thesauris/new' component={NewThesauri} />
-      <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
+      <Route path='entities' component={EntityTypesList} />
+      <Route path='entities/new' component={NewTemplate} />
+      <Route path='entities/edit/:templateId' component={EditTemplate} />
+      <Route path='connections' component={RelationTypesList} />
       <Route path='connections/new' component={NewRelationType} />
       <Route path='connections/edit/:relationTypeId' component={EditRelationType} />
+      <Route path='thesauris' component={ThesaurisList} />
+      <Route path='thesauris/new' component={NewThesauri} />
+      <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
     </Route>
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />

@@ -18,7 +18,8 @@ describe('DocumentForm', () => {
       document: {_id: 'docId', template: 'templateId', title: 'testTitle', metadata: {field1: 'field1value', field2: 'field2value'}},
       templates: Immutable.fromJS([
         {name: 'template1', _id: 'templateId', properties: fieldsTemplate},
-        {name: 'template2', _id: '2', properties: [{name: 'field3'}]}
+        {name: 'template2', _id: '2', properties: [{name: 'field3'}]},
+        {name: 'template3', _id: '3', properties: [{name: 'field4'}], isEntity: true}
       ]),
       thesauris: Immutable.fromJS([{_id: 2, name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
       onSubmit: jasmine.createSpy('onSubmit'),
@@ -44,7 +45,7 @@ describe('DocumentForm', () => {
     expect(title.props().model).toEqual('document.title');
   });
 
-  it('should render template as a select', () => {
+  it('should render template as a select, only with document templates', () => {
     render();
     let template = component.find(Select).first();
     expect(template.props().options).toEqual([{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}]);
