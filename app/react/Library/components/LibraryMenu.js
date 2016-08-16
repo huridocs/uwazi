@@ -21,12 +21,6 @@ export class LibraryMenu extends Component {
         </MenuButtons.Main>
         );
     }
-
-    return (
-      <MenuButtons.Main onClick={this.props.showFilters}>
-        <i className="fa fa-filter"></i>
-      </MenuButtons.Main>
-      );
   }
 
   deleteDocument() {

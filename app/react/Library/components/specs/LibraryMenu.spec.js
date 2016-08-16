@@ -25,14 +25,6 @@ describe('LibraryMenu', () => {
     };
   });
 
-  describe('when filtersPanel is hidden', () => {
-    it('should showFilters on click', () => {
-      render();
-      component.find(MenuButtons.Main).simulate('click');
-      expect(props.showFilters).toHaveBeenCalled();
-    });
-  });
-
   describe('when there is a document selected', () => {
     it('should start editing it', () => {
       props.selectedDocument = Immutable.fromJS({_id: '123'});
