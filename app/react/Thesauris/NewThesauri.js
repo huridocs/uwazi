@@ -19,6 +19,6 @@ export default class NewThesauri extends RouteHandler {
   }
 
   render() {
-    return <ThesauriForm />;
+    return <ThesauriForm new={true} />;
   }
 }

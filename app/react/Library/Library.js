@@ -8,6 +8,7 @@ import {libraryFilters, generateDocumentTypes} from './helpers/libraryFilters';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
+import SearchButton from './components/SearchButton';
 import ContextMenu from 'app/ContextMenu';
 import LibraryMenu from './components/LibraryMenu';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
@@ -17,7 +18,10 @@ import {store} from 'app/store';
 export default class Library extends RouteHandler {
 
   static renderTools() {
-    return <SearchBar/>;
+    return <div>
+        <SearchBar/>
+        <SearchButton/>
+      </div>;
   }
 
   static requestState() {

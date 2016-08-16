@@ -67,9 +67,10 @@ header ul .btn .fa {
   color: black;
 }
 
-.float-btn__sec button, .float-btn__main button, .search-suggestions-all button {
+.float-btn__sec button, .float-btn__main button {
   background: transparent;
   border: none;
+  outline: none;
   padding: 0;
 }
 
@@ -127,6 +128,7 @@ header ul .btn .fa {
 
 .DatePicker__From,
 .DatePicker__To {
+  position: relative;
   float: left;
   width: 100%;
   margin-bottom: 5px;

@@ -21,11 +21,9 @@ export default function (container) {
 
     searchRenderedReference(referenceId) {
       let reference = null;
-      Object.keys(this.renderedReferences).forEach((referencesKey) => {
-        if (this.renderedReferences[referencesKey][referenceId]) {
-          reference = this.renderedReferences[referencesKey][referenceId];
-        }
-      });
+      if (this.renderedReferences[referenceId]) {
+        reference = this.renderedReferences[referenceId];
+      }
       return reference;
     },
 
@@ -109,30 +107,28 @@ export default function (container) {
       }
     },
 
-    renderReferences(references, rangeProperty = 'sourceRange') {
+    renderReferences(references) {
       let ids = [];
-      if (!this.renderedReferences[rangeProperty]) {
-        this.renderedReferences[rangeProperty] = {};
-      }
+
       references.forEach((reference) => {
         if (!container.innerHTML) {
           throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
         }
         ids.push(reference._id);
-        if (this.renderedReferences[rangeProperty][reference._id] || !reference[rangeProperty]) {
+        if (this.renderedReferences[reference._id] || typeof reference.range.start === 'undefined') {
           return;
         }
-        let restoredRange = TextRange.restore(reference[rangeProperty], container);
+        let restoredRange = TextRange.restore(reference.range, container);
         let elementWrapper = document.createElement('a');
         elementWrapper.classList.add('reference');
         elementWrapper.setAttribute('data-id', reference._id);
-        this.renderedReferences[rangeProperty][reference._id] = wrapper.wrap(elementWrapper, restoredRange);
+        this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 
-      Object.keys(this.renderedReferences[rangeProperty]).forEach((id) => {
+      Object.keys(this.renderedReferences).forEach((id) => {
         if (ids.indexOf(id) === -1) {
-          this.renderedReferences[rangeProperty][id].unwrap();
-          delete this.renderedReferences[rangeProperty][id];
+          this.renderedReferences[id].unwrap();
+          delete this.renderedReferences[id];
         }
       });
     }

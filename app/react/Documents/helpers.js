@@ -11,9 +11,14 @@ export default {
     let metadata = template.properties.map((property) => {
       let value = doc.metadata[property.name];
       if (property.type === 'select' && value) {
-        value = thesauris.find(t => t._id === property.content).values.find(v => {
+        let thesauri = thesauris.find(t => t._id === property.content).values.find(v => {
           return v.id.toString() === value.toString();
-        }).label;
+        });
+
+        value = '';
+        if (thesauri) {
+          value = thesauri.label;
+        }
       }
 
       if (property.type === 'date' && value) {

@@ -7,6 +7,8 @@ header {
 	top: 0;
 
 	h1 {
+    float: left;
+    padding-left: 15px;
 		font-size: $f-size-lg;
 		font-family: $f-special;
 		font-style: italic;
@@ -23,18 +25,16 @@ header {
     }
 	}
 
-	.input-group {
-		line-height: 54px;
-		@include desktop {
-      margin: 0 -30px;
-		}
+	.form-group {
+    position: relative;
+    margin: 0;
+
+		/*line-height: 54px;
 
 		.btn {
-			height: 32px;
-			line-height: 32px;
+			height: 54px;
+			line-height: 54px;
 			border: 0;
-			border: 1px solid $c-grey-light;
-			border-right: 0;
 			background: $c-white;
 			border-radius: 0;
 			box-shadow: none;
@@ -55,13 +55,12 @@ header {
 		}
 		.form-control {
 			padding: 0;
-			line-height: 32px;
+      height: 54px;
+			line-height: 54px;
 			float: none;
 			background: none;
 		  border: 0;
-			border: 1px solid $c-grey-light;
 			border-left: 0;
-			background: $c-white;
 			border-radius: 0;
 		  box-shadow: none;
 			color: $c-black;
@@ -71,6 +70,7 @@ header {
 							 &::-moz-placeholder { color: $c-grey; }
 							  &:-moz-placeholder { color: $c-grey; }
 		}
+    */
 
 		.btn {
 			.fa-search { display: inline-block; }
@@ -102,6 +102,7 @@ header {
       position: relative;
       top: 0;
 			display: block;
+      float: right;
       text-align: right;
       box-shadow: none;
 		}
@@ -123,6 +124,13 @@ header {
 		a {
 			color: $c-black;
       border-radius: 0;
+      border: 0;
+      transition: all 0ms;
+
+      &:hover {
+        color: $c-white;
+        background-color: $c-primary;
+      }
 		}
 	}
 
@@ -134,38 +142,130 @@ header {
     height: 54px;
     line-height: 54px;
     padding: 0 15px;
-    margin-left: -15px;
     text-align: center;
     font-size: $f-size-lg;
     cursor: pointer;
+    position: absolute;
 		@include desktop {
 			display: none;
 		}
 	}
 }
 
+.search-button {
+  position: relative;
+  display: block;
+  color: $c-black;
+  border-radius: 0;
+  border: 0;
+  border-left: 1px solid $c-grey;
+  transition: all 0ms;
+  float: right;
+  width: 54px;
+  line-height: 54px;
+  padding: 0;
+  background: $c-white;
+  z-index: 3;
+
+  &:hover {
+    color: $c-white;
+    background-color: $c-success;
+  }
+
+  &:active {
+    box-shadow: none;
+  }
+
+  &.is-active {
+    border-color: $c-white;
+    margin-left: 0;
+
+    &:hover {
+      color: $c-black;
+      background-color: $c-white;
+    }
+  }
+
+  .fa-search { display: inline-block; }
+  .fa-chevron-right { display: none; }
+
+  &.is-active {
+    .fa-search { display: none; }
+    .fa-chevron-right { display: inline-block; }
+  }
+}
+
+.search-box {
+  position: relative;
+  display: block;
+  float: right;
+  width: 0;
+  max-width: 320px - 54px;
+  transition: all 500ms;
+
+  &.is-active {
+    width: 90%;
+  }
+
+  @include desktop {
+    max-width: 9999px;
+    &.is-active {
+      width: 33.333%;
+    }
+  }
+
+  .form-control {
+    height: 54px;
+    padding-left: 30px;
+    border-radius: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom-color: transparent;
+    border-left: 1px solid $c-grey;
+
+    &:focus {
+      border-color: #66afe9;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    }
+  }
+}
 
 .search-suggestions {
 	display: none;
 	position: absolute;
-  top: 61px;
-	left: 0;
-	width: 100%;
+  top: 54px - 1px;
+  left: 0;
+  width: 100%;
   background: $c-white;
   z-index: 40;
 	color: $c-black;
-  border: 1px solid $c-grey;
+  border: 1px solid #66afe9;
 	border-top: 0;
-  padding: 15px 15px 0;
-	box-shadow: $shadow;
-	line-height: 2em;
-	&.active {
+	line-height: 1em;
+	&.is-active {
 		display: block;
 	}
 
 	p {
 		position: relative;
+    margin: 0;
 	}
+
+  a, button {
+    color: $c-black;
+    display: block;
+    padding: 10px 30px;
+    line-height: 1.2em;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    &:hover {
+      background: $c-grey-lighten;
+      text-decoration: none;
+    }
+  }
+
 	.fa-arrow-left {
 		position: absolute;
 		top: 8px;
@@ -187,10 +287,10 @@ header {
 .search-suggestions-all {
 	font-style: italic;
 	border-top: 1px solid $c-grey;
-	cursor: pointer;
-  margin: 15px -15px 0;
-  padding: 15px;
-  display: block;
+
+  button {
+    padding: 15px 30px;
+  }
 
 	.fa {
 		margin-right: 5px;

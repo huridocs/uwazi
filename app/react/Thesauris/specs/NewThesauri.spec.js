@@ -22,8 +22,9 @@ describe('NewThesauri', () => {
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})});
   });
 
-  it('should render a ThesauriForm', () => {
+  it('should render a ThesauriForm with new=true', () => {
     expect(component.find(ThesauriForm).length).toBe(1);
+    expect(component.find(ThesauriForm).props().new).toBe(true);
   });
 
   describe('static requestState()', () => {

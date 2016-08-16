@@ -49,13 +49,13 @@ class App extends Component {
   }
 
   render() {
-    let menuClass = 'col-md-5 col-sm-6';
+    let searchBoxClass = 'search-box';
     let menuToggleClass = 'navbar-toggle ';
     let MenuButtonClass = 'menu-button fa fa-bars';
-    let navClass = 'nav nav-pills col-sm-6 col-md-5';
+    let navClass = 'nav nav-pills';
 
     if (this.state.showmenu) {
-      menuClass += ' in';
+      searchBoxClass += ' in';
       menuToggleClass += 'active';
       MenuButtonClass = 'menu-button fa fa-close';
       navClass += ' is-active';
@@ -78,11 +78,9 @@ class App extends Component {
           <header>
             <div className="container-fluid">
               <div className="row">
-                <h1 className="col-sm-2"><SiteName/></h1>
-                <div className="col-sm-4 col-md-5">
-                  <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
-                  {this.renderTools()}
-                </div>
+                <h1 className="logotype"><SiteName/></h1>
+                <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
+                {this.renderTools()}
                 <Menu onClick={this.toggleMenu.bind(this)} className={navClass} />
               </div>
             </div>

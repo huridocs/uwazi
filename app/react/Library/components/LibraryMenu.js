@@ -21,12 +21,6 @@ export class LibraryMenu extends Component {
         </MenuButtons.Main>
         );
     }
-
-    return (
-      <MenuButtons.Main onClick={this.props.showFilters}>
-        <i className="fa fa-filter"></i>
-      </MenuButtons.Main>
-      );
   }
 
   deleteDocument() {
@@ -91,7 +85,6 @@ export class LibraryMenu extends Component {
 LibraryMenu.propTypes = {
   filtersPanel: PropTypes.bool,
   showFilters: PropTypes.func,
-  filtersForm: PropTypes.object,
   search: PropTypes.object,
   templates: PropTypes.object,
   searchDocuments: PropTypes.func,
@@ -113,7 +106,6 @@ function mapStateToProps(state) {
     filtersPanel: state.library.ui.get('filtersPanel'),
     searchTerm: state.library.ui.get('searchTerm'),
     templates: state.library.filters.get('templates'),
-    filtersForm: state.form.filters,
     docForm: state.library.docForm,
     docFormState: state.library.docFormState,
     search: state.search
