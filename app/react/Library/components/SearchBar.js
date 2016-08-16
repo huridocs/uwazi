@@ -104,7 +104,7 @@ export function mapStateToProps(state) {
     suggestions: state.library.ui.get('suggestions'),
     showSuggestions: state.library.ui.get('showSuggestions'),
     overSuggestions: state.library.ui.get('overSuggestions'),
-    open: state.library.ui.get('filtersPanel')
+    open: state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument')
   };
 }
 
