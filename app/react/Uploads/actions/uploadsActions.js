@@ -53,8 +53,9 @@ export function setThesauris(thesauris) {
 
 export function newEntity(templates) {
   return function (dispatch) {
-    dispatch(entitties.actions.loadEntity('uploads.metadata', {title: ''}, templates));
-    dispatch(edit({title: '', type: 'entity'}));
+    let newEntityMetadata = {title: '', type: 'entity'};
+    dispatch(entitties.actions.loadEntity('uploads.metadata', newEntityMetadata, templates));
+    dispatch(edit(newEntityMetadata));
   };
 }
 

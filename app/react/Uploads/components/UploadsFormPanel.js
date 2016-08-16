@@ -13,13 +13,26 @@ export class UploadsFormPanel extends Component {
     this.props.saveDocument(doc);
   }
 
+  close() {
+    if (this.props.formState.dirty) {
+      return this.context.confirm({
+        accept: () => {
+          this.props.finishEdit();
+        },
+        message: 'Are you sure you want to close the form? All the progress will be lost.'
+      });
+    }
+
+    this.props.finishEdit();
+  }
+
   render() {
     let sidePanelprops = {open: this.props.open};
     return (
       <SidePanel {...sidePanelprops}>
         <div className="sidepanel-header">
           <h1>Metadata</h1>
-          <i className='fa fa-close close-modal' onClick={this.props.finishEdit}></i>
+          <i className='fa fa-close close-modal' onClick={this.close.bind(this)}></i>
         </div>
         <div className="sidepanel-body">
           <ShowIf if={this.props.metadataType === 'document'}>
@@ -39,7 +52,12 @@ UploadsFormPanel.propTypes = {
   saveDocument: PropTypes.func,
   finishEdit: PropTypes.func,
   title: PropTypes.string,
-  metadataType: PropTypes.string
+  metadataType: PropTypes.string,
+  formState: PropTypes.object
+};
+
+UploadsFormPanel.contextTypes = {
+  confirm: PropTypes.func
 };
 
 const mapStateToProps = ({uploads}) => {
@@ -48,11 +66,12 @@ const mapStateToProps = ({uploads}) => {
   if (uiState.get('metadataBeingEdited')) {
     metadataType = uiState.get('metadataBeingEdited').type;
   }
-  
+
   return {
     open: typeof uiState.get('metadataBeingEdited') === 'object',
     metadataType,
-    title: uploads.metadata.title
+    title: uploads.metadata.title,
+    formState: uploads.metadataForm
   };
 };
 
