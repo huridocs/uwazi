@@ -65,7 +65,8 @@ nav ul {
   max-width: 33%;
 }
 
-.nav-tabs>li>a {
+.nav-tabs>li>a, .nav-tabs>li>div {
+  cursor:pointer;
   line-height: 40px;
   padding: 0;
   margin-top: 5px;
@@ -76,7 +77,7 @@ nav ul {
   border-radius: 0;
 }
 
-.nav-tabs>li>a:focus, .nav-tabs>li>a:hover {
+.nav-tabs>li>a:focus, .nav-tabs>li>div:focus, .nav-tabs>li>a:hover, .nav-tabs>li>div:hover {
   background-color: transparent;
   color: $c-black;
   border: 0;
@@ -84,7 +85,8 @@ nav ul {
 }
 
 
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover,
+.nav-tabs>li>div.tab-link-active, .nav-tabs>li>div.tab-link-active:focus, .nav-tabs>li>div.tab-link-active:hover{
   font-weight: bold;
   background-color: transparent;
   color: $c-black;
