@@ -144,7 +144,7 @@ describe('uploadsActions', () => {
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.UPDATE_DOCUMENT, doc},
-          {type: types.FINISH_UPLOADED_DOCUMENT_EDIT}
+          {type: types.FINISH_EDIT_METADATA}
         ];
         const store = mockStore({});
 
