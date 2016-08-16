@@ -236,21 +236,22 @@ header {
     width: 0;
     z-index: 3;
   }
-  .btn {
-    line-height: 54px - 1px;
-    border: 0;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 54px;
-    text-align: center;
-  }
-  .fa-close {
+  .btn-close {
     display: none;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    border: 0;
+    padding: 1px 1px 0 0;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    text-align: center;
+    font-size: $f-size-sm;
+    border-radius: 50% !important;
   }
-  .input-group.is-active .fa-close {
-    display: inline-block;
+  .input-group.is-active .btn-close {
+    display: block;
   }
 }
 

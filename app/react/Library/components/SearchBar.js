@@ -58,7 +58,7 @@ export class SearchBar extends Component {
               />
             </Field>
             <span className="input-group-btn" onClick={this.resetSearch.bind(this)}>
-              <div className="btn btn-default"><i className="fa fa-close"></i></div>
+              <div className="btn btn-primary btn-close"><i className="fa fa-close"></i></div>
             </span>
           </div>
           <div
