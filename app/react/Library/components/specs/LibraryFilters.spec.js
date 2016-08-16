@@ -33,11 +33,10 @@ describe('LibraryFilters', () => {
         library: {
           filters: Immutable.fromJS({properties: 'filters state'}),
           ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true})
-        },
-        form: {filters: {name: 'redux-form'}}
+        }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({properties: 'filters state', form: {name: 'redux-form'}, searchTerm: 'Zerg Rush', open: true});
+      expect(state).toEqual({properties: 'filters state', searchTerm: 'Zerg Rush', open: true});
     });
   });
 });

@@ -16,9 +16,9 @@ export default function referencesReducer(state = initialState, action = {}) {
     return state.push(Immutable.fromJS(action.reference));
   }
 
-  if (action.type === 'viewer/inboundReferences/REMOVE') {
+  if (action.type === types.REMOVE_REFERENCE) {
     return state.filter((reference) => {
-      return reference.get('_id') !== action.value._id;
+      return reference.get('_id') !== action.reference._id;
     });
   }
 

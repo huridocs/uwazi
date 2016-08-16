@@ -77,7 +77,7 @@ describe('referencesActions', () => {
         let reference = {_id: 'abc'};
 
         const expectedActions = [
-          {type: 'viewer/inboundReferences/REMOVE', value: reference},
+          {type: types.REMOVE_REFERENCE, reference},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Connection deleted', type: 'success', id: 'unique_id'}}
         ];
 

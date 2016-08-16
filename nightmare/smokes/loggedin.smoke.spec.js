@@ -5,7 +5,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 
 describe('Smoke test,', () => {
-  let nightmare = new Nightmare({show: true}).viewport(1100, 600);
+  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('while logged in,', () => {
     describe('login success,', () => {
