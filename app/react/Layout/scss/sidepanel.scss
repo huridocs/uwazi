@@ -112,11 +112,52 @@ $c-sidebar: darken($c-background, 0%);
   z-index: 1;
 }
 
+.sidepanel-footer + .sidepanel-body {
+  padding-bottom: 75px;
+}
+
 .sidepanel-header {
   top: 54px;
   border-bottom: 1px solid $c-grey;
 }
 .sidepanel-footer {
+  position: absolute;
   bottom: 0;
-  border-top: 1px solid $c-grey;
+  width: 100%;
+  text-align: center;
+  background: linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
+
+  .btn {
+    position: relative;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    top: -5px;
+    margin: 0 6px;
+  }
+  .btn-label {
+    color: $c-grey-dark;
+    position: absolute;
+    top: 100%;
+    font-size: 10px;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+
+  }
+
+  .btn:hover .btn-label {
+    color: $c-black;
+  }
+
+  .btn-success {
+    border: 0;
+  }
+
+  .btn:disabled {
+    cursor: default;
+    opacity: .7;
+  }
+  .btn:disabled .btn-label {
+    color: $c-grey !important;
+  }
 }
