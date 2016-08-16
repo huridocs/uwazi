@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {getValues} from 'redux-form';
 
 import {filterDocumentType, filterAllDocumentTypes, resetFilters} from 'app/Library/actions/filterActions';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
@@ -21,10 +20,6 @@ export class LibraryFilters extends Component {
 
   handleFilterAllDocuments() {
     this.props.filterAllDocumentTypes(!this.props.allDocumentTypes);
-  }
-
-  applyFilters() {
-    this.props.searchDocuments(this.props.searchTerm, getValues(this.props.form));
   }
 
   render() {
@@ -66,7 +61,6 @@ LibraryFilters.propTypes = {
   thesauris: PropTypes.array,
   allDocumentTypes: PropTypes.bool,
   documentTypes: PropTypes.object,
-  form: PropTypes.object,
   filterDocumentType: PropTypes.func,
   filterAllDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
@@ -78,7 +72,6 @@ LibraryFilters.propTypes = {
 
 export function mapStateToProps(state) {
   let props = state.library.filters.toJS();
-  props.form = state.form.filters;
   props.searchTerm = state.library.ui.toJS().searchTerm;
   props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
   return props;

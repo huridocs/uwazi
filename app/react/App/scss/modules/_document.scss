@@ -111,6 +111,11 @@
     &.relationship-selected {
       border-left: 3px solid $c-success;
     }
+
+    &.disabled {
+      opacity: 0.6;
+      cursor: inherit;
+    }
   }
 }
 

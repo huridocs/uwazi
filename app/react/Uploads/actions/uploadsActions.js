@@ -2,6 +2,7 @@ import superagent from 'superagent';
 import {APIURL} from '../../config.js';
 import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
+import entitties from 'app/Entities';
 import api from '../../utils/api';
 
 export function enterUploads() {
@@ -10,10 +11,15 @@ export function enterUploads() {
   };
 }
 
-export function editDocument(doc) {
+export function finishEdit() {
   return {
-    type: types.EDIT_UPLOADED_DOCUMENT,
-    doc
+    type: types.FINISH_EDIT_METADATA
+  };
+}
+
+export function edit(doc) {
+  return function (dispatch) {
+    dispatch({type: types.EDIT_METADATA, doc});
   };
 }
 
@@ -21,12 +27,6 @@ export function updateDocument(doc) {
   return {
     type: types.UPDATE_DOCUMENT,
     doc
-  };
-}
-
-export function finishEdit() {
-  return {
-    type: types.FINISH_UPLOADED_DOCUMENT_EDIT
   };
 }
 
@@ -51,12 +51,46 @@ export function setThesauris(thesauris) {
   };
 }
 
+export function newEntity(templates) {
+  return function (dispatch) {
+    let newEntityMetadata = {title: '', type: 'entity'};
+    dispatch(entitties.actions.loadEntity('uploads.metadata', newEntityMetadata, templates));
+    dispatch(edit(newEntityMetadata));
+  };
+}
+
+export function saveEntity(entity) {
+  return function (dispatch) {
+    return api.post('entities', entity)
+    .then((response) => {
+      dispatch(notify('Entity saved', 'success'));
+      dispatch({type: types.FINISH_EDIT_METADATA});
+      if (!entity._id) {
+        return dispatch({type: types.ELEMENT_CREATED, doc: response.json});
+      }
+
+      return dispatch({type: types.UPDATE_DOCUMENT, doc: response.json});
+    });
+  };
+}
+
+export function publishEntity(entity) {
+  return function (dispatch) {
+    entity.published = true;
+    return api.post('entities', entity)
+    .then(() => {
+      dispatch(notify('Entity published', 'success'));
+      dispatch({type: types.MOVED_TO_LIBRARY, id: entity._id});
+    });
+  };
+}
+
 export function createDocument(newDoc) {
   return function (dispatch) {
     return api.post('documents', newDoc)
     .then((response) => {
       let doc = response.json;
-      dispatch({type: types.DOCUMENT_CREATED, doc});
+      dispatch({type: types.ELEMENT_CREATED, doc});
       return doc;
     });
   };
@@ -85,7 +119,7 @@ export function saveDocument(doc) {
     .then(() => {
       dispatch(notify('Document updated', 'success'));
       dispatch(updateDocument(doc));
-      dispatch({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
+      dispatch({type: types.FINISH_EDIT_METADATA});
     });
   };
 }
@@ -96,7 +130,7 @@ export function moveToLibrary(doc) {
     return api.post('documents', doc)
     .then(() => {
       dispatch(notify('Document published', 'success'));
-      dispatch({type: types.MOVED_TO_LIBRARY, doc: doc._id});
+      dispatch({type: types.MOVED_TO_LIBRARY, id: doc._id});
     });
   };
 }
@@ -106,7 +140,17 @@ export function deleteDocument(doc) {
     return api.delete('documents', doc)
     .then(() => {
       dispatch(notify('Document deleted', 'success'));
-      dispatch({type: types.DOCUMENT_DELETED, doc: doc._id});
+      dispatch({type: types.ELEMENT_DELETED, id: doc._id});
+    });
+  };
+}
+
+export function deleteEntity(entity) {
+  return function (dispatch) {
+    return api.delete('entities', entity)
+    .then(() => {
+      dispatch(notify('Entity deleted', 'success'));
+      dispatch({type: types.ELEMENT_DELETED, id: entity._id});
     });
   };
 }

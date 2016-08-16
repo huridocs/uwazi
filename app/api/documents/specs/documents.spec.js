@@ -21,7 +21,7 @@ describe('documents', () => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
-    .catch(done.fail);
+    .catch(catchErrors(done));
   });
 
   describe('save', () => {

@@ -95,15 +95,15 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'documents/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
-      .mock(APIURL + 'documents/search?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
+      .mock(APIURL + 'search/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
+      .mock(APIURL + 'search?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
       .mock(APIURL +
-        'documents/search?searchTerm=batman&' +
+        'search?searchTerm=batman&' +
         'filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D&types=%5B%22decision%22%5D',
         'get',
         {body: JSON.stringify(documentCollection)}
       )
-      .mock(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get',
+      .mock(APIURL + 'search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get',
             {body: JSON.stringify(documentCollection)});
       dispatch = jasmine.createSpy('dispatch');
     });
@@ -122,7 +122,7 @@ describe('libraryActions', () => {
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
           expect(backend.called(APIURL +
-            'documents/search?searchTerm=batman' +
+            'search?searchTerm=batman' +
             '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D&types=%5B%22decision%22%5D'))
           .toBe(true);
           expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
@@ -136,7 +136,7 @@ describe('libraryActions', () => {
         store.library.filters = Immutable.fromJS(state);
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL + 'documents/search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D')).toBe(true);
+          expect(backend.called(APIURL + 'search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D')).toBe(true);
           expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
           done();
         })
@@ -181,7 +181,7 @@ describe('libraryActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: 'rrf/reset', model: 'library.docForm'},
+          {type: 'rrf/reset', model: 'library.metadata'},
           {type: types.UPDATE_DOCUMENT, doc: 'response'},
           {type: types.SELECT_DOCUMENT, doc: 'response'}
         ];

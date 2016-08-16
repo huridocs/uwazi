@@ -1,19 +1,13 @@
 import api from 'app/utils/api';
 
 export default {
-  get(source) {
-    let url = 'references';
-    if (source) {
-      url += `?sourceDocument=${source}`;
-    }
-    return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+  get(documentId) {
+    let url = `references/by_document/${documentId}`;
+    return api.get(url).then((response) => response.json);
   },
 
   getInbound(targetDocument) {
-    return api.get(`references/by_target_document/${targetDocument}`)
+    return api.get(`references/by_target/${targetDocument}`)
     .then((response) => {
       return response.json.rows;
     });

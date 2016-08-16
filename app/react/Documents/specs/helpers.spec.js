@@ -8,6 +8,7 @@ describe('document helpers', () => {
     {_id: '2', name: 'template name', properties: [
       {name: 'author', type: 'text', label: 'authorLabel'},
       {name: 'country', type: 'select', content: 'abc1', label: 'countryLabel'},
+      {name: 'badThesauri', type: 'select', content: 'abc1', label: 'badThesauri'},
       {name: 'language', type: 'text', label: 'languageLabel'},
       {name: 'date', type: 'date', label: 'dateLabel'}
     ]},
@@ -22,6 +23,7 @@ describe('document helpers', () => {
   let doc = {title: 'doc title', template: '2', metadata: {
     author: 'authorValue',
     country: 'thesauriId',
+    badThesauri: 'bad',
     language: 'languageValue',
     date: '1469729080'
   }};
@@ -35,6 +37,7 @@ describe('document helpers', () => {
         metadata: [
           {label: 'authorLabel', value: 'authorValue'},
           {label: 'countryLabel', value: 'countryValue'},
+          {label: 'badThesauri', value: ''},
           {label: 'languageLabel', value: 'languageValue'},
           {label: 'dateLabel', value: 'Jul 28, 2016'}
         ]

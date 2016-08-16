@@ -152,12 +152,12 @@ export default {
       docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
 
       this.deleteFile(response.json);
-      return request.get(`${dbURL}/_design/references/_view/by_source_document?key="${id}"`);
+      return request.get(`${dbURL}/_design/references/_view/by_source?key="${id}"`);
     })
     .then((response) => {
       sanitizeResponse(response.json);
       docsToDelete = docsToDelete.concat(response.json.rows);
-      return request.get(`${dbURL}/_design/references/_view/by_target_document?key="${id}"`);
+      return request.get(`${dbURL}/_design/references/_view/by_target?key="${id}"`);
     })
     .then((response) => {
       sanitizeResponse(response.json);

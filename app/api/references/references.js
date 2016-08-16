@@ -2,6 +2,16 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import sanitizeResponse from 'api/utils/sanitizeResponse';
 
+let normalizeConnection = (connection, docId) => {
+  connection.targetRange = connection.targetRange || {text: ''};
+  connection.sourceRange = connection.sourceRange || {text: ''};
+  connection.inbound = connection.targetDocument === docId;
+  connection.range = connection.inbound ? connection.targetRange : connection.sourceRange;
+  connection.text = connection.inbound ? connection.sourceRange.text : connection.targetRange.text;
+  connection.connectedDocument = connection.inbound ? connection.sourceDocument : connection.targetDocument;
+  return connection;
+};
+
 export default {
   getAll() {
     return request.get(`${dbURL}/_design/references/_view/all`)
@@ -11,14 +21,14 @@ export default {
   },
 
   getByDocument(docId) {
-    return request.get(`${dbURL}/_design/references/_view/by_source_document?key="${docId}"`)
+    return request.get(`${dbURL}/_design/references/_view/by_document?key="${docId}"`)
     .then((response) => {
-      return sanitizeResponse(response.json);
+      return sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, docId));
     });
   },
 
   getByTarget(docId) {
-    return request.get(`${dbURL}/_design/references/_view/by_target_document?key="${docId}"`)
+    return request.get(`${dbURL}/_design/references/_view/by_target?key="${docId}"`)
     .then((response) => {
       return sanitizeResponse(response.json);
     });
@@ -34,14 +44,14 @@ export default {
     });
   },
 
-  save(reference) {
-    reference.type = 'reference';
-    return request.post(dbURL, reference)
+  save(connection) {
+    connection.type = 'reference';
+    return request.post(dbURL, connection)
     .then((result) => {
       return request.get(`${dbURL}/${result.json.id}`);
     })
     .then((result) => {
-      return result.json;
+      return normalizeConnection(result.json, connection.sourceDocument);
     });
   },
 

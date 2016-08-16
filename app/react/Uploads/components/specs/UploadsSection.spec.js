@@ -30,12 +30,4 @@ describe('UploadsSection', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'ENTER_UPLOADS_SECTION'});
     });
   });
-
-  //describe('componentWillUnmount', () => {
-    //it('should resetDocumentViewer', () => {
-      //render();
-      //component.unmount();
-      //expect(context.store.dispatch).toHaveBeenCalledWith({type: 'RESET_DOCUMENT_VIEWER'});
-    //});
-  //});
 });

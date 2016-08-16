@@ -4,7 +4,8 @@ import {bindActionCreators} from 'redux';
 import {MenuButtons} from 'app/ContextMenu';
 import documents from 'app/Documents';
 import {NeedAuthorization} from 'app/Auth';
-import {deleteDocument} from 'app/Library/actions/libraryActions';
+import {deleteDocument, deleteEntity} from 'app/Library/actions/libraryActions';
+import ShowIf from 'app/App/ShowIf';
 
 
 import {showFilters, searchDocuments} from 'app/Library/actions/libraryActions';
@@ -24,21 +25,26 @@ export class LibraryMenu extends Component {
   }
 
   deleteDocument() {
+    let selectedDocument = this.props.selectedDocument.toJS();
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.selectedDocument.toJS());
+        if (selectedDocument.type === 'document') {
+          this.props.deleteDocument(selectedDocument);
+        }
+
+        this.props.deleteEntity(selectedDocument);
       },
-      title: 'Confirm delete document',
-      message: 'Are you sure you want to delete this document?'
+      title: 'Confirm delete',
+      message: `Are you sure you want to delete: ${selectedDocument.title}?`
     });
   }
 
   renderDocumentMenu() {
-    if (this.props.docForm._id) {
-      let disabled = !this.props.docFormState.dirty;
+    if (this.props.metadata._id) {
+      let disabled = !this.props.metadataForm.dirty;
       return (
         <MenuButtons.Main disabled={disabled}>
-          <button type="submit" form="documentForm" disabled={disabled}>
+          <button type="submit" form="metadataForm" disabled={disabled}>
             <i className="fa fa-save"></i>
           </button>
         </MenuButtons.Main>
@@ -48,16 +54,18 @@ export class LibraryMenu extends Component {
     return (
       <NeedAuthorization>
         <div>
-          <div className="float-btn__sec">
-            <a href={'/api/documents/download?_id=' + this.props.selectedDocument.toJS()._id} target="_blank" >
-              <span>Download</span><i className="fa fa-cloud-download"></i>
-            </a>
-          </div>
+          <ShowIf if={this.props.selectedDocument.get('type') === 'document'}>
+            <div className="float-btn__sec">
+              <a href={'/api/documents/download?_id=' + this.props.selectedDocument.toJS()._id} target="_blank" >
+                <span>Download</span><i className="fa fa-cloud-download"></i>
+              </a>
+            </div>
+          </ShowIf>
           <div onClick={this.deleteDocument.bind(this)} className="float-btn__sec">
             <span>Delete</span><i className="fa fa-trash"></i>
           </div>
           <MenuButtons.Main
-            onClick={() => this.props.loadDocument('library.docForm', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
+            onClick={() => this.props.loadDocument('library.metadata', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
           >
             <i className="fa fa-pencil"></i>
           </MenuButtons.Main>
@@ -84,16 +92,16 @@ export class LibraryMenu extends Component {
 LibraryMenu.propTypes = {
   filtersPanel: PropTypes.bool,
   showFilters: PropTypes.func,
-  filtersForm: PropTypes.object,
   search: PropTypes.object,
   templates: PropTypes.object,
   searchDocuments: PropTypes.func,
   searchTerm: PropTypes.string,
   selectedDocument: PropTypes.object,
   loadDocument: PropTypes.func,
-  docForm: PropTypes.object,
-  docFormState: PropTypes.object,
-  deleteDocument: PropTypes.func
+  metadata: PropTypes.object,
+  metadataForm: PropTypes.object,
+  deleteDocument: PropTypes.func,
+  deleteEntity: PropTypes.func
 };
 
 LibraryMenu.contextTypes = {
@@ -106,9 +114,8 @@ function mapStateToProps(state) {
     filtersPanel: state.library.ui.get('filtersPanel'),
     searchTerm: state.library.ui.get('searchTerm'),
     templates: state.library.filters.get('templates'),
-    filtersForm: state.form.filters,
-    docForm: state.library.docForm,
-    docFormState: state.library.docFormState,
+    metadata: state.library.metadata,
+    metadataForm: state.library.metadataForm,
     search: state.search
   };
 }
@@ -118,7 +125,8 @@ function mapDispatchToProps(dispatch) {
     showFilters,
     searchDocuments,
     loadDocument: documents.actions.loadDocument,
-    deleteDocument
+    deleteDocument,
+    deleteEntity
   }, dispatch);
 }
 

@@ -1,9 +1,10 @@
 import * as types from 'app/Library/actions/actionTypes';
-import api from 'app/Library/DocumentsAPI';
+import api from 'app/Search/SearchAPI';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
+import entities from 'app/Entities';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -106,7 +107,19 @@ export function saveDocument(doc) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch(formActions.reset('library.docForm'));
+      dispatch(formActions.reset('library.metadata'));
+      dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(selectDocument(updatedDoc));
+    });
+  };
+}
+
+export function saveEntity(entity) {
+  return function (dispatch) {
+    return entities.api.save(entity)
+    .then((updatedDoc) => {
+      dispatch(notify('Entity updated', 'success'));
+      dispatch(formActions.reset('library.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
@@ -124,6 +137,17 @@ export function deleteDocument(doc) {
       dispatch(notify('Document deleted', 'success'));
       dispatch(unselectDocument());
       dispatch(removeDocument(doc));
+    });
+  };
+}
+
+export function deleteEntity(entity) {
+  return function (dispatch) {
+    return entities.api.delete(entity)
+    .then(() => {
+      dispatch(notify('Entity deleted', 'success'));
+      dispatch(unselectDocument());
+      dispatch(removeDocument(entity));
     });
   };
 }

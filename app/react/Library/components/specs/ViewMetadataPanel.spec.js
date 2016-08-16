@@ -13,8 +13,8 @@ describe('ViewMetadataPanel', () => {
 
   beforeEach(() => {
     props = {
-      doc: {metadata: []},
-      docForm: {},
+      metadata: {metadata: []},
+      metadataForm: {},
       unselectDocument: jasmine.createSpy('unselectDocument'),
       resetForm: jasmine.createSpy('resetForm'),
       showModal: jasmine.createSpy('showModal'),
@@ -47,7 +47,7 @@ describe('ViewMetadataPanel', () => {
       render();
       component.find('i').simulate('click');
       expect(props.unselectDocument).toHaveBeenCalled();
-      expect(props.resetForm).toHaveBeenCalledWith('library.docForm');
+      expect(props.resetForm).toHaveBeenCalledWith('library.metadata');
     });
 
     describe('when the form is dirty', () => {
@@ -55,7 +55,7 @@ describe('ViewMetadataPanel', () => {
         render();
         props.formState.dirty = true;
         component.find('i').simulate('click');
-        expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
+        expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.metadata);
       });
     });
   });
@@ -66,7 +66,8 @@ describe('ViewMetadataPanel', () => {
         ui: Immutable.fromJS({
           selectedDocument: Immutable.fromJS({})
         }),
-        docForm: {},
+        metadata: {},
+        metadataForm: {},
         filters: Immutable.fromJS({templates: ['templates'], thesauris: ['thesauris']})
       }
     };

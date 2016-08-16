@@ -45,32 +45,16 @@ describe('references routes', () => {
     });
   });
 
-  describe('GET', () => {
-    it('should return references by sourceDocument', (done) => {
-      let req = {query: {sourceDocument: 'source1'}};
+  describe('GET by_document', () => {
+    it('should return references.getByDocument', (done) => {
+      let req = {params: {id: 'documentId'}};
 
-      routes.get('/api/references', req)
+      spyOn(references, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
+
+      routes.get('/api/references/by_document/:id', req)
       .then((response) => {
-        let docs = response.rows;
-        expect(docs.length).toBe(2);
-        expect(docs[0].title).toBe('reference1');
-        expect(docs[1].title).toBe('reference3');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
-
-  describe('GET by_target_document', () => {
-    it('should return references by targetDocument', (done) => {
-      let req = {params: {id: 'target'}};
-
-      routes.get('/api/references/by_target_document/:id', req)
-      .then((response) => {
-        let docs = response.rows;
-        expect(docs.length).toBe(2);
-        expect(docs[0].title).toBe('targetDocument');
-        expect(docs[1].title).toBe('targetDocument');
+        expect(references.getByDocument).toHaveBeenCalledWith('documentId');
+        expect(response).toBe('byDocument');
         done();
       })
       .catch(catchErrors(done));

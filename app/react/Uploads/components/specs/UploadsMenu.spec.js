@@ -1,39 +1,43 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
-import {Link} from 'react-router';
 
 import {UploadsMenu} from 'app/Uploads/components/UploadsMenu';
 
-describe('ViewerDefaultMenu', () => {
+describe('UploadsMenu', () => {
   let component;
   let props;
+  let confirm = jasmine.createSpy('confirm');
 
   let render = () => {
-    component = shallow(<UploadsMenu {...props}/>);
+    component = shallow(<UploadsMenu {...props}/>, {context: {confirm}});
   };
 
   beforeEach(() => {
     props = {
       active: true,
-      showModal: jasmine.createSpy('showModal')
+      showModal: jasmine.createSpy('showModal'),
+      templates: Immutable.fromJS([]),
+      newEntity: jasmine.createSpy('newEntity')
     };
   });
 
   describe('submit button', () => {
-    it('should be rendered when document its defined', () => {
-      props.doc = Immutable.fromJS({});
+    it('should be rendered when metadata is defined', () => {
+      props.metadataBeingEdited = Immutable.fromJS({});
       render();
-      expect(component.find('[type="submit"]').props().form).toBe('documentForm');
+      expect(component.find('[type="submit"]').props().form).toBe('metadataForm');
     });
   });
 
   describe('delete button', () => {
-    it('should show deleteDocumentModal', () => {
-      props.doc = Immutable.fromJS({template: '1', title: 'test'});
+    it('should call deleteDocument', () => {
+      props.metadataBeingEdited = Immutable.fromJS({template: '1', title: 'test'});
       render();
+      let instance = component.instance();
+      spyOn(instance, 'deleteDocument');
       component.find('.delete').simulate('click');
-      expect(props.showModal).toHaveBeenCalledWith('deleteDocument', props.doc);
+      expect(instance.deleteDocument).toHaveBeenCalled();
     });
   });
 
@@ -43,24 +47,13 @@ describe('ViewerDefaultMenu', () => {
       expect(component.find('.publish').length).toBe(0);
     });
 
-    it('should show ReadyToPublishModal', () => {
-      props.doc = Immutable.fromJS({template: '1', title: 'test'});
+    it('should call publish method', () => {
+      props.metadataBeingEdited = Immutable.fromJS({template: '1', title: 'test'});
       render();
+      let instance = component.instance();
+      spyOn(instance, 'publish');
       component.find('.publish').simulate('click');
-      expect(props.showModal).toHaveBeenCalledWith('readyToPublish', props.doc);
-    });
-  });
-  describe('View button', () => {
-    it('should not be rendered when document its not processed ', () => {
-      render();
-      expect(component.find('.view').length).toBe(0);
-    });
-
-    it('should render a link to the document', () => {
-      props.doc = Immutable.fromJS({_id: '1', title: 'test', processed: true});
-      render();
-      let link = component.find('.view').find(Link);
-      expect(link.props().to).toBe('document/1');
+      expect(instance.publish).toHaveBeenCalled();
     });
   });
 });
