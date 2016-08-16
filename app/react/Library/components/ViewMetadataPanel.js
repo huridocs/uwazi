@@ -33,15 +33,15 @@ export class ViewMetadataPanel extends Component {
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         </div>
         <div className="sidepanel-footer">
-          <button className="edit-metadata btn btn-default">
+          <button className="edit-metadata btn btn-primary">
             <i className="fa fa-pencil"></i>
             <span className="btn-label">Edit</span>
           </button>
-          <button className="edit-metadata btn btn-default">
+          <button className="edit-metadata btn btn-primary">
             <i className="fa fa-cloud-download"></i>
             <span className="btn-label">Download</span>
           </button>
-          <button className="edit-metadata btn btn-default">
+          <button className="edit-metadata btn btn-danger">
             <i className="fa fa-trash"></i>
             <span className="btn-label">Delete</span>
           </button>

@@ -113,7 +113,7 @@ $c-sidebar: darken($c-background, 0%);
   bottom: 0;
   width: 100%;
   text-align: center;
-  background: linear-gradient(transparent, $c-grey-lighten);
+  background: linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
 
   .btn {
     position: relative;
@@ -142,11 +142,8 @@ $c-sidebar: darken($c-background, 0%);
   }
 
   .btn:disabled {
-    cursor: normal;
-    background: $c-grey-light;
-    color: $c-grey;
-    border: 1px solid $c-grey;
-    opacity: 1;
+    cursor: default;
+    opacity: .7;
   }
   .btn:disabled .btn-label {
     color: $c-grey !important;
