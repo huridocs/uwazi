@@ -64,6 +64,7 @@ export function saveEntity(entity) {
     return api.post('entities', entity)
     .then((response) => {
       dispatch(notify('Entity saved', 'success'));
+      dispatch({type: types.FINISH_EDIT_METADATA});
       if (!entity._id) {
         return dispatch({type: types.ELEMENT_CREATED, doc: response.json});
       }
@@ -118,7 +119,7 @@ export function saveDocument(doc) {
     .then(() => {
       dispatch(notify('Document updated', 'success'));
       dispatch(updateDocument(doc));
-      dispatch({type: types.FINISH_UPLOADED_DOCUMENT_EDIT});
+      dispatch({type: types.FINISH_EDIT_METADATA});
     });
   };
 }
