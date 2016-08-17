@@ -238,16 +238,16 @@ header {
   }
   .btn-close {
     display: none;
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
     border: 0;
-    padding: 1px 1px 0 0;
+    padding: 0;
     position: absolute;
-    right: 16px;
-    top: 16px;
+    right: 18px;
+    top: 18px;
     text-align: center;
-    font-size: $f-size-sm;
+    font-size: 9px;
     border-radius: 50% !important;
   }
   .input-group.is-active .btn-close {
