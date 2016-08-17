@@ -121,6 +121,23 @@
 
 .relationship-steps {
   display: flex;
+
+  &.is-fixed {
+    display: flex;
+    position: fixed;
+    z-index: 1;
+    background: linear-gradient($c-background 0%, $c-background 70%, transparent 100%);
+    top: 54px;
+    width: 100%;
+    left: 0;
+    padding: 15px;
+    @include desktop {
+      left: auto;
+      max-width: 800px;
+      padding: 15px 0;
+    }
+  }
+
   .btn {
     padding: 5px 10px;
     margin: 12px 10px 12px 0;

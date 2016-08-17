@@ -51,7 +51,8 @@
   &:hover{
     cursor: pointer;
   }
-  &.is-active {
+  &.is-active,
+  &.is-selected {
     border-color: $c-primary-light;
     box-shadow: $shadow;
     &:before {
@@ -152,7 +153,8 @@ $item-width: 250px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 
-  .item.is-active & {
+  .item.is-active &,
+  .item.is-selected & {
     background-color: $c-primary-lighten;
     border-top: 1px solid $c-primary-light;
   }
