@@ -6,7 +6,7 @@ $c-sidebar: darken($c-background, 0%);
 .side-panel {
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 54px;
   bottom: 0;
