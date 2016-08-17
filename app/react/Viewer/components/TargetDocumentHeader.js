@@ -37,7 +37,7 @@ export class TargetDocumentHeader extends Component {
     }
 
     return (
-      <div className="relationship-steps">
+      <div className="relationship-steps is-fixed">
         <button onClick={this.back.bind(this)} className="btn btn-default">
           <i className="fa fa-arrow-left"></i>
           Back
