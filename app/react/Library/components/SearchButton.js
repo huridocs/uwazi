@@ -42,7 +42,7 @@ SearchButton.propTypes = {
 export function mapStateToProps(state) {
   return {
     open: state.library.ui.get('filtersPanel'),
-    metadataPanelIsOpen: state.library.ui.get('selectedDocument')
+    metadataPanelIsOpen: !!state.library.ui.get('selectedDocument')
   };
 }
 

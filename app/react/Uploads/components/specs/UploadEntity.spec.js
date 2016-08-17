@@ -15,7 +15,7 @@ describe('UploadEntity', () => {
       templates: Immutable.fromJS([{templates: 'templates'}]),
       edit: jasmine.createSpy('edit'),
       finishEdit: jasmine.createSpy('finishEdit'),
-      loadEntity: jasmine.createSpy('loadEntity')
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm')
     };
   });
 
@@ -62,6 +62,7 @@ describe('UploadEntity', () => {
 
       component.find(RowList.Item).simulate('click');
       expect(props.edit).toHaveBeenCalledWith(props.entity.toJS());
+      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.entity.toJS(), props.templates.toJS());
     });
 
     describe('when clicking on the same document being edited', () => {
@@ -72,7 +73,7 @@ describe('UploadEntity', () => {
         component.find(RowList.Item).simulate('click');
         expect(props.finishEdit).toHaveBeenCalled();
         expect(props.edit).not.toHaveBeenCalled();
-        expect(props.loadEntity).not.toHaveBeenCalled();
+        expect(props.loadInReduxForm).not.toHaveBeenCalled();
       });
     });
   });

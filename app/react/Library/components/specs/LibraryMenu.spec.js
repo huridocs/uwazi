@@ -17,7 +17,7 @@ describe('LibraryMenu', () => {
     props = {
       showFilters: jasmine.createSpy('showFilters'),
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      loadDocument: jasmine.createSpy('loadDocument'),
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       filtersForm: {isBatman: {value: true}},
       templates: Immutable.fromJS([]),
       searchTerm: 'test',
@@ -32,7 +32,7 @@ describe('LibraryMenu', () => {
 
       render();
       component.find(MenuButtons.Main).simulate('click');
-      expect(props.loadDocument).toHaveBeenCalled();
+      expect(props.loadInReduxForm).toHaveBeenCalled();
     });
   });
 });

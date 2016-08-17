@@ -1,21 +1,21 @@
 import React, {Component, PropTypes} from 'react';
 
-export class ShowDocument extends Component {
+export class ShowMetadata extends Component {
   render() {
-    const {doc} = this.props;
+    const {entity} = this.props;
     return (
       <div>
         <div className="view">
           <dl>
-            <dt>Document title</dt>
-            <dd>{doc.title}</dd>
+            <dt>Title</dt>
+            <dd>{entity.title}</dd>
           </dl>
           <dl>
-            <dt>Document type</dt>
-            <dd>{doc.documentType}</dd>
+            <dt>Type</dt>
+            <dd>{entity.documentType}</dd>
           </dl>
 
-          {doc.metadata.map((property, index) => {
+          {entity.metadata.map((property, index) => {
             return (
               <dl key={index}>
                 <dt>{property.label}</dt>
@@ -29,9 +29,8 @@ export class ShowDocument extends Component {
   }
 }
 
-ShowDocument.propTypes = {
-  doc: PropTypes.object,
-  template: PropTypes.object
+ShowMetadata.propTypes = {
+  entity: PropTypes.object
 };
 
-export default ShowDocument;
+export default ShowMetadata;

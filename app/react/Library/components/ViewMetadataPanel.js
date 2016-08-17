@@ -1,15 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
-import documents from 'app/Documents';
 import {bindActionCreators} from 'redux';
 import {unselectDocument, saveDocument} from '../actions/libraryActions';
 
 import DocumentForm from '../containers/DocumentForm';
 import EntityForm from '../containers/EntityForm';
-import {ShowDocument} from 'app/Documents';
 import {actions as formActions} from 'react-redux-form';
 import modals from 'app/Modals';
+import {formater, ShowMetadata} from 'app/Metadata';
 
 export class ViewMetadataPanel extends Component {
   submit(doc) {
@@ -41,7 +40,7 @@ export class ViewMetadataPanel extends Component {
             if (docBeingEdited && this.props.metadata.type === 'entity') {
               return <EntityForm/>;
             }
-            return <ShowDocument doc={metadata}/>;
+            return <ShowMetadata entity={metadata}/>;
           })()}
         </div>
       </SidePanel>
@@ -65,7 +64,7 @@ const mapStateToProps = ({library}) => {
     open: library.ui.get('selectedDocument') ? true : false,
     docBeingEdited: !!library.metadata._id,
     formState: library.metadataForm,
-    metadata: documents.helpers.prepareMetadata(library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').toJS() : {},
+    metadata: formater.prepareMetadata(library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').toJS() : {},
                                            library.filters.get('templates').toJS(),
                                            library.filters.get('thesauris').toJS())
   };

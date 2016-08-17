@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {MenuButtons} from 'app/ContextMenu';
-import documents from 'app/Documents';
+import {actions as metadataActions} from 'app/Metadata';
 import {NeedAuthorization} from 'app/Auth';
 import {deleteDocument, deleteEntity} from 'app/Library/actions/libraryActions';
 import ShowIf from 'app/App/ShowIf';
@@ -65,7 +65,7 @@ export class LibraryMenu extends Component {
             <span>Delete</span><i className="fa fa-trash"></i>
           </div>
           <MenuButtons.Main
-            onClick={() => this.props.loadDocument('library.metadata', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
+            onClick={() => this.props.loadInReduxForm('library.metadata', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
           >
             <i className="fa fa-pencil"></i>
           </MenuButtons.Main>
@@ -97,7 +97,7 @@ LibraryMenu.propTypes = {
   searchDocuments: PropTypes.func,
   searchTerm: PropTypes.string,
   selectedDocument: PropTypes.object,
-  loadDocument: PropTypes.func,
+  loadInReduxForm: PropTypes.func,
   metadata: PropTypes.object,
   metadataForm: PropTypes.object,
   deleteDocument: PropTypes.func,
@@ -124,7 +124,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     showFilters,
     searchDocuments,
-    loadDocument: documents.actions.loadDocument,
+    loadInReduxForm: metadataActions.loadInReduxForm,
     deleteDocument,
     deleteEntity
   }, dispatch);
