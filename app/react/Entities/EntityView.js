@@ -1,5 +1,4 @@
 import React from 'react';
-import Helmet from 'react-helmet';
 
 import RouteHandler from 'app/App/RouteHandler';
 import entitiesAPI from './EntitiesAPI';
@@ -28,9 +27,6 @@ export default class Entity extends RouteHandler {
   }
 
   render() {
-    return <div className="row">
-            <Helmet title="Entity" />
-            <EntityViewer/>
-           </div>;
+    return <EntityViewer/>;
   }
 }

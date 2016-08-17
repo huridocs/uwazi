@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import {formater, ShowMetadata} from 'app/Metadata';
 
@@ -6,7 +7,8 @@ export class EntityViewer extends Component {
 
   render() {
     return (
-      <div>
+      <div className="row">
+        <Helmet title="Entity" />
         <ShowMetadata entity={this.props.entity} />
       </div>
     );
