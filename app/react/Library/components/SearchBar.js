@@ -46,7 +46,7 @@ export class SearchBar extends Component {
     return (
       <div className={'search-box' + (this.props.open ? ' is-active' : '')}>
         <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
-          <div className={'form-group' + (search.searchTerm ? ' is-active' : '')}>
+          <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
             <Field model="search.searchTerm">
               <input
                 type="text"
@@ -57,6 +57,9 @@ export class SearchBar extends Component {
                 autoComplete="off"
               />
             </Field>
+            <span className="input-group-btn" onClick={this.resetSearch.bind(this)}>
+              <div className="btn btn-primary btn-close"><i className="fa fa-close"></i></div>
+            </span>
           </div>
           <div
             onMouseOver={this.mouseEnter.bind(this)}
