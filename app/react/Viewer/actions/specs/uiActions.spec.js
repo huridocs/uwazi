@@ -2,7 +2,7 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
 
-describe('Viewer uiActions', () => {
+fdescribe('Viewer uiActions', () => {
   describe('closePanel()', () => {
     it('should return a CLOSE_PANEL with panel passed', () => {
       let action = actions.closePanel();
@@ -59,6 +59,11 @@ describe('Viewer uiActions', () => {
       actions.activateReference('id')(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id'});
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+    });
+
+    it('should dispatch a SHOW_TAB connections', () => {
+      actions.activateReference('id')(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'connections'});
     });
 
     it('should scroll to the elements', () => {

@@ -7,7 +7,7 @@ import ContextMenu from 'app/ContextMenu';
 import {Viewer} from 'app/Viewer/components/Viewer';
 import ShowIf from 'app/App/ShowIf';
 
-describe('Viewer', () => {
+fdescribe('Viewer', () => {
   let component;
   let props;
   let context;
@@ -23,6 +23,12 @@ describe('Viewer', () => {
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<Viewer {...props}/>, {context});
   };
+
+  it('should add "connections" className when showConnections', () => {
+    props.showConnections = true;
+    render();
+    expect(component.find('.document-viewer').hasClass('connections')).toBe(true);
+  });
 
   it('should add with-panel className when there is a panel open', () => {
     props.panelIsOpen = true;

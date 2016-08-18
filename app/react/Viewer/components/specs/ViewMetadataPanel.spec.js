@@ -8,7 +8,7 @@ import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
 
-describe('ViewMetadataPanel', () => {
+fdescribe('ViewMetadataPanel', () => {
   let component;
   let props;
 
@@ -53,6 +53,7 @@ describe('ViewMetadataPanel', () => {
       it('should close panel and reset form', () => {
         props.closePanel = jasmine.createSpy('closePanel');
         props.resetForm = jasmine.createSpy('resetForm');
+        props.showTab = jasmine.createSpy('showConnections');
         props.formState = {dirty: false};
         props.docBeingEdited = true;
         render();
@@ -61,6 +62,7 @@ describe('ViewMetadataPanel', () => {
 
         expect(props.closePanel).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith('documentViewer.docForm');
+        expect(props.showTab).toHaveBeenCalled();
       });
     });
   });

@@ -4,7 +4,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
 import {saveDocument} from '../actions/documentActions';
-import {closePanel} from '../actions/uiActions';
+import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
 import DocumentForm from '../containers/DocumentForm';
@@ -16,6 +16,7 @@ export class ViewMetadataPanel extends Component {
       return this.props.showModal('ConfirmCloseForm', this.props.doc);
     }
     this.props.resetForm('documentViewer.docForm');
+    this.props.showTab();
     this.props.closePanel();
   }
 
@@ -33,12 +34,37 @@ export class ViewMetadataPanel extends Component {
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         </div>
         <div className="sidepanel-body">
-          {(() => {
-            if (docBeingEdited) {
-              return <DocumentForm onSubmit={this.submit.bind(this)} />;
-            }
-            return <ShowMetadata entity={doc}/>;
-          })()}
+          <Tabs selectedTab={this.props.tab}
+            handleSelect={(tab) => {
+              this.props.showTab(tab);
+            }}
+          >
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="toc">Table of contents</TabLink>
+              </li>
+              <li>
+                <TabLink to="metadata" default>Metadata</TabLink>
+              </li>
+              <li>
+                <TabLink to="connections">Connections (22)</TabLink>
+              </li>
+            </ul>
+            <TabContent for="toc">
+              TOC
+            </TabContent>
+            <TabContent for="metadata">
+              {(() => {
+                if (docBeingEdited) {
+                  return <DocumentForm onSubmit={this.submit.bind(this)} />;
+                }
+                return <ShowMetadata entity={doc}/>;
+              })()}
+            </TabContent>
+            <TabContent for="connections">
+              <Connections />
+            </TabContent>
+          </Tabs>
         </div>
       </SidePanel>
     );
@@ -50,6 +76,8 @@ ViewMetadataPanel.propTypes = {
   formState: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
+  showTab: PropTypes.func,
+  tab: PropTypes.string,
   saveDocument: PropTypes.func,
   closePanel: PropTypes.func,
   showModal: PropTypes.func,
@@ -67,12 +95,13 @@ const mapStateToProps = ({documentViewer}) => {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
     doc,
     docBeingEdited: !!documentViewer.docForm._id,
-    formState: documentViewer.docFormState
+    formState: documentViewer.docFormState,
+    tab: documentViewer.uiState.get('tab')
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({showModal: modals.actions.showModal, saveDocument, closePanel, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({showModal: modals.actions.showModal, showTab, saveDocument, closePanel, resetForm: formActions.reset}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);
