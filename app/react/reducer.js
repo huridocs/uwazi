@@ -6,6 +6,7 @@ import {reducer as notificationsReducer} from 'app/Notifications';
 
 import thesauri from 'app/Thesauris/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
+import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 
 import library from 'app/Library/reducers/reducer';
@@ -22,6 +23,7 @@ export default combineReducers({
   library,
   template,
   thesauri,
+  entityView,
   thesauris: createReducer('thesauris', []),
   relationTypes: createReducer('relationTypes', []),
   relationType: modelReducer('relationType', {name: ''}),

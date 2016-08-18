@@ -1,18 +1,25 @@
 import React, {Component, PropTypes} from 'react';
 import {Form} from 'react-redux-form';
 
-import validator from '../utils/documentValidator';
+import validator from '../helpers/validator';
 
 import {FormGroup, FormField, Select, DatePicker} from 'app/Forms';
 
-export class DocumentForm extends Component {
+export class MetadataForm extends Component {
   render() {
-    let {document, state} = this.props;
-    let templates = this.props.templates.toJS().filter((template) => !template.isEntity);
-    let thesauris = this.props.thesauris.toJS();
-    let template = templates.find((t) => t._id === document.template);
-    const {model} = this.props;
+    let {metadata, state} = this.props;
+    let templates = this.props.templates.toJS();
 
+    templates = templates.filter((template) => {
+      if (metadata.type === 'entity') {
+        return template.isEntity;
+      }
+      return !template.isEntity;
+    });
+
+    let thesauris = this.props.thesauris.toJS();
+    let template = templates.find((t) => t._id === metadata.template);
+    const {model} = this.props;
     if (!template) {
       return <div />;
     }
@@ -22,22 +29,22 @@ export class DocumentForm extends Component {
     });
 
     return (
-      <Form id='documentForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
+      <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
         <FormGroup {...state.fields.title}>
-          <label>Document title <span className="required">*</span></label>
+          <label>Title <span className="required">*</span></label>
           <FormField model={`${model}.title`}>
             <textarea className="form-control"/>
           </FormField>
         </FormGroup>
 
         <FormGroup>
-          <label>Document Type <span className="required">*</span></label>
+          <label>Type <span className="required">*</span></label>
           <FormField>
             <Select options={templateOptions}
               value={template._id}
               onChange={(e) => {
-                this.props.changeTemplate(model, document, templates.find((t) => t._id === e.target.value));
+                this.props.changeTemplate(model, metadata, templates.find((t) => t._id === e.target.value));
               }}
             />
           </FormField>
@@ -69,8 +76,8 @@ export class DocumentForm extends Component {
   }
 }
 
-DocumentForm.propTypes = {
-  document: PropTypes.object,
+MetadataForm.propTypes = {
+  metadata: PropTypes.object,
   model: PropTypes.string.isRequired,
   state: PropTypes.object,
   templates: PropTypes.object,
@@ -79,4 +86,4 @@ DocumentForm.propTypes = {
   onSubmit: PropTypes.func
 };
 
-export default DocumentForm;
+export default MetadataForm;

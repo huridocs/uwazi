@@ -18,6 +18,7 @@ import {
 } from 'app/Settings';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
+import EntityView from 'app/Entities/EntityView';
 import Uploads from 'app/Uploads/UploadsRoute';
 
 import EditTemplate from 'app/Templates/EditTemplate';
@@ -54,6 +55,7 @@ export default (
     <Route path='login' component={Login} />
     <Route path='resetpassword/:key' component={ResetPassword} />
     <Route path='document/:documentId' component={ViewDocument} />
+    <Route path='entity/:entityId' component={EntityView} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

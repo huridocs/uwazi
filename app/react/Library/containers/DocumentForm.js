@@ -1,9 +1,8 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import documents from 'app/Documents';
 import {saveDocument} from 'app/Library/actions/libraryActions';
-import MetadataForm from 'app/Templates/components/MetadataForm';
+import {actions, MetadataForm} from 'app/Metadata';
 
 function mapStateToProps({library}) {
   return {
@@ -16,7 +15,7 @@ function mapStateToProps({library}) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({changeTemplate: documents.actions.changeTemplate, onSubmit: saveDocument}, dispatch);
+  return bindActionCreators({changeTemplate: actions.changeTemplate, onSubmit: saveDocument}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

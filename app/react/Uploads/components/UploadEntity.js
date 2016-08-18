@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {edit, finishEdit, publishEntity} from 'app/Uploads/actions/uploadsActions';
 import {Link} from 'react-router';
-import entities from 'app/Entities';
+import {actions} from 'app/Metadata';
 
 export class UploadEntity extends Component {
   publish(e) {
@@ -24,7 +24,7 @@ export class UploadEntity extends Component {
       return this.props.finishEdit();
     }
 
-    this.props.loadEntity('uploads.metadata', entity, this.props.templates.toJS());
+    this.props.loadInReduxForm('uploads.metadata', entity, this.props.templates.toJS());
     this.props.edit(entity);
   }
 
@@ -54,7 +54,7 @@ export class UploadEntity extends Component {
 UploadEntity.propTypes = {
   entity: PropTypes.object,
   metadataBeingEdited: PropTypes.object,
-  loadEntity: PropTypes.func,
+  loadInReduxForm: PropTypes.func,
   finishEdit: PropTypes.func,
   templates: PropTypes.object,
   edit: PropTypes.func,
@@ -73,7 +73,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, edit, loadEntity: entities.actions.loadEntity, publishEntity}, dispatch);
+  return bindActionCreators({finishEdit, edit, loadInReduxForm: actions.loadInReduxForm, publishEntity}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadEntity);

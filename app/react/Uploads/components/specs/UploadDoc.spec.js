@@ -15,7 +15,7 @@ describe('UploadDoc', () => {
       templates: Immutable.fromJS([{templates: 'templates'}]),
       edit: jasmine.createSpy('edit'),
       finishEdit: jasmine.createSpy('finishEdit'),
-      loadDocument: jasmine.createSpy('loadDocument'),
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       showModal: jasmine.createSpy('showModal')
     };
   });
@@ -124,7 +124,7 @@ describe('UploadDoc', () => {
 
       component.find(RowList.Item).simulate('click');
       expect(props.edit).toHaveBeenCalledWith(props.doc.toJS());
-      expect(props.loadDocument).toHaveBeenCalledWith('uploads.metadata', props.doc.toJS(), props.templates.toJS());
+      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.doc.toJS(), props.templates.toJS());
     });
 
     describe('when clicking on the same document being edited', () => {
@@ -135,7 +135,7 @@ describe('UploadDoc', () => {
         component.find(RowList.Item).simulate('click');
         expect(props.finishEdit).toHaveBeenCalled();
         expect(props.edit).not.toHaveBeenCalled();
-        expect(props.loadDocument).not.toHaveBeenCalled();
+        expect(props.loadInReduxForm).not.toHaveBeenCalled();
       });
     });
   });

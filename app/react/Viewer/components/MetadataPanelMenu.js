@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import documents from 'app/Documents';
+import {actions} from 'app/Metadata';
 import {MenuButtons} from 'app/ContextMenu';
 import {NeedAuthorization} from 'app/Auth';
 
@@ -22,7 +22,7 @@ export class MetadataPanelMenu extends Component {
 
             return (
               <MenuButtons.Main disabled={disabled} >
-                <button type="submit" form="documentForm" disabled={disabled}>
+                <button type="submit" form="metadataForm" disabled={disabled}>
                   <i className="fa fa-save"></i>
                 </button>
               </MenuButtons.Main>
@@ -30,7 +30,8 @@ export class MetadataPanelMenu extends Component {
           }
           return (
             <NeedAuthorization>
-              <MenuButtons.Main onClick={() => this.props.loadDocument('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
+              <MenuButtons.Main
+                onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
                 <i className="fa fa-pencil"></i>
               </MenuButtons.Main>
             </NeedAuthorization>
@@ -46,7 +47,7 @@ MetadataPanelMenu.propTypes = {
   doc: PropTypes.object,
   docForm: PropTypes.object,
   formState: PropTypes.object,
-  loadDocument: PropTypes.func,
+  loadInReduxForm: PropTypes.func,
   targetDoc: PropTypes.bool
 };
 
@@ -61,7 +62,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadDocument: documents.actions.loadDocument}, dispatch);
+  return bindActionCreators({loadInReduxForm: actions.loadInReduxForm}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataPanelMenu);

@@ -5,7 +5,7 @@ import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {edit, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {Link} from 'react-router';
-import documents from 'app/Documents';
+import {actions} from 'app/Metadata';
 
 export class UploadDoc extends Component {
   showModal(modal, e) {
@@ -19,7 +19,7 @@ export class UploadDoc extends Component {
     if (active) {
       return this.props.finishEdit();
     }
-    this.props.loadDocument('uploads.metadata', doc, this.props.templates.toJS());
+    this.props.loadInReduxForm('uploads.metadata', doc, this.props.templates.toJS());
     this.props.edit(doc);
   }
 
@@ -103,7 +103,7 @@ UploadDoc.propTypes = {
   progress: PropTypes.number,
   edit: PropTypes.func,
   metadataBeingEdited: PropTypes.object,
-  loadDocument: PropTypes.func,
+  loadInReduxForm: PropTypes.func,
   finishEdit: PropTypes.func,
   showModal: PropTypes.func,
   templates: PropTypes.object
@@ -118,7 +118,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, edit, loadDocument: documents.actions.loadDocument, showModal}, dispatch);
+  return bindActionCreators({finishEdit, edit, loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

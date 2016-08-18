@@ -1,14 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
-import documents from 'app/Documents';
+import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
 import {saveDocument} from '../actions/documentActions';
 import {closePanel} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
 import DocumentForm from '../containers/DocumentForm';
-import {ShowDocument} from 'app/Documents';
 import modals from 'app/Modals';
 
 export class ViewMetadataPanel extends Component {
@@ -38,7 +37,7 @@ export class ViewMetadataPanel extends Component {
             if (docBeingEdited) {
               return <DocumentForm onSubmit={this.submit.bind(this)} />;
             }
-            return <ShowDocument doc={doc}/>;
+            return <ShowMetadata entity={doc}/>;
           })()}
         </div>
       </SidePanel>
@@ -58,10 +57,10 @@ ViewMetadataPanel.propTypes = {
 };
 
 const mapStateToProps = ({documentViewer}) => {
-  let doc = documents.helpers.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+  let doc = formater.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
 
   if (documentViewer.targetDoc.get('_id')) {
-    doc = documents.helpers.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+    doc = formater.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
   }
 
   return {

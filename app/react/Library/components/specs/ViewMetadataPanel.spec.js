@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
-import documents from 'app/Documents';
+import {formater} from 'app/Metadata';
 
 import PanelContainer, {ViewMetadataPanel} from '../ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
@@ -75,14 +75,14 @@ describe('ViewMetadataPanel', () => {
     const mockStore = configureMockStore([]);
 
     let renderContainer = () => {
-      spyOn(documents.helpers, 'prepareMetadata');
+      spyOn(formater, 'prepareMetadata');
       let store = mockStore(state);
       component = shallow(<PanelContainer />, {context: {store}});
     };
 
     it('should prepare doc with template and thesauris', () => {
       renderContainer();
-      expect(documents.helpers.prepareMetadata).toHaveBeenCalledWith(
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(
         state.library.ui.get('selectedDocument').toJS(),
         state.library.filters.get('templates').toJS(),
         state.library.filters.get('thesauris').toJS()

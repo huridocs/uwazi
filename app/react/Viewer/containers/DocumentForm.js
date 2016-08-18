@@ -1,20 +1,14 @@
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-
-import documents, {DocumentForm} from 'app/Documents';
+import {MetadataForm} from 'app/Metadata';
 
 function mapStateToProps({documentViewer}) {
   return {
     model: 'documentViewer.docForm',
-    document: documentViewer.docForm,
+    metadata: documentViewer.docForm,
     state: documentViewer.docFormState,
     templates: documentViewer.templates,
     thesauris: documentViewer.thesauris
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({changeTemplate: documents.actions.changeTemplate}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentForm);
+export default connect(mapStateToProps)(MetadataForm);
