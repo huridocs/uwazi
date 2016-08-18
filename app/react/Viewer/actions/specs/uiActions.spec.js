@@ -66,10 +66,13 @@ fdescribe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'connections'});
     });
 
-    it('should scroll to the elements', () => {
+    it('should scroll to the elements', (done) => {
       actions.activateReference('id')(dispatch);
-      expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-      expect(scroller.to).toHaveBeenCalledWith('.document-references .item[data-id="id"]', '.document-references .sidepanel-body');
+      setTimeout(() => {
+        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
+        expect(scroller.to).toHaveBeenCalledWith('.document-metadata .item[data-id="id"]', '.document-metadata .sidepanel-body');
+        done();
+      });
     });
   });
 
