@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import {Form} from 'react-redux-form';
-import {bindActionCreators} from 'redux';
 
 import validator from '../helpers/validator';
 
