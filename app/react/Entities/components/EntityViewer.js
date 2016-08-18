@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
-import {formater, ShowMetadata} from 'app/Metadata';
+import {formater} from 'app/Metadata';
 
 export class EntityViewer extends Component {
 
@@ -9,7 +9,7 @@ export class EntityViewer extends Component {
     return (
       <div className="row">
         <Helmet title="Entity" />
-        <ShowMetadata entity={this.props.entity} />
+        <h3>Entity view is not yet implemented</h3>
       </div>
     );
   }
