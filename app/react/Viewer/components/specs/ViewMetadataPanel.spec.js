@@ -8,7 +8,7 @@ import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
 
-fdescribe('ViewMetadataPanel', () => {
+describe('ViewMetadataPanel', () => {
   let component;
   let props;
 

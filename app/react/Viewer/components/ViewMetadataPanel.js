@@ -10,7 +10,7 @@ import {actions as formActions} from 'react-redux-form';
 import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import Connections from './ViewReferencesPanel';
+import Connections from './ConnectionsList';
 
 export class ViewMetadataPanel extends Component {
   close() {

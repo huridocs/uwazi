@@ -2,7 +2,7 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
 
-fdescribe('Viewer uiActions', () => {
+describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
     it('should return a CLOSE_PANEL with panel passed', () => {
       let action = actions.closePanel();
@@ -58,7 +58,7 @@ fdescribe('Viewer uiActions', () => {
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
       actions.activateReference('id')(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id'});
-      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
     it('should dispatch a SHOW_TAB connections', () => {
@@ -88,7 +88,7 @@ fdescribe('Viewer uiActions', () => {
 
     it('should dispatch a call to activateReference', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id2'});
-      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
     it('should dispatch a SET_TARGET_SELECTION with found range', () => {

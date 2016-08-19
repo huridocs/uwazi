@@ -45,7 +45,7 @@ describe('ViewMetadataPanel', () => {
   describe('on close', () => {
     it('should should unselectDocument', () => {
       render();
-      component.find('i').simulate('click');
+      component.find('i.close-modal').simulate('click');
       expect(props.unselectDocument).toHaveBeenCalled();
       expect(props.resetForm).toHaveBeenCalledWith('library.metadata');
     });
@@ -54,7 +54,7 @@ describe('ViewMetadataPanel', () => {
       it('should open the confirmation modal', () => {
         render();
         props.formState.dirty = true;
-        component.find('i').simulate('click');
+        component.find('i.close-modal').simulate('click');
         expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.metadata);
       });
     });

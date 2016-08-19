@@ -10,7 +10,7 @@ import {highlightReference, closePanel, activateReference, selectReference, deac
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
-export class ViewReferencesPanel extends Component {
+export class ConnectionsList extends Component {
 
   relationType(id, relationTypes) {
     let type = relationTypes.find((relation) => relation._id === id);
@@ -134,7 +134,7 @@ export class ViewReferencesPanel extends Component {
   }
 }
 
-ViewReferencesPanel.propTypes = {
+ConnectionsList.propTypes = {
   uiState: PropTypes.object,
   references: PropTypes.object,
   referencedDocuments: PropTypes.object,
@@ -148,7 +148,7 @@ ViewReferencesPanel.propTypes = {
   targetDoc: PropTypes.bool
 };
 
-ViewReferencesPanel.contextTypes = {
+ConnectionsList.contextTypes = {
   confirm: PropTypes.func
 };
 
@@ -174,4 +174,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({highlightReference, closePanel, activateReference, selectReference, deactivateReference, deleteReference}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewReferencesPanel);
+export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsList);

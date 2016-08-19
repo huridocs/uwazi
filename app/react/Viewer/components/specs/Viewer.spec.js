@@ -7,7 +7,7 @@ import ContextMenu from 'app/ContextMenu';
 import {Viewer} from 'app/Viewer/components/Viewer';
 import ShowIf from 'app/App/ShowIf';
 
-fdescribe('Viewer', () => {
+describe('Viewer', () => {
   let component;
   let props;
   let context;
