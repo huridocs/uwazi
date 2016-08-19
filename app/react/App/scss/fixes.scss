@@ -284,3 +284,24 @@ header ul .btn .fa {
     width: 100%;
   }
 }
+
+/* entity styles */
+.metadata-sidepanel {
+  left: 0 !important;
+  right: auto !important;
+  width: 50% !important;
+}
+.document-references {
+  right: 0 !important;
+  width: 50% !important;
+
+  .item-group {
+    justify-content: space-around;
+  }
+  .item {
+    width: 48% !important;
+  }
+  .item-type {
+    top: -5px !important;
+  }
+}

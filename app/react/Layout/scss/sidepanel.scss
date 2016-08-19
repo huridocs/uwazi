@@ -38,10 +38,11 @@ $c-sidebar: darken($c-background, 0%);
 
 
   h1 {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     font-size: $f-size-lg;
     margin: 0;
+    &.item-name {
+      font-size: $f-size-xl;
+    }
   }
 
   .fa-close {
