@@ -47,6 +47,8 @@ export class ViewMetadataPanel extends Component {
   render() {
     const {doc, docBeingEdited} = this.props;
 
+    let disabled = false;
+
     return (
       <SidePanel open={this.props.open} className='document-metadata'>
         <div className="sidepanel-header">
@@ -66,7 +68,7 @@ export class ViewMetadataPanel extends Component {
               </ShowIf>
             </NeedAuthorization>
             <ShowIf if={docBeingEdited}>
-              <button className="edit-metadata btn btn-success" disabled>
+              <button type="submit" form="metadataForm" disabled={disabled} className="edit-metadata btn btn-success">
                 <i className="fa fa-save"></i>
                 <span className="btn-label">Save</span>
               </button>
