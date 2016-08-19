@@ -38,25 +38,30 @@ $c-sidebar: darken($c-background, 0%);
 
 
   h1 {
+    display: block;
     font-size: $f-size-lg;
     margin: 0;
     &.item-name {
       font-size: $f-size-xl;
+      margin-bottom: 5px;
     }
+  }
+  .item-type {
+    font-size: $f-size-sm;
   }
 
   .fa-close {
-		position: absolute;
-		top: 15px;
-		right: 15px;
-		font-size: 18px;
-		color: $c-grey;
-		cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 18px;
+    color: $c-grey;
+    cursor: pointer;
     z-index: 2;
-		&:hover {
-			color: $c-grey-dark;
-		}
-	}
+    &:hover {
+      color: $c-grey-dark;
+    }
+  }
   .form-group {
     margin: 0;
   }
