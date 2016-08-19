@@ -9,6 +9,7 @@ import EntityForm from '../containers/EntityForm';
 import {actions as formActions} from 'react-redux-form';
 import modals from 'app/Modals';
 import {formater, ShowMetadata} from 'app/Metadata';
+import {NeedAuthorization} from 'app/Auth';
 
 export class ViewMetadataPanel extends Component {
   submit(doc) {
@@ -33,18 +34,22 @@ export class ViewMetadataPanel extends Component {
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         </div>
         <div className="sidepanel-footer">
-          <button className="edit-metadata btn btn-primary">
-            <i className="fa fa-pencil"></i>
-            <span className="btn-label">Edit</span>
-          </button>
+          <NeedAuthorization>
+            <button className="edit-metadata btn btn-primary">
+              <i className="fa fa-pencil"></i>
+              <span className="btn-label">Edit</span>
+            </button>
+          </NeedAuthorization>
           <button className="edit-metadata btn btn-primary">
             <i className="fa fa-cloud-download"></i>
             <span className="btn-label">Download</span>
           </button>
-          <button className="edit-metadata btn btn-danger">
-            <i className="fa fa-trash"></i>
-            <span className="btn-label">Delete</span>
-          </button>
+          <NeedAuthorization>
+            <button className="edit-metadata btn btn-danger">
+              <i className="fa fa-trash"></i>
+              <span className="btn-label">Delete</span>
+            </button>
+          </NeedAuthorization>
           <button className="edit-metadata btn btn-success" disabled>
             <i className="fa fa-save"></i>
             <span className="btn-label">Save</span>

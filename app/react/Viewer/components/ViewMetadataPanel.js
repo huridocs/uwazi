@@ -11,8 +11,26 @@ import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from './ConnectionsList';
+import ShowIf from 'app/App/ShowIf';
+import {NeedAuthorization} from 'app/Auth';
+import {actions} from 'app/Metadata';
+import {deleteDocument} from 'app/Viewer/actions/documentActions';
+import {browserHistory} from 'react-router';
 
 export class ViewMetadataPanel extends Component {
+  deleteDocument() {
+    this.context.confirm({
+      accept: () => {
+        this.props.deleteDocument(this.props.rawDoc.toJS())
+        .then(() => {
+          browserHistory.push('/');
+        });
+      },
+      title: 'Confirm delete document',
+      message: 'Are you sure you want to delete this document?'
+    });
+  }
+
   close() {
     if (this.props.formState.dirty) {
       return this.props.showModal('ConfirmCloseForm', this.props.doc);
@@ -35,6 +53,36 @@ export class ViewMetadataPanel extends Component {
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
         </div>
+        <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
+          <div className="sidepanel-footer">
+            <NeedAuthorization>
+              <ShowIf if={!docBeingEdited}>
+                <button
+                  onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.rawDoc.toJS(), this.props.templates.toJS())}
+                  className="edit-metadata btn btn-primary">
+                  <i className="fa fa-pencil"></i>
+                  <span className="btn-label">Edit</span>
+                </button>
+              </ShowIf>
+            </NeedAuthorization>
+            <ShowIf if={docBeingEdited}>
+              <button className="edit-metadata btn btn-success" disabled>
+                <i className="fa fa-save"></i>
+                <span className="btn-label">Save</span>
+              </button>
+            </ShowIf>
+            <a className="edit-metadata btn btn-primary" href={'/api/documents/download?_id=' + this.props.rawDoc.toJS()._id} target="_blank">
+              <i className="fa fa-cloud-download"></i>
+              <span className="btn-label">Download</span>
+            </a>
+            <NeedAuthorization>
+              <button className="edit-metadata btn btn-danger" onClick={this.deleteDocument.bind(this)}>
+                <i className="fa fa-trash"></i>
+                <span className="btn-label">Delete</span>
+              </button>
+            </NeedAuthorization>
+          </div>
+        </ShowIf>
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab}
             handleSelect={(tab) => {
@@ -76,6 +124,8 @@ export class ViewMetadataPanel extends Component {
 ViewMetadataPanel.propTypes = {
   doc: PropTypes.object,
   formState: PropTypes.object,
+  templates: PropTypes.object,
+  rawDoc: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   showTab: PropTypes.func,
@@ -83,7 +133,13 @@ ViewMetadataPanel.propTypes = {
   saveDocument: PropTypes.func,
   closePanel: PropTypes.func,
   showModal: PropTypes.func,
-  resetForm: PropTypes.func
+  deleteDocument: PropTypes.func,
+  resetForm: PropTypes.func,
+  loadInReduxForm: PropTypes.func
+};
+
+ViewMetadataPanel.contextTypes = {
+  confirm: PropTypes.func
 };
 
 const mapStateToProps = ({documentViewer}) => {
@@ -95,7 +151,9 @@ const mapStateToProps = ({documentViewer}) => {
 
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
+    templates: documentViewer.templates,
     doc,
+    rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab')
@@ -103,7 +161,14 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({showModal: modals.actions.showModal, showTab, saveDocument, closePanel, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({
+    loadInReduxForm: actions.loadInReduxForm,
+    showModal: modals.actions.showModal,
+    showTab, saveDocument,
+    closePanel,
+    deleteDocument,
+    resetForm: formActions.reset
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewMetadataPanel);
