@@ -29,7 +29,6 @@ fdescribe('metadata path', () => {
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       login(nightmare, 'admin', 'admin')
-      .wait(settingsNavButton)
       .realClick(settingsNavButton)
       .wait(settingsHeader)
       .url()
@@ -85,6 +84,7 @@ fdescribe('metadata path', () => {
         .wait(thesaurisBackButton)
         .realClick(thesaurisBackButton)
         .wait(thesaurisListHeader)
+        .evaluate('')
         // .realClick('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li:nth-child(1) > div > button')
         // .wait('body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger')
         // .realClick('body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger')
