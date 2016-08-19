@@ -9,6 +9,8 @@ import {actions as formActions} from 'react-redux-form';
 
 import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
+import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
+import Connections from './ViewReferencesPanel';
 
 export class ViewMetadataPanel extends Component {
   close() {
@@ -28,7 +30,7 @@ export class ViewMetadataPanel extends Component {
     const {doc, docBeingEdited} = this.props;
 
     return (
-      <SidePanel open={this.props.open}>
+      <SidePanel open={this.props.open} className='document-metadata'>
         <div className="sidepanel-header">
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>

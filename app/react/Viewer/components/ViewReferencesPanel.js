@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
 
-import SidePanel from 'app/Layout/SidePanel';
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
@@ -53,7 +52,6 @@ export class ViewReferencesPanel extends Component {
 
   render() {
     const uiState = this.props.uiState.toJS();
-    const sidePanelprops = {open: uiState.panel === 'viewReferencesPanel'};
     const relationTypes = this.props.relationTypes.toJS();
     const referencedDocuments = this.props.referencedDocuments.toJS();
 
@@ -64,82 +62,74 @@ export class ViewReferencesPanel extends Component {
     });
 
     return (
-      <SidePanel {...sidePanelprops} className="document-references">
-        <div className="sidepanel-header">
-          <h1>CONNECTIONS ({references.length})</h1>
-          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
-        </div>
-        <div className="sidepanel-body">
-          <div className="item-group">
-            {(() => {
-              return references.map((reference, index) => {
-                let itemClass = '';
-                let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
-                let referenceIcon = 'fa-sign-out';
+      <div className="item-group">
+        {(() => {
+          return references.map((reference, index) => {
+            let itemClass = '';
+            let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
+            let referenceIcon = 'fa-sign-out';
 
-                if (uiState.highlightedReference === reference._id) {
-                  itemClass = 'relationship-hover';
-                }
+            if (uiState.highlightedReference === reference._id) {
+              itemClass = 'relationship-hover';
+            }
 
-                if (uiState.activeReference === reference._id) {
-                  itemClass = 'relationship-active';
-                  if (this.props.targetDoc && this.props.uiState.toJS().reference.targetRange) {
-                    itemClass = 'relationship-selected';
-                  }
-                }
+            if (uiState.activeReference === reference._id) {
+              itemClass = 'relationship-active';
+              if (this.props.targetDoc && this.props.uiState.toJS().reference.targetRange) {
+                itemClass = 'relationship-selected';
+              }
+            }
 
-                if (reference.inbound) {
-                  referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
-                }
+            if (reference.inbound) {
+              referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
+            }
 
-                return (
-                  <div key={index}
-                    onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
-                    onMouseLeave={this.props.highlightReference.bind(null, null)}
-                    onClick={this.clickReference.bind(this, reference)}
-                    className={`item ${itemClass} ${disabled ? 'disabled' : ''}`}
-                    data-id={reference._id}>
-                    <div className="item-info">
-                      <div className="item-name">
-                        <i className={`fa ${referenceIcon}`}></i>
-                        &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
-                        {(() => {
-                          if (reference.text) {
-                            return <div className="item-snippet">
-                              {reference.text}
-                            </div>;
-                          }
-                        })()}
-                      </div>
-                    </div>
-                    <div className="item-metadata">
-                      <dl>
-                        <dt>Connection type</dt>
-                        <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
-                      </dl>
-                    </div>
-                    <div className="item-actions">
-                      <ShowIf if={!this.props.targetDoc}>
-                        <NeedAuthorization>
-                          <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                            <i className="fa fa-unlink"></i><span>Delete</span>
-                          </a>
-                        </NeedAuthorization>
-                      </ShowIf>
-                      &nbsp;
-                      <ShowIf if={!this.props.targetDoc}>
-                        <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
-                        </Link>
-                      </ShowIf>
-                    </div>
+            return (
+              <div key={index}
+                onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
+                onMouseLeave={this.props.highlightReference.bind(null, null)}
+                onClick={this.clickReference.bind(this, reference)}
+                className={`item ${itemClass} ${disabled ? 'disabled' : ''}`}
+                data-id={reference._id}>
+                <div className="item-info">
+                  <div className="item-name">
+                    <i className={`fa ${referenceIcon}`}></i>
+                    &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
+                    {(() => {
+                      if (reference.text) {
+                        return <div className="item-snippet">
+                          {reference.text}
+                        </div>;
+                      }
+                    })()}
                   </div>
-                  );
-              });
-            })()}
-          </div>
-        </div>
-      </SidePanel>
+                </div>
+                <div className="item-metadata">
+                  <dl>
+                    <dt>Connection type</dt>
+                    <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
+                  </dl>
+                </div>
+                <div className="item-actions">
+                  <ShowIf if={!this.props.targetDoc}>
+                    <NeedAuthorization>
+                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                        <i className="fa fa-unlink"></i><span>Delete</span>
+                      </a>
+                    </NeedAuthorization>
+                  </ShowIf>
+                  &nbsp;
+                  <ShowIf if={!this.props.targetDoc}>
+                    <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                      <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+                    </Link>
+                  </ShowIf>
+                </div>
+              </div>
+              );
+          });
+        })()}
+      </div>
     );
   }
 }
