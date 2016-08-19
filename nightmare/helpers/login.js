@@ -7,7 +7,7 @@ export function login(nightmare, userName, userPassword) {
   return nightmare
         .goto(config.url)
         .wait(loginNavButton)
-        .realClick(loginNavButton)
+        .click(loginNavButton)
         .wait('#username')
         .type('input[name="username"]', userName)
         .type('input[name="password"]', userPassword)
