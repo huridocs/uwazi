@@ -39,26 +39,24 @@ describe('documents', () => {
   });
 
   describe('/api/documents', () => {
-    it('should return a list of documents returned from the list view', (done) => {
+    it('should return documents.get', (done) => {
+      spyOn(documents, 'get').and.returnValue(new Promise((resolve) => resolve('documents')));
       routes.get('/api/documents')
       .then((response) => {
-        expect(response.rows.length).toBe(7);
-        expect(response.rows[0].title).toEqual('Batman finishes');
-        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
+        expect(response).toBe('documents');
         done();
       })
       .catch(console.log);
     });
 
     describe('when passing id', () => {
-      it('should return matching document', (done) => {
+      it('should pass the id to documents.get', (done) => {
+        spyOn(documents, 'get').and.returnValue(new Promise((resolve) => resolve('documents')));
         let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}};
 
         routes.get('/api/documents', req)
-        .then((response) => {
-          let docs = response.rows;
-          expect(docs.length).toBe(1);
-          expect(docs[0].title).toBe('Penguin almost done');
+        .then(() => {
+          expect(documents.get).toHaveBeenCalledWith(req.query._id);
           done();
         })
         .catch(done.fail);

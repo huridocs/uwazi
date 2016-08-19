@@ -59,22 +59,14 @@ export default (app) => {
   });
 
   app.get('/api/documents', (req, res) => {
-    let id = '';
-    let url = dbUrl + '/_design/documents/_view/docs';
+    let id;
 
     if (req.query && req.query._id) {
-      id = '?key="' + req.query._id + '"';
-      url = dbUrl + '/_design/documents/_view/docs' + id;
+      id = req.query._id;
     }
 
-    request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value);
-      if (response.json.rows.length === 1 && response.json.rows[0].css) {
-        response.json.rows[0].css = response.json.rows[0].css.replace(/(\..*?){/g, '._' + response.json.rows[0]._id + ' $1 {');
-        response.json.rows[0].fonts = '';
-      }
-      res.json(response.json);
+    documents.get(id).then(response => {
+      res.json(response);
     })
     .catch(console.log);
   });
