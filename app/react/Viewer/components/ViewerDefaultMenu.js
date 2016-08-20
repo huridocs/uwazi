@@ -21,7 +21,7 @@ export class ViewerDefaultMenu extends Component {
 
 const mapStateToProps = ({documentViewer}) => {
   return {
-    panelIsOpen: documentViewer.uiState.get('panel'),
+    panelIsOpen: !!documentViewer.uiState.get('panel'),
     doc: documentViewer.doc,
     targetDoc: !!documentViewer.targetDoc.get('_id')
   };

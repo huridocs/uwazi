@@ -10,6 +10,7 @@ import CreateReferencePanel from './CreateReferencePanel';
 import ViewMetadataPanel from './ViewMetadataPanel';
 
 import ViewerDefaultMenu from './ViewerDefaultMenu';
+import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
 import Footer from 'app/App/Footer';
@@ -52,6 +53,7 @@ export class Viewer extends Component {
 
         <ContextMenu>
           <ViewerDefaultMenu/>
+          <ViewerTextSelectedMenu/>
         </ContextMenu>
       </div>
     );
