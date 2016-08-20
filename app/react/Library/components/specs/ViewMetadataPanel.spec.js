@@ -15,6 +15,7 @@ describe('ViewMetadataPanel', () => {
     props = {
       metadata: {metadata: []},
       metadataForm: {},
+      rawDoc: Immutable.fromJS({}),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       resetForm: jasmine.createSpy('resetForm'),
       showModal: jasmine.createSpy('showModal'),
