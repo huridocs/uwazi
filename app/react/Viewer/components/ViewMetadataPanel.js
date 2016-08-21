@@ -103,7 +103,9 @@ export class ViewMetadataPanel extends Component {
               </li>
             </ul>
             <TabContent for="toc">
-              TOC
+              {this.props.tocForm.map((connection) => {
+                return <div>{connection.sourceRange.text}</div>;
+              })}
             </TabContent>
             <TabContent for="metadata">
               {(() => {
@@ -158,7 +160,8 @@ const mapStateToProps = ({documentViewer}) => {
     rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
-    tab: documentViewer.uiState.get('tab')
+    tab: documentViewer.uiState.get('tab'),
+    tocForm: documentViewer.tocForm || []
   };
 };
 

@@ -9,6 +9,7 @@ import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
 import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
+import * as uiActions from './uiActions';
 
 export function setDocument(document, html) {
   return {
@@ -89,5 +90,19 @@ export function viewerSearchDocuments(searchTerm) {
     .then((response) => {
       dispatch(actions.set('viewer/documentResults', response.json.rows));
     });
+  };
+}
+
+export function addToToc(reference) {
+  return function (dispatch, getState) {
+    let state = getState();
+    let toc = state.documentViewer.tocForm;
+    if (!toc.length) {
+      toc = state.documentViewer.doc.toJS().toc || [];
+    }
+    toc.push(reference);
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+    dispatch(uiActions.openPanel('viewMetadataPanel'));
+    dispatch(uiActions.showTab('toc'));
   };
 }
