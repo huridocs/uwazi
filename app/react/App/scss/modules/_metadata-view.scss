@@ -2,6 +2,8 @@ aside {
   .view {
     padding: 15px;
     dl {
+      display: table;
+      width: 100%;
       padding: 15px;
       border-top: 1px solid $c-grey-lighten;
       margin: 0;
@@ -18,6 +20,7 @@ aside {
       margin-bottom: 5px;
     }
     dd {
+      float: left;
       width: 75%;
       margin: 0;
     }
