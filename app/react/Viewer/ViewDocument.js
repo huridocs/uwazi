@@ -62,8 +62,8 @@ export default class ViewDocument extends RouteHandler {
   }
 
   setReduxState({documentViewer}) {
-    this.context.store.dispatch(actions.set('viewer/doc', documentViewer.doc));
     this.context.store.dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));
+    this.context.store.dispatch(actions.set('viewer/doc', documentViewer.doc));
     this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
     this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
     this.context.store.dispatch(actions.set('viewer/relationTypes', documentViewer.relationTypes));

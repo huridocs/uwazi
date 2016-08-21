@@ -105,6 +105,19 @@ export class ViewMetadataPanel extends Component {
               this.props.showTab(tab);
             }}
           >
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="toc">Table of contents</TabLink>
+              </li>
+              <li>
+                <TabLink to="metadata" default>Metadata</TabLink>
+              </li>
+              <li>
+                <TabLink to="connections">Connections (22)</TabLink>
+              </li>
+            </ul>
+            <TabContent for="toc">
+            </TabContent>
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited) {

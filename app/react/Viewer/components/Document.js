@@ -45,6 +45,7 @@ export class Document extends Component {
 
   componentDidUpdate() {
     this.text.renderReferences(this.props.references);
+    this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);

@@ -21,9 +21,11 @@ export default function (container) {
 
     searchRenderedReference(referenceId) {
       let reference = null;
-      if (this.renderedReferences[referenceId]) {
-        reference = this.renderedReferences[referenceId];
-      }
+      Object.keys(this.renderedReferences).forEach((referencesKey) => {
+        if (this.renderedReferences[referencesKey][referenceId]) {
+          reference = this.renderedReferences[referencesKey][referenceId];
+        }
+      });
       return reference;
     },
 
@@ -107,28 +109,31 @@ export default function (container) {
       }
     },
 
-    renderReferences(references) {
+    renderReferences(references, identifier = 'reference') {
+      let rangeProperty = 'range';
       let ids = [];
-
+      if (!this.renderedReferences[identifier]) {
+        this.renderedReferences[identifier] = {};
+      }
       references.forEach((reference) => {
         if (!container.innerHTML) {
           throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
         }
         ids.push(reference._id);
-        if (this.renderedReferences[reference._id] || typeof reference.range.start === 'undefined') {
+        if (this.renderedReferences[identifier][reference._id] || !reference[rangeProperty]) {
           return;
         }
-        let restoredRange = TextRange.restore(reference.range, container);
+        let restoredRange = TextRange.restore(reference[rangeProperty], container);
         let elementWrapper = document.createElement('a');
-        elementWrapper.classList.add('reference');
+        elementWrapper.classList.add(identifier);
         elementWrapper.setAttribute('data-id', reference._id);
-        this.renderedReferences[reference._id] = wrapper.wrap(elementWrapper, restoredRange);
+        this.renderedReferences[identifier][reference._id] = wrapper.wrap(elementWrapper, restoredRange);
       });
 
-      Object.keys(this.renderedReferences).forEach((id) => {
+      Object.keys(this.renderedReferences[identifier]).forEach((id) => {
         if (ids.indexOf(id) === -1) {
-          this.renderedReferences[id].unwrap();
-          delete this.renderedReferences[id];
+          this.renderedReferences[identifier][id].unwrap();
+          delete this.renderedReferences[identifier][id];
         }
       });
     }
