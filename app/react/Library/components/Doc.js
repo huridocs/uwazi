@@ -35,9 +35,10 @@ export class Doc extends Component {
 
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)}>
+        {/*<i className="item-icon fa fa-file-o"></i>*/}
         <div className="item-info">
-          <span className={typeIndex}>{type}</span>
           <ItemName>{title}</ItemName>
+          <span className={typeIndex}>{type}</span>
         </div>
         <div className="item-metadata">
             <dl>
@@ -47,7 +48,7 @@ export class Doc extends Component {
         </div>
         <ItemFooter>
           <Link to={documentViewUrl} className="item-shortcut">
-            <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+            <i className="fa fa-file-o"></i> <i className="fa fa-angle-right"></i>
           </Link>
         </ItemFooter>
       </RowList.Item>
