@@ -17,7 +17,7 @@ describe('LibraryMenu', () => {
     props = {
       showFilters: jasmine.createSpy('showFilters'),
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      loadDocument: jasmine.createSpy('loadDocument'),
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       filtersForm: {isBatman: {value: true}},
       templates: Immutable.fromJS([]),
       searchTerm: 'test',
@@ -28,11 +28,11 @@ describe('LibraryMenu', () => {
   describe('when there is a document selected', () => {
     it('should start editing it', () => {
       props.selectedDocument = Immutable.fromJS({_id: '123'});
-      props.docForm = Immutable.fromJS({_id: '123'});
+      props.metadata = Immutable.fromJS({_id: '123'});
 
       render();
       component.find(MenuButtons.Main).simulate('click');
-      expect(props.loadDocument).toHaveBeenCalled();
+      expect(props.loadInReduxForm).toHaveBeenCalled();
     });
   });
 });

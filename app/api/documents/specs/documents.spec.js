@@ -21,7 +21,34 @@ describe('documents', () => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
-    .catch(done.fail);
+    .catch(catchErrors(done));
+  });
+
+  describe('get', () => {
+    it('should return a list of documents returned from the list view', (done) => {
+      documents.get()
+      .then((response) => {
+        expect(response.rows.length).toBe(7);
+        expect(response.rows[0].title).toEqual('Batman finishes');
+        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
+        done();
+      })
+      .catch(console.log);
+    });
+    describe('when passing id', () => {
+      it('should return matching document', (done) => {
+        let docId = '8202c463d6158af8065022d9b5014ccb';
+
+        documents.get(docId)
+        .then((response) => {
+          let docs = response.rows;
+          expect(docs.length).toBe(1);
+          expect(docs[0].title).toBe('Penguin almost done');
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
   });
 
   describe('save', () => {

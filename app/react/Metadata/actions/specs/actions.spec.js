@@ -2,7 +2,7 @@ import * as actions from '../actions';
 import {actions as formActions} from 'react-redux-form';
 
 describe('documentFormActions', () => {
-  describe('loadDocument', () => {
+  describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
       let dispatch = jasmine.createSpy('dispatch');
@@ -10,7 +10,7 @@ describe('documentFormActions', () => {
       let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
 
 
-      actions.loadDocument('formNamespace', doc, templates)(dispatch);
+      actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
       let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: ''}};
       expect(dispatch).toHaveBeenCalledWith('formload');
@@ -25,7 +25,7 @@ describe('documentFormActions', () => {
       let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
 
 
-      actions.loadDocument('formNamespace', doc, templates)(dispatch);
+      actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
       let expectedDoc = {title: 'test', metadata: {test: '', newProp: ''}, template: 'templateId'};
       expect(dispatch).toHaveBeenCalledWith('formload');

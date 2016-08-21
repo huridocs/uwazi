@@ -18,12 +18,12 @@ describe('MetadataPanelMenu', () => {
       props = {
         doc: Immutable.fromJS({_id: 1}),
         templates: Immutable.fromJS({templates: 'tempaltes'}),
-        loadDocument: jasmine.createSpy('loadDocument')
+        loadInReduxForm: jasmine.createSpy('loadInReduxForm')
       };
       render();
 
       component.find(MenuButtons.Main).simulate('click');
-      expect(props.loadDocument).toHaveBeenCalledWith('documentViewer.docForm', props.doc.toJS(), props.templates.toJS());
+      expect(props.loadInReduxForm).toHaveBeenCalledWith('documentViewer.docForm', props.doc.toJS(), props.templates.toJS());
     });
   });
 
@@ -39,7 +39,7 @@ describe('MetadataPanelMenu', () => {
       render();
 
       let button = component.find(MenuButtons.Main).find('button');
-      expect(button.props().form).toBe('documentForm');
+      expect(button.props().form).toBe('metadataForm');
     });
 
     describe('when form is pristine', () => {

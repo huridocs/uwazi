@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
-import documents from 'app/Documents';
+import {formater} from 'app/Metadata';
 
 import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
@@ -15,6 +15,7 @@ describe('ViewMetadataPanel', () => {
   beforeEach(() => {
     props = {
       doc: {metadata: []},
+      rawDoc: Immutable.fromJS({}),
       showModal: jasmine.createSpy('showModal')
     };
   });
@@ -44,7 +45,7 @@ describe('ViewMetadataPanel', () => {
       it('should showModal ConfirmCloseForm', () => {
         props.formState = {dirty: true};
         render();
-        component.find('i').simulate('click');
+        component.find('i.close-modal').simulate('click');
         expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
       });
     });
@@ -53,14 +54,16 @@ describe('ViewMetadataPanel', () => {
       it('should close panel and reset form', () => {
         props.closePanel = jasmine.createSpy('closePanel');
         props.resetForm = jasmine.createSpy('resetForm');
+        props.showTab = jasmine.createSpy('showConnections');
         props.formState = {dirty: false};
         props.docBeingEdited = true;
         render();
 
-        component.find('i').simulate('click');
+        component.find('i.close-modal').simulate('click');
 
         expect(props.closePanel).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith('documentViewer.docForm');
+        expect(props.showTab).toHaveBeenCalled();
       });
     });
   });
@@ -96,14 +99,14 @@ describe('ViewMetadataPanel', () => {
     const mockStore = configureMockStore([]);
 
     let renderContainer = () => {
-      spyOn(documents.helpers, 'prepareMetadata');
+      spyOn(formater, 'prepareMetadata');
       let store = mockStore(state);
       component = shallow(<PanelContainer />, {context: {store}});
     };
 
     it('should prepare doc with template and thesauris', () => {
       renderContainer();
-      expect(documents.helpers.prepareMetadata).toHaveBeenCalledWith(
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(
         state.documentViewer.doc.toJS(),
         state.documentViewer.templates.toJS(),
         state.documentViewer.thesauris.toJS()

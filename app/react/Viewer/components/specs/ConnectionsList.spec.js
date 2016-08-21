@@ -3,8 +3,7 @@ import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 
-import ListContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
-import SidePanel from 'app/Layout/SidePanel';
+import PanelContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
 
 describe('ConnectionsList', () => {
   let component;
@@ -48,16 +47,6 @@ describe('ConnectionsList', () => {
     render();
 
     expect(component.find('.item').get(0).props.className).toContain('disabled');
-  });
-
-  describe('on Close panel', () => {
-    it('should close panel and deactivate reference', () => {
-      render();
-
-      component.find('.close-modal').simulate('click');
-      expect(props.closePanel).toHaveBeenCalled();
-      expect(props.deactivateReference).toHaveBeenCalled();
-    });
   });
 
   describe('when mouseenter on a reference', () => {
@@ -114,7 +103,7 @@ describe('ConnectionsList', () => {
     });
   });
 
-  describe('ListContainer', () => {
+  describe('PanelContainer', () => {
     let state = {
       documentViewer: {
         uiState: Immutable.fromJS({

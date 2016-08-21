@@ -7,7 +7,7 @@ export default {
   },
 
   getInbound(targetDocument) {
-    return api.get(`references/by_target_document/${targetDocument}`)
+    return api.get(`references/by_target/${targetDocument}`)
     .then((response) => {
       return response.json.rows;
     });

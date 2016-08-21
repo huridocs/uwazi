@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {addToToc} from '../actions/documentActions';
 
 import {openPanel} from 'app/Viewer/actions/uiActions';
 
@@ -16,6 +17,10 @@ export class ViewerTextSelectedMenu extends Component {
           <span>Connect to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
+        <div onClick={this.props.addToToc.bind(null, this.props.reference.toJS())} className="float-btn__sec">
+          <span>Add to table of contents</span>
+          <i className="fa fa-list"></i>
+        </div>
         <div className="float-btn__main cta"><i className="fa fa-plus"></i></div>
       </div>
     );
@@ -25,11 +30,18 @@ export class ViewerTextSelectedMenu extends Component {
 ViewerTextSelectedMenu.propTypes = {
   openPanel: PropTypes.func,
   closeMenu: PropTypes.func,
+  addToToc: PropTypes.func,
   active: PropTypes.bool
 };
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openPanel}, dispatch);
+function mapStateToProps({documentViewer}) {
+  return {
+    reference: documentViewer.uiState.get('reference')
+  };
 }
 
-export default connect(null, mapDispatchToProps)(ViewerTextSelectedMenu);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({openPanel, addToToc}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewerTextSelectedMenu);

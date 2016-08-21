@@ -3,64 +3,118 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 
-import {showModal} from 'app/Modals/actions/modalActions';
+import {newEntity} from 'app/Uploads/actions/uploadsActions';
+import ShowIf from 'app/App/ShowIf';
+
+import {deleteDocument, deleteEntity, moveToLibrary, publishEntity, finishEdit} from 'app/Uploads/actions/uploadsActions';
 
 export class UploadsMenu extends Component {
+
+  deleteDocument() {
+    this.context.confirm({
+      accept: () => {
+        if (this.props.metadataBeingEdited.type === 'document') {
+          this.props.deleteDocument(this.props.metadataBeingEdited);
+        }
+
+        this.props.deleteEntity(this.props.metadataBeingEdited);
+        this.props.finishEdit();
+      },
+      title: 'Confirm delete',
+      message: `Are you sure you want to delete: ${this.props.metadataBeingEdited.title}?`
+    });
+  }
+
+  publish() {
+    this.context.confirm({
+      accept: () => {
+        if (this.props.metadataBeingEdited.type === 'document') {
+          this.props.moveToLibrary(this.props.metadataBeingEdited);
+        }
+
+        this.props.publishEntity(this.props.metadataBeingEdited);
+        this.props.finishEdit();
+      },
+      title: 'Confirm publish',
+      message: `Are you sure you want to make ${this.props.metadataBeingEdited.title} public?`,
+      type: 'success'
+    });
+  }
+
+  renderMetadataMenu(metadataBeingEdited) {
+    return <div>
+            <ShowIf if={!!metadataBeingEdited.template}>
+                <div className="float-btn__sec publish" onClick={() => this.publish()}>
+                  <span>Publish</span><i className="fa fa-send"></i>
+                </div>
+            </ShowIf>
+            <ShowIf if={!!metadataBeingEdited.processed && metadataBeingEdited.type === 'document'}>
+              <div className="float-btn__sec view">
+                <Link to={`document/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
+              </div>
+            </ShowIf>
+            <ShowIf if={!!metadataBeingEdited._id && metadataBeingEdited.type === 'entity'}>
+              <div className="float-btn__sec view">
+                <Link to={`entity/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
+              </div>
+            </ShowIf>
+            <ShowIf if={!!metadataBeingEdited._id}>
+              <div className="float-btn__sec delete" onClick={() => this.deleteDocument()}>
+                <span>Delete</span><i className="fa fa-trash"></i>
+              </div>
+            </ShowIf>
+            <div className="float-btn__main cta">
+              <button type="submit" form="metadataForm"><span>Save</span><i className="fa fa-save"></i></button>
+            </div>
+          </div>;
+  }
+
+  renderNormalMenu() {
+    return <div>
+            <div className="float-btn__main cta">
+              <button onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
+                <span>New Entity</span><i className="fa fa-plus"></i>
+              </button>
+            </div>
+           </div>;
+  }
+
   render() {
-    let active = this.props.active && this.props.documentBeingEdited;
-    let doc = this.props.doc;
-    return (
-      <div className={active ? 'active' : ''}>
-        {(() => {
-          if (doc && doc.get('template')) {
-            return <div className="float-btn__sec publish" onClick={() => this.props.showModal('readyToPublish', doc)}>
-              <span>Publish document</span><i className="fa fa-send"></i>
-            </div>;
-          }
-        })()}
-        {(() => {
-          if (doc && doc.get('processed')) {
-            return <div className="float-btn__sec view">
-              <Link to={`document/${doc.get('_id')}`}><span>ViewDocument</span><i className="fa fa-file-o"></i></Link>
-            </div>;
-          }
-        })()}
-        {(() => {
-          if (doc) {
-            return <div className="float-btn__sec delete" onClick={() => this.props.showModal('deleteDocument', doc)}>
-              <span>Delete document</span><i className="fa fa-trash"></i>
-            </div>;
-          }
-        })()}
-        {(() => {
-          if (doc) {
-            return <div className="float-btn__main cta">
-              <button type="submit" form="documentForm"><span>Save metadata</span><i className="fa fa-save"></i></button>
-            </div>;
-          }
-        })()}
-      </div>
-    );
+    if (this.props.metadataBeingEdited) {
+      return this.renderMetadataMenu(this.props.metadataBeingEdited);
+    }
+
+    return this.renderNormalMenu();
   }
 }
 
 UploadsMenu.propTypes = {
   active: PropTypes.bool,
-  documentBeingEdited: PropTypes.string,
-  doc: PropTypes.object,
-  showModal: PropTypes.func
+  metadataBeingEdited: PropTypes.object,
+  deleteEntity: PropTypes.func,
+  deleteDocument: PropTypes.func,
+  newEntity: PropTypes.func,
+  moveToLibrary: PropTypes.func,
+  publishEntity: PropTypes.func,
+  finishEdit: PropTypes.func,
+  templates: PropTypes.object
+};
+
+UploadsMenu.contextTypes = {
+  confirm: PropTypes.func
 };
 
 function mapStateToProps(state) {
   let docId = state.uploads.uiState.get('documentBeingEdited');
   return {
     documentBeingEdited: docId,
-    doc: state.uploads.documents.find(doc => doc.get('_id') === docId)
+    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited'),
+    templates: state.uploads.templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({showModal}, dispatch);
+  return bindActionCreators({deleteDocument, deleteEntity, newEntity, moveToLibrary, publishEntity, finishEdit}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsMenu);

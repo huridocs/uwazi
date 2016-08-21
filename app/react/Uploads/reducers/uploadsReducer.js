@@ -9,7 +9,7 @@ export default function documents(state = initialState, action = {}) {
     return Immutable.fromJS(action.documents);
   }
 
-  if (action.type === types.DOCUMENT_CREATED) {
+  if (action.type === types.ELEMENT_CREATED) {
     return state.push(Immutable.fromJS(action.doc)).sort((a, b) => b.get('creationDate') - a.get('creationDate'));
   }
 
@@ -26,11 +26,11 @@ export default function documents(state = initialState, action = {}) {
   }
 
   if (action.type === types.MOVED_TO_LIBRARY) {
-    return state.delete(state.findIndex(doc => doc.get('_id') === action.doc));
+    return state.delete(state.findIndex(doc => doc.get('_id') === action.id));
   }
 
-  if (action.type === types.DOCUMENT_DELETED) {
-    return state.delete(state.findIndex(doc => doc.get('_id') === action.doc));
+  if (action.type === types.ELEMENT_DELETED) {
+    return state.delete(state.findIndex(doc => doc.get('_id') === action.id));
   }
 
   return Immutable.fromJS(state);

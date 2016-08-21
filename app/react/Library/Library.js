@@ -9,8 +9,6 @@ import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
 import SearchButton from './components/SearchButton';
-import ContextMenu from 'app/ContextMenu';
-import LibraryMenu from './components/LibraryMenu';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
 import {store} from 'app/store';
@@ -51,13 +49,10 @@ export default class Library extends RouteHandler {
 
   render() {
     return <div className="row panels-layout">
-              <DocumentsList />
-              <ConfirmCloseForm />
-              <LibraryFilters />
-              <ViewMetadataPanel />
-              <ContextMenu>
-                <LibraryMenu/>
-              </ContextMenu>
-            </div>;
+      <DocumentsList />
+      <ConfirmCloseForm />
+      <LibraryFilters />
+      <ViewMetadataPanel />
+    </div>;
   }
 }

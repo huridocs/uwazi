@@ -38,17 +38,17 @@
     color: inherit;
   }
 
-  &.references-panel-is-open a.reference {
+  &.connections a.reference {
     background-color: $c-secondary-lighten;
   }
 
   a.highlighted,
-  &.references-panel-is-open a.highlighted {
+  &.connections a.highlighted {
     background-color: $c-secondary-light;
     cursor: pointer;
   }
 
-  &.references-panel-is-open a.is-active {
+  &.connections a.is-active {
     background-color: $c-secondary;
     cursor: pointer;
   }
@@ -88,7 +88,7 @@
   width: 33%;
 }
 
-.document-references {
+.side-panel {
   .item {
     &.relationship-hover {
       border-left: 3px solid $c-secondary-light;
@@ -121,6 +121,23 @@
 
 .relationship-steps {
   display: flex;
+
+  &.is-fixed {
+    display: flex;
+    position: fixed;
+    z-index: 1;
+    background: linear-gradient($c-background 0%, $c-background 70%, transparent 100%);
+    top: 54px;
+    width: 100%;
+    left: 0;
+    padding: 15px;
+    @include desktop {
+      left: auto;
+      max-width: 800px;
+      padding: 15px 0;
+    }
+  }
+
   .btn {
     padding: 5px 10px;
     margin: 12px 10px 12px 0;

@@ -2,7 +2,6 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {ViewerSaveTargetReferenceMenu} from 'app/Viewer/components/ViewerSaveTargetReferenceMenu';
-import {MenuButtons} from 'app/ContextMenu';
 
 describe('ViewerSaveTargetReferenceMenu', () => {
   let component;
@@ -22,7 +21,7 @@ describe('ViewerSaveTargetReferenceMenu', () => {
     };
     render();
 
-    let button = component.find(MenuButtons.Main);
+    let button = component.find('button');
     expect(button.props().disabled).toBe(false);
     button.simulate('click');
     expect(props.loadTargetDocument).toHaveBeenCalledWith('targetId');
@@ -37,7 +36,7 @@ describe('ViewerSaveTargetReferenceMenu', () => {
     };
     render();
 
-    let button = component.find(MenuButtons.Main);
+    let button = component.find('button');
     expect(button.props().disabled).toBe(true);
     button.simulate('click');
     expect(props.loadTargetDocument).not.toHaveBeenCalled();
@@ -56,7 +55,7 @@ describe('ViewerSaveTargetReferenceMenu', () => {
       };
       render();
 
-      let button = component.find(MenuButtons.Main);
+      let button = component.find('button');
       expect(button.props().disabled).toBe(true);
       button.simulate('click');
       expect(props.saveReference).not.toHaveBeenCalled();

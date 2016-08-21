@@ -4,16 +4,9 @@ import {bindActionCreators} from 'redux';
 
 import {saveReference} from 'app/Viewer/actions/referencesActions';
 import {loadTargetDocument} from 'app/Viewer/actions/documentActions';
-import {MenuButtons} from 'app/ContextMenu';
 
 export class ViewerSaveTargetReferenceMenu extends Component {
   handleClick() {
-    if (this.props.reference.targetRange) {
-      let reference = this.props.reference;
-      reference.sourceDocument = this.props.sourceDocument;
-      return this.props.saveReference(reference);
-    }
-
     if (this.props.reference.targetDocument && !this.props.targetDocument) {
       this.props.loadTargetDocument(this.props.reference.targetDocument);
     }
@@ -27,11 +20,9 @@ export class ViewerSaveTargetReferenceMenu extends Component {
     }
 
     return (
-      <div>
-        <MenuButtons.Main disabled={disabled} onClick={() => this.handleClick()}>
-          <i className={'fa ' + className}></i>
-        </MenuButtons.Main>
-      </div>
+      <button className="edit-metadata btn btn-success" disabled={disabled} onClick={() => this.handleClick()}>
+        <i className={'fa ' + className}></i>
+      </button>
     );
   }
 }

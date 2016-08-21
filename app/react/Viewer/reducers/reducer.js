@@ -22,5 +22,7 @@ export default combineReducers({
   templates: createReducer('viewer/templates', []),
   thesauris: createReducer('viewer/thesauris', []),
   relationTypes: createReducer('viewer/relationTypes', []),
-  referencedDocuments: createReducer('viewer/referencedDocuments', [])
+  referencedDocuments: createReducer('viewer/referencedDocuments', []),
+  tocForm: modelReducer('documentViewer.tocForm', []),
+  tocFormState: formReducer('documentViewer.tocForm')
 });

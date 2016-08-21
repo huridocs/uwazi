@@ -18,6 +18,7 @@ export class SettingsNavigation extends Component {
           <Link to='/settings/documents' activeClassName="active" className="list-group-item">Documents</Link>
           <Link to='/settings/connections' activeClassName="active" className="list-group-item">Connections</Link>
           <Link to='/settings/thesauris' activeClassName="active" className="list-group-item">Thesauris</Link>
+          <Link to='/settings/entities' activeClassName="active" className="list-group-item">Entities</Link>
         </div>
       </div>
     </div>;

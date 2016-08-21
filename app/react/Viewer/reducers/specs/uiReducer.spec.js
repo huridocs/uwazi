@@ -3,6 +3,7 @@ import 'jasmine-immutablejs-matchers';
 
 import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
+import * as actions from 'app/Viewer/actions/uiActions';
 
 describe('documentReducer', () => {
   describe('when state is undefined', () => {
@@ -27,6 +28,15 @@ describe('documentReducer', () => {
     it('should set panel = to the panel passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_PANEL, panel: 'a panel'});
       let expected = Immutable.fromJS({panel: 'a panel'});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('showTab()', () => {
+    it('should set tab connections', () => {
+      let newState = uiReducer(Immutable.fromJS({}), actions.showTab('connections'));
+      let expected = Immutable.fromJS({tab: 'connections'});
 
       expect(newState).toEqualImmutable(expected);
     });

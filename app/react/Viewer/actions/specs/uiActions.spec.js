@@ -61,10 +61,18 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
-    it('should scroll to the elements', () => {
+    it('should dispatch a SHOW_TAB connections', () => {
       actions.activateReference('id')(dispatch);
-      expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-      expect(scroller.to).toHaveBeenCalledWith('.document-metadata .item[data-id="id"]', '.document-metadata .sidepanel-body');
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'connections'});
+    });
+
+    it('should scroll to the elements', (done) => {
+      actions.activateReference('id')(dispatch);
+      setTimeout(() => {
+        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
+        expect(scroller.to).toHaveBeenCalledWith('.document-metadata .item[data-id="id"]', '.document-metadata .sidepanel-body');
+        done();
+      });
     });
   });
 

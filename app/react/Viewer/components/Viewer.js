@@ -11,9 +11,6 @@ import ViewMetadataPanel from './ViewMetadataPanel';
 
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
-import ViewerSaveReferenceMenu from './ViewerSaveReferenceMenu';
-import ViewerSaveTargetReferenceMenu from './ViewerSaveTargetReferenceMenu';
-import MetadataPanelMenu from './MetadataPanelMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
 import Footer from 'app/App/Footer';
@@ -33,8 +30,8 @@ export class Viewer extends Component {
     if (this.props.targetDoc) {
       className += ' show-target-document';
     }
-    if (this.props.referencesPanelIsOpen) {
-      className += ' references-panel-is-open';
+    if (this.props.showConnections) {
+      className += ' connections';
     }
 
     return (
@@ -57,9 +54,6 @@ export class Viewer extends Component {
         <ContextMenu>
           <ViewerDefaultMenu/>
           <ViewerTextSelectedMenu/>
-          <ViewerSaveReferenceMenu/>
-          <ViewerSaveTargetReferenceMenu/>
-          <MetadataPanelMenu/>
         </ContextMenu>
       </div>
     );
@@ -70,7 +64,7 @@ export class Viewer extends Component {
 Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   targetDoc: PropTypes.bool,
-  referencesPanelIsOpen: PropTypes.bool
+  showConnections: PropTypes.bool
 };
 
 Viewer.contextTypes = {
@@ -81,8 +75,8 @@ const mapStateToProps = ({documentViewer}) => {
   let uiState = documentViewer.uiState.toJS();
   return {
     panelIsOpen: !!uiState.panel,
-    referencesPanelIsOpen: uiState.panel === 'viewReferencesPanel',
-    targetDoc: !!documentViewer.targetDoc.get('_id')
+    targetDoc: !!documentViewer.targetDoc.get('_id'),
+    showConnections: uiState.tab === 'connections'
   };
 };
 

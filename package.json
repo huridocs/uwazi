@@ -72,7 +72,11 @@
     "react-redux": "^4.0.0",
     "react-redux-form": "0.13.9",
     "react-router": "2.0.0",
+<<<<<<< HEAD
     "react-tabs-redux": "^1.3.0",
+=======
+    "react-tabs-redux": "^1.3.1",
+>>>>>>> 950a95f64c12b4be485f9a17d36ed15f2a0e3139
     "read-multiple-files": "^1.1.1",
     "redux": "^3.0.4",
     "redux-thunk": "^2.0.1",

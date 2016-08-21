@@ -7,7 +7,7 @@ import {FormField} from 'app/Forms';
 import {Link} from 'react-router';
 import {actions as formActions} from 'react-redux-form';
 
-import {inserted, addProperty, saveTemplate} from 'app/Templates/actions/templateActions';
+import {inserted, addProperty} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import validator from './ValidateTemplate';
@@ -118,7 +118,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({inserted, addProperty, saveTemplate, setErrors: formActions.setErrors}, dispatch);
+  return bindActionCreators({inserted, addProperty, setErrors: formActions.setErrors}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dropTarget);

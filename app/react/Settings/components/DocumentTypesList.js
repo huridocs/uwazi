@@ -34,6 +34,9 @@ export class DocumentTypesList extends Component {
       <div className="panel-heading">Documents</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
+          if (template.isEntity) {
+            return false;
+          }
           return <li key={index} className="list-group-item">
               <Link to={'/settings/documents/edit/' + template._id}>{template.name}</Link>
               <div className="list-group-item-actions">
@@ -52,6 +55,7 @@ export class DocumentTypesList extends Component {
       <div className="panel-body">
         <Link to="/settings/documents/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
+          &nbsp;
           <span>Add document</span>
         </Link>
       </div>

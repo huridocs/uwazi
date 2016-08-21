@@ -13,9 +13,9 @@ describe('UploadDoc', () => {
     props = {
       doc: Immutable.fromJS({_id: 'docId', title: 'doc title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
-      editDocument: jasmine.createSpy('editDocument'),
+      edit: jasmine.createSpy('edit'),
       finishEdit: jasmine.createSpy('finishEdit'),
-      loadDocument: jasmine.createSpy('loadDocument'),
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       showModal: jasmine.createSpy('showModal')
     };
   });
@@ -42,24 +42,24 @@ describe('UploadDoc', () => {
     expect(component.find(ItemFooter.Label).props().status).toBe('success');
   });
 
-  it('should not pass active prop if not documentBeingEdited', () => {
+  it('should not pass active prop if not metadataBeingEdited', () => {
     render();
     expect(component.find(RowList.Item).props().active).toBeUndefined();
   });
 
-  it('should pass active prop true if documentBeingEdited its the same', () => {
+  it('should pass active prop true if metadataBeingEdited its the same', () => {
     props = {
       doc: Immutable.fromJS({_id: 'docId', title: 'doc title'}),
-      documentBeingEdited: 'docId'
+      metadataBeingEdited: {_id: 'docId'}
     };
     render();
     expect(component.find(RowList.Item).props().active).toBe(true);
   });
 
-  it('should pass active prop false if documentBeingEdited its not the same', () => {
+  it('should pass active prop false if metadataBeingEdited its not the same', () => {
     props = {
       doc: Immutable.fromJS({_id: 'docId', title: 'doc title'}),
-      documentBeingEdited: 'anotherId'
+      metadataBeingEdited: {_id: 'anotherId'}
     };
     render();
     expect(component.find(RowList.Item).props().active).toBe(false);
@@ -119,23 +119,23 @@ describe('UploadDoc', () => {
   });
 
   describe('onClick', () => {
-    it('should editDocument', () => {
+    it('should edit', () => {
       render();
 
       component.find(RowList.Item).simulate('click');
-      expect(props.editDocument).toHaveBeenCalledWith(props.doc.toJS());
-      expect(props.loadDocument).toHaveBeenCalledWith('uploads.document', props.doc.toJS(), props.templates.toJS());
+      expect(props.edit).toHaveBeenCalledWith(props.doc.toJS());
+      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.doc.toJS(), props.templates.toJS());
     });
 
     describe('when clicking on the same document being edited', () => {
       it('should finishEdit', () => {
-        props.documentBeingEdited = 'docId';
+        props.metadataBeingEdited = {_id: 'docId'};
         render();
 
         component.find(RowList.Item).simulate('click');
         expect(props.finishEdit).toHaveBeenCalled();
-        expect(props.editDocument).not.toHaveBeenCalled();
-        expect(props.loadDocument).not.toHaveBeenCalled();
+        expect(props.edit).not.toHaveBeenCalled();
+        expect(props.loadInReduxForm).not.toHaveBeenCalled();
       });
     });
   });

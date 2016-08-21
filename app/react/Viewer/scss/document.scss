@@ -5,7 +5,6 @@
 .document-viewer {
   overflow-y: scroll;
   height: 100%;
-  transform: translateX(0%);
   transition: all 500ms;
 }
 
@@ -104,7 +103,7 @@
 }
 
 .document.targetDocument {
-  
+  padding-top: 54px;
 }
 
 .document.targetDocument._undefined {

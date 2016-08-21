@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
+import Immutable from 'immutable';
 
 import api from 'app/utils/api';
 import {mockID} from 'shared/uniqueID.js';
@@ -137,6 +138,46 @@ describe('documentActions', () => {
         })
         .then(done)
         .catch(done.fail);
+      });
+    });
+
+    describe('addToToc', () => {
+      it('should populate doc form, and add the selected text to it', () => {
+        let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
+        const expectedActions = [
+          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [reference], silent: true, multi: false},
+          {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
+          {type: types.SHOW_TAB, tab: 'toc'}
+        ];
+        const store = mockStore({
+          documentViewer: {
+            tocForm: [],
+            doc: Immutable.fromJS({})
+          }
+        });
+
+        store.dispatch(actions.addToToc(reference));
+        expect(store.getActions()).toEqual(expectedActions);
+      });
+
+      describe('if document is already loaded', () => {
+        it('should not reload the form', () => {
+          let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
+          const expectedActions = [
+            {type: 'rrf/change', model: 'documentViewer.tocForm', value: [{}, reference], silent: true, multi: false},
+            {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
+            {type: types.SHOW_TAB, tab: 'toc'}
+          ];
+          const store = mockStore({
+            documentViewer: {
+              tocForm: [{}],
+              doc: Immutable.fromJS({})
+            }
+          });
+
+          store.dispatch(actions.addToToc(reference));
+          expect(store.getActions()).toEqual(expectedActions);
+        });
       });
     });
   });

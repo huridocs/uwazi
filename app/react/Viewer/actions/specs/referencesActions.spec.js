@@ -54,7 +54,8 @@ describe('referencesActions', () => {
           {type: 'viewer/targetDocHTML/UNSET'},
           {type: 'viewer/targetDocReferences/UNSET'},
           {type: 'ACTIVE_REFERENCE', reference: 'referenceCreated'},
-          {type: 'OPEN_PANEL', panel: 'viewReferencesPanel'},
+          {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'},
+          {type: 'SHOW_TAB', tab: 'connections'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}},
           {type: 'viewer/referencedDocuments/SET', value: [{_id: '1'}, {_id: '2'}]}
         ];

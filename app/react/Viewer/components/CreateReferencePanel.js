@@ -11,6 +11,9 @@ import {selectTargetDocument, closePanel} from 'app/Viewer/actions/uiActions';
 import {setRelationType} from 'app/Viewer/actions/referencesActions';
 import {Select} from 'app/Forms';
 import {showModal} from 'app/Modals/actions/modalActions';
+import CreateTargetConnectionMenu from './ViewerSaveTargetReferenceMenu';
+import CreateConnectionMenu from './ViewerSaveReferenceMenu';
+import ShowIf from 'app/App/ShowIf';
 
 export class CreateReferencePanel extends Component {
   close() {
@@ -38,28 +41,38 @@ export class CreateReferencePanel extends Component {
             onChange={e => this.props.setRelationType(e.target.value)}
           />
 
-          <div className="relationship-steps">
-            <h2>Select document<small>2</small></h2>
-          </div>
-          <ViewerSearchForm />
+        <div className="relationship-steps">
+          <h2>Select document<small>2</small></h2>
+        </div>
+        <ViewerSearchForm />
+      </div>
+
+      <div className="sidepanel-footer">
+        <ShowIf if={this.props.creatingToTarget}>
+          <CreateTargetConnectionMenu />
+        </ShowIf>
+        <ShowIf if={!this.props.creatingToTarget}>
+          <CreateConnectionMenu />
+        </ShowIf>
       </div>
 
       <div className="sidepanel-body">
-          <SearchResults
-            results={this.props.results}
-            searching={this.props.searching}
-            selected={this.props.selected}
-            onClick={this.props.selectTargetDocument}
-          />
+        <SearchResults
+          results={this.props.results}
+          searching={this.props.searching}
+          selected={this.props.selected}
+          onClick={this.props.selectTargetDocument}
+        />
       </div>
 
-      </SidePanel>
+    </SidePanel>
     );
   }
 }
 
 CreateReferencePanel.propTypes = {
   open: PropTypes.bool,
+  creatingToTarget: PropTypes.bool,
   results: PropTypes.object,
   reference: PropTypes.object,
   searching: PropTypes.bool,
@@ -77,6 +90,7 @@ const mapStateToProps = (state) => {
 
   return {
     open: uiState.panel === 'referencePanel' || uiState.panel === 'targetReferencePanel',
+    creatingToTarget: uiState.panel === 'targetReferencePanel',
     reference: uiState.reference,
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,

@@ -38,14 +38,14 @@ describe('uploadsReducer', () => {
     });
   });
 
-  describe('DOCUMENT_CREATED', () => {
+  describe('ELEMENT_CREATED', () => {
     it('should insert the new document and sort documents by date', () => {
       let currentState = Immutable.fromJS([{title: '1', creationDate: 25}, {title: '2', creationDate: 35}]);
       let doc = {title: '3', creationDate: 15};
-      currentState = uploadsReducer(currentState, {type: types.DOCUMENT_CREATED, doc});
+      currentState = uploadsReducer(currentState, {type: types.ELEMENT_CREATED, doc});
 
       let anotherDoc = {title: '4', creationDate: 50};
-      let newState = uploadsReducer(currentState, {type: types.DOCUMENT_CREATED, doc: anotherDoc});
+      let newState = uploadsReducer(currentState, {type: types.ELEMENT_CREATED, doc: anotherDoc});
       expect(newState).toEqualImmutable(Immutable.fromJS([
         {title: '4', creationDate: 50},
         {title: '2', creationDate: 35},
@@ -78,10 +78,10 @@ describe('uploadsReducer', () => {
     });
   });
 
-  describe('DOCUMENT_DELETED', () => {
+  describe('ELEMENT_DELETED', () => {
     it('should remove it from the state', () => {
       let currentState = Immutable.fromJS([{_id: 'id1', title: '1'}, {_id: 'id2', title: '2'}]);
-      let newState = uploadsReducer(currentState, {type: types.DOCUMENT_DELETED, doc: 'id2'});
+      let newState = uploadsReducer(currentState, {type: types.ELEMENT_DELETED, doc: 'id2'});
       expect(newState.toJS()).toEqual([{_id: 'id1', title: '1'}]);
     });
   });

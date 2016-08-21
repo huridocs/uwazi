@@ -13,6 +13,8 @@ export default combineReducers({
   thesauris,
   progress,
   uiState,
-  document: modelReducer('uploads.document'),
-  documentForm: formReducer('uploads.document')
+  metadata: modelReducer('uploads.metadata'),
+  metadataForm: formReducer('uploads.metadata'),
+  entity: modelReducer('uploads.entity'),
+  entityForm: formReducer('uploads.entity')
 });

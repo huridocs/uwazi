@@ -7,8 +7,8 @@ import libraryFilters from './filtersReducer';
 import {modelReducer, formReducer} from 'react-redux-form';
 
 export default combineReducers({
-  docForm: modelReducer('library.docForm'),
-  docFormState: formReducer('library.docForm'),
+  metadata: modelReducer('library.metadata'),
+  metadataForm: formReducer('library.metadata'),
   documents: documents,
   ui: libraryUI,
   filters: libraryFilters

@@ -68,7 +68,14 @@ export function saveTemplate(data) {
       dispatch({type: types.TEMPLATE_SAVED, data: response});
 
       dispatch(formActions.merge('template.data', {_id: response.id, _rev: response.rev}));
-      dispatch(notify('saved successfully !', 'success'));
+      dispatch(notify('Saved successfully.', 'success'));
     });
+  };
+}
+
+export function saveEntity(data) {
+  let entity = Object.assign({}, data, {isEntity: true});
+  return function (dispatch) {
+    saveTemplate(entity)(dispatch);
   };
 }
