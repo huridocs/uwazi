@@ -9,10 +9,12 @@ import queryBuilder from 'api/documents/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import fs from 'fs';
+import {mockID} from 'shared/uniqueID';
 
 describe('documents', () => {
   let result;
   beforeEach((done) => {
+    mockID();
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1'},
       {title: 'doc2', _id: 'id2'}
@@ -67,6 +69,22 @@ describe('documents', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.creationDate).toEqual('universal time');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should assign unique ids to toc entries', (done) => {
+      spyOn(date, 'currentUTC').and.returnValue('universal time');
+      let doc = {title: 'Batman begins', toc: [{}, {_id: '1'}]};
+      let user = {_id: 'user Id'};
+
+      documents.save(doc, user)
+      .then(getDocuments)
+      .then((docs) => {
+        let createdDocument = docs.find((d) => d.title === 'Batman begins');
+        expect(createdDocument.toc[0]._id).toBe('unique_id');
+        expect(createdDocument.toc[1]._id).toBe('1');
         done();
       })
       .catch(catchErrors(done));
