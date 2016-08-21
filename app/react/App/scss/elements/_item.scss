@@ -2,8 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   max-width: 1024px;
-	list-style-type: none;
-	padding: 0;
+  list-style-type: none;
+  padding: 0;
   margin: auto;
 
   .document-viewer & {
@@ -179,7 +179,11 @@ $item-padding: 15px;
   right: 0;
   color: $c-grey-dark;
   background-color: $c-white;
+<<<<<<< 5b0428941e186857f256723c49377677c4f715c8
   border-top: 1px dotted $c-grey-light;
+=======
+  border-top: 1px solid $c-grey-lighten;
+>>>>>>> new entity iteration
   padding: 0 10px;
   text-align: right;
   border-bottom-left-radius: 4px;
