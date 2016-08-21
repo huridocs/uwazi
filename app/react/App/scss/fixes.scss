@@ -290,16 +290,30 @@ header ul .btn .fa {
   left: 0 !important;
   right: auto !important;
   width: 50% !important;
+  @media (max-width: 1023px) {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 999px !important;
+    top: 0 !important;
+  }
 }
 .document-references {
   right: 0 !important;
   width: 50% !important;
+  @media (max-width: 1023px) {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 999px !important;
+    top: 0 !important;
+  }
 
   .item-group {
     justify-content: space-around;
   }
-  .item {
-    width: 48% !important;
+  @media(min-width: 1024px) {
+    .item {
+      width: 48% !important;
+    }
   }
   .item-type {
     top: 0px !important;
