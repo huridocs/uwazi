@@ -99,7 +99,7 @@ export class ViewMetadataPanel extends Component {
                 <TabLink to="metadata" default>Metadata</TabLink>
               </li>
               <li>
-                <TabLink to="connections">Connections (22)</TabLink>
+                <TabLink to="connections">Connections ({this.props.numberOfReferences})</TabLink>
               </li>
             </ul>
             <TabContent for="toc">
@@ -139,7 +139,8 @@ ViewMetadataPanel.propTypes = {
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
-  loadInReduxForm: PropTypes.func
+  loadInReduxForm: PropTypes.func,
+  numberOfReferences: PropTypes.number
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -161,6 +162,7 @@ const mapStateToProps = ({documentViewer}) => {
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab'),
+    numberOfReferences: documentViewer.references.size,
     tocForm: documentViewer.tocForm || []
   };
 };
