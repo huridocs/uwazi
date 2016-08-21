@@ -13,7 +13,7 @@ $c-sidebar: $c-white;
   top: 54px;
   bottom: 0;
   //border-left: 1px solid $c-grey;
-  box-shadow: $shadow;
+  box-shadow: 0 0 10px $c-grey;
   background-color: $c-sidebar;
   max-width: 320px - 54px;
   transition: right 500ms;
@@ -59,6 +59,12 @@ $c-sidebar: $c-white;
     position: absolute;
     top: 15px;
     right: 15px;
+    font-size: 18px;
+    color: $c-grey;
+    cursor: pointer;
+    position: absolute;
+    top: 30px;
+    right: 30px;
     font-size: 18px;
     color: $c-grey;
     cursor: pointer;
@@ -182,5 +188,43 @@ $c-sidebar: $c-white;
 
 .metadata-sidepanel {
   z-index: 3;
-  box-shadow: 0 0 10px $c-grey;
+}
+
+
+/* entity styles */
+.metadata-sidepanel {
+  left: 0 !important;
+  right: auto !important;
+  width: 50% !important;
+  @media (max-width: 1023px) {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 999px !important;
+    top: 0 !important;
+  }
+  .sidepanel-header {
+    border: 0;
+  }
+}
+.document-references {
+  right: 0 !important;
+  width: 50% !important;
+  @media (max-width: 1023px) {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 999px !important;
+    top: 0 !important;
+  }
+
+  .item-group {
+    justify-content: space-between;
+  }
+  @media(min-width: 1024px) {
+    .item {
+      width: 48% !important;
+    }
+  }
+  .item-metadata {
+    display: none;
+  }
 }
