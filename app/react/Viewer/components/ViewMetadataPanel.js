@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
-import {saveDocument} from '../actions/documentActions';
+import {saveDocument, saveToc} from '../actions/documentActions';
 import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
@@ -16,6 +16,7 @@ import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {browserHistory} from 'react-router';
+import {TocForm} from 'app/Documents';
 
 export class ViewMetadataPanel extends Component {
   deleteDocument() {
@@ -99,6 +100,14 @@ export class ViewMetadataPanel extends Component {
             </NeedAuthorization>
           </div>
         </ShowIf>
+        <ShowIf if={this.props.tab === 'toc'}>
+          <div className="sidepanel-footer">
+          <button type="submit" form="tocForm" disabled={disabled} className="edit-toc btn btn-success">
+            <i className="fa fa-save"></i>
+            <span className="btn-label">Save</span>
+          </button>
+          </div>
+        </ShowIf>
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}
             handleSelect={(tab) => {
@@ -117,6 +126,7 @@ export class ViewMetadataPanel extends Component {
               </li>
             </ul>
             <TabContent for="toc">
+              <TocForm onSubmit={this.props.saveToc} model="documentViewer.tocForm" state={this.props.tocFormState} toc={this.props.tocForm}/>
             </TabContent>
             <TabContent for="metadata">
               {(() => {
@@ -151,7 +161,13 @@ ViewMetadataPanel.propTypes = {
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
   loadInReduxForm: PropTypes.func,
+<<<<<<< c15d1a4bc4ebf2604b7bf762875a1f81c4d5094b
   numberOfReferences: PropTypes.number
+=======
+  tocFormState: PropTypes.object,
+  tocForm: PropTypes.array,
+  saveToc: PropTypes.func
+>>>>>>> TocForm for creating documents table of contents
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -173,8 +189,13 @@ const mapStateToProps = ({documentViewer}) => {
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab'),
+<<<<<<< c15d1a4bc4ebf2604b7bf762875a1f81c4d5094b
     numberOfReferences: documentViewer.references.size,
     tocForm: documentViewer.tocForm || []
+=======
+    tocFormState: documentViewer.tocFormState,
+    tocForm: documentViewer.tocForm
+>>>>>>> TocForm for creating documents table of contents
   };
 };
 
@@ -185,7 +206,8 @@ function mapDispatchToProps(dispatch) {
     showTab, saveDocument,
     closePanel,
     deleteDocument,
-    resetForm: formActions.reset
+    resetForm: formActions.reset,
+    saveToc
   }, dispatch);
 }
 

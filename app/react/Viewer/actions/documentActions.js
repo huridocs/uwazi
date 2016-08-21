@@ -43,6 +43,15 @@ export function saveDocument(doc) {
   };
 }
 
+export function saveToc(toc) {
+  return function (dispatch, getState) {
+    let doc = getState().documentViewer.doc.toJS();
+    doc.toc = toc;
+    dispatch(formActions.reset('documentViewer.tocForm'));
+    return dispatch(saveDocument(doc));
+  };
+}
+
 export function deleteDocument(doc) {
   return function (dispatch) {
     return documents.api.delete(doc)
@@ -93,14 +102,24 @@ export function viewerSearchDocuments(searchTerm) {
   };
 }
 
-export function addToToc(reference) {
+export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
     let state = getState();
     let toc = state.documentViewer.tocForm;
     if (!toc.length) {
       toc = state.documentViewer.doc.toJS().toc || [];
     }
-    toc.push(reference);
+
+    let tocElement = {
+      range: {
+        start: textSelectedObject.sourceRange.start,
+        end: textSelectedObject.sourceRange.end
+      },
+      label: textSelectedObject.sourceRange.text,
+      indentation: 0
+    };
+
+    toc.push(tocElement);
     dispatch(formActions.load('documentViewer.tocForm', toc));
     dispatch(uiActions.openPanel('viewMetadataPanel'));
     dispatch(uiActions.showTab('toc'));

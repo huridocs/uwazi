@@ -40,6 +40,48 @@ describe('documentActions', () => {
     });
   });
 
+  describe('addToToc', () => {
+    it('should populate doc form, and add the selected text to it', () => {
+      let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
+      let tocElement = {range: {start: 12, end: 23}, label: 'Blah', indentation: 0};
+      const expectedActions = [
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [tocElement], silent: true, multi: false},
+        {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
+        {type: types.SHOW_TAB, tab: 'toc'}
+      ];
+      const store = mockStore({
+        documentViewer: {
+          tocForm: [],
+          doc: Immutable.fromJS({})
+        }
+      });
+
+      store.dispatch(actions.addToToc(reference));
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+
+    describe('if document is already loaded', () => {
+      it('should not reload the form', () => {
+        let textSelectedObject = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
+        let tocElement = {range: {start: 12, end: 23}, label: 'Blah', indentation: 0};
+        const expectedActions = [
+          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [{}, tocElement], silent: true, multi: false},
+          {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
+          {type: types.SHOW_TAB, tab: 'toc'}
+        ];
+        const store = mockStore({
+          documentViewer: {
+            tocForm: [{}],
+            doc: Immutable.fromJS({})
+          }
+        });
+
+        store.dispatch(actions.addToToc(textSelectedObject));
+        expect(store.getActions()).toEqual(expectedActions);
+      });
+    });
+  });
+
   describe('async actions', () => {
     beforeEach(() => {
       mockID();
@@ -118,6 +160,38 @@ describe('documentActions', () => {
       });
     });
 
+    describe('saveToc', () => {
+      it('should save the document with the new toc and dispatch a notification on success', (done) => {
+        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        let doc = {name: 'doc'};
+        let toc = [
+          {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0},
+          {range: {start: 22, end: 44}, label: 'Chapter 1.1', indentation: 1}
+        ];
+
+        const expectedActions = [
+          {type: 'rrf/reset', model: 'documentViewer.tocForm'},
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
+          {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', toc}},
+          {type: 'rrf/reset', model: 'documentViewer.docForm'},
+          {type: 'viewer/doc/SET', value: 'response'}
+        ];
+        const store = mockStore({
+          documentViewer: {
+            doc: Immutable.fromJS(doc)
+          }
+        });
+
+        store.dispatch(actions.saveToc(toc))
+        .then(() => {
+          expect(documents.api.save).toHaveBeenCalledWith({name: 'doc', toc});
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'delete').and.returnValue(Promise.resolve('response'));
@@ -138,46 +212,6 @@ describe('documentActions', () => {
         })
         .then(done)
         .catch(done.fail);
-      });
-    });
-
-    describe('addToToc', () => {
-      it('should populate doc form, and add the selected text to it', () => {
-        let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
-        const expectedActions = [
-          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [reference], silent: true, multi: false},
-          {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
-          {type: types.SHOW_TAB, tab: 'toc'}
-        ];
-        const store = mockStore({
-          documentViewer: {
-            tocForm: [],
-            doc: Immutable.fromJS({})
-          }
-        });
-
-        store.dispatch(actions.addToToc(reference));
-        expect(store.getActions()).toEqual(expectedActions);
-      });
-
-      describe('if document is already loaded', () => {
-        it('should not reload the form', () => {
-          let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
-          const expectedActions = [
-            {type: 'rrf/change', model: 'documentViewer.tocForm', value: [{}, reference], silent: true, multi: false},
-            {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
-            {type: types.SHOW_TAB, tab: 'toc'}
-          ];
-          const store = mockStore({
-            documentViewer: {
-              tocForm: [{}],
-              doc: Immutable.fromJS({})
-            }
-          });
-
-          store.dispatch(actions.addToToc(reference));
-          expect(store.getActions()).toEqual(expectedActions);
-        });
       });
     });
   });
