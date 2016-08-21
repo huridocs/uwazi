@@ -1,7 +1,6 @@
 .filters-box {
 	.empty-state {
 		color: $c-grey-dark;
-		background: $c-grey-lighten;
 		text-align: center;
 		padding: 45px;
 
@@ -38,7 +37,7 @@
 
   &:not(:last-child),
   .form-group & {
-    border-bottom: 1px solid $c-grey;
+    border-bottom: 1px dotted $c-grey-light;
   }
 
 	&.is-active {
