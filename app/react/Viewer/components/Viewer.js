@@ -36,7 +36,6 @@ export class Viewer extends Component {
 
     return (
       <div className="row">
-        {/*
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={!this.props.targetDoc}>
@@ -46,7 +45,6 @@ export class Viewer extends Component {
             <Footer/>
           </div>
         </main>
-        */}
 
         <ConfirmCloseForm />
         <ConfirmCloseReferenceForm />
