@@ -108,6 +108,10 @@ $c-sidebar: darken($c-background, 0%);
   top: 54px;
   border-bottom: 1px solid $c-grey;
 
+  &.no-border {
+    border-bottom: 0;
+  }
+
   .nav-tabs {
     margin: -15px;
     margin-top: 0;
