@@ -30,7 +30,7 @@
 .search__filter {
 	list-style-type: none;
 	margin: 0;
-	padding: 15px;
+	padding: 15px 30px;
 	display: table;
 	width: 100%;
 	color: $c-grey-dark;
@@ -49,13 +49,19 @@
 	> li:first-child {
 		position: relative;
 		margin: 0;
-		font-weight: bold;
-		text-transform: uppercase;
-		font-size: $f-size-sm;
-		letter-spacing: 0.1em;
-		line-height: 2em;
-		width: 100%;
+    width: 100%;
+    font-weight: 300;
+    font-style: normal;
+    font-family: $f-special;
+    margin-bottom: 0;
 		color: $c-black;
+    line-height: inherit;
+    label {
+      font-size: $f-size;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 300;
+    }
 	}
 
 	> li {
