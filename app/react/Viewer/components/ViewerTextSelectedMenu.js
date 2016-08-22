@@ -27,7 +27,8 @@ ViewerTextSelectedMenu.propTypes = {
   openPanel: PropTypes.func,
   closeMenu: PropTypes.func,
   addToToc: PropTypes.func,
-  active: PropTypes.bool
+  active: PropTypes.bool,
+  reference: PropTypes.object
 };
 
 function mapStateToProps({documentViewer}) {

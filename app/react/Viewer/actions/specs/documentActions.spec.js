@@ -90,6 +90,55 @@ describe('documentActions', () => {
     });
   });
 
+  describe('removeFromToc', () => {
+    it('should remove the toc entry from the form', () => {
+      let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0, _id: 1};
+      let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0, _id: 2};
+
+      const expectedActions = [
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1], silent: true, multi: false}
+      ];
+
+      const store = mockStore({
+        documentViewer: {
+          tocForm: [chapter1, chapter2],
+          doc: Immutable.fromJS({
+            toc: []
+          })
+        }
+      });
+
+      store.dispatch(actions.removeFromToc(chapter2));
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  describe('indentTocElement', () => {
+    it('should change the toc entry indentation', () => {
+      let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0, _id: 1};
+      let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0, _id: 2};
+
+      const expectedActions = [
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false}
+      ];
+
+      let formState = [chapter1, chapter2];
+      const store = mockStore({
+        documentViewer: {
+          tocForm: formState,
+          doc: Immutable.fromJS({
+            toc: []
+          })
+        }
+      });
+
+      store.dispatch(actions.indentTocElement(chapter2, 1));
+      expect(store.getActions()).toEqual(expectedActions);
+      expect(store.getActions()[0].value).not.toBe(formState);
+      expect(chapter2.indentation).toBe(1);
+    });
+  });
+
   describe('async actions', () => {
     beforeEach(() => {
       mockID();

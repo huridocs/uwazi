@@ -112,6 +112,34 @@ export function editToc(toc) {
   };
 }
 
+export function removeFromToc(tocElement) {
+  return function (dispatch, getState) {
+    let state = getState();
+    let toc = state.documentViewer.tocForm;
+
+    toc = toc.filter((entry) => {
+      return entry._id !== tocElement._id;
+    });
+
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+  };
+}
+
+export function indentTocElement(tocElement, indentation) {
+  return function (dispatch, getState) {
+    let state = getState();
+    let toc = state.documentViewer.tocForm.concat();
+
+    toc.forEach((entry) => {
+      if (entry._id === tocElement._id) {
+        entry.indentation = indentation;
+      }
+    });
+
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+  };
+}
+
 export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
     let state = getState();

@@ -15,7 +15,7 @@ export class ShowToc extends Component {
         <ul className="toc-view">
           {toc.map((tocElement, index) => {
             return (
-              <li className="toc-indent-1" key={index}>
+              <li className={`toc-indent-${tocElement.indentation}`} key={index}>
                 <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.label}</a>
               </li>
               );

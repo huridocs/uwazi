@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
-import {saveDocument, saveToc, editToc} from '../actions/documentActions';
+import {saveDocument, saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
 import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
@@ -142,7 +142,13 @@ export class ViewMetadataPanel extends Component {
                 <ShowToc toc={doc.toc || []} />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
-                <TocForm onSubmit={this.props.saveToc} model="documentViewer.tocForm" state={this.props.tocFormState} toc={this.props.tocForm}/>
+                <TocForm
+                  removeEntry={this.props.removeFromToc}
+                  indent={this.props.indentTocElement}
+                  onSubmit={this.props.saveToc} model="documentViewer.tocForm"
+                  state={this.props.tocFormState}
+                  toc={this.props.tocForm}
+                />
               </ShowIf>
             </TabContent>
             <TabContent for="metadata">
@@ -183,8 +189,9 @@ ViewMetadataPanel.propTypes = {
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
-  saveToc: PropTypes.func,
-  editToc: PropTypes.func
+  editToc: PropTypes.func,
+  removeFromToc: PropTypes.func,
+  indentTocElement: PropTypes.func
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -222,7 +229,9 @@ function mapDispatchToProps(dispatch) {
     deleteDocument,
     resetForm: formActions.reset,
     saveToc,
-    editToc
+    editToc,
+    removeFromToc,
+    indentTocElement
   }, dispatch);
 }
 
