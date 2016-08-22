@@ -55,6 +55,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));
     this.context.store.dispatch(actions.unset('viewer/referencedDocuments'));
+    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
   }
 
