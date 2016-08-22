@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
-import {saveDocument, saveToc} from '../actions/documentActions';
+import {saveDocument, saveToc, editToc} from '../actions/documentActions';
 import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
@@ -100,14 +100,26 @@ export class ViewMetadataPanel extends Component {
             </NeedAuthorization>
           </div>
         </ShowIf>
-        <ShowIf if={this.props.tab === 'toc'}>
-          <div className="sidepanel-footer">
-          <button type="submit" form="tocForm" disabled={disabled} className="edit-toc btn btn-success">
-            <i className="fa fa-save"></i>
-            <span className="btn-label">Save</span>
-          </button>
+        <NeedAuthorization>
+          <div>
+            <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
+              <div className="sidepanel-footer">
+              <button type="submit" form="tocForm" className="edit-toc btn btn-success">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">Save</span>
+              </button>
+              </div>
+            </ShowIf>
+            <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited}>
+              <div className="sidepanel-footer">
+              <button onClick={() => this.props.editToc(this.props.doc.toc || [])} className="edit-toc btn btn-success">
+                <i className="fa fa-pencil"></i>
+                <span className="btn-label">Edit</span>
+              </button>
+              </div>
+            </ShowIf>
           </div>
-        </ShowIf>
+        </NeedAuthorization>
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}
             handleSelect={(tab) => {
@@ -126,8 +138,12 @@ export class ViewMetadataPanel extends Component {
               </li>
             </ul>
             <TabContent for="toc">
-              <ShowToc toc={doc.toc} />
-              <TocForm onSubmit={this.props.saveToc} model="documentViewer.tocForm" state={this.props.tocFormState} toc={this.props.tocForm}/>
+              <ShowIf if={!this.props.tocBeingEdited}>
+                <ShowToc toc={doc.toc || []} />
+              </ShowIf>
+              <ShowIf if={this.props.tocBeingEdited}>
+                <TocForm onSubmit={this.props.saveToc} model="documentViewer.tocForm" state={this.props.tocFormState} toc={this.props.tocForm}/>
+              </ShowIf>
             </TabContent>
             <TabContent for="metadata">
               {(() => {
@@ -154,6 +170,7 @@ ViewMetadataPanel.propTypes = {
   rawDoc: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
+  tocBeingEdited: PropTypes.bool,
   showTab: PropTypes.func,
   tab: PropTypes.string,
   saveDocument: PropTypes.func,
@@ -162,13 +179,12 @@ ViewMetadataPanel.propTypes = {
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
   loadInReduxForm: PropTypes.func,
-<<<<<<< c15d1a4bc4ebf2604b7bf762875a1f81c4d5094b
-  numberOfReferences: PropTypes.number
-=======
+  numberOfReferences: PropTypes.number,
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
-  saveToc: PropTypes.func
->>>>>>> TocForm for creating documents table of contents
+  saveToc: PropTypes.func,
+  saveToc: PropTypes.func,
+  editToc: PropTypes.func
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -190,13 +206,10 @@ const mapStateToProps = ({documentViewer}) => {
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab'),
-<<<<<<< c15d1a4bc4ebf2604b7bf762875a1f81c4d5094b
     numberOfReferences: documentViewer.references.size,
-    tocForm: documentViewer.tocForm || []
-=======
-    tocFormState: documentViewer.tocFormState,
-    tocForm: documentViewer.tocForm
->>>>>>> TocForm for creating documents table of contents
+    tocForm: documentViewer.tocForm || [],
+    tocBeingEdited: documentViewer.tocBeingEdited,
+    tocFormState: documentViewer.tocFormState
   };
 };
 
@@ -208,7 +221,8 @@ function mapDispatchToProps(dispatch) {
     closePanel,
     deleteDocument,
     resetForm: formActions.reset,
-    saveToc
+    saveToc,
+    editToc
   }, dispatch);
 }
 

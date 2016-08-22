@@ -48,6 +48,7 @@ export function saveToc(toc) {
     let doc = getState().documentViewer.doc.toJS();
     doc.toc = toc;
     dispatch(formActions.reset('documentViewer.tocForm'));
+    dispatch(actions.set('viewer/tocBeingEdited', false));
     return dispatch(saveDocument(doc));
   };
 }
@@ -102,6 +103,15 @@ export function viewerSearchDocuments(searchTerm) {
   };
 }
 
+export function editToc(toc) {
+  return function (dispatch) {
+    dispatch(actions.set('viewer/tocBeingEdited', true));
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+    dispatch(uiActions.openPanel('viewMetadataPanel'));
+    dispatch(uiActions.showTab('toc'));
+  };
+}
+
 export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
     let state = getState();
@@ -120,8 +130,6 @@ export function addToToc(textSelectedObject) {
     };
 
     toc.push(tocElement);
-    dispatch(formActions.load('documentViewer.tocForm', toc));
-    dispatch(uiActions.openPanel('viewMetadataPanel'));
-    dispatch(uiActions.showTab('toc'));
+    dispatch(editToc(toc));
   };
 }

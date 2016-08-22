@@ -5,11 +5,18 @@ import {FormGroup, FormField} from 'app/Forms';
 
 export class TocForm extends Component {
   render() {
+    console.log(this.props.toc.order);
     return (
       <Form id='tocForm' model={this.props.model} onSubmit={this.props.onSubmit} >
         {this.props.toc.map((tocElement, index) => {
           return (
             <FormGroup key={index} {...this.props.state.fields[index]} submitFailed={this.props.state.submitFailed}>
+              <a className="btn btn-xs btn-default">
+                <i className="fa fa-arrow-left"></i>
+              </a>
+              <a className="btn btn-xs btn-default">
+                <i className="fa fa-arrow-right"></i>
+              </a>
               <FormField model={`${this.props.model}[${index}].label`} >
                 <input className="form-control"/>
               </FormField>
