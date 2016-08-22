@@ -1,5 +1,3 @@
-import request from '../../shared/JSONRequest.js';
-import {db_url as dbUrl} from '../config/database.js';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauris from './thesauris';
 

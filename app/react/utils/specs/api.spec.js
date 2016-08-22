@@ -2,6 +2,8 @@ import {APIURL} from 'app/config';
 import api from 'app/utils/api';
 import backend from 'fetch-mock';
 import {browserHistory} from 'react-router';
+import * as notifyActions from 'app/Notifications/actions/notificationsActions';
+import {store} from 'app/store';
 
 describe('Login', () => {
   beforeEach(() => {
@@ -10,9 +12,8 @@ describe('Login', () => {
     .mock(APIURL + 'test_get', 'GET', JSON.stringify({method: 'GET'}))
     .mock(APIURL + 'test_post', 'POST', JSON.stringify({method: 'POST'}))
     .mock(APIURL + 'test_delete?data=delete', 'DELETE', JSON.stringify({method: 'DELETE'}))
-    .mock(APIURL + 'unauthorised_get', 'GET', {status: 401, body: {}})
-    .mock(APIURL + 'unauthorised_post', 'POST', {status: 401, body: {}})
-    .mock(APIURL + 'unauthorised_delete', 'DELETE', {status: 401, body: {}});
+    .mock(APIURL + 'unauthorised', 'GET', {status: 401, body: {}})
+    .mock(APIURL + 'error_url', 'GET', {status: 500, body: {}});
   });
 
 
@@ -24,17 +25,6 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
-    });
-
-    describe('handles 401', () => {
-      it('should redirect to login', (done) => {
-        spyOn(browserHistory, 'replace');
-        api.get('unauthorised_get')
-        .catch(() => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('/login');
-          done();
-        });
-      });
     });
 
     describe('when authorizing', () => {
@@ -62,17 +52,6 @@ describe('Login', () => {
       })
       .catch(done.fail);
     });
-
-    describe('handles 401', () => {
-      it('should redirect to login', (done) => {
-        spyOn(browserHistory, 'replace');
-        api.post('unauthorised_post')
-        .catch(() => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('/login');
-          done();
-        });
-      });
-    });
   });
 
   describe('DELETE', () => {
@@ -84,15 +63,28 @@ describe('Login', () => {
       })
       .catch(done.fail);
     });
+  });
 
-    describe('handles 401', () => {
+  describe('error handling', () => {
+    describe('401', () => {
       it('should redirect to login', (done) => {
         spyOn(browserHistory, 'replace');
-        api.delete('unauthorised_delete')
+        api.get('unauthorised')
         .catch(() => {
           expect(browserHistory.replace).toHaveBeenCalledWith('/login');
           done();
         });
+      });
+    });
+
+    it('should notify the user', (done) => {
+      spyOn(store, 'dispatch');
+      spyOn(notifyActions, 'notify').and.returnValue('notify action');
+      api.get('error_url')
+      .catch(() => {
+        expect(store.dispatch).toHaveBeenCalledWith('notify action');
+        expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'warning');
+        done();
       });
     });
   });

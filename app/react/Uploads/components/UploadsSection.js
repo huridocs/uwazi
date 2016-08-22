@@ -10,6 +10,7 @@ import UploadsList from './UploadsList';
 import UploadsFormPanel from './UploadsFormPanel';
 import UploadFailedModal from './UploadFailedModal';
 import UploadsMenu from './UploadsMenu';
+import ReadyToPublishModal from './ReadyToPublishModal';
 
 import io from 'socket.io-client';
 
@@ -40,7 +41,7 @@ export class UploadsSection extends Component {
         </main>
         <UploadsFormPanel />
         <UploadFailedModal />
-
+        <ReadyToPublishModal />
         <ContextMenu>
           <UploadsMenu />
         </ContextMenu>

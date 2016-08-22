@@ -2,7 +2,7 @@ import superagent from 'superagent';
 import {APIURL} from '../../config.js';
 import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
-import entitties from 'app/Entities';
+import metadata from 'app/Metadata';
 import api from '../../utils/api';
 
 export function enterUploads() {
@@ -54,7 +54,7 @@ export function setThesauris(thesauris) {
 export function newEntity(templates) {
   return function (dispatch) {
     let newEntityMetadata = {title: '', type: 'entity'};
-    dispatch(entitties.actions.loadEntity('uploads.metadata', newEntityMetadata, templates));
+    dispatch(metadata.actions.loadInReduxForm('uploads.metadata', newEntityMetadata, templates));
     dispatch(edit(newEntityMetadata));
   };
 }

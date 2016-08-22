@@ -57,6 +57,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));
     this.context.store.dispatch(actions.unset('viewer/referencedDocuments'));
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
+    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
   }
 

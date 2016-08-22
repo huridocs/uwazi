@@ -43,40 +43,40 @@ export class UploadsMenu extends Component {
 
   renderMetadataMenu(metadataBeingEdited) {
     return <div>
-            <ShowIf if={!!metadataBeingEdited.template}>
-                <div className="float-btn__sec publish" onClick={() => this.publish()}>
-                  <span>Publish</span><i className="fa fa-send"></i>
-                </div>
-            </ShowIf>
-            <ShowIf if={!!metadataBeingEdited.processed && metadataBeingEdited.type === 'document'}>
-              <div className="float-btn__sec view">
-                <Link to={`document/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
-              </div>
-            </ShowIf>
-            <ShowIf if={!!metadataBeingEdited._id && metadataBeingEdited.type === 'entity'}>
-              <div className="float-btn__sec view">
-                <Link to={`entity/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
-              </div>
-            </ShowIf>
-            <ShowIf if={!!metadataBeingEdited._id}>
-              <div className="float-btn__sec delete" onClick={() => this.deleteDocument()}>
-                <span>Delete</span><i className="fa fa-trash"></i>
-              </div>
-            </ShowIf>
-            <div className="float-btn__main cta">
-              <button type="submit" form="metadataForm"><span>Save</span><i className="fa fa-save"></i></button>
-            </div>
-          </div>;
+      <ShowIf if={!!metadataBeingEdited.template}>
+        <div className="float-btn__sec publish" onClick={() => this.publish()}>
+          <span>Publish</span><i className="fa fa-send"></i>
+        </div>
+      </ShowIf>
+      <ShowIf if={!!metadataBeingEdited.processed && metadataBeingEdited.type === 'document'}>
+        <div className="float-btn__sec view">
+          <Link to={`document/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
+        </div>
+      </ShowIf>
+      <ShowIf if={!!metadataBeingEdited._id && metadataBeingEdited.type === 'entity'}>
+        <div className="float-btn__sec view">
+          <Link to={`entity/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
+        </div>
+      </ShowIf>
+      <ShowIf if={!!metadataBeingEdited._id}>
+        <div className="float-btn__sec delete" onClick={() => this.deleteDocument()}>
+          <span>Delete</span><i className="fa fa-trash"></i>
+        </div>
+      </ShowIf>
+      <div className="float-btn__main cta">
+        <button type="submit" form="metadataForm"><span>Save</span><i className="fa fa-save"></i></button>
+      </div>
+    </div>;
   }
 
   renderNormalMenu() {
     return <div>
-            <div className="float-btn__main cta">
-              <button onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
-                <span>New Entity</span><i className="fa fa-plus"></i>
-              </button>
-            </div>
-           </div>;
+      <div className="float-btn__main cta">
+        <button onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
+          <span>New Entity</span><i className="fa fa-plus"></i>
+        </button>
+      </div>
+    </div>;
   }
 
   render() {
