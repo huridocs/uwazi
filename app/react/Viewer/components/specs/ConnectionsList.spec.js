@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 
-import PanelContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
+import ListContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
 
 describe('ConnectionsList', () => {
   let component;
