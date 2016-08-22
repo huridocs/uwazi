@@ -10,30 +10,34 @@
 
 .toc-view-link {
   display: block;
-  padding: 5px 15px;
-  font-family: $f-special;
+  padding: 5px 0;
   color: $c-black;
+  font-style: italic;
 }
 
 .toc-edit {
   display: flex;
   align-items: center;
-  padding: 5px 15px;
+  padding: 5px 0;
 
   input {
     margin: 0 5px;
   }
 }
 
-.toc-indent-0:not(:first-child) {
-  border-top: 1px dotted $c-grey;
-}
-.toc-indent-1 {
-  border-top: 1px dotted $c-grey-light;
+
+.toc-indent-0 a{
+  font-size: $f-size-lg;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: $c-black;
+  font-style: normal;
 }
 
-.toc-indent-0 a {
-  font-size: $f-size-lg;
+.toc-indent-1 a{
+  text-transform: uppercase;
+  color: $c-black;
+  font-style: normal;
 }
 
 .toc-indent-0 { padding-left: 0% }
