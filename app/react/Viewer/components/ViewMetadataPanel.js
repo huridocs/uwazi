@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
-import {saveDocument} from '../actions/documentActions';
+import {saveDocument, saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
 import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
@@ -16,6 +16,7 @@ import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {browserHistory} from 'react-router';
+import {TocForm, ShowToc} from 'app/Documents';
 
 export class ViewMetadataPanel extends Component {
   deleteDocument() {
@@ -54,20 +55,6 @@ export class ViewMetadataPanel extends Component {
         <div className="sidepanel-header no-border">
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
-          <Tabs selectedTab={this.props.tab || 'metadata'}
-            handleSelect={(tab) => {
-              this.props.showTab(tab);
-            }}
-          >
-            <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="metadata">Metadata</TabLink>
-              </li>
-              <li>
-                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
-              </li>
-            </ul>
-          </Tabs>
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
@@ -99,12 +86,57 @@ export class ViewMetadataPanel extends Component {
             </NeedAuthorization>
           </div>
         </ShowIf>
+        <NeedAuthorization>
+            <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
+              <div className="sidepanel-footer">
+              <button type="submit" form="tocForm" className="edit-toc btn btn-success">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">Save</span>
+              </button>
+              </div>
+            </ShowIf>
+        </NeedAuthorization>
+        <NeedAuthorization>
+            <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited}>
+              <div className="sidepanel-footer">
+              <button onClick={() => this.props.editToc(this.props.doc.toc || [])} className="edit-toc btn btn-success">
+                <i className="fa fa-pencil"></i>
+                <span className="btn-label">Edit</span>
+              </button>
+              </div>
+            </ShowIf>
+        </NeedAuthorization>
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}
             handleSelect={(tab) => {
               this.props.showTab(tab);
             }}
           >
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="toc">Table of contents</TabLink>
+              </li>
+              <li>
+                <TabLink to="metadata" default>Metadata</TabLink>
+              </li>
+              <li>
+                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
+              </li>
+            </ul>
+            <TabContent for="toc">
+              <ShowIf if={!this.props.tocBeingEdited}>
+                <ShowToc toc={doc.toc || []} />
+              </ShowIf>
+              <ShowIf if={this.props.tocBeingEdited}>
+                <TocForm
+                  removeEntry={this.props.removeFromToc}
+                  indent={this.props.indentTocElement}
+                  onSubmit={this.props.saveToc} model="documentViewer.tocForm"
+                  state={this.props.tocFormState}
+                  toc={this.props.tocForm}
+                />
+              </ShowIf>
+            </TabContent>
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited) {
@@ -130,6 +162,7 @@ ViewMetadataPanel.propTypes = {
   rawDoc: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
+  tocBeingEdited: PropTypes.bool,
   showTab: PropTypes.func,
   tab: PropTypes.string,
   saveDocument: PropTypes.func,
@@ -138,7 +171,13 @@ ViewMetadataPanel.propTypes = {
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
   loadInReduxForm: PropTypes.func,
-  numberOfReferences: PropTypes.number
+  numberOfReferences: PropTypes.number,
+  tocFormState: PropTypes.object,
+  tocForm: PropTypes.array,
+  saveToc: PropTypes.func,
+  editToc: PropTypes.func,
+  removeFromToc: PropTypes.func,
+  indentTocElement: PropTypes.func
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -161,7 +200,9 @@ const mapStateToProps = ({documentViewer}) => {
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab'),
     numberOfReferences: documentViewer.references.size,
-    tocForm: documentViewer.tocForm || []
+    tocForm: documentViewer.tocForm || [],
+    tocBeingEdited: documentViewer.tocBeingEdited,
+    tocFormState: documentViewer.tocFormState
   };
 };
 
@@ -172,7 +213,11 @@ function mapDispatchToProps(dispatch) {
     showTab, saveDocument,
     closePanel,
     deleteDocument,
-    resetForm: formActions.reset
+    resetForm: formActions.reset,
+    saveToc,
+    editToc,
+    removeFromToc,
+    indentTocElement
   }, dispatch);
 }
 

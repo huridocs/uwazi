@@ -43,6 +43,16 @@ export function saveDocument(doc) {
   };
 }
 
+export function saveToc(toc) {
+  return function (dispatch, getState) {
+    let doc = getState().documentViewer.doc.toJS();
+    doc.toc = toc;
+    dispatch(formActions.reset('documentViewer.tocForm'));
+    dispatch(actions.set('documentViewer/tocBeingEdited', false));
+    return dispatch(saveDocument(doc));
+  };
+}
+
 export function deleteDocument(doc) {
   return function (dispatch) {
     return documents.api.delete(doc)
@@ -93,16 +103,64 @@ export function viewerSearchDocuments(searchTerm) {
   };
 }
 
-export function addToToc(reference) {
+export function editToc(toc) {
+  return function (dispatch) {
+    dispatch(actions.set('documentViewer/tocBeingEdited', true));
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+    dispatch(uiActions.openPanel('viewMetadataPanel'));
+    dispatch(uiActions.showTab('toc'));
+  };
+}
+
+export function removeFromToc(tocElement) {
+  return function (dispatch, getState) {
+    let state = getState();
+    let toc = state.documentViewer.tocForm;
+
+    toc = toc.filter((entry) => {
+      return entry !== tocElement;
+    });
+
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+  };
+}
+
+export function indentTocElement(tocElement, indentation) {
+  return function (dispatch, getState) {
+    let state = getState();
+    let toc = state.documentViewer.tocForm.concat();
+
+    toc.forEach((entry) => {
+      if (entry === tocElement) {
+        entry.indentation = indentation;
+      }
+    });
+
+    dispatch(formActions.load('documentViewer.tocForm', toc));
+  };
+}
+
+export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
     let state = getState();
     let toc = state.documentViewer.tocForm;
     if (!toc.length) {
       toc = state.documentViewer.doc.toJS().toc || [];
     }
-    toc.push(reference);
-    dispatch(formActions.load('documentViewer.tocForm', toc));
-    dispatch(uiActions.openPanel('viewMetadataPanel'));
-    dispatch(uiActions.showTab('toc'));
+
+    let tocElement = {
+      range: {
+        start: textSelectedObject.sourceRange.start,
+        end: textSelectedObject.sourceRange.end
+      },
+      label: textSelectedObject.sourceRange.text,
+      indentation: 0
+    };
+
+    toc.push(tocElement);
+    toc = toc.sort((a, b) => {
+      return a.range.start - b.range.start;
+    });
+    dispatch(editToc(toc));
   };
 }

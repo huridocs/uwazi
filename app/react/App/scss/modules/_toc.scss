@@ -1,0 +1,55 @@
+.toc {
+  padding: 15px;
+}
+
+.toc-view{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc-view-link {
+  display: block;
+  padding: 5px 0;
+  color: $c-black;
+  font-style: italic;
+}
+
+.toc-edit {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+
+  input {
+    margin: 0 5px;
+  }
+}
+
+
+.toc-indent-0 a{
+  font-size: $f-size-lg;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.toc-indent-1 a{
+  text-transform: uppercase;
+  font-style: normal;
+}
+
+.toc-indent-0 { padding-left: 0% }
+.toc-indent-1 { padding-left: 2.5% }
+.toc-indent-2 { padding-left: 5% }
+.toc-indent-3 { padding-left: 7.5% }
+.toc-indent-4 { padding-left: 10% }
+.toc-indent-5 { padding-left: 12.5% }
+.toc-indent-6 { padding-left: 15% }
+.toc-indent-7 { padding-left: 17.5% }
+.toc-indent-8 { padding-left: 20% }
+.toc-indent-9 { padding-left: 22.5% }
+
+.toc-indent-0 .toc-indent-less,
+.toc-indent-9 .toc-indent-more {
+  display: none;
+}

@@ -7,6 +7,7 @@ import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import fs from 'fs';
+import uniqueID from 'shared/uniqueID';
 
 export default {
   save(doc, user) {
@@ -14,6 +15,16 @@ export default {
     if (!doc._id) {
       doc.user = user;
       doc.creationDate = date.currentUTC();
+    }
+
+    if (doc.toc) {
+      doc.toc = doc.toc.map((tocEntry) => {
+        if (!tocEntry._id) {
+          tocEntry._id = uniqueID();
+        }
+
+        return tocEntry;
+      });
     }
 
     let url = dbURL;

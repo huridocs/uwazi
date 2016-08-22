@@ -17,6 +17,10 @@ export class ViewerTextSelectedMenu extends Component {
           <span>Connect to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
+        <div onClick={this.props.addToToc.bind(null, this.props.reference.toJS())} className="float-btn__sec">
+          <span>Add to table of contents</span>
+          <i className="fa fa-list"></i>
+        </div>
         <div className="float-btn__main cta"><i className="fa fa-plus"></i></div>
       </div>
     );
@@ -27,7 +31,8 @@ ViewerTextSelectedMenu.propTypes = {
   openPanel: PropTypes.func,
   closeMenu: PropTypes.func,
   addToToc: PropTypes.func,
-  active: PropTypes.bool
+  active: PropTypes.bool,
+  reference: PropTypes.object
 };
 
 function mapStateToProps({documentViewer}) {
