@@ -55,20 +55,6 @@ export class ViewMetadataPanel extends Component {
         <div className="sidepanel-header no-border">
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
-          <Tabs selectedTab={this.props.tab || 'metadata'}
-            handleSelect={(tab) => {
-              this.props.showTab(tab);
-            }}
-          >
-            <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="metadata">Metadata</TabLink>
-              </li>
-              <li>
-                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
-              </li>
-            </ul>
-          </Tabs>
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
@@ -134,7 +120,7 @@ export class ViewMetadataPanel extends Component {
                 <TabLink to="metadata" default>Metadata</TabLink>
               </li>
               <li>
-                <TabLink to="connections">Connections (22)</TabLink>
+                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
               </li>
             </ul>
             <TabContent for="toc">
