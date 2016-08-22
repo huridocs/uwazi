@@ -9,7 +9,32 @@ export class EntityViewer extends Component {
     return (
       <div className="row">
         <Helmet title="Entity" />
-        <h3>Entity view is not yet implemented</h3>
+        <aside className="side-panel entity-metadata">
+          <div className="sidepanel-header">
+            <h1 className="item-name">Entity Name</h1>
+            <span className="item-type item-type-2">Entity type</span>
+          </div>
+          <div className="sidepanel-body">
+            <div className="view">
+              <dl>
+                <dt>Metadata 1</dt>
+                <dd>Metadata 1</dd>
+              </dl>
+              <dl>
+                <dt>Metadata 2</dt>
+                <dd>Metadata 2</dd>
+              </dl>
+            </div>
+          </div>
+        </aside>
+        <aside className="side-panel entity-connections">
+          <div className="sidepanel-header">
+            <h1>Connections (0)</h1>
+          </div>
+          <div className="sidepanel-body">
+            <div className="item-group">{/* Connections go here */}</div>
+          </div>
+        </aside>
       </div>
     );
   }
