@@ -84,45 +84,62 @@ $item-padding: 15px;
   flex: 1;
 }
 
-.item-type {
-  position: relative;
-  top: -2px;
-  padding: 3px 6px 2px 7px;
-  font-size: $f-size-xs;
-  font-family: $f-regular;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.item-type {}
+
+.item-type__icon {
+  font-size: 14px;
+}
+.item-type__name {
   color: $c-white;
   border-radius: 3px;
+  margin-left: 5px;
+  padding: 3px 5px 2px;
+  font-size: $f-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  top: -2px;
+  position: relative;
 }
 
-.item-type-0  { background-color: $c-primary; }
-.item-type-1  { background-color: $c-type-1; }
-.item-type-2  { background-color: $c-type-2; }
-.item-type-3  { background-color: $c-type-3; }
-.item-type-4  { background-color: $c-type-4; }
-.item-type-5  { background-color: $c-type-5; }
-.item-type-6  { background-color: $c-type-6; }
-.item-type-7  { background-color: $c-type-7; }
-.item-type-8  { background-color: $c-type-8; }
-.item-type-9  { background-color: $c-type-9; }
-.item-type-10 { background-color: $c-type-10; }
-.item-type-11 { background-color: $c-type-11; }
-.item-type-12 { background-color: $c-type-12; }
-.item-type-13 { background-color: $c-type-13; }
-.item-type-14 { background-color: $c-type-14; }
-.item-type-15 { background-color: $c-type-15; }
-.item-type-16 { background-color: $c-type-16; }
-.item-type-17 { background-color: $c-type-17; }
-.item-type-18 { background-color: $c-type-18; }
+.item-type-0 .item-type__icon  { color: $c-primary; }
+.item-type-1 .item-type__icon  { color: $c-type-1; }
+.item-type-2 .item-type__icon  { color: $c-type-2; }
+.item-type-3 .item-type__icon  { color: $c-type-3; }
+.item-type-4 .item-type__icon  { color: $c-type-4; }
+.item-type-5 .item-type__icon  { color: $c-type-5; }
+.item-type-6 .item-type__icon  { color: $c-type-6; }
+.item-type-7 .item-type__icon  { color: $c-type-7; }
+.item-type-8 .item-type__icon  { color: $c-type-8; }
+.item-type-9 .item-type__icon  { color: $c-type-9; }
+.item-type-10 .item-type__icon { color: $c-type-10; }
+.item-type-11 .item-type__icon { color: $c-type-11; }
+.item-type-12 .item-type__icon { color: $c-type-12; }
+.item-type-13 .item-type__icon { color: $c-type-13; }
+.item-type-14 .item-type__icon { color: $c-type-14; }
+.item-type-15 .item-type__icon { color: $c-type-15; }
+.item-type-16 .item-type__icon { color: $c-type-16; }
+.item-type-17 .item-type__icon { color: $c-type-17; }
+.item-type-18 .item-type__icon { color: $c-type-18; }
 
-.item-icon {
-  position: absolute;
-  left: 12px;
-  top: 11px;
-  color: $c-grey-dark;
-  opacity: 0.6;
-}
+.item-type-0 .item-type__name  { background-color: $c-primary; }
+.item-type-1 .item-type__name  { background-color: $c-type-1; }
+.item-type-2 .item-type__name  { background-color: $c-type-2; }
+.item-type-3 .item-type__name  { background-color: $c-type-3; }
+.item-type-4 .item-type__name  { background-color: $c-type-4; }
+.item-type-5 .item-type__name  { background-color: $c-type-5; }
+.item-type-6 .item-type__name  { background-color: $c-type-6; }
+.item-type-7 .item-type__name  { background-color: $c-type-7; }
+.item-type-8 .item-type__name  { background-color: $c-type-8; }
+.item-type-9 .item-type__name  { background-color: $c-type-9; }
+.item-type-10 .item-type__name { background-color: $c-type-10; }
+.item-type-11 .item-type__name { background-color: $c-type-11; }
+.item-type-12 .item-type__name { background-color: $c-type-12; }
+.item-type-13 .item-type__name { background-color: $c-type-13; }
+.item-type-14 .item-type__name { background-color: $c-type-14; }
+.item-type-15 .item-type__name { background-color: $c-type-15; }
+.item-type-16 .item-type__name { background-color: $c-type-16; }
+.item-type-17 .item-type__name { background-color: $c-type-17; }
+.item-type-18 .item-type__name { background-color: $c-type-18; }
 
 .item-name {
   display: block;
