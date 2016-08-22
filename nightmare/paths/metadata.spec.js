@@ -9,16 +9,26 @@ const settingsNavButton = '#app > div.content > header > div > div > ul > li:nth
 const settingsHeader = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.panel-heading';
 const thesaurisButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)';
 const documentsButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(1)';
+const entitiesButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(4)';
+const connectionsButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(2)';
 const thesaurisBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading > a';
 const documentsBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > a';
+const connectionsBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading.relationType > a';
+const entitiesBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > a';
 const addNewThesauri = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a';
 const addNewDocument = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a';
+const addNewEntity = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a';
+const addNewConnection = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a > span';
 const addNewValueToThesauriButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-body > a';
 const firstThesauriValForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(2) > div > div > input';
 const secondThesauriValForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(3) > div > div > input';
 const saveThesauriButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading > button';
 const saveDocumentButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > button';
+const saveEntityButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > button';
+const saveConnectionButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading.relationType > button';
 const thesauriNameForm = '#thesauriName';
+const connectionNameForm = '#relationTypeName';
+const entityNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input';
 const documentTemplateNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input';
 const deleteButtonConfirmation = 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger';
 
@@ -171,7 +181,130 @@ fdescribe('metadata path', () => {
         )
         .catch(catchErrors(done));
       });
+    });
 
+    it('should click Connections button and then click on add new connection button', (done) => {
+      nightmare
+      .wait(connectionsButton)
+      .realClick(connectionsButton)
+      .wait(addNewConnection)
+      .realClick(addNewConnection)
+      .wait(saveConnectionButton)
+      .exists(saveConnectionButton)
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    describe('in Connections', () => {
+      it('should create a new connection', (done) => {
+        nightmare
+        .wait(connectionNameForm)
+        .type(connectionNameForm, 'test connection')
+        .wait(saveConnectionButton)
+        .realClick(saveConnectionButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should go back to Documents then delete the created document template', (done) => {
+        nightmare
+        .wait(connectionsBackButton)
+        .realClick(connectionsBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          connectionsList.forEach((connection) => {
+            if (connection.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let connection = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          connection.forEach((connection) => {
+            if (connection.innerText.match('test')) {
+              connection.querySelector('.fa-trash').click();
+            }
+          });
+        })
+        .wait(deleteButtonConfirmation)
+        .realClick(deleteButtonConfirmation)
+        .then(
+          done
+        )
+        .catch(catchErrors(done));
+      });
+    });
+
+    it('should click Entities button and then click on add new Entity button', (done) => {
+      nightmare
+      .wait(entitiesButton)
+      .realClick(entitiesButton)
+      .wait(addNewEntity)
+      .realClick(addNewEntity)
+      .wait(saveEntityButton)
+      .exists(saveEntityButton)
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    describe('in Entities', () => {
+      it('should create a new entity', (done) => {
+        nightmare
+        .wait(entityNameForm)
+        .type(entityNameForm, 'test entity')
+        .wait(saveEntityButton)
+        .realClick(saveEntityButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should go back to Entities then delete the created entity', (done) => {
+        nightmare
+        .wait(entitiesBackButton)
+        .realClick(entitiesBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entitiesList.forEach((entity) => {
+            if (entity.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let entity = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entity.forEach((entity) => {
+            if (entity.innerText.match('test')) {
+              entity.querySelector('.fa-trash').click();
+            }
+          });
+        })
+        .wait(deleteButtonConfirmation)
+        .realClick(deleteButtonConfirmation)
+        .then(
+          done
+        )
+        .catch(catchErrors(done));
+      });
     });
   });
 
