@@ -118,7 +118,7 @@ export function removeFromToc(tocElement) {
     let toc = state.documentViewer.tocForm;
 
     toc = toc.filter((entry) => {
-      return entry._id !== tocElement._id;
+      return entry !== tocElement;
     });
 
     dispatch(formActions.load('documentViewer.tocForm', toc));
@@ -131,7 +131,7 @@ export function indentTocElement(tocElement, indentation) {
     let toc = state.documentViewer.tocForm.concat();
 
     toc.forEach((entry) => {
-      if (entry._id === tocElement._id) {
+      if (entry === tocElement) {
         entry.indentation = indentation;
       }
     });

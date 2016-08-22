@@ -17,10 +17,6 @@ export class ViewerTextSelectedMenu extends Component {
           <span>Connect to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
-        <div onClick={this.props.openPanel.bind(null, 'referencePanel')} className="float-btn__sec">
-          <span>Connect to a document</span>
-          <i className="fa fa-file-o"></i>
-        </div>
         <div onClick={this.props.addToToc.bind(null, this.props.reference.toJS())} className="float-btn__sec">
           <span>Add to table of contents</span>
           <i className="fa fa-list"></i>
