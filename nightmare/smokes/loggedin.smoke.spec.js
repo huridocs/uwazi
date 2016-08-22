@@ -1,5 +1,4 @@
 import Nightmare from 'nightmare';
-import {login} from '../helpers/login.js';
 import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -15,15 +14,18 @@ const uploadsBottomRightSaveButton = '.float-btn';
 describe('Smoke test,', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
-  describe('login in', () => {
-    it('should log in then redirect to library view', (done) => {
-      login(nightmare, 'admin', 'admin')
-      .url()
-      .then((url) => {
-        expect(url).toBe(config.url + '/');
-        done();
-      })
-      .catch(catchErrors(done));
+  describe('while logged in,', () => {
+    describe('login success,', () => {
+      it('should redirect to library view', (done) => {
+        nightmare
+        .login('admin', 'admin')
+        .url()
+        .then((url) => {
+          expect(url).toBe(config.url + '/');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 

@@ -1,6 +1,5 @@
 import Nightmare from 'nightmare';
 import realMouse from 'nightmare-real-mouse';
-import {login} from '../helpers/login.js';
 import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -18,7 +17,8 @@ describe('references path', () => {
 
   describe('login', () => {
     it('should log in as admin', (done) => {
-      login(nightmare, 'admin', 'admin')
+      nightmare
+      .login('admin', 'admin')
       .url()
       .then((url) => {
         expect(url).toBe(config.url + '/');

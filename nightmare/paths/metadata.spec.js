@@ -1,6 +1,5 @@
 import Nightmare from 'nightmare';
 import realMouse from 'nightmare-real-mouse';
-import {login} from '../helpers/login.js';
 import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -16,19 +15,15 @@ const firstThesauriValForm = '#app > div.content > div > div > div.col-xs-12.col
 const secondThesauriValForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(3) > div > div > input';
 const saveThesauriButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading > button';
 const thesauriNameForm = '#thesauriName';
-const thesaurisListHeader = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-heading';
-// const thesaurisUlElement = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul';
+const deleteButtonConfirmation = 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger';
 
-// let targetElementByInnerText = (selector, text) => {
-//   return document.querySelector(selector).innerText;
-// };
-
-fdescribe('metadata path', () => {
-  let nightmare = new Nightmare({show: true}).viewport(1100, 600);
+describe('metadata path', () => {
+  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
-      login(nightmare, 'admin', 'admin')
+      nightmare
+      .login('admin', 'admin')
       .realClick(settingsNavButton)
       .wait(settingsHeader)
       .url()
@@ -83,17 +78,29 @@ fdescribe('metadata path', () => {
         nightmare
         .wait(thesaurisBackButton)
         .realClick(thesaurisBackButton)
-        .wait(thesaurisListHeader)
-        .evaluate('')
-        // .realClick('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li:nth-child(1) > div > button')
-        // .wait('body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger')
-        // .realClick('body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger')
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
+        .wait(() => {
+          let itemFound = false;
+          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          thesaurisList.forEach((thesauri) => {
+            if (thesauri.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
         })
+        .evaluate(() => {
+          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          thesaurisList.forEach((thesauri) => {
+            if (thesauri.innerText.match('test')) {
+              thesauri.querySelector('.fa-trash').click();
+            }
+          });
+        })
+        .wait(deleteButtonConfirmation)
+        .realClick(deleteButtonConfirmation)
+        .then(
+          done
+        )
         .catch(catchErrors(done));
       });
     });
