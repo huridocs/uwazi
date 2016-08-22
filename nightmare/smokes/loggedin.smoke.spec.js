@@ -12,7 +12,7 @@ const settingsNavButton = '#app > div.content > header > div > div > ul > li:nth
 const uploadBox = '#app > div.content > div > div > main > div:nth-child(1) > div';
 const uploadsBottomRightSaveButton = '.float-btn';
 
-fdescribe('Smoke test,', () => {
+describe('Smoke test,', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login in', () => {
