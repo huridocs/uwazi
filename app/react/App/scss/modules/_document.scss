@@ -38,17 +38,17 @@
     color: inherit;
   }
 
-  &.references-panel-is-open a.reference {
+  &.connections a.reference {
     background-color: $c-secondary-lighten;
   }
 
   a.highlighted,
-  &.references-panel-is-open a.highlighted {
+  &.connections a.highlighted {
     background-color: $c-secondary-light;
     cursor: pointer;
   }
 
-  &.references-panel-is-open a.is-active {
+  &.connections a.is-active {
     background-color: $c-secondary;
     cursor: pointer;
   }
@@ -88,7 +88,7 @@
   width: 33%;
 }
 
-.document-references {
+.side-panel {
   .item {
     &.relationship-hover {
       border-left: 3px solid $c-secondary-light;

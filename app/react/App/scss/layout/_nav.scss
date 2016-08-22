@@ -49,3 +49,47 @@ nav ul {
   line-height: 54px;
   border: 0;
 }
+
+.nav-tabs {
+  margin-top: -1px;
+  text-align: center;
+  border-bottom: 1px solid $c-grey;
+  display: flex;
+  background-color: transparent;
+}
+
+.nav-tabs>li {
+  display: inline-block;
+  float: none;
+  width: 100%;
+  max-width: 33%;
+}
+
+.nav-tabs>li>a, .nav-tabs>li>div {
+  cursor:pointer;
+  line-height: 40px;
+  padding: 0;
+  margin-top: 5px;
+  background-color: transparent;
+  color: $c-grey-dark;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+}
+
+.nav-tabs>li>a:focus, .nav-tabs>li>div:focus, .nav-tabs>li>a:hover, .nav-tabs>li>div:hover {
+  background-color: transparent;
+  color: $c-black;
+  border: 0;
+  border-bottom: 3px solid $c-grey-dark;
+}
+
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover,
+.nav-tabs>li>div.tab-link-active, .nav-tabs>li>div.tab-link-active:focus, .nav-tabs>li>div.tab-link-active:hover{
+  font-weight: bold;
+  background-color: transparent;
+  color: $c-black;
+  border: 0;
+  border-bottom: 3px solid $c-primary;
+}

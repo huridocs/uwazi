@@ -58,13 +58,21 @@ describe('Viewer uiActions', () => {
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
       actions.activateReference('id')(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id'});
-      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
-    it('should scroll to the elements', () => {
+    it('should dispatch a SHOW_TAB connections', () => {
       actions.activateReference('id')(dispatch);
-      expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-      expect(scroller.to).toHaveBeenCalledWith('.document-references .item[data-id="id"]', '.document-references .sidepanel-body');
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'connections'});
+    });
+
+    it('should scroll to the elements', (done) => {
+      actions.activateReference('id')(dispatch);
+      setTimeout(() => {
+        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
+        expect(scroller.to).toHaveBeenCalledWith('.document-metadata .item[data-id="id"]', '.document-metadata .sidepanel-body');
+        done();
+      });
     });
   });
 
@@ -80,7 +88,7 @@ describe('Viewer uiActions', () => {
 
     it('should dispatch a call to activateReference', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id2'});
-      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewReferencesPanel'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
     it('should dispatch a SET_TARGET_SELECTION with found range', () => {

@@ -24,6 +24,12 @@ describe('Viewer', () => {
     component = shallow(<Viewer {...props}/>, {context});
   };
 
+  it('should add "connections" className when showConnections', () => {
+    props.showConnections = true;
+    render();
+    expect(component.find('.document-viewer').hasClass('connections')).toBe(true);
+  });
+
   it('should add with-panel className when there is a panel open', () => {
     props.panelIsOpen = true;
     render();

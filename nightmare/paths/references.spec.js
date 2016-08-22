@@ -7,6 +7,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 realMouse(Nightmare);
 
 const searchButton = '#app > div.content > header > div > div > div > a';
+const loadTargetDocumentButton = '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button';
 
 let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
@@ -61,8 +62,8 @@ describe('references path', () => {
       .type('.input-group input[type="text"]', '334 06 Egyptian Initiative')
       .wait(1000)
       .realClick('.item-group .item')
-      .wait('.float-btn.btn-fixed')
-      .realClick('.float-btn.btn-fixed')
+      .wait(loadTargetDocumentButton)
+      .realClick(loadTargetDocumentButton)
       .wait('.document-viewer.show-target-document')
       .exists('.document-viewer.show-target-document')
       .then((result) => {
@@ -73,6 +74,7 @@ describe('references path', () => {
     });
 
     it('should select a word from the second document then click the save button', (done) => {
+      const activeConnection = '#app > div.content > div > div > aside.side-panel.document-metadata.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active';
       let textToSelect = '#pf1 > div.pc.pc1.w0.h0 > div.t.m0.x0.h3.y3.ff1.fs2.fc0.sc0.ls1.ws0';
       nightmare
       .wait(textToSelect)
@@ -80,8 +82,8 @@ describe('references path', () => {
       .realClick(textToSelect)
       .wait('.fa-save')
       .realClick('.fa-save')
-      .wait('.side-panel.document-references.is-active')
-      .exists('.side-panel.document-references.is-active')
+      .wait(activeConnection)
+      .exists(activeConnection)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -112,7 +114,7 @@ describe('references path', () => {
 
     it('select the word where the relation was created from the document then delete it', (done) => {
       let textToSelect = '.t:nth-child(4)';
-      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-references.is-active > div.sidepanel-body > div > div:nth-child(1) > div.item-actions > a:nth-child(1)';
+      let unlinkIcon = '#app > div.content > div > div > aside.side-panel.document-metadata.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active > div.item-actions > a:nth-child(1)';
       nightmare
       .realClick(textToSelect)
       .realClick(textToSelect)

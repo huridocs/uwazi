@@ -3,10 +3,9 @@ import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 
-import PanelContainer, {ViewReferencesPanel} from 'app/Viewer/components/ViewReferencesPanel';
-import SidePanel from 'app/Layout/SidePanel';
+import ListContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
 
-describe('ViewReferencesPanel', () => {
+describe('ConnectionsList', () => {
   let component;
   let props;
 
@@ -31,15 +30,8 @@ describe('ViewReferencesPanel', () => {
   });
 
   let render = () => {
-    component = shallow(<ViewReferencesPanel {...props}/>);
+    component = shallow(<ConnectionsList {...props}/>);
   };
-
-  it('should render a SidePanel', () => {
-    render();
-
-    expect(component.find(SidePanel).length).toBe(1);
-    expect(component.find(SidePanel).props().open).toBe(false);
-  });
 
   it('should merge and render references in order with the proper document titles', () => {
     render();
@@ -55,16 +47,6 @@ describe('ViewReferencesPanel', () => {
     render();
 
     expect(component.find('.item').get(0).props.className).toContain('disabled');
-  });
-
-  describe('on Close panel', () => {
-    it('should close panel and deactivate reference', () => {
-      render();
-
-      component.find('.close-modal').simulate('click');
-      expect(props.closePanel).toHaveBeenCalled();
-      expect(props.deactivateReference).toHaveBeenCalled();
-    });
   });
 
   describe('when mouseenter on a reference', () => {
@@ -87,7 +69,7 @@ describe('ViewReferencesPanel', () => {
     beforeEach(() => {
       props.uiState = Immutable.fromJS({
         reference: Immutable.fromJS({targetRange: 'targetRange'}),
-        panel: 'viewReferencesPanel',
+        panel: 'ConnectionsList',
         activeReference: 'ref1'
       });
     });
@@ -121,15 +103,6 @@ describe('ViewReferencesPanel', () => {
     });
   });
 
-  describe('when props.referencePanel', () => {
-    it('should open SidePanel', () => {
-      props.uiState = Immutable.fromJS({panel: 'viewReferencesPanel'});
-      render();
-
-      expect(component.find(SidePanel).props().open).toBe(true);
-    });
-  });
-
   describe('PanelContainer', () => {
     let state = {
       documentViewer: {
@@ -145,7 +118,7 @@ describe('ViewReferencesPanel', () => {
 
     let renderContainer = () => {
       let store = mockStore(state);
-      component = shallow(<PanelContainer />, {context: {store}});
+      component = shallow(<ListContainer />, {context: {store}});
     };
 
     it('should should map props', () => {

@@ -4,7 +4,7 @@ export class ShowMetadata extends Component {
   render() {
     const {entity} = this.props;
     return (
-      <div>
+      <div className="side-panel-content">
         <div className="view">
           <dl>
             <dt>Title</dt>

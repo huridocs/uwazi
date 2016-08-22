@@ -15,6 +15,7 @@ describe('ViewMetadataPanel', () => {
   beforeEach(() => {
     props = {
       doc: {metadata: []},
+      rawDoc: Immutable.fromJS({}),
       showModal: jasmine.createSpy('showModal')
     };
   });
@@ -44,7 +45,7 @@ describe('ViewMetadataPanel', () => {
       it('should showModal ConfirmCloseForm', () => {
         props.formState = {dirty: true};
         render();
-        component.find('i').simulate('click');
+        component.find('i.close-modal').simulate('click');
         expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
       });
     });
@@ -53,14 +54,16 @@ describe('ViewMetadataPanel', () => {
       it('should close panel and reset form', () => {
         props.closePanel = jasmine.createSpy('closePanel');
         props.resetForm = jasmine.createSpy('resetForm');
+        props.showTab = jasmine.createSpy('showConnections');
         props.formState = {dirty: false};
         props.docBeingEdited = true;
         render();
 
-        component.find('i').simulate('click');
+        component.find('i.close-modal').simulate('click');
 
         expect(props.closePanel).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith('documentViewer.docForm');
+        expect(props.showTab).toHaveBeenCalled();
       });
     });
   });
