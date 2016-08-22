@@ -54,6 +54,20 @@ export class ViewMetadataPanel extends Component {
         <div className="sidepanel-header">
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
+          <Tabs selectedTab={this.props.tab}
+            handleSelect={(tab) => {
+              this.props.showTab(tab);
+            }}
+          >
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="metadata" default>Metadata</TabLink>
+              </li>
+              <li>
+                <TabLink to="connections">Connections ({this.props.numberOfReferences})</TabLink>
+              </li>
+            </ul>
+          </Tabs>
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
@@ -91,22 +105,6 @@ export class ViewMetadataPanel extends Component {
               this.props.showTab(tab);
             }}
           >
-            <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="toc">Table of contents</TabLink>
-              </li>
-              <li>
-                <TabLink to="metadata" default>Metadata</TabLink>
-              </li>
-              <li>
-                <TabLink to="connections">Connections ({this.props.numberOfReferences})</TabLink>
-              </li>
-            </ul>
-            <TabContent for="toc">
-              {this.props.tocForm.map((connection) => {
-                return <div>{connection.sourceRange.text}</div>;
-              })}
-            </TabContent>
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited) {
