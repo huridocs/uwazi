@@ -87,7 +87,6 @@ export class ViewMetadataPanel extends Component {
           </div>
         </ShowIf>
         <NeedAuthorization>
-          <div>
             <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
               <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -96,6 +95,8 @@ export class ViewMetadataPanel extends Component {
               </button>
               </div>
             </ShowIf>
+        </NeedAuthorization>
+        <NeedAuthorization>
             <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited}>
               <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.toc || [])} className="edit-toc btn btn-success">
@@ -104,7 +105,6 @@ export class ViewMetadataPanel extends Component {
               </button>
               </div>
             </ShowIf>
-          </div>
         </NeedAuthorization>
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}
