@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Form} from 'react-redux-form';
 
-import {FormGroup, FormField} from 'app/Forms';
+import {FormField} from 'app/Forms';
 
 export class TocForm extends Component {
   render() {
@@ -9,7 +9,7 @@ export class TocForm extends Component {
       <Form id='tocForm' model={this.props.model} onSubmit={this.props.onSubmit} >
         {this.props.toc.map((tocElement, index) => {
           return (
-            <div>
+            <div key={index}>
               <a className="btn btn-xs btn-default">
                 <i className="fa fa-arrow-left"></i>
               </a>

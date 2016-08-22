@@ -25,5 +25,5 @@ export default combineReducers({
   referencedDocuments: createReducer('viewer/referencedDocuments', []),
   tocForm: modelReducer('documentViewer.tocForm', []),
   tocFormState: formReducer('documentViewer.tocForm'),
-  tocBeingEdited: createReducer('viewer/tocBeingEdited', false)
+  tocBeingEdited: createReducer('documentViewer/tocBeingEdited', false)
 });

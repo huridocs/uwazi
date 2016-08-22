@@ -41,18 +41,24 @@ describe('documentActions', () => {
   });
 
   describe('addToToc', () => {
-    it('should populate doc form, and add the selected text to it', () => {
-      let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
-      let tocElement = {range: {start: 12, end: 23}, label: 'Blah', indentation: 0};
+    it('should populate doc form, and add the selected text to its correct place', () => {
+      let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Chapter 1'}};
+      let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0};
+      let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0};
+
       const expectedActions = [
-        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [tocElement], silent: true, multi: false},
+        {type: 'documentViewer/tocBeingEdited/SET', value: true},
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false},
         {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
         {type: types.SHOW_TAB, tab: 'toc'}
       ];
+
       const store = mockStore({
         documentViewer: {
           tocForm: [],
-          doc: Immutable.fromJS({})
+          doc: Immutable.fromJS({
+            toc: [chapter2]
+          })
         }
       });
 
@@ -62,21 +68,23 @@ describe('documentActions', () => {
 
     describe('if document is already loaded', () => {
       it('should not reload the form', () => {
-        let textSelectedObject = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Blah'}};
-        let tocElement = {range: {start: 12, end: 23}, label: 'Blah', indentation: 0};
+        let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Chapter 1'}};
+        let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0};
+        let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0};
         const expectedActions = [
-          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [{}, tocElement], silent: true, multi: false},
+          {type: 'documentViewer/tocBeingEdited/SET', value: true},
+          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false},
           {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
           {type: types.SHOW_TAB, tab: 'toc'}
         ];
         const store = mockStore({
           documentViewer: {
-            tocForm: [{}],
+            tocForm: [chapter2],
             doc: Immutable.fromJS({})
           }
         });
 
-        store.dispatch(actions.addToToc(textSelectedObject));
+        store.dispatch(actions.addToToc(reference));
         expect(store.getActions()).toEqual(expectedActions);
       });
     });
@@ -171,6 +179,7 @@ describe('documentActions', () => {
 
         const expectedActions = [
           {type: 'rrf/reset', model: 'documentViewer.tocForm'},
+          {type: 'documentViewer/tocBeingEdited/SET', value: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', toc}},
           {type: 'rrf/reset', model: 'documentViewer.docForm'},
