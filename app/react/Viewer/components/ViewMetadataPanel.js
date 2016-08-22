@@ -64,7 +64,7 @@ export class ViewMetadataPanel extends Component {
                 <TabLink to="metadata">Metadata</TabLink>
               </li>
               <li>
-                <TabLink to="connections">Connections ({this.props.numberOfReferences})</TabLink>
+                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
               </li>
             </ul>
           </Tabs>
