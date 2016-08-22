@@ -109,7 +109,7 @@ export default function (container) {
       }
     },
 
-    renderReferences(references, identifier = 'reference') {
+    renderReferences(references, identifier = 'reference', elementWrapperType = 'a') {
       let rangeProperty = 'range';
       let ids = [];
       if (!this.renderedReferences[identifier]) {
@@ -124,7 +124,7 @@ export default function (container) {
           return;
         }
         let restoredRange = TextRange.restore(reference[rangeProperty], container);
-        let elementWrapper = document.createElement('a');
+        let elementWrapper = document.createElement(elementWrapperType);
         elementWrapper.classList.add(identifier);
         elementWrapper.setAttribute('data-id', reference._id);
         this.renderedReferences[identifier][reference._id] = wrapper.wrap(elementWrapper, restoredRange);

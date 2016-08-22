@@ -16,7 +16,7 @@ import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {browserHistory} from 'react-router';
-import {TocForm} from 'app/Documents';
+import {TocForm, ShowToc} from 'app/Documents';
 
 export class ViewMetadataPanel extends Component {
   deleteDocument() {
@@ -126,6 +126,7 @@ export class ViewMetadataPanel extends Component {
               </li>
             </ul>
             <TabContent for="toc">
+              <ShowToc toc={doc.toc} />
               <TocForm onSubmit={this.props.saveToc} model="documentViewer.tocForm" state={this.props.tocFormState} toc={this.props.tocForm}/>
             </TabContent>
             <TabContent for="metadata">
