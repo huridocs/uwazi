@@ -66,7 +66,10 @@ export class EntityViewer extends Component {
         <ShowIf if={!entityBeingEdited}>
           <div className="sidepanel-header">
             <h1 className="item-name">{entity.title}</h1>
-            <span className="item-type item-type-2">{entity.documentType}</span>
+            <span className="item-type item-type-2">
+              <i className="item-type__icon fa fa-bank"></i>
+              <span className="item-type__name">{entity.documentType}</span>
+            </span>
           </div>
         </ShowIf>
             <div className="sidepanel-footer">

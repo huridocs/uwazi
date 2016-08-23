@@ -18,7 +18,7 @@ export class Doc extends Component {
 
   render() {
     let {title, _id, creationDate, template} = this.props.doc;
-    let documentViewUrl = '/document/' + _id;
+    let documentViewUrl = `/${this.props.doc.type}/${_id}`;
     let typeIndex = 'item-type item-type-0';
     let type = this.props.templates.toJS().reduce((result, templ, index) => {
       if (templ._id === template) {
