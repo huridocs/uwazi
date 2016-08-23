@@ -37,8 +37,8 @@ export class LibraryFilters extends Component {
           <ul className="multiselect is-active">
             <li className="multiselectLabel">
               <span>Document type</span>
-              <i className="fa fa-angle-down"></i>
-              <i className="fa fa-angle-up"></i>
+              <i className="multiselectLabel-icon fa fa-angle-down"></i>
+              <i className="multiselectLabel-icon fa fa-angle-up"></i>
             </li>
             <li className="multiselectItem">
               <input
@@ -49,7 +49,11 @@ export class LibraryFilters extends Component {
                 checked={this.props.allDocumentTypes}/>
               <label
                 className="multiselectItem-label"
-                htmlFor="all-documents">Select all</label>
+                htmlFor="all-documents">
+                  <i className="multiselectItem-icon fa fa-square"></i>
+                  <i className="multiselectItem-icon fa fa-check-square"></i>
+                  <span>Select all</span>
+              </label>
             </li>
             {this.props.templates.map((template, index) => {
               return <li className="multiselectItem" key={index}>
@@ -61,7 +65,11 @@ export class LibraryFilters extends Component {
                   checked={this.props.documentTypes[template._id]}/>
                 <label
                   className="multiselectItem-label"
-                  htmlFor={template._id}>{template.name}</label>
+                  htmlFor={template._id}>
+                    <i className="multiselectItem-icon fa fa-square"></i>
+                    <i className="multiselectItem-icon fa fa-check-square"></i>
+                    <span>{template.name}</span>
+                </label>
               </li>;
             })}
           </ul>
