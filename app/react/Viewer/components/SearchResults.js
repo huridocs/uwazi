@@ -9,6 +9,10 @@ export class SearchResults extends Component {
               return <div className="loader">Searching...</div>;
             }
             return this.props.results.toJS().map((result, index) => {
+              if (this.props.creatingToTarget && result.type === 'entity') {
+                return false;
+              }
+
               return (
                 <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}
                      key={index} onClick={() => this.props.onClick(result._id)}>
@@ -31,7 +35,8 @@ SearchResults.propTypes = {
   results: PropTypes.object,
   selected: PropTypes.string,
   searching: PropTypes.bool,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  creatingToTarget: PropTypes.bool
 };
 
 export default SearchResults;

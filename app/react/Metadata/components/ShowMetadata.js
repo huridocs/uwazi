@@ -4,7 +4,6 @@ export class ShowMetadata extends Component {
   render() {
     const {entity} = this.props;
     return (
-      <div className="side-panel-content">
         <div className="view">
           <dl>
             <dt>Title</dt>
@@ -24,7 +23,6 @@ export class ShowMetadata extends Component {
               );
           })}
         </div>
-      </div>
     );
   }
 }

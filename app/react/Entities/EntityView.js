@@ -7,16 +7,23 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import {actions} from 'app/BasicReducer';
 import EntityViewer from './components/EntityViewer';
 import referencesAPI from 'app/Viewer/referencesAPI';
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 
 export default class Entity extends RouteHandler {
 
   static requestState({entityId}) {
-    return Promise.all([entitiesAPI.get(entityId), templatesAPI.get(), thesaurisAPI.get(), referencesAPI.get(entityId)])
-    .then(([entities, templates, thesauris, references]) => {
+    return Promise.all([
+      entitiesAPI.get(entityId),
+      templatesAPI.get(),
+      thesaurisAPI.get(),
+      referencesAPI.get(entityId),
+      relationTypesAPI.get()])
+    .then(([entities, templates, thesauris, references, relationTypes]) => {
       return {
         entityView: {entity: entities[0], references},
         templates,
-        thesauris
+        thesauris,
+        relationTypes
       };
     });
   }
@@ -26,6 +33,7 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.set('entityView/references', state.entityView.references));
     this.context.store.dispatch(actions.set('templates', state.templates));
     this.context.store.dispatch(actions.set('thesauris', state.thesauris));
+    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
   }
 
   render() {

@@ -28,7 +28,7 @@ export default app => {
       res.json(response);
     })
     .catch((error) => {
-      res.json({error: error.json});
+      res.status(500).json({error: error.json});
     });
   });
 

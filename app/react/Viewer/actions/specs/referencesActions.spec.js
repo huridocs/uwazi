@@ -40,8 +40,7 @@ describe('referencesActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'references', 'POST', {body: JSON.stringify({_id: 'referenceCreated'})})
-      .mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})})
-      .mock(APIURL + 'documents/list?keys=%5B2%5D', 'GET', {body: JSON.stringify({rows: [{_id: '2'}]})});
+      .mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})});
     });
 
     describe('saveReference', () => {
@@ -56,8 +55,7 @@ describe('referencesActions', () => {
           {type: 'ACTIVE_REFERENCE', reference: 'referenceCreated'},
           {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'},
           {type: 'SHOW_TAB', tab: 'connections'},
-          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}},
-          {type: 'viewer/referencedDocuments/SET', value: [{_id: '1'}, {_id: '2'}]}
+          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}
         ];
 
         const store = mockStore({});

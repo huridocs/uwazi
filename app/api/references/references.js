@@ -23,7 +23,21 @@ export default {
   getByDocument(docId) {
     return request.get(`${dbURL}/_design/references/_view/by_document?key="${docId}"`)
     .then((response) => {
-      return sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, docId));
+      let connections = sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, docId));
+      let requestDocuments = [];
+      connections.forEach((connection) => {
+        let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
+        .then((res) => {
+          connection.connectedDocumentTitle = res.json.title;
+          connection.connectedDocumentType = res.json.type;
+        });
+        requestDocuments.push(promise);
+      });
+
+      return Promise.all(requestDocuments)
+      .then(() => {
+        return connections;
+      });
     });
   },
 
