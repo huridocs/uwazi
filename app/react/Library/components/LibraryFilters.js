@@ -34,23 +34,34 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
-          <ul className="search__filter search__filter--type">
-            <li>Document type</li>
-            <li>
+          <ul className="multiselect is-active">
+            <li className="multiselectLabel">
+              <span>Document type</span>
+              <i className="fa fa-angle-down"></i>
+              <i className="fa fa-angle-up"></i>
+            </li>
+            <li className="multiselectItem">
               <input
+                className="multiselectItem-input"
                 onClick={this.handleFilterAllDocuments.bind(this)}
                 id="all-documents"
                 type="checkbox"
                 checked={this.props.allDocumentTypes}/>
-              <label htmlFor="all-documents">&nbsp;Select all</label>
+              <label
+                className="multiselectItem-label"
+                htmlFor="all-documents">Select all</label>
             </li>
             {this.props.templates.map((template, index) => {
-              return <li key={index}>
-                <input onChange={this.handleFilterDocType.bind(this)}
+              return <li className="multiselectItem" key={index}>
+                <input
+                  className="multiselectItem-input"
+                  onChange={this.handleFilterDocType.bind(this)}
                   id={template._id}
                   type="checkbox"
                   checked={this.props.documentTypes[template._id]}/>
-                <label htmlFor={template._id}>&nbsp;{template.name}</label>
+                <label
+                  className="multiselectItem-label"
+                  htmlFor={template._id}>{template.name}</label>
               </li>;
             })}
           </ul>

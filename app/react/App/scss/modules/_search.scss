@@ -197,3 +197,84 @@
 		}
 	}
 }
+
+.multiselect {
+  padding: 15px;
+  margin: 0;
+  list-style-type: none;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $c-grey;
+  }
+}
+
+.multiselectLabel {
+  font-family: $f-special;
+
+  .fa {
+    margin-left: 5px;
+  }
+}
+
+.multiselectItem {
+  display: flex;
+  align-items: center;
+}
+
+.multiselectItem-input[type="checkbox"],
+.multiselectItem-input[type="radio"] {
+  margin: 0 5px 0 0;
+}
+
+.multiselectItem-label {
+  flex: 1;
+  margin: 0;
+}
+
+// multiselect is active
+
+.multiselect.is-active {
+
+  .multiselectItem {
+    line-height: 30px;
+  }
+
+  .fa-angle-down {
+    display: none;
+  }
+  .fa-angle-up {
+    display: inline-block;
+  }
+}
+
+
+// multiselect is not active
+
+.multiselect:not(.is-active) {
+  .multiselectItem {
+    display: inline;
+  }
+  .multiselectItem-label {
+    margin: 3px 3px 3px 0;
+    padding: 2px 5px 0;
+    font-size: $f-size-sm;
+    background: $c-grey-light;
+    color: $c-primary;
+    border-radius: 2px;
+    line-height: 1.7em;
+
+    &:before {
+      content: 'X';
+      margin-right: 3px;
+    }
+  }
+
+  .multiselectItem-input,
+  .multiselectItem-input:not(:checked) + .multiselectItem-label {
+    display: none;
+  }
+
+  .fa-angle-up {
+    display: none;
+  }
+}
