@@ -28,6 +28,11 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-header">
           <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
         </div>
+        <div className="sidepanel-footer">
+          <button type="submit" form="filtersForm" className="btn btn-success">
+            <i className="fa fa-search"></i>
+          </button>
+        </div>
         <div className="sidepanel-body">
           <ul className="search__filter search__filter--type">
             <li>Document type</li>
