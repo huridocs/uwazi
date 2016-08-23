@@ -32,7 +32,7 @@ const entityNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 
 const documentTemplateNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input';
 const deleteButtonConfirmation = 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger';
 
-fdescribe('metadata path', () => {
+describe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
