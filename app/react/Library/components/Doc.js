@@ -33,12 +33,19 @@ export class Doc extends Component {
       active = this.props.selectedDocument === this.props.doc._id;
     }
 
+    let icon = 'fa-file-text-o';
+    let className = 'item-document';
+    if (this.props.doc.type === 'entity') {
+      icon = 'fa-bank';
+      className = 'item-entity';
+    }
+
     return (
-      <RowList.Item active={active} onClick={this.select.bind(this, active)}>
+      <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
         <div className="item-info">
           <ItemName>{title}</ItemName>
           <span className={typeIndex}>
-            <i className="item-type__icon fa fa-file-text-o"></i>
+            <i className={`item-type__icon fa ${icon}`}></i>
             <span className="item-type__name">{type}</span>
           </span>
         </div>

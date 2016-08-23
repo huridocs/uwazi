@@ -58,7 +58,7 @@ let RowList = ({children}) => {
   return <div className="item-group">{children}</div>;
 };
 
-let RowListItem = ({children, status, onClick, active}) => {
+let RowListItem = ({children, status, onClick, active, className}) => {
   let activeClass = '';
   if (active === true) {
     activeClass = 'is-active';
@@ -68,7 +68,7 @@ let RowListItem = ({children, status, onClick, active}) => {
   }
 
   return (
-    <div className={'item item-status item-' + (status || 'default') + ' ' + activeClass} onClick={onClick}>
+    <div className={className + ' item item-status item-' + (status || 'default') + ' ' + activeClass} onClick={onClick}>
       {children}
     </div>
   );
@@ -83,7 +83,13 @@ let childrenType = PropTypes.oneOfType([
 
 List.propTypes = {children: childrenType};
 RowList.propTypes = {children: childrenType};
-RowListItem.propTypes = {children: childrenType, status: PropTypes.string, onClick: PropTypes.func, active: PropTypes.bool};
+RowListItem.propTypes = {
+  children: childrenType,
+  status: PropTypes.string,
+  onClick: PropTypes.func,
+  active: PropTypes.bool,
+  className: PropTypes.string
+};
 ItemFooter.propTypes = {children: childrenType, onClick: PropTypes.func};
 ItemLabel.propTypes = {children: childrenType, status: PropTypes.string};
 ItemName.propTypes = {children: childrenType};
