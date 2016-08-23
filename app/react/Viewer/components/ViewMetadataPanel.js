@@ -55,6 +55,23 @@ export class ViewMetadataPanel extends Component {
         <div className="sidepanel-header no-border">
           <h1>Metadata</h1>
           <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
+          <Tabs selectedTab={this.props.tab || 'metadata'}
+            handleSelect={(tab) => {
+              this.props.showTab(tab);
+            }}
+          >
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="toc">Table of contents</TabLink>
+              </li>
+              <li>
+                <TabLink to="metadata" default>Metadata</TabLink>
+              </li>
+              <li>
+                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
+              </li>
+            </ul>
+          </Tabs>
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
@@ -107,22 +124,7 @@ export class ViewMetadataPanel extends Component {
             </ShowIf>
         </NeedAuthorization>
         <div className="sidepanel-body">
-          <Tabs selectedTab={this.props.tab || 'metadata'}
-            handleSelect={(tab) => {
-              this.props.showTab(tab);
-            }}
-          >
-            <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="toc">Table of contents</TabLink>
-              </li>
-              <li>
-                <TabLink to="metadata" default>Metadata</TabLink>
-              </li>
-              <li>
-                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
-              </li>
-            </ul>
+          <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc toc={doc.toc || []} />
@@ -186,9 +188,11 @@ ViewMetadataPanel.contextTypes = {
 
 const mapStateToProps = ({documentViewer}) => {
   let doc = formater.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+  let numberOfReferences = documentViewer.references.size;
 
   if (documentViewer.targetDoc.get('_id')) {
     doc = formater.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+    numberOfReferences = documentViewer.targetDocReferences.size;
   }
 
   return {
@@ -199,7 +203,7 @@ const mapStateToProps = ({documentViewer}) => {
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab'),
-    numberOfReferences: documentViewer.references.size,
+    numberOfReferences,
     tocForm: documentViewer.tocForm || [],
     tocBeingEdited: documentViewer.tocBeingEdited,
     tocFormState: documentViewer.tocFormState
