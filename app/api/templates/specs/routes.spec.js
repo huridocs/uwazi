@@ -124,4 +124,17 @@ describe('templates routes', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('/templates/select_options', () => {
+    it('should return the number of templates using a thesauri', (done) => {
+      spyOn(templates, 'selectOptions').and.returnValue(Promise.resolve('options'));
+      let req = {};
+      routes.get('/api/templates/select_options', req)
+      .then((result) => {
+        expect(result).toBe('options');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
 });

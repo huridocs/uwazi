@@ -48,4 +48,8 @@ export default app => {
       res.json(response);
     });
   });
+
+  app.get('/api/templates/select_options', (req, res) => {
+    templates.selectOptions().then((response) => res.json(response));
+  });
 };

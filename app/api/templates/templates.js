@@ -77,5 +77,12 @@ export default {
       }
       return response.json.rows[0].value;
     });
+  },
+
+  selectOptions() {
+    return request.get(`${dbURL}/_design/templates/_view/select_options`)
+    .then((response) => {
+      return response.json.rows.map(row => row.value);
+    });
   }
 };

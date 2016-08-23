@@ -237,4 +237,21 @@ describe('templates', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('selectOptions', () => {
+    it('should return all the thesauris and entities with same format as thesauri', (done) => {
+      templates.selectOptions()
+      .then((result) => {
+        expect(result.length).toBe(3);
+        expect(result[0].name).toBe('thesauri');
+        expect(result[0].type).toBe('thesauri');
+        expect(result[1].name).toBe('entity1');
+        expect(result[1].type).toBe('entity');
+        expect(result[2].name).toBe('entity2');
+        expect(result[2].type).toBe('entity');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
 });
