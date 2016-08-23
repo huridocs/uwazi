@@ -275,16 +275,24 @@
 
   .multiselectItem-label {
     margin: 3px 6px 3px 0;
-    padding: 3px 9px 1px;
+    padding: 3px 6px 3px 9px;
     font-size: $f-size-sm;
     background: $c-grey-light;
     color: $c-primary;
     border-radius: 2px;
     line-height: 1.7em;
 
-    &:before {
-      content: 'X';
-      margin-right: 3px;
+    &:after {
+      content: 'x';
+      display: inline-block;
+      width: 14px;
+      line-height: 13px;
+      padding: 0px 3px 1px 3px;
+      margin-left: 5px;
+      text-align: center;
+      background: $c-primary;
+      color: $c-white;
+      border-radius: 50%;
     }
   }
 
