@@ -6,24 +6,26 @@ import {formater} from 'app/Metadata';
 export class EntityViewer extends Component {
 
   render() {
+    console.log(this.props.references);
+    let {entity} = this.props;
     return (
       <div className="row">
         <Helmet title="Entity" />
         <aside className="side-panel entity-metadata">
           <div className="sidepanel-header">
-            <h1 className="item-name">Entity Name</h1>
-            <span className="item-type item-type-2">Entity type</span>
+            <h1 className="item-name">{entity.title}</h1>
+            <span className="item-type item-type-2">{entity.documentType}</span>
           </div>
           <div className="sidepanel-body">
             <div className="view">
-              <dl>
-                <dt>Metadata 1</dt>
-                <dd>Metadata 1</dd>
-              </dl>
-              <dl>
-                <dt>Metadata 2</dt>
-                <dd>Metadata 2</dd>
-              </dl>
+              {entity.metadata.map((property, index) => {
+                return (
+                  <dl key={index}>
+                    <dt>{property.label}</dt>
+                    <dd>{property.value}</dd>
+                  </dl>
+                  );
+              })}
             </div>
           </div>
         </aside>
@@ -42,7 +44,8 @@ export class EntityViewer extends Component {
 }
 
 EntityViewer.propTypes = {
-  entity: PropTypes.object
+  entity: PropTypes.object,
+  references: PropTypes.array
 };
 
 const mapStateToProps = (state) => {
@@ -51,7 +54,8 @@ const mapStateToProps = (state) => {
   let thesauris = state.thesauris.toJS();
 
   return {
-    entity: formater.prepareMetadata(entity, templates, thesauris)
+    entity: formater.prepareMetadata(entity, templates, thesauris),
+    references: state.entityView.references.toJS()
   };
 };
 
