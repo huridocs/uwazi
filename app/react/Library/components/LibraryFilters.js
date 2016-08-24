@@ -25,12 +25,14 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel open={this.props.open}>
-        <div className="sidepanel-header">
-          <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
-        </div>
         <div className="sidepanel-footer">
+          <span onClick={this.props.resetFilters} className="btn btn-primary">
+            <i className="fa fa-refresh"></i>
+            <span className="btn-label">Reset</span>
+          </span>
           <button type="submit" form="filtersForm" className="btn btn-success">
             <i className="fa fa-search"></i>
+            <span className="btn-label">Search</span>
           </button>
         </div>
         <div className="sidepanel-body">
@@ -40,7 +42,7 @@ export class LibraryFilters extends Component {
               <i className="multiselectLabel-icon fa fa-angle-down"></i>
               <i className="multiselectLabel-icon fa fa-angle-up"></i>
             </li>
-            <li className="multiselectItem">
+            <li className="multiselectItem multiselectItem--all">
               <input
                 className="multiselectItem-input"
                 onClick={this.handleFilterAllDocuments.bind(this)}
