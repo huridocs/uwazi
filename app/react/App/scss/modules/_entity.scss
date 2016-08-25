@@ -10,8 +10,15 @@
     top: 0 !important;
   }
   .sidepanel-header {
-    border: 0;
-    padding-bottom: 0;
+    display: none;
+  }
+  .sidepanel-body {
+    .item-name {
+      padding: 30px 30px 0;
+    }
+    .item-type {
+      margin-left: 30px;
+    }
   }
   dt {
     width: 25%;
