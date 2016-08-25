@@ -40,6 +40,7 @@ describe('metadata path', () => {
       nightmare
       .login('admin', 'admin')
       .waitToClick(settingsNavButton)
+      .wait(settingsHeader)
       .url()
       .then((url) => {
         expect(url).toBe(config.url + '/settings/account');
