@@ -4,6 +4,7 @@ import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
+import thesauris from '../thesauris';
 
 describe('thesauris routes', () => {
   let routes;
@@ -59,34 +60,14 @@ describe('thesauris routes', () => {
 
   describe('DELETE', () => {
     it('should delete a thesauri', (done) => {
-      request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
-      .then(thesauri => {
-        let req = {query: {_id: thesauri.json._id, _rev: thesauri.json._rev}};
-        return routes.delete('/api/thesauris', req);
-      })
-      .then((response) => {
-        expect(response.ok).toBe(true);
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let docs = response.json.rows;
-        expect(docs.length).toBe(1);
-        expect(docs[0].value.name).toBe('Top 2 scify books');
+      spyOn(thesauris, 'delete').and.returnValue(Promise.resolve());
+      let req = {query: {_id: 'abc', _rev: '123'}};
+      return routes.delete('/api/thesauris', req)
+      .then(() => {
+        expect(thesauris.delete).toHaveBeenCalledWith('abc', '123');
         done();
       })
       .catch(done.fail);
-    });
-
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        let req = {query: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
-        routes.delete('/api/thesauris', req)
-        .then((response) => {
-          expect(response.error.error).toBe('bad_request');
-          done();
-        })
-        .catch(done.fail);
-      });
     });
   });
 

@@ -23,6 +23,40 @@ describe('thesauris', () => {
       .catch(done.fail);
     });
 
+    it('should also return entity templates with the entitties as optiones', (done) => {
+      thesauris.get()
+      .then((response) => {
+        let docs = response.rows;
+        expect(docs[2].name).toBe('Judge');
+        expect(docs[2].values).toEqual([{id: 'entityID', label: 'Dredd'}]);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    describe('when passing id', () => {
+      it('should return matching thesauri', (done) => {
+        thesauris.get('c08ef2532f0bd008ac5174b45e033c94')
+        .then((response) => {
+          expect(response.rows[0].name).toBe('Top 2 scify books');
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+  });
+
+  describe('dictionaries()', () => {
+    it('should return all thesauris by default', (done) => {
+      thesauris.get()
+      .then((response) => {
+        let docs = response.rows;
+        expect(docs[0].name).toBe('secret recipes');
+        done();
+      })
+      .catch(done.fail);
+    });
+
     describe('when passing id', () => {
       it('should return matching thesauri', (done) => {
         thesauris.get('c08ef2532f0bd008ac5174b45e033c94')
@@ -47,7 +81,7 @@ describe('thesauris', () => {
       })
       .then((response) => {
         let docs = response.json.rows;
-        expect(docs.length).toBe(1);
+        expect(docs.length).toBe(2);
         expect(docs[0].value.name).toBe('Top 2 scify books');
         done();
       })

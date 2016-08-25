@@ -3,7 +3,6 @@ import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
-import fs from 'fs';
 
 export default {
   save(doc, user) {
@@ -40,6 +39,13 @@ export default {
         return 0;
       }
       return response.json.rows[0].value;
+    });
+  },
+
+  getByTemplate(templateId) {
+    return request.get(`${dbURL}/_design/entities/_view/by_template?&key="${templateId}"`)
+    .then((response) => {
+      return sanitizeResponse(response.json);
     });
   },
 

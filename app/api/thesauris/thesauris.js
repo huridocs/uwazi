@@ -1,6 +1,7 @@
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import sanitizeResponse from 'api/utils/sanitizeResponse.js';
+import entities from 'api/entities/entities';
 
 let autoincrementValuesId = (thesauri) => {
   let nextId = thesauri.values.reduce((latestId, value) => {
@@ -53,7 +54,47 @@ export default {
     });
   },
 
+  templateToThesauri(template) {
+    return entities.getByTemplate(template._id)
+    .then((response) => {
+      template.values = response.rows.map((entity) => {
+        return {id: entity._id, label: entity.title};
+      });
+      return template;
+    });
+  },
+
   get(thesauriId) {
+    let url = `${dbUrl}/_design/thesauris/_view/all`;
+    if (thesauriId) {
+      url += `?key="${thesauriId}"`;
+    }
+
+    return request.get(url)
+    .then((response) => {
+      let thesauris = sanitizeResponse(response.json);
+      let requests = thesauris.rows.map((result, index) => {
+        if (result.type === 'template') {
+          return this.templateToThesauri(result)
+          .then((templateTransformedInThesauri) => {
+            thesauris.rows[index] = templateTransformedInThesauri;
+          });
+        }
+
+        return Promise.resolve(result);
+      });
+
+      return Promise.all(requests)
+      .then(() => {
+        return thesauris;
+      });
+    })
+    .catch((error) => {
+      return {error: error.json};
+    });
+  },
+
+  dictionaries(thesauriId) {
     let url = `${dbUrl}/_design/thesauris/_view/all`;
     if (thesauriId) {
       url += `?key="${thesauriId}"`;
