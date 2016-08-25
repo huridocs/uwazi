@@ -2,7 +2,6 @@ import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
 import fs from 'fs';
-import Pdftohtml from 'pdftohtmljs_uwazi';
 import readMultipleFiles from 'read-multiple-files';
 
 let basename = (filepath) => {
@@ -60,37 +59,46 @@ export default class PDF extends EventEmitter {
 
   toHTML() {
     let destination = '/tmp/' + Date.now() + '/';
-    let converter = new Pdftohtml(this.optimizedPath);
-    converter.add_options([
-      '--dest-dir ' + destination,
-      '--split-pages 1',
-      '--embed-css 0',
-      '--page-filename %d',
-      '--css-filename custom.css',
-      '--optimize-text 1',
-      '--tounicode 1',
-      '--decompose-ligature 1',
-      '--hdpi 96',
-      '--vdpi 96',
-      '--bg-format jpg']);
+    let options = [
+      this.optimizedPath,
+      `--dest-dir=${destination}`,
+      '--split-pages=1',
+      '--embed-css=0',
+      '--page-filename=%d',
+      '--css-filename=custom.css',
+      '--optimize-text=1',
+      '--tounicode=1',
+      '--decompose-ligature=1',
+      '--zoom=1.33',
+      '--hdpi=96',
+      '--vdpi=96',
+      '--bg-format=jpg'
+    ];
 
-    return converter.convert()
-    .then(() => {
-      return new Promise((resolve) => {
+    let conversion = spawn('pdf2htmlEX', options);
+
+    return new Promise((resolve) => {
+      //conversion.stderr.on('data', (error) => {
+        ////console.log(error.toString());
+      //});
+      //conversion.stdout.on('data', (data) => {
+        ////console.log(data.toString());
+      //});
+      conversion.stdout.on('close', () => {
         fs.readdir(destination, (err, filenames) => {
           let orderedPageFiles = filenames
           .filter((filename) => !filename.match(/\.html/) && parseInt(filename, 10))
           .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
           .map((file) => destination + file);
 
-          let conversion = {};
+          let conversionObject = {};
 
           readMultipleFiles(orderedPageFiles, 'utf8', (error, pages) => {
             fs.readFile(destination + 'custom.css', 'utf8', (cssError, css) => {
-              conversion.css = css.split('\n').filter((line) => !line.match('@font-face')).join('\n');
-              conversion.fonts = css.split('\n').filter((line) => line.match('@font-face')).join('\n');
-              conversion.pages = pages;
-              resolve(conversion);
+              conversionObject.css = css.split('\n').filter((line) => !line.match('@font-face')).join('\n');
+              conversionObject.fonts = css.split('\n').filter((line) => line.match('@font-face')).join('\n');
+              conversionObject.pages = pages;
+              resolve(conversionObject);
             });
           });
         });
