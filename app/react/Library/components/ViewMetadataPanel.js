@@ -58,8 +58,14 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">
-          <h1>Metadata</h1>
-          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
+            <ul className="nav nav-tabs">
+              <li>
+                <div className="tab-link tab-link-active">
+                  <i className="fa fa-info-circle"></i>
+                </div>
+              </li>
+            </ul>
+            <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
         </div>
         <div className="sidepanel-footer">
           <NeedAuthorization>

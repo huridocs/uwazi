@@ -57,7 +57,7 @@ export class Doc extends Component {
         </div>
         <ItemFooter>
           <Link to={documentViewUrl} className="item-shortcut">
-            <i className="fa fa-chevron-right"></i>
+            <i className="fa fa-external-link"></i>
           </Link>
         </ItemFooter>
       </RowList.Item>

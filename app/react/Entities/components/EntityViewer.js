@@ -65,11 +65,7 @@ export class EntityViewer extends Component {
         <aside className="side-panel entity-metadata">
         <ShowIf if={!entityBeingEdited}>
           <div className="sidepanel-header">
-            <h1 className="item-name">{entity.title}</h1>
-            <span className="item-type item-type-2">
-              <i className="item-type__icon fa fa-bank"></i>
-              <span className="item-type__name">{entity.documentType}</span>
-            </span>
+
           </div>
         </ShowIf>
             <div className="sidepanel-footer">
@@ -97,6 +93,15 @@ export class EntityViewer extends Component {
               </NeedAuthorization>
             </div>
           <div className="sidepanel-body">
+            <ShowIf if={!entityBeingEdited}>
+              <h1 className="item-name">{entity.title}</h1>
+            </ShowIf>
+            <ShowIf if={!entityBeingEdited}>
+              <span className="item-type item-type-2">
+                <i className="item-type__icon fa fa-bank"></i>
+                <span className="item-type__name">{entity.documentType}</span>
+              </span>
+            </ShowIf>
           {(() => {
             if (entityBeingEdited) {
               return <EntityForm/>;
@@ -108,7 +113,15 @@ export class EntityViewer extends Component {
         </aside>
         <aside className="side-panel entity-connections">
           <div className="sidepanel-header">
-            <h1>Connections ({references.length})</h1>
+            <ul className="nav nav-tabs">
+              <li>
+                <div className="tab-link tab-link-active">
+                  <i className="fa fa-sitemap"></i>
+                  <span className="connectionsNumber">{references.length}</span>
+                </div>
+              </li>
+            </ul>
+            &nbsp;
           </div>
           <div className="sidepanel-body">
             <div className="item-group">
