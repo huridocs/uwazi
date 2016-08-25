@@ -210,7 +210,31 @@
 
 .multiselectLabel {
   font-family: $f-special;
+  position: relative;
+  margin-bottom: 8px;
 
+  input.form-control {
+    border: 0;
+    border-bottom: 1px solid $c-grey-light;
+    border-radius: 0;
+    box-shadow: none;
+    padding-left: 26px;
+
+    &:focus {
+      border-bottom-color: $c-primary;
+    }
+  }
+
+  .fa {
+    color: $c-grey-light;
+    position: absolute;
+    top: 9px;
+    left: 6px;
+  }
+
+  input.form-control:focus ~ .fa {
+    color: $c-primary;
+  }
 }
 .multiselectLabel-icon {
   float: right;
@@ -240,9 +264,28 @@
   flex: 1;
   margin: 0;
   cursor: pointer;
+}
 
-  .multiselectItem--all & {
+.multiselectItem--all {
+  label {
     font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: $f-size-sm;
+    position: relative;
+    top: -1px;
+  }
+}
+
+.multiselectButton {
+  .btn {
+    margin-top: 8px;
+    padding: 3px 9px;
+    font-size: $f-size-sm;
+    border-color: $c-grey-light;
+  }
+  .fa {
+    margin-right: 9px !important;
   }
 }
 
@@ -253,10 +296,6 @@
   .multiselectLabel-icon:first-of-type { display: none; }
   .multiselectLabel-icon:last-of-type  { display: inline-block; }
 
-  .multiselectLabel {
-    margin-bottom: 8px;
-  }
-  
   .multiselectItem {
     line-height: 1.8em;
     padding: 2px 6px 0;

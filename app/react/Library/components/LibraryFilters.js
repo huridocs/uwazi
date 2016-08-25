@@ -38,9 +38,8 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <ul className="multiselect is-active">
             <li className="multiselectLabel">
-              <span>Document type</span>
-              <i className="multiselectLabel-icon fa fa-angle-down"></i>
-              <i className="multiselectLabel-icon fa fa-angle-up"></i>
+                <input className="form-control" placeholder="Document type" />
+                <i className="fa fa-search"></i>
             </li>
             <li className="multiselectItem multiselectItem--all">
               <input
@@ -74,6 +73,29 @@ export class LibraryFilters extends Component {
                 </label>
               </li>;
             })}
+
+            <li className="multiselectItem" key='999'>
+              <input
+                className="multiselectItem-input"
+                type="checkbox" />
+              <label
+                className="multiselectItem-label">
+                  <i className="multiselectItem-icon fa fa-square"></i>
+                  <i className="multiselectItem-icon fa fa-check-square"></i>
+                  <span>Test</span>
+              </label>
+            </li>
+
+            <li className="multiselectButton">
+                <button className="btn btn-xs btn-default">
+                  <i className="fa fa-caret-down"></i>
+                  <span>Show 73 more</span>
+                </button>
+                <button className="btn btn-xs btn-default">
+                  <i className="fa fa-caret-up"></i>
+                  <span>Show less</span>
+                </button>
+            </li>
           </ul>
           <FiltersForm />
         </div>
