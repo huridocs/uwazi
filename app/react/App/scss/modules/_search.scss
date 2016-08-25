@@ -277,15 +277,28 @@
   }
 }
 
-.multiselectButton {
-  .btn {
-    margin-top: 8px;
-    padding: 3px 9px;
-    font-size: $f-size-sm;
-    border-color: $c-grey-light;
+.multiselectActions {
+  padding-top: 8px;
+  position: relative;
+  .input-group-addon {
+    padding: 0 3px;
   }
-  .fa {
-    margin-right: 9px !important;
+  .form-control {
+    width: auto;
+    height: 24px;
+    line-height: 25px;
+    font-size: $f-size-sm;
+  }
+  .btn {
+    float: left;
+    height: 24px;
+    line-height: 24px;
+    font-size: $f-size-sm;
+    padding: 0 9px;
+    margin-right: 5px;
+    .fa {
+      margin-right: 9px !important;
+    }
   }
 }
 

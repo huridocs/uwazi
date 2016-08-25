@@ -37,25 +37,7 @@ export class LibraryFilters extends Component {
         </div>
         <div className="sidepanel-body">
           <ul className="multiselect is-active">
-            <li className="multiselectLabel">
-                <input className="form-control" placeholder="Document type" />
-                <i className="fa fa-search"></i>
-            </li>
-            <li className="multiselectItem multiselectItem--all">
-              <input
-                className="multiselectItem-input"
-                onClick={this.handleFilterAllDocuments.bind(this)}
-                id="all-documents"
-                type="checkbox"
-                checked={this.props.allDocumentTypes}/>
-              <label
-                className="multiselectItem-label"
-                htmlFor="all-documents">
-                  <i className="multiselectItem-icon fa fa-square"></i>
-                  <i className="multiselectItem-icon fa fa-check-square"></i>
-                  <span>Select all</span>
-              </label>
-            </li>
+            <li className="multiselectLabel">Document type</li>
             {this.props.templates.map((template, index) => {
               return <li className="multiselectItem" key={index}>
                 <input
@@ -74,27 +56,17 @@ export class LibraryFilters extends Component {
               </li>;
             })}
 
-            <li className="multiselectItem" key='999'>
-              <input
-                className="multiselectItem-input"
-                type="checkbox" />
-              <label
-                className="multiselectItem-label">
-                  <i className="multiselectItem-icon fa fa-square"></i>
-                  <i className="multiselectItem-icon fa fa-check-square"></i>
-                  <span>Test</span>
-              </label>
-            </li>
-
-            <li className="multiselectButton">
-                <button className="btn btn-xs btn-default">
-                  <i className="fa fa-caret-down"></i>
-                  <span>Show 73 more</span>
-                </button>
-                <button className="btn btn-xs btn-default">
-                  <i className="fa fa-caret-up"></i>
-                  <span>Show less</span>
-                </button>
+            <li className="multiselectActions">
+              <button className="btn btn-xs btn-default">
+                <i className="fa fa-caret-down"></i>
+                <span>Show all</span>
+              </button>
+              <div className="input-group">
+                <span className="input-group-addon" id="basic-addon1">
+                  <i className="fa fa-search"></i>
+                </span>
+                <input className="form-control" placeholder="Search item" />
+              </div>
             </li>
           </ul>
           <FiltersForm />
