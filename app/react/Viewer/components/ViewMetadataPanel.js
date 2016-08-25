@@ -53,8 +53,7 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
-          <h1>Metadata</h1>
-          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>
+          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
           <Tabs selectedTab={this.props.tab || 'metadata'}
             handleSelect={(tab) => {
               this.props.showTab(tab);
@@ -62,13 +61,20 @@ export class ViewMetadataPanel extends Component {
           >
             <ul className="nav nav-tabs">
               <li>
-                <TabLink to="toc">Table of contents</TabLink>
+                <TabLink to="toc">
+                  <i className="fa fa-indent"></i>
+                </TabLink>
               </li>
               <li>
-                <TabLink to="metadata" default>Metadata</TabLink>
+                <TabLink to="metadata" default>
+                  <i className="fa fa-info-circle"></i>
+                </TabLink>
               </li>
               <li>
-                <TabLink to="connections">Connections&nbsp;({this.props.numberOfReferences})</TabLink>
+                <TabLink to="connections">
+                  <i className="fa fa-sitemap"></i>
+                  <span className="connectionsNumber">{this.props.numberOfReferences}</span>
+                </TabLink>
               </li>
             </ul>
           </Tabs>

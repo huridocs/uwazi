@@ -113,7 +113,15 @@ export class EntityViewer extends Component {
         </aside>
         <aside className="side-panel entity-connections">
           <div className="sidepanel-header">
-            <h1>Connections ({references.length})</h1>
+            <ul className="nav nav-tabs">
+              <li>
+                <div className="tab-link tab-link-active">
+                  <i className="fa fa-sitemap"></i>
+                  <span className="connectionsNumber">{references.length}</span>
+                </div>
+              </li>
+            </ul>
+            &nbsp;
           </div>
           <div className="sidepanel-body">
             <div className="item-group">
