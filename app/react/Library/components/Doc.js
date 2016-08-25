@@ -33,11 +33,21 @@ export class Doc extends Component {
       active = this.props.selectedDocument === this.props.doc._id;
     }
 
+    let icon = 'fa-file-text-o';
+    let className = 'item-document';
+    if (this.props.doc.type === 'entity') {
+      icon = 'fa-bank';
+      className = 'item-entity';
+    }
+
     return (
-      <RowList.Item active={active} onClick={this.select.bind(this, active)}>
+      <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
         <div className="item-info">
-          <span className={typeIndex}>{type}</span>
           <ItemName>{title}</ItemName>
+          <span className={typeIndex}>
+            <i className={`item-type__icon fa ${icon}`}></i>
+            <span className="item-type__name">{type}</span>
+          </span>
         </div>
         <div className="item-metadata">
             <dl>
@@ -47,7 +57,7 @@ export class Doc extends Component {
         </div>
         <ItemFooter>
           <Link to={documentViewUrl} className="item-shortcut">
-            <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+            <i className="fa fa-chevron-right"></i>
           </Link>
         </ItemFooter>
       </RowList.Item>
