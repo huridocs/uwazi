@@ -32,7 +32,7 @@ const entityNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 
 const documentTemplateNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input';
 const deleteButtonConfirmation = 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger';
 
-describe('metadata path', () => {
+fdescribe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
@@ -79,6 +79,44 @@ describe('metadata path', () => {
         .realClick(addNewValueToThesauriButton)
         .wait(secondThesauriValForm)
         .type(secondThesauriValForm, 'tests value 2')
+        .realClick(saveThesauriButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should go back to Thesauris then edit the created thesauri', (done) => {
+        nightmare
+        .wait(thesaurisBackButton)
+        .realClick(thesaurisBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          thesaurisList.forEach((thesauri) => {
+            if (thesauri.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          thesaurisList.forEach((thesauri) => {
+            if (thesauri.innerText.match('test')) {
+              thesauri.querySelector('.fa-pencil').click();
+            }
+          });
+        })
+        .wait(thesauriNameForm)
+        .type(thesauriNameForm, ' edited once')
+        .wait(firstThesauriValForm)
+        .type(firstThesauriValForm, ' edited once')
+        .wait(secondThesauriValForm)
+        .type(secondThesauriValForm, ' edited once')
         .realClick(saveThesauriButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
@@ -152,6 +190,40 @@ describe('metadata path', () => {
         .catch(catchErrors(done));
       });
 
+      it('should go back to Documents then edit the created document', (done) => {
+        nightmare
+        .wait(documentsBackButton)
+        .realClick(documentsBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          documentsList.forEach((oneDocument) => {
+            if (oneDocument.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          documentsList.forEach((oneDocument) => {
+            if (oneDocument.innerText.match('test')) {
+              oneDocument.querySelector('.fa-pencil').click();
+            }
+          });
+        })
+        .wait(documentTemplateNameForm)
+        .type(documentTemplateNameForm, ' edited once')
+        .realClick(saveDocumentButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
       it('should go back to Documents then delete the created document template', (done) => {
         nightmare
         .wait(documentsBackButton)
@@ -214,6 +286,40 @@ describe('metadata path', () => {
         .catch(catchErrors(done));
       });
 
+      it('should go back to Connections then edit the created connection', (done) => {
+        nightmare
+        .wait(connectionsBackButton)
+        .realClick(connectionsBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          connectionsList.forEach((connection) => {
+            if (connection.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          connectionsList.forEach((connection) => {
+            if (connection.innerText.match('test')) {
+              connection.querySelector('.fa-pencil').click();
+            }
+          });
+        })
+        .wait(connectionNameForm)
+        .type(connectionNameForm, ' edited once')
+        .realClick(saveConnectionButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
       it('should go back to Documents then delete the created document template', (done) => {
         nightmare
         .wait(connectionsBackButton)
@@ -266,6 +372,40 @@ describe('metadata path', () => {
         .wait(entityNameForm)
         .type(entityNameForm, 'test entity')
         .wait(saveEntityButton)
+        .realClick(saveEntityButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should go back to Entities then edit the created entity', (done) => {
+        nightmare
+        .wait(entitiesBackButton)
+        .realClick(entitiesBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entitiesList.forEach((entity) => {
+            if (entity.innerText.match('test')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entitiesList.forEach((entity) => {
+            if (entity.innerText.match('test')) {
+              connection.querySelector('.fa-pencil').click();
+            }
+          });
+        })
+        .wait(entityNameForm)
+        .type(entityNameForm, ' edited once')
         .realClick(saveEntityButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
