@@ -1,21 +1,28 @@
 aside {
   .view {
+    padding: 15px;
     dl {
+      display: table;
+      width: 100%;
       padding: 15px;
-      border-top: 1px solid $c-grey;
+      border-top: 1px solid $c-grey-lighten;
       margin: 0;
     }
     dl:first-child {
       border-top: 0;
     }
     dt {
-      font-size: $f-size-lg;
+      float: left;
+      width: 100%;
+      font-weight: 300;
       font-style: normal;
       font-family: $f-special;
-      color: $c-black;
-      margin-bottom: 5px;
+      margin-bottom: 0;
+      margin-bottom: 3px;
     }
     dd {
+      float: left;
+      width: 100%;
       margin: 0;
     }
   }

@@ -62,6 +62,7 @@ export class CreateReferencePanel extends Component {
           searching={this.props.searching}
           selected={this.props.selected}
           onClick={this.props.selectTargetDocument}
+          creatingToTarget={this.props.creatingToTarget}
         />
       </div>
 

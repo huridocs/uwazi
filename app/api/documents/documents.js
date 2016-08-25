@@ -51,10 +51,6 @@ export default {
     return request.get(url)
     .then(response => {
       response.json.rows = response.json.rows.map(row => row.value);
-      //if (response.json.rows.length === 1 && response.json.rows[0].css) {
-        //response.json.rows[0].css = response.json.rows[0].css.replace(/(\..*?){/g, '._' + response.json.rows[0]._id + ' $1 {');
-        //response.json.rows[0].fonts = '';
-      //}
       return response.json;
     });
   },

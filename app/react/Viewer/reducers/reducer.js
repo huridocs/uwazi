@@ -13,7 +13,6 @@ export default combineReducers({
   targetDoc: createReducer('viewer/targetDoc', {}),
   targetDocHTML: createReducer('viewer/targetDocHTML', {pages: []}),
   targetDocReferences: createReducer('viewer/targetDocReferences', []),
-  targetDocReferencedDocuments: createReducer('viewer/targetDocReferencedDocuments', []),
   references,
   uiState,
   docForm: modelReducer('documentViewer.docForm'),
@@ -22,7 +21,6 @@ export default combineReducers({
   templates: createReducer('viewer/templates', []),
   thesauris: createReducer('viewer/thesauris', []),
   relationTypes: createReducer('viewer/relationTypes', []),
-  referencedDocuments: createReducer('viewer/referencedDocuments', []),
   tocForm: modelReducer('documentViewer.tocForm', []),
   tocFormState: formReducer('documentViewer.tocForm'),
   tocBeingEdited: createReducer('documentViewer/tocBeingEdited', false)

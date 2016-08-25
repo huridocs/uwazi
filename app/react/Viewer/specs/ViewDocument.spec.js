@@ -10,7 +10,6 @@ import ViewDocument from 'app/Viewer/ViewDocument';
 describe('ViewDocument', () => {
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
   let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
-  let connectedDocuments = {rows: [{title: 'A', _id: '1'}, {title: 'B', _id: '2'}]};
   let relationTypes = {rows: [{name: 'Supports', _id: '1'}]};
   let document = {_id: '1', title: 'title'};
   let docHTML = {_id: '2', html: 'html'};
@@ -31,7 +30,6 @@ describe('ViewDocument', () => {
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)})
     .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify(relationTypes)})
     .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: [document]})})
-    .mock(APIURL + 'documents/list?keys=%5B%221%22%2C%222%22%5D', 'GET', {body: JSON.stringify(connectedDocuments)})
     .mock(APIURL + 'documents/html?_id=documentId', 'GET', {body: JSON.stringify(docHTML)})
     .mock(APIURL + 'references/by_document/documentId', 'GET', {body: JSON.stringify(references)});
   });
@@ -50,7 +48,6 @@ describe('ViewDocument', () => {
         let templatesResponse = state.documentViewer.templates;
         let thesaurisResponse = state.documentViewer.thesauris;
         let relationTypesResponse = state.documentViewer.relationTypes;
-        let referencedDocuments = state.documentViewer.referencedDocuments;
 
         expect(documentResponse._id).toBe('1');
         expect(html).toEqual(docHTML);
@@ -58,7 +55,6 @@ describe('ViewDocument', () => {
         expect(templatesResponse).toEqual(templates.rows);
         expect(thesaurisResponse).toEqual(thesauris.rows);
         expect(relationTypesResponse).toEqual(relationTypes.rows);
-        expect(referencedDocuments).toEqual(connectedDocuments.rows);
         done();
       })
       .catch(done.fail);
@@ -75,8 +71,7 @@ describe('ViewDocument', () => {
           references: 'references',
           templates: 'templates',
           thesauris: 'thesauris',
-          relationTypes: 'relationTypes',
-          referencedDocuments: 'referencedDocuments'
+          relationTypes: 'relationTypes'
         }
       });
 
@@ -86,7 +81,6 @@ describe('ViewDocument', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/SET', value: 'templates'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/SET', value: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/relationTypes/SET', value: 'relationTypes'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/referencedDocuments/SET', value: 'referencedDocuments'});
     });
   });
 
@@ -108,7 +102,6 @@ describe('ViewDocument', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/relationTypes/UNSET'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/referencedDocuments/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'rrf/reset', model: 'documentViewer.tocForm'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
     });

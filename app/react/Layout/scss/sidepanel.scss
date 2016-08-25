@@ -3,6 +3,7 @@
 @import "../../App/scss/config/_typography.scss";
 
 $c-sidebar: darken($c-background, 0%);
+$c-sidebar: $c-white;
 .side-panel {
   z-index: 2;
   display: flex;
@@ -11,7 +12,8 @@ $c-sidebar: darken($c-background, 0%);
   right: 0;
   top: 54px;
   bottom: 0;
-  border-left: 1px solid $c-grey;
+  //border-left: 1px solid $c-grey;
+  box-shadow: 0 0 10px $c-grey;
   background-color: $c-sidebar;
   max-width: 320px - 54px;
   transition: right 500ms;
@@ -38,29 +40,43 @@ $c-sidebar: darken($c-background, 0%);
 
 
   h1 {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    display: block;
+    font-family: $f-special;
+    font-weight: 300;
     font-size: $f-size-lg;
     margin: 0;
+    &.item-name {
+      font-size: $f-size-xl;
+      margin-bottom: 15px;
+    }
+  }
+  .item-type {
+    top: 0;
   }
 
   .fa-close {
-		position: absolute;
-		top: 15px;
-		right: 15px;
-		font-size: 18px;
-		color: $c-grey;
-		cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 18px;
+    color: $c-grey;
+    cursor: pointer;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    font-size: 18px;
+    color: $c-grey;
+    cursor: pointer;
     z-index: 2;
-		&:hover {
-			color: $c-grey-dark;
-		}
-	}
+    &:hover {
+      color: $c-grey-dark;
+    }
+  }
   .form-group {
     margin: 0;
   }
   .item-group {
-    padding: 15px;
+    padding: 30px;
   }
   .item {
     transition: all 0ms;
@@ -96,7 +112,7 @@ $c-sidebar: darken($c-background, 0%);
 .sidepanel-header,
 .sidepanel-footer {
   background: $c-sidebar;
-  padding: 15px;
+  padding: 30px;
   z-index: 1;
 }
 
@@ -106,7 +122,7 @@ $c-sidebar: darken($c-background, 0%);
 
 .sidepanel-header {
   top: 54px;
-  border-bottom: 1px solid $c-grey;
+  border-bottom: 2px solid $c-grey-light;
 
   &.no-border {
     border-bottom: 0;
@@ -122,7 +138,7 @@ $c-sidebar: darken($c-background, 0%);
   bottom: 0;
   width: 100%;
   text-align: center;
-  background: linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
+  background: linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
 
   .btn {
     position: relative;
@@ -131,7 +147,6 @@ $c-sidebar: darken($c-background, 0%);
     height: 44px;
     line-height: 44px;
     padding: 0;
-    top: -5px;
     margin: 0 6px;
   }
   .btn-label {

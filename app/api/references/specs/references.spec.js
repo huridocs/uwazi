@@ -36,18 +36,24 @@ describe('references', () => {
         expect(result[0].range).toBe('range1');
         expect(result[0].text).toBe('sourceRange');
         expect(result[0].connectedDocument).toBe('source1');
+        expect(result[0].connectedDocumentTitle).toBe('source1 title');
+        expect(result[0].connectedDocumentType).toBe('document');
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
         expect(result[1].range).toBe('range2');
         expect(result[1].text).toBe('targetRange');
         expect(result[1].connectedDocument).toBe('doc3');
+        expect(result[1].connectedDocumentTitle).toBe('doc3 title');
+        expect(result[1].connectedDocumentType).toBe('entity');
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
         expect(result[2].range).toBe('range3');
         expect(result[2].text).toBe('');
         expect(result[2].connectedDocument).toBe('doc4');
+        expect(result[2].connectedDocumentTitle).toBe('doc4 title');
+        expect(result[2].connectedDocumentType).toBe('document');
 
         expect(result[3].text).toBe('');
         done();

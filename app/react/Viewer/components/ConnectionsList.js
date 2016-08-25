@@ -19,13 +19,6 @@ export class ConnectionsList extends Component {
     }
   }
 
-  documentTitle(id, referencedDocuments) {
-    let docu = referencedDocuments.find((doc) => doc._id === id);
-    if (docu) {
-      return docu.title;
-    }
-  }
-
   close() {
     this.props.closePanel();
     this.props.deactivateReference();
@@ -53,7 +46,6 @@ export class ConnectionsList extends Component {
   render() {
     const uiState = this.props.uiState.toJS();
     const relationTypes = this.props.relationTypes.toJS();
-    const referencedDocuments = this.props.referencedDocuments.toJS();
 
     const references = this.props.references.toJS().sort((a, b) => {
       let aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
@@ -94,7 +86,7 @@ export class ConnectionsList extends Component {
                 <div className="item-info">
                   <div className="item-name">
                     <i className={`fa ${referenceIcon}`}></i>
-                    &nbsp;{this.documentTitle(reference.connectedDocument, referencedDocuments)}
+                    &nbsp;{reference.connectedDocumentTitle}
                     {(() => {
                       if (reference.text) {
                         return <div className="item-snippet">
@@ -154,17 +146,14 @@ ConnectionsList.contextTypes = {
 
 const mapStateToProps = ({documentViewer}) => {
   let references = documentViewer.references;
-  let referencedDocuments = documentViewer.referencedDocuments;
 
   if (documentViewer.targetDoc.get('_id')) {
     references = documentViewer.targetDocReferences;
-    referencedDocuments = documentViewer.targetDocReferencedDocuments;
   }
 
   return {
     uiState: documentViewer.uiState,
     references,
-    referencedDocuments,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')
   };

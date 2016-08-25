@@ -224,8 +224,9 @@ header {
     border-top: 0;
     border-right: 0;
     border-bottom-color: transparent;
-    border-left: 1px solid $c-grey;
-    box-shadow: none;
+    border-left: 0;
+    box-shadow: 0 0 10px $c-grey;
+    z-index: 4;
 
     &:focus {
       border-color: #66afe9;

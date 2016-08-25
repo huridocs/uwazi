@@ -6,6 +6,10 @@ export default {
     {"_id":"c08ef2532f0bd008ac5174b45e033c07","type":"reference", "title":"reference4", "sourceDocument": "doc5", "targetDocument": "source2", "targetRange": "range1", "relationtype": 'relation1'},
     {"_id":"c08ef2532f0bd008ac5174b45e033c04","type":"reference", "title":"targetDocument", "targetDocument": "target"},
     {"_id":"c08ef2532f0bd008ac5174b45e033c05","type":"reference", "title":"targetDocument", "targetDocument": "target"},
-    {"_id":"c08ef2532f0bd008ac5174b45e033c06","type":"reference", "title":"targetDocument1", "targetDocument": "target1"}
+    {"_id":"c08ef2532f0bd008ac5174b45e033c06","type":"reference", "title":"targetDocument1", "targetDocument": "target1"},
+    {"_id":"source1", title: "source1 title", type: "document"},
+    {"_id":"doc3", title: "doc3 title", type: "entity"},
+    {"_id":"doc4", title: "doc4 title", type: "document"},
+    {"_id":"doc5", title: "doc5 title", type: "document"}
   ]
 };
