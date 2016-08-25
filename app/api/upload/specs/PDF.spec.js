@@ -10,7 +10,9 @@ describe('PDF', function () {
 
   describe('optimize', () => {
     let filepath = '/the/pdf/path.pdf';
-    let commandBeingExecuted = {stdout: new Events(), stderr: new Events()};
+    let commandBeingExecuted = new Events();
+    commandBeingExecuted.stdout = new Events();
+    commandBeingExecuted.stderr = new Events();
     commandBeingExecuted.stdout.pipe = () => {};
     commandBeingExecuted.stderr.pipe = () => {};
     beforeEach(() => {
@@ -55,14 +57,14 @@ describe('PDF', function () {
     it('should reject the promise on error', (done) => {
       pdf.optimize()
       .then(() => {
-        done.fail('promise should be rejected when there is an error on stderr');
+        done.fail('promise should be rejected when there is an exit code === 1');
       })
       .catch((error) => {
-        expect(error).toBe('error!');
+        expect(error).toBe(1);
         done();
       });
 
-      commandBeingExecuted.stderr.emit('data', 'error!');
+      commandBeingExecuted.emit('close', 1);
     });
   });
 
@@ -85,21 +87,24 @@ describe('PDF', function () {
       .catch(done.fail);
     });
 
-    it('should reject the promise when there is an error', (done) => {
-      let commandBeingExecuted = {stdout: new Events(), stderr: new Events()};
+    it('should reject the promise on error', (done) => {
+      let commandBeingExecuted = new Events();
+      commandBeingExecuted.stdout = new Events();
+      commandBeingExecuted.stderr = new Events();
       commandBeingExecuted.stdout.pipe = () => {};
       commandBeingExecuted.stderr.pipe = () => {};
       spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
 
       pdf.extractText()
       .then(() => {
-        done.fail('promise should be rejected when there is an error on stderr');
+        done.fail('promise should be rejected when there is an exit code === 1');
       })
       .catch((error) => {
-        expect(error).toBe('error');
+        expect(error).toBe(1);
         done();
       });
-      commandBeingExecuted.stderr.emit('data', 'error');
+
+      commandBeingExecuted.emit('close', 1);
     });
   });
 
@@ -133,6 +138,26 @@ describe('PDF', function () {
         done();
       })
       .catch(done.fail);
+    });
+
+    it('should reject the promise on error', (done) => {
+      let commandBeingExecuted = new Events();
+      commandBeingExecuted.stdout = new Events();
+      commandBeingExecuted.stderr = new Events();
+      commandBeingExecuted.stdout.pipe = () => {};
+      commandBeingExecuted.stderr.pipe = () => {};
+      spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
+
+      pdf.toHTML()
+      .then(() => {
+        done.fail('promise should be rejected when there is an exit code === 1');
+      })
+      .catch((error) => {
+        expect(error).toBe(1);
+        done();
+      });
+
+      commandBeingExecuted.emit('close', 1);
     });
   });
 

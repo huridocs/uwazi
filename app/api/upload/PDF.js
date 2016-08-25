@@ -38,11 +38,16 @@ export default class PDF extends EventEmitter {
     });
 
     return new Promise((resolve, reject) => {
+      conversion.on('close', (code) => {
+        if (code === 1) {
+          reject(code);
+        }
+      });
+
       conversion.stdout.on('close', () => {
         this.optimizedPath = generateOutputPath(this.filepath);
         resolve(this.optimizedPath);
       });
-      conversion.stderr.on('data', (error) => reject(error));
     });
   }
 
@@ -55,7 +60,11 @@ export default class PDF extends EventEmitter {
     extraction.stdout.pipe(logFile);
 
     return new Promise((resolve, reject) => {
-      extraction.stderr.on('data', (error) => reject(error));
+      extraction.on('close', (code) => {
+        if (code === 1) {
+          reject(code);
+        }
+      });
       extraction.stdout.on('close', () => {
         fs.readFile(tmpPath + basename(this.filepath) + '.txt', 'utf-8', (err, content) => {
           resolve(content);
@@ -87,7 +96,13 @@ export default class PDF extends EventEmitter {
     conversion.stderr.pipe(logFile);
     conversion.stdout.pipe(logFile);
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      conversion.on('close', (code) => {
+        if (code === 1) {
+          reject(code);
+        }
+      });
+
       conversion.stdout.on('close', () => {
         fs.readdir(destination, (err, filenames) => {
           let orderedPageFiles = filenames
