@@ -14,14 +14,14 @@ let generateOutputPath = (filepath) => {
 };
 
 export default class PDF extends EventEmitter {
-  constructor(filepath) {
+  constructor(filepath, originalName) {
     super();
-    this.logFilePath = __dirname+'/../../../log/conversions.log';
+    this.logFile = __dirname + '/../../../log/' + basename(originalName) + '.log';
     this.filepath = filepath;
   }
 
   optimize() {
-    let logFile = fs.createWriteStream(this.logFilePath, {flags: 'a'});
+    let logFile = fs.createWriteStream(this.logFile, {flags: 'a'});
     let options = [ '-sDEVICE=pdfwrite', '-dNOPAUSE', '-dBATCH', `-sOutputFile=${generateOutputPath(this.filepath)}`, this.filepath ];
     let conversion = spawn('gs', options);
     conversion.stderr.pipe(logFile);
@@ -47,7 +47,7 @@ export default class PDF extends EventEmitter {
   }
 
   extractText() {
-    let logFile = fs.createWriteStream(this.logFilePath, {flags: 'a'});
+    let logFile = fs.createWriteStream(this.logFile, {flags: 'a'});
     let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
     let options = ['text', '-o', tmpPath, this.filepath];
     let extraction = spawn('docsplit', options);
@@ -65,7 +65,7 @@ export default class PDF extends EventEmitter {
   }
 
   toHTML() {
-    let logFile = fs.createWriteStream(this.logFilePath, {flags: 'a'});
+    let logFile = fs.createWriteStream(this.logFile, {flags: 'a'});
     let destination = '/tmp/' + Date.now() + '/';
     let options = [
       this.optimizedPath,

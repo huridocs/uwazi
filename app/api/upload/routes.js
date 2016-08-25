@@ -34,7 +34,7 @@ export default (app) => {
       let file = req.files[0].destination + req.files[0].filename;
 
       return Promise.all([
-        new PDF(file).convert(),
+        new PDF(file, req.files[0].originalname).convert(),
         request.get(dbURL + '/' + req.body.document)
       ]);
     })
