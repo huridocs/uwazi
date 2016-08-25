@@ -71,7 +71,7 @@ export class SearchBar extends Component {
               return <p key={index}>
                 <Link to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <i className="fa fa-arrow-left">
+                  <i className="fa fa-external-link">
                   </i>
                 </Link>
               </p>;
