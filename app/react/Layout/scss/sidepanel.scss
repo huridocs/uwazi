@@ -122,7 +122,7 @@ $c-sidebar: $c-white;
 
 .sidepanel-header {
   top: 54px;
-  border-bottom: 1px solid $c-grey;
+  border-bottom: 2px solid $c-grey-light;
 
   &.no-border {
     border-bottom: 0;
@@ -132,14 +132,13 @@ $c-sidebar: $c-white;
     margin: -15px;
     margin-top: 0;
   }
-  border-bottom: 2px solid $c-grey-light;
 }
 .sidepanel-footer {
   position: absolute;
   bottom: 0;
   width: 100%;
   text-align: center;
-  background: linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
+  background: linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
 
   .btn {
     position: relative;
@@ -148,7 +147,6 @@ $c-sidebar: $c-white;
     height: 44px;
     line-height: 44px;
     padding: 0;
-    top: -5px;
     margin: 0 6px;
   }
   .btn-label {
