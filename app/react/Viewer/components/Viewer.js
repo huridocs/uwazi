@@ -48,6 +48,7 @@ export class Viewer extends Component {
 
         <ConfirmCloseForm />
         <ConfirmCloseReferenceForm />
+        <ViewMetadataPanel />
         <CreateReferencePanel />
         <ViewMetadataPanel />
 

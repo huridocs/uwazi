@@ -8,35 +8,26 @@ import Viewer from 'app/Viewer/components/Viewer';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import documentsAPI from 'app/Documents/DocumentsAPI';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 
 export default class ViewDocument extends RouteHandler {
 
   static requestState({documentId}) {
-    let referencesRequest = referencesAPI.get(documentId);
-
     return Promise.all([
       api.get('documents', {_id: documentId}),
       api.get('documents/html', {_id: documentId}),
-      referencesRequest,
-      referencesRequest
-      .then((references) => {
-        let keys = references.map((reference) => reference.connectedDocument);
-        return documentsAPI.list(keys);
-      }),
+      referencesAPI.get(documentId),
       templatesAPI.get(),
       thesaurisAPI.get(),
       relationTypesAPI.get()
     ])
-    .then(([doc, docHTML, references, connectedDocuments, templates, thesauris, relationTypes]) => {
+    .then(([doc, docHTML, references, templates, thesauris, relationTypes]) => {
       return {
         documentViewer: {
           doc: doc.json.rows[0],
           docHTML: docHTML.json,
           references,
-          referencedDocuments: connectedDocuments,
           templates,
           thesauris,
           relationTypes
@@ -55,7 +46,6 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.unset('viewer/templates'));
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));
-    this.context.store.dispatch(actions.unset('viewer/referencedDocuments'));
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
@@ -67,7 +57,6 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
     this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
     this.context.store.dispatch(actions.set('viewer/relationTypes', documentViewer.relationTypes));
-    this.context.store.dispatch(actions.set('viewer/referencedDocuments', documentViewer.referencedDocuments));
     this.context.store.dispatch(setReferences(documentViewer.references));
   }
 

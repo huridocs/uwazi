@@ -147,8 +147,7 @@ describe('documentActions', () => {
       .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
       .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
       .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')})
-      .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])})
-      .mock(APIURL + 'documents/list?keys=%5B%221%22%5D', 'GET', {body: JSON.stringify({rows: []})});
+      .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
 
     describe('loadTargetDocument', () => {
@@ -158,8 +157,7 @@ describe('documentActions', () => {
         const expectedActions = [
           {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
           {type: 'viewer/targetDocHTML/SET', value: 'html'},
-          {type: 'viewer/targetDocReferences/SET', value: [{connectedDocument: '1'}]},
-          {type: 'viewer/targetDocReferencedDocuments/SET', value: []}
+          {type: 'viewer/targetDocReferences/SET', value: [{connectedDocument: '1'}]}
         ];
         const store = mockStore({});
 
@@ -186,7 +184,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.viewerSearchDocuments(searchTerm))
         .then(() => {
-          expect(api.get).toHaveBeenCalledWith('documents/search', {searchTerm: 'term', fields: ['doc.title']});
+          expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['doc.title']});
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

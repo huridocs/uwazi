@@ -14,19 +14,28 @@ import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
+import {deleteEntity} from 'app/Entities/actions/actions';
 import {browserHistory} from 'react-router';
 
 export class ViewMetadataPanel extends Component {
+
   deleteDocument() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.rawDoc.toJS())
+        if (this.props.metadata.type === 'document') {
+          this.props.deleteDocument(this.props.metadata)
+          .then(() => {
+            browserHistory.push('/');
+          });
+        }
+
+        this.props.deleteEntity(this.props.metadata)
         .then(() => {
           browserHistory.push('/');
         });
       },
-      title: 'Confirm delete document',
-      message: 'Are you sure you want to delete this document?'
+      title: 'Confirm delete',
+      message: `Are you sure you want to delete: ${this.props.metadata.title}?`
     });
   }
 
@@ -108,7 +117,8 @@ ViewMetadataPanel.propTypes = {
   formState: PropTypes.object,
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
-  loadInReduxForm: PropTypes.func
+  loadInReduxForm: PropTypes.func,
+  deleteEntity: PropTypes.func
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -135,6 +145,7 @@ function mapDispatchToProps(dispatch) {
     resetForm: formActions.reset,
     saveDocument,
     deleteDocument,
+    deleteEntity,
     showModal: modals.actions.showModal
   }, dispatch);
 }
