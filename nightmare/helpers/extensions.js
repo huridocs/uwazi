@@ -15,3 +15,9 @@ Nightmare.action('login', function (name, password, done) {
   .wait(settingsNavButton)
   .then(done);
 });
+
+Nightmare.action('waitToClick', function (selector, done) {
+  this.wait(selector)
+  .realClick(selector)
+  .then(done);
+});

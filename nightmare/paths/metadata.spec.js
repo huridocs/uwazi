@@ -39,8 +39,7 @@ describe('metadata path', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
-      .realClick(settingsNavButton)
-      .wait(settingsHeader)
+      .waitToClick(settingsNavButton)
       .url()
       .then((url) => {
         expect(url).toBe(config.url + '/settings/account');
@@ -53,10 +52,8 @@ describe('metadata path', () => {
   describe('in settings', () => {
     it('should click Thesauris button and then click on add new thesauri button', (done) => {
       nightmare
-      .wait(thesaurisButton)
-      .realClick(thesaurisButton)
-      .wait(addNewThesauri)
-      .realClick(addNewThesauri)
+      .waitToClick(thesaurisButton)
+      .waitToClick(addNewThesauri)
       .wait(saveThesauriButton)
       .exists(saveThesauriButton)
       .then((result) => {
@@ -71,15 +68,13 @@ describe('metadata path', () => {
         nightmare
         .wait(thesauriNameForm)
         .type(thesauriNameForm, 'test thesauri 1')
-        .wait(addNewValueToThesauriButton)
-        .realClick(addNewValueToThesauriButton)
+        .waitToClick(addNewValueToThesauriButton)
         .wait(firstThesauriValForm)
         .type(firstThesauriValForm, 'tests value 1')
-        .wait(addNewValueToThesauriButton)
-        .realClick(addNewValueToThesauriButton)
+        .waitToClick(addNewValueToThesauriButton)
         .wait(secondThesauriValForm)
         .type(secondThesauriValForm, 'tests value 2')
-        .realClick(saveThesauriButton)
+        .waitToClick(saveThesauriButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -91,8 +86,7 @@ describe('metadata path', () => {
 
       it('should go back to Thesauris then edit the created thesauri', (done) => {
         nightmare
-        .wait(thesaurisBackButton)
-        .realClick(thesaurisBackButton)
+        .waitToClick(thesaurisBackButton)
         .wait(() => {
           let itemFound = false;
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -117,7 +111,7 @@ describe('metadata path', () => {
         .type(firstThesauriValForm, ' edited once')
         .wait(secondThesauriValForm)
         .type(secondThesauriValForm, ' edited once')
-        .realClick(saveThesauriButton)
+        .waitToClick(saveThesauriButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -129,8 +123,7 @@ describe('metadata path', () => {
 
       it('should go back to Thesauris then delete the created thesauri', (done) => {
         nightmare
-        .wait(thesaurisBackButton)
-        .realClick(thesaurisBackButton)
+        .waitToClick(thesaurisBackButton)
         .wait(() => {
           let itemFound = false;
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -149,8 +142,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(deleteButtonConfirmation)
-        .realClick(deleteButtonConfirmation)
+        .waitToClick(deleteButtonConfirmation)
         .then(
           done
         )
@@ -160,10 +152,8 @@ describe('metadata path', () => {
 
     it('should click Documents button and then click on add new document button', (done) => {
       nightmare
-      .wait(documentsButton)
-      .realClick(documentsButton)
-      .wait(addNewDocument)
-      .realClick(addNewDocument)
+      .waitToClick(documentsButton)
+      .waitToClick(addNewDocument)
       .wait(saveDocumentButton)
       .exists(saveDocumentButton)
       .then((result) => {
@@ -179,8 +169,7 @@ describe('metadata path', () => {
         nightmare
         .wait(documentTemplateNameForm)
         .type(documentTemplateNameForm, 'test document template')
-        .wait(saveDocumentButton)
-        .realClick(saveDocumentButton)
+        .waitToClick(saveDocumentButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -192,8 +181,7 @@ describe('metadata path', () => {
 
       it('should go back to Documents then edit the created document', (done) => {
         nightmare
-        .wait(documentsBackButton)
-        .realClick(documentsBackButton)
+        .waitToClick(documentsBackButton)
         .wait(() => {
           let itemFound = false;
           let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -214,7 +202,7 @@ describe('metadata path', () => {
         })
         .wait(documentTemplateNameForm)
         .type(documentTemplateNameForm, ' edited once')
-        .realClick(saveDocumentButton)
+        .waitToClick(saveDocumentButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -226,8 +214,7 @@ describe('metadata path', () => {
 
       it('should go back to Documents then delete the created document template', (done) => {
         nightmare
-        .wait(documentsBackButton)
-        .realClick(documentsBackButton)
+        .waitToClick(documentsBackButton)
         .wait(() => {
           let itemFound = false;
           let documentTemplatesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -246,8 +233,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(deleteButtonConfirmation)
-        .realClick(deleteButtonConfirmation)
+        .waitToClick(deleteButtonConfirmation)
         .then(
           done
         )
@@ -257,10 +243,8 @@ describe('metadata path', () => {
 
     it('should click Connections button and then click on add new connection button', (done) => {
       nightmare
-      .wait(connectionsButton)
-      .realClick(connectionsButton)
-      .wait(addNewConnection)
-      .realClick(addNewConnection)
+      .waitToClick(connectionsButton)
+      .waitToClick(addNewConnection)
       .wait(saveConnectionButton)
       .exists(saveConnectionButton)
       .then((result) => {
@@ -275,8 +259,7 @@ describe('metadata path', () => {
         nightmare
         .wait(connectionNameForm)
         .type(connectionNameForm, 'test connection')
-        .wait(saveConnectionButton)
-        .realClick(saveConnectionButton)
+        .waitToClick(saveConnectionButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -288,8 +271,7 @@ describe('metadata path', () => {
 
       it('should go back to Connections then edit the created connection', (done) => {
         nightmare
-        .wait(connectionsBackButton)
-        .realClick(connectionsBackButton)
+        .waitToClick(connectionsBackButton)
         .wait(() => {
           let itemFound = false;
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -310,7 +292,7 @@ describe('metadata path', () => {
         })
         .wait(connectionNameForm)
         .type(connectionNameForm, ' edited once')
-        .realClick(saveConnectionButton)
+        .waitToClick(saveConnectionButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -322,8 +304,7 @@ describe('metadata path', () => {
 
       it('should go back to Documents then delete the created document template', (done) => {
         nightmare
-        .wait(connectionsBackButton)
-        .realClick(connectionsBackButton)
+        .waitToClick(connectionsBackButton)
         .wait(() => {
           let itemFound = false;
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -342,8 +323,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(deleteButtonConfirmation)
-        .realClick(deleteButtonConfirmation)
+        .waitToClick(deleteButtonConfirmation)
         .then(
           done
         )
@@ -353,10 +333,8 @@ describe('metadata path', () => {
 
     it('should click Entities button and then click on add new Entity button', (done) => {
       nightmare
-      .wait(entitiesButton)
-      .realClick(entitiesButton)
-      .wait(addNewEntity)
-      .realClick(addNewEntity)
+      .waitToClick(entitiesButton)
+      .waitToClick(addNewEntity)
       .wait(saveEntityButton)
       .exists(saveEntityButton)
       .then((result) => {
@@ -371,8 +349,7 @@ describe('metadata path', () => {
         nightmare
         .wait(entityNameForm)
         .type(entityNameForm, 'test entity')
-        .wait(saveEntityButton)
-        .realClick(saveEntityButton)
+        .waitToClick(saveEntityButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -384,8 +361,7 @@ describe('metadata path', () => {
 
       it('should go back to Entities then edit the created entity', (done) => {
         nightmare
-        .wait(entitiesBackButton)
-        .realClick(entitiesBackButton)
+        .waitToClick(entitiesBackButton)
         .wait(() => {
           let itemFound = false;
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -406,7 +382,7 @@ describe('metadata path', () => {
         })
         .wait(entityNameForm)
         .type(entityNameForm, ' edited once')
-        .realClick(saveEntityButton)
+        .waitToClick(saveEntityButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -418,8 +394,7 @@ describe('metadata path', () => {
 
       it('should go back to Entities then delete the created entity', (done) => {
         nightmare
-        .wait(entitiesBackButton)
-        .realClick(entitiesBackButton)
+        .waitToClick(entitiesBackButton)
         .wait(() => {
           let itemFound = false;
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -438,8 +413,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(deleteButtonConfirmation)
-        .realClick(deleteButtonConfirmation)
+        .waitToClick(deleteButtonConfirmation)
         .then(
           done
         )
