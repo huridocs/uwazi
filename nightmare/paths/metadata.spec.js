@@ -97,7 +97,7 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test')) {
+            if (thesauri.innerText.match('test thesauri 1')) {
               itemFound = true;
             }
           });
@@ -106,7 +106,7 @@ fdescribe('metadata path', () => {
         .evaluate(() => {
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test')) {
+            if (thesauri.innerText.match('test thesauri 1')) {
               thesauri.querySelector('.fa-pencil').click();
             }
           });
@@ -135,7 +135,7 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test')) {
+            if (thesauri.innerText.match('test thesauri 1 edited once')) {
               itemFound = true;
             }
           });
@@ -144,7 +144,7 @@ fdescribe('metadata path', () => {
         .evaluate(() => {
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test')) {
+            if (thesauri.innerText.match('test thesauri 1 edited once')) {
               thesauri.querySelector('.fa-trash').click();
             }
           });
@@ -198,7 +198,7 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           documentsList.forEach((oneDocument) => {
-            if (oneDocument.innerText.match('test')) {
+            if (oneDocument.innerText.match('test document template')) {
               itemFound = true;
             }
           });
@@ -207,7 +207,7 @@ fdescribe('metadata path', () => {
         .evaluate(() => {
           let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           documentsList.forEach((oneDocument) => {
-            if (oneDocument.innerText.match('test')) {
+            if (oneDocument.innerText.match('test document template')) {
               oneDocument.querySelector('.fa-pencil').click();
             }
           });
@@ -232,16 +232,16 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let documentTemplatesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           documentTemplatesList.forEach((documentTemplate) => {
-            if (documentTemplate.innerText.match('test')) {
+            if (documentTemplate.innerText.match('test document template edited once')) {
               itemFound = true;
             }
           });
           return itemFound;
         })
         .evaluate(() => {
-          let documentTemplate = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          documentTemplate.forEach((documentTemplate) => {
-            if (documentTemplate.innerText.match('test')) {
+          let documentTemplateList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          documentTemplateList.forEach((documentTemplate) => {
+            if (documentTemplate.innerText.match('test document template edited once')) {
               documentTemplate.querySelector('.fa-trash').click();
             }
           });
@@ -294,7 +294,7 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test')) {
+            if (connection.innerText.match('test connection')) {
               itemFound = true;
             }
           });
@@ -303,7 +303,7 @@ fdescribe('metadata path', () => {
         .evaluate(() => {
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test')) {
+            if (connection.innerText.match('test connection')) {
               connection.querySelector('.fa-pencil').click();
             }
           });
@@ -328,16 +328,16 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test')) {
+            if (connection.innerText.match('test connection edited once')) {
               itemFound = true;
             }
           });
           return itemFound;
         })
         .evaluate(() => {
-          let connection = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          connection.forEach((connection) => {
-            if (connection.innerText.match('test')) {
+          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          connectionsList.forEach((connection) => {
+            if (connection.innerText.match('test connection edited once')) {
               connection.querySelector('.fa-trash').click();
             }
           });
@@ -390,7 +390,7 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test')) {
+            if (entity.innerText.match('test entity')) {
               itemFound = true;
             }
           });
@@ -399,8 +399,8 @@ fdescribe('metadata path', () => {
         .evaluate(() => {
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test')) {
-              connection.querySelector('.fa-pencil').click();
+            if (entity.innerText.match('test entity')) {
+              entity.querySelector('.fa-pencil').click();
             }
           });
         })
@@ -424,16 +424,16 @@ fdescribe('metadata path', () => {
           let itemFound = false;
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
           entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test')) {
+            if (entity.innerText.match('test entity edited once')) {
               itemFound = true;
             }
           });
           return itemFound;
         })
         .evaluate(() => {
-          let entity = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entity.forEach((entity) => {
-            if (entity.innerText.match('test')) {
+          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entitiesList.forEach((entity) => {
+            if (entity.innerText.match('test entity edited once')) {
               entity.querySelector('.fa-trash').click();
             }
           });
