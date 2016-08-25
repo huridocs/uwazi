@@ -4,6 +4,7 @@ node_modules
 coverage
 /dist
 /build
+*.log
 npm-debug
 uploads/*
 app/api/upload/specs/uploads/*
