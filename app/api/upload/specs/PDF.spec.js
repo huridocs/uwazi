@@ -11,6 +11,8 @@ describe('PDF', function () {
   describe('optimize', () => {
     let filepath = '/the/pdf/path.pdf';
     let commandBeingExecuted = {stdout: new Events(), stderr: new Events()};
+    commandBeingExecuted.stdout.pipe = () => {};
+    commandBeingExecuted.stderr.pipe = () => {};
     beforeEach(() => {
       spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
       pdf = new PDFObject(filepath);
@@ -85,6 +87,8 @@ describe('PDF', function () {
 
     it('should reject the promise when there is an error', (done) => {
       let commandBeingExecuted = {stdout: new Events(), stderr: new Events()};
+      commandBeingExecuted.stdout.pipe = () => {};
+      commandBeingExecuted.stderr.pipe = () => {};
       spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
 
       pdf.extractText()

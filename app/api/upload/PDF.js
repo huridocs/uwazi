@@ -16,12 +16,16 @@ let generateOutputPath = (filepath) => {
 export default class PDF extends EventEmitter {
   constructor(filepath) {
     super();
+    this.logFilePath = __dirname+'/../../../log/conversions.log';
     this.filepath = filepath;
   }
 
   optimize() {
+    let logFile = fs.createWriteStream(this.logFilePath, {flags: 'a'});
     let options = [ '-sDEVICE=pdfwrite', '-dNOPAUSE', '-dBATCH', `-sOutputFile=${generateOutputPath(this.filepath)}`, this.filepath ];
     let conversion = spawn('gs', options);
+    conversion.stderr.pipe(logFile);
+    conversion.stdout.pipe(logFile);
 
     let pages = 0;
     conversion.stdout.on('data', (data) => {
@@ -43,9 +47,12 @@ export default class PDF extends EventEmitter {
   }
 
   extractText() {
+    let logFile = fs.createWriteStream(this.logFilePath, {flags: 'a'});
     let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
     let options = ['text', '-o', tmpPath, this.filepath];
     let extraction = spawn('docsplit', options);
+    extraction.stderr.pipe(logFile);
+    extraction.stdout.pipe(logFile);
 
     return new Promise((resolve, reject) => {
       extraction.stderr.on('data', (error) => reject(error));
@@ -58,6 +65,7 @@ export default class PDF extends EventEmitter {
   }
 
   toHTML() {
+    let logFile = fs.createWriteStream(this.logFilePath, {flags: 'a'});
     let destination = '/tmp/' + Date.now() + '/';
     let options = [
       this.optimizedPath,
@@ -76,14 +84,10 @@ export default class PDF extends EventEmitter {
     ];
 
     let conversion = spawn('pdf2htmlEX', options);
+    conversion.stderr.pipe(logFile);
+    conversion.stdout.pipe(logFile);
 
     return new Promise((resolve) => {
-      //conversion.stderr.on('data', (error) => {
-        ////console.log(error.toString());
-      //});
-      //conversion.stdout.on('data', (data) => {
-        ////console.log(data.toString());
-      //});
       conversion.stdout.on('close', () => {
         fs.readdir(destination, (err, filenames) => {
           let orderedPageFiles = filenames
