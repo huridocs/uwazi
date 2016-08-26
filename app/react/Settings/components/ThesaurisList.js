@@ -15,33 +15,33 @@ export class ThesaurisList extends Component {
         accept: () => {
           this.props.deleteThesauri(thesauri);
         },
-        title: 'Confirm delete thesauri: ' + thesauri.name,
-        message: 'Are you sure you want to delete this thesauri?'
+        title: 'Confirm delete dictionary: ' + thesauri.name,
+        message: 'Are you sure you want to delete this dictionary?'
       });
     })
     .catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: 'Cannot delete thesauri: ' + thesauri.name,
-        message: 'This thesauri is being used in document types and cannot be deleted.'
+        title: 'Cannot delete dictionary: ' + thesauri.name,
+        message: 'This dictionary is being used in document types and cannot be deleted.'
       });
     });
   }
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Thesauris</div>
+      <div className="panel-heading">Dictionaries</div>
       <ul className="list-group relation-types">
-        {this.props.thesauris.toJS().map((thesauri, index) => {
+        {this.props.dictionaries.toJS().map((dictionary, index) => {
           return <li key={index} className="list-group-item">
-              <Link to={'/settings/thesauris/edit/' + thesauri._id}>{thesauri.name}</Link>
+              <Link to={'/settings/dictionaries/edit/' + dictionary._id}>{dictionary.name}</Link>
               <div className="list-group-item-actions">
-                <Link to={'/settings/thesauris/edit/' + thesauri._id} className="btn btn-default btn-xs">
+                <Link to={'/settings/dictionaries/edit/' + dictionary._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
                   <span>Edit</span>
                 </Link>
-                <button onClick={this.deleteThesauri.bind(this, thesauri)} className="btn btn-danger btn-xs template-remove">
+                <button onClick={this.deleteThesauri.bind(this, dictionary)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>
                   <span>Delete</span>
                 </button>
@@ -53,7 +53,7 @@ export class ThesaurisList extends Component {
         <Link to="/settings/thesauris/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>Add thesauri</span>
+          <span>Add dictionary</span>
         </Link>
       </div>
     </div>;
@@ -61,7 +61,7 @@ export class ThesaurisList extends Component {
 }
 
 ThesaurisList.propTypes = {
-  thesauris: PropTypes.object,
+  dictionaries: PropTypes.object,
   deleteThesauri: PropTypes.func,
   notify: PropTypes.func,
   checkThesauriCanBeDeleted: PropTypes.func
@@ -72,7 +72,7 @@ ThesaurisList.contextTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {thesauris: state.thesauris};
+  return {dictionaries: state.dictionaries};
 }
 
 function mapDispatchToProps(dispatch) {

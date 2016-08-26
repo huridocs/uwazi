@@ -25,6 +25,7 @@ export default combineReducers({
   thesauri,
   entityView,
   thesauris: createReducer('thesauris', []),
+  dictionaries: createReducer('dictionaries', []),
   relationTypes: createReducer('relationTypes', []),
   relationType: modelReducer('relationType', {name: ''}),
   relationTypeForm: formReducer('relationType'),

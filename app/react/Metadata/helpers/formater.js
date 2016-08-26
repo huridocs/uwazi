@@ -10,14 +10,22 @@ export default {
 
     let metadata = template.properties.map((property) => {
       let value = doc.metadata[property.name];
+      let url;
+
       if (property.type === 'select' && value) {
-        let thesauri = thesauris.find(t => t._id === property.content).values.find(v => {
+        let thesauri = thesauris.find(t => t._id === property.content);
+
+        let option = thesauri.values.find(v => {
           return v.id.toString() === value.toString();
         });
 
         value = '';
-        if (thesauri) {
-          value = thesauri.label;
+        if (option) {
+          value = option.label;
+        }
+
+        if (thesauri.type === 'template') {
+          url = `entity/${option.id}`;
         }
       }
 
@@ -25,7 +33,7 @@ export default {
         value = moment.utc(value, 'X').format('MMM DD, YYYY');
       }
 
-      return {label: property.label, value};
+      return {label: property.label, value, url};
     });
 
     return Object.assign({}, doc, {metadata: metadata, documentType: template.name});

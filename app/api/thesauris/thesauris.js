@@ -95,7 +95,7 @@ export default {
   },
 
   dictionaries(thesauriId) {
-    let url = `${dbUrl}/_design/thesauris/_view/all`;
+    let url = `${dbUrl}/_design/thesauris/_view/dictionaries`;
     if (thesauriId) {
       url += `?key="${thesauriId}"`;
     }
