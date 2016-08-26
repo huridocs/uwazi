@@ -14,6 +14,19 @@ export class FormConfigSelect extends Component {
     const thesauris = this.props.thesauris.toJS();
     const ptoperty = data.properties[index];
 
+    let optionGroups = [
+      {label: 'Dictionaries', options: []},
+      {label: 'Entities', options: []}
+    ];
+
+    thesauris.forEach((thesauri) => {
+      if (thesauri.type === 'template') {
+        optionGroups[1].options.push(thesauri);
+        return;
+      }
+      optionGroups[0].options.push(thesauri);
+    });
+
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.errors[labelKey + '.required'];
@@ -39,7 +52,7 @@ export class FormConfigSelect extends Component {
             <div className="input-group">
               <span className="input-group-addon">Thesauri</span>
               <SelectField model={`template.data.properties[${index}].content`}>
-                <Select options={thesauris} optionsLabel="name" optionsValue="_id"/>
+                <Select options={optionGroups} optionsLabel="name" optionsValue="_id"/>
               </SelectField>
             </div>
           </div>
