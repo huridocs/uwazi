@@ -69,7 +69,6 @@ export default {
     if (thesauriId) {
       url += `?key="${thesauriId}"`;
     }
-
     return request.get(url)
     .then((response) => {
       let thesauris = sanitizeResponse(response.json);

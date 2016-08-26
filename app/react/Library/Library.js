@@ -28,7 +28,6 @@ export default class Library extends RouteHandler {
       let docs = documents;
       let documentTypes = generateDocumentTypes(templates);
       let properties = libraryFilters(templates, documentTypes);
-
       return {
         library: {
           documents: docs,
