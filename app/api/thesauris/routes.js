@@ -26,6 +26,20 @@ export default app => {
     });
   });
 
+  app.get('/api/dictionaries', (req, res) => {
+    let id;
+    if (req.query) {
+      id = req.query._id;
+    }
+    thesauris.dictionaries(id)
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((error) => {
+      res.json({error: error.json});
+    });
+  });
+
   app.delete('/api/thesauris', needsAuthorization, (req, res) => {
     thesauris.delete(req.query._id, req.query._rev)
     .then((response) => {

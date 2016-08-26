@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {Link} from 'react-router';
 
 export class ShowMetadata extends Component {
   render() {
@@ -18,7 +19,14 @@ export class ShowMetadata extends Component {
             return (
               <dl key={index}>
                 <dt>{property.label}</dt>
-                <dd>{property.value}</dd>
+                <dd>
+                {(() => {
+                  if (property.url) {
+                    return <Link to={property.url}>{property.value}</Link>;
+                  }
+                  return property.value;
+                })()}
+                </dd>
               </dl>
               );
           })}

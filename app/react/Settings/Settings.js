@@ -16,10 +16,11 @@ export class Settings extends RouteHandler {
       UsersAPI.currentUser(),
       TemplatesAPI.get(),
       ThesaurisAPI.get(),
+      ThesaurisAPI.getDictionaries(),
       RelationTypesAPI.get()
     ])
-    .then(([user, templates, thesauris, relationTypes]) => {
-      return {user, templates, thesauris, relationTypes};
+    .then(([user, templates, thesauris, dictionaries, relationTypes]) => {
+      return {user, templates, thesauris, dictionaries, relationTypes};
     });
   }
 
@@ -27,6 +28,7 @@ export class Settings extends RouteHandler {
     this.context.store.dispatch(actions.set('auth/user', state.user));
     this.context.store.dispatch(actions.set('templates', state.templates));
     this.context.store.dispatch(actions.set('thesauris', state.thesauris));
+    this.context.store.dispatch(actions.set('dictionaries', state.dictionaries));
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
   }
 

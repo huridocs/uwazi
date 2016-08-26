@@ -30,9 +30,9 @@ describe('Select', () => {
     render();
     let optionElements = component.find('option');
 
-    expect(optionElements.length).toBe(2);
-    expect(optionElements.first().props().value).toBe('option1');
-    expect(optionElements.first().text()).toBe('Option1');
+    expect(optionElements.length).toBe(3);
+    expect(optionElements.at(1).props().value).toBe('option1');
+    expect(optionElements.at(1).text()).toBe('Option1');
     expect(optionElements.last().props().value).toBe('option2');
     expect(optionElements.last().text()).toBe('Option2');
   });
@@ -63,11 +63,34 @@ describe('Select', () => {
     it('should render the options', () => {
       let optionElements = component.find('option');
 
-      expect(optionElements.length).toBe(2);
-      expect(optionElements.first().props().value).toBe('option1');
-      expect(optionElements.first().text()).toBe('Option1');
+      expect(optionElements.length).toBe(3);
+      expect(optionElements.at(1).props().value).toBe('option1');
+      expect(optionElements.at(1).text()).toBe('Option1');
       expect(optionElements.last().props().value).toBe('option2');
       expect(optionElements.last().text()).toBe('Option2');
+    });
+  });
+
+  describe('when passing group of options', () => {
+    beforeEach(() => {
+      props = {
+        label: 'input label',
+        options: [
+          {label: 'Option group 1', options: [{name: 'opt 1', id: 1}, {name: 'opt 1', id: 4}]},
+          {label: 'Option group 2', options: [{name: 'opt 3', id: 3}, {name: 'opt 4', id: 4}]}
+        ],
+        optionsValue: 'id',
+        optionsLabel: 'name'
+      };
+      component = shallow(<Select {...props}/>);
+    });
+
+    it('should render the option groups', () => {
+      let optionElements = component.find('optgroup');
+
+      expect(optionElements.length).toBe(2);
+      expect(optionElements.first().props().label).toBe('Option group 1');
+      expect(optionElements.last().props().label).toBe('Option group 2');
     });
   });
 });
