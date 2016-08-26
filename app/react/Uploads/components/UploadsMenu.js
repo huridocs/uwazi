@@ -13,12 +13,13 @@ export class UploadsMenu extends Component {
   deleteDocument() {
     this.context.confirm({
       accept: () => {
+        this.props.finishEdit();
         if (this.props.metadataBeingEdited.type === 'document') {
           this.props.deleteDocument(this.props.metadataBeingEdited);
+          return;
         }
 
         this.props.deleteEntity(this.props.metadataBeingEdited);
-        this.props.finishEdit();
       },
       title: 'Confirm delete',
       message: `Are you sure you want to delete: ${this.props.metadataBeingEdited.title}?`
