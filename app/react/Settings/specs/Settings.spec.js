@@ -8,13 +8,15 @@ describe('Settings', () => {
   describe('requestState', () => {
     let user = {name: 'doe'};
     let templates = [{_id: 1, name: 'Decision'}];
-    let thesauris = [{_id: 1, name: 'Countries'}];
+    let thesauris = [{_id: 1, name: 'Countries'}, {_id: '12314', name: 'Judges', type: 'template'}];
+    let dictionaries = [{_id: 1, name: 'Countries'}];
     let relationTypes = [{_id: 1, name: 'Supports'}];
 
     beforeEach(() => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      spyOn(ThesaurisAPI, 'getDictionaries').and.returnValue(Promise.resolve(thesauris));
+      spyOn(ThesaurisAPI, 'get').and.returnValue(Promise.resolve(thesauris));
+      spyOn(ThesaurisAPI, 'getDictionaries').and.returnValue(Promise.resolve(dictionaries));
       spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
     });
 
@@ -23,7 +25,8 @@ describe('Settings', () => {
       .then((state) => {
         expect(state.user).toEqual(user);
         expect(state.templates).toEqual(templates);
-        expect(state.dictionaries).toEqual(thesauris);
+        expect(state.thesauris).toEqual(thesauris);
+        expect(state.dictionaries).toEqual(dictionaries);
         expect(state.relationTypes).toEqual(relationTypes);
         done();
       });

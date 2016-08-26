@@ -47,9 +47,9 @@ export default (
       <Route path='connections' component={RelationTypesList} />
       <Route path='connections/new' component={NewRelationType} />
       <Route path='connections/edit/:relationTypeId' component={EditRelationType} />
-      <Route path='thesauris' component={ThesaurisList} />
-      <Route path='thesauris/new' component={NewThesauri} />
-      <Route path='thesauris/edit/:thesauriId' component={EditThesauri} />
+      <Route path='dictionaries' component={ThesaurisList} />
+      <Route path='dictionaries/new' component={NewThesauri} />
+      <Route path='dictionaries/edit/:thesauriId' component={EditThesauri} />
     </Route>
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
