@@ -1,7 +1,12 @@
 export default {
   settingsView: {
+    firstEditButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li:nth-child(1) > div > a > i',
+    collectionNameForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > form > div > input',
     settingsNavButton: '#app > div.content > header > div > div > ul > li:nth-child(3) > a',
     settingsHeader: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.panel-heading',
+    logoutButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div:nth-child(3) > div.panel-body > a',
+    accountButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
+    collectionButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(2)',
     thesaurisButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     documentsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     entitiesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(4)',

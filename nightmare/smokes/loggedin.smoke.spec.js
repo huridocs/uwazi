@@ -3,7 +3,7 @@ import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
-describe('Smoke test,', () => {
+fdescribe('Smoke test,', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('while logged in,', () => {
@@ -168,6 +168,197 @@ describe('Smoke test,', () => {
         .url()
         .then((url) => {
           expect(url).toBe(config.url + '/settings/account');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the Collection button and check collection settings appear', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.collectionButton)
+        .wait(selectors.settingsView.collectionNameForm)
+        .exists(selectors.settingsView.collectionNameForm)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the Documents button and check documents appear', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.documentsButton)
+        .wait(selectors.settingsView.addNewDocument)
+        .exists(selectors.settingsView.addNewDocument)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the edit button of the 1st decument', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.firstEditButton)
+        .wait(selectors.settingsView.documentsBackButton)
+        .exists(selectors.settingsView.documentsBackButton)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the back button to go back to the list of documents', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.documentsBackButton)
+        .wait(selectors.settingsView.addNewDocument)
+        .exists(selectors.settingsView.addNewDocument)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the Connections button and check connections appear', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.connectionsButton)
+        .wait(selectors.settingsView.addNewConnection)
+        .exists(selectors.settingsView.addNewConnection)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the edit button of the 1st connection', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.firstEditButton)
+        .wait(selectors.settingsView.connectionsBackButton)
+        .exists(selectors.settingsView.connectionsBackButton)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the back button to go back to the list of Connections', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.connectionsBackButton)
+        .wait(selectors.settingsView.addNewConnection)
+        .exists(selectors.settingsView.addNewConnection)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the thesauris button and check thesauris appear', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.thesaurisButton)
+        .wait(selectors.settingsView.addNewThesauri)
+        .exists(selectors.settingsView.addNewThesauri)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the edit button of the 1st connection', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.firstEditButton)
+        .wait(selectors.settingsView.thesaurisBackButton)
+        .exists(selectors.settingsView.thesaurisBackButton)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click the back button to go back to the list of thesauris', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.thesaurisBackButton)
+        .wait(selectors.settingsView.addNewThesauri)
+        .exists(selectors.settingsView.addNewThesauri)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should click Entities button and then click on add new Entity button', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.entitiesButton)
+        .waitToClick(selectors.settingsView.addNewEntity)
+        .wait(selectors.settingsView.saveEntityButton)
+        .exists(selectors.settingsView.saveEntityButton)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should create a new entity', (done) => {
+        nightmare
+        .wait(selectors.settingsView.entityNameForm)
+        .type(selectors.settingsView.entityNameForm, 'test entity')
+        .waitToClick(selectors.settingsView.saveEntityButton)
+        .wait('.alert.alert-success')
+        .exists('.alert.alert-success')
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should go back to Entities then delete the created entity', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.entitiesBackButton)
+        .wait(() => {
+          let itemFound = false;
+          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entitiesList.forEach((entity) => {
+            if (entity.innerText.match('test entity')) {
+              itemFound = true;
+            }
+          });
+          return itemFound;
+        })
+        .evaluate(() => {
+          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          entitiesList.forEach((entity) => {
+            if (entity.innerText.match('test entity')) {
+              entity.querySelector('.fa-trash').click();
+            }
+          });
+        })
+        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
+        .then(
+          done
+        )
+        .catch(catchErrors(done));
+      });
+
+      it('should click the account button and then click on logout button', (done) => {
+        nightmare
+        .waitToClick(selectors.settingsView.accountButton)
+        .evaluate(function () {
+          document.querySelector('.admin-content').scrollTop = 999;
+        })
+        .waitToClick(selectors.settingsView.logoutButton)
+        .wait(selectors.libraryView.libraryFirstDocument)
+        .exists(selectors.libraryView.libraryFirstDocument)
+        .then((result) => {
+          expect(result).toBe(true);
           done();
         })
         .catch(catchErrors(done));
