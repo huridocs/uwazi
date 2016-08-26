@@ -19,9 +19,9 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let template = {properties: [{label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}], _id: 1};
+        let template = {properties: [{label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}], _id: 1, backUrl: 'url'};
         let templates = Immutable.fromJS([]);
-        let targetProps = {template, templates, connectDropTarget: identity, formState: {fields: {}, errors: {}}};
+        let targetProps = {template, templates, connectDropTarget: identity, formState: {fields: {}, errors: {}}, backUrl: 'url'};
         let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity,
           formState: {fields: {}, errors: {}}};
         return <div>
@@ -38,6 +38,7 @@ describe('MetadataTemplate', () => {
     let result;
     let formModel = {name: '', properties: properties};
     props.properties = properties;
+    props.backUrl = 'url';
     let initialData = {
       template: {data: formModel},
       form: {template: {}},
@@ -64,7 +65,7 @@ describe('MetadataTemplate', () => {
   }
 
   describe('render()', () => {
-    let props = {template: {properties: []}, connectDropTarget: (x) => x, formState: {fields: {}}, templates: Immutable.fromJS([])};
+    let props = {backUrl: '', template: {properties: []}, connectDropTarget: (x) => x, formState: {fields: {}}, templates: Immutable.fromJS([])};
 
     it('should disable send button when saving the template', () => {
       let component = shallow(<MetadataTemplate {...props} />);

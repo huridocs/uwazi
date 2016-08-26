@@ -17,14 +17,16 @@ export class TemplateCreator extends Component {
 
   render() {
     let save = this.props.saveTemplate;
-    if (this.context.router.isActive('settings/entities/new')) {
+    let backUrl = '/settings/documents';
+    if (this.props.entity) {
       save = this.props.saveEntity;
+      backUrl = '/settings/entities';
     }
 
     return (
       <div className="row metadata">
         <main className="col-xs-12 col-sm-9">
-            <MetadataTemplate saveTemplate={save} />
+            <MetadataTemplate saveTemplate={save} backUrl={backUrl} />
         </main>
         <aside className="col-xs-12 col-sm-3">
           <div className="metadataTemplate-constructor panel panel-default">
@@ -44,7 +46,8 @@ export class TemplateCreator extends Component {
 TemplateCreator.propTypes = {
   resetTemplate: PropTypes.func,
   saveTemplate: PropTypes.func,
-  saveEntity: PropTypes.func
+  saveEntity: PropTypes.func,
+  entity: PropTypes.bool
 };
 
 TemplateCreator.contextTypes = {

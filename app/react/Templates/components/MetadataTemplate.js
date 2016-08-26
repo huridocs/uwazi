@@ -30,7 +30,7 @@ export class MetadataTemplate extends Component {
               validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
             >
               <div className="metadataTemplate-heading panel-heading">
-                <Link to="/settings/documents" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <Link to={this.props.backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <div className={nameGroupClass}>
                   <FormField model="template.data.name">
@@ -75,6 +75,7 @@ export class MetadataTemplate extends Component {
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   formState: PropTypes.object,
+  backUrl: PropTypes.string,
   saveTemplate: PropTypes.func,
   savingTemplate: PropTypes.bool,
   setErrors: PropTypes.func,
