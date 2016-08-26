@@ -42,7 +42,7 @@ export class ThesauriForm extends Component {
           >
             <div className="panel panel-default thesauri">
               <div className="panel-heading">
-                <Link to="/settings/thesauris" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <Link to="/settings/dictionaries" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
                 &nbsp;
                 <Field model="thesauri.data.name">
                   <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
