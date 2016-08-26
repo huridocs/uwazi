@@ -23,7 +23,7 @@ export class ViewMetadataPanel extends Component {
     this.context.confirm({
       accept: () => {
         if (this.props.metadata.type === 'document') {
-          this.props.deleteDocument(this.props.metadata)
+          return this.props.deleteDocument(this.props.metadata)
           .then(() => {
             browserHistory.push('/');
           });
