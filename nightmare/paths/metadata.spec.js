@@ -1,36 +1,10 @@
 import Nightmare from 'nightmare';
 import realMouse from 'nightmare-real-mouse';
 import config from '../helpers/config.js';
+import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
-
-const settingsNavButton = '#app > div.content > header > div > div > ul > li:nth-child(3) > a';
-const settingsHeader = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.panel-heading';
-const thesaurisButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)';
-const documentsButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(1)';
-const entitiesButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(4)';
-const connectionsButton = '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(2)';
-const thesaurisBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading > a';
-const documentsBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > a';
-const connectionsBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading.relationType > a';
-const entitiesBackButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > a';
-const addNewThesauri = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a';
-const addNewDocument = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a';
-const addNewEntity = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a';
-const addNewConnection = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > a > span';
-const addNewValueToThesauriButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-body > a';
-const firstThesauriValForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(2) > div > div > input';
-const secondThesauriValForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(3) > div > div > input';
-const saveThesauriButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading > button';
-const saveDocumentButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > button';
-const saveEntityButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > button';
-const saveConnectionButton = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading.relationType > button';
-const thesauriNameForm = '#thesauriName';
-const connectionNameForm = '#relationTypeName';
-const entityNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input';
-const documentTemplateNameForm = '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input';
-const deleteButtonConfirmation = 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger';
 
 describe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
@@ -39,8 +13,8 @@ describe('metadata path', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
-      .waitToClick(settingsNavButton)
-      .wait(settingsHeader)
+      .waitToClick(selectors.settingsView.settingsNavButton)
+      .wait(selectors.settingsView.settingsHeader)
       .url()
       .then((url) => {
         expect(url).toBe(config.url + '/settings/account');
@@ -53,10 +27,10 @@ describe('metadata path', () => {
   describe('in settings', () => {
     it('should click Thesauris button and then click on add new thesauri button', (done) => {
       nightmare
-      .waitToClick(thesaurisButton)
-      .waitToClick(addNewThesauri)
-      .wait(saveThesauriButton)
-      .exists(saveThesauriButton)
+      .waitToClick(selectors.settingsView.thesaurisButton)
+      .waitToClick(selectors.settingsView.addNewThesauri)
+      .wait(selectors.settingsView.saveThesauriButton)
+      .exists(selectors.settingsView.saveThesauriButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -67,15 +41,15 @@ describe('metadata path', () => {
     describe('in Thesauris', () => {
       it('should create a new thesauri with two values', (done) => {
         nightmare
-        .wait(thesauriNameForm)
-        .type(thesauriNameForm, 'test thesauri 1')
-        .waitToClick(addNewValueToThesauriButton)
-        .wait(firstThesauriValForm)
-        .type(firstThesauriValForm, 'tests value 1')
-        .waitToClick(addNewValueToThesauriButton)
-        .wait(secondThesauriValForm)
-        .type(secondThesauriValForm, 'tests value 2')
-        .waitToClick(saveThesauriButton)
+        .wait(selectors.settingsView.thesauriNameForm)
+        .type(selectors.settingsView.thesauriNameForm, 'test thesauri 1')
+        .waitToClick(selectors.settingsView.addNewValueToThesauriButton)
+        .wait(selectors.settingsView.firstThesauriValForm)
+        .type(selectors.settingsView.firstThesauriValForm, 'tests value 1')
+        .waitToClick(selectors.settingsView.addNewValueToThesauriButton)
+        .wait(selectors.settingsView.secondThesauriValForm)
+        .type(selectors.settingsView.secondThesauriValForm, 'tests value 2')
+        .waitToClick(selectors.settingsView.saveThesauriButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -87,7 +61,7 @@ describe('metadata path', () => {
 
       it('should go back to Thesauris then edit the created thesauri', (done) => {
         nightmare
-        .waitToClick(thesaurisBackButton)
+        .waitToClick(selectors.settingsView.thesaurisBackButton)
         .wait(() => {
           let itemFound = false;
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -106,13 +80,13 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(thesauriNameForm)
-        .type(thesauriNameForm, ' edited once')
-        .wait(firstThesauriValForm)
-        .type(firstThesauriValForm, ' edited once')
-        .wait(secondThesauriValForm)
-        .type(secondThesauriValForm, ' edited once')
-        .waitToClick(saveThesauriButton)
+        .wait(selectors.settingsView.thesauriNameForm)
+        .type(selectors.settingsView.thesauriNameForm, ' edited once')
+        .wait(selectors.settingsView.firstThesauriValForm)
+        .type(selectors.settingsView.firstThesauriValForm, ' edited once')
+        .wait(selectors.settingsView.secondThesauriValForm)
+        .type(selectors.settingsView.secondThesauriValForm, ' edited once')
+        .waitToClick(selectors.settingsView.saveThesauriButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -124,7 +98,7 @@ describe('metadata path', () => {
 
       it('should go back to Thesauris then delete the created thesauri', (done) => {
         nightmare
-        .waitToClick(thesaurisBackButton)
+        .waitToClick(selectors.settingsView.thesaurisBackButton)
         .wait(() => {
           let itemFound = false;
           let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -143,7 +117,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .waitToClick(deleteButtonConfirmation)
+        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
         .then(
           done
         )
@@ -153,10 +127,10 @@ describe('metadata path', () => {
 
     it('should click Documents button and then click on add new document button', (done) => {
       nightmare
-      .waitToClick(documentsButton)
-      .waitToClick(addNewDocument)
-      .wait(saveDocumentButton)
-      .exists(saveDocumentButton)
+      .waitToClick(selectors.settingsView.documentsButton)
+      .waitToClick(selectors.settingsView.addNewDocument)
+      .wait(selectors.settingsView.saveDocumentButton)
+      .exists(selectors.settingsView.saveDocumentButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -168,9 +142,9 @@ describe('metadata path', () => {
       it('should create a new document template with no properties added', (done) => {
         //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
         nightmare
-        .wait(documentTemplateNameForm)
-        .type(documentTemplateNameForm, 'test document template')
-        .waitToClick(saveDocumentButton)
+        .wait(selectors.settingsView.documentTemplateNameForm)
+        .type(selectors.settingsView.documentTemplateNameForm, 'test document template')
+        .waitToClick(selectors.settingsView.saveDocumentButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -182,7 +156,7 @@ describe('metadata path', () => {
 
       it('should go back to Documents then edit the created document', (done) => {
         nightmare
-        .waitToClick(documentsBackButton)
+        .waitToClick(selectors.settingsView.documentsBackButton)
         .wait(() => {
           let itemFound = false;
           let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -201,9 +175,9 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(documentTemplateNameForm)
-        .type(documentTemplateNameForm, ' edited once')
-        .waitToClick(saveDocumentButton)
+        .wait(selectors.settingsView.documentTemplateNameForm)
+        .type(selectors.settingsView.documentTemplateNameForm, ' edited once')
+        .waitToClick(selectors.settingsView.saveDocumentButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -215,7 +189,7 @@ describe('metadata path', () => {
 
       it('should go back to Documents then delete the created document template', (done) => {
         nightmare
-        .waitToClick(documentsBackButton)
+        .waitToClick(selectors.settingsView.documentsBackButton)
         .wait(() => {
           let itemFound = false;
           let documentTemplatesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -227,14 +201,14 @@ describe('metadata path', () => {
           return itemFound;
         })
         .evaluate(() => {
-          let documentTemplateList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          documentTemplateList.forEach((documentTemplate) => {
+          let documentTemplatesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
+          documentTemplatesList.forEach((documentTemplate) => {
             if (documentTemplate.innerText.match('test document template edited once')) {
               documentTemplate.querySelector('.fa-trash').click();
             }
           });
         })
-        .waitToClick(deleteButtonConfirmation)
+        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
         .then(
           done
         )
@@ -244,10 +218,10 @@ describe('metadata path', () => {
 
     it('should click Connections button and then click on add new connection button', (done) => {
       nightmare
-      .waitToClick(connectionsButton)
-      .waitToClick(addNewConnection)
-      .wait(saveConnectionButton)
-      .exists(saveConnectionButton)
+      .waitToClick(selectors.settingsView.connectionsButton)
+      .waitToClick(selectors.settingsView.addNewConnection)
+      .wait(selectors.settingsView.saveConnectionButton)
+      .exists(selectors.settingsView.saveConnectionButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -258,9 +232,9 @@ describe('metadata path', () => {
     describe('in Connections', () => {
       it('should create a new connection', (done) => {
         nightmare
-        .wait(connectionNameForm)
-        .type(connectionNameForm, 'test connection')
-        .waitToClick(saveConnectionButton)
+        .wait(selectors.settingsView.connectionNameForm)
+        .type(selectors.settingsView.connectionNameForm, 'test connection')
+        .waitToClick(selectors.settingsView.saveConnectionButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -272,7 +246,7 @@ describe('metadata path', () => {
 
       it('should go back to Connections then edit the created connection', (done) => {
         nightmare
-        .waitToClick(connectionsBackButton)
+        .waitToClick(selectors.settingsView.connectionsBackButton)
         .wait(() => {
           let itemFound = false;
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -291,9 +265,9 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(connectionNameForm)
-        .type(connectionNameForm, ' edited once')
-        .waitToClick(saveConnectionButton)
+        .wait(selectors.settingsView.connectionNameForm)
+        .type(selectors.settingsView.connectionNameForm, ' edited once')
+        .waitToClick(selectors.settingsView.saveConnectionButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -305,7 +279,7 @@ describe('metadata path', () => {
 
       it('should go back to Documents then delete the created document template', (done) => {
         nightmare
-        .waitToClick(connectionsBackButton)
+        .waitToClick(selectors.settingsView.connectionsBackButton)
         .wait(() => {
           let itemFound = false;
           let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -324,7 +298,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .waitToClick(deleteButtonConfirmation)
+        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
         .then(
           done
         )
@@ -334,10 +308,10 @@ describe('metadata path', () => {
 
     it('should click Entities button and then click on add new Entity button', (done) => {
       nightmare
-      .waitToClick(entitiesButton)
-      .waitToClick(addNewEntity)
-      .wait(saveEntityButton)
-      .exists(saveEntityButton)
+      .waitToClick(selectors.settingsView.entitiesButton)
+      .waitToClick(selectors.settingsView.addNewEntity)
+      .wait(selectors.settingsView.saveEntityButton)
+      .exists(selectors.settingsView.saveEntityButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -348,9 +322,9 @@ describe('metadata path', () => {
     describe('in Entities', () => {
       it('should create a new entity', (done) => {
         nightmare
-        .wait(entityNameForm)
-        .type(entityNameForm, 'test entity')
-        .waitToClick(saveEntityButton)
+        .wait(selectors.settingsView.entityNameForm)
+        .type(selectors.settingsView.entityNameForm, 'test entity')
+        .waitToClick(selectors.settingsView.saveEntityButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -362,7 +336,7 @@ describe('metadata path', () => {
 
       it('should go back to Entities then edit the created entity', (done) => {
         nightmare
-        .waitToClick(entitiesBackButton)
+        .waitToClick(selectors.settingsView.entitiesBackButton)
         .wait(() => {
           let itemFound = false;
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -381,9 +355,9 @@ describe('metadata path', () => {
             }
           });
         })
-        .wait(entityNameForm)
-        .type(entityNameForm, ' edited once')
-        .waitToClick(saveEntityButton)
+        .wait(selectors.settingsView.entityNameForm)
+        .type(selectors.settingsView.entityNameForm, ' edited once')
+        .waitToClick(selectors.settingsView.saveEntityButton)
         .wait('.alert.alert-success')
         .exists('.alert.alert-success')
         .then((result) => {
@@ -395,7 +369,7 @@ describe('metadata path', () => {
 
       it('should go back to Entities then delete the created entity', (done) => {
         nightmare
-        .waitToClick(entitiesBackButton)
+        .waitToClick(selectors.settingsView.entitiesBackButton)
         .wait(() => {
           let itemFound = false;
           let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
@@ -414,7 +388,7 @@ describe('metadata path', () => {
             }
           });
         })
-        .waitToClick(deleteButtonConfirmation)
+        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
         .then(
           done
         )

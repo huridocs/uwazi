@@ -1,15 +1,7 @@
 import Nightmare from 'nightmare';
 import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
-
-const libraryFirstDocument = '.item-group .item';
-const searchInLibrary = '#app > div.content > header > div > div > div > a > i.fa.fa-search';
-const firstDocumentViewButton = '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a';
-const libraryNavButton = '#app > div.content > header > div > div > ul > li:nth-child(1) > a';
-const uploadsNavButton = '.fa-cloud-upload';
-const settingsNavButton = '#app > div.content > header > div > div > ul > li:nth-child(3) > a';
-const uploadBox = '#app > div.content > div > div > main > div:nth-child(1) > div';
-const uploadsBottomRightSaveButton = '.float-btn';
+import selectors from '../helpers/selectors.js';
 
 describe('Smoke test,', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
@@ -33,8 +25,8 @@ describe('Smoke test,', () => {
     describe('library view', () => {
       it('should check if documents loaded correctly', (done) => {
         nightmare
-        .wait(libraryFirstDocument)
-        .exists(libraryFirstDocument)
+        .wait(selectors.libraryView.libraryFirstDocument)
+        .exists(selectors.libraryView.libraryFirstDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -44,7 +36,7 @@ describe('Smoke test,', () => {
 
       it('when clicking on a document a side panel should appear', (done) => {
         nightmare
-        .click(libraryFirstDocument)
+        .click(selectors.libraryView.libraryFirstDocument)
         .wait('.side-panel.is-active')
         .exists('.side-panel.is-active')
         .then((result) => {
@@ -56,8 +48,7 @@ describe('Smoke test,', () => {
 
       it('when clicking the side panels cross it should disappear', (done) => {
         nightmare
-        .wait('.fa-close')
-        .click('.fa-close')
+        .waitToClick('.fa-close')
         .wait('.side-panel.is-hidden')
         .exists('.side-panel.is-hidden')
         .then((result) => {
@@ -69,8 +60,7 @@ describe('Smoke test,', () => {
 
       it('when clicking the filters menu it should appear', (done) => {
         nightmare
-        .wait(searchInLibrary)
-        .click(searchInLibrary)
+        .waitToClick(selectors.libraryView.searchInLibrary)
         .wait('.side-panel.is-active')
         .exists('.side-panel.is-active')
         .then((result) => {
@@ -82,8 +72,7 @@ describe('Smoke test,', () => {
 
       it('when clicking the filters menu cross it should disappear', (done) => {
         nightmare
-        .wait('.fa-close')
-        .click('.fa-close')
+        .waitToClick('.fa-close')
         .wait('.side-panel.is-hidden')
         .exists('.side-panel.is-hidden')
         .then((result) => {
@@ -95,8 +84,7 @@ describe('Smoke test,', () => {
 
       it('when clicking on a document view button the document should open', (done) => {
         nightmare
-        .wait(firstDocumentViewButton)
-        .click(firstDocumentViewButton)
+        .waitToClick(selectors.libraryView.firstDocumentViewButton)
         .wait('.page')
         .exists('.page')
         .then((result) => {
@@ -108,10 +96,9 @@ describe('Smoke test,', () => {
 
       it('to return to library from a document should click on library nav button', (done) => {
         nightmare
-        .wait(libraryNavButton)
-        .click(libraryNavButton)
-        .wait(libraryFirstDocument)
-        .exists(libraryFirstDocument)
+        .waitToClick(selectors.libraryView.libraryNavButton)
+        .wait(selectors.libraryView.libraryFirstDocument)
+        .exists(selectors.libraryView.libraryFirstDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -123,10 +110,9 @@ describe('Smoke test,', () => {
     describe('uploads view', () => {
       it('click on uploads nav button', (done) => {
         nightmare
-        .wait(uploadsNavButton)
-        .click(uploadsNavButton)
-        .wait(uploadBox)
-        .exists(uploadBox)
+        .waitToClick(selectors.uploadsView.uploadsNavButton)
+        .wait(selectors.uploadsView.uploadBox)
+        .exists(selectors.uploadsView.uploadBox)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -136,8 +122,7 @@ describe('Smoke test,', () => {
 
       it('click on a document then a side panel with the metadata form should appear', (done) => {
         nightmare
-        .click(libraryFirstDocument)
-        .wait(libraryFirstDocument)
+        .waitToClick(selectors.libraryView.libraryFirstDocument)
         .wait('.side-panel.is-active')
         .exists('.side-panel.is-active')
         .then((result) => {
@@ -149,8 +134,8 @@ describe('Smoke test,', () => {
 
       it('the bottom right menu should become active on roll over', (done) => {
         nightmare
-        .wait(uploadsBottomRightSaveButton)
-        .mouseover(uploadsBottomRightSaveButton)
+        .wait(selectors.uploadsView.uploadsBottomRightSaveButton)
+        .mouseover(selectors.uploadsView.uploadsBottomRightSaveButton)
         .wait('.float-btn.active')
         .exists('.float-btn.active')
         .then((result) => {
@@ -178,12 +163,11 @@ describe('Smoke test,', () => {
       // FURTHER TESTS TO BE ADDED TO COMPLITELY CHECK SETTINGS VIEW, THIS IS RELATED TO METADATA VIEW DELETED
       it('should check if user settings view loads', (done) => {
         nightmare
-        .wait(settingsNavButton)
-        .click(settingsNavButton)
-        .wait('input[type="email"]')
-        .exists('input[type="email"]')
-        .then((result) => {
-          expect(result).toBe(true);
+        .waitToClick(selectors.settingsView.settingsNavButton)
+        .wait(selectors.settingsView.settingsHeader)
+        .url()
+        .then((url) => {
+          expect(url).toBe(config.url + '/settings/account');
           done();
         })
         .catch(catchErrors(done));
