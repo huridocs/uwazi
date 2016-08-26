@@ -61,10 +61,8 @@ export class LibraryFilters extends Component {
                 <i className="fa fa-caret-down"></i>
                 <span>Show all</span>
               </button>
-              <div className="input-group">
-                <span className="input-group-addon" id="basic-addon1">
-                  <i className="fa fa-search"></i>
-                </span>
+              <div className="form-group">
+                <i className="fa fa-search"></i>
                 <input className="form-control" placeholder="Search item" />
               </div>
             </li>
