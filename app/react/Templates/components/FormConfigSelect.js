@@ -19,7 +19,9 @@ export class FormConfigSelect extends Component {
       {label: 'Entities', options: []}
     ];
 
-    thesauris.forEach((thesauri) => {
+    thesauris.filter((thesauri) => {
+      return thesauri._id !== data._id;
+    }).forEach((thesauri) => {
       if (thesauri.type === 'template') {
         optionGroups[1].options.push(thesauri);
         return;

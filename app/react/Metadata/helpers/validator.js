@@ -1,5 +1,5 @@
 export function required(val) {
-  return val.trim() !== '';
+  return !!val && val.trim() !== '';
 }
 
 export default {
