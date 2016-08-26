@@ -24,7 +24,7 @@ export default {
           value = option.label;
         }
 
-        if (thesauri.type === 'template') {
+        if (option && thesauri.type === 'template') {
           url = `entity/${option.id}`;
         }
       }

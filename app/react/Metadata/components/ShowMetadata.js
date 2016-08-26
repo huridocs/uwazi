@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import ShowIf from 'app/App/ShowIf';
 
 export class ShowMetadata extends Component {
   render() {

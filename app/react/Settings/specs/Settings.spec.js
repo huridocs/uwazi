@@ -14,7 +14,7 @@ describe('Settings', () => {
     beforeEach(() => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      spyOn(ThesaurisAPI, 'get').and.returnValue(Promise.resolve(thesauris));
+      spyOn(ThesaurisAPI, 'getDictionaries').and.returnValue(Promise.resolve(thesauris));
       spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
     });
 
@@ -23,7 +23,7 @@ describe('Settings', () => {
       .then((state) => {
         expect(state.user).toEqual(user);
         expect(state.templates).toEqual(templates);
-        expect(state.thesauris).toEqual(thesauris);
+        expect(state.dictionaries).toEqual(thesauris);
         expect(state.relationTypes).toEqual(relationTypes);
         done();
       });
