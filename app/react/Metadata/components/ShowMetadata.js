@@ -13,6 +13,16 @@ export class ShowMetadata extends Component {
             <dt>Type</dt>
             <dd>{entity.documentType}</dd>
           </dl>
+          <dl>
+            <dt>Descriptores</dt>
+            <dd>
+              <ul>
+                <li><a href="#">Condiciones de detención</a></li>
+                <li><a href="#">Amenazas y hostigamientos</a></li>
+                <li><a href="#">Defensores/as de derechos humanos</a></li>
+              </ul>
+            </dd>
+          </dl>
 
           {entity.metadata.map((property, index) => {
             return (
