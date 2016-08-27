@@ -17,9 +17,9 @@
   flex-direction: column;
   position: relative;
   width: 100%;
-  min-height: 120px;
-  padding: 0 0 25px 0;
-  margin: 0 0 20px;
+  min-height: 100px;
+  padding: 0 0 30px 0;
+  margin: 0 0 15px;
   top: 0;
   background: $c-white;
   border-radius: 4px;
@@ -54,10 +54,12 @@
   }
   &.is-active,
   &.is-selected {
+    background: $c-primary-lighten;
     border-color: $c-primary-light;
     box-shadow: $shadow;
     &:before {
-      box-shadow: -3px 3px 9px -3px $c-primary-light;
+      border-color: $c-background $c-background $c-primary-lighten $c-primary-lighten;
+      box-shadow: -3px 3px 9px -3px $c-primary;
     }
   }
 
@@ -76,15 +78,13 @@
 }
 
 $item-width: auto;
-$item-padding: 15px;
+$item-padding: 10px;
 
 .item-info {
   width: $item-width;
   padding: $item-padding;
   flex: 1;
 }
-
-.item-type {}
 
 .item-type__icon {
   font-size: 14px;
@@ -143,7 +143,6 @@ $item-padding: 15px;
 
 .item-name {
   display: block;
-  margin: 0 10px 5px 0;
   font-family: $f-special;
   color: $c-black;
 }
@@ -155,7 +154,7 @@ $item-padding: 15px;
 }
 
 .item-metadata {
-  max-width: $item-width;
+  display: none;
   padding: 0 $item-padding $item-padding;
 
   dl {
@@ -173,45 +172,47 @@ $item-padding: 15px;
 }
 
 .item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
+  height: $item-padding*2 + $item-padding;
   color: $c-grey-dark;
-  background-color: $c-white;
-  border-top: 1px solid $c-grey-lighten;
-  padding: 0 10px;
-  text-align: right;
+  padding: 0 $item-padding;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
-
-  .item.is-active &,
-  .item.is-selected & {
-    background-color: $c-primary-lighten;
-    border-top: 1px solid $c-primary-light;
-  }
 }
 
 .item-shortcut {
-  display: inline-block;
-  line-height: 30px;
-  color: $c-grey-dark;
-  opacity: 0.6;
+  padding: 5px;
+  margin: -5px;
+
+  .arrow {
+    position: relative;
+    top: 1px;
+    margin-left: -5px;
+    font-size: $f-size-sm;
+    color: $c-grey-dark;
+  }
+
+  .fa {
+    color: $c-grey;
+  }
 
   &:hover,
   &:focus,
   &:active {
-    color: $c-black;
     text-decoration: none;
-    opacity: 1;
-  }
 
-  span {
-    font-size: $f-size-sm;
-    margin-right: 5px;
-  }
-  .fa:not(:last-child) {
-    margin-right: 2px;
+    .fa {
+      color: $c-primary;
+    }
+    .arrow {
+      color: $c-black;
+    }
   }
 }
 
