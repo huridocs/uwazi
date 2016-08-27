@@ -28,7 +28,7 @@ describe('TemplateCreator', () => {
 
   describe('when creating a new entity', () => {
     it('should pass the saveEntity action to the MetadataTemplate component', () => {
-      context.router.isActive.and.returnValue(true);
+      props.entity = true;
       render();
       expect(component.find(MetadataTemplate).props().saveTemplate).toBe(saveEntity);
     });
