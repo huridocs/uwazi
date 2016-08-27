@@ -199,31 +199,6 @@ $item-padding: 10px;
   }
 }
 
-
-.itemShortcut-arrow {
-  color: $c-grey-dark;
-  border: 1px solid $c-grey-light;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  display: inline-block;
-  box-shadow: $shadow;
-  transition: all 225ms;
-
-  .item-shortcut:hover & {
-    color: $c-black;
-    border-color: $c-grey;
-    box-shadow: $shadow-active;
-  }
-
-  .item.is-active & {
-    border-color: $c-primary-light;
-    color: $c-primary;
-  }
-}
-
 .item-group-load-more {
   text-align: center;
 }
