@@ -207,9 +207,7 @@ $item-padding: 10px;
   &:active {
     text-decoration: none;
 
-    .fa {
-      color: $c-primary;
-    }
+    .fa,
     .arrow {
       color: $c-black;
     }
