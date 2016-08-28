@@ -42,6 +42,8 @@ class Root extends Component {
           type="text/css"
           />
           <link rel="shortcut icon" href="/public/favicon.ico"/>
+          <script src="/node_modules/pace-js/pace.js" />
+          <link href="/node_modules/pace-js/themes/blue/pace-theme-minimal.css" rel="stylesheet" />
         </head>
         <body>
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
