@@ -25,34 +25,47 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel open={this.props.open}>
-        <div className="sidepanel-header">
-          <h1>Filters<small> <span onClick={this.props.resetFilters}><i className="fa fa-refresh"></i><span>Reset filters</span></span></small></h1>
-        </div>
         <div className="sidepanel-footer">
+          <span onClick={this.props.resetFilters} className="btn btn-primary">
+            <i className="fa fa-refresh"></i>
+            <span className="btn-label">Reset</span>
+          </span>
           <button type="submit" form="filtersForm" className="btn btn-success">
             <i className="fa fa-search"></i>
+            <span className="btn-label">Search</span>
           </button>
         </div>
         <div className="sidepanel-body">
-          <ul className="search__filter search__filter--type">
-            <li>Document type</li>
-            <li>
-              <input
-                onClick={this.handleFilterAllDocuments.bind(this)}
-                id="all-documents"
-                type="checkbox"
-                checked={this.props.allDocumentTypes}/>
-              <label htmlFor="all-documents">&nbsp;Select all</label>
-            </li>
+          <ul className="multiselect is-active">
+            <li className="multiselectLabel">Document type</li>
             {this.props.templates.map((template, index) => {
-              return <li key={index}>
-                <input onChange={this.handleFilterDocType.bind(this)}
+              return <li className="multiselectItem" key={index}>
+                <input
+                  className="multiselectItem-input"
+                  onChange={this.handleFilterDocType.bind(this)}
                   id={template._id}
                   type="checkbox"
                   checked={this.props.documentTypes[template._id]}/>
-                <label htmlFor={template._id}>&nbsp;{template.name}</label>
+                <label
+                  className="multiselectItem-label"
+                  htmlFor={template._id}>
+                    <i className="multiselectItem-icon fa fa-square"></i>
+                    <i className="multiselectItem-icon fa fa-check-square"></i>
+                    <span>{template.name}</span>
+                </label>
               </li>;
             })}
+
+            <li className="multiselectActions">
+              <button className="btn btn-xs btn-default">
+                <i className="fa fa-caret-down"></i>
+                <span>Show all</span>
+              </button>
+              <div className="form-group">
+                <i className="fa fa-search"></i>
+                <input className="form-control" placeholder="Search item" />
+              </div>
+            </li>
           </ul>
           <FiltersForm />
         </div>
