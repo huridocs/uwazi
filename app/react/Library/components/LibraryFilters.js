@@ -22,6 +22,17 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel open={this.props.open}>
+        <div className="sidepanel-header">
+          <h1>
+            <span>Filters</span>
+            <small>
+              <span onClick={this.props.resetFilters}>
+                <i className="fa fa-refresh"></i>
+                <span>Reset filters</span>
+              </span>
+            </small>
+          </h1>
+       </div>
         <div className="sidepanel-footer">
           <span onClick={this.props.resetFilters} className="btn btn-primary">
             <i className="fa fa-refresh"></i>
