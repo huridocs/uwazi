@@ -88,6 +88,9 @@
 
 .btn-primary {
   background-color: $c-primary;
+  &:hover {
+    background-color: $c-primary-dark;
+  }
 }
 
 .btn-success {
