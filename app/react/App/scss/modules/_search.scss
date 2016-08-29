@@ -30,7 +30,7 @@
 .search__filter {
 	list-style-type: none;
 	margin: 0;
-	padding: 15px 30px;
+	padding: 15px;
 	display: table;
 	width: 100%;
 	color: $c-grey-dark;
@@ -39,12 +39,6 @@
   .form-group & {
     border-bottom: 1px dotted $c-grey-light;
   }
-
-	&.is-active {
-		color: $c-black;
-		background: #E7FBD9;
-	}
-
 
 	> li:first-child {
 		position: relative;
@@ -173,7 +167,7 @@
 	background: $c-grey-dark;
 	position: absolute;
 	right: 0;
-	top: 6px;
+	top: 0;
 	width: 32px;
 	height: 16px;
 	border-radius: 8px;
@@ -190,6 +184,7 @@
 		border-radius: 50%;
 	}
 	.search__filter.is-active & {
+    background: $c-success;
 		&:after {
 			left: auto;
 			right: 2px;
@@ -198,7 +193,7 @@
 }
 
 .multiselect {
-  padding: 15px;
+  padding: 0;
   margin: 0;
   list-style-type: none;
 
@@ -259,10 +254,13 @@
   color: $c-grey-light;
 }
 
-.multiselectItem-label {
+label.multiselectItem-label {
   flex: 1;
   margin: 0;
   cursor: pointer;
+  font-size: inherit;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .multiselectItem--all {
@@ -371,6 +369,12 @@
   }
 }
 
+.search__filter:not(.is-active) {
+  .multiselectItem-input:checked + label,
+  .multiselectItem-input:checked + label .multiselectItem-icon {
+    color: $c-grey-dark;
+  }
+}
 
 // multiselect is not active
 .multiselect:not(.is-active) {
