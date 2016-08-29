@@ -51,8 +51,7 @@ describe('Library', () => {
       .then((state) => {
         expect(state.library.documents).toEqual(documents);
         expect(state.library.filters.templates).toEqual(templates.rows);
-        expect(state.library.filters.documentTypes).toEqual({abc1: false, abc2: false});
-        expect(state.library.filters.allDocumentTypes).toBe(false);
+        expect(state.library.filters.documentTypes).toEqual([]);
         expect(state.library.filters.thesauris).toEqual(thesauris.rows);
         done();
       })

@@ -24,7 +24,7 @@ describe('library helper', () => {
   describe('libraryFilters()', () => {
     describe('When only one documentType is selected', () => {
       it('should return all its filters fields with thesauri options', () => {
-        let documentTypes = {1: true, 2: false, 3: false};
+        let documentTypes = ['1'];
         let filters = libraryFilters(templates, documentTypes, thesauris);
         expect(filters)
         .toEqual([
@@ -37,14 +37,14 @@ describe('library helper', () => {
 
     describe('When more than one documentType is selected', () => {
       it('should return all filters fields that are in the selected templates', () => {
-        let documentTypes = {1: true, 2: true, 3: false};
+        let documentTypes = ['1', '2'];
         let filters = libraryFilters(templates, documentTypes, thesauris);
         expect(filters).toEqual([{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']}]);
       });
 
       describe('when none match', () => {
         it('should return none', () => {
-          let documentTypes = {1: true, 2: true, 3: true};
+          let documentTypes = ['1', '2', '3'];
           let filters = libraryFilters(templates, documentTypes, thesauris);
           expect(filters).toEqual([]);
         });

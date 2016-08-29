@@ -43,9 +43,12 @@ export class MultiSelect extends Component {
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
     prefix = prefix || '';
-    let filteredOptions = options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
 
-    if (!this.state.showAll) {
+    if (this.state.filter) {
+      options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
+    }
+
+    if (!this.state.showAll && options.length > this.optionsToShow) {
       options.sort((a, b) => {
         return this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
       });
@@ -58,16 +61,18 @@ export class MultiSelect extends Component {
     return (
       <ul className="multiselect is-active">
       <li className="multiselectActions">
-        <ShowIf if={filteredOptions.length > this.optionsToShow}>
+        <ShowIf if={this.props.options.length > this.optionsToShow}>
           <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
             <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
             <span>{this.state.showAll ? 'Show less' : 'Show all'}</span>
           </button>
         </ShowIf>
-        <div className="form-group">
-          <i className="fa fa-search"></i>
-          <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
-        </div>
+        <ShowIf if={this.props.options.length > this.optionsToShow}>
+          <div className="form-group">
+            <i className="fa fa-search"></i>
+            <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
+          </div>
+        </ShowIf>
       </li>
         {options.map((option, index) => {
           return <li className="multiselectItem" key={index}>
@@ -90,7 +95,7 @@ export class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={filteredOptions.length > this.optionsToShow && this.state.showAll}>
+          <ShowIf if={this.props.options.length > this.optionsToShow && this.state.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <i className="fa fa-caret-up"></i>
               <span>Show less</span>
