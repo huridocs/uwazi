@@ -93,12 +93,17 @@ $item-padding: 10px;
   color: $c-white;
   border-radius: 3px;
   margin-left: 5px;
-  padding: 3px 5px 2px;
+  padding: 2px 4px 1px;
   font-size: $f-size-xs;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  top: -2px;
+  top: 2px;
   position: relative;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .item-type-0 .item-type__icon  { color: $c-primary; }
