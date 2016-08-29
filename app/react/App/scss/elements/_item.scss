@@ -201,7 +201,7 @@ $item-padding: 10px;
 
 
 .itemShortcut-arrow {
-  color: $c-grey;
+  color: $c-grey-dark;
   border: 1px solid $c-grey-light;
   border-radius: 50%;
   width: 30px;
@@ -210,9 +210,11 @@ $item-padding: 10px;
   text-align: center;
   display: inline-block;
   box-shadow: $shadow;
+  transition: all 225ms;
 
   .item-shortcut:hover & {
     color: $c-black;
+    border-color: $c-grey;
     box-shadow: $shadow-active;
   }
 }
