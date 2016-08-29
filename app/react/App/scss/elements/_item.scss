@@ -204,17 +204,16 @@ $item-padding: 10px;
   color: $c-grey;
   border: 1px solid $c-grey-light;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  line-height: 22px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
   display: inline-block;
+  box-shadow: $shadow;
 
-  .item:hover & {
-    color: $c-black;
-  }
   .item-shortcut:hover & {
-    background: $c-grey-light;
+    color: $c-black;
+    box-shadow: $shadow-active;
   }
 }
 
