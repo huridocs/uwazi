@@ -32,6 +32,10 @@ export class MultiSelect extends Component {
     this.setState({filter: e.target.value});
   }
 
+  resetFilter() {
+    this.setState({filter: ''});
+  }
+
   showAll(e) {
     e.preventDefault();
     let showAll = !this.state.showAll;
@@ -39,18 +43,26 @@ export class MultiSelect extends Component {
   }
 
   render() {
-    let {options, optionsValue, optionsLabel, prefix} = this.props;
+    let {optionsValue, optionsLabel, prefix} = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
     prefix = prefix || '';
+
+    let options = this.props.options.slice();
 
     if (this.state.filter) {
       options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
     }
 
     if (!this.state.showAll && options.length > this.optionsToShow) {
+
       options.sort((a, b) => {
-        return this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+        let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+        if (sorting === 0) {
+          sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
+        }
+
+        return sorting;
       });
 
       let numberOfActiveOptions = options.filter((opt) => this.checked(opt[optionsValue])).length;
@@ -69,7 +81,7 @@ export class MultiSelect extends Component {
         </ShowIf>
         <ShowIf if={this.props.options.length > this.optionsToShow}>
           <div className="form-group">
-            <i className="fa fa-search"></i>
+            <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)}></i>
             <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
           </div>
         </ShowIf>

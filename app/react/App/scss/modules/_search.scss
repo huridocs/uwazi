@@ -1,54 +1,54 @@
 .filters-box {
-	.empty-state {
-		color: $c-grey-dark;
-		text-align: center;
-		padding: 45px;
+  .empty-state {
+    color: $c-grey-dark;
+    text-align: center;
+    padding: 45px;
 
-		.fa {
-			display: block;
-			font-size: 30px;
-			margin: 0 auto;
-		}
-	}
-	.no-filters {
-		display: none;
-	}
-	.title {
-		padding: 15px;
-		color: $c-grey-dark;
+    .fa {
+      display: block;
+      font-size: 30px;
+      margin: 0 auto;
+    }
+  }
+  .no-filters {
+    display: none;
+  }
+  .title {
+    padding: 15px;
+    color: $c-grey-dark;
 
-		.fa {
-			margin-right: 5px;
-		}
-	}
+    .fa {
+      margin-right: 5px;
+    }
+  }
 }
 
 .filters {
-	display: none;
+  display: none;
 }
 
 .search__filter {
-	list-style-type: none;
-	margin: 0;
-	padding: 15px;
-	display: table;
-	width: 100%;
-	color: $c-grey-dark;
+  list-style-type: none;
+  margin: 0;
+  padding: 15px;
+  display: table;
+  width: 100%;
+  color: $c-grey-dark;
 
   &:not(:last-child),
   .form-group & {
     border-bottom: 1px dotted $c-grey-light;
   }
 
-	> li:first-child {
-		position: relative;
-		margin: 0;
+  > li:first-child {
+    position: relative;
+    margin: 0;
     width: 100%;
     font-weight: 300;
     font-style: normal;
     font-family: $f-special;
     margin-bottom: 0;
-		color: $c-black;
+    color: $c-black;
     line-height: inherit;
     label {
       font-size: $f-size;
@@ -56,140 +56,140 @@
       letter-spacing: 0;
       font-weight: 300;
     }
-	}
+  }
 
-	> li {
-		line-height: 19px;
-		float: left;
-		width: 50%;
-	}
+  > li {
+    line-height: 19px;
+    float: left;
+    width: 50%;
+  }
 
-	> li.wide {
-		width: 100%;
-	}
+  > li.wide {
+    width: 100%;
+  }
 
-	.fa-caret-left {
-		color: #8BC74C;
-	}
-	.fa-caret-left + span {
-		margin-left: 5px;
-		color: #8BC74C;
-	}
+  .fa-caret-left {
+    color: #8BC74C;
+  }
+  .fa-caret-left + span {
+    margin-left: 5px;
+    color: #8BC74C;
+  }
 
-	.fa-close {
-		color: #ED353D;
-	}
-	.fa-close + span {
-		margin-left: 5px;
-		color: #ED353D;
-		cursor: pointer;
-	}
+  .fa-close {
+    color: #ED353D;
+  }
+  .fa-close + span {
+    margin-left: 5px;
+    color: #ED353D;
+    cursor: pointer;
+  }
 }
 
 .search__filter--type {
-	background: transparent;
+  background: transparent;
 
-	input,
-	label {
-		cursor: pointer;
-		margin: 0;
-	}
+  input,
+  label {
+    cursor: pointer;
+    margin: 0;
+  }
   label {
     font-family: $f-regular !important;
     font-size: $f-size !important;
     font-weight: bold;
   }
-	.btn {
-		width: 97%;
-		margin-bottom: 5px;
-	}
+  .btn {
+    width: 97%;
+    margin-bottom: 5px;
+  }
 }
 
 
 .search__filter--radiobutton,
 .search__filter--single__selection,
 .search__filter--multiple__selection {
-	input {
-		position: relative;
-		margin-right: 2px;
-		cursor: pointer;
-	}
+  input {
+    position: relative;
+    margin-right: 2px;
+    cursor: pointer;
+  }
 }
 
 .search__filter--single__selection li {
-	width: 100%;
+  width: 100%;
 }
 
 .search__filter--radiobutton {
-	.fa {
-		border-radius: 50%;
-	}
+  .fa {
+    border-radius: 50%;
+  }
 }
 
 .search__filter--list {
-	ol {
-		overflow-y: scroll;
-		height: 130px;
-		background: $c-white;
-		border: 1px solid $c-grey;
-		border-top: 0;
-		list-style-type: none;
-		padding: 0;
+  ol {
+    overflow-y: scroll;
+    height: 130px;
+    background: $c-white;
+    border: 1px solid $c-grey;
+    border-top: 0;
+    list-style-type: none;
+    padding: 0;
 
-		li {
-			border-top: 0;
-			padding: 5px 12px;
-		}
-		input {
-			margin-right: 5px;
-		}
-	}
+    li {
+      border-top: 0;
+      padding: 5px 12px;
+    }
+    input {
+      margin-right: 5px;
+    }
+  }
 }
 
 
 .search__filter--date {
-	.fa {
-		float: left;
-		width: 5%;
-		text-align: center;
-		line-height: 23px;
-	}
-	input {
-		float: left;
-		width: 46.5%;
-		margin-left: 1%;
-	}
+  .fa {
+    float: left;
+    width: 5%;
+    text-align: center;
+    line-height: 23px;
+  }
+  input {
+    float: left;
+    width: 46.5%;
+    margin-left: 1%;
+  }
 }
 
 
 .switcher {
-	display: block;
-	background: $c-grey-dark;
-	position: absolute;
-	right: 0;
-	top: 0;
-	width: 32px;
-	height: 16px;
-	border-radius: 8px;
-	cursor: pointer;
-	&:after {
-		background: $c-white;
-		width: 12px;
-		height: 12px;
-		content: '';
-		display: block;
-		position: absolute;
-		top: 2px;
-		left: 2px;
-		border-radius: 50%;
-	}
-	.search__filter.is-active & {
+  display: block;
+  background: $c-grey-dark;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 32px;
+  height: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:after {
+    background: $c-white;
+    width: 12px;
+    height: 12px;
+    content: '';
+    display: block;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    border-radius: 50%;
+  }
+  .search__filter.is-active & {
     background: $c-success;
-		&:after {
-			left: auto;
-			right: 2px;
-		}
-	}
+    &:after {
+      left: auto;
+      right: 2px;
+    }
+  }
 }
 
 .multiselect {
@@ -285,6 +285,7 @@ label.multiselectItem-label {
       top: 5px;
       left: 7px;
       color: $c-primary;
+      cursor: pointer;
     }
   }
   .form-control,
