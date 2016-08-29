@@ -7,7 +7,7 @@ export class MultiSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {filter: '', showAll: false};
-    this.optionsToShow = 4;
+    this.optionsToShow = 5;
   }
 
   change(value) {
@@ -46,7 +46,13 @@ export class MultiSelect extends Component {
     let filteredOptions = options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
 
     if (!this.state.showAll) {
-      options = options.slice(0, this.optionsToShow);
+      options.sort((a, b) => {
+        return this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+      });
+
+      let numberOfActiveOptions = options.filter((opt) => this.checked(opt[optionsValue])).length;
+      let optionsToShow = this.optionsToShow > numberOfActiveOptions ? this.optionsToShow : numberOfActiveOptions;
+      options = options.slice(0, optionsToShow);
     }
 
     return (
