@@ -199,6 +199,25 @@ $item-padding: 10px;
   }
 }
 
+
+.itemShortcut-arrow {
+  color: $c-grey;
+  border: 1px solid $c-grey-light;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  display: inline-block;
+
+  .item:hover & {
+    color: $c-black;
+  }
+  .item-shortcut:hover & {
+    background: $c-grey-light;
+  }
+}
+
 .item-group-load-more {
   text-align: center;
 }
