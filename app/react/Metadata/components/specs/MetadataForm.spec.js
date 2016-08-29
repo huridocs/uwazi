@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 import {MetadataForm} from '../MetadataForm';
 import {Form} from 'react-redux-form';
-import {FormField, Select} from 'app/Forms';
+import {FormField, Select, MultiSelect, DatePicker} from 'app/Forms';
 
 describe('MetadataForm', () => {
   let component;
@@ -12,7 +12,12 @@ describe('MetadataForm', () => {
   let props;
 
   beforeEach(() => {
-    fieldsTemplate = [{name: 'field1', label: 'label1'}, {name: 'field2', label: 'label2', type: 'select', content: '2'}];
+    fieldsTemplate = [
+      {name: 'field1', label: 'label1'},
+      {name: 'field2', label: 'label2', type: 'select', content: '2'},
+      {name: 'field3', label: 'label3', type: 'multiselect', content: '2'},
+      {name: 'field4', label: 'label4', type: 'date'}
+    ];
 
     props = {
       metadata: {_id: 'docId', template: 'templateId', title: 'testTitle', metadata: {field1: 'field1value', field2: 'field2value'}},
@@ -79,6 +84,13 @@ describe('MetadataForm', () => {
     let select = selectField.find(Select);
     expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
     expect(select.props().optionsValue).toEqual('id');
+
+    let multiselect = component.find(MultiSelect);
+    expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
+    expect(multiselect.props().optionsValue).toEqual('id');
+
+    let datepicker = component.find(DatePicker);
+    expect(datepicker.length).toBe(1);
   });
 
   describe('submit', () => {

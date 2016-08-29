@@ -18,6 +18,10 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
       if (!entity.metadata[property.name] && property.type !== 'date') {
         entity.metadata[property.name] = '';
       }
+
+      if (!entity.metadata[property.name] && property.type === 'multiselect') {
+        entity.metadata[property.name] = [];
+      }
     });
 
     dispatch(formActions.load(form, entity));
@@ -26,6 +30,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 }
 
 export function changeTemplate(form, onlyReadEntity, template) {
+  console.log(form, onlyReadEntity, template);
   return function (dispatch) {
     let propertyNames = [];
     //test

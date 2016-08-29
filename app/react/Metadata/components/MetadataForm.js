@@ -3,7 +3,7 @@ import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
 
-import {FormGroup, FormField, Select, DatePicker} from 'app/Forms';
+import {FormGroup, FormField, Select, MultiSelect, DatePicker} from 'app/Forms';
 
 export class MetadataForm extends Component {
   render() {
@@ -27,7 +27,7 @@ export class MetadataForm extends Component {
     const templateOptions = templates.map((t) => {
       return {label: t.name, value: t._id};
     });
-
+    
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
@@ -61,6 +61,9 @@ export class MetadataForm extends Component {
                 {(() => {
                   if (property.type === 'select') {
                     return <Select optionsValue='id' options={thesauris.find((t) => t._id.toString() === property.content.toString()).values} />;
+                  }
+                  if (property.type === 'multiselect') {
+                    return <MultiSelect optionsValue='id' options={thesauris.find((t) => t._id.toString() === property.content.toString()).values} />;
                   }
                   if (property.type === 'date') {
                     return <DatePicker/>;

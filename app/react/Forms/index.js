@@ -3,6 +3,7 @@ import DatePicker, {DatePickerField} from './components/DatePicker';
 import DateRange from './components/DateRange';
 import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
+import MultiSelect from './components/MultiSelect';
 
 export {
   Select,
@@ -11,5 +12,6 @@ export {
   FormGroup,
   DatePicker,
   DatePickerField,
-  DateRange
+  DateRange,
+  MultiSelect
 };
