@@ -26,7 +26,6 @@
   border: 1px solid $c-grey-light;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
   opacity: 1;
-  transition: all 300ms;
   zoom: 1;
 
   @media (min-width: 640px) {
@@ -46,7 +45,6 @@
     border-color: $c-background $c-background $c-white $c-white;
     border-bottom-left-radius: 4px;
     box-shadow: -3px 3px 9px -3px $c-grey;
-    transition: all 300ms;
   }
 
   &:hover{
@@ -54,11 +52,10 @@
   }
   &.is-active,
   &.is-selected {
-    background: $c-primary-lighten;
-    border-color: $c-primary-light;
-    box-shadow: $shadow;
+    border-color: $c-primary;
+    box-shadow: $shadow, inset 0 0 0 1px $c-primary;
     &:before {
-      border-color: $c-background $c-background $c-primary-lighten $c-primary-lighten;
+      border-color: $c-background $c-background $c-primary $c-primary;
       box-shadow: -3px 3px 9px -3px $c-primary;
     }
   }
@@ -192,6 +189,7 @@ $item-padding: 10px;
 
 .item-shortcut {
   position: relative;
+  bottom: 5px;
   padding: 5px;
   margin-right: -$item-padding;
 
@@ -207,17 +205,16 @@ $item-padding: 10px;
   color: $c-grey;
   border: 1px solid $c-grey-light;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  line-height: 22px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
   display: inline-block;
+  box-shadow: $shadow;
 
-  .item:hover & {
-    color: $c-black;
-  }
   .item-shortcut:hover & {
-    background: $c-grey-light;
+    color: $c-black;
+    box-shadow: $shadow-active;
   }
 }
 
