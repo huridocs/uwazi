@@ -57,8 +57,9 @@ export class Doc extends Component {
             <span className="item-type__name">{type}</span>
           </span>
           <Link to={documentViewUrl} className="item-shortcut">
-            <i className="fa fa-file-o"></i>
-            <span className="arrow">&#10142;</span>
+            {/*<i className="fa fa-file-o"></i>
+            <span className="itemShortcut-label">View</span>*/}
+            <span className="itemShortcut-arrow">&#10142;</span>
           </Link>
         </ItemFooter>
       </RowList.Item>

@@ -154,7 +154,6 @@ $item-padding: 10px;
 }
 
 .item-metadata {
-  display: none;
   padding: 0 $item-padding $item-padding;
 
   dl {
@@ -187,30 +186,33 @@ $item-padding: 10px;
 }
 
 .item-shortcut {
+  position: relative;
   padding: 5px;
-  margin: -5px;
-
-  .arrow {
-    position: relative;
-    top: 1px;
-    margin-left: -5px;
-    font-size: $f-size-sm;
-    color: $c-grey-dark;
-  }
-
-  .fa {
-    color: $c-grey;
-  }
+  margin-right: -$item-padding;
 
   &:hover,
   &:focus,
   &:active {
     text-decoration: none;
+  }
+}
 
-    .fa,
-    .arrow {
-      color: $c-black;
-    }
+
+.itemShortcut-arrow {
+  color: $c-grey;
+  border: 1px solid $c-grey-light;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  display: inline-block;
+
+  .item:hover & {
+    color: $c-black;
+  }
+  .item-shortcut:hover & {
+    background: $c-grey-light;
   }
 }
 
