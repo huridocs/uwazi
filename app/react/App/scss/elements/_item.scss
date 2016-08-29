@@ -213,9 +213,9 @@ $item-padding: 10px;
   transition: all 225ms;
 
   .item-shortcut:hover & {
-    color: $c-black;
-    border-color: $c-grey;
-    box-shadow: $shadow-active;
+    color: $c-white;
+    border-color: $c-primary;
+    background-color: $c-primary;
   }
 
   .item.is-active & {
