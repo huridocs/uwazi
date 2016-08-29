@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 
-import {Select, SelectField, DateRange} from 'app/Forms';
+import {FormField, MultiSelect, DateRange} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -18,14 +18,14 @@ export class FiltersForm extends Component {
           let documentTypes = this.props.documentTypes.toJS();
           let templates = this.props.templates.toJS();
           let activeTypes = templates.reduce((result, template) => {
-            if (documentTypes[template._id]) {
+            if (documentTypes.includes(template._id)) {
               result.push(template.name);
             }
             return result;
           }, []);
           let formatedTypes = activeTypes.join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
 
-          if (activeTypes.length === 0) {
+          if (documentTypes.length === 0) {
             return <div className="empty-state select-type">
                     <i className="fa fa-arrow-up"></i><b>Filter the results</b>
                     <p>Select at least one type of document to start filtering the results.</p>
@@ -53,10 +53,10 @@ export class FiltersForm extends Component {
         <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments}>
         {fields.map((property, index) => {
           let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
-          if (property.type === 'select') {
+          if (property.type === 'select' || property.type === 'multiselect') {
             return (
               <FormGroup key={index}>
-                <SelectField model={`search.filters.${property.name}`} >
+                <FormField model={`search.filters.${property.name}`} >
                   <ul className={propertyClass}>
                     <li>
                       {property.label}
@@ -64,10 +64,14 @@ export class FiltersForm extends Component {
                       <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </li>
                     <li className="wide">
-                      <Select options={property.options} optionsValue="id" onChange={() => this.props.activateFilter(property.name)} />
+                      <MultiSelect
+                        prefix={property.name}
+                        options={property.options}
+                        optionsValue="id" onChange={() => this.props.activateFilter(property.name)}
+                      />
                     </li>
                   </ul>
-                </SelectField>
+                </FormField>
               </FormGroup>
               );
           }

@@ -7,7 +7,11 @@ export default function () {
     from: 0,
     size: 12,
     query: {
-      match_all: {}
+      bool: {
+        must: [
+          {match_all: {}}
+        ]
+      }
     },
     sort: [],
     filter: {
@@ -26,13 +30,13 @@ export default function () {
 
     fullTextSearch(term, fieldsToSearch = ['doc.fullText', 'doc.metadata.*', 'doc.title']) {
       if (term) {
-        baseQuery.query = {
+        baseQuery.query.bool.must.push({
           multi_match: {
             query: term,
             type: 'phrase_prefix',
             fields: fieldsToSearch
           }
-        };
+        });
       }
       return this;
     },
@@ -56,6 +60,12 @@ export default function () {
           let range = {};
           range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
           baseQuery.filter.bool.must.push({range});
+        }
+
+        if (filters[property].type === 'multiselect') {
+          let terms = {};
+          terms[`doc.metadata.${property}`] = filters[property].value;
+          baseQuery.query.bool.must.push({terms});
         }
       });
       return this;

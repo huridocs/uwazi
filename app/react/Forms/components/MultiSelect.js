@@ -39,29 +39,43 @@ export class MultiSelect extends Component {
   }
 
   render() {
-    let {options, optionsValue, optionsLabel} = this.props;
+    let {options, optionsValue, optionsLabel, prefix} = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
+    prefix = prefix || '';
     let filteredOptions = options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
+
     if (!this.state.showAll) {
       options = options.slice(0, this.optionsToShow);
     }
 
     return (
-      <ul className="multiselect">
+      <ul className="multiselect is-active">
+      <li className="multiselectActions">
+        <ShowIf if={filteredOptions.length > this.optionsToShow}>
+          <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
+            <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+            <span>{this.state.showAll ? 'Show less' : 'Show all'}</span>
+          </button>
+        </ShowIf>
+        <div className="form-group">
+          <i className="fa fa-search"></i>
+          <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
+        </div>
+      </li>
         {options.map((option, index) => {
           return <li className="multiselectItem" key={index}>
             <input
               type='checkbox'
               className="multiselectItem-input"
               value={option[optionsValue]}
-              id={option[optionsValue]}
+              id={prefix + option[optionsValue]}
               onChange={this.change.bind(this, option[optionsValue])}
               checked={this.checked(option[optionsValue])}
             />
             <label
               className="multiselectItem-label"
-              htmlFor={option[optionsValue]}>
+              htmlFor={prefix + option[optionsValue]}>
                 <i className="multiselectItem-icon fa fa-square"></i>
                 <i className="multiselectItem-icon fa fa-check-square"></i>
                 <span>{option[optionsLabel]}</span>
@@ -70,16 +84,12 @@ export class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={filteredOptions.length > this.optionsToShow}>
+          <ShowIf if={filteredOptions.length > this.optionsToShow && this.state.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
-              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
-              <span>{this.state.showAll ? 'Show less' : 'Show all'}</span>
+              <i className="fa fa-caret-up"></i>
+              <span>Show less</span>
             </button>
           </ShowIf>
-          <div className="form-group">
-            <i className="fa fa-search"></i>
-            <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
-          </div>
         </li>
       </ul>
     );
@@ -94,7 +104,8 @@ MultiSelect.propTypes = {
   value: PropTypes.array,
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
-  optionsLabel: PropTypes.string
+  optionsLabel: PropTypes.string,
+  prefix: PropTypes.string
 };
 
 export default MultiSelect;

@@ -38,7 +38,6 @@ describe('libraryActions', () => {
     };
 
     beforeEach(() => {
-      spyOn(libraryHelper, 'generateDocumentTypes').and.returnValue(documentTypes);
       spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
       dispatch = jasmine.createSpy('dispatch');
       getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters)}});
@@ -46,7 +45,6 @@ describe('libraryActions', () => {
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
       actions.setTemplates(templates, thesauris)(dispatch, getState);
-      expect(libraryHelper.generateDocumentTypes).toHaveBeenCalledWith(templates);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_TEMPLATES,
         templates, thesauris, documentTypes,

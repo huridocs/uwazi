@@ -30,7 +30,6 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 }
 
 export function changeTemplate(form, onlyReadEntity, template) {
-  console.log(form, onlyReadEntity, template);
   return function (dispatch) {
     let propertyNames = [];
     //test

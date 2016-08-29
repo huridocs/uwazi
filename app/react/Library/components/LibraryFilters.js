@@ -2,24 +2,21 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {filterDocumentType, filterAllDocumentTypes, resetFilters} from 'app/Library/actions/filterActions';
+import {filterDocumentTypes, resetFilters} from 'app/Library/actions/filterActions';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {hideFilters} from 'app/Library/actions/libraryActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import SidePanel from 'app/Layout/SidePanel';
+import {MultiSelect} from 'app/Forms';
 
 export class LibraryFilters extends Component {
 
-  componentWillMount() {
-    this.docTypes = [];
+  constructor(props) {
+    super(props);
   }
 
-  handleFilterDocType(e) {
-    this.props.filterDocumentType(e.target.id);
-  }
-
-  handleFilterAllDocuments() {
-    this.props.filterAllDocumentTypes(!this.props.allDocumentTypes);
+  handleFilterDocType(documentTypes) {
+    this.props.filterDocumentTypes(documentTypes);
   }
 
   render() {
@@ -36,37 +33,14 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
-          <ul className="multiselect is-active">
-            <li className="multiselectLabel">Document type</li>
-            {this.props.templates.map((template, index) => {
-              return <li className="multiselectItem" key={index}>
-                <input
-                  className="multiselectItem-input"
-                  onChange={this.handleFilterDocType.bind(this)}
-                  id={template._id}
-                  type="checkbox"
-                  checked={this.props.documentTypes[template._id]}/>
-                <label
-                  className="multiselectItem-label"
-                  htmlFor={template._id}>
-                    <i className="multiselectItem-icon fa fa-square"></i>
-                    <i className="multiselectItem-icon fa fa-check-square"></i>
-                    <span>{template.name}</span>
-                </label>
-              </li>;
-            })}
-
-            <li className="multiselectActions">
-              <button className="btn btn-xs btn-default">
-                <i className="fa fa-caret-down"></i>
-                <span>Show all</span>
-              </button>
-              <div className="form-group">
-                <i className="fa fa-search"></i>
-                <input className="form-control" placeholder="Search item" />
-              </div>
-            </li>
-          </ul>
+          <MultiSelect
+            value={this.props.documentTypes}
+            prefix="documentTypes"
+            options={this.props.templates}
+            optionsValue="_id"
+            optionsLabel="name"
+            onChange={this.handleFilterDocType.bind(this)}
+          />
           <FiltersForm />
         </div>
       </SidePanel>
@@ -77,26 +51,25 @@ export class LibraryFilters extends Component {
 LibraryFilters.propTypes = {
   templates: PropTypes.array,
   thesauris: PropTypes.array,
-  allDocumentTypes: PropTypes.bool,
-  documentTypes: PropTypes.object,
-  filterDocumentType: PropTypes.func,
-  filterAllDocumentTypes: PropTypes.func,
+  filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
   hideFilters: PropTypes.func,
   searchDocuments: PropTypes.func,
   searchTerm: PropTypes.string,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  documentTypes: PropTypes.array
 };
 
 export function mapStateToProps(state) {
   let props = state.library.filters.toJS();
   props.searchTerm = state.library.ui.toJS().searchTerm;
+  props.documentTypes = props.documentTypes;
   props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
   return props;
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({filterDocumentType, filterAllDocumentTypes, searchDocuments, hideFilters, resetFilters}, dispatch);
+  return bindActionCreators({filterDocumentTypes, searchDocuments, hideFilters, resetFilters}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);

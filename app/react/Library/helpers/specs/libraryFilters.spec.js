@@ -1,4 +1,4 @@
-import {libraryFilters, generateDocumentTypes} from 'app/Library/helpers/libraryFilters';
+import {libraryFilters} from 'app/Library/helpers/libraryFilters';
 
 describe('library helper', () => {
   let templates = [
@@ -49,13 +49,6 @@ describe('library helper', () => {
           expect(filters).toEqual([]);
         });
       });
-    });
-  });
-
-  describe('generateDocumentTypes()', () => {
-    it('should generate an object with one document type for each template using the ID', () => {
-      expect(generateDocumentTypes(templates)).toEqual({1: false, 2: false, 3: false});
-      expect(generateDocumentTypes(templates, true)).toEqual({1: true, 2: true, 3: true});
     });
   });
 });

@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 
-const initialState = {templates: [], properties: [], thesauris: [], allDocumentTypes: false, documentTypes: {}};
+const initialState = {templates: [], properties: [], thesauris: [], allDocumentTypes: false, documentTypes: []};
 
 export default function filters(state = initialState, action = {}) {
   if (action.type === types.SET_LIBRARY_TEMPLATES) {
