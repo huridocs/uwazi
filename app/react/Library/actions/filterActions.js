@@ -50,12 +50,12 @@ export function toggleFilter(propertyName) {
   };
 }
 
-export function activateFilter(propertyName) {
+export function activateFilter(propertyName, activate) {
   return function (dispatch, getState) {
     let state = getState().library.filters.toJS();
     let updatedProperties = state.properties.map((property) => {
       if (property.name === propertyName) {
-        property.active = true;
+        property.active = activate;
       }
       return property;
     });

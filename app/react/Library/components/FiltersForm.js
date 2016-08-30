@@ -67,7 +67,7 @@ export class FiltersForm extends Component {
                       <MultiSelect
                         prefix={property.name}
                         options={property.options}
-                        optionsValue="id" onChange={() => this.props.activateFilter(property.name)}
+                        optionsValue="id" onChange={(options) => this.props.activateFilter(property.name, !!options.length)}
                       />
                     </li>
                   </ul>
@@ -88,8 +88,8 @@ export class FiltersForm extends Component {
                     <DateRange
                       fromModel={`search.filters.${property.name}.from`}
                       toModel={`search.filters.${property.name}.to`}
-                      fromChange={() => this.props.activateFilter(property.name)}
-                      toChange={() => this.props.activateFilter(property.name)}
+                      fromChange={() => this.props.activateFilter(property.name, true)}
+                      toChange={() => this.props.activateFilter(property.name, true)}
                     />
                   </li>
                 </ul>
@@ -108,7 +108,7 @@ export class FiltersForm extends Component {
                     </label>
                   </li>
                   <li className="wide">
-                    <input className="form-control" onChange={() => this.props.activateFilter(property.name)} />
+                    <input className="form-control" onChange={(e) => this.props.activateFilter(property.name, !!e.target.value)} />
                   </li>
                 </ul>
               </Field>
