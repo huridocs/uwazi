@@ -1,11 +1,11 @@
-import queryBuilder from 'api/documents/documentQueryBuilder';
+import queryBuilder from 'api/search/documentQueryBuilder';
 
 describe('documentQueryBuilder', () => {
   beforeEach(() => {});
 
   describe('default query', () => {
     it('should do a match all on published documents', () => {
-      expect(queryBuilder().query().query).toEqual({match_all: {}});
+      expect(queryBuilder().query().query.bool.must[0]).toEqual({match_all: {}});
       expect(queryBuilder().query().filter.bool.must[0]).toEqual({match: {'doc.published': true}});
     });
   });
@@ -36,6 +36,11 @@ describe('documentQueryBuilder', () => {
       expect(query.filter.bool.must[1]).toEqual({range: {'doc.metadata.property1': {gte: 10, lte: 20}}});
     });
 
+    it('should filter multiselect filters', () => {
+      let query = queryBuilder().filterMetadata({property1: {value: [23, 4, 16], type: 'multiselect'}}).query();
+      expect(query.query.bool.must[1]).toEqual({terms: {'doc.metadata.property1': [23, 4, 16]}});
+    });
+
     describe('when there is no filters', () => {
       it('should add filter conditions', () => {
         let query = queryBuilder().filterMetadata().query();
@@ -64,20 +69,15 @@ describe('documentQueryBuilder', () => {
   describe('fullTextSearch', () => {
     it('should do a multi_match on default fields', () => {
       let query = queryBuilder().fullTextSearch('term').query();
-      expect(query.query).toEqual({
-        multi_match: {
-          query: 'term',
-          type: 'phrase_prefix',
-          fields: ['doc.fullText', 'doc.metadata.*', 'doc.title']
+      expect(query.query.bool.must[1]).toEqual(
+        {
+          multi_match: {
+            query: 'term',
+            type: 'phrase_prefix',
+            fields: ['doc.fullText', 'doc.metadata.*', 'doc.title']
+          }
         }
-      });
-    });
-
-    describe('when term is blank', () => {
-      it('should return the default match_all', () => {
-        let query = queryBuilder().fullTextSearch('').query();
-        expect(query.query).toEqual({match_all: {}});
-      });
+      );
     });
 
     describe('sort', () => {
@@ -94,7 +94,7 @@ describe('documentQueryBuilder', () => {
     describe('when passing fields', () => {
       it('should use them instead of the default ones', () => {
         let query = queryBuilder().fullTextSearch('term', ['another.field']).query();
-        expect(query.query).toEqual({
+        expect(query.query.bool.must[1]).toEqual({
           multi_match: {
             query: 'term',
             type: 'phrase_prefix',

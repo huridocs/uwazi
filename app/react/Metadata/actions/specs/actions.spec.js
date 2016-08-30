@@ -22,12 +22,17 @@ describe('documentFormActions', () => {
       spyOn(formActions, 'setInitial').and.returnValue('forminitial');
       let dispatch = jasmine.createSpy('dispatch');
       let doc = {title: 'test'};
-      let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
+      let templates = [{_id: 'templateId', properties: [
+        {name: 'test'},
+        {name: 'newProp'},
+        {name: 'date', type: 'date'},
+        {name: 'multi', type: 'multiselect'}
+      ]}];
 
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-      let expectedDoc = {title: 'test', metadata: {test: '', newProp: ''}, template: 'templateId'};
+      let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId'};
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(dispatch).toHaveBeenCalledWith('forminitial');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);

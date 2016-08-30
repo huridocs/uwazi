@@ -1,6 +1,56 @@
 import moment from 'moment';
 
 export default {
+
+  date(property, timestamp) {
+    let value = moment.utc(timestamp, 'X').format('MMM DD, YYYY');
+    return {label: property.label, value};
+  },
+
+  select(property, thesauriValue, thesauris) {
+    let thesauri = thesauris.find(t => t._id === property.content);
+
+    let option = thesauri.values.find(v => {
+      return v.id.toString() === thesauriValue.toString();
+    });
+
+    let value = '';
+    if (option) {
+      value = option.label;
+    }
+
+    let url;
+    if (option && thesauri.type === 'template') {
+      url = `entity/${option.id}`;
+    }
+
+    return {label: property.label, value, url};
+  },
+
+  multiselect(property, thesauriValues, thesauris) {
+    let thesauri = thesauris.find(t => t._id === property.content);
+
+    let values = thesauriValues.map((thesauriValue) => {
+      let option = thesauri.values.find(v => {
+        return v.id.toString() === thesauriValue.toString();
+      });
+
+      let value = '';
+      if (option) {
+        value = option.label;
+      }
+
+      let url;
+      if (option && thesauri.type === 'template') {
+        url = `entity/${option.id}`;
+      }
+
+      return {value, url};
+    });
+
+    return {label: property.label, value: values};
+  },
+
   prepareMetadata(doc, templates, thesauris) {
     let template = templates.find(t => t._id === doc.template);
 
@@ -10,30 +60,20 @@ export default {
 
     let metadata = template.properties.map((property) => {
       let value = doc.metadata[property.name];
-      let url;
 
       if (property.type === 'select' && value) {
-        let thesauri = thesauris.find(t => t._id === property.content);
+        return this.select(property, value, thesauris);
+      }
 
-        let option = thesauri.values.find(v => {
-          return v.id.toString() === value.toString();
-        });
-
-        value = '';
-        if (option) {
-          value = option.label;
-        }
-
-        if (option && thesauri.type === 'template') {
-          url = `entity/${option.id}`;
-        }
+      if (property.type === 'multiselect' && value) {
+        return this.multiselect(property, value, thesauris);
       }
 
       if (property.type === 'date' && value) {
-        value = moment.utc(value, 'X').format('MMM DD, YYYY');
+        return this.date(property, value);
       }
 
-      return {label: property.label, value, url};
+      return {label: property.label, value};
     });
 
     return Object.assign({}, doc, {metadata: metadata, documentType: template.name});

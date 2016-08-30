@@ -1,6 +1,5 @@
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
-import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
@@ -35,9 +34,8 @@ export function setDocuments(docs) {
 export function setTemplates(templates, thesauris) {
   return function (dispatch, getState) {
     let filtersState = getState().library.filters.toJS();
-    let documentTypes = Object.assign(libraryHelper.generateDocumentTypes(templates), filtersState.documentTypes);
     let libraryFilters = filtersState.properties;
-    dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, documentTypes, libraryFilters});
+    dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters});
   };
 }
 
@@ -74,19 +72,15 @@ export function getDocumentsByFilter(readOnlySearch, limit, getState) {
     if (property.type === 'date') {
       type = 'range';
     }
+    if (property.type === 'select' || property.type === 'multiselect') {
+      type = 'multiselect';
+    }
     if (property.active) {
       search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
     }
   });
 
-  search.types = Object.keys(documentTypes).reduce((selectedTypes, type) => {
-    if (documentTypes[type]) {
-      selectedTypes.push(type);
-    }
-
-    return selectedTypes;
-  }, []);
-
+  search.types = documentTypes;
   search.limit = limit;
 
   return api.search(search);

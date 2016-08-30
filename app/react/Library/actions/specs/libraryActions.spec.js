@@ -28,7 +28,7 @@ describe('libraryActions', () => {
   });
 
   describe('setTemplates', () => {
-    let documentTypes = {typea: true, typeb: false};
+    let documentTypes = ['typea'];
     let libraryFilters = 'generated filters';
     let dispatch;
     let getState;
@@ -38,7 +38,6 @@ describe('libraryActions', () => {
     };
 
     beforeEach(() => {
-      spyOn(libraryHelper, 'generateDocumentTypes').and.returnValue(documentTypes);
       spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
       dispatch = jasmine.createSpy('dispatch');
       getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters)}});
@@ -46,10 +45,9 @@ describe('libraryActions', () => {
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
       actions.setTemplates(templates, thesauris)(dispatch, getState);
-      expect(libraryHelper.generateDocumentTypes).toHaveBeenCalledWith(templates);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_TEMPLATES,
-        templates, thesauris, documentTypes,
+        templates, thesauris,
         libraryFilters: ['library properties']
       });
     });
@@ -113,7 +111,7 @@ describe('libraryActions', () => {
       let getState;
       let state;
       beforeEach(() => {
-        state = {properties: [{name: 'author', active: true}], documentTypes: {decision: true, ruling: false}};
+        state = {properties: [{name: 'author', active: true}], documentTypes: ['decision']};
         store = {library: {filters: Immutable.fromJS(state)}};
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });

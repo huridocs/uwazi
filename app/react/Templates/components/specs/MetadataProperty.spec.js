@@ -99,7 +99,7 @@ describe('MetadataProperty', () => {
         component.setProps({type: 'any'});
         expect(component.find(FormConfigInput).length).toBe(1);
 
-        component.setProps({type: 'list'});
+        component.setProps({type: 'multiselect'});
         expect(component.find(FormConfigSelect).length).toBe(1);
       });
     });

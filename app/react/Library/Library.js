@@ -4,7 +4,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from './components/DocumentsList';
 import LibraryFilters from './components/LibraryFilters';
 import {getDocumentsByFilter, enterLibrary, setDocuments, setTemplates} from './actions/libraryActions';
-import {libraryFilters, generateDocumentTypes} from './helpers/libraryFilters';
+import {libraryFilters} from './helpers/libraryFilters';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
@@ -26,12 +26,11 @@ export default class Library extends RouteHandler {
     return Promise.all([getDocumentsByFilter(store.getState().search, null, store.getState), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       let docs = documents;
-      let documentTypes = generateDocumentTypes(templates);
-      let properties = libraryFilters(templates, documentTypes);
+      let properties = libraryFilters(templates, []);
       return {
         library: {
           documents: docs,
-          filters: {templates, documentTypes, properties, thesauris, allDocumentTypes: false}
+          filters: {templates, documentTypes: [], properties, thesauris}
         }
       };
     });

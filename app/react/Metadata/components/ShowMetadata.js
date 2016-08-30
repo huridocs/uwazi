@@ -24,6 +24,17 @@ export class ShowMetadata extends Component {
                   if (property.url) {
                     return <Link to={property.url}>{property.value}</Link>;
                   }
+
+                  if (typeof property.value === 'object') {
+                    return <ul>
+                            {property.value.map((value, indx) => {
+                              if (value.url) {
+                                return <li key={indx}><Link to={value.url}>{value.value}</Link></li>;
+                              }
+                              return <li key={indx}>{value.value}</li>;
+                            })}
+                           </ul>;
+                  }
                   return property.value;
                 })()}
                 </dd>
