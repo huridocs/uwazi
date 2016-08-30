@@ -43,8 +43,8 @@ export class LibraryFilters extends Component {
               optionsLabel="name"
               onChange={this.handleFilterDocType.bind(this)}
             />
-            <FiltersForm />
           </div>
+          <FiltersForm />
         </div>
       </SidePanel>
     );
