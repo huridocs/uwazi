@@ -357,6 +357,7 @@ label.multiselectItem-label {
   .multiselectItem {
     line-height: 1.8em;
     padding: 2px 6px 0;
+    margin: 0 -6px;
   }
 
   .multiselectItem-input:not(:checked) + label .multiselectItem-icon:first-of-type { display: inline-block; }
