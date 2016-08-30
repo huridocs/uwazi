@@ -213,7 +213,7 @@ $item-padding: 10px;
   }
 
   &:hover {
-    color: $c-white;
+    color: $c-white !important;
     border-color: $c-primary !important;
     background-color: $c-primary;
   }
