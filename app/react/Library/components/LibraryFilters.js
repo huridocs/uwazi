@@ -22,17 +22,6 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel open={this.props.open}>
-        <div className="sidepanel-header">
-          <h1>
-            <span>Filters</span>
-            <small>
-              <span onClick={this.props.resetFilters}>
-                <i className="fa fa-refresh"></i>
-                <span>Reset filters</span>
-              </span>
-            </small>
-          </h1>
-       </div>
         <div className="sidepanel-footer">
           <span onClick={this.props.resetFilters} className="btn btn-primary">
             <i className="fa fa-refresh"></i>
@@ -44,16 +33,18 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
-          <div>Document Types</div>
-          <MultiSelect
-            value={this.props.documentTypes}
-            prefix="documentTypes"
-            options={this.props.templates}
-            optionsValue="_id"
-            optionsLabel="name"
-            onChange={this.handleFilterDocType.bind(this)}
-          />
-          <FiltersForm />
+          <div className="documentTypes-selector">
+            <div className="documentTypes-title">Document Types</div>
+            <MultiSelect
+              value={this.props.documentTypes}
+              prefix="documentTypes"
+              options={this.props.templates}
+              optionsValue="_id"
+              optionsLabel="name"
+              onChange={this.handleFilterDocType.bind(this)}
+            />
+            <FiltersForm />
+          </div>
         </div>
       </SidePanel>
     );

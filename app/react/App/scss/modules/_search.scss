@@ -418,3 +418,19 @@ label.multiselectItem-label {
   }
 }
 /**/
+
+.documentTypes-selector {
+  padding: 15px;
+}
+
+.documentTypes-title {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  font-weight: 300;
+  font-style: normal;
+  font-family: $f-special;
+  margin-bottom: 0;
+  color: $c-black;
+  line-height: inherit;
+}
