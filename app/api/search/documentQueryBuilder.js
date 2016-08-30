@@ -20,6 +20,9 @@ export default function () {
           {match: {'doc.published': true}}
         ]
       }
+    },
+    aggregations: {
+
     }
   };
 
@@ -68,6 +71,14 @@ export default function () {
           baseQuery.query.bool.must.push({terms});
         }
       });
+      return this;
+    },
+
+    aggregations(properties) {
+      properties.forEach((property) => {
+        baseQuery.aggregations[property] = {terms: {field: `doc.metadata.${property}.raw`}};
+      });
+
       return this;
     },
 

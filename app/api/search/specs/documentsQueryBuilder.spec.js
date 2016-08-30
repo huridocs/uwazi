@@ -66,6 +66,17 @@ describe('documentQueryBuilder', () => {
     });
   });
 
+  describe('aggregations', () => {
+    it('should add aggregations to the query', () => {
+      let query = queryBuilder().aggregations(['property1', 'property2']).query();
+      let expectedMatcher = {
+        property1: {terms: {field: 'doc.metadata.property1.raw'}},
+        property2: {terms: {field: 'doc.metadata.property2.raw'}}
+      };
+      expect(query.aggregations).toEqual(expectedMatcher);
+    });
+  });
+
   describe('fullTextSearch', () => {
     it('should do a multi_match on default fields', () => {
       let query = queryBuilder().fullTextSearch('term').query();
