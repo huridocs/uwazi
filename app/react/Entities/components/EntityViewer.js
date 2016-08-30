@@ -156,12 +156,14 @@ export class EntityViewer extends Component {
                       <div className="item-actions">
                         <NeedAuthorization>
                           <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                            <i className="fa fa-unlink"></i><span>Delete</span>
+                            <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
                           </a>
                         </NeedAuthorization>
                         &nbsp;
                         <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+                          <span className="itemShortcut-arrow">
+                            <i className="fa fa-external-link"></i>
+                          </span>
                         </Link>
                       </div>
                     </div>

@@ -91,10 +91,7 @@
 .side-panel {
   .item {
     &.relationship-hover {
-      border-left: 3px solid $c-secondary-light;
-      .item-info, .item-metadata {
-        padding-left: 13px;
-      }
+      box-shadow: $shadow, inset 3px 0 0 $c-secondary-light;
     }
 
     &.relationship-active,

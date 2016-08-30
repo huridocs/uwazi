@@ -146,7 +146,8 @@ $c-sidebar: $c-white;
 .sidepanel-footer {
   position: absolute;
   bottom: 0;
-  width: 100%;
+  left: 15px;
+  right: 15px;
   padding-top: 0;
   text-align: center;
   background: linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
