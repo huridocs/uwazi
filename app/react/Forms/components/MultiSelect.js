@@ -87,7 +87,7 @@ export class MultiSelect extends Component {
         </ShowIf>
       </li>
         {options.map((option, index) => {
-          return <li className="multiselectItem" key={index}>
+          return <li className="multiselectItem" key={index} title={option[optionsValue]}>
             <input
               type='checkbox'
               className="multiselectItem-input"

@@ -261,6 +261,10 @@ label.multiselectItem-label {
   font-size: inherit;
   text-transform: none;
   letter-spacing: normal;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .multiselectItem--all {
@@ -277,6 +281,7 @@ label.multiselectItem-label {
 .multiselectActions {
   padding-top: 8px;
   position: relative;
+  display: flex;
   .form-group {
     position: relative;
     display: inline-block;
