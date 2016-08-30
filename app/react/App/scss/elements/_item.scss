@@ -189,37 +189,40 @@ $item-padding: 10px;
 .item-shortcut {
   position: relative;
   bottom: 5px;
-  padding: 5px;
-  margin-right: -$item-padding;
-
-  &:hover,
-  &:focus,
-  &:active {
-    text-decoration: none;
-  }
-}
-
-
-.itemShortcut-arrow {
+  margin: 0 -5px;
+  padding: 0 5px;
   color: $c-grey-dark;
   border: 1px solid $c-grey-light;
-  border-radius: 50%;
-  width: 30px;
+  border-radius: 15px;
+  min-width: 30px;
   height: 30px;
   line-height: 30px;
   text-align: center;
   display: inline-block;
   box-shadow: $shadow;
 
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
+
   .item.is-active & {
     color: $c-primary;
     border-color: $c-primary-light;
   }
 
-  .item-shortcut:hover & {
+  &:hover {
     color: $c-white;
     border-color: $c-primary !important;
     background-color: $c-primary;
+  }
+}
+
+.item-shortcut-group {
+  margin: 0 -5px;
+  .item-shortcut {
+    margin: 0;
   }
 }
 

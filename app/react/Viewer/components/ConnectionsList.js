@@ -103,19 +103,23 @@ export class ConnectionsList extends Component {
                   </dl>
                 </div>
                 <div className="item-actions">
-                  <ShowIf if={!this.props.targetDoc}>
-                    <NeedAuthorization>
-                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                        <i className="fa fa-unlink"></i><span>Delete</span>
-                      </a>
-                    </NeedAuthorization>
-                  </ShowIf>
-                  &nbsp;
-                  <ShowIf if={!this.props.targetDoc}>
-                    <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                      <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
-                    </Link>
-                  </ShowIf>
+                  <div className="item-shortcut-group">
+                    <ShowIf if={!this.props.targetDoc}>
+                      <NeedAuthorization>
+                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                          <i className="fa fa-unlink"></i><span>Delete</span>
+                        </a>
+                      </NeedAuthorization>
+                    </ShowIf>
+                    &nbsp;
+                    <ShowIf if={!this.props.targetDoc}>
+                      <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                        <span className="itemShortcut-arrow">
+                          <i className="fa fa-external-link"></i>
+                        </span>
+                      </Link>
+                    </ShowIf>
+                  </div>
                 </div>
               </div>
               );
