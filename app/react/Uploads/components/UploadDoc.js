@@ -90,7 +90,9 @@ export class UploadDoc extends Component {
           return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
         })()}
         <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-          <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
+          <span className="itemShortcut-arrow">
+            <i className="fa fa-external-link"></i>
+          </span>
         </Link>
       </ItemFooter>
     </RowList.Item>
