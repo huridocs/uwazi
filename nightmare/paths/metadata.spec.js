@@ -8,13 +8,13 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 realMouse(Nightmare);
 
 fdescribe('metadata path', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 20}).viewport(1100, 600);
+  let nightmare = new Nightmare({show: true, typeInterval: 30}).viewport(1100, 600);
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
-      .waitToClick(selectors.settingsView.settingsNavButton)
+      .waitToClick(selectors.navigation.settingsNavButton)
       .wait(selectors.settingsView.settingsHeader)
       .url()
       .then((url) => {
@@ -61,6 +61,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to dictionaries then edit the created dictionary', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
@@ -82,6 +83,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .deleteItemFromList('edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
@@ -121,6 +123,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to Documents then edit the created document', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
@@ -138,6 +141,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to Documents then delete the created document template', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .deleteItemFromList('edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
@@ -176,6 +180,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to Connections then edit the created connection', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
@@ -193,6 +198,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to connections then delete the created connection', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList('edited')
@@ -232,6 +238,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to Entities then edit the created entity', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
@@ -249,6 +256,7 @@ fdescribe('metadata path', () => {
 
     it('should go back to Entities then delete the created entity', (done) => {
       nightmare
+      .wait(3200)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList('edited')

@@ -4,7 +4,6 @@ export default {
     liElementsOfSection: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li',
     firstEditButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li:nth-child(1) > div > a > i',
     collectionNameForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > form > div > input',
-    settingsNavButton: '#app > div.content > header > div > div > ul > li:nth-child(3) > a',
     settingsHeader: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.panel-heading',
     logoutButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div:nth-child(3) > div.panel-body > a',
     accountButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
@@ -39,12 +38,16 @@ export default {
     libraryFirstDocument: '.item-group .item',
     searchInLibrary: '#app > div.content > header > div > div > div > a > i.fa.fa-search',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a',
-    libraryNavButton: '#app > div.content > header > div > div > ul > li:nth-child(1) > a',
     loadTargetDocumentButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button'
   },
   uploadsView: {
-    uploadsNavButton: '.fa-cloud-upload',
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
     uploadsBottomRightSaveButton: '.float-btn'
+  },
+  navigation: {
+    loginNavButton: '#app > div.content > header > div > div > ul > li:nth-child(2) > a',
+    uploadsNavButton: '.fa-cloud-upload',
+    libraryNavButton: '#app > div.content > header > div > div > ul > li:nth-child(1) > a',
+    settingsNavButton: '#app > div.content > header > div > div > ul > li:nth-child(3) > a'
   }
 };
