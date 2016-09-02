@@ -8,7 +8,6 @@ import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import fs from 'fs';
 import uniqueID from 'shared/uniqueID';
-import sanitizeHtml from 'sanitize-html';
 
 export default {
   save(doc, user) {
