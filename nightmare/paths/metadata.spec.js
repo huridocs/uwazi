@@ -8,7 +8,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 realMouse(Nightmare);
 
 fdescribe('metadata path', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 30}).viewport(1100, 600);
+  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
@@ -65,12 +65,12 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
-      .wait(selectors.settingsView.dictionaryNameForm)
-      .type(selectors.settingsView.dictionaryNameForm, ' edited')
-      .wait(selectors.settingsView.firstDictionaryValForm)
-      .type(selectors.settingsView.firstDictionaryValForm, ' edited')
-      .wait(selectors.settingsView.secondDictionaryValForm)
-      .type(selectors.settingsView.secondDictionaryValForm, ' edited')
+      .clearInput(selectors.settingsView.dictionaryNameForm)
+      .type(selectors.settingsView.dictionaryNameForm, 'edited')
+      .clearInput(selectors.settingsView.firstDictionaryValForm)
+      .type(selectors.settingsView.firstDictionaryValForm, 'edited')
+      .clearInput(selectors.settingsView.secondDictionaryValForm)
+      .type(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -79,7 +79,7 @@ fdescribe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
@@ -89,7 +89,7 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('Documents tests', () => {
@@ -127,8 +127,8 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
-      .wait(selectors.settingsView.entityNameForm)
-      .type(selectors.settingsView.entityNameForm, ' edited')
+      .clearInput(selectors.settingsView.entityNameForm)
+      .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -137,7 +137,7 @@ fdescribe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
 
     it('should go back to Documents then delete the created document template', (done) => {
       nightmare
@@ -147,7 +147,7 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('Connections tests', () => {
@@ -184,8 +184,8 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
-      .wait(selectors.settingsView.connectionNameForm)
-      .type(selectors.settingsView.connectionNameForm, ' edited')
+      .clearInput(selectors.settingsView.connectionNameForm)
+      .type(selectors.settingsView.connectionNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveConnectionButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -194,7 +194,7 @@ fdescribe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
 
     it('should go back to connections then delete the created connection', (done) => {
       nightmare
@@ -205,7 +205,7 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('Entities tests', () => {
@@ -242,8 +242,8 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
-      .wait(selectors.settingsView.entityNameForm)
-      .type(selectors.settingsView.entityNameForm, ' edited')
+      .clearInput(selectors.settingsView.entityNameForm)
+      .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -252,7 +252,7 @@ fdescribe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
 
     it('should go back to Entities then delete the created entity', (done) => {
       nightmare
@@ -263,7 +263,7 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('closing browser', () => {

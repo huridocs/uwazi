@@ -2,6 +2,16 @@ import selectors from './selectors.js';
 import config from './config.js';
 import Nightmare from 'nightmare';
 
+Nightmare.action('clearInput', function (selector, done) {
+  let backSpaces = [];
+  for (let i = 0; i < 20; i += 1) {
+    backSpaces.push('\u0008');
+  }
+  this.wait(selector)
+  .type(selector, backSpaces.join(''))
+  .then(done);
+});
+
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
   .wait(selectors.navigation.loginNavButton)
