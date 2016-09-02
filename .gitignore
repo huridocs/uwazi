@@ -7,6 +7,7 @@ coverage
 *.log
 npm-debug
 uploads/*
+conversions/*.json
 app/api/upload/specs/uploads/*
 uploaded_documents/*
 !uploads/index.html

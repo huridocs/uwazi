@@ -140,17 +140,6 @@ describe('documents', () => {
     });
   });
 
-  describe('getHTML', () => {
-    it('should return the html conversion of the document with documentid selector added to al css', (done) => {
-      documents.getHTML('docId')
-      .then((html) => {
-        expect(html.css).toBe('._docId .selector1 {} ._docId .selector2 {}');
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
   describe('saveHTML', () => {
     it('should save html conversion', (done) => {
       documents.saveHTML({pages: ['pages'], document: 'documentId'})
