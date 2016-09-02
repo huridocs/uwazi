@@ -18,6 +18,7 @@ export default class PDF extends EventEmitter {
     super();
     this.logFile = __dirname + '/../../../log/' + basename(originalName) + '.log';
     this.filepath = filepath;
+    this.optimizedPath = filepath;
   }
 
   optimize() {
@@ -85,6 +86,7 @@ export default class PDF extends EventEmitter {
       '--css-filename=custom.css',
       '--optimize-text=1',
       '--tounicode=1',
+      '--heps=2',
       '--decompose-ligature=1',
       '--zoom=1.33',
       '--hdpi=96',
@@ -126,13 +128,10 @@ export default class PDF extends EventEmitter {
   }
 
   convert() {
-    return this.optimize()
-    .then(() => {
-      return Promise.all([
-        this.toHTML(),
-        this.extractText()
-      ]);
-    })
+    return Promise.all([
+      this.toHTML(),
+      this.extractText()
+    ])
     .catch(() => {
       return Promise.reject({error: 'conversion_error'});
     })
