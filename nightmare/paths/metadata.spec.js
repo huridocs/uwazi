@@ -1,3 +1,4 @@
+/*eslint max-nested-callbacks: ["error", 10]*/
 import Nightmare from 'nightmare';
 import realMouse from 'nightmare-real-mouse';
 import config from '../helpers/config.js';
@@ -6,8 +7,8 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
 
-describe('metadata path', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
+fdescribe('metadata path', () => {
+  let nightmare = new Nightmare({show: true, typeInterval: 20}).viewport(1100, 600);
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
@@ -24,13 +25,13 @@ describe('metadata path', () => {
     });
   });
 
-  describe('in settings', () => {
-    it('should click Thesauris button and then click on add new thesauri button', (done) => {
+  describe('Dictionaries tests', () => {
+    it('should click dictionaries button and then click on add new dictionary button', (done) => {
       nightmare
-      .waitToClick(selectors.settingsView.thesaurisButton)
-      .waitToClick(selectors.settingsView.addNewThesauri)
-      .wait(selectors.settingsView.saveThesauriButton)
-      .exists(selectors.settingsView.saveThesauriButton)
+      .waitToClick(selectors.settingsView.dictionariesButton)
+      .waitToClick(selectors.settingsView.addNewDictionary)
+      .wait(selectors.settingsView.saveDictionaryButton)
+      .exists(selectors.settingsView.saveDictionaryButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -38,93 +39,58 @@ describe('metadata path', () => {
       .catch(catchErrors(done));
     });
 
-    describe('in Thesauris', () => {
-      it('should create a new thesauri with two values', (done) => {
-        nightmare
-        .wait(selectors.settingsView.thesauriNameForm)
-        .type(selectors.settingsView.thesauriNameForm, 'test thesauri 1')
-        .waitToClick(selectors.settingsView.addNewValueToThesauriButton)
-        .wait(selectors.settingsView.firstThesauriValForm)
-        .type(selectors.settingsView.firstThesauriValForm, 'tests value 1')
-        .waitToClick(selectors.settingsView.addNewValueToThesauriButton)
-        .wait(selectors.settingsView.secondThesauriValForm)
-        .type(selectors.settingsView.secondThesauriValForm, 'tests value 2')
-        .waitToClick(selectors.settingsView.saveThesauriButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should go back to Thesauris then edit the created thesauri', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.thesaurisBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test thesauri 1')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test thesauri 1')) {
-              thesauri.querySelector('.fa-pencil').click();
-            }
-          });
-        })
-        .wait(selectors.settingsView.thesauriNameForm)
-        .type(selectors.settingsView.thesauriNameForm, ' edited once')
-        .wait(selectors.settingsView.firstThesauriValForm)
-        .type(selectors.settingsView.firstThesauriValForm, ' edited once')
-        .wait(selectors.settingsView.secondThesauriValForm)
-        .type(selectors.settingsView.secondThesauriValForm, ' edited once')
-        .waitToClick(selectors.settingsView.saveThesauriButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should go back to Thesauris then delete the created thesauri', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.thesaurisBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test thesauri 1 edited once')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let thesaurisList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          thesaurisList.forEach((thesauri) => {
-            if (thesauri.innerText.match('test thesauri 1 edited once')) {
-              thesauri.querySelector('.fa-trash').click();
-            }
-          });
-        })
-        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-        .then(
-          done
-        )
-        .catch(catchErrors(done));
-      });
+    it('should create a new dictionary with two values', (done) => {
+      nightmare
+      .wait(selectors.settingsView.dictionaryNameForm)
+      .type(selectors.settingsView.dictionaryNameForm, 'test dictionary')
+      .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
+      .wait(selectors.settingsView.firstDictionaryValForm)
+      .type(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
+      .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
+      .wait(selectors.settingsView.secondDictionaryValForm)
+      .type(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
+      .waitToClick(selectors.settingsView.saveDictionaryButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
+    it('should go back to dictionaries then edit the created dictionary', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.dictionariesBackButton)
+      .wait(selectors.settingsView.liElementsOfSection)
+      .editItemFromList('test')
+      .wait(selectors.settingsView.dictionaryNameForm)
+      .type(selectors.settingsView.dictionaryNameForm, ' edited')
+      .wait(selectors.settingsView.firstDictionaryValForm)
+      .type(selectors.settingsView.firstDictionaryValForm, ' edited')
+      .wait(selectors.settingsView.secondDictionaryValForm)
+      .type(selectors.settingsView.secondDictionaryValForm, ' edited')
+      .waitToClick(selectors.settingsView.saveDictionaryButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should go back to dictionaries then delete the created dictionary', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.dictionariesBackButton)
+      .deleteItemFromList('edited')
+      .waitToClick(selectors.settingsView.deleteButtonConfirmation)
+      .then(done)
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('Documents tests', () => {
     it('should click Documents button and then click on add new document button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.documentsButton)
@@ -138,84 +104,49 @@ describe('metadata path', () => {
       .catch(catchErrors(done));
     });
 
-    describe('in Documents', () => {
-      it('should create a new document template with no properties added', (done) => {
-        //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
-        nightmare
-        .wait(selectors.settingsView.documentTemplateNameForm)
-        .type(selectors.settingsView.documentTemplateNameForm, 'test document template')
-        .waitToClick(selectors.settingsView.saveDocumentButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should go back to Documents then edit the created document', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.documentsBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          documentsList.forEach((oneDocument) => {
-            if (oneDocument.innerText.match('test document template')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let documentsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          documentsList.forEach((oneDocument) => {
-            if (oneDocument.innerText.match('test document template')) {
-              oneDocument.querySelector('.fa-pencil').click();
-            }
-          });
-        })
-        .wait(selectors.settingsView.documentTemplateNameForm)
-        .type(selectors.settingsView.documentTemplateNameForm, ' edited once')
-        .waitToClick(selectors.settingsView.saveDocumentButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should go back to Documents then delete the created document template', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.documentsBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let documentTemplatesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          documentTemplatesList.forEach((documentTemplate) => {
-            if (documentTemplate.innerText.match('test document template edited once')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let documentTemplatesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          documentTemplatesList.forEach((documentTemplate) => {
-            if (documentTemplate.innerText.match('test document template edited once')) {
-              documentTemplate.querySelector('.fa-trash').click();
-            }
-          });
-        })
-        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-        .then(
-          done
-        )
-        .catch(catchErrors(done));
-      });
+    it('should create a new document template with no properties added', (done) => {
+      //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
+      nightmare
+      .wait(selectors.settingsView.documentTemplateNameForm)
+      .type(selectors.settingsView.documentTemplateNameForm, 'test document')
+      .waitToClick(selectors.settingsView.saveDocumentButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
+    it('should go back to Documents then edit the created document', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.documentsBackButton)
+      .wait(selectors.settingsView.liElementsOfSection)
+      .editItemFromList('test')
+      .wait(selectors.settingsView.entityNameForm)
+      .type(selectors.settingsView.entityNameForm, ' edited')
+      .waitToClick(selectors.settingsView.saveEntityButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should go back to Documents then delete the created document template', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.documentsBackButton)
+      .deleteItemFromList('edited')
+      .waitToClick(selectors.settingsView.deleteButtonConfirmation)
+      .then(done)
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('Connections tests', () => {
     it('should click Connections button and then click on add new connection button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.connectionsButton)
@@ -229,83 +160,49 @@ describe('metadata path', () => {
       .catch(catchErrors(done));
     });
 
-    describe('in Connections', () => {
-      it('should create a new connection', (done) => {
-        nightmare
-        .wait(selectors.settingsView.connectionNameForm)
-        .type(selectors.settingsView.connectionNameForm, 'test connection')
-        .waitToClick(selectors.settingsView.saveConnectionButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should go back to Connections then edit the created connection', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.connectionsBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test connection')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test connection')) {
-              connection.querySelector('.fa-pencil').click();
-            }
-          });
-        })
-        .wait(selectors.settingsView.connectionNameForm)
-        .type(selectors.settingsView.connectionNameForm, ' edited once')
-        .waitToClick(selectors.settingsView.saveConnectionButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should go back to Documents then delete the created document template', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.connectionsBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test connection edited once')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let connectionsList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          connectionsList.forEach((connection) => {
-            if (connection.innerText.match('test connection edited once')) {
-              connection.querySelector('.fa-trash').click();
-            }
-          });
-        })
-        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-        .then(
-          done
-        )
-        .catch(catchErrors(done));
-      });
+    it('should create a new connection', (done) => {
+      nightmare
+      .wait(selectors.settingsView.connectionNameForm)
+      .type(selectors.settingsView.connectionNameForm, 'test connection')
+      .waitToClick(selectors.settingsView.saveConnectionButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
+    it('should go back to Connections then edit the created connection', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.connectionsBackButton)
+      .wait(selectors.settingsView.liElementsOfSection)
+      .editItemFromList('test')
+      .wait(selectors.settingsView.connectionNameForm)
+      .type(selectors.settingsView.connectionNameForm, ' edited')
+      .waitToClick(selectors.settingsView.saveConnectionButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should go back to connections then delete the created connection', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.connectionsBackButton)
+      .wait(selectors.settingsView.liElementsOfSection)
+      .deleteItemFromList('edited')
+      .waitToClick(selectors.settingsView.deleteButtonConfirmation)
+      .then(done)
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('Entities tests', () => {
     it('should click Entities button and then click on add new Entity button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.entitiesButton)
@@ -319,81 +216,45 @@ describe('metadata path', () => {
       .catch(catchErrors(done));
     });
 
-    describe('in Entities', () => {
-      it('should create a new entity', (done) => {
-        nightmare
-        .wait(selectors.settingsView.entityNameForm)
-        .type(selectors.settingsView.entityNameForm, 'test entity')
-        .waitToClick(selectors.settingsView.saveEntityButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+    it('should create a new entity', (done) => {
+      nightmare
+      .wait(selectors.settingsView.entityNameForm)
+      .type(selectors.settingsView.entityNameForm, 'test entity')
+      .click(selectors.settingsView.saveEntityButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
 
-      it('should go back to Entities then edit the created entity', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.entitiesBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test entity')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test entity')) {
-              entity.querySelector('.fa-pencil').click();
-            }
-          });
-        })
-        .wait(selectors.settingsView.entityNameForm)
-        .type(selectors.settingsView.entityNameForm, ' edited once')
-        .waitToClick(selectors.settingsView.saveEntityButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+    it('should go back to Entities then edit the created entity', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.entitiesBackButton)
+      .wait(selectors.settingsView.liElementsOfSection)
+      .editItemFromList('test')
+      .wait(selectors.settingsView.entityNameForm)
+      .type(selectors.settingsView.entityNameForm, ' edited')
+      .waitToClick(selectors.settingsView.saveEntityButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
 
-      it('should go back to Entities then delete the created entity', (done) => {
-        nightmare
-        .waitToClick(selectors.settingsView.entitiesBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test entity edited once')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test entity edited once')) {
-              entity.querySelector('.fa-trash').click();
-            }
-          });
-        })
-        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-        .then(
-          done
-        )
-        .catch(catchErrors(done));
-      });
+    it('should go back to Entities then delete the created entity', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.entitiesBackButton)
+      .wait(selectors.settingsView.liElementsOfSection)
+      .deleteItemFromList('edited')
+      .waitToClick(selectors.settingsView.deleteButtonConfirmation)
+      .then(done)
+      .catch(catchErrors(done));
     });
   });
 
