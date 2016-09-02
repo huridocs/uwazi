@@ -83,11 +83,11 @@
 
 .t span {
   position:relative;
-  display:inline-block;
   unicode-bidi:bidi-override;
 }
 
 ._ {
+  display:inline-block;
   color:transparent;
   z-index:-1;
 }
