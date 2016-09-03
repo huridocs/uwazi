@@ -7,7 +7,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
 
-fdescribe('metadata path', () => {
+describe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {

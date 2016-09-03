@@ -96,7 +96,7 @@ describe('Smoke test,', () => {
 
       it('to return to library from a document should click on library nav button', (done) => {
         nightmare
-        .waitToClick(selectors.libraryView.libraryNavButton)
+        .waitToClick(selectors.navigation.libraryNavButton)
         .wait(selectors.libraryView.libraryFirstDocument)
         .exists(selectors.libraryView.libraryFirstDocument)
         .then((result) => {
@@ -110,7 +110,7 @@ describe('Smoke test,', () => {
     describe('uploads view', () => {
       it('click on uploads nav button', (done) => {
         nightmare
-        .waitToClick(selectors.uploadsView.uploadsNavButton)
+        .waitToClick(selectors.navigation.uploadsNavButton)
         .wait(selectors.uploadsView.uploadBox)
         .exists(selectors.uploadsView.uploadBox)
         .then((result) => {
@@ -162,7 +162,7 @@ describe('Smoke test,', () => {
     describe('settings view', () => {
       it('should check if user settings view loads', (done) => {
         nightmare
-        .waitToClick(selectors.settingsView.settingsNavButton)
+        .waitToClick(selectors.navigation.settingsNavButton)
         .wait(selectors.settingsView.settingsHeader)
         .url()
         .then((url) => {
@@ -258,9 +258,9 @@ describe('Smoke test,', () => {
 
       it('should click the thesauris button and check thesauris appear', (done) => {
         nightmare
-        .waitToClick(selectors.settingsView.thesaurisButton)
-        .wait(selectors.settingsView.addNewThesauri)
-        .exists(selectors.settingsView.addNewThesauri)
+        .waitToClick(selectors.settingsView.dictionariesButton)
+        .wait(selectors.settingsView.addNewDictionary)
+        .exists(selectors.settingsView.addNewDictionary)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -271,8 +271,8 @@ describe('Smoke test,', () => {
       it('should click the edit button of the 1st connection', (done) => {
         nightmare
         .waitToClick(selectors.settingsView.firstEditButton)
-        .wait(selectors.settingsView.thesaurisBackButton)
-        .exists(selectors.settingsView.thesaurisBackButton)
+        .wait(selectors.settingsView.dictionariesBackButton)
+        .exists(selectors.settingsView.dictionariesBackButton)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -282,9 +282,9 @@ describe('Smoke test,', () => {
 
       it('should click the back button to go back to the list of thesauris', (done) => {
         nightmare
-        .waitToClick(selectors.settingsView.thesaurisBackButton)
-        .wait(selectors.settingsView.addNewThesauri)
-        .exists(selectors.settingsView.addNewThesauri)
+        .waitToClick(selectors.settingsView.dictionariesBackButton)
+        .wait(selectors.settingsView.addNewDictionary)
+        .exists(selectors.settingsView.addNewDictionary)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -322,24 +322,7 @@ describe('Smoke test,', () => {
       it('should go back to Entities then delete the created entity', (done) => {
         nightmare
         .waitToClick(selectors.settingsView.entitiesBackButton)
-        .wait(() => {
-          let itemFound = false;
-          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test entity')) {
-              itemFound = true;
-            }
-          });
-          return itemFound;
-        })
-        .evaluate(() => {
-          let entitiesList = document.querySelectorAll('#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul li');
-          entitiesList.forEach((entity) => {
-            if (entity.innerText.match('test entity')) {
-              entity.querySelector('.fa-trash').click();
-            }
-          });
-        })
+        .deleteItemFromList('test')
         .waitToClick(selectors.settingsView.deleteButtonConfirmation)
         .then(
           done
