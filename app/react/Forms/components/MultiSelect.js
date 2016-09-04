@@ -54,16 +54,18 @@ export class MultiSelect extends Component {
       options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
     }
 
-    if (!this.state.showAll && options.length > this.optionsToShow) {
-      options.sort((a, b) => {
-        let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
-        if (sorting === 0) {
-          sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
-        }
+    let tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
 
-        return sorting;
-      });
+    options.sort((a, b) => {
+      let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+      if (!tooManyOptions || sorting === 0) {
+        sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
+      }
 
+      return sorting;
+    });
+
+    if (tooManyOptions) {
       let numberOfActiveOptions = options.filter((opt) => this.checked(opt[optionsValue])).length;
       let optionsToShow = this.optionsToShow > numberOfActiveOptions ? this.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
