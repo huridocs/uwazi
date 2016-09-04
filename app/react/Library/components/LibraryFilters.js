@@ -20,6 +20,17 @@ export class LibraryFilters extends Component {
   }
 
   render() {
+
+    this.props.templates.map((template) => {
+      template.results = 0;
+      template.total = 0;
+      let aggregationsMatch = this.props.aggregations.types.buckets.find((aggregation) => aggregation.key === template._id);
+      if (aggregationsMatch) {
+        template.results = aggregationsMatch.filtered.doc_count;
+        template.total = aggregationsMatch.doc_count;
+      }
+    });
+
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-footer">
@@ -53,7 +64,7 @@ export class LibraryFilters extends Component {
 
 LibraryFilters.propTypes = {
   templates: PropTypes.array,
-  thesauris: PropTypes.array,
+  aggregations: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
   hideFilters: PropTypes.func,
@@ -66,8 +77,9 @@ LibraryFilters.propTypes = {
 export function mapStateToProps(state) {
   let props = state.library.filters.toJS();
   props.searchTerm = state.library.ui.toJS().searchTerm;
-  props.documentTypes = props.documentTypes;
   props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
+  props.templates = state.templates.toJS();
+  props.aggregations = state.library.aggregations.toJS();
   return props;
 }
 

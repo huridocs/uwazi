@@ -114,7 +114,7 @@ function mapStateToProps(state) {
     selectedDocument: state.library.ui.get('selectedDocument'),
     filtersPanel: state.library.ui.get('filtersPanel'),
     searchTerm: state.library.ui.get('searchTerm'),
-    templates: state.library.filters.get('templates'),
+    templates: state.get('templates'),
     metadata: state.library.metadata,
     metadataForm: state.library.metadataForm,
     search: state.search

@@ -11,7 +11,8 @@ import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
 
 describe('Library', () => {
-  let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2};
+  let aggregations = {buckets: []};
+  let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2, aggregations};
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
   let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
   let component;
@@ -27,7 +28,7 @@ describe('Library', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'search?prop1=prop1&filters=%7B%7D&types=%5B%5D', 'GET', {body: JSON.stringify(documents)})
+    .mock(APIURL + 'search?prop1=prop1&aggregations=%5B%5D&filters=%7B%7D&types=%5B%5D', 'GET', {body: JSON.stringify(documents)})
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
     .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify(thesauris)});
   });
@@ -50,9 +51,10 @@ describe('Library', () => {
       Library.requestState()
       .then((state) => {
         expect(state.library.documents).toEqual(documents);
-        expect(state.library.filters.templates).toEqual(templates.rows);
+        expect(state.library.aggregations).toEqual(aggregations);
+        expect(state.templates).toEqual(templates.rows);
         expect(state.library.filters.documentTypes).toEqual([]);
-        expect(state.library.filters.thesauris).toEqual(thesauris.rows);
+        expect(state.thesauris).toEqual(thesauris.rows);
         done();
       })
       .catch(done.fail);
@@ -61,7 +63,7 @@ describe('Library', () => {
     it('should request the templates', (done) => {
       Library.requestState()
       .then((state) => {
-        expect(state.library.filters.templates).toEqual(templates.rows);
+        expect(state.templates).toEqual(templates.rows);
         done();
       })
       .catch(done.fail);
@@ -71,16 +73,17 @@ describe('Library', () => {
   describe('setReduxState()', () => {
     beforeEach(() => {
       spyOn(libraryActions, 'setTemplates');
-      instance.setReduxState({library: {documents, filters: {templates: templates.rows, thesauris: thesauris.rows}}});
+      instance.setReduxState({library: {documents, aggregations}, templates: templates.rows, thesauris: thesauris.rows});
     });
 
-    it('should call setDocuments with the documents', () => {
+    it('should call set the documents and aggregations', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'library/aggregations/SET', value: aggregations});
     });
 
-    it('should call setTemplates with the templates and thesauris', () => {
-      expect(libraryActions.setTemplates)
-      .toHaveBeenCalledWith(templates.rows, thesauris.rows);
+    it('should set templates and thesauris', () => {
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: templates.rows});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: thesauris.rows});
     });
   });
 });

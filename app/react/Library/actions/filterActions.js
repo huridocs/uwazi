@@ -2,6 +2,8 @@ import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
+import api from 'app/Search/SearchAPI';
+import {actions} from 'app/BasicReducer';
 
 function updateModelFilters(dispatch, getState, libraryFilters) {
   let previousModelFilters = getState().search.filters;
@@ -18,14 +20,26 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
 
 export function filterDocumentTypes(documentTypes) {
   return function (dispatch, getState) {
-    let state = getState().library.filters.toJS();
+    let state = getState();
 
-    let templates = state.templates;
-    let thesauris = state.thesauris;
+    let templates = state.templates.toJS();
+    let thesauris = state.thesauris.toJS();
 
-    let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes, thesauris);
+    let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
+
+    let aggregations = libraryFilters
+    .filter((property) => property.type === 'select' || property.type === 'multiselect')
+    .map((property) => property.name);
+
+    libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
     updateModelFilters(dispatch, getState, libraryFilters);
+
+    let search = Object.assign({aggregations, types: documentTypes}, state.search);
+    api.search(search)
+    .then((response) => {
+      dispatch(actions.set('library/aggregations', response.aggregations || []));
+    });
   };
 }
 

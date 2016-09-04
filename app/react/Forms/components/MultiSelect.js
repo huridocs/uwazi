@@ -55,7 +55,6 @@ export class MultiSelect extends Component {
     }
 
     if (!this.state.showAll && options.length > this.optionsToShow) {
-
       options.sort((a, b) => {
         let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
         if (sorting === 0) {
@@ -87,7 +86,7 @@ export class MultiSelect extends Component {
         </ShowIf>
       </li>
         {options.map((option, index) => {
-          return <li className="multiselectItem" key={index} title={option[optionsValue]}>
+          return <li className="multiselectItem" key={index} title={option[optionsLabel]}>
             <input
               type='checkbox'
               className="multiselectItem-input"
@@ -101,7 +100,10 @@ export class MultiSelect extends Component {
               htmlFor={prefix + option[optionsValue]}>
                 <i className="multiselectItem-icon fa fa-square"></i>
                 <i className="multiselectItem-icon fa fa-check-square"></i>
-                <span>{option[optionsLabel]}</span>
+                <span>{option[optionsLabel]}&nbsp;</span>
+                <ShowIf if={typeof option.results !== 'undefined'}>
+                  <span className="results">({option.results} of {option.total})</span>
+                </ShowIf>
             </label>
           </li>;
         })}

@@ -13,7 +13,6 @@ export default function () {
         ]
       }
     },
-    sort: [],
     filter: {
       bool: {
         must: [
@@ -21,8 +20,22 @@ export default function () {
         ]
       }
     },
+    sort: [],
     aggregations: {
-
+      types: {
+        terms: {field: 'doc.template.raw'},
+        aggregations: {
+          filtered: {
+            filter: {
+              bool: {
+                must: [
+                  {match: {'doc.published': true}}
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   };
 
@@ -53,46 +66,57 @@ export default function () {
 
     filterMetadata(filters = {}) {
       Object.keys(filters).forEach((property) => {
+        let match = {};
         if (filters[property].type === 'text') {
-          let match = {};
-          match[`doc.metadata.${property}`] = filters[property].value;
-          baseQuery.filter.bool.must.push({match});
+          match.match = {};
+          match.match[`doc.metadata.${property}`] = filters[property].value;
         }
 
         if (filters[property].type === 'range') {
-          let range = {};
-          range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
-          baseQuery.filter.bool.must.push({range});
+          match.range = {};
+          match.range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
         }
 
         if (filters[property].type === 'multiselect') {
-          let terms = {};
-          terms[`doc.metadata.${property}`] = filters[property].value;
-          baseQuery.query.bool.must.push({terms});
+          let values = filters[property].value;
+          match.terms = {};
+          match.terms[`doc.metadata.${property}.raw`] = values;
         }
+
+        baseQuery.filter.bool.must.push(match);
+        baseQuery.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });
       return this;
     },
 
     aggregations(properties) {
       properties.forEach((property) => {
-        baseQuery.aggregations[property] = {terms: {field: `doc.metadata.${property}.raw`}};
-      });
+        let key = `doc.metadata.${property}.raw`;
+        let filters = baseQuery.filter.bool.must.filter((match) => {
+          return !match.terms || (match.terms && !match.terms[key]);
+        });
 
+        baseQuery.aggregations[property] = {
+          terms: {
+            field: key
+          },
+          aggregations: {
+            filtered: {
+              filter: {
+                bool: {
+                  must: filters
+                }
+              }
+            }
+          }
+        };
+      });
       return this;
     },
 
     filterByTemplate(templates = []) {
       if (templates.length) {
-        let match = {bool: {
-          should: [],
-          minimum_should_match: 1
-        }};
-
-        templates.forEach((templateId) => {
-          match.bool.should.push({match: {'doc.template': templateId}});
-        });
-
+        let match = {terms: {'doc.template.raw': templates}};
         baseQuery.filter.bool.must.push(match);
       }
       return this;

@@ -4,13 +4,13 @@ import {bindActionCreators} from 'redux';
 import {saveEntity} from 'app/Library/actions/libraryActions';
 import {actions, MetadataForm} from 'app/Metadata';
 
-function mapStateToProps({library}) {
+function mapStateToProps(state) {
   return {
     model: 'library.metadata',
-    metadata: library.metadata,
-    state: library.metadataForm,
-    templates: library.filters.get('templates'),
-    thesauris: library.filters.get('thesauris')
+    metadata: state.library.metadata,
+    state: state.library.metadataForm,
+    templates: state.templates,
+    thesauris: state.thesauris
   };
 }
 
