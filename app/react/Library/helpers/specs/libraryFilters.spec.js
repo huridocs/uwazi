@@ -77,7 +77,7 @@ describe('library helper', () => {
             key: 1,
             doc_count: 4,
             filtered: {doc_count: 2}
-          }],
+          }]
         }
       };
 
