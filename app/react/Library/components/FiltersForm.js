@@ -20,7 +20,8 @@ export class FiltersForm extends Component {
 
   render() {
     let fields = this.props.fields.toJS();
-    fields = libraryHelper.parseWithAggregations(fields, this.props.aggregations.toJS());
+    fields = libraryHelper.parseWithAggregations(fields, this.props.aggregations.toJS())
+    .filter((field) => (field.type !== 'select' && field.type !== 'multiselect') || field.options.length);
     return (
       <div className="filters-box">
         {(() => {

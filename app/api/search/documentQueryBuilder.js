@@ -9,15 +9,13 @@ export default function () {
     query: {
       bool: {
         must: [
-          {match_all: {}}
+          {match: {'doc.published': true}}
         ]
       }
     },
     filter: {
       bool: {
-        must: [
-          {match: {'doc.published': true}}
-        ]
+        must: []
       }
     },
     sort: [],
@@ -28,9 +26,7 @@ export default function () {
           filtered: {
             filter: {
               bool: {
-                must: [
-                  {match: {'doc.published': true}}
-                ]
+                must: []
               }
             }
           }

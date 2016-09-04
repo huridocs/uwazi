@@ -102,7 +102,11 @@ export class MultiSelect extends Component {
                 <i className="multiselectItem-icon fa fa-check-square"></i>
                 <span>{option[optionsLabel]}&nbsp;</span>
                 <ShowIf if={typeof option.results !== 'undefined'}>
-                  <span className="results">({option.results} of {option.total})</span>
+                  <span className="results">({option.results}
+                    <ShowIf if={option.results != option.total}>
+                     <span>&nbsp;of {option.total}</span>
+                    </ShowIf>
+                  )</span>
                 </ShowIf>
             </label>
           </li>;

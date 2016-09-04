@@ -5,8 +5,7 @@ describe('documentQueryBuilder', () => {
 
   describe('default query', () => {
     it('should do a match all on published documents', () => {
-      expect(queryBuilder().query().query.bool.must[0]).toEqual({match_all: {}});
-      expect(queryBuilder().query().filter.bool.must[0]).toEqual({match: {'doc.published': true}});
+      expect(queryBuilder().query().query.bool.must[0]).toEqual({match: {'doc.published': true}});
     });
   });
 
@@ -25,28 +24,18 @@ describe('documentQueryBuilder', () => {
   describe('filterMetadata', () => {
     it('should add filter conditions', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: 'value1', type: 'text'}, property2:  {value: 'value2', type: 'text'}}).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({match: {'doc.published': true}});
-      expect(baseQuery.filter.bool.must[1]).toEqual({match: {'doc.metadata.property1': 'value1'}});
-      expect(baseQuery.filter.bool.must[2]).toEqual({match: {'doc.metadata.property2': 'value2'}});
+      expect(baseQuery.filter.bool.must[0]).toEqual({match: {'doc.metadata.property1': 'value1'}});
+      expect(baseQuery.filter.bool.must[1]).toEqual({match: {'doc.metadata.property2': 'value2'}});
     });
 
     it('should filter range filters', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: {from: 10, to: 20}, type: 'range'}}).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({match: {'doc.published': true}});
-      expect(baseQuery.filter.bool.must[1]).toEqual({range: {'doc.metadata.property1': {gte: 10, lte: 20}}});
+      expect(baseQuery.filter.bool.must[0]).toEqual({range: {'doc.metadata.property1': {gte: 10, lte: 20}}});
     });
 
     it('should filter multiselect filters', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: [23, 4, 16], type: 'multiselect'}}).query();
-      expect(baseQuery.filter.bool.must[1]).toEqual({terms: {'doc.metadata.property1.raw': [23, 4, 16]}});
-    });
-
-    describe('when there is no filters', () => {
-      it('should add filter conditions', () => {
-        let baseQuery = queryBuilder().filterMetadata().query();
-        expect(baseQuery.filter.bool.must[0]).toEqual({match: {'doc.published': true}});
-        expect(baseQuery.filter.bool.must.length).toBe(1);
-      });
+      expect(baseQuery.filter.bool.must[0]).toEqual({terms: {'doc.metadata.property1.raw': [23, 4, 16]}});
     });
   });
 
@@ -54,7 +43,7 @@ describe('documentQueryBuilder', () => {
     it('should add a match to get only documents that match with the templates', () => {
       let baseQuery = queryBuilder().filterByTemplate(['template1', 'template2']).query();
       let expectedMatcher = {terms: {'doc.template.raw': ['template1', 'template2']}};
-      expect(baseQuery.filter.bool.must[1]).toEqual(expectedMatcher);
+      expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
     });
   });
 
@@ -70,9 +59,7 @@ describe('documentQueryBuilder', () => {
           filtered: {
             filter: {
               bool: {
-                must: [
-                  {match: {'doc.published': true}}
-                ]
+                must: []
               }
             }
           }
@@ -91,9 +78,7 @@ describe('documentQueryBuilder', () => {
           filtered: {
             filter: {
               bool: {
-                must: [
-                  {match: {'doc.published': true}}
-                ]
+                must: []
               }
             }
           }
