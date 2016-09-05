@@ -91,3 +91,81 @@
   right: -5px;
   top: -2px;
 }
+
+.well-metadata-creator {
+  margin: 20px 0 5px 0;
+  padding: 0 15px 0 12px;
+  background: #EEE;
+  border-color: #CCC;
+
+  label {
+    color: $c-black;
+  }
+
+  input, label {
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  small {
+    display: block;
+    opacity: 0.6;
+    line-height: 1.3em;
+    padding-left: 15px;
+  }
+
+  .col-sm-8 {
+    background: $c-white;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-left: 1px solid #CCC;
+
+    &.border-bottom {
+      border-bottom: 1px dashed #CCC;
+    }
+  }
+
+  .property-atributes {
+    opacity: 0.3;
+    cursor: pointer;
+    display: table;
+    width: 100%;
+    position: relative;
+    padding: 0;
+    border-radius: 3px;
+    font-weight: normal;
+    color: $c-primary;
+    &.is-active {
+      opacity: 1;
+    }
+
+    span {
+      margin: 0 5px;
+    }
+    span.conflict {
+      color: #86714A;
+    }
+    .fa {
+      margin-right: 5px;
+    }
+    .fa-angle-right {
+      margin: 0;
+    }
+    .fa-info-circle {
+      color: $c-grey;
+      margin: 0 8px 0 0;
+      font-size: $f-size-lg;
+      float: right;
+      transition: all 300ms;
+    }
+    &:hover > .fa-info-circle {
+      color: $c-black;
+    }
+  }
+
+  .tooltip.top {
+    right: 35px;
+    left: auto !important;
+    transform: translateX(50%);
+  }
+}

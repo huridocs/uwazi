@@ -51,7 +51,8 @@ export class FormConfigInput extends Component {
                   </div>;
           }
         })()}
-        <div className="well">
+
+        <div className="well well-metadata-creator">
           <div className="row">
             <div className="col-sm-4">
               <FormField model={`template.data.properties[${index}].filter`}>
@@ -65,11 +66,30 @@ export class FormConfigInput extends Component {
                 <i className="fa fa-question-circle"></i>
               </label>
             </div>
-            <div className="col-sm-8">
+            <div className="col-sm-8 border-bottom">
               <FilterSuggestions {...ptoperty} />
             </div>
           </div>
+
+          <div className="row">
+            <div className="col-sm-4">
+              <FormField model={`template.data.properties[${index}].showInCard`}>
+                <input id={'showInCard' + this.props.index} type="checkbox"/>
+              </FormField>
+              &nbsp;
+              <label htmlFor={'showInCard' + this.props.index}
+                     title="This property will appear in the library cards as part of the basic info.">
+                Show in cards
+                &nbsp;
+                <i className="fa fa-question-circle"></i>
+              </label>
+            </div>
+            <div className="col-sm-8">
+              Put here other 'show in card' properties?
+            </div>
+          </div>
         </div>
+
       </div>
     );
   }
