@@ -65,7 +65,6 @@ export function parseWithAggregations(filters, aggregations) {
 
         if (aggregation) {
           option.results = aggregation.filtered.doc_count;
-          option.total = aggregation.doc_count;
         }
 
         return option;

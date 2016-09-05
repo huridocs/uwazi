@@ -105,7 +105,7 @@ export class MultiSelect extends Component {
                 <span>{option[optionsLabel]}&nbsp;</span>
                 <ShowIf if={typeof option.results !== 'undefined'}>
                   <span className="results">({option.results}
-                    <ShowIf if={option.results !== option.total}>
+                    <ShowIf if={typeof option.total !== 'undefined' && option.results !== option.total}>
                      <span>&nbsp;of {option.total}</span>
                     </ShowIf>
                   )</span>
