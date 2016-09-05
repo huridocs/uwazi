@@ -4,6 +4,7 @@ import DateRange from './components/DateRange';
 import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
+import MarkDown from './components/MarkDown';
 
 export {
   Select,
@@ -13,5 +14,6 @@ export {
   DatePicker,
   DatePickerField,
   DateRange,
-  MultiSelect
+  MultiSelect,
+  MarkDown
 };

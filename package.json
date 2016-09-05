@@ -49,6 +49,8 @@
     "jsesc": "^1.0.0",
     "json-loader": "^0.5.4",
     "jvent": "^0.2.0",
+    "markdown-js": "0.0.3",
+    "marked": "^0.3.6",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "multer": "^1.1.0",

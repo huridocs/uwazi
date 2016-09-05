@@ -3,5 +3,6 @@ export default {
   select: 'fa fa-sort',
   multiselect: 'fa fa-list',
   date: 'fa fa-calendar',
-  text: 'fa fa-font'
+  text: 'fa fa-font',
+  markdown: 'fa fa-code'
 };

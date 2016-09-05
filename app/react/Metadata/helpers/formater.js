@@ -51,6 +51,10 @@ export default {
     return {label: property.label, value: values};
   },
 
+  markdown(property, value) {
+    return {label: property.label, markdown: value}
+  },
+
   prepareMetadata(doc, templates, thesauris) {
     let template = templates.find(t => t._id === doc.template);
 
@@ -71,6 +75,10 @@ export default {
 
       if (property.type === 'date' && value) {
         return this.date(property, value);
+      }
+
+      if (property.type === 'markdown'&& value) {
+        return this.markdown(property, value);
       }
 
       return {label: property.label, value};
