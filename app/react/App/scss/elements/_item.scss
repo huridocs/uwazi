@@ -165,9 +165,12 @@ $item-padding: 10px;
   }
   dt {
     width: 100px;
+    font-style: normal;
+    color: #999;
   }
   dd {
     width: $item-width - 100px;
+    margin-left: 10px;
   }
 }
 
