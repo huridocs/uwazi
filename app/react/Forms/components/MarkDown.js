@@ -7,16 +7,18 @@ export class MarkDown extends Component {
 
   render() {
     return (
-        <Tabs>
-          <TabLink to="edit" default>Edit</TabLink>
-          <TabLink to="preview">Preview</TabLink>
+        <Tabs className="markdownEditor">
+          <div className="tab-nav">
+            <TabLink to="edit" default>Edit</TabLink>
+            <TabLink to="preview">Preview</TabLink>
+            <a className="tab-link tab-link--help" href="https://guides.github.com/features/mastering-markdown/" target="_blank">help</a>
+          </div>
           <TabContent for="edit">
-            <textarea className="form-control" onChange={this.props.onChange} value={this.props.value}/>
+            <textarea className="form-control" rows="6" onChange={this.props.onChange} value={this.props.value}/>
           </TabContent>
-          <TabContent for="preview">
+          <TabContent for="preview" className="markdownViewer">
             <div dangerouslySetInnerHTML={{__html: marked(this.props.value, {sanitize: true})}}></div>
           </TabContent>
-          <a href="https://guides.github.com/features/mastering-markdown/" target="_blank">help</a>
         </Tabs>
     );
   }

@@ -1,0 +1,62 @@
+.markdownEditor {
+  position: relative;
+
+  textarea {
+    padding: 15px;
+    font-family: "Courier", monospace;
+  }
+  .tab-nav {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+  }
+  .tab-link {
+    display: inline-block;
+    padding: 5px 5px 0;
+    font-size: $f-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    color: $c-grey-dark;
+    border-bottom: 1px dotted $c-white;
+    &:hover {
+      text-decoration: none;
+      color: $c-black;
+      border-bottom: 1px dotted $c-black;
+    }
+    &.tab-link-active {
+      color: $c-primary;
+      font-weight: bold;
+      border-bottom: 1px solid $c-primary;
+    }
+  }
+}
+
+.markdownViewer {
+  h1 {
+    font-family: $f-regular !important;
+    font-weight: bold !important;
+    font-size: 24px !important;
+  }
+  h2 {
+    font-family: $f-regular;
+    font-weight: bold;
+    text-transform: none;
+    font-size: 22px;
+    padding-left: 0;
+    letter-spacing: 0;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  h1, h2, h3 {
+    margin: 10px 0;
+  }
+  blockquote {
+    font-size: $f-size;
+    font-style: italic;
+  }
+  img {
+    max-width: 100%;
+  }
+}
