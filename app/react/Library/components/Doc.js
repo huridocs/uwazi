@@ -2,8 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import UTCToLocal from 'app/Layout/UTCToLocal';
+import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
+import {formater} from 'app/Metadata';
 
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 
@@ -18,6 +19,43 @@ export class Doc extends Component {
 
   render() {
     let {title, _id, creationDate, template} = this.props.doc;
+
+    // TEST!!
+    let populatedMetadata = formater.prepareMetadata(this.props.doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
+    const templateData = this.props.templates.find(t => t.get('_id') === template);
+    const showInCardProperties = templateData.get('properties').filter(p => p.get('showInCard'));
+
+    const htmlMetadata = showInCardProperties.map((property, index) => {
+      let porpertyData = populatedMetadata.find(p => p.label === property.get('label')).value;
+      if (typeof porpertyData !== 'object') {
+        return (
+          <dl key={index}>
+            <dt>{property.get('label')}</dt>
+            <dd>{porpertyData}</dd>
+          </dl>
+        );
+      }
+
+      // if (typeof porpertyData === 'object' && porpertyData.length > 0) {
+      //   return porpertyData.map((propertyValue, subIndex) =>
+      //     <dl key={index + '-' + subIndex}>
+      //       <dt>{subIndex === 0 ? property.get('label') : ''}</dt>
+      //       <dd>{propertyValue.value}</dd>
+      //     </dl>
+      //   );
+      // }
+
+      if (typeof porpertyData === 'object' && porpertyData.length > 0) {
+        return (
+          <dl key={index}>
+            <dt>{property.get('label')}</dt>
+            <dd>{porpertyData.map(d => d.value).join(', ')}</dd>
+          </dl>
+        );
+      }
+    });
+    // -------
+
     let documentViewUrl = `/${this.props.doc.type}/${_id}`;
     let typeIndex = 'item-type item-type-0';
     let type = this.props.templates.toJS().reduce((result, templ, index) => {
@@ -47,9 +85,10 @@ export class Doc extends Component {
         </div>
         <div className="item-metadata">
             <dl>
-                <dt>Upload date</dt>
-                <dd><UTCToLocal utc={creationDate}/></dd>
+                <dt><i>Upload date</i></dt>
+                <dd><PrintDate utc={creationDate} toLocal={true} /></dd>
             </dl>
+            {htmlMetadata}
         </div>
         <ItemFooter>
           <span className={typeIndex}>
@@ -73,14 +112,16 @@ Doc.propTypes = {
   selectDocument: PropTypes.func,
   unselectDocument: PropTypes.func,
   creationDate: PropTypes.number,
-  templates: PropTypes.object
+  templates: PropTypes.object,
+  thesauris: PropTypes.object
 };
 
 
 export function mapStateToProps(state) {
   return {
     selectedDocument: state.library.ui.get('selectedDocument') ? state.library.ui.get('selectedDocument').get('_id') : '',
-    templates: state.templates
+    templates: state.templates,
+    thesauris: state.thesauris
   };
 }
 

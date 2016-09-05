@@ -13,7 +13,8 @@ describe('Doc', () => {
   beforeEach(() => {
     props = {
       doc: {_id: 'idOne', template: 'templateId'},
-      templates: Immutable.fromJS([{_id: 'idOne'}]),
+      templates: Immutable.fromJS([{_id: 'templateId', properties: []}]),
+      thesauris: Immutable.fromJS([]),
       selectDocument: jasmine.createSpy('selectDocument'),
       unselectDocument: jasmine.createSpy('unselectDocument')
     };
