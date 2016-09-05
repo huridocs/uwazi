@@ -12,3 +12,7 @@ echo -e "\ncreating blank state on ${1:-uwazi_development} database"
 sleep 1
 echo -e "\nreseting views on ${1:-uwazi_development} database"
 ./restore_views.sh
+
+echo "Restoring conversions...."
+rm ../conversions/*.json
+cp ./conversions/*.json ${2:-..}/conversions/
