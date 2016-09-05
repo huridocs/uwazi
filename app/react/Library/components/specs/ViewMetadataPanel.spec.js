@@ -69,8 +69,10 @@ describe('ViewMetadataPanel', () => {
         }),
         metadata: {},
         metadataForm: {},
-        filters: Immutable.fromJS({templates: ['templates'], thesauris: ['thesauris']})
-      }
+        filters: Immutable.fromJS({})
+      },
+      templates: Immutable.fromJS(['templates']),
+      thesauris: Immutable.fromJS(['thesauris'])
     };
 
     const mockStore = configureMockStore([]);
@@ -85,8 +87,8 @@ describe('ViewMetadataPanel', () => {
       renderContainer();
       expect(formater.prepareMetadata).toHaveBeenCalledWith(
         state.library.ui.get('selectedDocument').toJS(),
-        state.library.filters.get('templates').toJS(),
-        state.library.filters.get('thesauris').toJS()
+        ['templates'],
+        ['thesauris']
       );
     });
 

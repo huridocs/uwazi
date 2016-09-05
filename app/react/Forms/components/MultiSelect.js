@@ -54,17 +54,18 @@ export class MultiSelect extends Component {
       options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
     }
 
-    if (!this.state.showAll && options.length > this.optionsToShow) {
+    let tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
 
-      options.sort((a, b) => {
-        let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
-        if (sorting === 0) {
-          sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
-        }
+    options.sort((a, b) => {
+      let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+      if (!tooManyOptions || sorting === 0) {
+        sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
+      }
 
-        return sorting;
-      });
+      return sorting;
+    });
 
+    if (tooManyOptions) {
       let numberOfActiveOptions = options.filter((opt) => this.checked(opt[optionsValue])).length;
       let optionsToShow = this.optionsToShow > numberOfActiveOptions ? this.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
@@ -87,7 +88,7 @@ export class MultiSelect extends Component {
         </ShowIf>
       </li>
         {options.map((option, index) => {
-          return <li className="multiselectItem" key={index} title={option[optionsValue]}>
+          return <li className="multiselectItem" key={index} title={option[optionsLabel]}>
             <input
               type='checkbox'
               className="multiselectItem-input"
@@ -101,7 +102,14 @@ export class MultiSelect extends Component {
               htmlFor={prefix + option[optionsValue]}>
                 <i className="multiselectItem-icon fa fa-square"></i>
                 <i className="multiselectItem-icon fa fa-check-square"></i>
-                <span>{option[optionsLabel]}</span>
+                <span>{option[optionsLabel]}&nbsp;</span>
+                <ShowIf if={typeof option.results !== 'undefined'}>
+                  <span className="results">({option.results}
+                    <ShowIf if={typeof option.total !== 'undefined' && option.results !== option.total}>
+                     <span>&nbsp;of {option.total}</span>
+                    </ShowIf>
+                  )</span>
+                </ShowIf>
             </label>
           </li>;
         })}

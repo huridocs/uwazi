@@ -7,23 +7,28 @@ import {FormField, MultiSelect, DateRange} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
+import libraryHelper from 'app/Library/helpers/libraryFilters';
+import {store} from 'app/store';
 
 export class FiltersForm extends Component {
 
+  onChange(e) {
+    if (e.target.type === 'checkbox') {
+      this.props.searchDocuments(store.getState().search);
+    }
+  }
+
   render() {
     let fields = this.props.fields.toJS();
+    fields = libraryHelper.parseWithAggregations(fields, this.props.aggregations.toJS())
+    .filter((field) => (field.type !== 'select' && field.type !== 'multiselect') || field.options.length);
     return (
       <div className="filters-box">
         {(() => {
           let documentTypes = this.props.documentTypes.toJS();
           let templates = this.props.templates.toJS();
-          let activeTypes = templates.reduce((result, template) => {
-            if (documentTypes.includes(template._id)) {
-              result.push(template.name);
-            }
-            return result;
-          }, []);
-          let formatedTypes = activeTypes.join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
+          let activeTypes = templates.filter((template) => documentTypes.includes(template._id));
+          let formatedTypes = activeTypes.map((template) => template.name).join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
 
           if (documentTypes.length === 0) {
             return <div className="empty-state select-type">
@@ -50,13 +55,13 @@ export class FiltersForm extends Component {
                   </div>;
           }
         })()}
-        <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments}>
+        <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments} onChange={this.onChange.bind(this)}>
         {fields.map((property, index) => {
           let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
           if (property.type === 'select' || property.type === 'multiselect') {
             return (
               <FormGroup key={index}>
-                <FormField model={`search.filters.${property.name}`} >
+                <FormField model={`search.filters.${property.name}`}>
                   <ul className={propertyClass}>
                     <li>
                       {property.label}
@@ -123,6 +128,7 @@ export class FiltersForm extends Component {
 
 FiltersForm.propTypes = {
   templates: PropTypes.object,
+  aggregations: PropTypes.object,
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,
   toggleFilter: PropTypes.func,
@@ -134,7 +140,8 @@ FiltersForm.propTypes = {
 export function mapStateToProps(state) {
   return {
     fields: state.library.filters.get('properties'),
-    templates: state.library.filters.get('templates'),
+    aggregations: state.library.aggregations,
+    templates: state.templates,
     search: state.search,
     documentTypes: state.library.filters.get('documentTypes')
   };

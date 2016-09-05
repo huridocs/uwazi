@@ -77,10 +77,10 @@ Doc.propTypes = {
 };
 
 
-export function mapStateToProps({library}) {
+export function mapStateToProps(state) {
   return {
-    selectedDocument: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') : '',
-    templates: library.filters.get('templates')
+    selectedDocument: state.library.ui.get('selectedDocument') ? state.library.ui.get('selectedDocument').get('_id') : '',
+    templates: state.templates
   };
 }
 

@@ -4,6 +4,7 @@ import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import entities from 'app/Entities';
+import {actions} from 'app/BasicReducer';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -32,10 +33,8 @@ export function setDocuments(docs) {
 }
 
 export function setTemplates(templates, thesauris) {
-  return function (dispatch, getState) {
-    let filtersState = getState().library.filters.toJS();
-    let libraryFilters = filtersState.properties;
-    dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters});
+  return function (dispatch) {
+    dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris});
   };
 }
 
@@ -65,6 +64,9 @@ export function getDocumentsByFilter(readOnlySearch, limit, getState) {
   let documentTypes = state.documentTypes;
 
   let search = Object.assign({}, readOnlySearch);
+  search.aggregations = state.properties
+  .filter((property) => property.type === 'select' || property.type === 'multiselect')
+  .map((property) => property.name);
 
   search.filters = {};
   properties.forEach((property) => {
@@ -89,8 +91,9 @@ export function getDocumentsByFilter(readOnlySearch, limit, getState) {
 export function searchDocuments(readOnlySearch, limit) {
   return function (dispatch, getState) {
     return getDocumentsByFilter(readOnlySearch, limit, getState)
-    .then((docs) => {
-      dispatch(setDocuments(docs));
+    .then((response) => {
+      dispatch(actions.set('library/aggregations', response.aggregations));
+      dispatch(setDocuments({rows: response.rows}));
       dispatch(hideSuggestions());
     });
   };

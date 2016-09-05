@@ -15,6 +15,7 @@ describe('FiltersForm', () => {
       fields: Immutable.fromJS([{author: {initialValue: 'Philip K. Dick'}}]),
       documentTypes: Immutable.fromJS({}),
       templates: Immutable.fromJS([]),
+      aggregations: Immutable.fromJS({}),
       search: {searchTerm: 'Batman'}
     };
     component = shallow(<FiltersForm {...props}/>);

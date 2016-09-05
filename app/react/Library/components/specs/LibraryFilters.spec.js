@@ -11,9 +11,10 @@ describe('LibraryFilters', () => {
   let props;
 
   beforeEach(() => {
-    templates = [{name: 'Decision'}, {name: 'Ruling'}];
+    templates = [{name: 'decision'}, {name: 'ruling'}];
     props = {
       templates,
+      aggregations: {types: {buckets: [{key: 'decision', doc_count: 2}]}},
       documentTypes: [],
       searchTerm: 'Bruce Wayne',
       form: {isBatman: {value: true}},
@@ -33,11 +34,20 @@ describe('LibraryFilters', () => {
       let store = {
         library: {
           filters: Immutable.fromJS({properties: 'filters state', documentTypes: ['Decision']}),
-          ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true})
-        }
+          ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true}),
+          aggregations: Immutable.fromJS({types: {buckets: []}})
+        },
+        templates: Immutable.fromJS([])
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({properties: 'filters state', searchTerm: 'Zerg Rush', documentTypes: ['Decision'], open: true});
+      expect(state).toEqual({
+        properties: 'filters state',
+        searchTerm: 'Zerg Rush',
+        documentTypes: ['Decision'],
+        open: true,
+        templates: [],
+        aggregations: {types: {buckets: []}}
+      });
     });
   });
 });

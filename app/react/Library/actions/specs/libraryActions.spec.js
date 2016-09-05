@@ -17,6 +17,7 @@ const mockStore = configureMockStore(middlewares);
 
 describe('libraryActions', () => {
   let documentCollection = [{name: 'Secret list of things'}];
+  let aggregations = [{prop: {buckets: []}}];
   let templates = [{name: 'Decision'}, {name: 'Ruling'}];
   let thesauris = [{_id: 'abc1'}];
 
@@ -47,8 +48,8 @@ describe('libraryActions', () => {
       actions.setTemplates(templates, thesauris)(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_TEMPLATES,
-        templates, thesauris,
-        libraryFilters: ['library properties']
+        templates,
+        thesauris
       });
     });
   });
@@ -96,13 +97,15 @@ describe('libraryActions', () => {
       .mock(APIURL + 'search/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
       .mock(APIURL + 'search?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
       .mock(APIURL +
-        'search?searchTerm=batman&' +
-        'filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D&types=%5B%22decision%22%5D',
+        'search?searchTerm=batman' +
+        '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D' +
+        '&aggregations=%5B%5D' +
+        '&types=%5B%22decision%22%5D',
         'get',
-        {body: JSON.stringify(documentCollection)}
+        {body: JSON.stringify({rows: documentCollection, aggregations})}
       )
-      .mock(APIURL + 'search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D', 'get',
-            {body: JSON.stringify(documentCollection)});
+      .mock(APIURL + 'search?searchTerm=batman&filters=%7B%7D&aggregations=%5B%5D&types=%5B%22decision%22%5D', 'get',
+            {body: JSON.stringify({rows: documentCollection, aggregations})});
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -119,11 +122,16 @@ describe('libraryActions', () => {
       it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL +
-            'search?searchTerm=batman' +
-            '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D&types=%5B%22decision%22%5D'))
-          .toBe(true);
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: {rows: documentCollection}});
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('set the response aggregations result ', (done) => {
+        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: 'library/aggregations/SET', value: aggregations});
           done();
         })
         .catch(done.fail);
@@ -134,8 +142,7 @@ describe('libraryActions', () => {
         store.library.filters = Immutable.fromJS(state);
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
         .then(() => {
-          expect(backend.called(APIURL + 'search?searchTerm=batman&filters=%7B%7D&types=%5B%22decision%22%5D')).toBe(true);
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: documentCollection});
+          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: {rows: documentCollection}});
           done();
         })
         .catch(done.fail);

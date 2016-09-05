@@ -17,6 +17,9 @@ export default (app) => {
     if (req.query.fields) {
       req.query.fields = JSON.parse(req.query.fields);
     }
+    if (req.query.aggregations) {
+      req.query.aggregations = JSON.parse(req.query.aggregations);
+    }
     return search.search(req.query)
     .then(results => res.json(results));
   });
