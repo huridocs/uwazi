@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
+import marked from 'marked';
 
 export class ShowMetadata extends Component {
   render() {
@@ -34,6 +35,9 @@ export class ShowMetadata extends Component {
                               return <li key={indx}>{value.value}</li>;
                             })}
                            </ul>;
+                  }
+                  if (property.markdown) {
+                    return <div dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>
                   }
                   return property.value;
                 })()}

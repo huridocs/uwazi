@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import marked from 'marked';
 
 import {formater} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
@@ -33,7 +34,14 @@ export class EntityViewer extends Component {
         return (
           <dl key={index}>
             <dt>{property.label}</dt>
-            <dd>{property.value}</dd>
+            <dd>
+            {(() => {
+              if (property.markdown) {
+                return <div dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>
+              }
+              return property.value;
+            })()}
+            </dd>
           </dl>
           );
       })}
