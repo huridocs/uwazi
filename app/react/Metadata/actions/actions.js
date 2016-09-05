@@ -15,7 +15,6 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 
     let template = templates.find((t) => t._id === entity.template);
     template.properties.forEach((property) => {
-      console.log(property);
       if (!entity.metadata[property.name] && property.type !== 'date') {
         entity.metadata[property.name] = '';
       }

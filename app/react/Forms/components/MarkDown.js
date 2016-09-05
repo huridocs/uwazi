@@ -14,7 +14,7 @@ export class MarkDown extends Component {
             <textarea className="form-control" onChange={this.props.onChange} value={this.props.value}/>
           </TabContent>
           <TabContent for="preview">
-            <div dangerouslySetInnerHTML={{__html: marked(this.props.value)}}></div>
+            <div dangerouslySetInnerHTML={{__html: marked(this.props.value, {sanitize: true})}}></div>
           </TabContent>
           <a href="https://guides.github.com/features/mastering-markdown/" target="_blank">help</a>
         </Tabs>

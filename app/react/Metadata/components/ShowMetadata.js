@@ -22,7 +22,6 @@ export class ShowMetadata extends Component {
                 <dt>{property.label}</dt>
                 <dd>
                 {(() => {
-                  console.log(property);
                   if (property.url) {
                     return <Link to={property.url}>{property.value}</Link>;
                   }
@@ -38,7 +37,7 @@ export class ShowMetadata extends Component {
                            </ul>;
                   }
                   if (property.markdown) {
-                    return <div dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>
+                    return <div dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>
                   }
                   return property.value;
                 })()}
