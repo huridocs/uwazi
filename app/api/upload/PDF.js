@@ -115,7 +115,10 @@ export default class PDF extends EventEmitter {
           let conversionObject = {};
 
           readMultipleFiles(orderedPageFiles, 'utf8', (error, pages) => {
-            fs.readFile(destination + 'custom.css', 'utf8', (cssError, css) => {
+            fs.readFile(destination + 'custom.css', 'utf8', (cssError, css = '') => {
+              if (cssError) {
+                reject(cssError);
+              }
               conversionObject.css = css.split('\n').filter((line) => !line.match('@font-face')).join('\n');
               conversionObject.fonts = css.split('\n').filter((line) => line.match('@font-face')).join('\n');
               conversionObject.pages = pages;

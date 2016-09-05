@@ -204,11 +204,11 @@ export default {
       docsToDelete = docsToDelete.concat(response.json.rows);
       return request.get(`${dbURL}/_design/references/_view/by_target?key="${id}"`);
     })
-    .then((response) => {
-      sanitizeResponse(response.json);
-      docsToDelete = docsToDelete.concat(response.json.rows);
-      return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
-    })
+    //.then((response) => {
+      //sanitizeResponse(response.json);
+      //docsToDelete = docsToDelete.concat(response.json.rows);
+      //return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
+    //})
     .then((response) => {
       sanitizeResponse(response.json);
       docsToDelete = docsToDelete.concat(response.json.rows);
