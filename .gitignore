@@ -7,6 +7,8 @@ coverage
 *.log
 npm-debug
 uploads/*
+uwazi-fixtures
+conversions/*.json
 app/api/upload/specs/uploads/*
 uploaded_documents/*
 !uploads/index.html

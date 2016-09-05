@@ -137,21 +137,37 @@ export default {
   },
 
   getHTML(documentId) {
-    return request.get(`${dbURL}/_design/documents/_view/conversions?key="${documentId}"`)
-    .then((response) => {
-      let conversion = response.json.rows[0].value;
-      if (conversion.css) {
-        conversion.css = conversion.css.replace(/(\..*?){/g, '._' + conversion.document + ' $1{');
-      }
-      return conversion;
+    let path = `${__dirname}/../../../conversions/${documentId}.json`;
+    return new Promise((resolve, reject) => {
+      fs.readFile(path, (err, conversionJSON) => {
+        if (err) {
+          reject(err);
+        }
+
+        try {
+          let conversion = JSON.parse(conversionJSON);
+          if (conversion.css) {
+            conversion.css = conversion.css.replace(/(\..*?){/g, '._' + documentId + ' $1 {');
+          }
+          resolve(conversion);
+        } catch (e) {
+          reject(e);
+        }
+      });
     });
   },
 
   saveHTML(conversion) {
     conversion.type = 'conversion';
-    return request.post(dbURL, conversion)
-    .then((response) => {
-      return response.json;
+    let path = `${__dirname}/../../../conversions/${conversion.document}.json`;
+    return new Promise((resolve, reject) => {
+      fs.writeFile(path, JSON.stringify(conversion), (err) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(path);
+      });
     });
   },
 
@@ -188,11 +204,11 @@ export default {
       docsToDelete = docsToDelete.concat(response.json.rows);
       return request.get(`${dbURL}/_design/references/_view/by_target?key="${id}"`);
     })
-    .then((response) => {
-      sanitizeResponse(response.json);
-      docsToDelete = docsToDelete.concat(response.json.rows);
-      return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
-    })
+    //.then((response) => {
+      //sanitizeResponse(response.json);
+      //docsToDelete = docsToDelete.concat(response.json.rows);
+      //return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
+    //})
     .then((response) => {
       sanitizeResponse(response.json);
       docsToDelete = docsToDelete.concat(response.json.rows);

@@ -167,13 +167,13 @@ describe('PDF', function () {
       pdf = new PDFObject(filepath);
     });
 
-    afterEach((done) => {
-      if (pdf.optimizedPath) {
-        fs.unlink(pdf.optimizedPath, done);
-      } else {
-        done();
-      }
-    });
+    //afterEach((done) => {
+      //if (pdf.optimizedPath) {
+        //fs.unlink(pdf.optimizedPath, done);
+      //} else {
+        //done();
+      //}
+    //});
 
     it('should optimize and extract html and text', (done) => {
       pdf.convert()
@@ -189,7 +189,7 @@ describe('PDF', function () {
 
     describe('when there is a conversion error', () => {
       it('should throw a conversion_error', (done) => {
-        spyOn(pdf, 'optimize').and.returnValue(Promise.reject());
+        spyOn(pdf, 'extractText').and.returnValue(Promise.reject());
         pdf.convert()
         .then(() => {
           done.fail('should have thrown a conversion_error');
