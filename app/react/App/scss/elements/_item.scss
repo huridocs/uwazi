@@ -7,7 +7,7 @@
   margin: auto;
 
   .document-viewer & {
-    justify-content: space-between;
+    justify-content: flex-start;
     margin: 0 auto;
   }
 }
@@ -28,11 +28,19 @@
   opacity: 1;
   zoom: 1;
 
-  @media (min-width: 640px) {
+  @media (min-width: 640px) and (max-width: 1023px) {
     width: 48%;
+    margin: 0 0 4%;
+    &:not(:nth-child(2n)) {
+      margin-right: 4%;
+    }
   }
   @media (min-width: 1024px) {
     width: 32.5%;
+    margin: 0 0 1.25%;
+    &:not(:nth-child(3n)) {
+      margin-right: 1.25%;
+    }
   }
 
   &:before {
