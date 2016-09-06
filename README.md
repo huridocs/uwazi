@@ -56,6 +56,11 @@
       ```
 
 - **pdf2htmlEX**
+    - OSX
+
+      ```
+      $ brew install pdf2htmlex
+      ```
     - Ubuntu
 
       ```
