@@ -78,8 +78,8 @@ export default {
         return this.date(property, value, showInCard);
       }
 
-      if (property.type === 'markdown'&& value) {
-        return this.markdown(property, value, showIncard);
+      if (property.type === 'markdown' && value) {
+        return this.markdown(property, value, showInCard);
       }
 
       return {label: property.label, value, showInCard};
