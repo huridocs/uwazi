@@ -17,45 +17,23 @@ export class Doc extends Component {
     this.props.selectDocument(this.props.doc);
   }
 
+  formatMetadata(populatedMetadata, creationDate) {
+    let metadata = populatedMetadata.filter(p => p.showInCard && (p.value && p.value.length > 0)).map((property, index) => {
+      return (
+        <dl key={index}>
+          <dt>{property.label}</dt>
+          <dd>{typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ')}</dd>
+        </dl>
+      );
+    });
+
+    let creationMetadata = <dl><dt><i>Upload date</i></dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
+
+    return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
+  }
+
   render() {
     let {title, _id, creationDate, template} = this.props.doc;
-
-    // TEST!!
-    let populatedMetadata = formater.prepareMetadata(this.props.doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
-    const templateData = this.props.templates.find(t => t.get('_id') === template);
-    const showInCardProperties = templateData.get('properties').filter(p => p.get('showInCard'));
-
-    const htmlMetadata = showInCardProperties.map((property, index) => {
-      let porpertyData = populatedMetadata.find(p => p.label === property.get('label')).value;
-      if (typeof porpertyData !== 'object') {
-        return (
-          <dl key={index}>
-            <dt>{property.get('label')}</dt>
-            <dd>{porpertyData}</dd>
-          </dl>
-        );
-      }
-
-      // if (typeof porpertyData === 'object' && porpertyData.length > 0) {
-      //   return porpertyData.map((propertyValue, subIndex) =>
-      //     <dl key={index + '-' + subIndex}>
-      //       <dt>{subIndex === 0 ? property.get('label') : ''}</dt>
-      //       <dd>{propertyValue.value}</dd>
-      //     </dl>
-      //   );
-      // }
-
-      if (typeof porpertyData === 'object' && porpertyData.length > 0) {
-        return (
-          <dl key={index}>
-            <dt>{property.get('label')}</dt>
-            <dd>{porpertyData.map(d => d.value).join(', ')}</dd>
-          </dl>
-        );
-      }
-    });
-    // -------
-
     let documentViewUrl = `/${this.props.doc.type}/${_id}`;
     let typeIndex = 'item-type item-type-0';
     let type = this.props.templates.toJS().reduce((result, templ, index) => {
@@ -78,17 +56,16 @@ export class Doc extends Component {
       className = 'item-entity';
     }
 
+    const populatedMetadata = formater.prepareMetadata(this.props.doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
+    const metadata = this.formatMetadata(populatedMetadata, creationDate);
+
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
         <div className="item-info">
           <ItemName>{title}</ItemName>
         </div>
         <div className="item-metadata">
-            <dl>
-                <dt><i>Upload date</i></dt>
-                <dd><PrintDate utc={creationDate} toLocal={true} /></dd>
-            </dl>
-            {htmlMetadata}
+          {metadata}
         </div>
         <ItemFooter>
           <span className={typeIndex}>
@@ -111,7 +88,6 @@ Doc.propTypes = {
   selectedDocument: PropTypes.string,
   selectDocument: PropTypes.func,
   unselectDocument: PropTypes.func,
-  creationDate: PropTypes.number,
   templates: PropTypes.object,
   thesauris: PropTypes.object
 };
