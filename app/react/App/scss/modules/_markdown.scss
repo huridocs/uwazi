@@ -60,3 +60,13 @@
     max-width: 100%;
   }
 }
+
+.panel-body {
+  .markdownEditor {
+    margin-top: 15px;
+  }
+  .tab-link {
+    padding: 15px 15px 0;
+    font-size: $f-size-sm;
+  }
+}
