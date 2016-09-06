@@ -164,12 +164,13 @@ $item-padding: 10px;
     font-size: $f-size-sm;
   }
   dt {
-    width: 100px;
+    min-width: 90px;
     font-style: normal;
-    color: #999;
+    color: $c-grey;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   dd {
-    width: $item-width - 100px;
     margin-left: 10px;
   }
 }
