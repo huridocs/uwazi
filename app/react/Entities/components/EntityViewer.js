@@ -37,7 +37,7 @@ export class EntityViewer extends Component {
             <dd>
             {(() => {
               if (property.markdown) {
-                return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>
+                return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
               }
               return property.value;
             })()}

@@ -27,7 +27,7 @@ export class MarkDown extends Component {
 
 MarkDown.propTypes = {
   onChange: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.string
 };
 
 export default MarkDown;

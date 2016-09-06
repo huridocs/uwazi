@@ -52,7 +52,7 @@ export default {
   },
 
   markdown(property, value) {
-    return {label: property.label, markdown: value}
+    return {label: property.label, markdown: value};
   },
 
   prepareMetadata(doc, templates, thesauris) {
