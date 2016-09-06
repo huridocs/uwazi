@@ -14,9 +14,7 @@
     - OSX
       - `brew update`
       - `brew install elasticsearch`
-      - after installation brew will provide instructions on how to launch elasticsearch.
       - `brew install logstash`
-      - to run logstash -> `logstash agent -f logstash.conf` the config file is in the project root
 
     - Ubuntu
       ```
