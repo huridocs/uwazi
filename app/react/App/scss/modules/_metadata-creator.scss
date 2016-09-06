@@ -118,14 +118,14 @@
     background: $c-white;
     padding-top: 10px;
     padding-bottom: 5px;
-    border-left: 1px solid #CCC;
+    border-left: 1px solid $c-grey-light;
 
     &.border-bottom {
-      border-bottom: 1px dashed #CCC;
+      border-bottom: 1px dashed $c-grey-light;
     }
 
     &.help {
-      color: #999;
+      color: $c-grey-dark;
     }
   }
 
