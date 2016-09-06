@@ -5,6 +5,7 @@ import {Link} from 'react-router';
 import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
 import {formater} from 'app/Metadata';
+import marked from 'marked';
 
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 
@@ -18,11 +19,17 @@ export class Doc extends Component {
   }
 
   formatMetadata(populatedMetadata, creationDate) {
-    let metadata = populatedMetadata.filter(p => p.showInCard && (p.value && p.value.length > 0)).map((property, index) => {
+    let metadata = populatedMetadata
+    .filter(p => p.showInCard && (p.value && p.value.length > 0 || p.markdown))
+    .map((property, index) => {
+      let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
+      if (property.markdown) {
+        value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
+      }
       return (
         <dl key={index}>
           <dt>{property.label}</dt>
-          <dd>{typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ')}</dd>
+          <dd>{value}</dd>
         </dl>
       );
     });
