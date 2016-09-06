@@ -36,7 +36,8 @@
       
 - **Docsplit**
     - OSX
-      - install ruby `brew install ruby`
+      - `brew install ruby`
+      - `brew install ghostscript`
       - `gem install docsplit`
       - install non optional dependencies for docsplit -> [https://documentcloud.github.io/docsplit/](https://documentcloud.github.io/docsplit/)
     - UBUNTU 
