@@ -7,6 +7,8 @@
     .fa {
       display: block;
       font-size: 30px;
+      height: 54px;
+      line-height: 54px;
       margin: 0 auto;
     }
   }
@@ -453,6 +455,7 @@ label.multiselectItem-label {
 
 .documentTypes-selector {
   padding: 15px 30px;
+  border-bottom: 2px solid $c-grey-light;
 }
 
 .documentTypes-title {
