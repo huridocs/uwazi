@@ -34,11 +34,31 @@ export default {
     deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger'
   },
   libraryView: {
-    unlinkIcon: '#app > div.content > div > div > aside.side-panel.document-metadata.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active > div.item-actions > a:nth-child(1)',
     libraryFirstDocument: '.item-group .item',
-    searchInLibrary: '#app > div.content > header > div > div > div > a > i.fa.fa-search',
-    firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a',
-    loadTargetDocumentButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button'
+    librarySecondDocument: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2)',
+    librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2) > div.item-info > div',
+    searchInLibrary: '#app > div.content > header > div > div > div > a',
+    searchInput: '#app > div.content > header > div > div > div > div > form > div.input-group > input',
+    firstSearchSuggestion: '#app > div.content > header > div > div > div > div > form > div.search-suggestions.is-active > p:nth-child(1) > a',
+    firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a'
+  },
+  documentView: {
+    documentPage: '.page',
+    documentPageFirstParagraph: '.t:nth-child(4)',
+    bottomRightMenu: '.fa-plus',
+    bottomRightMenuIsActive: '.float-btn.active',
+    bottomRightMenuAddParagraph: '.fa-paragraph',
+    createReferenceSidePanelIsActive: '#app > div.content > div > div > aside.side-panel.create-reference.is-active',
+    createReferenceSidePanelSelect: 'select.form-control',
+    createReferenceSidePanelSelectFirstValue: 'a901de64992c1acddbbc2a930808377a',
+    createReferenceSidePanelInput: '.input-group input[type="text"]',
+    createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div:nth-child(1)',
+    createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button',
+    targetDocument: '.document-viewer.show-target-document',
+    saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div.relationship-steps.is-fixed > button.btn.btn-success',
+    activeConnection: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active',
+    unlinkIcon: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active > div.item-actions > a:nth-child(1) > i'
+
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
