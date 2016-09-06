@@ -84,8 +84,8 @@ export class FormConfigInput extends Component {
                 <i className="fa fa-question-circle"></i>
               </label>
             </div>
-            <div className="col-sm-8">
-              Put here other 'show in card' properties?
+            <div className="col-sm-8 help">
+              Show this property in the library card's basic info.
             </div>
           </div>
         </div>
