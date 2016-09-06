@@ -36,7 +36,7 @@
   color: $c-grey-dark;
 
   &:not(:last-child),
-  .form-group & {
+  .form-group &:not(:last-child) {
     border-bottom: 1px dotted $c-grey-light;
   }
 

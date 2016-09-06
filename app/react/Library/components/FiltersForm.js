@@ -32,26 +32,13 @@ export class FiltersForm extends Component {
 
           if (documentTypes.length === 0) {
             return <div className="empty-state select-type">
-                    <i className="fa fa-arrow-up"></i><b>Filter the results</b>
-                    <p>Select at least one type of document to start filtering the results.</p>
+                    <i className="fa fa-arrow-up"></i><b>Select to start filtering</b>
                   </div>;
           }
 
           if (activeTypes.length > 0 && fields.length === 0) {
             return <div className="empty-state no-filters">
                     <i className="fa fa-close"></i><b>No common filters</b>
-                    <p>The combination of document types has no filters in common.</p>
-                  </div>;
-          }
-
-          if (activeTypes.length > 1 && fields.length > 0) {
-            return <div className="title">
-                    <i className="fa fa-tag"></i>Common filters for<b> {formatedTypes}</b>
-                  </div>;
-          }
-          if (activeTypes.length === 1 && fields.length > 0) {
-            return <div className="title">
-                    <i className="fa fa-tag"></i>Filters for<b> {formatedTypes}</b>
                   </div>;
           }
         })()}

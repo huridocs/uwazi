@@ -45,7 +45,6 @@ export class LibraryFilters extends Component {
         </div>
         <div className="sidepanel-body">
           <div className="documentTypes-selector">
-            <div className="documentTypes-title">Document Types</div>
             <MultiSelect
               value={this.props.documentTypes}
               prefix="documentTypes"
