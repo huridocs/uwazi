@@ -9,7 +9,6 @@
       ```
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
-      $ npm install npm@2 -g
       ``` 
 - **Elasticsearch / Logstash** (latest version, 2.1.1)
     - OSX
