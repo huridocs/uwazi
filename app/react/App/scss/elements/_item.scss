@@ -7,7 +7,7 @@
   margin: auto;
 
   .document-viewer & {
-    justify-content: space-between;
+    justify-content: flex-start;
     margin: 0 auto;
   }
 }
@@ -28,11 +28,19 @@
   opacity: 1;
   zoom: 1;
 
-  @media (min-width: 640px) {
+  @media (min-width: 640px) and (max-width: 1023px) {
     width: 48%;
+    margin: 0 0 15px;
+    &:not(:nth-child(2n)) {
+      margin-right: 4%;
+    }
   }
   @media (min-width: 1024px) {
     width: 32.5%;
+    margin: 0 0 15px;
+    &:not(:nth-child(3n)) {
+      margin-right: 1.25%;
+    }
   }
 
   &:before {
@@ -164,10 +172,14 @@ $item-padding: 10px;
     font-size: $f-size-sm;
   }
   dt {
-    width: 100px;
+    min-width: 90px;
+    font-style: normal;
+    color: $c-grey;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   dd {
-    width: $item-width - 100px;
+    margin-left: 10px;
   }
 }
 
