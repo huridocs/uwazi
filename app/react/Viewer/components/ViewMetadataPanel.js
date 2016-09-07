@@ -150,7 +150,7 @@ export class ViewMetadataPanel extends Component {
                 if (docBeingEdited) {
                   return <DocumentForm onSubmit={this.submit.bind(this)} />;
                 }
-                return <ShowMetadata entity={doc}/>;
+                return <ShowMetadata entity={doc} showTitle={true} showType={true} />;
               })()}
             </TabContent>
             <TabContent for="connections">

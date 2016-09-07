@@ -21,7 +21,7 @@ export default {
 
     let url;
     if (option && thesauri.type === 'template') {
-      url = `entity/${option.id}`;
+      url = `/entity/${option.id}`;
     }
 
     return {label: property.label, value, url, showInCard};
@@ -42,7 +42,7 @@ export default {
 
       let url;
       if (option && thesauri.type === 'template') {
-        url = `entity/${option.id}`;
+        url = `/entity/${option.id}`;
       }
 
       return {value, url};
