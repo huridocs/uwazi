@@ -292,12 +292,11 @@ describe('Smoke test,', () => {
         .catch(catchErrors(done));
       });
 
-      it('should click Entities button and then click on add new Entity button', (done) => {
+      it('should click Entities button and check Entities appear', (done) => {
         nightmare
         .waitToClick(selectors.settingsView.entitiesButton)
-        .waitToClick(selectors.settingsView.addNewEntity)
-        .wait(selectors.settingsView.saveEntityButton)
-        .exists(selectors.settingsView.saveEntityButton)
+        .wait(selectors.settingsView.addNewEntity)
+        .exists(selectors.settingsView.addNewEntity)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -305,13 +304,11 @@ describe('Smoke test,', () => {
         .catch(catchErrors(done));
       });
 
-      it('should create a new entity', (done) => {
+      it('should click the edit button of the 1st entity', (done) => {
         nightmare
-        .wait(selectors.settingsView.entityNameForm)
-        .type(selectors.settingsView.entityNameForm, 'test entity')
-        .waitToClick(selectors.settingsView.saveEntityButton)
-        .wait('.alert.alert-success')
-        .exists('.alert.alert-success')
+        .waitToClick(selectors.settingsView.firstEditButton)
+        .wait(selectors.settingsView.entitiesBackButton)
+        .exists(selectors.settingsView.entitiesBackButton)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -319,14 +316,15 @@ describe('Smoke test,', () => {
         .catch(catchErrors(done));
       });
 
-      it('should go back to Entities then delete the created entity', (done) => {
+      it('should click the back button to go back to the list of entities', (done) => {
         nightmare
         .waitToClick(selectors.settingsView.entitiesBackButton)
-        .deleteItemFromList('test')
-        .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-        .then(
-          done
-        )
+        .wait(selectors.settingsView.addNewEntity)
+        .exists(selectors.settingsView.addNewEntity)
+        .then((result) => {
+          expect(result).toBe(true);
+          done();
+        })
         .catch(catchErrors(done));
       });
 

@@ -57,7 +57,7 @@ export default {
     targetDocument: '.document-viewer.show-target-document',
     saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div.relationship-steps.is-fixed > button.btn.btn-success',
     activeConnection: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active',
-    unlinkIcon: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active > div.item-actions > a:nth-child(1) > i'
+    unlinkIcon: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(1) > div.item-actions > div > a:nth-child(1)'
 
   },
   uploadsView: {

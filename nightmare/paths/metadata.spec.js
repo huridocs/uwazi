@@ -225,7 +225,7 @@ describe('metadata path', () => {
     it('should create a new entity', (done) => {
       nightmare
       .wait(selectors.settingsView.entityNameForm)
-      .type(selectors.settingsView.entityNameForm, 'test entity')
+      .type(selectors.settingsView.entityNameForm, 'e2e test entity')
       .click(selectors.settingsView.saveEntityButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -241,7 +241,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
+      .editItemFromList('e2e')
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
