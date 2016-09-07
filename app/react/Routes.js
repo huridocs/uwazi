@@ -17,6 +17,8 @@ import {
   ThesaurisList
 } from 'app/Settings';
 
+import PagesList from 'app/Pages/PagesList';
+
 import ViewDocument from 'app/Viewer/ViewDocument';
 import EntityView from 'app/Entities/EntityView';
 import Uploads from 'app/Uploads/UploadsRoute';
@@ -40,6 +42,7 @@ export default (
     <Route path='settings' component={Settings}>
       <Route path='account' component={AccountSettings} />
       <Route path='collection' component={CollectionSettings} />
+      <Route path='pages' component={PagesList} />
       <Route path='documents' component={DocumentTypesList} />
       <Route path='documents/new' component={NewTemplate} />
       <Route path='documents/edit/:templateId' component={EditTemplate} />

@@ -2,9 +2,9 @@
   border-color: $c-grey-light;
 }
 
-.panel-default>.panel-heading {
+.panel-default > .panel-heading {
 	font-weight: bold;
-	border-bottom: 0;
+	border-bottom-color: $c-grey-light;
   background-color: $c-grey-lighten;
   padding: 16px;
 }
