@@ -103,7 +103,7 @@ export class ViewMetadataPanel extends Component {
             if (docBeingEdited && this.props.metadata.type === 'entity') {
               return <EntityForm/>;
             }
-            return <ShowMetadata entity={metadata}/>;
+            return <ShowMetadata entity={metadata} showTitle={true} showType={true} />;
           })()}
         </div>
       </SidePanel>

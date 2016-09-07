@@ -21,7 +21,7 @@ export default {
 
     let url;
     if (option && thesauri.type === 'template') {
-      url = `entity/${option.id}`;
+      url = `/entity/${option.id}`;
     }
 
     return {label: property.label, value, url};
@@ -42,7 +42,7 @@ export default {
 
       let url;
       if (option && thesauri.type === 'template') {
-        url = `entity/${option.id}`;
+        url = `/entity/${option.id}`;
       }
 
       return {value, url};
@@ -77,7 +77,7 @@ export default {
         return this.date(property, value);
       }
 
-      if (property.type === 'markdown'&& value) {
+      if (property.type === 'markdown' && value) {
         return this.markdown(property, value);
       }
 
