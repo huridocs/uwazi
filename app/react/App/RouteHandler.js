@@ -28,7 +28,7 @@ class RouteHandler extends Component {
   }
 
   getClientState(props) {
-    this.constructor.requestState(props.params)
+    this.constructor.requestState(props.params, props.location ? props.location.query : {})
     .then((response) => {
       this.setReduxState(response);
     });
