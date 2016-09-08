@@ -1,4 +1,5 @@
 import React from 'react';
+import RouteHandler from 'app/App/RouteHandler';
 import ReactDOM from 'react-dom';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {browserHistory} from 'react-router';
@@ -107,8 +108,9 @@ function handleRoute(res, renderProps, req) {
 
   if (routeProps.requestState) {
     api.authorize(cookie);
+    RouteHandler.renderedFromServer = true;
     return Promise.all([
-      routeProps.requestState(renderProps.params),
+      routeProps.requestState(renderProps.params, renderProps.location ? renderProps.location.query : {}),
       api.get('user'),
       api.get('settings')
     ])
