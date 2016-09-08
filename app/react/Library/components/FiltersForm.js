@@ -28,7 +28,6 @@ export class FiltersForm extends Component {
           let documentTypes = this.props.documentTypes.toJS();
           let templates = this.props.templates.toJS();
           let activeTypes = templates.filter((template) => documentTypes.includes(template._id));
-          let formatedTypes = activeTypes.map((template) => template.name).join(', ').replace(/(,) (\w* *\w*$)/, ' and $2');
 
           if (documentTypes.length === 0) {
             return <div className="empty-state select-type">
