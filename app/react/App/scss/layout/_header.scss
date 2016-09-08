@@ -6,19 +6,22 @@ header {
 	position: fixed;
 	top: 0;
   min-height: 54px;
+  justify-content: space-between;
 
 	h1 {
     float: left;
-    padding-left: 15px;
 		font-size: $f-size-lg;
 		font-family: $f-special;
-		font-style: italic;
 		font-weight: 300;
 		margin: 0;
 		line-height: 54px;
-		display: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: calc(100% - 54*2px);
 		@include desktop {
-			display: block;
+		  padding-left: 15px;
+      width: auto;
 		}
 
     a {
@@ -29,49 +32,6 @@ header {
 	.form-group {
     position: relative;
     margin: 0;
-
-		/*line-height: 54px;
-
-		.btn {
-			height: 54px;
-			line-height: 54px;
-			border: 0;
-			background: $c-white;
-			border-radius: 0;
-			box-shadow: none;
-			color: $c-grey-dark;
-			padding: 0 10px;
-      .fa-search {
-        color: $c-grey;
-      }
-		}
-		.dropdown-toggle {
-			display: none;
-			@include desktop {
-				display: block;
-			}
-			.fa {
-				margin-left: 5px;
-			}
-		}
-		.form-control {
-			padding: 0;
-      height: 54px;
-			line-height: 54px;
-			float: none;
-			background: none;
-		  border: 0;
-			border-left: 0;
-			border-radius: 0;
-		  box-shadow: none;
-			color: $c-black;
-
-			&::-webkit-input-placeholder { color: $c-grey; }
-					 &:-ms-input-placeholder { color: $c-grey; }
-							 &::-moz-placeholder { color: $c-grey; }
-							  &:-moz-placeholder { color: $c-grey; }
-		}
-    */
 
 		.btn {
 			.fa-search { display: inline-block; }
@@ -86,55 +46,6 @@ header {
 		}
 	}
 
-	.nav-pills {
-    position: fixed;
-    top: 54px;
-    left: 0;
-    right: 0;
-    display: none;
-		line-height: 54px;
-    padding: 0;
-    box-shadow: $shadow;
-    background: $c-white;
-    &.is-active {
-      display: block;
-    }
-		@include desktop {
-      position: relative;
-      top: 0;
-			display: block;
-      float: right;
-      text-align: right;
-      box-shadow: none;
-		}
-		> li {
-			display: block;
-      width: 100%;
-			float: left;
-      border-top: 1px solid $c-grey-light;
-      @include desktop {
-  			display: inline-block;
-        float: none;
-        border: none;
-        width: auto;
-  		}
-		}
-		i {
-			margin-right: 3px;
-		}
-		a {
-			color: $c-black;
-      border-radius: 0;
-      border: 0;
-      transition: all 0ms;
-
-      &:hover {
-        color: $c-white;
-        background-color: $c-primary;
-      }
-		}
-	}
-
 	/* menu buttons */
 	.menu-button {
     z-index: 1;
@@ -146,11 +57,52 @@ header {
     text-align: center;
     font-size: $f-size-lg;
     cursor: pointer;
-    position: absolute;
 		@include desktop {
 			display: none;
 		}
 	}
+}
+
+.menuNav {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: none;
+  &.is-active {
+    display: table;
+    width: 100%;
+    border: 1px solid $c-grey;
+  }
+  @media(min-width: 1024px) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 54px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li {
+    padding: 5px;
+    width: 100%;
+    @media(min-width: 1024px) {
+      display: inline-block;
+      width: auto;
+    }
+  }
+  .btn {
+    display: block;
+  }
+}
+
+.menuItems {}
+.menuActions {
+  ul {
+    display: flex;
+  }
 }
 
 .search-button {

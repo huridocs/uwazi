@@ -15,18 +15,30 @@ class Menu extends Component {
     const user = this.props.user.toJS();
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
-        <li><a onClick={this.goToLibrary.bind(this)} className="btn"><i className="fa fa-th"></i>Library</a></li>
-        <NeedAuthorization>
-          <li><Link to='/uploads' className="btn"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
-        </NeedAuthorization>
-        <NeedAuthorization>
-          <li><Link to='/settings/account' className="btn"><i className="fa fa-cog"></i>Settings</Link></li>
-        </NeedAuthorization>
-        {(() => {
-          if (!user._id) {
-            return <li><Link to='/login' className="btn"><i className="fa fa-power-off"></i>Login</Link></li>;
-          }
-        })()}
+        <li className="menuItems">
+          <ul>
+            <li><Link to="/" className="btn btn-default">Item 1</Link></li>
+            <li><Link to="/" className="btn btn-default">Item 2</Link></li>
+            <li><Link to="/" className="btn btn-default">Item 3</Link></li>
+            <li><Link to="/" className="btn btn-default">Item 4</Link></li>
+          </ul>
+        </li>
+        <li className="menuActions">
+          <ul>
+            <li><a onClick={this.goToLibrary.bind(this)} className="btn btn-default"><i className="fa fa-th"></i>Library</a></li>
+            <NeedAuthorization>
+              <li><Link to='/uploads' className="btn btn-default"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
+            </NeedAuthorization>
+            <NeedAuthorization>
+              <li><Link to='/settings/account' className="btn btn-default"><i className="fa fa-cog"></i>Settings</Link></li>
+            </NeedAuthorization>
+            {(() => {
+              if (!user._id) {
+                return <li><Link to='/login' className="btn btn-default"><i className="fa fa-power-off"></i>Login</Link></li>;
+              }
+            })()}
+          </ul>
+        </li>
       </ul>
     );
   }
