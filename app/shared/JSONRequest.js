@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 
-function toParams(_data) {
+export function toUrlParams(_data) {
   let data = Object.assign({}, _data);
   if (!data || Object.keys(data).length === 0) {
     return '';
@@ -27,7 +27,7 @@ let _fetch = (url, data, method, cookie) => {
   headers.Cookie = cookie;
 
   if (method === 'GET' || method === 'DELETE') {
-    params = toParams(data);
+    params = toUrlParams(data);
   }
 
   if (method === 'POST') {
