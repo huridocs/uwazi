@@ -2,6 +2,7 @@ import {combineReducers} from 'redux';
 import createReducer from 'app/BasicReducer';
 
 import template from 'app/Templates/reducers/reducer';
+import page from 'app/Pages/reducers/reducer';
 import {reducer as notificationsReducer} from 'app/Notifications';
 
 import thesauri from 'app/Thesauris/reducers/reducer';
@@ -22,6 +23,7 @@ export default combineReducers({
   notifications: notificationsReducer,
   library,
   template,
+  page,
   thesauri,
   entityView,
   thesauris: createReducer('thesauris', []),
