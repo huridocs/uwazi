@@ -30,6 +30,7 @@ export default combineReducers({
   relationType: modelReducer('relationType', {name: ''}),
   relationTypeForm: formReducer('relationType'),
   templates: createReducer('templates', []),
+  pages: createReducer('pages', []),
   documentViewer,
   contextMenu,
   modals,

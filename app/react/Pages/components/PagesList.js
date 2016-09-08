@@ -1,11 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {actions} from 'app/BasicReducer';
-import {notify} from 'app/Notifications/actions/notificationsActions';
+// import {bindActionCreators} from 'redux';
+// import {actions} from 'app/BasicReducer';
+// import {notify} from 'app/Notifications/actions/notificationsActions';
 import {Link} from 'react-router';
-
-import {fromJS} from 'immutable';
 
 export class PagesList extends Component {
 
@@ -21,19 +19,19 @@ export class PagesList extends Component {
         <div className="panel-heading">Pages</div>
         <ul className="list-group document-types">
           {pages.map((page, index) =>
-              <li key={index} className="list-group-item">
-                <Link to={'/settings/pages/edit/' + page.get('_id')}>{page.get('title')}</Link>
-                <div className="list-group-item-actions">
-                  <Link to={'/settings/pages/edit/' + page.get('_id')} className="btn btn-default btn-xs">
-                    <i className="fa fa-pencil"></i>
-                    <span>Edit</span>
-                  </Link>
-                  <button onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
-                    <i className="fa fa-trash"></i>
-                    <span>Delete</span>
-                  </button>
-                </div>
-              </li>
+            <li key={index} className="list-group-item">
+              <Link to={'/settings/pages/edit/' + page.get('_id')}>{page.get('title')}</Link>
+              <div className="list-group-item-actions">
+                <Link to={'/settings/pages/edit/' + page.get('_id')} className="btn btn-default btn-xs">
+                  <i className="fa fa-pencil"></i>
+                  <span>Edit</span>
+                </Link>
+                <button onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
+                  <i className="fa fa-trash"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </li>
           )}
         </ul>
         <div className="panel-body">
@@ -88,16 +86,11 @@ export class PagesList extends Component {
 }
 
 PagesList.propTypes = {
-  pages: PropTypes.object,
-  user: PropTypes.object
+  pages: PropTypes.object
 };
 
 export function mapStateToProps(state) {
-  return {pages: fromJS([ {_id: 'p1', title: 'Page 1'}, {_id: 'p2', title: 'Page 2'}]), user: state.user};
+  return {pages: state.pages};
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setUser: actions.set.bind(null, 'auth/user'), notify}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PagesList);
+export default connect(mapStateToProps)(PagesList);
