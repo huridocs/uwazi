@@ -4,6 +4,7 @@ import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import {Form} from 'react-redux-form';
 import {FormField, MarkDown} from 'app/Forms';
+import ShowIf from 'app/App/ShowIf';
 
 import {resetPage, savePage} from 'app/Pages/actions/pageActions';
 import validator from './ValidatePage';
@@ -15,7 +16,7 @@ export class PageCreator extends Component {
   }
 
   render() {
-    const {formState} = this.props;
+    const {formState, page} = this.props;
     let backUrl = '/settings/pages';
 
     let nameGroupClass = 'template-name form-group';
@@ -43,9 +44,11 @@ export class PageCreator extends Component {
               </button>
             </div>
             <div className="panel-body">
-              <div className="alert alert-info">
-                <i className="fa fa-terminal"></i> http...
-              </div>
+              <ShowIf if={Boolean(page.data._id)}>
+                <div className="alert alert-info">
+                  <i className="fa fa-terminal"></i> http://{window.location.host}/pages/{page.data._id}
+                </div>
+              </ShowIf>
               <FormField model="page.data.metadata.content">
                 <MarkDown rows={18} />
               </FormField>

@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as actions from 'app/Pages/actions/actionTypes';
 
-const initialState = {propertyBeingDeleted: null};
+const initialState = {};
 
 export default function templatesUI(state = initialState, action = {}) {
   if (action.type === actions.SAVING_PAGE) {

@@ -19,6 +19,7 @@ import {
 
 import Pages from 'app/Pages/Pages';
 import NewPage from 'app/Pages/NewPage';
+import EditPage from 'app/Pages/EditPage';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import EntityView from 'app/Entities/EntityView';
@@ -45,6 +46,7 @@ export default (
       <Route path='collection' component={CollectionSettings} />
       <Route path='pages' component={Pages} />
       <Route path='pages/new' component={NewPage} />
+      <Route path='pages/edit/:pageId' component={EditPage} />
       <Route path='documents' component={DocumentTypesList} />
       <Route path='documents/new' component={NewTemplate} />
       <Route path='documents/edit/:templateId' component={EditTemplate} />

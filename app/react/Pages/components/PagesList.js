@@ -1,11 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {Link} from 'react-router';
 import {bindActionCreators} from 'redux';
-// import {actions} from 'app/BasicReducer';
-// import {notify} from 'app/Notifications/actions/notificationsActions';
+
 import {deletePage} from 'app/Pages/actions/pageActions';
 
-import {Link} from 'react-router';
 
 export class PagesList extends Component {
 
