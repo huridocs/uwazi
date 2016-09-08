@@ -1,20 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-
-import {resetPage, savePage} from 'app/Pages/actions/pageActions';
-// import PropertyOption from 'app/Templates/components/PropertyOption';
-// import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
-import {Form} from 'react-redux-form';
-
 import {Link} from 'react-router';
+import {connect} from 'react-redux';
+import {Form} from 'react-redux-form';
 import {FormField, MarkDown} from 'app/Forms';
 
+import {resetPage, savePage} from 'app/Pages/actions/pageActions';
 import validator from './ValidatePage';
 
-// import 'app/Templates/scss/templates.scss';
-
-export class TemplateCreator extends Component {
+export class PageCreator extends Component {
 
   componentWillUnmount() {
     this.props.resetPage();
@@ -35,7 +29,6 @@ export class TemplateCreator extends Component {
           <Form
             model="page.data"
             onSubmit={this.props.savePage}
-            className="metadataTemplate panel-default panel"
             validators={validator()}>
             <div className="metadataTemplate-heading panel-heading">
               <Link to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
@@ -53,42 +46,25 @@ export class TemplateCreator extends Component {
               <div className="alert alert-info">
                 <i className="fa fa-terminal"></i> http...
               </div>
-              <MarkDown value="" rows={18} />
+              <FormField model="page.data.metadata.content">
+                <MarkDown rows={18} />
+              </FormField>
             </div>
           </Form>
         </div>
       </div>
-
-      // <div className="row metadata">
-      //   <main className="col-xs-12 col-sm-9">
-      //       <MetadataTemplate saveTemplate={save} backUrl={backUrl} />
-      //   </main>
-      //   <aside className="col-xs-12 col-sm-3">
-      //     <div className="metadataTemplate-constructor panel panel-default">
-      //       <div className="panel-heading">Properties</div>
-      //       <ul className="list-group">
-      //         <PropertyOption label='Text' type='text'/>
-      //         <PropertyOption label='Select' type='select'/>
-      //         <PropertyOption label='Multi Select' type='multiselect'/>
-      //         <PropertyOption label='Date' type='date'/>
-      //         <PropertyOption label='Rich Text' type='markdown'/>
-      //       </ul>
-      //     </div>
-      //   </aside>
-      // </div>
-
     );
   }
 }
 
-TemplateCreator.propTypes = {
+PageCreator.propTypes = {
   resetPage: PropTypes.func,
   savePage: PropTypes.func,
   page: PropTypes.object,
   formState: PropTypes.object
 };
 
-TemplateCreator.contextTypes = {
+PageCreator.contextTypes = {
   router: PropTypes.object
 };
 
@@ -100,4 +76,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({resetPage, savePage}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TemplateCreator);
+export default connect(mapStateToProps, mapDispatchToProps)(PageCreator);

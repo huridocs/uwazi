@@ -1,14 +1,22 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-// import {bindActionCreators} from 'redux';
+import {bindActionCreators} from 'redux';
 // import {actions} from 'app/BasicReducer';
 // import {notify} from 'app/Notifications/actions/notificationsActions';
+import {deletePage} from 'app/Pages/actions/pageActions';
+
 import {Link} from 'react-router';
 
 export class PagesList extends Component {
 
   deletePage(page) {
-    console.log(page);
+    return this.context.confirm({
+      accept: () => {
+        this.props.deletePage({_id: page.get('_id')});
+      },
+      title: 'Confirm delete page: ' + page.get('title'),
+      message: 'Are you sure you want to delete this page?'
+    });
   }
 
   render() {
@@ -47,11 +55,20 @@ export class PagesList extends Component {
 }
 
 PagesList.propTypes = {
-  pages: PropTypes.object
+  pages: PropTypes.object,
+  deletePage: PropTypes.func
+};
+
+PagesList.contextTypes = {
+  confirm: PropTypes.func
 };
 
 export function mapStateToProps({pages}) {
   return {pages};
 }
 
-export default connect(mapStateToProps)(PagesList);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({deletePage}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PagesList);
