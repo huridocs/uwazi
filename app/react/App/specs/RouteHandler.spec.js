@@ -18,10 +18,11 @@ class TestController extends RouteHandler {
   }
 }
 
-describe('RouteHandler', () => {
+fdescribe('RouteHandler', () => {
   let component;
   let instance;
   let routeParams = {id: '123'};
+  let location = {query: 'url query'};
 
   beforeEach(() => {
     backend.restore();
@@ -32,7 +33,7 @@ describe('RouteHandler', () => {
     spyOn(TestController, 'requestState').and.callThrough();
 
     RouteHandler.renderedFromServer = false;
-    component = shallow(<TestController params={routeParams} />);
+    component = shallow(<TestController params={routeParams} location={location}/>);
     instance = component.instance();
     instance.constructor = TestController;
   });
@@ -51,7 +52,7 @@ describe('RouteHandler', () => {
   describe('on instance', () => {
     it('should request for initialState and setReduxState', (done) => {
       setTimeout(() => {
-        expect(TestController.requestState).toHaveBeenCalled();
+        expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query);
         expect(instance.setReduxStateCalledWith).toEqual({initialData: '123'});
         done();
       });
@@ -63,7 +64,7 @@ describe('RouteHandler', () => {
       it('should request the clientState', () => {
         spyOn(instance, 'getClientState');
         instance.componentWillReceiveProps({params: {id: '456'}});
-        expect(instance.getClientState).toHaveBeenCalled();
+        expect(instance.getClientState).toHaveBeenCalledWith({params: {id: '456'}});
       });
 
       it('should call emptyState', () => {
