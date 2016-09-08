@@ -9,6 +9,8 @@ import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import documents from 'app/Documents';
+import {browserHistory} from 'react-router';
+import {toUrlParams} from 'shared/JSONRequest';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 
@@ -109,32 +111,37 @@ describe('libraryActions', () => {
       dispatch = jasmine.createSpy('dispatch');
     });
 
-    describe('searchDocuments', () => {
+    fdescribe('searchDocuments', () => {
       let store;
       let getState;
       let state;
       beforeEach(() => {
-        state = {properties: [{name: 'author', active: true}], documentTypes: ['decision']};
+        state = {properties: [
+          {name: 'author', active: true},
+          {name: 'inactive'},
+          {name: 'date', type:'date', active: true},
+          {name: 'select', type: 'select', active: true},
+          {name: 'multiselect', type: 'multiselect', active: true}
+        ], documentTypes: ['decision']};
         store = {library: {filters: Immutable.fromJS(state)}};
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
 
-      it('should perform a search and return a SET_DOCUMENTS action with the result ', (done) => {
-        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
-        .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: types.SET_DOCUMENTS, documents: {rows: documentCollection}});
-          done();
-        })
-        .catch(done.fail);
-      });
+      fit('should perform a search and return a SET_DOCUMENTS action with the result ', () => {
+        const query = {searchTerm: 'batman', filters: {author: 'batman', date: 'dateValue', select: 'selectValue', multiselect: 'multiValue'}};
+        spyOn(browserHistory, 'push');
+        actions.searchDocuments(query)(dispatch, getState);
+        const expected = Object.assign({}, query);
+        expected.aggregations = ['select', 'multiselect'];
+        expected.filters = {
+          author: {value: 'batman', type: 'text'},
+          date: {value: 'dateValue', type: 'range'},
+          select: {value: 'selectValue', type: 'multiselect'},
+          multiselect: {value: 'multiValue', type: 'multiselect'}
+        };
+        expected.types = ['decision'];
 
-      it('set the response aggregations result ', (done) => {
-        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState)
-        .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: 'library/aggregations/SET', value: aggregations});
-          done();
-        })
-        .catch(done.fail);
+        expect(browserHistory.push).toHaveBeenCalledWith(`/${toUrlParams(expected)}`);
       });
 
       it('should remove from the search the filters that are not active', (done) => {

@@ -7,6 +7,7 @@ import sanitizeResponse from '../utils/sanitizeResponse';
 
 export default {
   search(query) {
+    //console.log(query);
     let documentsQuery = queryBuilder()
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)

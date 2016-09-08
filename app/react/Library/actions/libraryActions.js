@@ -5,6 +5,8 @@ import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import entities from 'app/Entities';
 import {actions} from 'app/BasicReducer';
+import {browserHistory} from 'react-router';
+import {toUrlParams} from 'shared/JSONRequest';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -58,44 +60,31 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
-export function getDocumentsByFilter(readOnlySearch, limit, getState) {
-  let state = getState().library.filters.toJS();
-  let properties = state.properties;
-  let documentTypes = state.documentTypes;
-
-  let search = Object.assign({}, readOnlySearch);
-  search.aggregations = state.properties
-  .filter((property) => property.type === 'select' || property.type === 'multiselect')
-  .map((property) => property.name);
-
-  search.filters = {};
-  properties.forEach((property) => {
-    let type = 'text';
-    if (property.type === 'date') {
-      type = 'range';
-    }
-    if (property.type === 'select' || property.type === 'multiselect') {
-      type = 'multiselect';
-    }
-    if (property.active) {
-      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
-    }
-  });
-
-  search.types = documentTypes;
-  search.limit = limit;
-
-  return api.search(search);
-}
-
 export function searchDocuments(readOnlySearch, limit) {
   return function (dispatch, getState) {
-    return getDocumentsByFilter(readOnlySearch, limit, getState)
-    .then((response) => {
-      dispatch(actions.set('library/aggregations', response.aggregations));
-      dispatch(setDocuments({rows: response.rows}));
-      dispatch(hideSuggestions());
+    const filters = getState().library.filters.toJS();
+    const search = Object.assign({}, readOnlySearch);
+    search.aggregations = filters.properties
+    .filter((property) => property.type === 'select' || property.type === 'multiselect')
+    .map((property) => property.name);
+
+    search.filters = {};
+    filters.properties.forEach((property) => {
+      if (!property.active) {
+        return;
+      }
+      let type = 'text';
+      if (property.type === 'date') {
+        type = 'range';
+      }
+      if (property.type === 'select' || property.type === 'multiselect') {
+        type = 'multiselect';
+      }
+      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
     });
+    search.types = filters.documentTypes;
+    //dispatch(hideSuggestions());
+    browserHistory.push(`/${toUrlParams(search)}`);
   };
 }
 

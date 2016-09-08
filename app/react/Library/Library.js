@@ -1,17 +1,18 @@
 import React from 'react';
 
+import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from './components/DocumentsList';
 import LibraryFilters from './components/LibraryFilters';
-import {getDocumentsByFilter, enterLibrary, setDocuments} from './actions/libraryActions';
-import {libraryFilters} from './helpers/libraryFilters';
+import {enterLibrary, setDocuments} from './actions/libraryActions';
+import * as libraryHelpers from './helpers/libraryFilters';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
 import SearchButton from './components/SearchButton';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
-import {store} from 'app/store';
+//import {store} from 'app/store';
 import {actions} from 'app/BasicReducer';
 
 export default class Library extends RouteHandler {
@@ -23,16 +24,40 @@ export default class Library extends RouteHandler {
       </div>;
   }
 
-  static requestState() {
-    return Promise.all([getDocumentsByFilter(store.getState().search, null, store.getState), templatesAPI.get(), thesaurisAPI.get()])
+  static requestState(params, query) {
+    //test this
+    query.filters = query.filters || {};
+    if (typeof query.filters === 'string') {
+      query.filters = JSON.parse(query.filters);
+    }
+
+    query.types = query.types || [];
+    if (typeof query.types === 'string') {
+      query.types = JSON.parse(query.types);
+    }
+    //
+
+    return Promise.all([api.search(query), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
-      let properties = libraryFilters(templates, []);
+      let properties = libraryHelpers.libraryFilters(templates, query.types);
+      let {searchTerm, filters, order, sort} = query;
+      Object.keys(filters).forEach(filter => {
+        filters[filter] = filters[filter].value;
+      });
+      properties = libraryHelpers.populateOptions(properties, thesauris).map((property) => {
+        if (filters[property.name]) {
+          property.active = true;
+        }
+        return property;
+      });
+
       return {
         library: {
           documents,
-          filters: {documentTypes: [], properties},
+          filters: {documentTypes: query.types, properties},
           aggregations: documents.aggregations
         },
+        search: {searchTerm, filters, order, sort},
         templates,
         thesauris
       };
