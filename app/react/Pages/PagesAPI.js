@@ -2,7 +2,7 @@ import api from 'app/utils/api';
 
 export default {
   get(id) {
-    let url = 'documents';
+    let url = 'pages';
     if (id) {
       url += `?_id=${id}`;
     }
@@ -11,19 +11,27 @@ export default {
     .then((response) => {
       return response.json.rows;
     });
+  },
+
+  list(keys) {
+    let url = 'pages/list';
+    return api.get(url, {keys: keys})
+    .then((response) => {
+      return response.json.rows;
+    });
+  },
+
+  save(page) {
+    return api.post('pages', page)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
+  delete(page) {
+    return api.delete('pages', page)
+    .then((response) => {
+      return response.json;
+    });
   }
-
-  // save(thesauri) {
-  //   return api.post('documents', thesauri)
-  //   .then((response) => {
-  //     return response.json;
-  //   });
-  // },
-
-  // delete(thesauri) {
-  //   return api.delete('documents', thesauri)
-  //   .then((response) => {
-  //     return response.json;
-  //   });
-  // }
 };

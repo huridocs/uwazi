@@ -9,7 +9,7 @@ import PagesList from './components/PagesList';
 export class Pages extends RouteHandler {
 
   static requestState() {
-    return PagesAPI.get()
+    return PagesAPI.list()
     .then((pages) => {
       return {pages};
     });
