@@ -24,5 +24,4 @@ export default class EditPage extends RouteHandler {
   render() {
     return <PageCreator />;
   }
-
 }

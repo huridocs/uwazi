@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-
 import PageCreator from 'app/Pages/components/PageCreator';
 import RouteHandler from 'app/App/RouteHandler';
 
