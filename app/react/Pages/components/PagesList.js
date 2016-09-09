@@ -24,7 +24,7 @@ export class PagesList extends Component {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">Pages</div>
-        <ul className="list-group document-types">
+        <ul className="list-group pages">
           {pages.map((page, index) =>
             <li key={index} className="list-group-item">
               <Link to={'/settings/pages/edit/' + page.get('_id')}>{page.get('title')}</Link>
