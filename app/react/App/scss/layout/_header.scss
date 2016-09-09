@@ -19,7 +19,7 @@ header {
     text-overflow: ellipsis;
     width: calc(100% - 54*2px);
 		@include desktop {
-		  padding-left: 15px;
+		  padding: 0 15px;
       width: auto;
       max-width: 320px;
 		}
@@ -54,7 +54,7 @@ header {
   &.is-active {
     display: table;
     width: 100%;
-    border: 1px solid $c-grey;
+    border-top: 1px solid $c-grey-light;
   }
   @media(min-width: 1024px) {
     display: flex;
@@ -69,7 +69,7 @@ header {
     margin: 0;
   }
   li {
-    padding: 5px;
+    padding: 0;
     width: 100%;
     @media(min-width: 1024px) {
       display: inline-block;
@@ -78,6 +78,19 @@ header {
   }
   .btn {
     display: block;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    min-width: 54px;
+    height: 54px;
+    line-height: 58px;
+    padding: 0 15px;
+    &:hover,
+    &:active,
+    &:focus {
+      background: $c-white;
+      border-color: $c-primary;
+    }
   }
 }
 
@@ -85,6 +98,12 @@ header {
 .menuActions {
   ul {
     display: flex;
+  }
+}
+
+.menuActions {
+  @media(max-width: 1023px) {
+    border-top: 1px solid $c-grey-light;
   }
 }
 
@@ -168,7 +187,8 @@ header {
   border-left: 1px solid $c-grey-light;
   float: right;
   width: 54px;
-  line-height: 54px;
+  height: 54px;
+  line-height: 58px;
   padding: 0;
   background: $c-white;
   z-index: 3;
