@@ -27,14 +27,14 @@ class Menu extends Component {
           <ul>
             <li><a onClick={this.goToLibrary.bind(this)} className="btn btn-default"><i className="fa fa-th"></i>Library</a></li>
             <NeedAuthorization>
-              <li><Link to='/uploads' className="btn btn-default"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
+              <li><Link to='/uploads' className="btn btn-default"><span><i className="fa fa-cloud-upload"></i></span></Link></li>
             </NeedAuthorization>
             <NeedAuthorization>
-              <li><Link to='/settings/account' className="btn btn-default"><i className="fa fa-cog"></i>Settings</Link></li>
+              <li><Link to='/settings/account' className="btn btn-default"><i className="fa fa-cog"></i></Link></li>
             </NeedAuthorization>
             {(() => {
               if (!user._id) {
-                return <li><Link to='/login' className="btn btn-default"><i className="fa fa-power-off"></i>Login</Link></li>;
+                return <li><Link to='/login' className="btn btn-default"><i className="fa fa-power-off"></i></Link></li>;
               }
             })()}
           </ul>
