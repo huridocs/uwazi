@@ -1,3 +1,5 @@
+import React from 'react';
+import {shallow} from 'enzyme';
 import {Pages} from '../Pages';
 import PagesAPI from '../PagesAPI';
 
@@ -19,18 +21,17 @@ describe('Pages', () => {
   });
 
   describe('setReduxState', () => {
-    let pagesClass;
-    let dispatch;
+    let instance;
+    let context;
 
     beforeEach(() => {
-      pagesClass = new Pages({pamars: {}});
-      dispatch = jasmine.createSpy('dispatch');
-      pagesClass.context = {store: {dispatch}};
-      pagesClass.setReduxState({pages: 'pages'});
+      context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+      instance = shallow(<Pages />, {context}).instance();
     });
 
     it('should set pages in state', () => {
-      expect(dispatch.calls.argsFor(0)).toEqual([{type: 'pages/SET', value: 'pages'}]);
+      instance.setReduxState({pages: 'pages'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'pages/SET', value: 'pages'});
     });
   });
 });
