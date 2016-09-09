@@ -20,6 +20,7 @@ import {
 import Pages from 'app/Pages/Pages';
 import NewPage from 'app/Pages/NewPage';
 import EditPage from 'app/Pages/EditPage';
+import PageView from 'app/Pages/PageView';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import EntityView from 'app/Entities/EntityView';
@@ -65,6 +66,7 @@ export default (
     <Route path='resetpassword/:key' component={ResetPassword} />
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path='entity/:entityId' component={EntityView} />
+    <Route path='page/:pageId' component={PageView} />
     <Route path="*" component={NoMatch} />
   </Route>
 );
