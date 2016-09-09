@@ -53,6 +53,20 @@ export function populateOptions(filters, thesauris) {
   return filters;
 }
 
+export function URLQueryToState(query, templates, thesauris) {
+  let properties = libraryFilters(templates, query.types);
+  let {searchTerm, filters, order, sort} = query;
+  properties = populateOptions(properties, thesauris).map((property) => {
+    if (filters[property.name]) {
+      property.active = true;
+    }
+    filters[property.name] = filters[property.name] ? filters[property.name].value : [];
+    return property;
+  });
+
+  return {properties, search: {searchTerm, filters, order, sort}};
+}
+
 export function parseWithAggregations(filters, aggregations) {
   return filters.map((property) => {
     if (property.content) {
@@ -77,6 +91,7 @@ export function parseWithAggregations(filters, aggregations) {
 
 export default {
   libraryFilters,
+  URLQueryToState,
   populateOptions,
   parseWithAggregations
 };

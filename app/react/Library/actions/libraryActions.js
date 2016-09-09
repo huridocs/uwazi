@@ -83,7 +83,7 @@ export function searchDocuments(readOnlySearch, limit) {
       search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
     });
     search.types = filters.documentTypes;
-    //dispatch(hideSuggestions());
+    dispatch(hideSuggestions());
     browserHistory.push(`/${toUrlParams(search)}`);
   };
 }
