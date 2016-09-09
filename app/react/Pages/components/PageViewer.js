@@ -6,12 +6,13 @@ export class PageViewer extends Component {
   render() {
     let {page} = this.props;
     return (
-      <div className="main-wrapper">
-        <h1>{page.get('title')}</h1>
-        <div className="markdownViewer"
-             dangerouslySetInnerHTML={{__html: marked(page.getIn(['metadata', 'content']), {sanitize: true})}}/>
-      </div>
-
+      <main className="document-viewer">
+        <div className="main-wrapper">
+          <h1>{page.get('title')}</h1>
+          <div className="markdownViewer"
+               dangerouslySetInnerHTML={{__html: marked(page.getIn(['metadata', 'content']) || '', {sanitize: true})}}/>
+        </div>
+      </main>
     );
   }
 }
