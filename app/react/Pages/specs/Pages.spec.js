@@ -1,9 +1,20 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {Pages} from '../Pages';
-import PagesAPI from '../PagesAPI';
+import PagesAPI from 'app/Pages/PagesAPI';
+import PagesList from 'app/Pages/components/PagesList';
 
 describe('Pages', () => {
+  let component;
+  let instance;
+  let context;
+
+  beforeEach(() => {
+    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    component = shallow(<Pages />, {context});
+    instance = component.instance();
+  });
+
   describe('requestState', () => {
     let pages = [{_id: 1, name: 'Page 1'}];
 
@@ -21,17 +32,15 @@ describe('Pages', () => {
   });
 
   describe('setReduxState', () => {
-    let instance;
-    let context;
-
-    beforeEach(() => {
-      context = {store: {dispatch: jasmine.createSpy('dispatch')}};
-      instance = shallow(<Pages />, {context}).instance();
-    });
-
     it('should set pages in state', () => {
       instance.setReduxState({pages: 'pages'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'pages/SET', value: 'pages'});
+    });
+  });
+
+  describe('render', () => {
+    it('should render a PagesList', () => {
+      expect(component.find(PagesList).length).toBe(1);
     });
   });
 });
