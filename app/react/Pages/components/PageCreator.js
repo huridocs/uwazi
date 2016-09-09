@@ -67,10 +67,6 @@ PageCreator.propTypes = {
   formState: PropTypes.object
 };
 
-PageCreator.contextTypes = {
-  router: PropTypes.object
-};
-
 function mapStateToProps(state) {
   return {page: state.page, formState: state.page.formState};
 }
