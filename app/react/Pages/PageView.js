@@ -11,7 +11,6 @@ export class PageView extends RouteHandler {
   static requestState({pageId}) {
     return PagesAPI.get(pageId)
     .then((pages) => {
-      console.log('REQ:', pages);
       return {page: {pageView: pages[0]}};
     });
   }
