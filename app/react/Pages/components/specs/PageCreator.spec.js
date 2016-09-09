@@ -5,7 +5,7 @@ import {PageCreator} from '../PageCreator';
 import {Form} from 'react-redux-form';
 import {FormField} from 'app/Forms';
 
-describe('EntityTypesList', () => {
+describe('PageCreator', () => {
   let component;
   let props;
 

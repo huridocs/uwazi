@@ -5,7 +5,7 @@ import {fromJS, Map} from 'immutable';
 import {PagesList} from '../PagesList';
 import {Link} from 'react-router';
 
-describe('EntityTypesList', () => {
+describe('PagesList', () => {
   let component;
   let props;
   let context;
