@@ -25,18 +25,6 @@ export default class Library extends RouteHandler {
   }
 
   static requestState(params, query = {filters: {}, types: []}) {
-    //test this
-    query.filters = query.filters || {};
-    if (typeof query.filters === 'string') {
-      query.filters = JSON.parse(query.filters);
-    }
-
-    query.types = query.types || [];
-    if (typeof query.types === 'string') {
-      query.types = JSON.parse(query.types);
-    }
-    //
-
     return Promise.all([api.search(query), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       const filterState = libraryHelpers.URLQueryToState(query, templates, thesauris);

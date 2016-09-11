@@ -1,4 +1,5 @@
 import {Component, PropTypes} from 'react';
+import JSONUtils from 'shared/JSONUtils';
 
 class RouteHandler extends Component {
 
@@ -28,7 +29,11 @@ class RouteHandler extends Component {
   }
 
   getClientState(props) {
-    this.constructor.requestState(props.params, props.location ? props.location.query : {})
+    let query = {};
+    if (props.location) {
+      query = JSONUtils.parseNested(props.location.query);
+    }
+    this.constructor.requestState(props.params, query)
     .then((response) => {
       this.setReduxState(response);
     });

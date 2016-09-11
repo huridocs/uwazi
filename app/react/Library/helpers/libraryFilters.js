@@ -24,7 +24,7 @@ function getOptions(property, thesauris) {
   }
 }
 
-export function libraryFilters(templates, documentTypes) {
+export function libraryFilters(templates, documentTypes = []) {
   let filters = [];
   let selectedTemplates = templates.filter((template) => {
     return documentTypes.includes(template._id);
