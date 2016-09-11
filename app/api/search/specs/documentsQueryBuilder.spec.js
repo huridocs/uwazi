@@ -53,7 +53,8 @@ describe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().query();
       let typesAggregation = {
         terms: {
-          field: 'doc.template.raw'
+          field: 'doc.template.raw',
+          size: 0
         },
         aggregations: {
           filtered: {
@@ -72,7 +73,8 @@ describe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().aggregations(['property1', 'property2']).query();
       let property1Aggregation = {
         terms: {
-          field: 'doc.metadata.property1.raw'
+          field: 'doc.metadata.property1.raw',
+          size: 0
         },
         aggregations: {
           filtered: {
