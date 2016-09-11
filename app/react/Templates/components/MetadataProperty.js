@@ -13,7 +13,7 @@ import Icons from './Icons';
 export class MetadataProperty extends Component {
 
   renderForm() {
-    if (this.props.type === 'select' || this.props.type === 'multiselect') {
+    if (this.props.type === 'select' || this.props.type === 'multiselect' || this.props.type === 'violatedarticles') {
       return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
     }
     return <FormConfigInput formKey={this.props.localID} index={this.props.index} />;

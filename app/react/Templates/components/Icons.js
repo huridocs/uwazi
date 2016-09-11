@@ -4,5 +4,6 @@ export default {
   multiselect: 'fa fa-list',
   date: 'fa fa-calendar',
   text: 'fa fa-font',
-  markdown: 'fa fa-file-text-o'
+  markdown: 'fa fa-file-text-o',
+  violatedarticles: 'fa fa-gavel'
 };

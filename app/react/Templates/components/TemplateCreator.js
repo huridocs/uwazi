@@ -37,6 +37,7 @@ export class TemplateCreator extends Component {
               <PropertyOption label='Multi Select' type='multiselect'/>
               <PropertyOption label='Date' type='date'/>
               <PropertyOption label='Rich Text' type='markdown'/>
+              <PropertyOption label='Violated articles' type='violatedarticles'/>
             </ul>
           </div>
         </aside>

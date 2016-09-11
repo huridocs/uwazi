@@ -5,6 +5,7 @@ import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
 import MarkDown from './components/MarkDown';
+import ViolatedArticles, {ViolatedArticlesField} from './components/ViolatedArticles';
 
 export {
   Select,
@@ -15,5 +16,7 @@ export {
   DatePickerField,
   DateRange,
   MultiSelect,
-  MarkDown
+  MarkDown,
+  ViolatedArticles,
+  ViolatedArticlesField
 };
