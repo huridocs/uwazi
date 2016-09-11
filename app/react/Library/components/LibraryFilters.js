@@ -20,11 +20,14 @@ export class LibraryFilters extends Component {
   }
 
   render() {
-
+    const aggregations = this.props.aggregations.toJS();
     this.props.templates.map((template) => {
       template.results = 0;
       template.total = 0;
-      let aggregationsMatch = this.props.aggregations.types.buckets.find((aggregation) => aggregation.key === template._id);
+      let aggregationsMatch;
+      if (aggregations.types) {
+        aggregationsMatch = aggregations.types.buckets.find((aggregation) => aggregation.key === template._id);
+      }
       if (aggregationsMatch) {
         template.results = aggregationsMatch.filtered.doc_count;
         template.total = aggregationsMatch.doc_count;
@@ -78,7 +81,7 @@ export function mapStateToProps(state) {
   props.searchTerm = state.library.ui.toJS().searchTerm;
   props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
   props.templates = state.templates.toJS();
-  props.aggregations = state.library.aggregations.toJS();
+  props.aggregations = state.library.aggregations;
   return props;
 }
 
