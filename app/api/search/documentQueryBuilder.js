@@ -21,7 +21,10 @@ export default function () {
     sort: [],
     aggregations: {
       types: {
-        terms: {field: 'doc.template.raw'},
+        terms: {
+          field: 'doc.template.raw',
+          size: 0
+        },
         aggregations: {
           filtered: {
             filter: {
@@ -94,7 +97,8 @@ export default function () {
 
         baseQuery.aggregations[property] = {
           terms: {
-            field: key
+            field: key,
+            size: 0
           },
           aggregations: {
             filtered: {
