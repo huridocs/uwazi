@@ -119,7 +119,7 @@ describe('libraryActions', () => {
         state = {properties: [
           {name: 'author', active: true},
           {name: 'inactive'},
-          {name: 'date', type:'date', active: true},
+          {name: 'date', type: 'date', active: true},
           {name: 'select', type: 'select', active: true},
           {name: 'multiselect', type: 'multiselect', active: true}
         ], documentTypes: ['decision']};
@@ -129,8 +129,9 @@ describe('libraryActions', () => {
 
       it('should convert the search and set it to the url query', () => {
         const query = {searchTerm: 'batman', filters: {author: 'batman', date: 'dateValue', select: 'selectValue', multiselect: 'multiValue'}};
+        const limit = 'limit';
         spyOn(browserHistory, 'push');
-        actions.searchDocuments(query)(dispatch, getState);
+        actions.searchDocuments(query, limit)(dispatch, getState);
         const expected = Object.assign({}, query);
         expected.aggregations = ['select', 'multiselect'];
         expected.filters = {
@@ -140,6 +141,7 @@ describe('libraryActions', () => {
           multiselect: {value: 'multiValue', type: 'multiselect'}
         };
         expected.types = ['decision'];
+        expected.limit = limit;
 
         expect(browserHistory.push).toHaveBeenCalledWith(`/${toUrlParams(expected)}`);
       });
