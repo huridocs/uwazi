@@ -13,6 +13,7 @@ import NoMatch from './App/NoMatch';
 import {isClient, getPropsFromRoute} from './utils';
 import store from './store';
 import api from 'app/utils/api';
+import JSONUtils from 'shared/JSONUtils';
 
 if (isClient) {
   ReactDOM.render(
@@ -109,8 +110,12 @@ function handleRoute(res, renderProps, req) {
   if (routeProps.requestState) {
     api.authorize(cookie);
     RouteHandler.renderedFromServer = true;
+    let query;
+    if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
+      query = JSONUtils.parseNested(renderProps.location.query);
+    }
     return Promise.all([
-      routeProps.requestState(renderProps.params, renderProps.location ? renderProps.location.query : {}),
+      routeProps.requestState(renderProps.params, query),
       api.get('user'),
       api.get('settings')
     ])

@@ -29,7 +29,7 @@ class RouteHandler extends Component {
   }
 
   getClientState(props) {
-    let query = {};
+    let query;
     if (props.location) {
       query = JSONUtils.parseNested(props.location.query);
     }
