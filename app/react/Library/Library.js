@@ -12,8 +12,8 @@ import SearchBar from './components/SearchBar';
 import SearchButton from './components/SearchButton';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
-//import {store} from 'app/store';
 import {actions} from 'app/BasicReducer';
+import {actions as formActions} from 'react-redux-form';
 
 export default class Library extends RouteHandler {
 
@@ -47,6 +47,8 @@ export default class Library extends RouteHandler {
     this.context.store.dispatch(actions.set('templates', state.templates));
     this.context.store.dispatch(actions.set('thesauris', state.thesauris));
     this.context.store.dispatch(actions.set('library/aggregations', state.library.aggregations));
+    //this.context.store.dispatch(formActions.load('search', state.search));
+    //this.context.store.dispatch({type: 'SET_LIBRARY_FILTERS', documentTypes: state.library.filters.documentTypes, properties: state.library.filters.properties});
   }
 
   componentDidMount() {

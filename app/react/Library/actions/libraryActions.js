@@ -4,7 +4,6 @@ import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import entities from 'app/Entities';
-import {actions} from 'app/BasicReducer';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 
