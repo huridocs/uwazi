@@ -10,7 +10,7 @@ import {modelReducer, formReducer} from 'react-redux-form';
 export default combineReducers({
   metadata: modelReducer('library.metadata'),
   metadataForm: formReducer('library.metadata'),
-  aggregations: createReducer('library/aggregations', []),
+  aggregations: createReducer('library/aggregations', {}),
   documents: documents,
   ui: libraryUI,
   filters: libraryFilters
