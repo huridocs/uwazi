@@ -7,8 +7,7 @@ import {searchDocuments} from 'app/Library/actions/libraryActions';
 export class SortButtons extends Component {
   sort(property) {
     let {search} = this.props;
-    let order = search.order;
-
+    let order = search.order || 'desc';
     if (search.order === 'desc' && search.sort === property) {
       order = 'asc';
     }
@@ -57,10 +56,8 @@ SortButtons.propTypes = {
   search: PropTypes.object
 };
 
-export function mapStateToProps(state) {
-  return {
-    search: state.search
-  };
+export function mapStateToProps({search}) {
+  return {search};
 }
 
 function mapDispatchToProps(dispatch) {

@@ -21,6 +21,38 @@ describe('library helper', () => {
 
   let thesauris = [{_id: 'abc1', values: [{id: 1, value: 'value1'}, {id: 2, value: 'value2'}]}];
 
+  describe('URLQueryToState', () => {
+    it('should return default values whn not set', () => {
+      const query = {
+        searchTerm: 'searchTerm',
+        types: []
+      };
+
+      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      expect(state.search.filters).toEqual({});
+      expect(state.search.order).toEqual('desc');
+      expect(state.search.sort).toEqual('title.raw');
+    });
+
+    it('should return the query transformed to the application state', () => {
+      const query = {
+        searchTerm: 'searchTerm',
+        order: 'order',
+        sort: 'sort',
+        types: ['3'],
+        filters: {country: {value: 'countryValue'}}
+      };
+
+      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      expect(state.properties.length).toBe(1);
+      expect(state.properties[0].active).toBe(true);
+      expect(state.search.filters.country).toBe('countryValue');
+      expect(state.search.searchTerm).toBe('searchTerm');
+      expect(state.search.order).toBe('order');
+      expect(state.search.sort).toBe('sort');
+    });
+  });
+
   describe('libraryFilters()', () => {
     describe('When only one documentType is selected', () => {
       it('should return all its filters fields with thesauri options', () => {
