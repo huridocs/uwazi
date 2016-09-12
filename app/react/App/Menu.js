@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
+import {toUrlParams} from 'shared/JSONRequest';
 
 class Menu extends Component {
 
@@ -9,7 +10,7 @@ class Menu extends Component {
     const user = this.props.user.toJS();
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
-        <li><Link to='/' className="btn"><i className="fa fa-th"></i>Library</Link></li>
+        <li><Link to={'/' + toUrlParams(this.props.search)} className="btn"><i className="fa fa-th"></i>Library</Link></li>
         <NeedAuthorization>
           <li><Link to='/uploads' className="btn"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
         </NeedAuthorization>
@@ -28,12 +29,13 @@ class Menu extends Component {
 
 Menu.propTypes = {
   user: PropTypes.object,
+  search: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func
 };
 
-export function mapStateToProps({user}) {
-  return {user};
+export function mapStateToProps({user, search}) {
+  return {user, search};
 }
 
 export default connect(mapStateToProps)(Menu);
