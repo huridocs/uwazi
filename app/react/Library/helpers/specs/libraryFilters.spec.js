@@ -22,6 +22,18 @@ describe('library helper', () => {
   let thesauris = [{_id: 'abc1', values: [{id: 1, value: 'value1'}, {id: 2, value: 'value2'}]}];
 
   describe('URLQueryToState', () => {
+    it('should return default values whn not set', () => {
+      const query = {
+        searchTerm: 'searchTerm',
+        types: []
+      };
+
+      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      expect(state.search.filters).toEqual({});
+      expect(state.search.order).toEqual('desc');
+      expect(state.search.sort).toEqual('title.raw');
+    });
+
     it('should return the query transformed to the application state', () => {
       const query = {
         searchTerm: 'searchTerm',

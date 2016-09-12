@@ -55,7 +55,7 @@ export function populateOptions(filters, thesauris) {
 
 export function URLQueryToState(query, templates, thesauris) {
   let properties = libraryFilters(templates, query.types);
-  let {searchTerm, filters, order = 'desc', sort = 'title.raw'} = query;
+  let {searchTerm, filters = {}, order = 'desc', sort = 'title.raw'} = query;
   properties = populateOptions(properties, thesauris).map((property) => {
     if (filters[property.name]) {
       property.active = true;

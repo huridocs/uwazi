@@ -32,7 +32,7 @@ export default class Library extends RouteHandler {
       return {
         library: {
           documents,
-          filters: {documentTypes: query.types, properties: filterState.properties},
+          filters: {documentTypes: query.types || [], properties: filterState.properties},
           aggregations: documents.aggregations
         },
         search: filterState.search,
@@ -47,8 +47,11 @@ export default class Library extends RouteHandler {
     this.context.store.dispatch(actions.set('templates', state.templates));
     this.context.store.dispatch(actions.set('thesauris', state.thesauris));
     this.context.store.dispatch(actions.set('library/aggregations', state.library.aggregations));
-    //this.context.store.dispatch(formActions.load('search', state.search));
-    //this.context.store.dispatch({type: 'SET_LIBRARY_FILTERS', documentTypes: state.library.filters.documentTypes, properties: state.library.filters.properties});
+    this.context.store.dispatch(formActions.load('search', state.search));
+    this.context.store.dispatch({type: 'SET_LIBRARY_FILTERS',
+                                documentTypes: state.library.filters.documentTypes,
+                                libraryFilters: state.library.filters.properties}
+                               );
   }
 
   componentDidMount() {

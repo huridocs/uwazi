@@ -90,7 +90,11 @@ describe('Library', () => {
   describe('setReduxState()', () => {
     beforeEach(() => {
       spyOn(libraryActions, 'setTemplates');
-      instance.setReduxState({library: {documents, aggregations}, templates: templates.rows, thesauris: thesauris.rows});
+      instance.setReduxState({library:
+                             {documents, aggregations, filters: {documentTypes: 'types', properties: 'properties'}},
+                             templates: templates.rows,
+                             thesauris: thesauris.rows
+      });
     });
 
     it('should call set the documents and aggregations', () => {
