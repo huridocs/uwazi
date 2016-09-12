@@ -1,6 +1,6 @@
 import JSONUtils from '../JSONUtils';
 
-fdescribe('JSONUtils', () => {
+describe('JSONUtils', () => {
   beforeEach(() => {
   });
 
