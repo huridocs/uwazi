@@ -1,9 +1,9 @@
-import {db_url as dbUrl} from 'api/config/database';
+import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 
 export default {
   get() {
-    return request.get(`${dbUrl}/_design/settings/_view/all`)
+    return request.get(`${dbURL}/_design/settings/_view/all`)
     .then((result) => {
       if (result.json.rows.length) {
         return result.json.rows[0].value;
@@ -13,11 +13,15 @@ export default {
     });
   },
 
-  save(settings) {
-    settings.type = 'settings';
-    return request.post(dbUrl, settings)
-    .then((result) => {
-      return result.json;
-    });
+  save(doc) {
+    doc.type = 'settings';
+
+    let url = dbURL;
+    if (doc._id) {
+      url = `${dbURL}/_design/settings/_update/partialUpdate/${doc._id}`;
+    }
+
+    return request.post(url, doc)
+    .then(response => this.get(`${dbURL}/${response.json.id}`));
   }
 };
