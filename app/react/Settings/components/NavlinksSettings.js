@@ -1,9 +1,13 @@
 import React, {PropTypes, Component} from 'react';
 import {connect} from 'react-redux';
 
-// import {FormField} from 'app/Forms';
+import update from 'react/lib/update';
+import {DragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 import NavlinkForm from './NavlinkForm';
+// import {FormField} from 'app/Forms';
+
 // import {bindActionCreators} from 'redux';
 // import {DropTarget} from 'react-dnd';
 // import {Form} from 'react-redux-form';
@@ -18,20 +22,34 @@ import NavlinkForm from './NavlinkForm';
 
 export class NavlinksSettings extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      navlinks: [
+        {localID: 1, title: 'Link 1', name: 'Un name', url: 'http://google.com'},
+        {localID: 2, title: 'Link 2', name: 'Otro name', url: 'http://apple.com'},
+        {localID: 3, title: 'Link 3', name: 'Tercero', url: 'http://apple.com'}
+      ]
+    };
+  }
+
+  moveLink(dragIndex, hoverIndex) {
+    const {navlinks} = this.state;
+    const dragItem = navlinks[dragIndex];
+
+    this.setState(update(this.state, {
+      navlinks: {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, dragItem]
+        ]
+      }
+    }));
+  }
+
   render() {
-    // console.log(this.props);
-    // const {settings} = this.props;
-    // console.log(settings.toJS());
-  //   const {connectDropTarget, formState} = this.props;
-  //   let nameGroupClass = 'template-name form-group';
-  //   if (formState.fields.name && !formState.fields.name.valid && (formState.submitFailed || formState.fields.name.dirty)) {
-  //     nameGroupClass += ' has-error';
-  //   }
-    let nameGroupClass = 'template-name form-group';
-    let navLinks = [
-      {localID: 1, title: 'Link 1', url: 'http://google.com'},
-      {localID: 2, title: 'Link 2', url: 'http://apple.com'}
-    ];
+    const {navlinks} = this.state;
+    const nameGroupClass = 'template-name form-group';
 
     return (
       <div className="row relationType">
@@ -51,44 +69,13 @@ export class NavlinksSettings extends Component {
               </div>
 
               <ul className="list-group">
-                {navLinks.map((link, index) => {
+                {navlinks.map((link, i) => {
                   return (
-                    <li className="list-group-item" key={link.localID} index={index}>
-                      <div>
-                        <span className="property-name">
-                          <i className="fa fa-reorder"></i>&nbsp;
-                          <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title}
-                        </span>
-                        <button type="button" className="btn btn-danger btn-xs pull-right property-remove">
-                          <i className="fa fa-trash"></i> Delete
-                        </button>
-                        &nbsp;
-                        <button type="button" className="btn btn-default btn-xs pull-right property-edit">
-                          <i className="fa fa-pencil"></i> Edit
-                        </button>
-                      </div>
-
-                      <div className="propery-form expand">
-                        <div>
-                          <div className="row">
-                            <div className="col-sm-6">
-                              <div className="input-group">
-                                <span className="input-group-addon">Title</span>
-                                <input className="form-control" name="template.data.properties[0].label" />
-                              </div>
-                            </div>
-                            <div className="col-sm-6">
-                              <div className="input-group">
-                                <span className="input-group-addon">URL</span>
-                                <input className="form-control" name="template.data.properties[0].url" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-
-                    </li>
+                    <NavlinkForm key={link.localID}
+                                 index={i}
+                                 id={link.localID}
+                                 link={link}
+                                 moveLink={this.moveLink.bind(this)} />
                   );
                 })}
               </ul>
@@ -104,6 +91,93 @@ export class NavlinksSettings extends Component {
         </div>
       </div>
     );
+    // console.log(this.props);
+    // const {settings} = this.props;
+    // console.log(settings.toJS());
+  //   const {connectDropTarget, formState} = this.props;
+  //   let nameGroupClass = 'template-name form-group';
+  //   if (formState.fields.name && !formState.fields.name.valid && (formState.submitFailed || formState.fields.name.dirty)) {
+  //     nameGroupClass += ' has-error';
+  //   }
+    // let nameGroupClass = 'template-name form-group';
+    // let navLinks = [
+    //   {localID: 1, title: 'Link 1', url: 'http://google.com'},
+    //   {localID: 2, title: 'Link 2', url: 'http://apple.com'}
+    // ];
+
+    // return (
+    //   <div className="row relationType">
+    //     <div className="col-xs-12">
+    //       <form className="">
+
+    //         <div className="panel panel-default">
+
+    //           <div className="panel-heading">
+    //             <div className={nameGroupClass}>
+    //               Navigation Links
+    //             </div>
+    //             &nbsp;
+    //             <button type="submit" className="btn btn-success">
+    //               <i className="fa fa-save"/> Save
+    //             </button>
+    //           </div>
+
+    //           <ul className="list-group">
+    //             {navLinks.map((link, index) => {
+    //               return (
+    //                 <li className="list-group-item" key={link.localID} index={index}>
+    //                   <div>
+    //                     <span className="property-name">
+    //                       <i className="fa fa-reorder"></i>&nbsp;
+    //                       <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title}
+    //                     </span>
+    //                     <button type="button" className="btn btn-danger btn-xs pull-right property-remove">
+    //                       <i className="fa fa-trash"></i> Delete
+    //                     </button>
+    //                     &nbsp;
+    //                     <button type="button" className="btn btn-default btn-xs pull-right property-edit">
+    //                       <i className="fa fa-pencil"></i> Edit
+    //                     </button>
+    //                   </div>
+
+    //                   <div className="propery-form expand">
+    //                     <div>
+    //                       <div className="row">
+    //                         <div className="col-sm-12">
+    //                           <div className="input-group">
+    //                             <span className="input-group-addon">Title</span>
+    //                             <input className="form-control" name="template.data.properties[0].label" />
+    //                           </div>
+    //                         </div>
+    //                       </div>
+    //                       <div className="row">
+    //                         <div className="col-sm-12">
+    //                           <div className="input-group">
+    //                             <span className="input-group-addon">URL</span>
+    //                             <input className="form-control" name="template.data.properties[0].url" />
+    //                           </div>
+    //                         </div>
+    //                       </div>
+    //                     </div>
+    //                   </div>
+
+
+    //                 </li>
+    //               );
+    //             })}
+    //           </ul>
+    //           <div className="panel-body">
+    //             <a className="btn btn-success" href="/settings/documents/new">
+    //               <i className="fa fa-plus"></i>&nbsp;<span>Add link</span>
+    //             </a>
+    //           </div>
+
+    //         </div>
+
+    //       </form>
+    //     </div>
+    //   </div>
+    // );
 
   //   return <div>
   //           <RemovePropertyConfirm />
@@ -186,7 +260,9 @@ NavlinksSettings.propTypes = {
 
 // export {dropTarget};
 
-const mapStateToProps = ({settings}) => {
+const mapStateToProps = (state) => {
+  console.log(state);
+  const {settings} = state;
   return {settings: settings.collection};
 };
 
@@ -195,4 +271,8 @@ const mapStateToProps = ({settings}) => {
 // }
 
 // export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dropTarget);
-export default connect(mapStateToProps)(NavlinksSettings);
+// export default connect(mapStateToProps)(NavlinksSettings);
+
+export default DragDropContext(HTML5Backend)(
+  connect(mapStateToProps)(NavlinksSettings)
+);
