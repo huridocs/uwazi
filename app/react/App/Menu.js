@@ -25,7 +25,7 @@ class Menu extends Component {
         </li>
         <li className="menuActions">
           <ul>
-            <li><a onClick={this.goToLibrary.bind(this)} className="btn btn-default"><i className="fa fa-th"></i>Library</a></li>
+            <li><a onClick={this.goToLibrary.bind(this)} className="btn btn-default"><i className="fa fa-th"></i></a></li>
             <NeedAuthorization>
               <li><Link to='/uploads' className="btn btn-default"><span><i className="fa fa-cloud-upload"></i></span></Link></li>
             </NeedAuthorization>
