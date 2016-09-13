@@ -10,6 +10,7 @@ export class SettingsNavigation extends Component {
         <div className="list-group">
           <Link to='/settings/account' activeClassName="active" className="list-group-item">Account</Link>
           <Link to='/settings/collection' activeClassName="active" className="list-group-item">Collection</Link>
+          <Link to='/settings/navlinks' activeClassName="active" className="list-group-item">Navigation Links</Link>
           <Link to='/settings/pages' activeClassName="active" className="list-group-item">Pages</Link>
         </div>
       </div>

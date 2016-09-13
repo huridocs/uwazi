@@ -11,6 +11,7 @@ import {
   Settings,
   AccountSettings,
   CollectionSettings,
+  NavlinksSettings,
   DocumentTypesList,
   EntityTypesList,
   RelationTypesList,
@@ -45,6 +46,7 @@ export default (
     <Route path='settings' component={Settings}>
       <Route path='account' component={AccountSettings} />
       <Route path='collection' component={CollectionSettings} />
+      <Route path='navlinks' component={NavlinksSettings} />
       <Route path='pages' component={Pages} />
       <Route path='pages/new' component={NewPage} />
       <Route path='pages/edit/:pageId' component={EditPage} />
