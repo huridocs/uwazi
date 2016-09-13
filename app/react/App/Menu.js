@@ -12,6 +12,7 @@ class Menu extends Component {
   }
 
   render() {
+    console.log('EN MENU:', this.props.links);
     const user = this.props.user.toJS();
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
@@ -49,11 +50,12 @@ Menu.propTypes = {
   search: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
-  searchDocuments: PropTypes.func
+  searchDocuments: PropTypes.func,
+  links: PropTypes.object
 };
 
-export function mapStateToProps({user, search}) {
-  return {user, search};
+export function mapStateToProps({user, search, settings}) {
+  return {user, search, links: settings.collection.get('links')};
 }
 
 function mapDispatchToProps(dispatch) {

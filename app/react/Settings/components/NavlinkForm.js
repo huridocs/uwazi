@@ -1,20 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {findDOMNode} from 'react-dom';
-// import ItemTypes from './ItemTypes';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import {DragSource, DropTarget} from 'react-dnd';
 
+import {FormField} from 'app/Forms';
+import ShowIf from 'app/App/ShowIf';
 
-const Types = {
-  LINK: 'link'
-};
-
-const style = {
-  border: '1px dashed gray',
-  padding: '0.5rem 1rem',
-  marginBottom: '.5rem',
-  backgroundColor: 'white',
-  cursor: 'move'
-};
+import {editLink} from 'app/Settings/actions/uiActions';
 
 const LinkSource = {
   beginDrag(props) {
@@ -62,7 +55,7 @@ const LinkTarget = {
     }
 
     // Time to actually perform the action
-    props.moveLink(dragIndex, hoverIndex);
+    props.sortLink(dragIndex, hoverIndex);
 
     // Note: we're mutating the monitor item here!
     // Generally it's better to avoid mutations,
@@ -74,14 +67,57 @@ const LinkTarget = {
 
 export class NavlinkForm extends Component {
   render() {
-    const {link, index, isDragging, connectDragSource, connectDropTarget} = this.props;
-    const opacity = isDragging ? 0 : 1;
-
-    const computedStyle = Object.assign({opacity}, style);
+    const {link, index, isDragging, connectDragSource, connectDropTarget, uiState} = this.props;
+    const className = 'list-group-item' + (isDragging ? ' dragging' : '');
 
     return connectDragSource(connectDropTarget(
-      <li className="list-group-item" style={computedStyle} key={link.localID} index={index}>
-        {link.title}
+      <li className={className}>
+
+        <div>
+          <span className="property-name">
+            <i className="fa fa-reorder"></i>&nbsp;
+            <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title}
+          </span>
+          <button type="button" className="btn btn-danger btn-xs pull-right property-remove">
+            <i className="fa fa-trash"></i> Delete
+          </button>
+          &nbsp;
+          <button type="button"
+                  className="btn btn-default btn-xs pull-right property-edit"
+                  onClick={() => this.props.editLink(link.localID)}>
+            <i className="fa fa-pencil"></i> Edit
+          </button>
+        </div>
+
+        <ShowIf if={uiState.get('editingLink') === link.localID}>
+          <div className="propery-form expand">
+            <div>
+              <div className="row">
+                <div className="col-sm-4">
+                  <div className="input-group">
+                    <span className="input-group-addon">
+                      Title
+                    </span>
+                    <FormField model={`settings.navlinksData.links[${index}].title`}>
+                      <input className="form-control" />
+                    </FormField>
+                  </div>
+                </div>
+                <div className="col-sm-8">
+                  <div className="input-group">
+                    <span className="input-group-addon">
+                      URL
+                    </span>
+                    <FormField model={`settings.navlinksData.links[${index}].url`}>
+                      <input className="form-control" />
+                    </FormField>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ShowIf>
+
       </li>
     ));
   }
@@ -94,16 +130,26 @@ NavlinkForm.propTypes = {
   isDragging: PropTypes.bool.isRequired,
   id: PropTypes.any.isRequired,
   link: PropTypes.object.isRequired,
-  moveLink: PropTypes.func.isRequired
+  sortLink: PropTypes.func.isRequired,
+  editLink: PropTypes.func,
+  uiState: PropTypes.object.isRequired
 };
 
-const dropTarget = DropTarget(Types.LINK, LinkTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+const dropTarget = DropTarget('LINK', LinkTarget, connectDND => ({
+  connectDropTarget: connectDND.dropTarget()
 }))(NavlinkForm);
 
-const dragSource = DragSource(Types.LINK, LinkSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
+const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
+  connectDragSource: connectDND.dragSource(),
   isDragging: monitor.isDragging()
 }))(dropTarget);
 
-export default dragSource;
+function mapSateToProps({settings}) {
+  return {uiState: settings.uiState};
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({editLink}, dispatch);
+}
+
+export default connect(mapSateToProps, mapDispatchToProps)(dragSource);

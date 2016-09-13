@@ -14,7 +14,7 @@ import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import uploads from 'app/Uploads/reducers/reducer';
 import user from 'app/Auth/reducer';
-import settings from 'app/Settings/reducer';
+import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';

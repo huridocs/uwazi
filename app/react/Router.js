@@ -122,6 +122,9 @@ function handleRoute(res, renderProps, req) {
     .then(([initialData, user, settings]) => {
       initialData.user = user.json;
       initialData.settings = {collection: settings.json};
+      // TEST!!!
+      initialData.settings.collection.links = initialData.settings.collection.links || [];
+      // -------
       renderPage(initialData, true);
     })
     .catch((error) => {
