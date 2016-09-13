@@ -9,15 +9,12 @@
       ```
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
-      $ npm install npm@2 -g
       ``` 
 - **Elasticsearch / Logstash** (latest version, 2.1.1)
     - OSX
       - `brew update`
       - `brew install elasticsearch`
-      - after installation brew will provide instructions on how to launch elasticsearch.
       - `brew install logstash`
-      - to run logstash -> `logstash agent -f logstash.conf` the config file is in the project root
 
     - Ubuntu
       ```
@@ -39,7 +36,8 @@
       
 - **Docsplit**
     - OSX
-      - install ruby `brew install ruby`
+      - `brew install ruby`
+      - `brew install ghostscript`
       - `gem install docsplit`
       - install non optional dependencies for docsplit -> [https://documentcloud.github.io/docsplit/](https://documentcloud.github.io/docsplit/)
     - UBUNTU 
@@ -58,6 +56,11 @@
       ```
 
 - **pdf2htmlEX**
+    - OSX
+
+      ```
+      $ brew install pdf2htmlex
+      ```
     - Ubuntu
 
       ```

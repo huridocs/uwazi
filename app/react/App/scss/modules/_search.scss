@@ -7,6 +7,8 @@
     .fa {
       display: block;
       font-size: 30px;
+      height: 54px;
+      line-height: 54px;
       margin: 0 auto;
     }
   }
@@ -31,12 +33,10 @@
   list-style-type: none;
   margin: 0;
   padding: 15px 30px;
-  display: table;
-  width: 100%;
   color: $c-grey-dark;
 
   &:not(:last-child),
-  .form-group & {
+  .form-group:not(:last-child) & {
     border-bottom: 1px dotted $c-grey-light;
   }
 
@@ -60,7 +60,6 @@
 
   > li {
     line-height: 19px;
-    float: left;
     width: 50%;
   }
 
@@ -238,10 +237,25 @@
 .multiselectItem {
   display: flex;
   align-items: center;
+  position: relative;
 
   &:hover {
     background: $c-grey-lighten;
   }
+
+}
+
+.multiselectItem-results {
+  position: absolute;
+  right: 0;
+  font-size: $f-size-sm;
+  width: 20px;
+  line-height: 15px;
+  height: 14px;
+  text-align: center;
+  margin: 3px 6px;
+  border-radius: 7px;
+  background: $c-grey-light;
 }
 
 .multiselectItem-input {
@@ -252,6 +266,12 @@
   width: 20px;
   font-size: $f-size-lg;
   color: $c-grey-light;
+
+  &:first-of-type {
+    position: relative;
+    top: 1px;
+    left: 1px;
+  }
 }
 
 label.multiselectItem-label {
@@ -374,12 +394,20 @@ label.multiselectItem-label {
   .multiselectItem-input:checked + label .multiselectItem-icon {
     color: $c-primary;
   }
+  .multiselectItem-input:checked + label .multiselectItem-results {
+    background: $c-primary;
+    color: $c-white;
+  }
 }
 
 .search__filter:not(.is-active) {
   .multiselectItem-input:checked + label,
   .multiselectItem-input:checked + label .multiselectItem-icon {
-    color: $c-grey-dark;
+    color: $c-grey;
+  }
+  .multiselectItem-input:checked + label .multiselectItem-results {
+    background: $c-grey;
+    color: $c-white;
   }
 }
 
@@ -427,6 +455,7 @@ label.multiselectItem-label {
 
 .documentTypes-selector {
   padding: 15px 30px;
+  border-bottom: 2px solid $c-grey-light;
 }
 
 .documentTypes-title {
