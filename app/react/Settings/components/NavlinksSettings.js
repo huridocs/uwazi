@@ -36,7 +36,7 @@ export class NavlinksSettings extends Component {
     return (
       <div className="row relationType">
         <div className="col-xs-12">
-          <form className="">
+          <form className="navLinks">
 
             <div className="panel panel-default">
 
@@ -71,15 +71,13 @@ export class NavlinksSettings extends Component {
                       <div className="propery-form expand">
                         <div>
                           <div className="row">
-                            <div className="col-sm-12">
+                            <div className="col-sm-6">
                               <div className="input-group">
                                 <span className="input-group-addon">Title</span>
                                 <input className="form-control" name="template.data.properties[0].label" />
                               </div>
                             </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-sm-12">
+                            <div className="col-sm-6">
                               <div className="input-group">
                                 <span className="input-group-addon">URL</span>
                                 <input className="form-control" name="template.data.properties[0].url" />
