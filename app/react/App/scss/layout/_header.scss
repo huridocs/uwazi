@@ -13,7 +13,6 @@ header {
 		font-family: $f-special;
 		font-weight: 300;
 		margin: 0;
-		line-height: 54px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -25,6 +24,9 @@ header {
 		}
 
     a {
+      display: inline-block;
+      line-height: 56px;
+      height: 54px;
       color: $c-black;
     }
 	}
@@ -51,10 +53,12 @@ header {
   margin: 0;
   list-style: none;
   display: none;
-  &.is-active {
-    display: table;
-    width: 100%;
-    border-top: 1px solid $c-grey-light;
+  @media(max-width: 1023px) {
+    &.is-active {
+      display: table;
+      width: 100%;
+      border-top: 1px solid $c-grey-light;
+    }
   }
   @media(min-width: 1024px) {
     display: flex;
@@ -83,7 +87,7 @@ header {
     border-radius: 0;
     min-width: 54px;
     height: 54px;
-    line-height: 58px;
+    line-height: 56px;
     padding: 0 15px;
     &:hover,
     &:active,
@@ -101,9 +105,12 @@ header {
   }
 }
 
-.menuActions {
-  @media(max-width: 1023px) {
-    border-top: 1px solid $c-grey-light;
+@media(max-width: 1023px) {
+  .menuItems li {
+    border-bottom: 1px solid $c-grey-light;
+  }
+  .menuActions li:not(:last-child) .btn {
+    border-right: 1px solid $c-grey-light;
   }
 }
 
@@ -188,7 +195,7 @@ header {
   float: right;
   width: 54px;
   height: 54px;
-  line-height: 58px;
+  line-height: 56px;
   padding: 0;
   background: $c-white;
   z-index: 3;
