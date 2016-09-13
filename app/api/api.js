@@ -21,6 +21,7 @@ export default (app, server) => {
   require('./relationtypes/routes.js')(app);
   require('./documents/routes.js')(app);
   require('./entities/routes.js')(app);
+  require('./pages/routes.js')(app);
   require('./upload/routes.js')(app);
   require('./settings/routes.js')(app);
 };

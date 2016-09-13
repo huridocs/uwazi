@@ -54,6 +54,16 @@
 	}
 }
 
+.panel-body {
+  .alert {
+    position: relative;
+    /*margin: 15px 0 0;*/
+    width: 100%;
+    left: 0;
+    font-family: 'Courier', monospace;
+  }
+}
+
 //
 
 .modal {

@@ -17,6 +17,11 @@ import {
   ThesaurisList
 } from 'app/Settings';
 
+import Pages from 'app/Pages/Pages';
+import NewPage from 'app/Pages/NewPage';
+import EditPage from 'app/Pages/EditPage';
+import PageView from 'app/Pages/PageView';
+
 import ViewDocument from 'app/Viewer/ViewDocument';
 import EntityView from 'app/Entities/EntityView';
 import Uploads from 'app/Uploads/UploadsRoute';
@@ -40,6 +45,9 @@ export default (
     <Route path='settings' component={Settings}>
       <Route path='account' component={AccountSettings} />
       <Route path='collection' component={CollectionSettings} />
+      <Route path='pages' component={Pages} />
+      <Route path='pages/new' component={NewPage} />
+      <Route path='pages/edit/:pageId' component={EditPage} />
       <Route path='documents' component={DocumentTypesList} />
       <Route path='documents/new' component={NewTemplate} />
       <Route path='documents/edit/:templateId' component={EditTemplate} />
@@ -58,6 +66,7 @@ export default (
     <Route path='resetpassword/:key' component={ResetPassword} />
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path='entity/:entityId' component={EntityView} />
+    <Route path='page/:pageId' component={PageView} />
     <Route path="*" component={NoMatch} />
   </Route>
 );

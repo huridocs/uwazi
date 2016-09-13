@@ -60,61 +60,63 @@ export class AccountSettings extends Component {
   }
 
   render() {
-    return <div className="account-settings">
-              <div className="panel panel-default">
-                <div className="panel-heading">Email address</div>
-                <div className="panel-body">
-                  <form onSubmit={this.updateEmail.bind(this)}>
-                    <div className="form-group">
-                      <label htmlFor="collection_name">Email</label>
-                      <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
-                    </div>
-                    <button type="submit" className="btn btn-success">Update</button>
-                  </form>
-                </div>
+    return (
+      <div className="account-settings">
+        <div className="panel panel-default">
+          <div className="panel-heading">Email address</div>
+          <div className="panel-body">
+            <form onSubmit={this.updateEmail.bind(this)}>
+              <div className="form-group">
+                <label htmlFor="collection_name">Email</label>
+                <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
               </div>
-              <div className="panel panel-default">
-                <div className="panel-heading">Change password</div>
-                <div className="panel-body">
-                  <form onSubmit={this.updatePassword.bind(this)}>
-                    <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                      <label htmlFor="password">New password</label>
-                      <input
-                        type="password"
-                        onChange={this.passwordChange.bind(this)}
-                        value={this.state.password}
-                        id="password"
-                        className="form-control"/>
-                    </div>
-                    <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                      <label htmlFor="repeatPassword">Confirm new password</label>
-                      <input
-                        type="password"
-                        onChange={this.repeatPasswordChange.bind(this)}
-                        value={this.state.repeatPassword}
-                        id="repeatPassword"
-                        className="form-control"/>
-                    </div>
-                    {(() => {
-                      if (this.state.passwordError) {
-                        return <div className="validation-error validation-error-centered">
-                                  <i className="fa fa-exclamation-triangle"></i>
-                                  &nbsp;
-                                  Both fields are required and should match.
-                              </div>;
-                      }
-                    })()}
-                    <button type="submit" className="btn btn-success">Update</button>
-                  </form>
-                </div>
+              <button type="submit" className="btn btn-success">Update</button>
+            </form>
+          </div>
+        </div>
+        <div className="panel panel-default">
+          <div className="panel-heading">Change password</div>
+          <div className="panel-body">
+            <form onSubmit={this.updatePassword.bind(this)}>
+              <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
+                <label htmlFor="password">New password</label>
+                <input
+                  type="password"
+                  onChange={this.passwordChange.bind(this)}
+                  value={this.state.password}
+                  id="password"
+                  className="form-control"/>
               </div>
-              <div className="panel panel-default">
-                <div className="panel-heading">Close admin session</div>
-                <div className="panel-body">
-                  <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> Logout</span></a>
-                </div>
+              <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
+                <label htmlFor="repeatPassword">Confirm new password</label>
+                <input
+                  type="password"
+                  onChange={this.repeatPasswordChange.bind(this)}
+                  value={this.state.repeatPassword}
+                  id="repeatPassword"
+                  className="form-control"/>
               </div>
-            </div>;
+              {(() => {
+                if (this.state.passwordError) {
+                  return <div className="validation-error validation-error-centered">
+                            <i className="fa fa-exclamation-triangle"></i>
+                            &nbsp;
+                            Both fields are required and should match.
+                        </div>;
+                }
+              })()}
+              <button type="submit" className="btn btn-success">Update</button>
+            </form>
+          </div>
+        </div>
+        <div className="panel panel-default">
+          <div className="panel-heading">Close admin session</div>
+          <div className="panel-body">
+            <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> Logout</span></a>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
