@@ -32,7 +32,7 @@ export class UploadsFormPanel extends Component {
       <SidePanel {...sidePanelprops}>
         <div className="sidepanel-header">
           <h1>Metadata</h1>
-          <i className='fa fa-close close-modal' onClick={this.close.bind(this)}></i>
+          <i className='closeSidepanel fa fa-close close-modal' onClick={this.close.bind(this)}></i>
         </div>
         <div className="sidepanel-body">
           <ShowIf if={this.props.metadataType === 'document'}>

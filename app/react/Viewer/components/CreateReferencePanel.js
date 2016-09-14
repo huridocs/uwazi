@@ -26,7 +26,7 @@ export class CreateReferencePanel extends Component {
       <SidePanel open={this.props.open} className="create-reference">
         <div className="sidepanel-header">
           <h1>Create Connection</h1>
-          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}></i>
+          <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}></i>
 
           <div className="relationship-steps">
             <h2>Connection type<small>1</small></h2>

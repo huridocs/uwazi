@@ -65,7 +65,7 @@ export class ViewMetadataPanel extends Component {
                 </div>
               </li>
             </ul>
-            <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
+            <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
         </div>
         <div className="sidepanel-footer">
           <NeedAuthorization>

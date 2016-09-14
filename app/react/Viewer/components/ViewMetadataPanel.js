@@ -53,7 +53,7 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
-          <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
+          <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
           <Tabs selectedTab={this.props.tab || 'metadata'}
             handleSelect={(tab) => {
               this.props.showTab(tab);
