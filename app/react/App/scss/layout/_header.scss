@@ -17,7 +17,7 @@ header {
     white-space: nowrap;
     text-overflow: ellipsis;
     width: calc(100% - 54*2px);
-		@include desktop {
+		@media(min-width: 1024px) {
 		  padding: 0 15px;
       width: auto;
       max-width: 320px;
@@ -42,7 +42,7 @@ header {
     text-align: center;
     font-size: $f-size-lg;
     cursor: pointer;
-		@include desktop {
+		@media(min-width: 1024px) {
 			display: none;
 		}
 	}
