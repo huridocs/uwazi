@@ -7,9 +7,10 @@ import {DragSource, DropTarget} from 'react-dnd';
 import {FormField} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 
+import {removeLink} from 'app/Settings/actions/navlinksActions';
 import {editLink} from 'app/Settings/actions/uiActions';
 
-const LinkSource = {
+export const LinkSource = {
   beginDrag(props) {
     return {
       id: props.localID,
@@ -18,7 +19,7 @@ const LinkSource = {
   }
 };
 
-const LinkTarget = {
+export const LinkTarget = {
   hover(props, monitor, component) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
@@ -78,7 +79,9 @@ export class NavlinkForm extends Component {
             <i className="fa fa-reorder"></i>&nbsp;
             <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title}
           </span>
-          <button type="button" className="btn btn-danger btn-xs pull-right property-remove">
+          <button type="button"
+                  className="btn btn-danger btn-xs pull-right property-remove"
+                  onClick={() => this.props.removeLink(index)}>
             <i className="fa fa-trash"></i> Delete
           </button>
           &nbsp;
@@ -132,6 +135,7 @@ NavlinkForm.propTypes = {
   link: PropTypes.object.isRequired,
   sortLink: PropTypes.func.isRequired,
   editLink: PropTypes.func,
+  removeLink: PropTypes.func,
   uiState: PropTypes.object.isRequired
 };
 
@@ -149,7 +153,7 @@ function mapSateToProps({settings}) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({editLink}, dispatch);
+  return bindActionCreators({editLink, removeLink}, dispatch);
 }
 
 export default connect(mapSateToProps, mapDispatchToProps)(dragSource);
