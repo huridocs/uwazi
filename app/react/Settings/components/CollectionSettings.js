@@ -20,26 +20,29 @@ export class CollectionSettings extends Component {
 
   updateSettings(e) {
     e.preventDefault();
-    SettingsAPI.save(this.props.settings)
+    const {_id, _rev, site_name} = this.props.settings;
+    SettingsAPI.save({_id, _rev, site_name})
     .then((result) => {
       this.props.notify('Settings updated.', 'success');
-      this.props.setSettings(Object.assign(this.props.settings, {_rev: result.rev}));
+      this.props.setSettings(Object.assign(this.props.settings, result));
     });
   }
 
   render() {
-    return <div className="panel panel-default">
-            <div className="panel-heading">Collection settings</div>
-            <div className="panel-body">
-              <form onSubmit={this.updateSettings.bind(this)}>
-                <div className="form-group">
-                  <label htmlFor="collection_name">Name</label>
-                  <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
-                </div>
-                <button type="submit" className="btn btn-success">Update</button>
-              </form>
+    return (
+      <div className="panel panel-default">
+        <div className="panel-heading">Collection settings</div>
+        <div className="panel-body">
+          <form onSubmit={this.updateSettings.bind(this)}>
+            <div className="form-group">
+              <label htmlFor="collection_name">Name</label>
+              <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
-          </div>;
+            <button type="submit" className="btn btn-success">Update</button>
+          </form>
+        </div>
+      </div>
+    );
   }
 }
 

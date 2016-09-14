@@ -10,20 +10,21 @@ describe('CollectionSettings', () => {
 
   beforeEach(() => {
     props = {
-      settings: {site_name: 'Uwazi'},
+      settings: {_id: 'id', _rev: 'rev', site_name: 'Uwazi', links: []},
       notify: jasmine.createSpy('notify')
     };
     component = shallow(<CollectionSettings {...props} />);
   });
 
-  describe('update name', () => {
+  describe('updateSettings', () => {
     beforeEach(() => {
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
     });
 
-    it('should save the settings object', () => {
+    it('should save only the site_name', () => {
+      const {_id, _rev, site_name} = props.settings;
       component.find('form').simulate('submit', {preventDefault: () => {}});
-      expect(SettingsAPI.save).toHaveBeenCalledWith({site_name: 'Uwazi'});
+      expect(SettingsAPI.save).toHaveBeenCalledWith({_id, _rev, site_name});
     });
   });
 });
