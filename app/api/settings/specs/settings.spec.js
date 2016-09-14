@@ -18,7 +18,7 @@ describe('settings', () => {
   describe('save()', () => {
     let getSettings = () => request.get(dbURL + '/_design/settings/_view/all').then((response) => response.json.rows.map(r => r.value));
 
-    fit('should save the settings', (done) => {
+    it('should save the settings', (done) => {
       let config = {site_name: 'My collection'};
       settings.save(config)
       .then(() => {
@@ -31,7 +31,7 @@ describe('settings', () => {
       }).catch(catchErrors(done));
     });
 
-    fit('should return the newly created document', (done) => {
+    it('should return the newly created document', (done) => {
       let config = {site_name: 'New settings'};
 
       settings.save(config)
@@ -44,7 +44,7 @@ describe('settings', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should be able to partially update it', (done) => {
+    it('should be able to partially update it', (done) => {
       request.get(dbURL + '/bc739d367ef40c434bd0ff6a18c9fbec')
       .then((doc) => {
         let modifiedDoc = {_id: doc.json._id, _rev: doc.json._rev, test: 'test'};
