@@ -7,7 +7,7 @@ export class MultiSelect extends Component {
   constructor(props) {
     super(props);
     this.state = {filter: '', showAll: false};
-    this.optionsToShow = 5;
+    this.optionsToShow = typeof props.optionsToShow !== 'undefined' ? props.optionsToShow : 5;
   }
 
   change(value) {
@@ -132,7 +132,8 @@ MultiSelect.propTypes = {
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
-  prefix: PropTypes.string
+  prefix: PropTypes.string,
+  optionsToShow: PropTypes.number
 };
 
 export default MultiSelect;

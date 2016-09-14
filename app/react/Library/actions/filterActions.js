@@ -13,6 +13,10 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
       model[property.name] = [];
     }
 
+    if (property.type === 'violatedarticles' && model[property.name] === '') {
+      model[property.name] = {};
+    }
+
     return model;
   }, {});
   dispatch(formActions.change('search.filters', modelFilters));
@@ -28,7 +32,7 @@ export function filterDocumentTypes(documentTypes) {
     let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
 
     let aggregations = libraryFilters
-    .filter((property) => property.type === 'select' || property.type === 'multiselect')
+    .filter((property) => property.type === 'select' || property.type === 'multiselect'|| property.type === 'violatedarticles')
     .map((property) => property.name);
 
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);

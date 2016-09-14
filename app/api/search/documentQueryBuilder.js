@@ -82,6 +82,19 @@ export default function () {
           match.terms[`doc.metadata.${property}.raw`] = values;
         }
 
+        if (filters[property].type === 'nested') {
+          match.nested = {
+            path: `doc.metadata.${property}`
+          };
+          match.nested.filter = {bool: {}};
+          let value = filters[property].value;
+          match.nested.filter.bool.must = Object.keys(value).map((key) => {
+            let terms = {terms: {}};
+            terms.terms[`doc.metadata.${property}.${key}`] = value[key];
+            return terms;
+          });
+        }
+
         baseQuery.filter.bool.must.push(match);
         baseQuery.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });

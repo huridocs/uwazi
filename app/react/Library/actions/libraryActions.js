@@ -79,6 +79,9 @@ export function searchDocuments(readOnlySearch, limit) {
       if (property.type === 'select' || property.type === 'multiselect') {
         type = 'multiselect';
       }
+      if (property.type === 'violatedarticles') {
+        type = 'nested';
+      }
       search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
     });
     search.types = filters.documentTypes;

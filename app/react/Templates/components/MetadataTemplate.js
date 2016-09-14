@@ -98,6 +98,7 @@ const target = {
       return;
     }
 
+    console.log(item);
     props.addProperty({label: item.label, type: item.type}, props.template.properties.length);
     return {name: 'container'};
   }

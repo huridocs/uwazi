@@ -6,6 +6,7 @@ import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
 import MarkDown from './components/MarkDown';
 import ViolatedArticles, {ViolatedArticlesField} from './components/ViolatedArticles';
+import ViolatedArticlesFilter from './components/ViolatedArticlesFilter';
 
 export {
   Select,
@@ -18,5 +19,6 @@ export {
   MultiSelect,
   MarkDown,
   ViolatedArticles,
-  ViolatedArticlesField
+  ViolatedArticlesField,
+  ViolatedArticlesFilter
 };

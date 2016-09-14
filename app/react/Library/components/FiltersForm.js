@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 
-import {FormField, MultiSelect, DateRange} from 'app/Forms';
+import {FormField, MultiSelect, DateRange, ViolatedArticlesFilter} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -63,6 +63,22 @@ export class FiltersForm extends Component {
                     </li>
                   </ul>
                 </FormField>
+              </FormGroup>
+              );
+          }
+          if (property.type === 'violatedarticles') {
+            return (
+              <FormGroup key={index}>
+                  <ul className={propertyClass}>
+                    <li>
+                      {property.label}
+                      {property.required ? <span className="required">*</span> : ''}
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                    </li>
+                    <li className="wide">
+                      <ViolatedArticlesFilter aggregations={this.props.aggregations} property={property} onChange={() => this.props.activateFilter(property.name, true)}/>
+                    </li>
+                  </ul>
               </FormGroup>
               );
           }
