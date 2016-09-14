@@ -12,17 +12,19 @@ class Menu extends Component {
   }
 
   render() {
-    console.log('EN MENU:', this.props.links);
+    const {links} = this.props;
     const user = this.props.user.toJS();
+
+    const navLinks = links.map(link =>
+      <li key={link.get('localID')}>
+        <Link to={link.get('url') || '/'} className="btn btn-default">{link.get('title')}</Link>
+      </li>
+    );
+
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
         <li className="menuItems">
-          <ul>
-            <li><Link to="/" className="btn btn-default">Item 1</Link></li>
-            <li><Link to="/" className="btn btn-default">Item 2</Link></li>
-            <li><Link to="/" className="btn btn-default">Item 3</Link></li>
-            <li><Link to="/" className="btn btn-default">Item 4</Link></li>
-          </ul>
+          <ul>{navLinks}</ul>
         </li>
         <li className="menuActions">
           <ul>
