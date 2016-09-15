@@ -68,8 +68,15 @@ export const LinkTarget = {
 
 export class NavlinkForm extends Component {
   render() {
-    const {link, index, isDragging, connectDragSource, connectDropTarget, uiState} = this.props;
-    const className = 'list-group-item' + (isDragging ? ' dragging' : '');
+    const {link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState} = this.props;
+
+    let className = 'list-group-item' + (isDragging ? ' dragging' : '');
+    let titleClass = 'input-group';
+
+    if (formState.errors[`links.${index}.title.required`]) {
+      className += ' error';
+      titleClass += ' has-error';
+    }
 
     return connectDragSource(connectDropTarget(
       <li className={className}>
@@ -77,7 +84,7 @@ export class NavlinkForm extends Component {
         <div>
           <span className="property-name">
             <i className="fa fa-reorder"></i>&nbsp;
-            <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title}
+            <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
           </span>
           <button type="button"
                   className="btn btn-danger btn-xs pull-right property-remove"
@@ -97,7 +104,7 @@ export class NavlinkForm extends Component {
             <div>
               <div className="row">
                 <div className="col-sm-4">
-                  <div className="input-group">
+                  <div className={titleClass}>
                     <span className="input-group-addon">
                       Title
                     </span>
@@ -136,6 +143,7 @@ NavlinkForm.propTypes = {
   sortLink: PropTypes.func.isRequired,
   editLink: PropTypes.func,
   removeLink: PropTypes.func,
+  formState: PropTypes.object.isRequired,
   uiState: PropTypes.object.isRequired
 };
 
@@ -148,12 +156,12 @@ const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
   isDragging: monitor.isDragging()
 }))(dropTarget);
 
-function mapSateToProps({settings}) {
-  return {uiState: settings.uiState};
+export function mapStateToProps({settings}) {
+  return {formState: settings.navlinksFormState, uiState: settings.uiState};
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({editLink, removeLink}, dispatch);
 }
 
-export default connect(mapSateToProps, mapDispatchToProps)(dragSource);
+export default connect(mapStateToProps, mapDispatchToProps)(dragSource);
