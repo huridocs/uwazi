@@ -7,6 +7,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import {loadLinks, addLink, sortLink, saveLinks} from 'app/Settings/actions/navlinksActions';
+import validator from 'app/Settings/utils/ValidateNavlinks';
 import NavlinkForm from './NavlinkForm';
 
 
@@ -27,7 +28,8 @@ export class NavlinksSettings extends Component {
         <div className="col-xs-12">
           <Form model="settings.navlinksData"
                 onSubmit={this.props.saveLinks.bind(this, payload)}
-                className="navLinks">
+                className="navLinks"
+                validators={validator(links)}>
 
             <div className="panel panel-default">
 

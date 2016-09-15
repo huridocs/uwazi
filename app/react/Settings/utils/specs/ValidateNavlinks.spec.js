@@ -18,13 +18,13 @@ describe('Navlinks Validator', () => {
     validationRules = validator(links);
   });
 
-  fit('should index each link validator', () => {
+  it('should index each link validator', () => {
     expect(Object.keys(validationRules['']).length).toBe(6);
     expect(validationRules['']['links.0.title.required']).toBeDefined();
     expect(validationRules['']['links.1.title.required']).toBeDefined();
   });
 
-  fit('should validate that title is not empty', () => {
+  it('should validate that title is not empty', () => {
     expect(validationRules['']['links.0.title.required'](form)).toBe(false);
     expect(validationRules['']['links.1.title.required'](form)).toBe(true);
     expect(validationRules['']['links.2.title.required'](form)).toBe(false);
@@ -32,7 +32,7 @@ describe('Navlinks Validator', () => {
     expect(validationRules['']['links.4.title.required'](form)).toBe(false);
   });
 
-  fit('should pass validation if index not in form', () => {
+  it('should pass validation if index not in form', () => {
     expect(validationRules['']['links.5.title.required'](form)).toBe(true);
   });
 });

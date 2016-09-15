@@ -29,8 +29,9 @@ describe('NavlinksSettings', () => {
     });
   });
 
-  it('should render a Form linked to settings.navlinksData', () => {
+  it('should render a Form linked to settings.navlinksData and validated', () => {
     expect(component.find(Form).props().model).toBe('settings.navlinksData');
+    expect(Object.keys(component.find(Form).props().validators['']).length).toBe(2);
   });
 
   it('should save links upon submit', () => {
