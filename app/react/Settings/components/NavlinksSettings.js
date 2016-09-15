@@ -38,7 +38,9 @@ export class NavlinksSettings extends Component {
                   Menu
                 </div>
                 &nbsp;
-                <button type="submit" className="btn btn-success" disabled={!!this.props.savingTemplate}>
+                <button type="submit"
+                        className="btn btn-success"
+                        disabled={!!this.props.savingNavlinks}>
                   <i className="fa fa-save"/> Save
                 </button>
               </div>
@@ -84,14 +86,14 @@ NavlinksSettings.propTypes = {
   addLink: PropTypes.func.isRequired,
   sortLink: PropTypes.func.isRequired,
   saveLinks: PropTypes.func.isRequired,
-  savingTemplate: PropTypes.bool
+  savingNavlinks: PropTypes.bool
 };
 
 export const mapStateToProps = (state) => {
   const {settings} = state;
   const {collection} = settings;
   const links = settings.navlinksData.links;
-  return {links, collection, savingTemplate: settings.uiState.get('savingNavlinks')};
+  return {links, collection, savingNavlinks: settings.uiState.get('savingNavlinks')};
 };
 
 function mapDispatchToProps(dispatch) {

@@ -39,6 +39,12 @@ describe('NavlinksSettings', () => {
     expect(props.saveLinks).toHaveBeenCalledWith({_id: 'abc', _rev: 'xyz', links: props.links});
   });
 
+  it('should disable saving if savingNavlinks', () => {
+    props.savingNavlinks = true;
+    component = shallow(<NavlinksSettings {...props} />);
+    expect(component.find('button').first().props().disabled).toBe(true);
+  });
+
   it('should list all existing links', () => {
     expect(component.find(NavlinkForm).length).toBe(2);
     expect(component.find(NavlinkForm).first().props().link).toBe(props.links[0]);
@@ -61,7 +67,7 @@ describe('NavlinksSettings', () => {
     it('should return the right props', () => {
       expect(mapStateToProps({settings}).links).toBe(settings.navlinksData.links);
       expect(mapStateToProps({settings}).collection).toBe(settings.collection);
-      expect(mapStateToProps({settings}).savingTemplate).toBe(true);
+      expect(mapStateToProps({settings}).savingNavlinks).toBe(true);
     });
   });
 
