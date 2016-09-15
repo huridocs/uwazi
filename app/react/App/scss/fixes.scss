@@ -14,6 +14,9 @@ header {
   width: 100%;
 }
 
+.container {
+  max-width: 1024px;
+}
 .container-fluid {
   margin-right: 0;
   margin-left: 0;
@@ -41,14 +44,6 @@ header {
 
 .panel-footer {
   display: block;
-}
-
-.btn .fa {
-  margin-right: 0;
-}
-
-header ul .btn .fa {
-    margin-right: 5px;
 }
 
 .alert {
@@ -260,6 +255,7 @@ header ul .btn .fa {
   }
   .form-group {
     width: 100%;
+    line-height: 32px;
   }
 }
 

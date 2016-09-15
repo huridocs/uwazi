@@ -1,10 +1,7 @@
 import Immutable from 'immutable';
-
 import * as actions from 'app/Pages/actions/actionTypes';
 
-const initialState = {};
-
-export default function templatesUI(state = initialState, action = {}) {
+export default function pagesUI(state = {}, action = {}) {
   if (action.type === actions.SAVING_PAGE) {
     return state.set('savingPage', true);
   }

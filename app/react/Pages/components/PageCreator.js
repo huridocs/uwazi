@@ -16,7 +16,7 @@ export class PageCreator extends Component {
   }
 
   render() {
-    const {formState, page} = this.props;
+    const {formState, page, savingPage} = this.props;
     let backUrl = '/settings/pages';
 
     let nameGroupClass = 'template-name form-group';
@@ -39,7 +39,9 @@ export class PageCreator extends Component {
                 </FormField>
               </div>
               &nbsp;
-              <button type="submit" className="btn btn-success save-template">
+              <button type="submit"
+                      className="btn btn-success save-template"
+                      disabled={!!savingPage}>
                 <i className="fa fa-save"></i> Save
               </button>
             </div>
@@ -64,11 +66,12 @@ PageCreator.propTypes = {
   resetPage: PropTypes.func,
   savePage: PropTypes.func,
   page: PropTypes.object,
-  formState: PropTypes.object
+  formState: PropTypes.object,
+  savingPage: PropTypes.bool
 };
 
-function mapStateToProps(state) {
-  return {page: state.page, formState: state.page.formState};
+function mapStateToProps({page}) {
+  return {page: page, formState: page.formState, savingPage: page.uiState.get('savingPage')};
 }
 
 function mapDispatchToProps(dispatch) {

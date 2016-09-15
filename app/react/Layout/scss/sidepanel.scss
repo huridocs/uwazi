@@ -12,14 +12,10 @@ $c-sidebar: $c-white;
   right: 0;
   top: 54px;
   bottom: 0;
-  //border-left: 1px solid $c-grey;
-  box-shadow: 0 0 10px $c-grey;
+  border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;
   max-width: 320px - 54px;
   transition: right 500ms;
-/*
-  max-width: 320px;
-*/
   width: 90%;
   &.is-hidden {
     right: -90%;

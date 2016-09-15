@@ -18,6 +18,15 @@
 		transform: translateY(3px);
 		color: $c-grey;
 	}
+
+	&.no-margin {
+		margin: 0px;
+	}
+
+	&.full-width {
+		width: calc(100% - 30px);
+		left: 15px;
+	}
 }
 
 .alert-success,
@@ -86,4 +95,12 @@
 }
 .modal-danger {
 	border-left: 5px solid #ED353D;
+}
+
+
+.notification {
+  margin-top: 15px;
+  .fa {
+    margin-right: 5px;
+  }
 }

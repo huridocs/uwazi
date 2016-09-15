@@ -1,24 +1,6 @@
 @import "../../App/scss/config/_colors.scss";
 @import "../../App/scss/config/_typography.scss";
 
-.metadataTemplate-heading {
-  display: flex;
-
-  .template-name {
-    flex: 1;
-    margin-right: 15px;
-
-    .form-control {
-      line-height: 23px;
-      padding: 9px 12px;
-      margin-bottom: 0;
-    }
-  }
-  .form-group {
-    margin: 0;
-  }
-}
-
 .metadataTemplate-list {
   .no-properties {
     text-align: center;
@@ -56,62 +38,6 @@
     .fa-clone,
     .fa-arrows-v {
       color: #777;
-    }
-  }
-}
-
-.panel {
-  .list-group {
-    .list-group-item {
-      small {
-        margin-left: 5px;
-        font-size: 1em;
-        color: $c-grey-dark;
-        text-decoration: none;
-      }
-      .btn {
-        padding: 2px 4px;
-        line-height: 1em;
-        margin-left: 5px;
-
-        span {
-          margin-left: 5px;
-          font-size: $f-size-sm;
-        }
-      }
-
-      &.error {
-        display: inherit;
-        border-bottom: 1px solid #ED353D;
-        margin-bottom: -1px;
-
-        &:last-child {
-          border-bottom: 1px solid #ED353D;
-        }
-
-        .property-name, .property-name .fa {
-          color: #ED353D;
-        }
-      }
-
-      .propery-form {
-        height: 0;
-        overflow: hidden;
-
-        &.expand {
-          height: auto;
-          padding-top: 15px;
-        }
-      }
-
-      &.dragging {
-        opacity: 0;
-      }
-    }
-    .list-group-item-actions {
-      position: absolute;
-      top: 10px;
-      right: 10px;
     }
   }
 }

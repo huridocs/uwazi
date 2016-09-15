@@ -9,6 +9,7 @@
 @import "elements/item";
 @import "elements/panel";
 @import "elements/breadcrumbs";
+@import "elements/draggable";
 
 @import "layout/header";
 @import "layout/content";
@@ -24,7 +25,8 @@
 @import "modules/toc";
 @import "modules/entity";
 @import "modules/metadata-view";
-@import "modules/metadata-creator";
+@import "modules/settings-nav";
+@import "modules/settings-metadata";
 @import "modules/uploads";
 @import "modules/login";
 @import "modules/markdown";

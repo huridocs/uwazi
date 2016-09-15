@@ -1,0 +1,149 @@
+.metadataTemplate-heading {
+  display: flex;
+
+  .template-name {
+    flex: 1;
+    margin-right: 15px;
+
+    .form-control {
+      line-height: 23px;
+      padding: 9px 12px;
+      margin-bottom: 0;
+    }
+  }
+  .form-group {
+    margin: 0;
+  }
+}
+
+.metadataTemplate-list,
+.metadataTemplate-constructor {
+  background: $c-grey-lighten;
+}
+
+.metadata {
+  @include draggable;
+}
+/*
+.metadata {
+  padding: 30px;
+	overflow-y: scroll;
+  padding: 15px 0;
+  margin: 0 -15px;
+
+	h1 {
+		margin-top: 0;
+		border-bottom: 1px solid $c-grey-light;
+		padding-bottom: 15px;
+		margin-bottom: 15px;
+		small {
+			font-size: $f-size-sm;
+			margin-left: 5px;
+		}
+	}
+	input {
+		padding: 5px 10px;
+	}
+
+  .list-group-item {
+    .btn {
+      margin-left: 5px;
+    }
+    .fa-reorder {
+      margin: 0 25px 0 0;
+      color: $c-grey;
+    }
+    &:hover .fa-reorder {
+      color: $c-grey-dark;
+    }
+    .expand {
+      width: 100%;
+    }
+    &.validation {
+      border-bottom: 1px solid #ED353D !important;
+      color: #ED353D;
+    }
+  }
+}
+*/
+
+.well-metadata-creator {
+  padding: 0 15px 0 12px;
+  background: #EEE;
+  border-color: #CCC;
+
+  label {
+    color: $c-black;
+  }
+
+  input, label {
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  small {
+    display: block;
+    opacity: 0.6;
+    line-height: 1.3em;
+    padding-left: 15px;
+  }
+
+  .col-sm-8 {
+    background: $c-white;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-left: 1px solid $c-grey-light;
+
+    &.border-bottom {
+      border-bottom: 1px dashed $c-grey-light;
+    }
+
+    &.help {
+      color: $c-grey-dark;
+    }
+  }
+
+  .property-atributes {
+    opacity: 0.3;
+    cursor: pointer;
+    display: table;
+    width: 100%;
+    position: relative;
+    padding: 0;
+    border-radius: 3px;
+    font-weight: normal;
+    color: $c-primary;
+    &.is-active {
+      opacity: 1;
+    }
+
+    span {
+      margin: 0 5px;
+    }
+    span.conflict {
+      color: #86714A;
+    }
+    .fa {
+      margin-right: 5px;
+    }
+    .fa-angle-right {
+      margin: 0;
+    }
+    .fa-info-circle {
+      color: $c-grey;
+      margin: 0 8px 0 0;
+      font-size: $f-size-lg;
+      float: right;
+      transition: all 300ms;
+    }
+    &:hover > .fa-info-circle {
+      color: $c-black;
+    }
+  }
+
+  .tooltip.top {
+    right: 35px;
+    left: auto !important;
+    transform: translateX(50%);
+  }
+}

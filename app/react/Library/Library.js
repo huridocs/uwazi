@@ -18,7 +18,7 @@ import {actions as formActions} from 'react-redux-form';
 export default class Library extends RouteHandler {
 
   static renderTools() {
-    return <div>
+    return <div className="searchBox">
         <SearchBar/>
         <SearchButton/>
       </div>;

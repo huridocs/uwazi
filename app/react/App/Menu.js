@@ -12,21 +12,36 @@ class Menu extends Component {
   }
 
   render() {
+    const {links} = this.props;
     const user = this.props.user.toJS();
+
+    const navLinks = links.map(link =>
+      <li key={link.get('localID')}>
+        <Link to={link.get('url') || '/'} className="btn btn-default">{link.get('title')}</Link>
+      </li>
+    );
+
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
-        <li><a onClick={this.goToLibrary.bind(this)} className="btn"><i className="fa fa-th"></i>Library</a></li>
-        <NeedAuthorization>
-          <li><Link to='/uploads' className="btn"><span><i className="fa fa-cloud-upload"></i>Uploads</span></Link></li>
-        </NeedAuthorization>
-        <NeedAuthorization>
-          <li><Link to='/settings/account' className="btn"><i className="fa fa-cog"></i>Settings</Link></li>
-        </NeedAuthorization>
-        {(() => {
-          if (!user._id) {
-            return <li><Link to='/login' className="btn"><i className="fa fa-power-off"></i>Login</Link></li>;
-          }
-        })()}
+        <li className="menuItems">
+          <ul>{navLinks}</ul>
+        </li>
+        <li className="menuActions">
+          <ul>
+            <li><a onClick={this.goToLibrary.bind(this)} className="btn btn-default"><i className="fa fa-th"></i></a></li>
+            <NeedAuthorization>
+              <li><Link to='/uploads' className="btn btn-default"><span><i className="fa fa-cloud-upload"></i></span></Link></li>
+            </NeedAuthorization>
+            <NeedAuthorization>
+              <li><Link to='/settings/account' className="btn btn-default"><i className="fa fa-cog"></i></Link></li>
+            </NeedAuthorization>
+            {(() => {
+              if (!user._id) {
+                return <li><Link to='/login' className="btn btn-default"><i className="fa fa-power-off"></i></Link></li>;
+              }
+            })()}
+          </ul>
+        </li>
       </ul>
     );
   }
@@ -37,11 +52,12 @@ Menu.propTypes = {
   search: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
-  searchDocuments: PropTypes.func
+  searchDocuments: PropTypes.func,
+  links: PropTypes.object
 };
 
-export function mapStateToProps({user, search}) {
-  return {user, search};
+export function mapStateToProps({user, search, settings}) {
+  return {user, search, links: settings.collection.get('links')};
 }
 
 function mapDispatchToProps(dispatch) {

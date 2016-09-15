@@ -52,7 +52,7 @@ class App extends Component {
     let searchBoxClass = 'search-box';
     let menuToggleClass = 'navbar-toggle ';
     let MenuButtonClass = 'menu-button fa fa-bars';
-    let navClass = 'nav nav-pills';
+    let navClass = 'menuNav';
 
     if (this.state.showmenu) {
       searchBoxClass += ' in';
@@ -76,14 +76,10 @@ class App extends Component {
             <h1><SiteName/></h1>
           </nav>
           <header>
-            <div className="container-fluid">
-              <div className="row">
-                <h1 className="logotype"><SiteName/></h1>
-                <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
-                {this.renderTools()}
-                <Menu onClick={this.toggleMenu.bind(this)} className={navClass} />
-              </div>
-            </div>
+            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
+            <h1 className="logotype"><SiteName/></h1>
+            {this.renderTools()}
+            <Menu onClick={this.toggleMenu.bind(this)} className={navClass} />
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>

@@ -28,6 +28,12 @@ describe('PageCreator', () => {
       expect(component.find(Form).props().onSubmit).toBe(props.savePage);
     });
 
+    it('should disable saving while savingPage', () => {
+      props.savingPage = true;
+      render();
+      expect(component.find('button').first().props().disabled).toBe(true);
+    });
+
     it('should have a title field associated to the page title', () => {
       render();
       expect(component.find(FormField).first().props().model).toBe('page.data.title');
