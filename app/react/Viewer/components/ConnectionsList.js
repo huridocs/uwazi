@@ -103,11 +103,15 @@ export class ConnectionsList extends Component {
                   </dl>
                 </div>
                 <div className="item-actions">
+                  <span className="item-type item-type-1">
+                    <i className="item-type__icon fa fa-file-text-o"></i>
+                    <span className="item-type__name">Court Document</span>
+                  </span>
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
                       <NeedAuthorization>
                         <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-unlink"></i><span>Delete</span>
+                          <i className="fa fa-trash"></i>
                         </a>
                       </NeedAuthorization>
                     </ShowIf>

@@ -93,6 +93,18 @@ $c-sidebar: $c-white;
   .item {
     transition: all 0ms;
     width: 100%;
+    margin: 0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    box-shadow: none;
+    &:last-child {
+      border-bottom: 0;
+    }
+    &:before {
+      display: none;
+    }
 
     &:after {
       content: '\f00c';
@@ -108,10 +120,20 @@ $c-sidebar: $c-white;
     }
 
     &.is-selected {
+      border-color: $c-grey-light;
+      background: $c-primary-lighten;
       &:after {
         opacity: 1;
         top: 50%;
       }
+    }
+
+    &.relationship-hover {
+      background: $c-secondary-lighten;
+    }
+
+    &.relationship-active {
+      background: $c-secondary-light;
     }
   }
 }
@@ -125,7 +147,7 @@ $c-sidebar: $c-white;
 .sidepanel-header,
 .sidepanel-footer {
   background: $c-sidebar;
-  padding: 18px 30px;
+  padding: 15px;
   z-index: 1;
 }
 

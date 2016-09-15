@@ -20,7 +20,10 @@ export class SearchResults extends Component {
                     <div className="item-name">{result.title}</div>
                   </div>
                   <div className="item-actions">
-                    <div className="item-shortcut"><i className="fa fa-angle-right"></i><span>Select document</span></div>
+                    <span className="item-type item-type-1">
+                      <i className="item-type__icon fa fa-file-text-o"></i>
+                      <span className="item-type__name">Court Document</span>
+                    </span>
                   </div>
                 </div>
               );
