@@ -13,9 +13,6 @@ header {
 		font-family: $f-special;
 		font-weight: 300;
 		margin: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     width: calc(100% - 54*2px);
 		@media(min-width: 1024px) {
 		  padding: 0 15px;
@@ -24,7 +21,11 @@ header {
 		}
 
     a {
-      display: inline-block;
+      display: block;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       line-height: 56px;
       height: 54px;
       color: $c-black;
