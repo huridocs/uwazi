@@ -101,28 +101,51 @@ export default function () {
       return this;
     },
 
+    aggregation(key, filters) {
+      return {
+        terms: {
+          field: key,
+          size: 0
+        },
+        aggregations: {
+          filtered: {
+            filter: {
+              bool: {
+                must: filters
+              }
+            }
+          }
+        }
+      };
+    },
+
     aggregations(properties) {
       properties.forEach((property) => {
-        let key = `doc.metadata.${property}.raw`;
+        let key = `doc.metadata.${property.name}.raw`;
         let filters = baseQuery.filter.bool.must.filter((match) => {
           return !match.terms || (match.terms && !match.terms[key]);
         });
 
-        baseQuery.aggregations[property] = {
-          terms: {
-            field: key,
-            size: 0
-          },
-          aggregations: {
-            filtered: {
-              filter: {
-                bool: {
-                  must: filters
-                }
+        if (property.nested) {
+          let nestedAggregation = baseQuery.aggregations[property.name] = {
+            nested: {
+              path: `doc.metadata.${property.name}`
+            },
+            aggregations: {}
+          };
+          property.nestedProperties.forEach((prop) => {
+            nestedAggregation.aggregations[prop] = {
+              terms: {
+                field: `doc.metadata.${property.name}${prop}.raw`,
+                size: 0
               }
-            }
-          }
-        };
+            };
+          });
+          return baseQuery.aggregations[property.name] = nestedAggregation;
+        }
+
+        baseQuery.aggregations[property.name] = this.aggregation(key, filters);
+        console.log(baseQuery.aggregations);
       });
       return this;
     },

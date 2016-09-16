@@ -64,8 +64,13 @@ export function searchDocuments(readOnlySearch, limit) {
     const filters = getState().library.filters.toJS();
     const search = Object.assign({}, readOnlySearch);
     search.aggregations = filters.properties
-    .filter((property) => property.type === 'select' || property.type === 'multiselect')
-    .map((property) => property.name);
+    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'violatedarticles')
+    .map((property) => {
+      if (property.type === 'violatedarticles') {
+        return {name: property.name, nested: true, nestedProperties: ['cadh', 'cipst', 'cbdp', 'cidfp']};
+      }
+      return {name: property.name, nested: false};
+    });
 
     search.filters = {};
     filters.properties.forEach((property) => {

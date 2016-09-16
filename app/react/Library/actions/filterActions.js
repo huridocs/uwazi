@@ -33,7 +33,12 @@ export function filterDocumentTypes(documentTypes) {
 
     let aggregations = libraryFilters
     .filter((property) => property.type === 'select' || property.type === 'multiselect'|| property.type === 'violatedarticles')
-    .map((property) => property.name);
+    .map((property) => {
+      if (property.type === 'violatedarticles') {
+        return {name: property.name, nested: true, nestedProperties: ['cadh', 'cipst', 'cbdp', 'cidfp']};
+      }
+      return {name: property.name, nested: false};
+    });
 
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
