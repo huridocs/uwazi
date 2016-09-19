@@ -1,1 +1,1 @@
-nodemon -q api_test.js
+nodemon -q api_test.js -w app
