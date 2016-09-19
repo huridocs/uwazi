@@ -10,10 +10,12 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import fs from 'fs';
 import {mockID} from 'shared/uniqueID';
+import references from 'api/references';
 
 describe('documents', () => {
   let result;
   beforeEach((done) => {
+    spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     mockID();
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1'},
@@ -56,6 +58,15 @@ describe('documents', () => {
   describe('save', () => {
     let getDocuments = () => request.get(dbURL + '/_design/documents/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
+
+    it('should saveEntityBasedReferences', () => {
+      spyOn(date, 'currentUTC').and.returnValue('universal time');
+      let doc = {title: 'Batman begins'};
+      let user = {_id: 'user Id'};
+
+      documents.save(doc, user);
+      expect(references.saveEntityBasedReferences).toHaveBeenCalledWith(doc);
+    });
 
     it('should create a new document with logged user id and UTC date', (done) => {
       spyOn(date, 'currentUTC').and.returnValue('universal time');

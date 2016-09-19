@@ -1,7 +1,7 @@
 import {db_url as dbURL} from 'api/config/database.js';
 import references from '../references.js';
 import database from 'api/utils/database.js';
-import fixtures from './fixtures.js';
+import fixtures, {template} from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -22,6 +22,71 @@ describe('references', () => {
         expect(result.rows[0].title).toBe('reference1');
         done();
       }).catch(catchErrors(done));
+    });
+  });
+
+  describe('saveEntityBasedReferences', () => {
+    it('should create references for each option on selects/multiselects using entities', (done) => {
+      const entity = {
+        _id: 'id_testing',
+        template,
+        metadata: {
+          selectName: 'selectValue',
+          multiSelectName: ['value1', 'value2']
+        }
+      };
+
+      references.saveEntityBasedReferences(entity)
+      .then(() => {
+        return references.getByDocument(entity._id);
+      })
+      .then((refs) => {
+        expect(refs.length).toBe(3);
+
+        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toEqual('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toEqual('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'value2').sourceDocument).toEqual('id_testing');
+
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    describe('when a select value changes', () => {
+      it('should update the references properly', (done) => {
+        const entity = {
+          _id: 'id_testing',
+          template,
+          metadata: {
+            selectName: 'selectValue',
+            multiSelectName: ['value1', 'value2']
+          }
+        };
+
+        let generatedIds = [];
+        references.saveEntityBasedReferences(entity)
+        .then((createdReferences) => {
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value1')._id);
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value2')._id);
+          entity.metadata.selectName = 'value1';
+          entity.metadata.multiSelectName = ['value2'];
+          return references.saveEntityBasedReferences(entity);
+        })
+        .then(() => {
+          return references.getByDocument(entity._id);
+        })
+        .then((refs) => {
+          expect(refs.length).toBe(2);
+
+          expect(refs.find((ref) => ref.targetDocument === 'value1')._id).not.toBe(generatedIds[0]);
+          expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toEqual('id_testing');
+          expect(refs.find((ref) => ref.targetDocument === 'value2')._id).toBe(generatedIds[1]);
+          expect(refs.find((ref) => ref.targetDocument === 'value2').sourceDocument).toEqual('id_testing');
+
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 

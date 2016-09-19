@@ -8,6 +8,7 @@ import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import fs from 'fs';
 import uniqueID from 'shared/uniqueID';
+import references from '../references/references.js';
 
 export default {
   save(doc, user) {
@@ -32,7 +33,10 @@ export default {
       url = dbURL + '/_design/documents/_update/partialUpdate/' + doc._id;
     }
 
-    return request.post(url, doc)
+    return references.saveEntityBasedReferences(doc)
+    .then(() => {
+      return request.post(url, doc);
+    })
     .then(response => {
       return this.get(response.json.id);
     })

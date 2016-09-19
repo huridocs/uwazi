@@ -69,6 +69,34 @@ export default {
     });
   },
 
+  getById(templateId) {
+    const id = '?key="' + templateId + '"';
+    const url = dbURL + '/_design/templates/_view/all' + id;
+
+    return request.get(url)
+    .then(response => {
+      response.json.rows = response.json.rows.map(row => row.value);
+      return response.json.rows[0];
+    });
+  },
+
+  getEntitySelectNames(templateId) {
+    return this.getById(templateId)
+    .then((template) => {
+      const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
+      const entitySelects = [];
+      return Promise.all(selects.map((select) => {
+        return request.get(`${dbURL}/${select.content}`)
+        .then((result) => {
+          if (result.json.type === 'template') {
+            entitySelects.push(select.name);
+          }
+        });
+      }))
+      .then(() => entitySelects);
+    });
+  },
+
   countByThesauri(thesauriId) {
     return request.get(`${dbURL}/_design/templates/_view/count_by_thesauri?key="${thesauriId}"`)
     .then((response) => {
