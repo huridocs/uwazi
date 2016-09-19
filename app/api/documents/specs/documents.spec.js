@@ -59,15 +59,6 @@ describe('documents', () => {
     let getDocuments = () => request.get(dbURL + '/_design/documents/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    it('should saveEntityBasedReferences', () => {
-      spyOn(date, 'currentUTC').and.returnValue('universal time');
-      let doc = {title: 'Batman begins'};
-      let user = {_id: 'user Id'};
-
-      documents.save(doc, user);
-      expect(references.saveEntityBasedReferences).toHaveBeenCalledWith(doc);
-    });
-
     it('should create a new document with logged user id and UTC date', (done) => {
       spyOn(date, 'currentUTC').and.returnValue('universal time');
       let doc = {title: 'Batman begins'};
@@ -80,6 +71,21 @@ describe('documents', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.creationDate).toEqual('universal time');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should saveEntityBasedReferences', (done) => {
+      spyOn(date, 'currentUTC').and.returnValue('universal time');
+      let doc = {title: 'Batman begins'};
+      let user = {_id: 'user Id'};
+
+      documents.save(doc, user)
+      .then(() => {
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._rev).toBeDefined();
         done();
       })
       .catch(catchErrors(done));

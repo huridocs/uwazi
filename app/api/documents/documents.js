@@ -33,14 +33,14 @@ export default {
       url = dbURL + '/_design/documents/_update/partialUpdate/' + doc._id;
     }
 
-    return references.saveEntityBasedReferences(doc)
-    .then(() => {
-      return request.post(url, doc);
-    })
+    return request.post(url, doc)
     .then(response => {
       return this.get(response.json.id);
     })
-    .then(response => response.rows[0]);
+    .then(response => {
+      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0])]);
+    })
+    .then(([response]) => response.rows[0]);
   },
 
   get(docId) {
