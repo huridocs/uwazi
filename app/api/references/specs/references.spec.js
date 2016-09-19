@@ -44,6 +44,7 @@ describe('references', () => {
         expect(refs.length).toBe(3);
 
         expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toEqual('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceType).toEqual('metadata');
         expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toEqual('id_testing');
         expect(refs.find((ref) => ref.targetDocument === 'value2').sourceDocument).toEqual('id_testing');
 

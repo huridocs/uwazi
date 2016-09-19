@@ -124,7 +124,12 @@ export default {
       });
 
       const deletes = toDelete.map((ref) => this.delete(ref));
-      const creates = toCreate.map((item) => this.save({sourceDocument: entity._id, targetDocument: item.value, sourceProperty: item.property}));
+      const creates = toCreate.map((item) => this.save({
+        sourceType: 'metadata',
+        sourceDocument: entity._id,
+        targetDocument: item.value,
+        sourceProperty: item.property
+      }));
 
       return Promise.all(deletes.concat(creates));
     });
