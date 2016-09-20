@@ -14,12 +14,16 @@ describe('EntityViewer', () => {
     context = {confirm: jasmine.createSpy('confirm')};
     props = {
       entity: {title: 'Title'},
-      templates: [{
-        _id: 'template1', properties: []
-      }],
+      templates: [
+        {_id: 'template1', properties: [{name: 'source_property', label: 'label1'}], name: 'template1Name'},
+        {_id: 'template2', properties: [{name: 'source_property', label: 'label2'}], name: 'template2Name'}
+      ],
+      relationTypes: [{_id: 'abc', name: 'relationTypeName'}],
       references: immutable([
-        {_id: 'ref1', connectedDocumentTemplate: 'template1'},
-        {_id: 'ref2', connectedDocumentTemplate: 'template1', sourceType: 'metadata'}
+        {_id: 'ref1', connectedDocumentTemplate: 'template1', relationType: 'abc'},
+        {_id: 'ref2', connectedDocumentTemplate: 'template1', sourceType: 'metadata', sourceProperty: 'source_property'},
+        {_id: 'ref3', connectedDocumentTemplate: 'template2', sourceType: 'metadata', sourceProperty: 'source_property'},
+        {_id: 'ref4', connectedDocumentTemplate: 'template1', sourceType: 'metadata', sourceProperty: 'source_property'}
       ]),
       deleteReference: jasmine.createSpy('deleteReference')
     };
@@ -32,8 +36,28 @@ describe('EntityViewer', () => {
 
   fdescribe('groupReferences', () => {
     it('should group the references based on the sourceProperty/connectionType and documentType', () => {
+      render();
       const groupedReferences = instance.groupReferences();
-      expect(true).toBe(false);
+
+      expect(groupedReferences.length).toBe(3);
+
+      expect(groupedReferences[0].key).toBe('abc-template1');
+      expect(groupedReferences[0].connectionType).toBe('connection');
+      expect(groupedReferences[0].connectionLabel).toBe('relationTypeName');
+      expect(groupedReferences[0].templateLabel).toBe('template1Name');
+      expect(groupedReferences[0].refs).toEqual([props.references.toJS()[0]]);
+
+      expect(groupedReferences[1].key).toBe('source_property-template1');
+      expect(groupedReferences[1].connectionType).toBe('metadata');
+      expect(groupedReferences[1].connectionLabel).toBe('label1');
+      expect(groupedReferences[1].templateLabel).toBe('template1Name');
+      expect(groupedReferences[1].refs).toEqual([props.references.toJS()[1], props.references.toJS()[3]]);
+
+      expect(groupedReferences[2].key).toBe('source_property-template2');
+      expect(groupedReferences[2].connectionType).toBe('metadata');
+      expect(groupedReferences[2].connectionLabel).toBe('label2');
+      expect(groupedReferences[2].templateLabel).toBe('template2Name');
+      expect(groupedReferences[2].refs).toEqual([props.references.toJS()[2]]);
     });
   });
 

@@ -45,17 +45,45 @@ export class EntityViewer extends Component {
 
   groupReferences() {
     const references = this.props.references.toJS();
-    const groupedReferences = {};
-    references.forEach((ref) => {
-      if (Object.keys(groupedReferences).indexOf(ref.sourceProperty) === -1) {
-        groupedReferences[ref.sourceProperty] = {};
+    const groupedReferences = [];
+    references.forEach((reference) => {
+      let groupedReference;
+      const referenceTemplate = this.props.templates
+                                  .find(t => t._id === reference.connectedDocumentTemplate);
+
+      if (reference.sourceType === 'metadata') {
+        groupedReference = groupedReferences.find(ref => ref.key === reference.sourceProperty + '-' + reference.connectedDocumentTemplate);
+
+        if (!groupedReference) {
+          groupedReference = {
+            key: reference.sourceProperty + '-' + reference.connectedDocumentTemplate,
+            connectionType: 'metadata',
+            connectionLabel: referenceTemplate
+                             .properties
+                             .find(p => p.name === reference.sourceProperty)
+                             .label,
+            templateLabel: referenceTemplate.name,
+            refs: []
+          };
+          groupedReferences.push(groupedReference);
+        }
       }
 
-      if (Object.keys(groupedReferences[ref.sourceProperty]).indexOf(ref.connectedDocumentTemplate) === -1) {
-        groupedReferences[ref.sourceProperty][ref.connectedDocumentTemplate] = [];
+      if (reference.sourceType !== 'metadata') {
+        groupedReference = groupedReferences.find(ref => ref.key === reference.relationType + '-' + reference.connectedDocumentTemplate);
+        if (!groupedReference) {
+          groupedReference = {
+            key: reference.relationType + '-' + reference.connectedDocumentTemplate,
+            connectionType: 'connection',
+            connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name,
+            templateLabel: referenceTemplate.name,
+            refs: []
+          };
+          groupedReferences.push(groupedReference);
+        }
       }
 
-      groupedReferences[ref.sourceProperty][ref.connectedDocumentTemplate].push(ref);
+      groupedReference.refs.push(reference);
     });
 
     return groupedReferences;
@@ -79,54 +107,57 @@ export class EntityViewer extends Component {
     references = references.toJS();
 
     const groupedReferences = this.groupReferences(references);
-    const referencesHtml = Object.keys(groupedReferences).map((propertyName, propertyIndex) =>
-      Object.keys(groupedReferences[propertyName]).map((templateId, templateIndex) =>
-        <div>
-          <div className="item-group-header" key={propertyIndex + '-' + templateIndex}>
-            Is <b>{propertyName}</b> in <b>{templateId}</b> ({groupedReferences[propertyName][templateId].length})
-          </div>
-          <div className="item-group">
-            {groupedReferences[propertyName][templateId].map((reference, index) => {
-              let referenceIcon = 'fa-sign-out';
-              if (reference.inbound) {
-                referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
-              }
-              return (
-                <div key={index} className="item">
-                  <div className="item-info">
-                    <div className="item-name">
-                      <i className={`fa ${referenceIcon}`}></i>
-                      &nbsp;{reference.connectedDocumentTitle}
-                      {(() => {
-                        if (reference.text) {
-                          return <div className="item-snippet">
-                            {reference.text}
-                          </div>;
-                        }
-                      })()}
-                    </div>
-                  </div>
-                  <div className="item-actions">
-                    <NeedAuthorization>
-                      <ShowIf if={reference.sourceType !== 'metadata'}>
-                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
-                        </a>
-                      </ShowIf>
-                    </NeedAuthorization>
-                    &nbsp;
-                    <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                      <span className="itemShortcut-arrow">
-                        <i className="fa fa-external-link"></i>
-                      </span>
-                    </Link>
+    const referencesHtml = groupedReferences.map((group) =>
+      <div key={group.key}>
+        <div className="item-group-header">
+          <ShowIf if={group.connectionType === 'metadata'}>
+            <span>Is <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> ({group.refs.length})</span>
+          </ShowIf>
+          <ShowIf if={group.connectionType === 'connection'}>
+            <span>Connected as <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> ({group.refs.length})</span>
+          </ShowIf>
+        </div>
+        <div className="item-group">
+          {group.refs.map((reference, index) => {
+            let referenceIcon = 'fa-sign-out';
+            if (reference.inbound) {
+              referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
+            }
+            return (
+              <div key={index} className="item">
+                <div className="item-info">
+                  <div className="item-name">
+                    <i className={`fa ${referenceIcon}`}></i>
+                    &nbsp;{reference.connectedDocumentTitle}
+                    {(() => {
+                      if (reference.text) {
+                        return <div className="item-snippet">
+                          {reference.text}
+                        </div>;
+                      }
+                    })()}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+                <div className="item-actions">
+                  <NeedAuthorization>
+                    <ShowIf if={reference.sourceType !== 'metadata'}>
+                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                        <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
+                      </a>
+                    </ShowIf>
+                  </NeedAuthorization>
+                  &nbsp;
+                  <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                    <span className="itemShortcut-arrow">
+                      <i className="fa fa-external-link"></i>
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      )
+      </div>
     );
 
     return (
