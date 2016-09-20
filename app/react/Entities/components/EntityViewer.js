@@ -1,3 +1,5 @@
+// ENTIRE COMPONENT IS UNTESTED!!!!
+// There is partial testing of added functionality, but this requires a full test.
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import {Link} from 'react-router';
@@ -27,58 +29,138 @@ export class EntityViewer extends Component {
     });
   }
 
+  // TESTED -----
   deleteReference(reference) {
-    this.context.confirm({
-      accept: () => {
-        this.props.deleteReference(reference);
-      },
-      title: 'Confirm delete connection',
-      message: 'Are you sure you want to delete this connection?'
-    });
-  }
-
-  relationType(id, relationTypes) {
-    let type = relationTypes.find((relation) => relation._id === id);
-    if (type) {
-      return type.name;
+    if (reference.sourceType !== 'metadata') {
+      this.context.confirm({
+        accept: () => {
+          this.props.deleteReference(reference);
+        },
+        title: 'Confirm delete connection',
+        message: 'Are you sure you want to delete this connection?'
+      });
     }
   }
+  // --------------
+
+  groupReferences(references) {
+    const groupedReferences = {};
+    references.forEach((ref) => {
+      if (Object.keys(groupedReferences).indexOf(ref.sourceProperty) === -1) {
+        groupedReferences[ref.sourceProperty] = {};
+      }
+
+      if (Object.keys(groupedReferences[ref.sourceProperty]).indexOf(ref.connectedDocumentTemplate) === -1) {
+        groupedReferences[ref.sourceProperty][ref.connectedDocumentTemplate] = [];
+      }
+
+      groupedReferences[ref.sourceProperty][ref.connectedDocumentTemplate].push(ref);
+    });
+
+    return groupedReferences;
+  }
+
+  renderReferences() {
+
+  }
+
+  // This is aparently NOT being used!
+  // relationType(id, relationTypes) {
+  //   let type = relationTypes.find((relation) => relation._id === id);
+  //   if (type) {
+  //     return type.name;
+  //   }
+  // }
 
   render() {
-    let {entity, entityBeingEdited, references, relationTypes} = this.props;
+    // let {entity, entityBeingEdited, references, relationTypes} = this.props;
+    let {entity, entityBeingEdited, references} = this.props;
+    references = references.toJS();
+
+    const groupedReferences = this.groupReferences(references);
+    const referencesHtml = Object.keys(groupedReferences).map((propertyName, propertyIndex) =>
+      Object.keys(groupedReferences[propertyName]).map((templateId, templateIndex) =>
+        <div>
+          <div className="item-group-header" key={propertyIndex + '-' + templateIndex}>
+            Is <b>{propertyName}</b> in <b>{templateId}</b> ({groupedReferences[propertyName][templateId].length})
+          </div>
+          <div className="item-group">
+            {groupedReferences[propertyName][templateId].map((reference, index) => {
+              let referenceIcon = 'fa-sign-out';
+              if (reference.inbound) {
+                referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
+              }
+              return (
+                <div key={index} className="item">
+                  <div className="item-info">
+                    <div className="item-name">
+                      <i className={`fa ${referenceIcon}`}></i>
+                      &nbsp;{reference.connectedDocumentTitle}
+                      {(() => {
+                        if (reference.text) {
+                          return <div className="item-snippet">
+                            {reference.text}
+                          </div>;
+                        }
+                      })()}
+                    </div>
+                  </div>
+                  <div className="item-actions">
+                    <NeedAuthorization>
+                      <ShowIf if={reference.sourceType !== 'metadata'}>
+                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                          <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
+                        </a>
+                      </ShowIf>
+                    </NeedAuthorization>
+                    &nbsp;
+                    <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                      <span className="itemShortcut-arrow">
+                        <i className="fa fa-external-link"></i>
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )
+    );
+
     return (
       <div className="row">
         <Helmet title="Entity" />
         <aside className="side-panel entity-metadata">
-        <ShowIf if={!entityBeingEdited}>
-          <div className="sidepanel-header">
+          <ShowIf if={!entityBeingEdited}>
+            <div className="sidepanel-header">
 
-          </div>
-        </ShowIf>
-            <div className="sidepanel-footer">
-              <NeedAuthorization>
-                <ShowIf if={!entityBeingEdited}>
-                  <button
-                    onClick={() => this.props.loadInReduxForm('entityView.entityForm', this.props.rawEntity, this.props.templates)}
-                    className="edit-metadata btn btn-primary">
-                    <i className="fa fa-pencil"></i>
-                    <span className="btn-label">Edit</span>
-                  </button>
-                </ShowIf>
-              </NeedAuthorization>
-              <ShowIf if={entityBeingEdited}>
-                <button type="submit" form="metadataForm" className="edit-metadata btn btn-success">
-                  <i className="fa fa-save"></i>
-                  <span className="btn-label">Save</span>
+            </div>
+          </ShowIf>
+          <div className="sidepanel-footer">
+            <NeedAuthorization>
+              <ShowIf if={!entityBeingEdited}>
+                <button
+                  onClick={() => this.props.loadInReduxForm('entityView.entityForm', this.props.rawEntity, this.props.templates)}
+                  className="edit-metadata btn btn-primary">
+                  <i className="fa fa-pencil"></i>
+                  <span className="btn-label">Edit</span>
                 </button>
               </ShowIf>
-              <NeedAuthorization>
-                <button className="edit-metadata btn btn-danger" onClick={this.deleteEntity.bind(this)}>
-                  <i className="fa fa-trash"></i>
-                  <span className="btn-label">Delete</span>
-                </button>
-              </NeedAuthorization>
-            </div>
+            </NeedAuthorization>
+            <ShowIf if={entityBeingEdited}>
+              <button type="submit" form="metadataForm" className="edit-metadata btn btn-success">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">Save</span>
+              </button>
+            </ShowIf>
+            <NeedAuthorization>
+              <button className="edit-metadata btn btn-danger" onClick={this.deleteEntity.bind(this)}>
+                <i className="fa fa-trash"></i>
+                <span className="btn-label">Delete</span>
+              </button>
+            </NeedAuthorization>
+          </div>
           <div className="sidepanel-body">
             <ShowIf if={!entityBeingEdited}>
               <h1 className="item-name">{entity.title}</h1>
@@ -112,54 +194,8 @@ export class EntityViewer extends Component {
             &nbsp;
           </div>
           <div className="sidepanel-body">
-            <div className="item-group">
-              {(() => {
-                return references.map((reference, index) => {
-                  let referenceIcon = 'fa-sign-out';
-                  if (reference.inbound) {
-                    referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
-                  }
-
-                  return (
-                    <div key={index} className="item">
-                      <div className="item-info">
-                        <div className="item-name">
-                          <i className={`fa ${referenceIcon}`}></i>
-                          &nbsp;{reference.connectedDocumentTitle}
-                          {(() => {
-                            if (reference.text) {
-                              return <div className="item-snippet">
-                                {reference.text}
-                              </div>;
-                            }
-                          })()}
-                        </div>
-                      </div>
-                      <div className="item-metadata">
-                        <dl>
-                          <dt>Connection type</dt>
-                          <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
-                        </dl>
-                      </div>
-                      <div className="item-actions">
-                        <NeedAuthorization>
-                          <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                            <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
-                          </a>
-                        </NeedAuthorization>
-                        &nbsp;
-                        <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
-                          <span className="itemShortcut-arrow">
-                            <i className="fa fa-external-link"></i>
-                          </span>
-                        </Link>
-                      </div>
-                    </div>
-                    );
-                });
-              })()}
+            {referencesHtml}
           </div>
-        </div>
         </aside>
       </div>
     );
@@ -171,7 +207,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
-  references: PropTypes.array,
+  references: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
   loadInReduxForm: PropTypes.func,
@@ -189,12 +225,13 @@ const mapStateToProps = (state) => {
   let thesauris = state.thesauris.toJS();
   let relationTypes = state.relationTypes.toJS();
 
+  let references = state.entityView.references.filterNot(ref => ref.get('sourceDocument') === entity._id && ref.get('sourceType') === 'metadata');
   return {
     rawEntity: entity,
     templates,
     relationTypes,
     entity: formater.prepareMetadata(entity, templates, thesauris),
-    references: state.entityView.references.toJS(),
+    references,
     entityBeingEdited: !!state.entityView.entityForm._id
   };
 };
