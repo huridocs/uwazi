@@ -51,7 +51,7 @@ export class ConnectionsList extends Component {
       let aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
       let bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
       return aStart - bStart;
-    });
+    }).filter((ref) => !ref.inbound && ref.sourceType !== 'metadata');
 
     return (
       <div className="item-group">
