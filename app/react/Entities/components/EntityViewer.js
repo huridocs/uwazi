@@ -43,7 +43,8 @@ export class EntityViewer extends Component {
   }
   // --------------
 
-  groupReferences(references) {
+  groupReferences() {
+    const references = this.props.references.toJS();
     const groupedReferences = {};
     references.forEach((ref) => {
       if (Object.keys(groupedReferences).indexOf(ref.sourceProperty) === -1) {
