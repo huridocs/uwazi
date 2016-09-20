@@ -53,6 +53,26 @@ describe('references', () => {
       .catch(catchErrors(done));
     });
 
+    it('should not attempt to create references for missing properties', (done) => {
+      const entity = {
+        _id: 'id_testing',
+        template,
+        metadata: {
+          selectName: 'selectValue'
+        }
+      };
+
+      references.saveEntityBasedReferences(entity)
+      .then(() => {
+        return references.getByDocument(entity._id);
+      })
+      .then((refs) => {
+        expect(refs.length).toBe(1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     describe('when a select value changes', () => {
       it('should update the references properly', (done) => {
         const entity = {

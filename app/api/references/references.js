@@ -94,10 +94,11 @@ export default {
     })
     .then(([properties, references]) => {
       let values = properties.reduce((memo, property) => {
-        let propertyValues = entity.metadata[property];
+        let propertyValues = entity.metadata[property] || [];
         if (typeof propertyValues === 'string') {
           propertyValues = [propertyValues];
         }
+
         return memo.concat(propertyValues.map(value => {
           return {property, value};
         }));
