@@ -147,7 +147,10 @@ export class EntityViewer extends Component {
                     </ShowIf>
                   </NeedAuthorization>
                   &nbsp;
-                  <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                  <Link
+                    to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                    onClick={e => e.stopPropagation()}
+                    className="item-shortcut">
                     <span className="itemShortcut-arrow">
                       <i className="fa fa-external-link"></i>
                     </span>

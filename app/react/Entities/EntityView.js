@@ -28,6 +28,11 @@ export default class Entity extends RouteHandler {
     });
   }
 
+  emptyState() {
+    this.context.store.dispatch(actions.unset('entityView/entity'));
+    this.context.store.dispatch(actions.unset('entityView/references'));
+  }
+
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('templates', state.templates));
