@@ -112,7 +112,7 @@ export default {
             isInValues = true;
           }
         });
-        return !isInValues;
+        return !isInValues && ref.sourceType === 'metadata';
       });
 
       const toCreate = values.filter((item) => {

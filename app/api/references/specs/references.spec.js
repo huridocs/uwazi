@@ -26,7 +26,7 @@ describe('references', () => {
   });
 
   describe('saveEntityBasedReferences', () => {
-    it('should create references for each option on selects/multiselects using entities', (done) => {
+    fit('should create references for each option on selects/multiselects using entities (not affecting document references)', (done) => {
       const entity = {
         _id: 'id_testing',
         template,
@@ -41,12 +41,13 @@ describe('references', () => {
         return references.getByDocument(entity._id);
       })
       .then((refs) => {
-        expect(refs.length).toBe(3);
+        expect(refs.length).toBe(4);
 
-        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toEqual('id_testing');
-        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceType).toEqual('metadata');
-        expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toEqual('id_testing');
-        expect(refs.find((ref) => ref.targetDocument === 'value2').sourceDocument).toEqual('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toBe('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceType).toBe('metadata');
+        expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
+        expect(refs.filter((ref) => ref.targetDocument === 'value2')[0].sourceDocument).toBe('id_testing');
+        expect(refs.filter((ref) => ref.targetDocument === 'value2')[1]._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
 
         done();
       })

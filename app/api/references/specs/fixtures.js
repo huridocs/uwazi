@@ -16,6 +16,8 @@ export default {
     {"_id":"doc4", title: "doc4 title", type: "document", template: "template1_id"},
     {"_id":"doc5", title: "doc5 title", type: "document", template: "template2_id"},
 
+    //document-based existing reference
+    {"_id":"c08ef2532f0bd008ac5174b45e033c10", "type":"reference", "title":"reference1", "sourceDocument": "id_testing", "targetDocument": "value2", "targetRange": "range1", "sourceRange": {text: 'sourceRange'}, "relationtype": 'relation1'},
     //selectValues
     {"_id":"selectValue", title: "selectValue", type: "entity"},
     {"_id":"value1", title: "value1", type: "entity"},
