@@ -29,9 +29,10 @@ export default {
       connections.forEach((connection) => {
         let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
         .then((res) => {
-          connection.connectedDocumentTitle = res.json.title;
-          connection.connectedDocumentType = res.json.type;
           connection.connectedDocumentTemplate = res.json.template;
+          connection.connectedDocumentType = res.json.type;
+          connection.connectedDocumentTitle = res.json.title;
+          connection.connectedDocumentPublished = Boolean(res.json.published);
         });
         requestDocuments.push(promise);
       });

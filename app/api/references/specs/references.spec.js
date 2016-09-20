@@ -127,6 +127,7 @@ describe('references', () => {
         expect(result[0].connectedDocumentTitle).toBe('source1 title');
         expect(result[0].connectedDocumentType).toBe('document');
         expect(result[0].connectedDocumentTemplate).toBe('template3_id');
+        expect(result[0].connectedDocumentPublished).toBe(false);
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
@@ -136,6 +137,7 @@ describe('references', () => {
         expect(result[1].connectedDocumentTitle).toBe('doc3 title');
         expect(result[1].connectedDocumentType).toBe('entity');
         expect(result[1].connectedDocumentTemplate).toBe('template1_id');
+        expect(result[1].connectedDocumentPublished).toBe(true);
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
@@ -145,6 +147,7 @@ describe('references', () => {
         expect(result[2].connectedDocumentTitle).toBe('doc4 title');
         expect(result[2].connectedDocumentType).toBe('document');
         expect(result[2].connectedDocumentTemplate).toBe('template1_id');
+        expect(result[2].connectedDocumentPublished).toBe(false);
 
         expect(result[3].text).toBe('');
         done();
