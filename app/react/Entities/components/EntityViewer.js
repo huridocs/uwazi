@@ -108,58 +108,56 @@ export class EntityViewer extends Component {
 
     const groupedReferences = this.groupReferences(references);
     const referencesHtml = groupedReferences.map((group) =>
-      <div key={group.key}>
+      <div className="item-group" key={group.key}>
         <div className="item-group-header">
           <ShowIf if={group.connectionType === 'metadata'}>
-            <span>Is <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> ({group.refs.length})</span>
+            <div>Is <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
           </ShowIf>
           <ShowIf if={group.connectionType === 'connection'}>
-            <span>Connected as <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> ({group.refs.length})</span>
+            <div>Connected as <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
           </ShowIf>
         </div>
-        <div className="item-group">
-          {group.refs.map((reference, index) => {
-            let referenceIcon = 'fa-sign-out';
-            if (reference.inbound) {
-              referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
-            }
-            return (
-              <div key={index} className="item">
-                <div className="item-info">
-                  <div className="item-name">
-                    <i className={`fa ${referenceIcon}`}></i>
-                    &nbsp;{reference.connectedDocumentTitle}
-                    {(() => {
-                      if (reference.text) {
-                        return <div className="item-snippet">
-                          {reference.text}
-                        </div>;
-                      }
-                    })()}
-                  </div>
-                </div>
-                <div className="item-actions">
-                  <NeedAuthorization>
-                    <ShowIf if={reference.sourceType !== 'metadata'}>
-                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                        <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
-                      </a>
-                    </ShowIf>
-                  </NeedAuthorization>
-                  &nbsp;
-                  <Link
-                    to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
-                    onClick={e => e.stopPropagation()}
-                    className="item-shortcut">
-                    <span className="itemShortcut-arrow">
-                      <i className="fa fa-external-link"></i>
-                    </span>
-                  </Link>
+        {group.refs.map((reference, index) => {
+          let referenceIcon = 'fa-sign-out';
+          if (reference.inbound) {
+            referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
+          }
+          return (
+            <div key={index} className="item">
+              <div className="item-info">
+                <div className="item-name">
+                  <i className={`fa ${referenceIcon}`}></i>
+                  &nbsp;{reference.connectedDocumentTitle}
+                  {(() => {
+                    if (reference.text) {
+                      return <div className="item-snippet">
+                        {reference.text}
+                      </div>;
+                    }
+                  })()}
                 </div>
               </div>
-            );
-          })}
-        </div>
+              <div className="item-actions">
+                <NeedAuthorization>
+                  <ShowIf if={reference.sourceType !== 'metadata'}>
+                    <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                      <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
+                    </a>
+                  </ShowIf>
+                </NeedAuthorization>
+                &nbsp;
+                <Link
+                  to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                  onClick={e => e.stopPropagation()}
+                  className="item-shortcut">
+                  <span className="itemShortcut-arrow">
+                    <i className="fa fa-external-link"></i>
+                  </span>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
 
