@@ -34,7 +34,7 @@ describe('EntityViewer', () => {
     instance = component.instance();
   };
 
-  fdescribe('groupReferences', () => {
+  describe('groupReferences', () => {
     it('should group the references based on the sourceProperty/connectionType and documentType', () => {
       render();
       const groupedReferences = instance.groupReferences();
@@ -75,7 +75,7 @@ describe('EntityViewer', () => {
     it('should delete the reference upon accepting', () => {
       component.find('.item-actions').find('a').first().props().onClick();
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deleteReference).toHaveBeenCalledWith(props.references[0]);
+      expect(props.deleteReference).toHaveBeenCalledWith(props.references.toJS()[0]);
     });
 
     it('should not atempt to delete references whos source is metadata', () => {
