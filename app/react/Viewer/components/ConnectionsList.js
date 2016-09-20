@@ -51,7 +51,7 @@ export class ConnectionsList extends Component {
       let aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
       let bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
       return aStart - bStart;
-    }).filter((ref) => !ref.inbound && ref.sourceType !== 'metadata');
+    });
 
     return (
       <div className="item-group">
@@ -113,7 +113,9 @@ export class ConnectionsList extends Component {
                     </ShowIf>
                     &nbsp;
                     <ShowIf if={!this.props.targetDoc}>
-                      <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                      <Link to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                            onClick={e => e.stopPropagation()}
+                            className="item-shortcut">
                         <span className="itemShortcut-arrow">
                           <i className="fa fa-external-link"></i>
                         </span>
@@ -149,15 +151,8 @@ ConnectionsList.contextTypes = {
 };
 
 const mapStateToProps = ({documentViewer}) => {
-  let references = documentViewer.references;
-
-  if (documentViewer.targetDoc.get('_id')) {
-    references = documentViewer.targetDocReferences;
-  }
-
   return {
     uiState: documentViewer.uiState,
-    references,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')
   };
