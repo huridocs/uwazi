@@ -16,7 +16,8 @@ describe('ViewMetadataPanel', () => {
     props = {
       doc: {metadata: []},
       rawDoc: Immutable.fromJS({}),
-      showModal: jasmine.createSpy('showModal')
+      showModal: jasmine.createSpy('showModal'),
+      references: Immutable.fromJS([{_id: 'reference'}])
     };
   });
 
@@ -89,7 +90,7 @@ describe('ViewMetadataPanel', () => {
         }),
         doc: Immutable.fromJS({}),
         targetDoc: Immutable.fromJS({}),
-        references: Immutable.fromJS(['reference']),
+        references: Immutable.fromJS([{_id: 'reference'}]),
         templates: Immutable.fromJS(['template']),
         thesauris: Immutable.fromJS(['thesauris']),
         docForm: {}
