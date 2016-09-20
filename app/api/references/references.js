@@ -31,6 +31,7 @@ export default {
         .then((res) => {
           connection.connectedDocumentTitle = res.json.title;
           connection.connectedDocumentType = res.json.type;
+          connection.connectedDocumentTemplate = res.json.template;
         });
         requestDocuments.push(promise);
       });
