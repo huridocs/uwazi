@@ -41,57 +41,55 @@ export class EntityViewer extends Component {
       });
     }
   }
-  // --------------
+
+  conformGroupData(connectionType, groupedReferences, options) {
+    let {key, connectionLabel, templateLabel} = options;
+    let groupData = groupedReferences.find(ref => ref.key === key);
+
+    if (!groupData) {
+      groupData = {key, connectionType, connectionLabel, templateLabel, refs: []};
+      groupedReferences.push(groupData);
+    }
+
+    return groupData;
+  }
+
+  getGroupData(reference, groupedReferences) {
+    const referenceTemplate = this.props.templates
+                              .find(t => t._id === reference.connectedDocumentTemplate);
+
+    if (reference.sourceType === 'metadata') {
+      return this.conformGroupData('metadata', groupedReferences, {
+        key: reference.sourceProperty + '-' + reference.connectedDocumentTemplate,
+        connectionLabel: referenceTemplate
+                         .properties
+                         .find(p => p.name === reference.sourceProperty)
+                         .label,
+        templateLabel: referenceTemplate.name
+      });
+    }
+
+    if (reference.sourceType !== 'metadata') {
+      return this.conformGroupData('connection', groupedReferences, {
+        key: reference.relationType + '-' + reference.connectedDocumentTemplate,
+        connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name,
+        templateLabel: referenceTemplate.name
+      });
+    }
+  }
 
   groupReferences() {
     const references = this.props.references.toJS();
     const groupedReferences = [];
     references.forEach((reference) => {
-      let groupedReference;
-      const referenceTemplate = this.props.templates
-                                  .find(t => t._id === reference.connectedDocumentTemplate);
-
-      if (reference.sourceType === 'metadata') {
-        groupedReference = groupedReferences.find(ref => ref.key === reference.sourceProperty + '-' + reference.connectedDocumentTemplate);
-
-        if (!groupedReference) {
-          groupedReference = {
-            key: reference.sourceProperty + '-' + reference.connectedDocumentTemplate,
-            connectionType: 'metadata',
-            connectionLabel: referenceTemplate
-                             .properties
-                             .find(p => p.name === reference.sourceProperty)
-                             .label,
-            templateLabel: referenceTemplate.name,
-            refs: []
-          };
-          groupedReferences.push(groupedReference);
-        }
-      }
-
-      if (reference.sourceType !== 'metadata') {
-        groupedReference = groupedReferences.find(ref => ref.key === reference.relationType + '-' + reference.connectedDocumentTemplate);
-        if (!groupedReference) {
-          groupedReference = {
-            key: reference.relationType + '-' + reference.connectedDocumentTemplate,
-            connectionType: 'connection',
-            connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name,
-            templateLabel: referenceTemplate.name,
-            refs: []
-          };
-          groupedReferences.push(groupedReference);
-        }
-      }
-
-      groupedReference.refs.push(reference);
+      const groupData = this.getGroupData(reference, groupedReferences);
+      groupData.refs.push(reference);
     });
 
     return groupedReferences;
   }
 
-  renderReferences() {
-
-  }
+  // --------------
 
   // This is aparently NOT being used!
   // relationType(id, relationTypes) {
