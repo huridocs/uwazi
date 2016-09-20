@@ -22,6 +22,7 @@ describe('EntityViewer', () => {
       references: immutable([
         {_id: 'ref1', connectedDocumentTemplate: 'template1', relationType: 'abc'},
         {_id: 'ref2', connectedDocumentTemplate: 'template1', sourceType: 'metadata', sourceProperty: 'source_property'},
+        {_id: 'ref5', relationType: 'abc'},
         {_id: 'ref3', connectedDocumentTemplate: 'template2', sourceType: 'metadata', sourceProperty: 'source_property'},
         {_id: 'ref4', connectedDocumentTemplate: 'template1', sourceType: 'metadata', sourceProperty: 'source_property'}
       ]),
@@ -39,7 +40,7 @@ describe('EntityViewer', () => {
       render();
       const groupedReferences = instance.groupReferences();
 
-      expect(groupedReferences.length).toBe(3);
+      expect(groupedReferences.length).toBe(4);
 
       expect(groupedReferences[0].key).toBe('abc-template1');
       expect(groupedReferences[0].connectionType).toBe('connection');
@@ -51,13 +52,19 @@ describe('EntityViewer', () => {
       expect(groupedReferences[1].connectionType).toBe('metadata');
       expect(groupedReferences[1].connectionLabel).toBe('label1');
       expect(groupedReferences[1].templateLabel).toBe('template1Name');
-      expect(groupedReferences[1].refs).toEqual([props.references.toJS()[1], props.references.toJS()[3]]);
+      expect(groupedReferences[1].refs).toEqual([props.references.toJS()[1], props.references.toJS()[4]]);
 
-      expect(groupedReferences[2].key).toBe('source_property-template2');
-      expect(groupedReferences[2].connectionType).toBe('metadata');
-      expect(groupedReferences[2].connectionLabel).toBe('label2');
-      expect(groupedReferences[2].templateLabel).toBe('template2Name');
+      expect(groupedReferences[2].key).toBe('abc-undefined');
+      expect(groupedReferences[2].connectionType).toBe('connection');
+      expect(groupedReferences[2].connectionLabel).toBe('relationTypeName');
+      expect(groupedReferences[2].templateLabel).toBe('documents without metadata');
       expect(groupedReferences[2].refs).toEqual([props.references.toJS()[2]]);
+
+      expect(groupedReferences[3].key).toBe('source_property-template2');
+      expect(groupedReferences[3].connectionType).toBe('metadata');
+      expect(groupedReferences[3].connectionLabel).toBe('label2');
+      expect(groupedReferences[3].templateLabel).toBe('template2Name');
+      expect(groupedReferences[3].refs).toEqual([props.references.toJS()[3]]);
     });
   });
 

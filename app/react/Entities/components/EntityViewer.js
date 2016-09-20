@@ -73,7 +73,7 @@ export class EntityViewer extends Component {
       return this.conformGroupData('connection', groupedReferences, {
         key: reference.relationType + '-' + reference.connectedDocumentTemplate,
         connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name,
-        templateLabel: referenceTemplate.name
+        templateLabel: referenceTemplate ? referenceTemplate.name : 'documents without metadata'
       });
     }
   }
@@ -120,8 +120,12 @@ export class EntityViewer extends Component {
           if (reference.inbound) {
             referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
           }
+
+          let itemClassName = 'item';
+          itemClassName += reference.connectedDocumentPublished ? '' : ' item-status item-warning';
+
           return (
-            <div key={index} className="item">
+            <div key={index} className={itemClassName}>
               <div className="item-info">
                 <div className="item-name">
                   <i className={`fa ${referenceIcon}`}></i>
@@ -136,6 +140,9 @@ export class EntityViewer extends Component {
                 </div>
               </div>
               <div className="item-actions">
+                <ShowIf if={!reference.connectedDocumentPublished}>
+                  <span className="label label-warning">unpublished</span>
+                </ShowIf>
                 <NeedAuthorization>
                   <ShowIf if={reference.sourceType !== 'metadata'}>
                     <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
@@ -256,7 +263,11 @@ const mapStateToProps = (state) => {
   let thesauris = state.thesauris.toJS();
   let relationTypes = state.relationTypes.toJS();
 
-  let references = state.entityView.references.filterNot(ref => ref.get('sourceDocument') === entity._id && ref.get('sourceType') === 'metadata');
+
+  let references = state.entityView.references
+                   .filterNot(ref => ref.get('sourceDocument') === entity._id && ref.get('sourceType') === 'metadata')
+                   .filter(ref => !!state.user.get('_id') || ref.get('connectedDocumentPublished'));
+
   return {
     rawEntity: entity,
     templates,
