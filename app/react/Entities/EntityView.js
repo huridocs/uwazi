@@ -28,6 +28,10 @@ export default class Entity extends RouteHandler {
     });
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
     this.context.store.dispatch(actions.unset('entityView/references'));

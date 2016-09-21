@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
+import {TemplateLabel} from 'app/Layout';
 import {formater} from 'app/Metadata';
 import marked from 'marked';
 
@@ -42,26 +43,13 @@ export class Doc extends Component {
   render() {
     let {title, _id, creationDate, template} = this.props.doc;
     let documentViewUrl = `/${this.props.doc.type}/${_id}`;
-    let typeIndex = 'item-type item-type-0';
-    let type = this.props.templates.toJS().reduce((result, templ, index) => {
-      if (templ._id === template) {
-        typeIndex = 'item-type item-type-' + index;
-        return templ.name;
-      }
-      return result;
-    }, '');
 
     let active;
     if (this.props.selectedDocument) {
       active = this.props.selectedDocument === this.props.doc._id;
     }
 
-    let icon = 'fa-file-text-o';
-    let className = 'item-document';
-    if (this.props.doc.type === 'entity') {
-      icon = 'fa-bank';
-      className = 'item-entity';
-    }
+    const className = this.props.doc.type === 'entity' ? 'item-entity' : 'item-document';
 
     const populatedMetadata = formater.prepareMetadata(this.props.doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
     const metadata = this.formatMetadata(populatedMetadata, creationDate);
@@ -75,10 +63,7 @@ export class Doc extends Component {
           {metadata}
         </div>
         <ItemFooter>
-          <span className={typeIndex}>
-            <i className={`item-type__icon fa ${icon}`}></i>
-            <span className="item-type__name">{type}</span>
-          </span>
+          <TemplateLabel template={template}/>
           <Link to={documentViewUrl} className="item-shortcut">
             <span className="itemShortcut-arrow">
               <i className="fa fa-external-link"></i>

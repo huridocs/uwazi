@@ -24,6 +24,7 @@ export default class ViewDocument extends RouteHandler {
     ])
     .then(([doc, docHTML, references, templates, thesauris, relationTypes]) => {
       return {
+        templates,
         documentViewer: {
           doc: doc.json.rows[0],
           docHTML: docHTML.json,
@@ -55,6 +56,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));
     this.context.store.dispatch(actions.set('viewer/doc', documentViewer.doc));
     this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
+    this.context.store.dispatch(actions.set('templates', documentViewer.templates));
     this.context.store.dispatch(actions.set('viewer/thesauris', documentViewer.thesauris));
     this.context.store.dispatch(actions.set('viewer/relationTypes', documentViewer.relationTypes));
     this.context.store.dispatch(setReferences(documentViewer.references));

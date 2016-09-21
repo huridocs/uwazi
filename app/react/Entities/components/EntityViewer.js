@@ -13,6 +13,7 @@ import {browserHistory} from 'react-router';
 import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
+import {TemplateLabel} from 'app/Layout';
 
 export class EntityViewer extends Component {
 
@@ -138,11 +139,8 @@ export class EntityViewer extends Component {
               </div>
               <div className="item-actions">
                 <div className="item-label-group">
-                  <span className="item-type item-type-1">
-                    <i className="item-type__icon fa fa-file-text-o"></i>
-                    <span className="item-type__name">Court Document</span>
-                  </span>
-                  &nbsp;
+                  <TemplateLabel template={reference.connectedDocumentTemplate}/>
+                  &nbsp;&nbsp;
                   <ShowIf if={!reference.connectedDocumentPublished}>
                     <span className="label label-warning">
                       <i className="fa fa-warning"></i> Unpublished

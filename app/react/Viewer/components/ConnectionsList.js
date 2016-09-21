@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
+import {TemplateLabel} from 'app/Layout';
 
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
@@ -103,10 +104,7 @@ export class ConnectionsList extends Component {
                   </dl>
                 </div>
                 <div className="item-actions">
-                  <span className="item-type item-type-1">
-                    <i className="item-type__icon fa fa-file-text-o"></i>
-                    <span className="item-type__name">Court Document</span>
-                  </span>
+                  <TemplateLabel template={reference.connectedDocumentTemplate} />
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
                       <NeedAuthorization>
