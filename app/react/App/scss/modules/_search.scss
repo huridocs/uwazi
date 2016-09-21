@@ -59,12 +59,18 @@
   }
 
   > li {
+    display: table;
     line-height: 19px;
     width: 50%;
   }
 
   > li.wide {
     width: 100%;
+
+    > div {
+      display: table;
+      width: 100%;
+    }
   }
 
   .fa-caret-left {
@@ -167,14 +173,14 @@
   position: absolute;
   right: 0;
   top: 0;
-  width: 32px;
-  height: 16px;
+  width: 25px;
+  height: 14px;
   border-radius: 8px;
   cursor: pointer;
   &:after {
     background: $c-white;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     content: '';
     display: block;
     position: absolute;
@@ -249,12 +255,12 @@
   position: absolute;
   right: 0;
   font-size: $f-size-sm;
-  width: 20px;
+  width: 25px;
   line-height: 15px;
   height: 14px;
   text-align: center;
   margin: 3px 6px;
-  border-radius: 7px;
+  border-radius: 8px;
   background: $c-grey-light;
 }
 
@@ -308,7 +314,7 @@ label.multiselectItem-label {
     .fa {
       position: absolute;
       top: 5px;
-      left: 7px;
+      left: 1px;
       color: $c-primary;
       cursor: pointer;
     }
@@ -317,7 +323,6 @@ label.multiselectItem-label {
   .btn {
     height: 24px;
     line-height: 24px;
-    font-size: $f-size-sm;
     border-radius: 0;
     border: 0;
     border-bottom: 1px solid transparent;
@@ -331,7 +336,7 @@ label.multiselectItem-label {
   }
   .form-control {
     width: auto;
-    padding-left: 25px;
+    padding-left: 20px;
     cursor: pointer;
 
     &::-webkit-input-placeholder {
