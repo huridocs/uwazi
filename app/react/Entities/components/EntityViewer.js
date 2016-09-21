@@ -118,18 +118,15 @@ export class EntityViewer extends Component {
         {group.refs.map((reference, index) => {
           let referenceIcon = 'fa-sign-out';
           if (reference.inbound) {
-            referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
+            referenceIcon = typeof reference.range.start === 'undefined' ? '' : 'fa-sign-in';
           }
 
-          let itemClassName = 'item';
-          itemClassName += reference.connectedDocumentPublished ? '' : ' item-status item-warning';
-
           return (
-            <div key={index} className={itemClassName}>
+            <div key={index} className='item'>
               <div className="item-info">
                 <div className="item-name">
                   <i className={`fa ${referenceIcon}`}></i>
-                  &nbsp;{reference.connectedDocumentTitle}
+                  {reference.connectedDocumentTitle}
                   {(() => {
                     if (reference.text) {
                       return <div className="item-snippet">
@@ -140,25 +137,36 @@ export class EntityViewer extends Component {
                 </div>
               </div>
               <div className="item-actions">
-                <ShowIf if={!reference.connectedDocumentPublished}>
-                  <span className="label label-warning">unpublished</span>
-                </ShowIf>
-                <NeedAuthorization>
-                  <ShowIf if={reference.sourceType !== 'metadata'}>
-                    <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                      <i className="fa fa-unlink"></i>&nbsp;<span>Delete</span>
-                    </a>
-                  </ShowIf>
-                </NeedAuthorization>
-                &nbsp;
-                <Link
-                  to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
-                  onClick={e => e.stopPropagation()}
-                  className="item-shortcut">
-                  <span className="itemShortcut-arrow">
-                    <i className="fa fa-external-link"></i>
+                <div className="item-label-group">
+                  <span className="item-type item-type-1">
+                    <i className="item-type__icon fa fa-file-text-o"></i>
+                    <span className="item-type__name">Court Document</span>
                   </span>
-                </Link>
+                  &nbsp;
+                  <ShowIf if={!reference.connectedDocumentPublished}>
+                    <span className="label label-warning">
+                      <i className="fa fa-warning"></i> Unpublished
+                    </span>
+                  </ShowIf>
+                </div>
+                <div className="item-shortcut-group">
+                  <NeedAuthorization>
+                    <ShowIf if={reference.sourceType !== 'metadata'}>
+                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                        <i className="fa fa-trash"></i>
+                      </a>
+                    </ShowIf>
+                  </NeedAuthorization>
+                  &nbsp;
+                  <Link
+                    to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                    onClick={e => e.stopPropagation()}
+                    className="item-shortcut">
+                    <span className="itemShortcut-arrow">
+                      <i className="fa fa-external-link"></i>
+                    </span>
+                  </Link>
+                </div>
               </div>
             </div>
           );
