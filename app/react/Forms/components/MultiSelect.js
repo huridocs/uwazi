@@ -75,12 +75,6 @@ export class MultiSelect extends Component {
       <ul className="multiselect is-active">
       <li className="multiselectActions">
         <ShowIf if={this.props.options.length > this.optionsToShow}>
-          <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
-            <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
-            <span>{this.state.showAll ? 'Show less' : 'Show all'}</span>
-          </button>
-        </ShowIf>
-        <ShowIf if={this.props.options.length > this.optionsToShow}>
           <div className="form-group">
             <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)}></i>
             <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
@@ -117,10 +111,10 @@ export class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={this.props.options.length > this.optionsToShow && this.state.showAll}>
+          <ShowIf if={this.props.options.length > this.optionsToShow}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
-              <i className="fa fa-caret-up"></i>
-              <span>Show less</span>
+              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+              <span>Show {this.state.showAll ? 'less' : this.props.options.length - this.optionsToShow +' more'}</span>
             </button>
           </ShowIf>
         </li>
