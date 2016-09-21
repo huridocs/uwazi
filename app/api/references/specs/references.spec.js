@@ -187,12 +187,16 @@ describe('references', () => {
   });
 
   describe('save()', () => {
-    describe('when the reference type did not exist', () => {
+    describe('when the reference did not exist', () => {
       it('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
-        references.save({sourceDocument: 'sourceDoc', targetDocument: 'targetDoc', sourceRange: 'range', targetRange: {text: 'text'}})
+        references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: 'range', targetRange: {text: 'text'}})
         .then((result) => {
           expect(result.sourceDocument).toBe('sourceDoc');
-          expect(result.connectedDocument).toBe('targetDoc');
+          expect(result.connectedDocument).toBe('doc3');
+          expect(result.connectedDocumentTemplate).toBe('template1_id');
+          expect(result.connectedDocumentType).toBe('entity');
+          expect(result.connectedDocumentTitle).toBe('doc3 title');
+          expect(result.connectedDocumentPublished).toBe(true);
           expect(result.range).toBe('range');
           expect(result.text).toBe('text');
           expect(result.inbound).toBe(false);
@@ -205,20 +209,20 @@ describe('references', () => {
       });
     });
 
-    describe('when the reference type exists', () => {
+    describe('when the reference exists', () => {
       it('should update it', (done) => {
-        let previouseRev;
-        request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`)
+        let previousRev;
+        request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`)
         .then((result) => {
           let reference = result.json;
-          reference.sourceDocument = 'source2';
-          previouseRev = reference._rev;
+          reference.sourceDocument = 'source1';
+          previousRev = reference._rev;
           return references.save(reference);
         })
         .then((result) => {
-          expect(result.sourceDocument).toBe('source2');
-          expect(result._id).toBe('c08ef2532f0bd008ac5174b45e033c00');
-          expect(result._rev !== previouseRev).toBe(true);
+          expect(result.sourceDocument).toBe('source1');
+          expect(result._id).toBe('c08ef2532f0bd008ac5174b45e033c01');
+          expect(result._rev !== previousRev).toBe(true);
           done();
         }).catch(catchErrors(done));
       });

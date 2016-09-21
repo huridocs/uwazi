@@ -13,6 +13,14 @@ let normalizeConnection = (connection, docId) => {
   return connection;
 };
 
+let normalizeConnectedDocumentData = (connection, connectedDocument) => {
+  connection.connectedDocumentTemplate = connectedDocument.template;
+  connection.connectedDocumentType = connectedDocument.type;
+  connection.connectedDocumentTitle = connectedDocument.title;
+  connection.connectedDocumentPublished = Boolean(connectedDocument.published);
+  return connection;
+};
+
 export default {
   getAll() {
     return request.get(`${dbURL}/_design/references/_view/all`)
@@ -28,11 +36,8 @@ export default {
       let requestDocuments = [];
       connections.forEach((connection) => {
         let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
-        .then((res) => {
-          connection.connectedDocumentTemplate = res.json.template;
-          connection.connectedDocumentType = res.json.type;
-          connection.connectedDocumentTitle = res.json.title;
-          connection.connectedDocumentPublished = Boolean(res.json.published);
+        .then((connectedDocument) => {
+          normalizeConnectedDocumentData(connection, connectedDocument.json);
         });
         requestDocuments.push(promise);
       });
@@ -69,6 +74,12 @@ export default {
     })
     .then((result) => {
       return normalizeConnection(result.json, connection.sourceDocument);
+    })
+    .then((result) => {
+      return Promise.all([result, request.get(`${dbURL}/${result.connectedDocument}`)]);
+    })
+    .then(([result, connectedDocument]) => {
+      return normalizeConnectedDocumentData(result, connectedDocument.json);
     });
   },
 
