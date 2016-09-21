@@ -1,7 +1,7 @@
 import {db_url as dbURL} from 'api/config/database.js';
 import references from '../references.js';
 import database from 'api/utils/database.js';
-import fixtures from './fixtures.js';
+import fixtures, {template} from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -17,11 +17,99 @@ describe('references', () => {
     it('should return all the references in the database', (done) => {
       references.getAll()
       .then((result) => {
-        expect(result.rows.length).toBe(7);
+        expect(result.rows.length).toBe(8);
         expect(result.rows[0].type).toBe('reference');
         expect(result.rows[0].title).toBe('reference1');
         done();
       }).catch(catchErrors(done));
+    });
+  });
+
+  describe('saveEntityBasedReferences', () => {
+    it('should create references for each option on selects/multiselects using entities (not affecting document references)', (done) => {
+      const entity = {
+        _id: 'id_testing',
+        template,
+        metadata: {
+          selectName: 'selectValue',
+          multiSelectName: ['value1', 'value2']
+        }
+      };
+
+      references.saveEntityBasedReferences(entity)
+      .then(() => {
+        return references.getByDocument(entity._id);
+      })
+      .then((refs) => {
+        expect(refs.length).toBe(4);
+
+        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toBe('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceType).toBe('metadata');
+        expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
+        expect(refs.filter((ref) => ref.targetDocument === 'value2')[0].sourceDocument).toBe('id_testing');
+        expect(refs.filter((ref) => ref.targetDocument === 'value2')[1]._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should not attempt to create references for missing properties', (done) => {
+      const entity = {
+        _id: 'id_testing',
+        template,
+        metadata: {
+          selectName: 'selectValue'
+        }
+      };
+
+      references.saveEntityBasedReferences(entity)
+      .then(() => {
+        return references.getByDocument(entity._id);
+      })
+      .then((refs) => {
+        expect(refs.length).toBe(2);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    describe('when a select value changes', () => {
+      it('should update the references properly', (done) => {
+        const entity = {
+          _id: 'id_testing',
+          template,
+          metadata: {
+            selectName: 'selectValue',
+            multiSelectName: ['value1', 'value2']
+          }
+        };
+
+        let generatedIds = [];
+        references.saveEntityBasedReferences(entity)
+        .then((createdReferences) => {
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value1')._id);
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value2')._id);
+          entity.metadata.selectName = 'value1';
+          entity.metadata.multiSelectName = ['value2'];
+          return references.saveEntityBasedReferences(entity);
+        })
+        .then(() => {
+          return references.getByDocument(entity._id);
+        })
+        .then((refs) => {
+          expect(refs.length).toBe(3);
+
+          expect(refs.find((ref) => ref.targetDocument === 'value1')._id).not.toBe(generatedIds[0]);
+          expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
+          expect(refs.filter((ref) => ref.targetDocument === 'value2')[0]._id).toBe(generatedIds[1]);
+          expect(refs.filter((ref) => ref.targetDocument === 'value2')[0].sourceDocument).toBe('id_testing');
+          expect(refs.filter((ref) => ref.targetDocument === 'value2')[1]._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 
@@ -38,6 +126,8 @@ describe('references', () => {
         expect(result[0].connectedDocument).toBe('source1');
         expect(result[0].connectedDocumentTitle).toBe('source1 title');
         expect(result[0].connectedDocumentType).toBe('document');
+        expect(result[0].connectedDocumentTemplate).toBe('template3_id');
+        expect(result[0].connectedDocumentPublished).toBe(false);
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
@@ -46,6 +136,8 @@ describe('references', () => {
         expect(result[1].connectedDocument).toBe('doc3');
         expect(result[1].connectedDocumentTitle).toBe('doc3 title');
         expect(result[1].connectedDocumentType).toBe('entity');
+        expect(result[1].connectedDocumentTemplate).toBe('template1_id');
+        expect(result[1].connectedDocumentPublished).toBe(true);
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
@@ -54,6 +146,8 @@ describe('references', () => {
         expect(result[2].connectedDocument).toBe('doc4');
         expect(result[2].connectedDocumentTitle).toBe('doc4 title');
         expect(result[2].connectedDocumentType).toBe('document');
+        expect(result[2].connectedDocumentTemplate).toBe('template1_id');
+        expect(result[2].connectedDocumentPublished).toBe(false);
 
         expect(result[3].text).toBe('');
         done();

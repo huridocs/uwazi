@@ -1,3 +1,7 @@
+.entity-content {
+  overflow-y: scroll;
+}
+
 .entity-metadata {
   left: 0 !important;
   right: auto !important;
@@ -19,6 +23,9 @@
     .item-type {
       margin-left: 30px;
     }
+  }
+  .view {
+    padding: 15px;
   }
   dt {
     width: 25%;
@@ -45,11 +52,15 @@
   }
 
   .item-group {
-    justify-content: space-between;
+    padding: 15px;
   }
   @media(min-width: 1024px) {
     .item {
-      width: 48% !important;
+      width: 49% !important;
+      margin-right: 2%;
+    }
+    .item:nth-child(2n+1) {
+      margin-right: 0;
     }
   }
   .item-metadata {

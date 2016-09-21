@@ -5,9 +5,12 @@ import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
+import references from 'api/references';
 
 describe('entities', () => {
   beforeEach((done) => {
+    spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
+
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
@@ -30,6 +33,21 @@ describe('entities', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.creationDate).toEqual('universal time');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should saveEntityBasedReferences', (done) => {
+      spyOn(date, 'currentUTC').and.returnValue('universal time');
+      let doc = {title: 'Batman begins'};
+      let user = {_id: 'user Id'};
+
+      entities.save(doc, user)
+      .then(() => {
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._rev).toBeDefined();
         done();
       })
       .catch(catchErrors(done));

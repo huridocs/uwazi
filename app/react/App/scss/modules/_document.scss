@@ -90,23 +90,8 @@
 
 .side-panel {
   .item {
-    &.relationship-hover {
-      box-shadow: $shadow, inset 3px 0 0 $c-secondary-light;
-    }
-
-    &.relationship-active,
     &.relationship-selected {
-      .item-info, .item-metadata {
-        padding-left: 13px;
-      }
-    }
-
-    &.relationship-active {
-      border-left: 3px solid $c-secondary;
-    }
-
-    &.relationship-selected {
-      border-left: 3px solid $c-success;
+      background: $c-success;
     }
 
     &.disabled {

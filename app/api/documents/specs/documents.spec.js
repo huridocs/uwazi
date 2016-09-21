@@ -10,10 +10,12 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import fs from 'fs';
 import {mockID} from 'shared/uniqueID';
+import references from 'api/references';
 
 describe('documents', () => {
   let result;
   beforeEach((done) => {
+    spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     mockID();
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1'},
@@ -69,6 +71,21 @@ describe('documents', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.creationDate).toEqual('universal time');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should saveEntityBasedReferences', (done) => {
+      spyOn(date, 'currentUTC').and.returnValue('universal time');
+      let doc = {title: 'Batman begins'};
+      let user = {_id: 'user Id'};
+
+      documents.save(doc, user)
+      .then(() => {
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
+        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._rev).toBeDefined();
         done();
       })
       .catch(catchErrors(done));

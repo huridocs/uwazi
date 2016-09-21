@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
+import {TemplateLabel} from 'app/Layout';
 
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
@@ -103,17 +104,20 @@ export class ConnectionsList extends Component {
                   </dl>
                 </div>
                 <div className="item-actions">
+                  <TemplateLabel template={reference.connectedDocumentTemplate} />
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
                       <NeedAuthorization>
                         <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-unlink"></i><span>Delete</span>
+                          <i className="fa fa-trash"></i>
                         </a>
                       </NeedAuthorization>
                     </ShowIf>
                     &nbsp;
                     <ShowIf if={!this.props.targetDoc}>
-                      <Link to={'/document/' + reference.connectedDocument} onClick={e => e.stopPropagation()} className="item-shortcut">
+                      <Link to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                            onClick={e => e.stopPropagation()}
+                            className="item-shortcut">
                         <span className="itemShortcut-arrow">
                           <i className="fa fa-external-link"></i>
                         </span>
@@ -149,15 +153,8 @@ ConnectionsList.contextTypes = {
 };
 
 const mapStateToProps = ({documentViewer}) => {
-  let references = documentViewer.references;
-
-  if (documentViewer.targetDoc.get('_id')) {
-    references = documentViewer.targetDocReferences;
-  }
-
   return {
     uiState: documentViewer.uiState,
-    references,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id')
   };

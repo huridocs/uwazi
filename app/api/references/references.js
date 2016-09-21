@@ -1,6 +1,7 @@
 import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import sanitizeResponse from 'api/utils/sanitizeResponse';
+import templates from 'api/templates';
 
 let normalizeConnection = (connection, docId) => {
   connection.targetRange = connection.targetRange || {text: ''};
@@ -28,8 +29,10 @@ export default {
       connections.forEach((connection) => {
         let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
         .then((res) => {
-          connection.connectedDocumentTitle = res.json.title;
+          connection.connectedDocumentTemplate = res.json.template;
           connection.connectedDocumentType = res.json.type;
+          connection.connectedDocumentTitle = res.json.title;
+          connection.connectedDocumentPublished = Boolean(res.json.published);
         });
         requestDocuments.push(promise);
       });
@@ -66,6 +69,72 @@ export default {
     })
     .then((result) => {
       return normalizeConnection(result.json, connection.sourceDocument);
+    });
+  },
+
+  saveEntityBasedReferences(entity) {
+    return templates.getById(entity.template)
+    .then((template) => {
+      const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
+      const entitySelects = [];
+      return Promise.all(selects.map((select) => {
+        return request.get(`${dbURL}/${select.content}`)
+        .then((result) => {
+          if (result.json.type === 'template') {
+            entitySelects.push(select.name);
+          }
+        });
+      }))
+      .then(() => entitySelects);
+    })
+    .then((properties) => {
+      return Promise.all([
+        properties,
+        this.getByDocument(entity._id)
+      ]);
+    })
+    .then(([properties, references]) => {
+      let values = properties.reduce((memo, property) => {
+        let propertyValues = entity.metadata[property] || [];
+        if (typeof propertyValues === 'string') {
+          propertyValues = [propertyValues];
+        }
+
+        return memo.concat(propertyValues.map(value => {
+          return {property, value};
+        }));
+      }, []);
+
+
+      const toDelete = references.filter((ref) => {
+        let isInValues = false;
+        values.forEach((item) => {
+          if (item.property === ref.sourceProperty && ref.targetDocument === item.value) {
+            isInValues = true;
+          }
+        });
+        return !isInValues && ref.sourceType === 'metadata';
+      });
+
+      const toCreate = values.filter((item) => {
+        let isInReferences = false;
+        references.forEach((ref) => {
+          if (item.property === ref.sourceProperty && ref.targetDocument === item.value) {
+            isInReferences = true;
+          }
+        });
+        return !isInReferences;
+      });
+
+      const deletes = toDelete.map((ref) => this.delete(ref));
+      const creates = toCreate.map((item) => this.save({
+        sourceType: 'metadata',
+        sourceDocument: entity._id,
+        targetDocument: item.value,
+        sourceProperty: item.property
+      }));
+
+      return Promise.all(deletes.concat(creates));
     });
   },
 

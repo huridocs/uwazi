@@ -12,7 +12,6 @@ export default {
     //references
     {"_id":"c08ef2532f0bd008ac5174b45e033c00","type":"reference", "title":"reference1", "sourceDocument": "8202c463d6158af8065022d9b5014a18", relationtype: 'relation1'},
     {"_id":"c08ef2532f0bd008ac5174b45e033c01","type":"reference", "title":"reference2", "sourceDocument": "source2", relationtype: 'relation2', "targetDocument": "8202c463d6158af8065022d9b5014a18"},
-    //conversion
     {"_id": "a9a88a38dbd9fedc9d5051741a14a1d9","document": "8202c463d6158af8065022d9b5014a18","type": "conversion","pages": []}
   ]
 };

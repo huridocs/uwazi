@@ -28,12 +28,21 @@ export default class Entity extends RouteHandler {
     });
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
+  emptyState() {
+    this.context.store.dispatch(actions.unset('entityView/entity'));
+    this.context.store.dispatch(actions.unset('entityView/references'));
+  }
+
   setReduxState(state) {
-    this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
-    this.context.store.dispatch(actions.set('entityView/references', state.entityView.references));
+    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('templates', state.templates));
     this.context.store.dispatch(actions.set('thesauris', state.thesauris));
-    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
+    this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
+    this.context.store.dispatch(actions.set('entityView/references', state.entityView.references));
   }
 
   render() {

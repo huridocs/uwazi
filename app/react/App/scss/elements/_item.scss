@@ -68,7 +68,6 @@
   }
 
   .label {
-    float: left;
     margin-right: 15px;
     font-size: $f-size-sm;
     font-weight: normal;
@@ -82,7 +81,7 @@
 }
 
 $item-width: auto;
-$item-padding: 10px;
+$item-padding: 15px;
 
 .item-info {
   width: $item-width;
@@ -173,8 +172,7 @@ $item-padding: 10px;
   }
   dt {
     min-width: 90px;
-    font-style: normal;
-    color: $c-grey;
+    font-style: italic;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -212,6 +210,7 @@ $item-padding: 10px;
   text-align: center;
   display: inline-block;
   box-shadow: $shadow;
+  background: $c-white;
 
   &:hover,
   &:focus,

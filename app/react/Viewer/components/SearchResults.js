@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {TemplateLabel} from 'app/Layout';
 
 export class SearchResults extends Component {
   render() {
@@ -20,7 +21,7 @@ export class SearchResults extends Component {
                     <div className="item-name">{result.title}</div>
                   </div>
                   <div className="item-actions">
-                    <div className="item-shortcut"><i className="fa fa-angle-right"></i><span>Select document</span></div>
+                    <TemplateLabel template={result.template}/>
                   </div>
                 </div>
               );

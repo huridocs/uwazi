@@ -1,4 +1,6 @@
+import React from 'react';
 import EntityView from '../EntityView';
+import {shallow} from 'enzyme';
 import EntitiesAPI from '../EntitiesAPI';
 import ReferencesAPI from 'app/Viewer/referencesAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
@@ -31,6 +33,16 @@ describe('EntityView', () => {
         expect(state.thesauris).toEqual(thesauris);
         expect(state.relationTypes).toEqual(relationTypes);
         done();
+      });
+    });
+
+    describe('emptyState()', () => {
+      it('should unset the state', () => {
+        let context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+        let component = shallow(<EntityView params={{entityId: 123}} />, {context});
+        component.instance().emptyState();
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/entity/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/references/UNSET'});
       });
     });
   });

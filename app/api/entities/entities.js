@@ -3,6 +3,7 @@ import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
+import references from '../references/references.js';
 
 export default {
   save(doc, user) {
@@ -19,7 +20,10 @@ export default {
 
     return request.post(url, doc)
     .then(response => request.get(`${dbURL}/${response.json.id}`))
-    .then(response => response.json);
+    .then(response => {
+      return Promise.all([response, references.saveEntityBasedReferences(response.json)]);
+    })
+    .then(([response]) => response.json);
   },
 
   getUploadsByUser(user) {

@@ -73,7 +73,7 @@ export class ViewMetadataPanel extends Component {
               <li>
                 <TabLink to="connections">
                   <i className="fa fa-sitemap"></i>
-                  <span className="connectionsNumber">{this.props.numberOfReferences}</span>
+                  <span className="connectionsNumber">{this.props.references.size}</span>
                 </TabLink>
               </li>
             </ul>
@@ -154,7 +154,7 @@ export class ViewMetadataPanel extends Component {
               })()}
             </TabContent>
             <TabContent for="connections">
-              <Connections />
+              <Connections references={this.props.references} />
             </TabContent>
           </Tabs>
         </div>
@@ -179,7 +179,7 @@ ViewMetadataPanel.propTypes = {
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
   loadInReduxForm: PropTypes.func,
-  numberOfReferences: PropTypes.number,
+  references: PropTypes.object,
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
@@ -194,12 +194,14 @@ ViewMetadataPanel.contextTypes = {
 
 const mapStateToProps = ({documentViewer}) => {
   let doc = formater.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
-  let numberOfReferences = documentViewer.references.size;
+  let references = documentViewer.references;
 
   if (documentViewer.targetDoc.get('_id')) {
     doc = formater.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
-    numberOfReferences = documentViewer.targetDocReferences.size;
+    references = documentViewer.targetDocReferences;
   }
+
+  references = references.filter((ref) => !ref.get('inbound') && ref.get('sourceType') !== 'metadata');
 
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
@@ -209,7 +211,7 @@ const mapStateToProps = ({documentViewer}) => {
     docBeingEdited: !!documentViewer.docForm._id,
     formState: documentViewer.docFormState,
     tab: documentViewer.uiState.get('tab'),
-    numberOfReferences,
+    references,
     tocForm: documentViewer.tocForm || [],
     tocBeingEdited: documentViewer.tocBeingEdited,
     tocFormState: documentViewer.tocFormState

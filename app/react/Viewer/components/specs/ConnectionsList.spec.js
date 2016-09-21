@@ -124,7 +124,8 @@ describe('ConnectionsList', () => {
     it('should should map props', () => {
       renderContainer();
       let containerProps = component.props();
-      expect(containerProps.references).toEqual(state.documentViewer.references);
+      expect(containerProps.uiState.toJS().panel).toBeDefined();
+      expect(containerProps.targetDoc).toBe(false);
     });
   });
 });

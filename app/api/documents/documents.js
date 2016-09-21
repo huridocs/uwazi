@@ -8,6 +8,7 @@ import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import fs from 'fs';
 import uniqueID from 'shared/uniqueID';
+import references from '../references/references.js';
 
 export default {
   save(doc, user) {
@@ -36,7 +37,10 @@ export default {
     .then(response => {
       return this.get(response.json.id);
     })
-    .then(response => response.rows[0]);
+    .then(response => {
+      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0])]);
+    })
+    .then(([response]) => response.rows[0]);
   },
 
   get(docId) {

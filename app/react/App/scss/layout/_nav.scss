@@ -44,9 +44,11 @@ nav ul {
 	}
 }
 
+$nav-height: 48px;
+
 .nav > li > a {
   padding: 0px 10px;
-  line-height: 54px;
+  line-height: $nav-height;
   border: 0;
 }
 
@@ -61,12 +63,12 @@ nav ul {
 .nav-tabs>li {
   display: inline-block;
   float: none;
-  min-width: 54px
+  min-width: $nav-height;
 }
 
 .nav-tabs>li>a, .nav-tabs>li>div {
   cursor:pointer;
-  line-height: 54px;
+  line-height: $nav-height;
   padding: 0 15px;
   background-color: transparent;
   color: $c-grey-dark;
