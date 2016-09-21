@@ -167,7 +167,7 @@ export class EntityViewer extends Component {
     );
 
     return (
-      <div className="row">
+      <div className="row entity-content">
         <Helmet title="Entity" />
         <aside className="side-panel entity-metadata">
           <ShowIf if={!entityBeingEdited}>
