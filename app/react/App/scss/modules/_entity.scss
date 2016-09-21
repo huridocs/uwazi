@@ -20,6 +20,9 @@
       margin-left: 30px;
     }
   }
+  .view {
+    padding: 15px;
+  }
   dt {
     width: 25%;
   }
@@ -45,11 +48,16 @@
   }
 
   .item-group {
-    justify-content: space-between;
+    justify-content: center;
+    padding: 15px;
   }
   @media(min-width: 1024px) {
     .item {
-      width: 48% !important;
+      width: 49% !important;
+      margin-right: 2%;
+    }
+    .item:nth-child(2n+1) {
+      margin-right: 0;
     }
   }
   .item-metadata {
