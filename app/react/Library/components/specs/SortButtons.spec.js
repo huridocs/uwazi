@@ -32,6 +32,19 @@ describe('SortButtons', () => {
       expect(component.find('span').first().text()).toBe('sortableProperty');
     });
 
+    describe('when multiple options have the same name', () => {
+      it('should not duplicate the entry', () => {
+        props.templates = immutable([
+          {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]},
+          {properties: [{sortable: true, name: 'sortable_name', label: 'anotherLabel', type: 'text'}]}
+        ]);
+        render();
+
+        expect(component.find('span').length).toBe(3);
+        expect(component.find('span').first().text()).toBe('sortableProperty');
+      });
+    });
+
     describe('when active', () => {
       it('should set the option active and add a caret', () => {
         props.search.sort = 'metadata.sortable_name.raw';

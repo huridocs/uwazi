@@ -20,22 +20,26 @@ export class SortButtons extends Component {
   }
 
   getAdditionalSorts(templates, search, order) {
-    return templates.toJS().reduce((additionalSorts, template) => {
+    const additionalSorts = templates.toJS().reduce((sorts, template) => {
       template.properties.forEach(property => {
-        if (property.sortable) {
+        if (property.sortable && !sorts.find(s => s.property === property.name)) {
           const sortString = 'metadata.' + property.name + '.raw';
-          additionalSorts.push(
-            <span key={additionalSorts.length + 1}
-                  className={search.sort === sortString ? 'active' : ''}
-                  onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
-              {property.label}
-              {search.sort === sortString ? <i className={'fa fa-caret-' + order}></i> : ''}
-            </span>
-          );
+          sorts.push({
+            property: property.name,
+            html:
+              <span key={sorts.length + 1}
+                    className={search.sort === sortString ? 'active' : ''}
+                    onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
+                {property.label}
+                {search.sort === sortString ? <i className={'fa fa-caret-' + order}></i> : ''}
+              </span>
+          });
         }
       });
-      return additionalSorts;
+      return sorts;
     }, []);
+
+    return additionalSorts.map(s => s.html);
   }
 
   render() {
