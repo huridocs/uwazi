@@ -72,6 +72,7 @@ describe('MetadataProperty', () => {
         connectDropTarget: identity,
         inserting: true,
         label: 'test',
+        type: 'propertyType',
         index: 1,
         localID: 'id',
         formState: {fields: [], errors: {}},
@@ -87,6 +88,12 @@ describe('MetadataProperty', () => {
     describe('when marked as inserting', () => {
       it('should add "dragging" className', () => {
         expect(component.find('.list-group-item').hasClass('dragging')).toBe(true);
+      });
+    });
+
+    describe('FormConfigInput', () => {
+      it('should pass the type to the component', () => {
+        expect(component.find(FormConfigInput).first().props().type).toBe('propertyType');
       });
     });
 

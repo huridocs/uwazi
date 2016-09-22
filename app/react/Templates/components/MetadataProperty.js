@@ -20,7 +20,7 @@ export class MetadataProperty extends Component {
     if (this.props.type === 'nested') {
       return <FormConfigNested formKey={this.props.localID} index={this.props.index} />;
     }
-    return <FormConfigInput formKey={this.props.localID} index={this.props.index} />;
+    return <FormConfigInput type={this.props.type} formKey={this.props.localID} index={this.props.index} />;
   }
 
   hasError(propertyErrors) {
