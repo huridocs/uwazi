@@ -153,15 +153,14 @@ header {
   right: 0;
   display: block;
   float: right;
-  width: 0;
-  max-width: 320px - $header-height;
+  width: calc(0%);
   transition: all 500ms;
 
   &.is-active {
-    width: 90%;
+    width: calc(100% - $header-height);
   }
 
-  @include desktop {
+  @media(min-width: 1024px) {
     position: relative;
     max-width: 9999px;
     &.is-active {
