@@ -59,7 +59,7 @@ export class TimelineViewer extends Component {
     }
 
     reference.additionalData.className = this.getTemplateType(reference.data.template);
-    reference.additionalData.date = moment.utc(reference.data.metadata.fecha * 1000).format('ll');
+    reference.additionalData.date = reference.data.metadata.fecha;
   }
 
   normalizeYears(years) {
@@ -146,7 +146,7 @@ export class TimelineViewer extends Component {
                   data-toggle="tooltip"
                   data-placement="top"
                   data-animation="false"
-                  title={`${reference.additionalData.date}\n${reference.data.title}`}>
+                  title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${reference.data.title}`}>
               <ShowIf if={reference.additionalData.type === 'judgement'}>
                 <i className="fa fa-legal"></i>
               </ShowIf>
