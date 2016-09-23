@@ -43,27 +43,19 @@ export class TimelineViewer extends Component {
     return Promise.all(references.map(r => ReferencesAPI.get(r.connectedDocument)));
   }
 
-  arrangeYears(references) {
-    let years = {};
-    references.forEach(reference => {
-      if (reference.data.template === admissibilityReport || reference.data.template === judgement) {
-        const docYear = moment.utc(reference.data.metadata.fecha * 1000).format('YYYY');
-        years[docYear] = years[docYear] || [];
+  assignAdditionalData(reference) {
+    if (reference.data.template === judgement) {
+      reference.additionalData = {type: 'judgement'};
+    }
 
-        if (reference.data.template === judgement) {
-          reference.additionalData = {type: 'judgement'};
-        }
+    if (reference.data.template === admissibilityReport) {
+      reference.additionalData = {type: 'admissibilityReport'};
+    }
 
-        if (reference.data.template === admissibilityReport) {
-          reference.additionalData = {type: 'admissibilityReport'};
-        }
+    reference.additionalData.className = this.getTemplateType(reference.data.template);
+  }
 
-        reference.additionalData.className = this.getTemplateType(reference.data.template);
-
-        years[docYear].push(reference);
-      }
-    });
-
+  normalizeYears(years) {
     const minYear = Object.keys(years).reduce((min, year) => {
       return Math.min(min, Number(year));
     }, Number(moment().format('YYYY')));
@@ -79,8 +71,21 @@ export class TimelineViewer extends Component {
     return years;
   }
 
+  arrangeYears(references) {
+    let years = {};
+    references.forEach(reference => {
+      if (reference.data.template === admissibilityReport || reference.data.template === judgement) {
+        const docYear = moment.utc(reference.data.metadata.fecha * 1000).format('YYYY');
+        years[docYear] = years[docYear] || [];
+        this.assignAdditionalData(reference);
+        years[docYear].push(reference);
+      }
+    });
+
+    return this.normalizeYears(years);
+  }
+
   getTimelineInfo(references) {
-    // const newState = {};
     const usefulReferences = references.filter(r => r.connectedDocumentTemplate !== countryTemplate);
 
     this.fetchReferenceData(usefulReferences)
@@ -107,9 +112,6 @@ export class TimelineViewer extends Component {
   }
 
   render() {
-    console.log('Rendered TimelineViewer');
-    // let references = this.state ? this.state.references : [];
-    // console.log('LOCAL STATE render:', this.state);
     let years = '';
     if (this.state) {
       years = Object.keys(this.state.years).map(year =>
@@ -138,23 +140,6 @@ export class TimelineViewer extends Component {
         {years}
       </div>
     );
-
-    //     <pre>
-    //     {this.state ? JSON.stringify(this.state.years, null, ' ') : ''}
-    //     </pre>
-    //     Entity: {this.props.entity.get('title')}<br />
-    //     Root references:<br />
-    //     {references.map((reference, referenceIndex) =>
-    //       <div key={referenceIndex}>
-    //         Root: {reference.data.title}
-    //         {reference.children.map((child, childIndex) =>
-    //           <div key={childIndex}>&nbsp;&nbsp; - Child: {child.connectedDocumentTitle}</div>
-    //         )}
-    //       </div>
-    //     )}
-
-    //   </div>
-    // );
   }
 }
 
