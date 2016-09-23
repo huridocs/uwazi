@@ -129,7 +129,16 @@ describe('libraryActions', () => {
       });
 
       it('should convert the search and set it to the url query', () => {
-        const query = {searchTerm: 'batman', filters: {author: 'batman', date: 'dateValue', select: 'selectValue', multiselect: 'multiValue', nested: 'nestedValue'}};
+        const query = {
+          searchTerm: 'batman',
+          filters: {
+            author: 'batman',
+            date: 'dateValue',
+            select: 'selectValue',
+            multiselect: 'multiValue',
+            nested: 'nestedValue'
+          }
+        };
         const limit = 'limit';
         spyOn(browserHistory, 'push');
         actions.searchDocuments(query, limit)(dispatch, getState);

@@ -88,7 +88,8 @@ export class FiltersForm extends Component {
                         aggregations={this.props.aggregations}
                         property={property}
                         onChange={(options) => {
-                          this.props.activateFilter(property.name, Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false));
+                          let active = Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false);
+                          this.props.activateFilter(property.name, active);
                         }}
                       />
                     </li>

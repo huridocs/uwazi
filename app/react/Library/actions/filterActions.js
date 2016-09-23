@@ -2,8 +2,6 @@ import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
-import api from 'app/Search/SearchAPI';
-import {actions} from 'app/BasicReducer';
 
 function updateModelFilters(dispatch, getState, libraryFilters) {
   let previousModelFilters = getState().search.filters;
