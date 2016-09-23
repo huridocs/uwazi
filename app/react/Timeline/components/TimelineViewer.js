@@ -77,16 +77,16 @@ export class TimelineViewer extends Component {
     let years = '';
     if (this.state) {
       years = Object.keys(this.state.years).map(year =>
-        <div key={year} className="year">
-          {year}<br />
+        <div key={year} className="timeline-year">
+          <span className="timeline-label">{year}</span>
           {this.state.years[year].map((reference, index) =>
-            <span key={index} className="timeline-item">&bull; {reference.data.title}</span>
+            <span key={index} className="timeline-item" title={reference.data.title}> </span>
           )}
         </div>
       );
     }
     return (
-      <div>
+      <div className="timeline">
         {years}
       </div>
     );

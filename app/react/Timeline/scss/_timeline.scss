@@ -1,0 +1,86 @@
+$timeline-item-size: 20px;
+.timeline {
+  display: flex;
+  padding: 15px;
+  &-year {
+    display: flex;
+    flex-direction: column-reverse;
+    width: $timeline-item-size;
+  }
+  &-label {
+    position: relative;
+    width: $timeline-item-size;
+    height: $timeline-item-size;
+  }
+
+  &-label {
+    span {
+      display: none;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: block;
+      width: 1px;
+      height: 6px;
+      top: 6px;
+      background: #ccc;
+    }
+  }
+
+  &-label-text {
+    span {
+      display: block;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200%;
+      text-align: center;
+      font-size: $f-size-sm;
+      padding-top: $timeline-item-size;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: block;
+      width: 1px;
+      height: 10px;
+      top: 4px;
+      background: $c-black;
+    }
+  }
+
+  &-item {
+    width: $timeline-item-size - 2px;
+    height: $timeline-item-size - 2px;
+    margin: 1px;
+    text-align: center;
+    background: $c-white;
+    color: $c-white;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    border-radius: 50%;
+
+    &-type-1 { background-color: $c-type-1 };
+    &-type-2 { background-color: $c-type-2 };
+    &-type-3 { background-color: $c-type-3 };
+    &-type-4 { background-color: $c-type-4 };
+    &-type-5 { background-color: $c-type-5 };
+    &-type-6 { background-color: $c-type-6 };
+    &-type-7 { background-color: $c-type-7 };
+    &-type-8 { background-color: $c-type-8 };
+    &-type-9 { background-color: $c-type-9 };
+    &-type-10 { background-color: $c-type-10 };
+    &-type-11 { background-color: $c-type-11 };
+    &-type-12 { background-color: $c-type-12 };
+    &-type-13 { background-color: $c-type-13 };
+    &-type-14 { background-color: $c-type-14 };
+    &-type-15 { background-color: $c-type-15 };
+    &-type-16 { background-color: $c-type-16 };
+    &-type-17 { background-color: $c-type-17 };
+    &-type-18 { background-color: $c-type-18 };
+  }
+}
