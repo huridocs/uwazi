@@ -72,7 +72,7 @@ export class TimelineViewer extends Component {
 
   render() {
     console.log('Rendered TimelineViewer');
-    let references = this.state ? this.state.references : [];
+    // let references = this.state ? this.state.references : [];
     // console.log('LOCAL STATE render:', this.state);
     let years = '';
     if (this.state) {
@@ -88,23 +88,25 @@ export class TimelineViewer extends Component {
     return (
       <div>
         {years}
-
-        <pre>
-        {this.state ? JSON.stringify(this.state.years, null, ' ') : ''}
-        </pre>
-        Entity: {this.props.entity.get('title')}<br />
-        Root references:<br />
-        {references.map((reference, referenceIndex) =>
-          <div key={referenceIndex}>
-            Root: {reference.data.title}
-            {reference.children.map((child, childIndex) =>
-              <div key={childIndex}>&nbsp;&nbsp; - Child: {child.connectedDocumentTitle}</div>
-            )}
-          </div>
-        )}
-
       </div>
     );
+
+    //     <pre>
+    //     {this.state ? JSON.stringify(this.state.years, null, ' ') : ''}
+    //     </pre>
+    //     Entity: {this.props.entity.get('title')}<br />
+    //     Root references:<br />
+    //     {references.map((reference, referenceIndex) =>
+    //       <div key={referenceIndex}>
+    //         Root: {reference.data.title}
+    //         {reference.children.map((child, childIndex) =>
+    //           <div key={childIndex}>&nbsp;&nbsp; - Child: {child.connectedDocumentTitle}</div>
+    //         )}
+    //       </div>
+    //     )}
+
+    //   </div>
+    // );
   }
 }
 
