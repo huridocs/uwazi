@@ -272,53 +272,78 @@ export class EntityViewer extends Component {
             <Tabs selectedTab={this.props.tab || 'connections'}>
               <TabContent for="connections">
                 <div className="timeline">
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2003</span></div>
-                    <div data-year="2003" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="10 de noviembre de 2003 Denuncia"></div>
+                  <div className="timeline-track">
+                    <div className="timeline-year">
+                      <div data-year="2003" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="10 de noviembre de 2003 Denuncia"></div>
+                    </div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year">
+                      <div data-year="2006" className="timeline-item timeline-item-type-5" data-toggle="tooltip" data-placement="top" data-animation="false" title="21 de octubre de 2006 Rosendo Cantú y otros. Informe de Admisibilidad Nº 93/06"></div>
+                    </div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year">
+                      <div data-year="2009" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="2 de agosto de 2009 Envío a la Corte"></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="2 de febrero de 2010 Rosendo Cantú y otra. Resolución de la CorteIDH de 2 de febrero de 2010"></div>
+                      <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="23 de abril de 2010 Rosendo Cantú y otra. Resolución del Presidente de 23 de abril de 2010"></div>
+                      <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="19 de mayo de 2010 Rosendo Cantú y otra. Resolución de la CorteIDH de 19 de mayo de 2010"></div>
+                      <div data-year="2010" className="timeline-item timeline-item-type-2" data-toggle="tooltip" data-placement="top" data-animation="false" title="31 de agosto de 2010 Rosendo Cantú y otra. Excepciones Preliminares, Fondo, Reparaciones y Costas. Sentencia de 31 de agosto de 2010"><i className="fa fa-legal"></i></div>
+                      <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="25 de noviembre de 2010 Rosendo Cantú y otra. Resolución de la CorteIDH de 25 de noviembre de 2010"></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div data-year="2011" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="15 de mayo de 2011 Rosendo Cantu y otras. Interpretación. Sentencia de 15 de mayo de 2011"></div>
+                      <div data-year="2011" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="1 de julio de 2011 Rosendo Cantú y otra. Resolución de la CorteIDH de 1 de julio de 2011"></div>
+                    </div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year"></div>
+                    <div className="timeline-year">
+                      <div data-year="2015" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="17 de abril de 2015 Rosendo Cantú [y otros casos]. Resolución de la CorteIDH de 17 de abril de 2015"></div>
+                      <div data-year="2015" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="23 de junio de 2015 Rosendo Cantú y otra. Resolución de la CorteIDH de 23 de junio de 2015"></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div data-year="2016" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="23 de febrero de 2016 Rosendo Cantú y otros. Resolución de la CorteIDH de 23 de febrero de 2016"></div>
+                    </div>
                   </div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2004</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label timeline-label-text"><span>2005</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2006</span></div>
-                    <div data-year="2006" className="timeline-item timeline-item-type-5" data-toggle="tooltip" data-placement="top" data-animation="false" title="21 de octubre de 2006 Rosendo Cantú y otros. Informe de Admisibilidad Nº 93/06"></div>
-                  </div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2007</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2008</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2009</span></div>
-                    <div data-year="2009" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="2 de agosto de 2009 Envío a la Corte"></div>
-                  </div>
-                  <div className="timeline-year">
-                    <div className="timeline-label timeline-label-text"><span>2010</span></div>
-                    <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="2 de febrero de 2010 Rosendo Cantú y otra. Resolución de la CorteIDH de 2 de febrero de 2010"></div>
-                    <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="23 de abril de 2010 Rosendo Cantú y otra. Resolución del Presidente de 23 de abril de 2010"></div>
-                    <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="19 de mayo de 2010 Rosendo Cantú y otra. Resolución de la CorteIDH de 19 de mayo de 2010"></div>
-                    <div data-year="2010" className="timeline-item timeline-item-type-2" data-toggle="tooltip" data-placement="top" data-animation="false" title="31 de agosto de 2010 Rosendo Cantú y otra. Excepciones Preliminares, Fondo, Reparaciones y Costas. Sentencia de 31 de agosto de 2010"><i className="fa fa-legal"></i></div>
-                    <div data-year="2010" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="25 de noviembre de 2010 Rosendo Cantú y otra. Resolución de la CorteIDH de 25 de noviembre de 2010"></div>
-                  </div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2011</span></div>
-                    <div data-year="2011" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="15 de mayo de 2011 Rosendo Cantu y otras. Interpretación. Sentencia de 15 de mayo de 2011"></div>
-                    <div data-year="2011" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="1 de julio de 2011 Rosendo Cantú y otra. Resolución de la CorteIDH de 1 de julio de 2011"></div>
-                  </div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2012</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2013</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2014</span></div></div>
-                  <div className="timeline-year">
-                    <div className="timeline-label timeline-label-text"><span>2015</span></div>
-                    <div data-year="2015" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="17 de abril de 2015 Rosendo Cantú [y otros casos]. Resolución de la CorteIDH de 17 de abril de 2015"></div>
-                    <div data-year="2015" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="23 de junio de 2015 Rosendo Cantú y otra. Resolución de la CorteIDH de 23 de junio de 2015"></div>
-                  </div>
-                  <div className="timeline-year">
-                    <div className="timeline-label"><span>2016</span></div>
-                    <div data-year="2016" className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="23 de febrero de 2016 Rosendo Cantú y otros. Resolución de la CorteIDH de 23 de febrero de 2016"></div>
+                  <div className="timeline-track">
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2003</span></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2004</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label timeline-label-text"><span>2005</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2006</span></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2007</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2008</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2009</span></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div className="timeline-label timeline-label-text"><span>2010</span></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2011</span></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2012</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2013</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2014</span></div></div>
+                    <div className="timeline-year">
+                      <div className="timeline-label timeline-label-text"><span>2015</span></div>
+                    </div>
+                    <div className="timeline-year">
+                      <div className="timeline-label"><span>2016</span></div>
+                    </div>
                   </div>
                 </div>
                 {referencesHtml}

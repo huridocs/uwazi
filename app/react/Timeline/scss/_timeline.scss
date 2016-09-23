@@ -1,7 +1,9 @@
 $timeline-item-size: 20px;
 .timeline {
-  display: flex;
   padding: 15px;
+  &-track {
+    display: flex;
+  }
   &-year {
     display: flex;
     flex-direction: column-reverse;
