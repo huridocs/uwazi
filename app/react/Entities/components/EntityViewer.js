@@ -14,10 +14,6 @@ import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {TemplateLabel} from 'app/Layout';
-import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import {showTab} from '../actions/uiActions';
-
-import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 
 export class EntityViewer extends Component {
 
@@ -214,10 +210,7 @@ export class EntityViewer extends Component {
               <h1 className="item-name">{entity.title}</h1>
             </ShowIf>
             <ShowIf if={!entityBeingEdited}>
-              <span className="item-type item-type-2">
-                <i className="item-type__icon fa fa-bank"></i>
-                <span className="item-type__name">{entity.documentType}</span>
-              </span>
+              <TemplateLabel template={entity.template}/>
             </ShowIf>
 
             {(() => {
@@ -231,54 +224,18 @@ export class EntityViewer extends Component {
         </aside>
         <aside className="side-panel entity-connections">
           <div className="sidepanel-header">
-            <ShowIf if={entity.template !== 'cd951f1feec188a75916812d43252418'}>
-              <Tabs selectedTab={this.props.tab || 'connections'}
-                    handleSelect={tab => {
-                      this.props.showTab(tab);
-                    }}>
-                <ul className="nav nav-tabs">
-                  <li>
-                    <TabLink to="connections">
-                      <i className="fa fa-sitemap"></i>
-                      <span className="connectionsNumber">{this.props.references.size}</span>
-                    </TabLink>
-                  </li>
-                </ul>
-              </Tabs>
-            </ShowIf>
-            <ShowIf if={entity.template === 'cd951f1feec188a75916812d43252418'}>
-              <Tabs selectedTab={this.props.tab || 'connections'}
-                    handleSelect={tab => {
-                      this.props.showTab(tab);
-                    }}>
-                <ul className="nav nav-tabs">
-                  <li>
-                    <TabLink to="connections">
-                      <i className="fa fa-sitemap"></i>
-                      <span className="connectionsNumber">{this.props.references.size}</span>
-                    </TabLink>
-                  </li>
-                  <li>
-                    <TabLink to="timeline" default>
-                      <i className="fa fa-clock-o"></i>
-                    </TabLink>
-                  </li>
-                </ul>
-              </Tabs>
-            </ShowIf>
+            <ul className="nav nav-tabs">
+              <li>
+                <div className="tab-link tab-link-active">
+                  <i className="fa fa-sitemap"></i>
+                  <span className="connectionsNumber">{references.length}</span>
+                </div>
+              </li>
+            </ul>
             &nbsp;
           </div>
           <div className="sidepanel-body">
-            <Tabs selectedTab={this.props.tab || 'connections'}>
-              <TabContent for="connections">
-                {referencesHtml}
-              </TabContent>
-              <TabContent for="timeline">
-                <ShowIf if={entity.template === 'cd951f1feec188a75916812d43252418'}>
-                  <TimelineViewer />
-                </ShowIf>
-              </TabContent>
-            </Tabs>
+            {referencesHtml}
           </div>
         </aside>
       </div>
@@ -296,9 +253,7 @@ EntityViewer.propTypes = {
   relationTypes: PropTypes.array,
   loadInReduxForm: PropTypes.func,
   deleteEntity: PropTypes.func,
-  deleteReference: PropTypes.func,
-  showTab: PropTypes.func,
-  tab: PropTypes.string
+  deleteReference: PropTypes.func
 };
 
 EntityViewer.contextTypes = {
@@ -322,8 +277,7 @@ const mapStateToProps = (state) => {
     relationTypes,
     entity: formater.prepareMetadata(entity, templates, thesauris),
     references,
-    entityBeingEdited: !!state.entityView.entityForm._id,
-    tab: state.entityView.uiState.get('tab')
+    entityBeingEdited: !!state.entityView.entityForm._id
   };
 };
 
@@ -331,8 +285,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     deleteEntity,
-    deleteReference,
-    showTab
+    deleteReference
   }, dispatch);
 }
 

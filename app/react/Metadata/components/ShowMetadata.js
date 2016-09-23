@@ -1,6 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
+import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
+
+import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 
 export class ShowMetadata extends Component {
   getValue(property) {
@@ -33,6 +36,12 @@ export class ShowMetadata extends Component {
       <div className="view">
         {showTitle ? <dl><dt>Title</dt><dd>{entity.title}</dd></dl> : ''}
         {showType ? <dl><dt>Type</dt><dd>{entity.documentType}</dd></dl> : ''}
+
+        <ShowIf if={entity.template === 'cd951f1feec188a75916812d43252418'}>
+          <dl>
+            <dd><TimelineViewer entity={entity} /></dd>
+          </dl>
+        </ShowIf>
 
         {entity.metadata.map((property, index) => {
           return (

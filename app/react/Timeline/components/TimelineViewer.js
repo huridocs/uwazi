@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
+import {Link} from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 
 import DocumentsAPI from 'app/Documents/DocumentsAPI';
@@ -22,6 +23,10 @@ export class TimelineViewer extends Component {
       }
       return result;
     }, '');
+  }
+
+  fetchReferences(entity) {
+    return ReferencesAPI.get(entity._id);
   }
 
   fetchReferenceData(references) {
@@ -53,6 +58,7 @@ export class TimelineViewer extends Component {
     }
 
     reference.additionalData.className = this.getTemplateType(reference.data.template);
+    reference.additionalData.date = moment.utc(reference.data.metadata.fecha * 1000).format('ll');
   }
 
   normalizeYears(years) {
@@ -74,7 +80,9 @@ export class TimelineViewer extends Component {
   arrangeYears(references) {
     let years = {};
     references.forEach(reference => {
-      if (reference.data.template === admissibilityReport || reference.data.template === judgement) {
+      const isDesiredTemplate = reference.data.template === admissibilityReport || reference.data.template === judgement;
+      const hasDate = reference.data.metadata.fecha !== null;
+      if (isDesiredTemplate && hasDate) {
         const docYear = moment.utc(reference.data.metadata.fecha * 1000).format('YYYY');
         years[docYear] = years[docYear] || [];
         this.assignAdditionalData(reference);
@@ -85,10 +93,14 @@ export class TimelineViewer extends Component {
     return this.normalizeYears(years);
   }
 
-  getTimelineInfo(references) {
-    const usefulReferences = references.filter(r => r.connectedDocumentTemplate !== countryTemplate);
+  getTimelineInfo(entity) {
+    let usefulReferences;
 
-    this.fetchReferenceData(usefulReferences)
+    this.fetchReferences(entity)
+    .then(references => {
+      usefulReferences = references.filter(r => r.connectedDocumentTemplate !== countryTemplate);
+      return this.fetchReferenceData(usefulReferences);
+    })
     .then(referencesData => {
       return Promise.all([referencesData, this.fetchSecondLevelReferences(usefulReferences)]);
     })
@@ -104,11 +116,11 @@ export class TimelineViewer extends Component {
   }
 
   componentDidMount() {
-    this.getTimelineInfo(this.props.references.toJS());
+    this.getTimelineInfo(this.props.entity);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.getTimelineInfo(nextProps.references.toJS());
+    this.getTimelineInfo(nextProps.entity);
   }
 
   render() {
@@ -120,17 +132,18 @@ export class TimelineViewer extends Component {
             <span>{year}</span>
           </div>
           {this.state.years[year].map((reference, index) =>
-            <div key={index}
-                 data-year="2003"
-                 className={`timeline-item ${reference.additionalData.className}`}
-                 data-toggle="tooltip"
-                 data-placement="top"
-                 data-animation="false"
-                 title={reference.data.title}>
+            <Link to={`/${reference.reference.connectedDocumentType}/${reference.data._id}`}
+                  key={index}
+                  data-year="2003"
+                  className={`timeline-item ${reference.additionalData.className}`}
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-animation="false"
+                  title={`${reference.additionalData.date}\n${reference.data.title}`}>
               <ShowIf if={reference.additionalData.type === 'judgement'}>
                 <i className="fa fa-legal"></i>
               </ShowIf>
-            </div>
+            </Link>
           )}
         </div>
       );
@@ -149,10 +162,8 @@ TimelineViewer.propTypes = {
   templates: PropTypes.object
 };
 
-function mapStateToProps(state) {
-  // console.log('STATE:', state);
-  const {entityView, templates} = state;
-  return {entity: entityView.entity, references: entityView.references, templates};
+function mapStateToProps({templates}) {
+  return {templates};
 }
 
 export default connect(mapStateToProps)(TimelineViewer);
