@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
+import Loader from 'app/components/Elements/Loader';
 import {Link} from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 
@@ -108,10 +109,12 @@ export class TimelineViewer extends Component {
       const stateReferences = usefulReferences.map((reference, index) => {
         return {reference, data: referencesData[index][0], children: secondLevelReferences[index]};
       });
-      this.setState({
-        references: stateReferences,
-        years: this.arrangeYears(stateReferences)
-      });
+      setTimeout(() => {
+        this.setState({
+          references: stateReferences,
+          years: this.arrangeYears(stateReferences)
+        });
+      }, 1000);
     });
   }
 
@@ -120,12 +123,16 @@ export class TimelineViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.getTimelineInfo(nextProps.entity);
+    if (this.props.entity._id !== nextProps.entity._id) {
+      this.setState({years: null}, () => {
+        this.getTimelineInfo(nextProps.entity);
+      });
+    }
   }
 
   render() {
     let years = '';
-    if (this.state) {
+    if (this.state && this.state.years) {
       years = Object.keys(this.state.years).map(year =>
         <div key={year} className="timeline-year">
           <div className={`timeline-label ${year % 5 === 0 ? 'timeline-label-text' : ''}`}>
@@ -150,6 +157,11 @@ export class TimelineViewer extends Component {
     }
     return (
       <div className="timeline">
+        {(() => {
+          if (!this.state || !this.state.years) {
+            return <Loader/>;
+          }
+        })()}
         {years}
       </div>
     );
