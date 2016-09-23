@@ -51,6 +51,21 @@ export default {
     return {label: property.label, value: values, showInCard};
   },
 
+  nested(property, rows, showInCard) {
+    if (!rows[0]) {
+      return {label: property.label, value: '', showInCard};
+    }
+
+    let keys = Object.keys(rows[0]);
+    let result = keys.join(' | ') + '\n';
+    result += keys.map(() => '-').join(' | ') + '\n';
+    result += rows.map((row) => {
+      return keys.map((key) => row[key].join(', ')).join(' | ');
+    }).join('\n');
+
+    return this.markdown(property, result, showInCard);
+  },
+
   markdown(property, value, showInCard) {
     return {label: property.label, markdown: value, showInCard};
   },
@@ -80,6 +95,10 @@ export default {
 
       if (property.type === 'markdown' && value) {
         return this.markdown(property, value, showInCard);
+      }
+
+      if (property.type === 'nested' && value) {
+        return this.nested(property, value, showInCard);
       }
 
       return {label: property.label, value, showInCard};

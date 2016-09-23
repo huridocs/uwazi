@@ -11,7 +11,7 @@ export class MultiSelect extends Component {
   }
 
   change(value) {
-    let newValues = this.props.value.slice(0);
+    let newValues = this.props.value ? this.props.value.slice(0) : [];
     if (newValues.includes(value)) {
       newValues = newValues.filter((val) => val !== value);
       return this.props.onChange(newValues);
@@ -99,11 +99,6 @@ export class MultiSelect extends Component {
                 <span>{option[optionsLabel]}&nbsp;</span>
                 <ShowIf if={typeof option.results !== 'undefined'}>
                   <span className="multiselectItem-results">{option.results}
-                    {/** /}
-                    <ShowIf if={typeof option.total !== 'undefined' && option.results !== option.total}>
-                     <span>&nbsp;of {option.total}</span>
-                    </ShowIf>
-                    {/**/}
                   </span>
                 </ShowIf>
             </label>

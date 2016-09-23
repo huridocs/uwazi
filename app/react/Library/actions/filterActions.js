@@ -13,7 +13,7 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
       model[property.name] = [];
     }
 
-    if (property.type === 'violatedarticles' && model[property.name] === '') {
+    if (property.type === 'nested' && model[property.name] === '') {
       model[property.name] = {};
     }
 
@@ -32,10 +32,10 @@ export function filterDocumentTypes(documentTypes) {
     let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
 
     let aggregations = libraryFilters
-    .filter((property) => property.type === 'select' || property.type === 'multiselect'|| property.type === 'violatedarticles')
+    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
     .map((property) => {
-      if (property.type === 'violatedarticles') {
-        return {name: property.name, nested: true, nestedProperties: ['cadh', 'cipst', 'cbdp', 'cidfp']};
+      if (property.type === 'nested') {
+        return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
       }
       return {name: property.name, nested: false};
     });
@@ -45,10 +45,7 @@ export function filterDocumentTypes(documentTypes) {
     updateModelFilters(dispatch, getState, libraryFilters);
 
     let search = Object.assign({aggregations, types: documentTypes}, state.search);
-    api.search(search)
-    .then((response) => {
-      dispatch(actions.set('library/aggregations', response.aggregations || []));
-    });
+    dispatch(libraryActions.searchDocuments(search));
   };
 }
 

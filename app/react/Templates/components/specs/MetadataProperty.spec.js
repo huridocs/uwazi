@@ -10,6 +10,7 @@ import {shallow} from 'enzyme';
 import {MetadataProperty, dragSource, dropTarget} from 'app/Templates/components/MetadataProperty';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
+import FormConfigNested from 'app/Templates/components/FormConfigNested';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -101,6 +102,9 @@ describe('MetadataProperty', () => {
 
         component.setProps({type: 'multiselect'});
         expect(component.find(FormConfigSelect).length).toBe(1);
+
+        component.setProps({type: 'nested'});
+        expect(component.find(FormConfigNested).length).toBe(1);
       });
     });
 

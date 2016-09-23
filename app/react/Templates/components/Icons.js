@@ -5,5 +5,5 @@ export default {
   date: 'fa fa-calendar',
   text: 'fa fa-font',
   markdown: 'fa fa-file-text-o',
-  violatedarticles: 'fa fa-gavel'
+  nested: 'fa fa-cubes'
 };

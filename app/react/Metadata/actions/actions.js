@@ -23,7 +23,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
         entity.metadata[property.name] = [];
       }
 
-      if (!entity.metadata[property.name] && property.type === 'violatedarticles') {
+      if (!entity.metadata[property.name] && property.type === 'nested') {
         entity.metadata[property.name] = [];
       }
     });

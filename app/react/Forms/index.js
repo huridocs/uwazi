@@ -5,8 +5,8 @@ import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
 import MarkDown from './components/MarkDown';
-import ViolatedArticles, {ViolatedArticlesField} from './components/ViolatedArticles';
-import ViolatedArticlesFilter from './components/ViolatedArticlesFilter';
+import Nested, {NestedField} from './components/Nested';
+import NestedMultiselect from './components/NestedMultiselect';
 
 export {
   Select,
@@ -18,7 +18,7 @@ export {
   DateRange,
   MultiSelect,
   MarkDown,
-  ViolatedArticles,
-  ViolatedArticlesField,
-  ViolatedArticlesFilter
+  Nested,
+  NestedField,
+  NestedMultiselect
 };

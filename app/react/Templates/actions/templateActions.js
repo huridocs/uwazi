@@ -18,6 +18,10 @@ export function addProperty(property = {}, index = 0) {
       property.content = getState().thesauris.toJS()[0]._id;
     }
 
+    if (property.type === 'nested') {
+      property.nestedProperties = [];
+    }
+
     let properties = getState().template.data.properties.slice(0);
     properties.splice(index, 0, property);
     dispatch(formActions.change('template.data.properties', properties));

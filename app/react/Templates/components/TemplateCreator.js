@@ -8,6 +8,7 @@ import {resetTemplate, saveTemplate, saveEntity} from 'app/Templates/actions/tem
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
+import ShowIf from 'app/App/ShowIf';
 
 export class TemplateCreator extends Component {
 
@@ -37,7 +38,9 @@ export class TemplateCreator extends Component {
               <PropertyOption label='Multi Select' type='multiselect'/>
               <PropertyOption label='Date' type='date'/>
               <PropertyOption label='Rich Text' type='markdown'/>
-              <PropertyOption label='Violated articles' type='violatedarticles'/>
+              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                <PropertyOption label='Violated articles' type='nested'/>
+              </ShowIf>
             </ul>
           </div>
         </aside>
@@ -50,7 +53,8 @@ TemplateCreator.propTypes = {
   resetTemplate: PropTypes.func,
   saveTemplate: PropTypes.func,
   saveEntity: PropTypes.func,
-  entity: PropTypes.bool
+  entity: PropTypes.bool,
+  settings: PropTypes.object
 };
 
 TemplateCreator.contextTypes = {
@@ -61,6 +65,12 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({resetTemplate, saveTemplate, saveEntity}, dispatch);
 }
 
+const mapStateToProps = (state) => {
+  return {
+    settings: state.settings
+  };
+};
+
 export default DragDropContext(HTML5Backend)(
-  connect(null, mapDispatchToProps)(TemplateCreator)
+  connect(mapStateToProps, mapDispatchToProps)(TemplateCreator)
 );

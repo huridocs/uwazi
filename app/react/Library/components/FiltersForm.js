@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 
-import {FormField, MultiSelect, DateRange, ViolatedArticlesFilter} from 'app/Forms';
+import {FormField, MultiSelect, DateRange, NestedMultiselect} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -66,17 +66,31 @@ export class FiltersForm extends Component {
               </FormGroup>
               );
           }
-          if (property.type === 'violatedarticles') {
+          if (property.type === 'nested') {
             return (
               <FormGroup key={index}>
                   <ul className={propertyClass}>
                     <li>
                       {property.label}
                       {property.required ? <span className="required">*</span> : ''}
+                      <div className="nested-strict">
+                        <FormField model={`search.filters.${property.name}.strict`}>
+                          <input id={property.name + 'strict'} type='checkbox'onChange={() => this.props.activateFilter(property.name, true)}/>
+                        </FormField>
+                        <label htmlFor={property.name + 'strict'}>
+                            <span>&nbsp;Strict mode</span>
+                        </label>
+                      </div>
                       <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </li>
                     <li className="wide">
-                      <ViolatedArticlesFilter aggregations={this.props.aggregations} property={property} onChange={() => this.props.activateFilter(property.name, true)}/>
+                      <NestedMultiselect
+                        aggregations={this.props.aggregations}
+                        property={property}
+                        onChange={(options) => {
+                          this.props.activateFilter(property.name, Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false));
+                        }}
+                      />
                     </li>
                   </ul>
               </FormGroup>

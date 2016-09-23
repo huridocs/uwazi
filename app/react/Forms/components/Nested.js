@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
 import {MarkDown} from 'app/Forms';
 
-export class ViolatedArticles extends Component {
+export class Nested extends Component {
 
   constructor(props) {
     super(props);
@@ -18,7 +18,7 @@ export class ViolatedArticles extends Component {
     let result = keys.join(' | ') + '\n';
     result += keys.map(() => '-').join(' | ') + '\n';
     result += rows.map((row) => {
-      return keys.map((key) => row[key]).join(' | ');
+      return keys.map((key) => row[key].join(',')).join(' | ');
     }).join('\n');
 
     return result;
@@ -32,11 +32,12 @@ export class ViolatedArticles extends Component {
     let entries = rows.splice(2);
     let formatedValues = entries.map((row) => {
       return row.split('|').reduce((result, val, index) => {
-        result[keys[index]] = val.split(',').map((v) => v.trim());
+        let values = val.split(',').map((v) => v.trim()).filter((v) => v);
+        result[keys[index]] = values;
         return result;
       }, {});
     });
-    
+
     this.props.onChange(formatedValues);
   }
 
@@ -46,15 +47,15 @@ export class ViolatedArticles extends Component {
 
 }
 
-ViolatedArticles.propTypes = {
+Nested.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.array
 };
 
-export default ViolatedArticles;
+export default Nested;
 
-const ViolatedArticlesField = createFieldClass({
-  ViolatedArticles: controls.textarea
+const NestedField = createFieldClass({
+  Nested: controls.textarea
 });
 
-export {ViolatedArticlesField};
+export {NestedField};

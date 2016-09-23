@@ -3,11 +3,34 @@ import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {FormField} from 'app/Forms';
 import {connect} from 'react-redux';
 
-export class FormConfigInput extends Component {
+export class FormConfigNested extends Component {
+
+  constructor(props) {
+    super(props);
+    const nestedProperties = props.data.properties[props.index].nestedProperties || [{key: '', label: ''}];
+    this.state = {nestedProperties};
+  }
+
+  contentValidation() {
+    return {required: (val) => val.trim() !== ''};
+  }
+
+  addProperty(e) {
+    e.preventDefault();
+    this.state.nestedProperties.push({key: '', label: ''});
+    this.setState({nestedProperties: this.state.nestedProperties});
+  }
+
+  removeProperty(index, e) {
+    e.preventDefault();
+    this.state.nestedProperties.splice(index, 1);
+    this.setState({nestedProperties: this.state.nestedProperties});
+  }
 
   render() {
     const {index, data, formState} = this.props;
-    const ptoperty = data.properties[index];
+    const property = data.properties[index];
+
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.errors[labelKey + '.required'];
@@ -19,32 +42,58 @@ export class FormConfigInput extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-sm-6">
+          <div className="col-sm-4">
             <div className={labelClass}>
               <span className="input-group-addon">
-                Label
+              Label
               </span>
               <FormField model={`template.data.properties[${index}].label`}>
-                <input className="form-control" />
+                <input className="form-control"/>
               </FormField>
             </div>
           </div>
-          <div className="col-sm-6">
+          <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
                 <FormField model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + index} type="checkbox"/>
+                  <input id={'required' + this.props.index} type="checkbox"/>
                 </FormField>
               </span>
-              <label htmlFor={'required' + index} className="form-control">Required</label>
+              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
             </div>
           </div>
         </div>
+        <div>Properties <button className="btn btn-default" onClick={this.addProperty.bind(this)}>Add</button></div>
+        {(() => {
+          return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
+            return <div key={nestedIndex} className="row">
+              <div className="col-sm-4">
+                <div className="input-group">
+                  <span className="input-group-addon">Key</span>
+                  <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
+                    <input className="form-control"/>
+                  </FormField>
+                </div>
+              </div>
+              <div className="col-sm-4">
+                <div className="input-group">
+                  <span className="input-group-addon">Label</span>
+                  <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
+                    <input className="form-control"/>
+                  </FormField>
+                </div>
+              </div>
+              <div className="col-sm-2">
+                <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>Remove</button>
+              </div>
+            </div>;
+          });
+        })()}
         {(() => {
           if (duplicatedLabel) {
-            return <div className="row validation-error">
+            return <div className="row has-error">
                     <div className="col-sm-4">
-                      <i className="fa fa-exclamation-triangle"></i>
+                    <i className="fa fa-exclamation-triangle"></i>
                       &nbsp;
                       Duplicated label
                     </div>
@@ -67,7 +116,7 @@ export class FormConfigInput extends Component {
               </label>
             </div>
             <div className="col-sm-8 border-bottom">
-              <FilterSuggestions {...ptoperty} />
+              <FilterSuggestions {...property} />
             </div>
           </div>
 
@@ -95,18 +144,19 @@ export class FormConfigInput extends Component {
   }
 }
 
-FormConfigInput.propTypes = {
+FormConfigNested.propTypes = {
+  thesauris: PropTypes.object,
   data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string
 };
 
-export function mapStateToProps({template}) {
+export function mapStateToProps(state) {
   return {
-    data: template.data,
-    formState: template.formState
+    data: state.template.data,
+    formState: state.template.formState
   };
 }
 
-export default connect(mapStateToProps)(FormConfigInput);
+export default connect(mapStateToProps)(FormConfigNested);

@@ -5,8 +5,8 @@ const FieldController = createFieldClass({
   MultiSelect: controls.select,
   DatePicker: controls.text,
   MarkDown: controls.text,
-  ViolatedArticles: controls.select,
-  ViolatedArticlesFilter: controls.select
+  Nested: controls.select,
+  NestedMultiselect: controls.select
 });
 
 class FormField extends Component {

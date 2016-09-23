@@ -63,36 +63,91 @@ export default function () {
       return this;
     },
 
+    textFilter(filters, property) {
+      let match = {match: {}};
+      match.match[`doc.metadata.${property}`] = filters[property].value;
+      return match;
+    },
+
+    rangeFilter(filters, property) {
+      let match = {range: {}};
+      match.range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+      return match;
+    },
+
+    multiselectFilter(filters, property) {
+      let values = filters[property].value;
+      let match = {terms: {}};
+      match.terms[`doc.metadata.${property}.raw`] = values;
+      return match;
+    },
+
+    nestedFilter(filters, property) {
+      let match = {
+        nested: {
+          path: `doc.metadata.${property}`,
+          filter: {
+            bool: {}
+          }
+        }
+      };
+      let value = filters[property].value;
+      let strictSearch = value.strict;
+      let properties = value.properties || [];
+
+      let keys = Object.keys(properties).filter((key) => {
+        return properties[key].any ||
+               properties[key].values;
+      });
+
+      if (strictSearch) {
+        match.nested.filter.bool.must = [];
+        keys.forEach((key) => {
+          if (properties[key].any) {
+            match.nested.filter.bool.must.push({exists: {field: `doc.metadata.${property}.${key}`}});
+            return;
+          }
+
+          properties[key].values.forEach((val) => {
+            let term = {term: {}};
+            term.term[`doc.metadata.${property}.${key}`] = {value: val};
+            match.nested.filter.bool.must.push(term);
+          });
+        });
+      }
+
+      if (!strictSearch) {
+        match.nested.filter.bool.should = keys.map((key) => {
+          if (properties[key].any) {
+            return {exists: {field: `doc.metadata.${property}.${key}`}};
+          }
+
+          let terms = {terms: {}};
+          terms.terms[`doc.metadata.${property}.${key}`] = properties[key].values;
+          return terms;
+        });
+      }
+
+      return match;
+    },
+
     filterMetadata(filters = {}) {
       Object.keys(filters).forEach((property) => {
-        let match = {};
+        let match;
         if (filters[property].type === 'text') {
-          match.match = {};
-          match.match[`doc.metadata.${property}`] = filters[property].value;
+          match = this.textFilter(filters, property);
         }
 
         if (filters[property].type === 'range') {
-          match.range = {};
-          match.range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+          match = this.rangeFilter(filters, property);
         }
 
         if (filters[property].type === 'multiselect') {
-          let values = filters[property].value;
-          match.terms = {};
-          match.terms[`doc.metadata.${property}.raw`] = values;
+          match = this.multiselectFilter(filters, property);
         }
 
         if (filters[property].type === 'nested') {
-          match.nested = {
-            path: `doc.metadata.${property}`
-          };
-          match.nested.filter = {bool: {}};
-          let value = filters[property].value;
-          match.nested.filter.bool.must = Object.keys(value).map((key) => {
-            let terms = {terms: {}};
-            terms.terms[`doc.metadata.${property}.${key}`] = value[key];
-            return terms;
-          });
+          match = this.nestedFilter(filters, property);
         }
 
         baseQuery.filter.bool.must.push(match);
@@ -119,33 +174,70 @@ export default function () {
       };
     },
 
+    nestedAggregation(property, filters) {
+      let nestedAggregation = baseQuery.aggregations[property.name] = {
+        nested: {
+          path: `doc.metadata.${property.name}`
+        },
+        aggregations: {}
+      };
+
+      property.nestedProperties.forEach((prop) => {
+        let nestedFilters = baseQuery.filter.bool.must.filter((match) => {
+          return match.nested && !match.nested.filter.bool.should;
+        })
+        .map((nestedFilter) => nestedFilter.nested.filter.bool.must)
+        .reduce((result, propFilters) => {
+          return result.concat(propFilters);
+        }, []);
+
+        nestedAggregation.aggregations[prop.key] = {
+          terms: {
+            field: `doc.metadata.${property.name}.${prop.key}.raw`,
+            size: 0
+          },
+          aggregations: {
+            filtered: {
+              filter: {
+                bool: {
+                  must: nestedFilters
+                }
+              },
+              aggregations: {
+                total: {
+                  reverse_nested: {},
+                  aggregations: {
+                    filtered: {
+                      filter: {
+                        bool: {
+                          must: filters
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        };
+      });
+
+      return nestedAggregation;
+    },
+
     aggregations(properties) {
       properties.forEach((property) => {
-        let key = `doc.metadata.${property.name}.raw`;
+        let path = `doc.metadata.${property.name}.raw`;
         let filters = baseQuery.filter.bool.must.filter((match) => {
-          return !match.terms || (match.terms && !match.terms[key]);
+          return !match.terms ||
+                 match.terms && !match.terms[path];
         });
 
         if (property.nested) {
-          let nestedAggregation = baseQuery.aggregations[property.name] = {
-            nested: {
-              path: `doc.metadata.${property.name}`
-            },
-            aggregations: {}
-          };
-          property.nestedProperties.forEach((prop) => {
-            nestedAggregation.aggregations[prop] = {
-              terms: {
-                field: `doc.metadata.${property.name}${prop}.raw`,
-                size: 0
-              }
-            };
-          });
-          return baseQuery.aggregations[property.name] = nestedAggregation;
+          return baseQuery.aggregations[property.name] = this.nestedAggregation(property, filters);
         }
 
-        baseQuery.aggregations[property.name] = this.aggregation(key, filters);
-        console.log(baseQuery.aggregations);
+        baseQuery.aggregations[property.name] = this.aggregation(path, filters);
       });
       return this;
     },

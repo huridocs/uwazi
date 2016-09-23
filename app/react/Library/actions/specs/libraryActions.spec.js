@@ -121,24 +121,30 @@ describe('libraryActions', () => {
           {name: 'inactive'},
           {name: 'date', type: 'date', active: true},
           {name: 'select', type: 'select', active: true},
-          {name: 'multiselect', type: 'multiselect', active: true}
+          {name: 'multiselect', type: 'multiselect', active: true},
+          {name: 'nested', type: 'nested', active: true, nestedProperties: [{key: 'prop1', label: 'prop one'}]}
         ], documentTypes: ['decision']};
         store = {library: {filters: Immutable.fromJS(state)}};
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
 
       it('should convert the search and set it to the url query', () => {
-        const query = {searchTerm: 'batman', filters: {author: 'batman', date: 'dateValue', select: 'selectValue', multiselect: 'multiValue'}};
+        const query = {searchTerm: 'batman', filters: {author: 'batman', date: 'dateValue', select: 'selectValue', multiselect: 'multiValue', nested: 'nestedValue'}};
         const limit = 'limit';
         spyOn(browserHistory, 'push');
         actions.searchDocuments(query, limit)(dispatch, getState);
         const expected = Object.assign({}, query);
-        expected.aggregations = ['select', 'multiselect'];
+        expected.aggregations = [
+          {name: 'select', nested: false},
+          {name: 'multiselect', nested: false},
+          {name: 'nested', nested: true, nestedProperties: [{key: 'prop1', label: 'prop one'}]}
+        ];
         expected.filters = {
           author: {value: 'batman', type: 'text'},
           date: {value: 'dateValue', type: 'range'},
           select: {value: 'selectValue', type: 'multiselect'},
-          multiselect: {value: 'multiValue', type: 'multiselect'}
+          multiselect: {value: 'multiValue', type: 'multiselect'},
+          nested: {value: 'nestedValue', type: 'nested'}
         };
         expected.types = ['decision'];
         expected.limit = limit;

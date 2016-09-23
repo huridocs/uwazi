@@ -64,10 +64,10 @@ export function searchDocuments(readOnlySearch, limit) {
     const filters = getState().library.filters.toJS();
     const search = Object.assign({}, readOnlySearch);
     search.aggregations = filters.properties
-    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'violatedarticles')
+    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
     .map((property) => {
-      if (property.type === 'violatedarticles') {
-        return {name: property.name, nested: true, nestedProperties: ['cadh', 'cipst', 'cbdp', 'cidfp']};
+      if (property.type === 'nested') {
+        return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
       }
       return {name: property.name, nested: false};
     });
@@ -84,7 +84,7 @@ export function searchDocuments(readOnlySearch, limit) {
       if (property.type === 'select' || property.type === 'multiselect') {
         type = 'multiselect';
       }
-      if (property.type === 'violatedarticles') {
+      if (property.type === 'nested') {
         type = 'nested';
       }
       search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
