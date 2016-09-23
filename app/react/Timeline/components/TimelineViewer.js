@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
+import ShowIf from 'app/App/ShowIf';
+
 import DocumentsAPI from 'app/Documents/DocumentsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import ReferencesAPI from 'app/Viewer/referencesAPI';
@@ -12,6 +14,15 @@ const admissibilityReport = 'e8e039070aa95f8f964c281d4583100d';
 const judgement = '5c7180d3dd310766a1c6817c165ed5f4';
 
 export class TimelineViewer extends Component {
+
+  getTemplateType(itemTemplate) {
+    return this.props.templates.toJS().reduce((result, template, index) => {
+      if (template._id === itemTemplate) {
+        return 'timeline-item-type-' + index;
+      }
+      return result;
+    }, '');
+  }
 
   fetchReferenceData(references) {
     const fetchPromises = references.map(reference => {
@@ -37,11 +48,33 @@ export class TimelineViewer extends Component {
     references.forEach(reference => {
       if (reference.data.template === admissibilityReport || reference.data.template === judgement) {
         const docYear = moment.utc(reference.data.metadata.fecha * 1000).format('YYYY');
-        // console.log(reference.data);
         years[docYear] = years[docYear] || [];
+
+        if (reference.data.template === judgement) {
+          reference.additionalData = {type: 'judgement'};
+        }
+
+        if (reference.data.template === admissibilityReport) {
+          reference.additionalData = {type: 'admissibilityReport'};
+        }
+
+        reference.additionalData.className = this.getTemplateType(reference.data.template);
+
         years[docYear].push(reference);
       }
     });
+
+    const minYear = Object.keys(years).reduce((min, year) => {
+      return Math.min(min, Number(year));
+    }, Number(moment().format('YYYY')));
+
+    const maxYear = Object.keys(years).reduce((max, year) => {
+      return Math.max(max, Number(year));
+    }, minYear);
+
+    for (let year = minYear - 3; year < maxYear + 4; year += 1) {
+      years[year] = years[year] || [];
+    }
 
     return years;
   }
@@ -58,7 +91,10 @@ export class TimelineViewer extends Component {
       const stateReferences = usefulReferences.map((reference, index) => {
         return {reference, data: referencesData[index][0], children: secondLevelReferences[index]};
       });
-      this.setState({references: stateReferences, years: this.arrangeYears(stateReferences)});
+      this.setState({
+        references: stateReferences,
+        years: this.arrangeYears(stateReferences)
+      });
     });
   }
 
@@ -78,9 +114,21 @@ export class TimelineViewer extends Component {
     if (this.state) {
       years = Object.keys(this.state.years).map(year =>
         <div key={year} className="timeline-year">
-          <span className="timeline-label">{year}</span>
+          <div className={`timeline-label ${year % 5 === 0 ? 'timeline-label-text' : ''}`}>
+            <span>{year}</span>
+          </div>
           {this.state.years[year].map((reference, index) =>
-            <span key={index} className="timeline-item" title={reference.data.title}> </span>
+            <div key={index}
+                 data-year="2003"
+                 className={`timeline-item ${reference.additionalData.className}`}
+                 data-toggle="tooltip"
+                 data-placement="top"
+                 data-animation="false"
+                 title={reference.data.title}>
+              <ShowIf if={reference.additionalData.type === 'judgement'}>
+                <i className="fa fa-legal"></i>
+              </ShowIf>
+            </div>
           )}
         </div>
       );
