@@ -201,7 +201,7 @@ const mapStateToProps = ({documentViewer}) => {
     references = documentViewer.targetDocReferences;
   }
 
-  references = references.filter((ref) => !ref.get('inbound') && ref.get('sourceType') !== 'metadata');
+  references = references.filterNot((ref) => !ref.get('inbound') && ref.get('sourceType') === 'metadata');
 
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
