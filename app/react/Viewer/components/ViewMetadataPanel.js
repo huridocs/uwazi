@@ -49,8 +49,6 @@ export class ViewMetadataPanel extends Component {
   render() {
     const {doc, docBeingEdited} = this.props;
 
-    let disabled = false;
-
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">

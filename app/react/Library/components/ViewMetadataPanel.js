@@ -10,8 +10,6 @@ import EntityForm from '../containers/EntityForm';
 import {actions as formActions} from 'react-redux-form';
 import modals from 'app/Modals';
 import {formater, ShowMetadata} from 'app/Metadata';
-import {NeedAuthorization} from 'app/Auth';
-import ShowIf from 'app/App/ShowIf';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
@@ -54,7 +52,6 @@ export class ViewMetadataPanel extends Component {
 
   render() {
     const {metadata, docBeingEdited} = this.props;
-    const disabled = false;
 
     return (
       <SidePanel open={this.props.open}>
