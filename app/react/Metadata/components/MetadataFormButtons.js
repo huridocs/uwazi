@@ -11,11 +11,12 @@ export class MetadataFormButtons extends Component {
   render() {
     const {entityBeingEdited} = this.props;
     const formName = this.props.formName || 'metadataForm';
+    const data = this.props.data.toJS();
     return <div className="sidepanel-footer">
       <NeedAuthorization>
         <ShowIf if={!entityBeingEdited}>
           <button
-            onClick={() => this.props.loadInReduxForm(this.props.formStatePath, this.props.data.toJS(), this.props.templates.toJS())}
+            onClick={() => this.props.loadInReduxForm(this.props.formStatePath, data, this.props.templates.toJS())}
             className="edit-metadata btn btn-primary">
             <i className="fa fa-pencil"></i>
             <span className="btn-label">Edit</span>
@@ -35,6 +36,12 @@ export class MetadataFormButtons extends Component {
           <i className="fa fa-save"></i>
           <span className="btn-label">Save</span>
         </button>
+      </ShowIf>
+      <ShowIf if={data.type === 'document'}>
+        <a className="btn btn-primary" href={'/api/documents/download?_id=' + data._id} target="_blank">
+          <i className="fa fa-cloud-download"></i>
+          <span className="btn-label">Download</span>
+        </a>
       </ShowIf>
       <NeedAuthorization>
         <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>
