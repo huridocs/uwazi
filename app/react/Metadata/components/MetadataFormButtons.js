@@ -5,11 +5,12 @@ import {bindActionCreators} from 'redux';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 
-import {actions} from 'app/Metadata';
+import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
   render() {
     const {entityBeingEdited} = this.props;
+    const formName = this.props.formName || 'metadataForm';
     return <div className="sidepanel-footer">
       <NeedAuthorization>
         <ShowIf if={!entityBeingEdited}>
@@ -30,7 +31,7 @@ export class MetadataFormButtons extends Component {
         </button>
       </ShowIf>
       <ShowIf if={entityBeingEdited}>
-        <button type="submit" form={this.props.formName} className="btn btn-success">
+        <button type="submit" form={formName} className="btn btn-success">
           <i className="fa fa-save"></i>
           <span className="btn-label">Save</span>
         </button>
@@ -63,7 +64,7 @@ const mapStateToProps = ({templates}) => {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
-    resetForm: actions.resetform
+    resetForm: actions.resetReduxForm
   }, dispatch);
 }
 

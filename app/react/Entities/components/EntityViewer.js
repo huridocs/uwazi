@@ -13,6 +13,7 @@ import {browserHistory} from 'react-router';
 import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
+import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel} from 'app/Layout';
 
 export class EntityViewer extends Component {
@@ -20,7 +21,7 @@ export class EntityViewer extends Component {
   deleteEntity() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteEntity(this.props.rawEntity)
+        this.props.deleteEntity(this.props.rawEntity.toJS())
         .then(() => {
           browserHistory.push('/');
         });
@@ -181,38 +182,13 @@ export class EntityViewer extends Component {
 
             </div>
           </ShowIf>
-          <div className="sidepanel-footer">
-            <NeedAuthorization>
-              <ShowIf if={!entityBeingEdited}>
-                <button
-                  onClick={() => this.props.loadInReduxForm('entityView.entityForm', this.props.rawEntity, this.props.templates)}
-                  className="edit-metadata btn btn-primary">
-                  <i className="fa fa-pencil"></i>
-                  <span className="btn-label">Edit</span>
-                </button>
-              </ShowIf>
-            </NeedAuthorization>
-            <ShowIf if={entityBeingEdited}>
-              <button
-                onClick={() => this.props.resetForm('entityView.entityForm')}
-                className="edit-metadata btn btn-primary">
-                <i className="fa fa-close"></i>
-                <span className="btn-label">Cancel</span>
-              </button>
-            </ShowIf>
-            <ShowIf if={entityBeingEdited}>
-              <button type="submit" form="metadataForm" className="edit-metadata btn btn-success">
-                <i className="fa fa-save"></i>
-                <span className="btn-label">Save</span>
-              </button>
-            </ShowIf>
-            <NeedAuthorization>
-              <button className="edit-metadata btn btn-danger" onClick={this.deleteEntity.bind(this)}>
-                <i className="fa fa-trash"></i>
-                <span className="btn-label">Delete</span>
-              </button>
-            </NeedAuthorization>
-          </div>
+
+          <MetadataFormButtons
+            delete={this.deleteEntity.bind(this)}
+            data={this.props.rawEntity}
+            formStatePath='entityView.entityForm'
+            entityBeingEdited={entityBeingEdited}/>
+
           <div className="sidepanel-body">
             <ShowIf if={!entityBeingEdited}>
               <h1 className="item-name">{entity.title}</h1>
@@ -284,7 +260,7 @@ const mapStateToProps = (state) => {
                    .filter(ref => !!state.user.get('_id') || ref.get('connectedDocumentPublished'));
 
   return {
-    rawEntity: entity,
+    rawEntity: state.entityView.entity,
     templates,
     relationTypes,
     entity: formater.prepareMetadata(entity, templates, thesauris),
