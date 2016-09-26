@@ -78,7 +78,7 @@ export function searchDocuments(readOnlySearch, limit) {
         return;
       }
       let type = 'text';
-      if (property.type === 'date') {
+      if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange') {
         type = 'range';
       }
       if (property.type === 'select' || property.type === 'multiselect') {

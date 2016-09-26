@@ -3,7 +3,7 @@ import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
 
-import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested} from 'app/Forms';
+import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange} from 'app/Forms';
 
 export class MetadataForm extends Component {
 
@@ -78,6 +78,12 @@ export class MetadataForm extends Component {
                   }
                   if (property.type === 'nested') {
                     return <Nested/>;
+                  }
+                  if (property.type === 'multidate') {
+                    return <MultiDate/>;
+                  }
+                  if (property.type === 'multidaterange') {
+                    return <MultiDateRange/>;
                   }
                   return <input className="form-control"/>;
                 })()}

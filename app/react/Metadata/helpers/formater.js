@@ -7,6 +7,22 @@ export default {
     return {label: property.label, value, showInCard};
   },
 
+  multidate(property, timestamps, showInCard) {
+    let value = timestamps.map((timestamp) => {
+      return {value: moment.utc(timestamp, 'X').format('MMM DD YYYY')};
+    });
+    return {label: property.label, value, showInCard};
+  },
+
+  multidaterange(property, dateranges, showInCard) {
+    let value = dateranges.map((range) => {
+      let from = moment.utc(range.from, 'X').format('MMM DD YYYY');
+      let to = moment.utc(range.to, 'X').format('MMM DD YYYY');
+      return {value: `${from} - ${to}`};
+    });
+    return {label: property.label, value, showInCard};
+  },
+
   select(property, thesauriValue, thesauris, showInCard) {
     let thesauri = thesauris.find(t => t._id === property.content);
 
@@ -91,6 +107,14 @@ export default {
 
       if (property.type === 'date' && value) {
         return this.date(property, value, showInCard);
+      }
+
+      if (property.type === 'multidate' && value) {
+        return this.multidate(property, value, showInCard);
+      }
+
+      if (property.type === 'multidaterange' && value) {
+        return this.multidaterange(property, value, showInCard);
       }
 
       if (property.type === 'markdown' && value) {
