@@ -28,12 +28,12 @@ export class SortButtons extends Component {
           sorts.push({
             property: property.name,
             html:
-              <span key={sorts.length + 1}
+              <li className="Dropdown-option" key={sorts.length + 1}>
                     className={search.sort === sortString ? 'active' : ''}
                     onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
                 {t(template.name, property.label)}
                 {search.sort === sortString ? <i className={'fa fa-caret-' + order}></i> : ''}
-              </span>
+              </li>
           });
         }
       });
@@ -51,18 +51,21 @@ export class SortButtons extends Component {
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
 
     return (
-      <p className="col-sm-5">
-        {t('System', 'Sort by')}
-        {additionalSorts}
-        <span className={sortingTitle ? 'active' : ''} onClick={() => this.sort('title', 'asc')}>
+      <div className="Dropdown u-floatRight">
+        <span className="Dropdown-label">{t('System', 'Sort by')}</span>
+        <ul className="Dropdown-list">
+        <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')} onClick={() => this.sort('title')}>
           A-Z
           {sortingTitle ? <i className={'fa fa-caret-' + order}></i> : ''}
-        </span>
-        <span className={sortingRecent ? 'active' : ''} onClick={() => this.sort('creationDate', 'desc')}>
-          {t('System', 'Recent')}
-          {sortingRecent ? <i className={'fa fa-caret-' + order}></i> : ''}
-        </span>
-      </p>
+        </li>
+          {additionalSorts}
+          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')} onClick={() => this.sort('creationDate')}>
+            Recent
+            {sortingRecent ? <i className={'fa fa-caret-' + order}></i> : ''}
+          </li>
+          {additionalSorts}
+        </ul>
+      </div>
     );
   }
 }
