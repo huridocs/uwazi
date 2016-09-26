@@ -5,7 +5,7 @@ import entities from 'api/entities/entities';
 
 let autoincrementValuesId = (thesauri) => {
   let nextId = thesauri.values.reduce((latestId, value) => {
-    return value.id >= latestId ? value.id : latestId;
+    return parseInt(value.id, 10) >= latestId ? parseInt(value.id, 10) : latestId;
   }, 0) + 1;
 
   thesauri.values.map((value) => {
@@ -13,6 +13,8 @@ let autoincrementValuesId = (thesauri) => {
       value.id = nextId;
       nextId += 1;
     }
+    
+    value.id = value.id.toString();
     return value;
   });
 

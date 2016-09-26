@@ -73,7 +73,7 @@ describe('thesauris routes', () => {
 
   describe('POST', () => {
     it('should create a thesauri', (done) => {
-      let req = {body: {name: 'Batman wish list', values: [{id: 1, label: 'Joker BFF'}]}};
+      let req = {body: {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]}};
       let postResponse;
 
       routes.post('/api/thesauris', req)
@@ -86,7 +86,7 @@ describe('thesauris routes', () => {
           return thesauri.value.name === 'Batman wish list';
         });
 
-        expect(newDoc.value.values).toEqual([{id: 1, label: 'Joker BFF'}]);
+        expect(newDoc.value.values).toEqual([{id: '1', label: 'Joker BFF'}]);
         expect(newDoc.value._rev).toBe(postResponse.rev);
         done();
       })
@@ -117,10 +117,10 @@ describe('thesauris routes', () => {
 
     it('should set a unique id for each value when missing', (done) => {
       let req = {body: {name: 'Enigma questions', values: [
-        {id: 1, label: 'A fly without wings is a walk?'},
-        {id: 3, label: 'Wait for a waiter makes you a waiter?'},
+        {id: '1', label: 'A fly without wings is a walk?'},
+        {id: '3', label: 'Wait for a waiter makes you a waiter?'},
         {label: 'If you have one eye, you blink or wink?'},
-        {id: 8, label: 'Is there another word for synonym?'},
+        {id: '8', label: 'Is there another word for synonym?'},
         {label: 'If you shouldnt talk to strangers, how you make friends?'}
       ]}};
       let postResponse;
@@ -136,8 +136,8 @@ describe('thesauris routes', () => {
         });
 
         expect(newDoc.value.name).toBe('Enigma questions');
-        expect(newDoc.value.values[2].id).toEqual(9);
-        expect(newDoc.value.values[4].id).toEqual(10);
+        expect(newDoc.value.values[2].id).toEqual('9');
+        expect(newDoc.value.values[4].id).toEqual('10');
         expect(newDoc.value._rev).toBe(postResponse.rev);
         done();
       })
