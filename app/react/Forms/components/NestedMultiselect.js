@@ -48,33 +48,31 @@ export class NestedMultiselect extends Component {
 
   render() {
     let property = this.props.property;
-    return <div className="nestedMultiselect">
+    return <ul className="multiselect is-active">
             {(() => {
               return property.nestedProperties.map((prop, index) => {
                 let options = this.getOptions(prop.key);
                 if (!options.length) {
                   return false;
                 }
-                return <div key={index}>
+                return <li key={index}>
                         <FormField model={`search.filters.${property.name}.properties.${prop.key}.any`}>
-                          <div className="multiselect is-active">
-                            <div className="multiselectItem">
-                              <input
-                                type='checkbox'
-                                className="form-control"
-                                id={prop.key}
-                                 className="multiselectItem-input"
-                                 onChange={this.selectAnyChange.bind(this, prop.key)}
-                              />
-                              <label htmlFor={prop.key} className="multiselectItem-label">
-                                <i className="multiselectItem-icon fa fa-square-o"></i>
-                                <i className="multiselectItem-icon fa fa-check"></i>
-                                <span>&nbsp;{prop.label}</span>
-                              </label>
-                              <button className="btn btn-xs btn-default multiselectItem-action" onClick={this.toggleOptions.bind(this, prop.key)}>
-                                <i className={this.state[prop.key] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
-                              </button>
-                            </div>
+                          <div className="multiselectItem">
+                            <input
+                              type='checkbox'
+                              className="form-control"
+                              id={prop.key}
+                               className="multiselectItem-input"
+                               onChange={this.selectAnyChange.bind(this, prop.key)}
+                            />
+                            <label htmlFor={prop.key} className="multiselectItem-label">
+                              <i className="multiselectItem-icon fa fa-square-o"></i>
+                              <i className="multiselectItem-icon fa fa-check"></i>
+                              <span>&nbsp;{prop.label}</span>
+                            </label>
+                            <button className="btn btn-xs btn-default multiselectItem-action" onClick={this.toggleOptions.bind(this, prop.key)}>
+                              <i className={this.state[prop.key] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                            </button>
                           </div>
                         </FormField>
                         <ShowIf if={this.state[prop.key]}>
@@ -87,10 +85,10 @@ export class NestedMultiselect extends Component {
                             />
                           </FormField>
                         </ShowIf>
-                      </div>;
+                      </li>;
               });
             })()}
-          </div>;
+          </ul>;
   }
 
 }
