@@ -17,14 +17,16 @@ export class FormConfigNested extends Component {
 
   addProperty(e) {
     e.preventDefault();
-    this.state.nestedProperties.push({key: '', label: ''});
-    this.setState({nestedProperties: this.state.nestedProperties});
+    let nestedProperties = this.state.nestedProperties.slice();
+    nestedProperties.push({key: '', label: ''});
+    this.setState({nestedProperties});
   }
 
   removeProperty(index, e) {
     e.preventDefault();
-    this.state.nestedProperties.splice(index, 1);
-    this.setState({nestedProperties: this.state.nestedProperties});
+    let nestedProperties = this.state.nestedProperties.slice();
+    nestedProperties.splice(index, 1);
+    this.setState({nestedProperties});
   }
 
   render() {
@@ -63,7 +65,7 @@ export class FormConfigNested extends Component {
             </div>
           </div>
         </div>
-        <div>Properties <button className="btn btn-default" onClick={this.addProperty.bind(this)}>Add</button></div>
+        <div>Properties <button className="btn btn-primary" onClick={this.addProperty.bind(this)}>Add</button></div>
         {(() => {
           return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
             return <div key={nestedIndex} className="row">
