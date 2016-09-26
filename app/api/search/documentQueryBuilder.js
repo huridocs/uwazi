@@ -110,7 +110,7 @@ export default function () {
 
           properties[key].values.forEach((val) => {
             let term = {term: {}};
-            term.term[`doc.metadata.${property}.${key}`] = {value: val};
+            term.term[`doc.metadata.${property}.${key}.raw`] = {value: val};
             match.nested.filter.bool.must.push(term);
           });
         });
@@ -123,7 +123,7 @@ export default function () {
           }
 
           let terms = {terms: {}};
-          terms.terms[`doc.metadata.${property}.${key}`] = properties[key].values;
+          terms.terms[`doc.metadata.${property}.${key}.raw`] = properties[key].values;
           return terms;
         });
       }
