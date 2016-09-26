@@ -3,10 +3,12 @@ import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {FormField} from 'app/Forms';
 import {connect} from 'react-redux';
 
+import ShowIf from 'app/App/ShowIf';
+
 export class FormConfigInput extends Component {
 
   render() {
-    const {index, data, formState} = this.props;
+    const {index, data, formState, type} = this.props;
     const ptoperty = data.properties[index];
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
@@ -84,10 +86,31 @@ export class FormConfigInput extends Component {
                 <i className="fa fa-question-circle"></i>
               </label>
             </div>
-            <div className="col-sm-8 help">
+            <div className={'col-sm-8 help' + (type === 'text' || type === 'date' ? ' border-bottom' : '')}>
               Show this property in the library card's basic info.
             </div>
           </div>
+
+          <ShowIf if={type === 'text' || type === 'date'}>
+            <div className="row">
+              <div className="col-sm-4">
+                <FormField model={`template.data.properties[${index}].sortable`}>
+                  <input id={'sortable' + this.props.index} type="checkbox"/>
+                </FormField>
+                &nbsp;
+                <label htmlFor={'sortable' + this.props.index}
+                       title="Library items will be able to be sorted by this property.">
+                  Sortable
+                  &nbsp;
+                  <i className="fa fa-question-circle"></i>
+                </label>
+              </div>
+              <div className="col-sm-8 help">
+                Use this property to sort library items.
+              </div>
+            </div>
+          </ShowIf>
+
         </div>
 
       </div>
@@ -99,7 +122,8 @@ FormConfigInput.propTypes = {
   data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
-  formKey: PropTypes.string
+  formKey: PropTypes.string,
+  type: PropTypes.string
 };
 
 export function mapStateToProps({template}) {
