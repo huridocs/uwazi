@@ -14,6 +14,12 @@ import moment from 'moment';
 const countryTemplate = 'e8e039070aa95f8f964c281d450d1022';
 const admissibilityReport = 'e8e039070aa95f8f964c281d4583100d';
 const judgement = '5c7180d3dd310766a1c6817c165ed5f4';
+const orderOfThePresident = 'd0565557e2c6f741bb73738c56868584';
+const caseDatesLabels = [
+  'Envio a la corte',
+  'Presentación ante la comisión',
+  'Presentación ante la corte'
+];
 
 export class TimelineViewer extends Component {
 
@@ -58,8 +64,29 @@ export class TimelineViewer extends Component {
       reference.additionalData = {type: 'admissibilityReport'};
     }
 
+    if (reference.data.template === orderOfThePresident) {
+      reference.additionalData = {type: 'orderOfThePresident'};
+    }
+
     reference.additionalData.className = this.getTemplateType(reference.data.template);
     reference.additionalData.date = reference.data.metadata.fecha;
+  }
+
+  getCaseDates(entity) {
+    return entity.metadata.reduce((dates, metadata) => {
+      if (caseDatesLabels.indexOf(metadata.label) !== -1) {
+        metadata.value.forEach(date => {
+          dates.push({label: metadata.label, timestamp: date});
+        });
+      }
+      return dates;
+    }, []);
+  }
+
+  assignDataToYear(years, date, data) {
+    const year = moment.utc(date * 1000).format('YYYY');
+    years[year] = years[year] || [];
+    years[year].push(data);
   }
 
   normalizeYears(years) {
@@ -78,17 +105,21 @@ export class TimelineViewer extends Component {
     return years;
   }
 
-  arrangeYears(references) {
+  arrangeYears(references, caseDates) {
     let years = {};
     references.forEach(reference => {
-      const isDesiredTemplate = reference.data.template === admissibilityReport || reference.data.template === judgement;
+      const isDesiredTemplate = reference.data.template === admissibilityReport ||
+                                reference.data.template === judgement ||
+                                reference.data.template === orderOfThePresident;
       const hasDate = reference.data.metadata.fecha !== null;
       if (isDesiredTemplate && hasDate) {
-        const docYear = moment.utc(reference.data.metadata.fecha * 1000).format('YYYY');
-        years[docYear] = years[docYear] || [];
+        this.assignDataToYear(years, reference.data.metadata.fecha, reference);
         this.assignAdditionalData(reference);
-        years[docYear].push(reference);
       }
+    });
+
+    caseDates.forEach(date => {
+      this.assignDataToYear(years, date.timestamp, date);
     });
 
     return this.normalizeYears(years);
@@ -106,13 +137,14 @@ export class TimelineViewer extends Component {
       return Promise.all([referencesData, this.fetchSecondLevelReferences(usefulReferences)]);
     })
     .then(([referencesData, secondLevelReferences]) => {
-      const stateReferences = usefulReferences.map((reference, index) => {
+      const conformedReferences = usefulReferences.map((reference, index) => {
         return {reference, data: referencesData[index][0], children: secondLevelReferences[index]};
       });
+
       setTimeout(() => {
         this.setState({
-          references: stateReferences,
-          years: this.arrangeYears(stateReferences)
+          references: conformedReferences,
+          years: this.arrangeYears(conformedReferences, this.getCaseDates(entity))
         });
       }, 1000);
     });
@@ -138,20 +170,35 @@ export class TimelineViewer extends Component {
           <div className={`timeline-label ${year % 5 === 0 ? 'timeline-label-text' : ''}`}>
             <span>{year}</span>
           </div>
-          {this.state.years[year].map((reference, index) =>
-            <Link to={`/${reference.reference.connectedDocumentType}/${reference.data._id}`}
-                  key={index}
-                  data-year="2003"
-                  className={`timeline-item ${reference.additionalData.className}`}
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  data-animation="false"
-                  title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${reference.data.title}`}>
-              <ShowIf if={reference.additionalData.type === 'judgement'}>
-                <i className="fa fa-legal"></i>
-              </ShowIf>
-            </Link>
-          )}
+          {this.state.years[year].map((reference, index) => {
+            if (reference.reference) {
+              return (
+                <Link to={`/${reference.reference.connectedDocumentType}/${reference.data._id}`}
+                      key={index}
+                      className={`timeline-item ${reference.additionalData.className}`}
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      data-animation="false"
+                      title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${reference.data.title}`}>
+                  <ShowIf if={reference.additionalData.type === 'judgement'}>
+                    <i className="fa fa-legal"></i>
+                  </ShowIf>
+                </Link>
+              );
+            }
+
+            if (!reference.reference) {
+              return (
+                <span key={index}
+                      className="timeline-item"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      data-animation="false"
+                      title={`${moment.utc(reference.timestamp * 1000).format('ll')}\n${reference.label}`}>
+                </span>
+              );
+            }
+          })}
         </div>
       );
     }
