@@ -8,6 +8,7 @@ import {showModal} from 'app/Modals/actions/modalActions';
 import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
+import FormConfigNested from './FormConfigNested';
 import Icons from './Icons';
 
 export class MetadataProperty extends Component {
@@ -15,6 +16,9 @@ export class MetadataProperty extends Component {
   renderForm() {
     if (this.props.type === 'select' || this.props.type === 'multiselect') {
       return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
+    }
+    if (this.props.type === 'nested') {
+      return <FormConfigNested formKey={this.props.localID} index={this.props.index} />;
     }
     return <FormConfigInput formKey={this.props.localID} index={this.props.index} />;
   }

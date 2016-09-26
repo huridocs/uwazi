@@ -60,7 +60,17 @@ export function URLQueryToState(query, templates, thesauris) {
     if (filters[property.name]) {
       property.active = true;
     }
-    filters[property.name] = filters[property.name] ? filters[property.name].value : [];
+    let defaultValue = '';
+
+    if (property.type === 'select' || property.type === 'multiselect') {
+      defaultValue = [];
+    }
+
+    if (property.type === 'nested') {
+      defaultValue = {};
+    }
+
+    filters[property.name] = filters[property.name] ? filters[property.name].value : defaultValue;
     return property;
   });
 

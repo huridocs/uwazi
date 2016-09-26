@@ -2,8 +2,6 @@ import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
-import api from 'app/Search/SearchAPI';
-import {actions} from 'app/BasicReducer';
 
 function updateModelFilters(dispatch, getState, libraryFilters) {
   let previousModelFilters = getState().search.filters;
@@ -11,6 +9,10 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
     model[property.name] = previousModelFilters[property.name] || '';
     if ((property.type === 'select' || property.type === 'multiselect') && model[property.name] === '') {
       model[property.name] = [];
+    }
+
+    if (property.type === 'nested' && model[property.name] === '') {
+      model[property.name] = {};
     }
 
     return model;
@@ -28,18 +30,20 @@ export function filterDocumentTypes(documentTypes) {
     let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
 
     let aggregations = libraryFilters
-    .filter((property) => property.type === 'select' || property.type === 'multiselect')
-    .map((property) => property.name);
+    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+    .map((property) => {
+      if (property.type === 'nested') {
+        return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
+      }
+      return {name: property.name, nested: false};
+    });
 
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
     updateModelFilters(dispatch, getState, libraryFilters);
 
     let search = Object.assign({aggregations, types: documentTypes}, state.search);
-    api.search(search)
-    .then((response) => {
-      dispatch(actions.set('library/aggregations', response.aggregations || []));
-    });
+    dispatch(libraryActions.searchDocuments(search));
   };
 }
 

@@ -196,6 +196,12 @@
   }
 }
 
+.nested-strict {
+  display: inline;
+  position: absolute;
+  right: 40px
+}
+
 .multiselect {
   padding: 0;
   margin: 0;
@@ -260,6 +266,19 @@
   text-align: center;
   margin: 3px 6px;
   border-radius: 8px;
+  background: $c-grey-light;
+}
+
+.multiselectItem-action {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: $f-size-sm;
+  width: 20px;
+  height: 18px;
+  text-align: center;
+  margin: 3px 6px;
+  border-radius: 5px;
   background: $c-grey-light;
 }
 

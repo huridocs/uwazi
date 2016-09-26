@@ -26,6 +26,10 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
       if (!entity.metadata[property.name] && property.type === 'multiselect') {
         entity.metadata[property.name] = [];
       }
+
+      if (!entity.metadata[property.name] && property.type === 'nested') {
+        entity.metadata[property.name] = [];
+      }
     });
 
     dispatch(formActions.load(form, entity));

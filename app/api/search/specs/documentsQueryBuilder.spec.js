@@ -70,7 +70,7 @@ describe('documentQueryBuilder', () => {
     });
 
     it('should add aggregations to the query with the current filters', () => {
-      let baseQuery = queryBuilder().aggregations(['property1', 'property2']).query();
+      let baseQuery = queryBuilder().aggregations([{name: 'property1'}, {name: 'property2'}]).query();
       let property1Aggregation = {
         terms: {
           field: 'doc.metadata.property1.raw',
@@ -86,6 +86,7 @@ describe('documentQueryBuilder', () => {
           }
         }
       };
+
       expect(baseQuery.aggregations.property1).toEqual(property1Aggregation);
     });
   });

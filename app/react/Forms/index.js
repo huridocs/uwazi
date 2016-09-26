@@ -5,6 +5,8 @@ import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
 import MarkDown from './components/MarkDown';
+import Nested, {NestedField} from './components/Nested';
+import NestedMultiselect from './components/NestedMultiselect';
 
 export {
   Select,
@@ -15,5 +17,8 @@ export {
   DatePickerField,
   DateRange,
   MultiSelect,
-  MarkDown
+  MarkDown,
+  Nested,
+  NestedField,
+  NestedMultiselect
 };

@@ -59,6 +59,21 @@
   img {
     max-width: 100%;
   }
+
+  th {
+    padding: 5px;
+    text-transform: uppercase;
+    &:first-child {
+      padding: 5px 5px 5px 0;
+    }
+  }
+
+  td {
+    padding: 5px;
+    &:first-child {
+      padding: 5px 5px 5px 0;
+    }
+  }
 }
 
 .panel-body {
