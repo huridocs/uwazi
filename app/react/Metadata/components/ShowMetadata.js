@@ -10,8 +10,8 @@ export class ShowMetadata extends Component {
     if (property.url) {
       return <Link to={property.url}>{property.value}</Link>;
     }
-
     if (typeof property.value === 'object') {
+      console.log(property.value);
       return <ul>
                {property.value.map((value, indx) => {
                  if (value.url) {

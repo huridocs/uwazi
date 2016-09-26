@@ -82,6 +82,27 @@ export default function () {
       return match;
     },
 
+    nestedrangeFilter(filters, property) {
+      let match = {
+        nested: {
+          path: `doc.metadata.${property}`,
+          filter: {
+            bool: {
+              should: []
+            }
+          }
+        }
+      };
+      let fromMatch = {range: {}};
+      fromMatch.range[`doc.metadata.${property}.from`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+      let toMatch = {range: {}};
+      toMatch.range[`doc.metadata.${property}.to`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+
+      match.nested.filter.bool.should.push(fromMatch);
+      match.nested.filter.bool.should.push(toMatch);
+      return match;
+    },
+
     nestedFilter(filters, property) {
       let match = {
         nested: {
@@ -127,7 +148,7 @@ export default function () {
           return terms;
         });
       }
-
+      
       return match;
     },
 
@@ -148,6 +169,10 @@ export default function () {
 
         if (filters[property].type === 'nested') {
           match = this.nestedFilter(filters, property);
+        }
+
+        if (filters[property].type === 'nestedrange') {
+          match = this.nestedrangeFilter(filters, property);
         }
 
         baseQuery.filter.bool.must.push(match);
@@ -252,8 +277,8 @@ export default function () {
 
     highlight(fields) {
       baseQuery.highlight = {
-        pre_tags : ['<b>'],
-        post_tags : ['</b>']
+        pre_tags: ['<b>'],
+        post_tags: ['</b>']
       };
       baseQuery.highlight.fields = {};
       fields.forEach((field) => {
