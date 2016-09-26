@@ -4,6 +4,9 @@ import {Form} from 'react-redux-form';
 import validator from '../helpers/validator';
 
 import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange} from 'app/Forms';
+import DropdownList from 'react-widgets/lib/DropdownList';
+
+import {fontawesomeIcons} from 'app/utils/fontawesomeIcons';
 
 export class MetadataForm extends Component {
 
@@ -33,6 +36,18 @@ export class MetadataForm extends Component {
       return {label: t.name, value: t._id};
     });
 
+    const ListItem = ({item}) => {
+      const style = {display: 'inline-block', width: '25px'};
+      return (
+        <span>
+          <span style={style}>
+            <i className={`fa fa-${item.id}`}></i>
+          </span>
+          {item.label}
+        </span>
+      );
+    };
+
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
@@ -52,6 +67,20 @@ export class MetadataForm extends Component {
                 this.props.changeTemplate(model, metadata, templates.find((t) => t._id === e.target.value));
               }}
             />
+          </FormField>
+        </FormGroup>
+
+        <FormGroup>
+          <label>Icon</label>
+          <FormField>
+            <DropdownList valueField="id"
+                          textField="label"
+                          data={fontawesomeIcons.map(icon => {
+                            return {id: icon, label: icon};
+                          })}
+                          valueComponent={ListItem}
+                          itemComponent={ListItem}
+                          filter="contains"/>
           </FormField>
         </FormGroup>
 
