@@ -1,5 +1,9 @@
 import {actions as formActions} from 'react-redux-form';
 
+export function resetReduxForm(form) {
+  return formActions.reset(form);
+}
+
 export function loadInReduxForm(form, onlyReadEntity, templates) {
   return function (dispatch) {
     //test

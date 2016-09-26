@@ -37,9 +37,9 @@ export default {
     libraryFirstDocument: '.item-group .item',
     librarySecondDocument: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2) > div.item-info > div',
-    searchInLibrary: '#app > div.content > header > div > div > div > a',
-    searchInput: '#app > div.content > header > div > div > div > div > form > div.input-group > input',
-    firstSearchSuggestion: '#app > div.content > header > div > div > div > div > form > div.search-suggestions.is-active > p:nth-child(1) > a',
+    searchInLibrary: '#app > div.content > header > div > a',
+    searchInput: '#app > div.content > header > div > div > form > div.input-group > input',
+    firstSearchSuggestion: '#app > div.content > header > div > div > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a'
   },
   documentView: {
@@ -65,9 +65,9 @@ export default {
     uploadsBottomRightSaveButton: '.float-btn'
   },
   navigation: {
-    loginNavButton: '#app > div.content > header > div > div > ul > li:nth-child(2) > a',
-    uploadsNavButton: '.fa-cloud-upload',
-    libraryNavButton: '#app > div.content > header > div > div > ul > li:nth-child(1) > a',
-    settingsNavButton: '#app > div.content > header > div > div > ul > li:nth-child(3) > a'
+    loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
+    uploadsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
+    libraryNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
+    settingsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a'
   }
 };

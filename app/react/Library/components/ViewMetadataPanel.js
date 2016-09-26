@@ -10,12 +10,11 @@ import EntityForm from '../containers/EntityForm';
 import {actions as formActions} from 'react-redux-form';
 import modals from 'app/Modals';
 import {formater, ShowMetadata} from 'app/Metadata';
-import {NeedAuthorization} from 'app/Auth';
-import ShowIf from 'app/App/ShowIf';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {browserHistory} from 'react-router';
+import {MetadataFormButtons} from 'app/Metadata';
 
 export class ViewMetadataPanel extends Component {
 
@@ -53,7 +52,6 @@ export class ViewMetadataPanel extends Component {
 
   render() {
     const {metadata, docBeingEdited} = this.props;
-    const disabled = false;
 
     return (
       <SidePanel open={this.props.open}>
@@ -65,36 +63,16 @@ export class ViewMetadataPanel extends Component {
                 </div>
               </li>
             </ul>
-            <i className="fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
+            <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
         </div>
-        <div className="sidepanel-footer">
-          <NeedAuthorization>
-            <ShowIf if={!docBeingEdited}>
-              <button
-                onClick={() => this.props.loadInReduxForm('library.metadata', this.props.rawDoc.toJS(), this.props.templates.toJS())}
-                className="edit-metadata btn btn-primary">
-                <i className="fa fa-pencil"></i>
-                <span className="btn-label">Edit</span>
-              </button>
-            </ShowIf>
-          </NeedAuthorization>
-          <ShowIf if={docBeingEdited}>
-            <button type="submit" form="metadataForm" disabled={disabled} className="edit-metadata btn btn-success">
-              <i className="fa fa-save"></i>
-              <span className="btn-label">Save</span>
-            </button>
-          </ShowIf>
-          <a className="edit-metadata btn btn-primary" href={'/api/documents/download?_id=' + this.props.rawDoc.toJS()._id} target="_blank">
-            <i className="fa fa-cloud-download"></i>
-            <span className="btn-label">Download</span>
-          </a>
-          <NeedAuthorization>
-            <button className="edit-metadata btn btn-danger" onClick={this.deleteDocument.bind(this)}>
-              <i className="fa fa-trash"></i>
-              <span className="btn-label">Delete</span>
-            </button>
-          </NeedAuthorization>
-        </div>
+
+        <MetadataFormButtons
+          delete={this.deleteDocument.bind(this)}
+          data={this.props.rawDoc}
+          formStatePath='library.metadata'
+          entityBeingEdited={docBeingEdited}
+        />
+
         <div className="sidepanel-body">
           {(() => {
             if (docBeingEdited && this.props.metadata.type === 'document') {
