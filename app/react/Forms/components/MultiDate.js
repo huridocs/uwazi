@@ -34,7 +34,7 @@ export class MultiDate extends Component {
 
   render() {
     return <div className="multidate">
-      <button className="btn btn-samll btn-primary fa fa-plus" onClick={this.add.bind(this)}></button>
+      <button className="btn btn-samll btn-primary fa fa-plus add" onClick={this.add.bind(this)}></button>
       {(() => {
         return this.state.values.map((value, index) => {
           return <div key={index} className="multidate-item">

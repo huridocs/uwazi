@@ -137,6 +137,26 @@ header {
   }
 }
 
+.multidate {
+
+  .add {
+    margin-bottom: 5px;
+  }
+
+  .DatePicker__From,
+  .DatePicker__To {
+    width: 80%;
+    @media(min-width: 1300px) {
+      width: 40%;
+    }
+  }
+
+  &-item {
+    margin-bottom: 5px;
+    overflow: hidden;
+  }
+}
+
 @media(max-width: 768px) {
   .react-datepicker__tether-element {
     position: fixed !important;

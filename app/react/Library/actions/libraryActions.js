@@ -78,7 +78,7 @@ export function searchDocuments(readOnlySearch, limit) {
         return;
       }
       let type = 'text';
-      if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange') {
+      if (property.type === 'date' || property.type === 'multidate') {
         type = 'range';
       }
       if (property.type === 'select' || property.type === 'multiselect') {
@@ -86,6 +86,9 @@ export function searchDocuments(readOnlySearch, limit) {
       }
       if (property.type === 'nested') {
         type = 'nested';
+      }
+      if (property.type === 'multidaterange') {
+        type = 'nestedrange';
       }
       search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
     });

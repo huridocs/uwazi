@@ -40,7 +40,11 @@ export class TemplateCreator extends Component {
               <PropertyOption label='Rich Text' type='markdown'/>
               <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
                 <PropertyOption label='Violated articles' type='nested'/>
+              </ShowIf>
+              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
                 <PropertyOption label='Multi Date' type='multidate'/>
+              </ShowIf>
+              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
                 <PropertyOption label='Multi Date Range' type='multidaterange'/>
               </ShowIf>
             </ul>
