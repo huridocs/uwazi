@@ -194,10 +194,7 @@ export class EntityViewer extends Component {
               <h1 className="item-name">{entity.title}</h1>
             </ShowIf>
             <ShowIf if={!entityBeingEdited}>
-              <span className="item-type item-type-2">
-                <i className="item-type__icon fa fa-bank"></i>
-                <span className="item-type__name">{entity.documentType}</span>
-              </span>
+              <TemplateLabel template={entity.template}/>
             </ShowIf>
 
             {(() => {
