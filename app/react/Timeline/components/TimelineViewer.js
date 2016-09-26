@@ -141,12 +141,10 @@ export class TimelineViewer extends Component {
         return {reference, data: referencesData[index][0], children: secondLevelReferences[index]};
       });
 
-      setTimeout(() => {
-        this.setState({
-          references: conformedReferences,
-          years: this.arrangeYears(conformedReferences, this.getCaseDates(entity))
-        });
-      }, 1000);
+      this.setState({
+        references: conformedReferences,
+        years: this.arrangeYears(conformedReferences, this.getCaseDates(entity))
+      });
     });
   }
 
