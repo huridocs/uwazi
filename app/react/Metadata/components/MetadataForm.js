@@ -3,18 +3,11 @@ import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
 
-import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange} from 'app/Forms';
-import DropdownList from 'react-widgets/lib/DropdownList';
+import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, DropdownList} from 'app/Forms';
 
 import {fontawesomeIcons} from 'app/utils/fontawesomeIcons';
 import countries from 'world-countries';
 import Flag from 'react-flags';
-
-export class ExtendedDropdownList extends DropdownList {
-  shouldComponentUpdate() {
-    return false;
-  }
-}
 
 class ListItem extends Component {
 
@@ -24,13 +17,13 @@ class ListItem extends Component {
     let icon;
     if (item.type === 'Icons') {
       icon = <span style={style}>
-               <i className={`fa fa-${item.id}`}></i>
+               <i className={`fa fa-${item._id}`}></i>
              </span>;
     }
 
     if (item.type === 'Flags') {
       icon = <span style={style}>
-               <Flag name={item.id}
+               <Flag name={item._id}
                      format="png"
                      pngSize={16}
                      shiny={true}
@@ -79,9 +72,9 @@ export class MetadataForm extends Component {
 
     // ---
     const listOptions = fontawesomeIcons.map(icon => {
-      return {id: icon, type: 'Icons', label: icon};
+      return {_id: icon, type: 'Icons', label: icon};
     }).concat(countries.map(country => {
-      return {id: country.cca3, type: 'Flags', label: country.name.common};
+      return {_id: country.cca3, type: 'Flags', label: country.name.common};
     }));
 
 
@@ -112,7 +105,7 @@ export class MetadataForm extends Component {
         <FormGroup>
           <label>Icon / Flag</label>
           <FormField model={`${model}.icon`}>
-            <ExtendedDropdownList valueField="id"
+            <DropdownList valueField="_id"
                           textField="label"
                           data={listOptions}
                           valueComponent={ListItem}

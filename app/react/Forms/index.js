@@ -9,6 +9,7 @@ import Nested, {NestedField} from './components/Nested';
 import NestedMultiselect from './components/NestedMultiselect';
 import MultiDate from './components/MultiDate';
 import MultiDateRange from './components/MultiDateRange';
+import DropdownList from './components/DropdownList';
 
 export {
   Select,
@@ -24,5 +25,6 @@ export {
   NestedField,
   NestedMultiselect,
   MultiDate,
-  MultiDateRange
+  MultiDateRange,
+  DropdownList
 };

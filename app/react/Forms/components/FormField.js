@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
-import {ExtendedDropdownList} from 'app/Metadata/components/MetadataForm';
+import DropdownList from './DropdownList';
 
 const FieldController = createFieldClass({
   Select: controls.select,
@@ -11,10 +11,10 @@ const FieldController = createFieldClass({
   MarkDown: controls.text,
   Nested: controls.select,
   NestedMultiselect: controls.select,
-  ExtendedDropdownList: controls.select
+  DropdownList: controls.select
 }, {
   componentMap: {
-    ExtendedDropdownList: ExtendedDropdownList
+    DropdownList: DropdownList
   }
 });
 
