@@ -4,7 +4,7 @@ header {
 	z-index: 40;
 	position: fixed;
 	top: 0;
-  min-height: 54px;
+  min-height: $header-height;
   justify-content: space-between;
 
 	h1 {
@@ -26,8 +26,8 @@ header {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: 56px;
-      height: 54px;
+      line-height: $header-height + 2px;
+      height: $header-height;
       color: $c-black;
     }
 	}
@@ -36,9 +36,9 @@ header {
 	.menu-button {
     z-index: 1;
     float: left;
-    width: 54px;
-    height: 54px;
-    line-height: 54px;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
     padding: 0 15px;
     text-align: center;
     font-size: $f-size-lg;
@@ -65,7 +65,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 54px;
+    height: $header-height;
   }
 
   ul {
@@ -86,9 +86,9 @@ header {
     border: 0;
     border-bottom: 2px solid transparent;
     border-radius: 0;
-    min-width: 54px;
-    height: 54px;
-    line-height: 56px;
+    min-width: $header-height;
+    height: $header-height;
+    line-height: $header-height + 2px;
     padding: 0 15px;
     &:hover,
     &:active,
@@ -131,7 +131,7 @@ header {
   display: block;
   float: right;
   width: 0;
-  max-width: 320px - 54px;
+  max-width: 320px - $header-height;
   transition: all 500ms;
 
   &.is-active {
@@ -149,7 +149,7 @@ header {
     width: 100%;
   }
   .form-control {
-    height: 54px;
+    height: $header-height;
     padding-left: 30px;
     border-radius: 0;
     border-top: 0;
@@ -194,16 +194,16 @@ header {
   border: 0;
   border-left: 1px solid $c-grey-light;
   float: right;
-  width: 54px;
-  height: 54px;
-  line-height: 56px;
+  width: $header-height;
+  height: $header-height;
+  line-height: $header-height + 2px;
   padding: 0;
   background: $c-white;
   z-index: 3;
   transition: width 225ms;
 
   @media(min-width: 1024px) {
-    width: 2*54px;
+    width: $header-height*2;
     &:hover {
       background-color: $c-grey-light;
     }
@@ -215,7 +215,7 @@ header {
 
   &.is-active {
     position: absolute;
-    width: 54px;
+    width: $header-height;
     border-color: $c-white;
     margin-left: 0;
     @media(min-width: 1024px) {
@@ -250,7 +250,7 @@ header {
 .search-suggestions {
 	display: none;
 	position: absolute;
-  top: 54px - 1px;
+  top: $header-height - 1px;
   left: 0;
   width: 100%;
   background: $c-white;
