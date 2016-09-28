@@ -23,7 +23,7 @@ describe('thesauris', () => {
       .catch(done.fail);
     });
 
-    fit('should also return entity templates with the entitties as options', (done) => {
+    it('should also return entity templates with the entitties as options', (done) => {
       thesauris.get()
       .then((response) => {
         let docs = response.rows;
