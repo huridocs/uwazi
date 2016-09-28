@@ -30,7 +30,7 @@ export class Doc extends Component {
       return (
         <dl key={index}>
           <dt>{property.label}</dt>
-          <dd><Icon className="item-icon" data={property.icon} size="xs"/>{value}</dd>
+          <dd><Icon className="item-icon item-icon-center" data={property.icon} size="xs"/>{value}</dd>
         </dl>
       );
     });
@@ -57,7 +57,7 @@ export class Doc extends Component {
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
         <div className="item-info">
-          <Icon className="item-icon" data={icon} size="sm"/>
+          <Icon className="item-icon item-icon-center" data={icon} size="sm"/>
           <ItemName>{title}</ItemName>
         </div>
         <div className="item-metadata">

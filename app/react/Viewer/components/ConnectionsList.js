@@ -89,7 +89,7 @@ export class ConnectionsList extends Component {
                   <div className="item-name">
                     <i className={`fa ${referenceIcon}`}></i>
                     &nbsp;
-                    <Icon className="item-icon" data={reference.connectedDocumentIcon} />
+                    <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
                     {reference.connectedDocumentTitle}
                     {(() => {
                       if (reference.text) {

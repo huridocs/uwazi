@@ -19,7 +19,7 @@ export class SearchResults extends Component {
                      key={index} onClick={() => this.props.onClick(result._id)}>
                   <div className="item-info">
                     <div className="item-name">
-                      <Icon className="item-icon" data={result.icon} />
+                      <Icon className="item-icon item-icon-center" data={result.icon} />
                       {result.title}
                     </div>
                   </div>

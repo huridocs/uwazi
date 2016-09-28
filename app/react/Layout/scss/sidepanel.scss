@@ -39,7 +39,7 @@ $c-sidebar: $c-white;
     font-family: $f-special;
     font-size: $f-size-lg;
   }
-  .item-icon {
+  .item-icon.item-icon-center {
     & img {
       vertical-align: bottom;
     }

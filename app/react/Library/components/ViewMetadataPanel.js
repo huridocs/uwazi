@@ -57,7 +57,7 @@ export class ViewMetadataPanel extends Component {
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">
             <div className="item-info">
-              <Icon className="item-icon" data={rawDoc.get('icon') ? rawDoc.get('icon').toJS() : {}} size="sm"/>
+              <Icon className="item-icon item-icon-center" data={rawDoc.get('icon') ? rawDoc.get('icon').toJS() : {}} size="sm"/>
               <h1 className="item-name">{rawDoc.get('title')}</h1>
               <TemplateLabel template={rawDoc.get('template')}/>
             </div>

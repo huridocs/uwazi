@@ -10,7 +10,7 @@ export class ShowMetadata extends Component {
   getValue(property) {
     if (property.url) {
       return <Link to={property.url}>
-               <Icon className="item-icon" data={property.icon} />
+               <Icon className="item-icon item-icon-center" data={property.icon} />
                {property.value}
              </Link>;
     }

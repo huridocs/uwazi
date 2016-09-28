@@ -122,7 +122,7 @@ export class EntityViewer extends Component {
             <div key={index} className='item'>
               <div className="item-info">
                 <div className="item-name">
-                  <Icon className="item-icon" data={reference.connectedDocumentIcon} />
+                  <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
                   {reference.connectedDocumentTitle}
                   {(() => {
                     if (reference.text) {
@@ -187,7 +187,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <ShowIf if={!entityBeingEdited}>
               <div className="item-info">
-                <Icon className="item-icon" data={entity.icon} size="md"/>
+                <Icon className="item-icon item-icon-center" data={entity.icon} size="md"/>
                 <h1 className="item-name">{entity.title}</h1>
                 <TemplateLabel template={entity.template}/>
               </div>

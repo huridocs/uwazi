@@ -54,7 +54,7 @@ export class ViewMetadataPanel extends Component {
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
           <div className="item-info">
-            <Icon className="item-icon" data={doc.icon ? doc.icon : {}} size="sm"/>
+            <Icon className="item-icon item-icon-center" data={doc.icon ? doc.icon : {}} size="sm"/>
             <h1 className="item-name">{doc.title}</h1>
             <TemplateLabel template={doc.template}/>
           </div>
