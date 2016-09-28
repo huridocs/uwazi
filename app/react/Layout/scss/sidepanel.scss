@@ -39,6 +39,15 @@ $c-sidebar: $c-white;
     font-family: $f-special;
     font-size: $f-size-lg;
   }
+  .item-icon {
+    & img {
+      vertical-align: bottom;
+    }
+
+    & i.fa {
+      line-height: 0;
+    }
+  }
   .item-type {
     display: block;
     margin-top: 15px;

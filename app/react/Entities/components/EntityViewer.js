@@ -14,7 +14,7 @@ import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
-import {TemplateLabel} from 'app/Layout';
+import {TemplateLabel, Icon} from 'app/Layout';
 
 export class EntityViewer extends Component {
 
@@ -190,15 +190,13 @@ export class EntityViewer extends Component {
             entityBeingEdited={entityBeingEdited}/>
 
           <div className="sidepanel-body">
-            <div className="item-info">
-              <img className="item-icon" src="http://icons.iconarchive.com/icons/custom-icon-design/all-country-flag/16/Ecuador-Flag-icon.png" />
-              <ShowIf if={!entityBeingEdited}>
+            <ShowIf if={!entityBeingEdited}>
+              <div className="item-info">
+                <Icon className="item-icon" data={entity.icon} size="md"/>
                 <h1 className="item-name">{entity.title}</h1>
-              </ShowIf>
-              <ShowIf if={!entityBeingEdited}>
                 <TemplateLabel template={entity.template}/>
-              </ShowIf>
-            </div>
+              </div>
+            </ShowIf>
 
             {(() => {
               if (entityBeingEdited) {

@@ -15,6 +15,7 @@ import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {browserHistory} from 'react-router';
 import {MetadataFormButtons} from 'app/Metadata';
+import {TemplateLabel, Icon} from 'app/Layout';
 
 export class ViewMetadataPanel extends Component {
 
@@ -51,17 +52,14 @@ export class ViewMetadataPanel extends Component {
   }
 
   render() {
-    const {metadata, docBeingEdited} = this.props;
-
+    const {metadata, docBeingEdited, rawDoc} = this.props;
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">
             <div className="item-info">
-              <img className="item-icon" src="http://icons.iconarchive.com/icons/custom-icon-design/all-country-flag/16/Ecuador-Flag-icon.png" />
-              <h1 className="item-name">test</h1>
-              <span className="item-type item-type-3">
-                <i className="item-type__icon fa fa-bank"></i><span className="item-type__name">Test Entity</span>
-              </span>
+              <Icon className="item-icon" data={rawDoc.get('icon') ? rawDoc.get('icon').toJS() : {}} size="sm"/>
+              <h1 className="item-name">{rawDoc.get('title')}</h1>
+              <TemplateLabel template={rawDoc.get('template')}/>
             </div>
             <ul className="nav nav-tabs">
               <li>
@@ -75,7 +73,7 @@ export class ViewMetadataPanel extends Component {
 
         <MetadataFormButtons
           delete={this.deleteDocument.bind(this)}
-          data={this.props.rawDoc}
+          data={rawDoc}
           formStatePath='library.metadata'
           entityBeingEdited={docBeingEdited}
         />

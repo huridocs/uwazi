@@ -21,6 +21,14 @@
   }
   .item-icon {
     margin: -7px 10px 0 0;
+
+    & img {
+      vertical-align: bottom;
+    }
+
+    & i.fa {
+      line-height: 0;
+    }
   }
   .item-name {
     font-weight: 300;
