@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
+import {Icon} from 'app/Layout/Icon';
 
 export class MultiSelect extends Component {
 
@@ -96,7 +97,10 @@ export class MultiSelect extends Component {
               htmlFor={prefix + option[optionsValue]}>
                 <i className="multiselectItem-icon fa fa-square-o"></i>
                 <i className="multiselectItem-icon fa fa-check"></i>
-                <span>{option[optionsLabel]}&nbsp;</span>
+                <span>
+                  <Icon className="item-icon" data={option.icon}/>
+                  {option[optionsLabel]}&nbsp;
+                </span>
                 <ShowIf if={typeof option.results !== 'undefined'}>
                   <span className="multiselectItem-results">{option.results}
                   </span>
