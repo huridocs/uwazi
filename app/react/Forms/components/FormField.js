@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
 import DropdownList from './DropdownList';
+import IconSelector from './IconSelector';
 
 const FieldController = createFieldClass({
   Select: controls.select,
@@ -11,10 +12,12 @@ const FieldController = createFieldClass({
   MarkDown: controls.text,
   Nested: controls.select,
   NestedMultiselect: controls.select,
-  DropdownList: controls.select
+  DropdownList: controls.select,
+  IconSelector: controls.select
 }, {
   componentMap: {
-    DropdownList: DropdownList
+    DropdownList: DropdownList,
+    IconSelector: IconSelector
   }
 });
 

@@ -10,6 +10,7 @@ import NestedMultiselect from './components/NestedMultiselect';
 import MultiDate from './components/MultiDate';
 import MultiDateRange from './components/MultiDateRange';
 import DropdownList from './components/DropdownList';
+import IconSelector from './components/IconSelector';
 
 export {
   Select,
@@ -26,5 +27,6 @@ export {
   NestedMultiselect,
   MultiDate,
   MultiDateRange,
-  DropdownList
+  DropdownList,
+  IconSelector
 };
