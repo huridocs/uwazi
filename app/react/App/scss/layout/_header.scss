@@ -1,11 +1,15 @@
 header {
-	background: $c-white;
-	border-bottom: 1px solid $c-grey-light;
 	z-index: 40;
 	position: fixed;
 	top: 0;
   min-height: 54px;
   justify-content: space-between;
+  border-bottom: 1px solid $c-grey-light;
+  @if $theme == light {
+    background: $c-white;
+  } @else {
+    background: $c-primary;
+  }
 
 	h1 {
     float: left;
@@ -28,7 +32,17 @@ header {
       text-overflow: ellipsis;
       line-height: 56px;
       height: 54px;
-      color: $c-black;
+
+      &,
+      &:hover,
+      &:focus,
+      &:active {
+        @if $theme == light {
+          color: $c-black;
+        } @else {
+          color: $c-white;
+        }
+      }
     }
 	}
 
@@ -43,6 +57,11 @@ header {
     text-align: center;
     font-size: $f-size-lg;
     cursor: pointer;
+    @if $theme == light {
+      color: $c-black;
+    } @else {
+      color: $c-white;
+    }
 		@media(min-width: 1024px) {
 			display: none;
 		}
@@ -58,7 +77,11 @@ header {
     &.is-active {
       display: table;
       width: 100%;
-      border-top: 1px solid $c-grey-light;
+      @if $theme == light {
+        border-top: 1px solid $c-grey-light;
+      } @else {
+        border-top: 1px solid $c-primary-dark;
+      }
     }
   }
   @media(min-width: 1024px) {
@@ -90,11 +113,23 @@ header {
     height: 54px;
     line-height: 56px;
     padding: 0 15px;
+    @if $theme == light {
+      color: $c-black;
+      background: $c-white;
+    } @else {
+      color: $c-white;
+      background: $c-primary;
+    }
     &:hover,
     &:active,
     &:focus {
-      background: $c-white;
-      border-color: $c-primary;
+      @if $theme == light {
+        background: $c-white;
+        border-color: $c-primary;
+      } @else {
+        background: $c-primary;
+        border-color: $c-white;
+      }
     }
   }
 }
@@ -108,22 +143,20 @@ header {
 
 @media(max-width: 1023px) {
   .menuItems li {
-    border-bottom: 1px solid $c-grey-light;
+    @if $theme == light {
+      border-bottom: 1px solid $c-grey-light;
+    } @else {
+      border-bottom: 1px solid $c-primary-dark;
+    }
   }
   .menuActions li:not(:last-child) .btn {
-    border-right: 1px solid $c-grey-light;
+    @if $theme == light {
+      border-right: 1px solid $c-grey-light;
+    } @else {
+      border-right: 1px solid $c-primary-dark;
+    }
   }
 }
-
-// .searchBox {
-//   position: absolute;
-//   width: 100%;
-//   right: 0;
-//   @media(min-width: 1023px) {
-//     position: relative;
-//     width: auto;
-//   }
-// }
 
 .search-box {
   position: absolute;
@@ -189,23 +222,36 @@ header {
 .search-button {
   position: relative;
   display: block;
-  color: $c-black;
   border-radius: 0;
   border: 0;
-  border-left: 1px solid $c-grey-light;
   float: right;
   width: 54px;
   height: 54px;
   line-height: 56px;
   padding: 0;
-  background: $c-white;
   z-index: 3;
   transition: width 225ms;
-
+  @if $theme == light {
+    color: $c-black;
+    background: $c-white;
+    border-left: 1px solid $c-grey-light;
+  } @else {
+    color: $c-white;
+    background: $c-primary;
+    border-left: 1px solid $c-primary-dark;
+  }
   @media(min-width: 1024px) {
     width: 2*54px;
-    &:hover {
-      background-color: $c-grey-light;
+    &:hover,
+    &:focus,
+    &:active {
+      @if $theme == light {
+        color: $c-black;
+        background-color: $c-grey-light;
+      } @else {
+        color: $c-white;
+        background-color: $c-primary-dark;
+      }
     }
   }
 
@@ -216,15 +262,26 @@ header {
   &.is-active {
     position: absolute;
     width: 54px;
-    border-color: $c-white;
     margin-left: 0;
+    @if $theme == light {
+      border-color: $c-white;
+    } @else {
+      border-color: $c-primary;
+    }
     @media(min-width: 1024px) {
       position: relative;
     }
 
-    &:hover {
-      color: $c-black;
-      background-color: $c-white;
+    &:hover,
+    &:focus,
+    &:active {
+      @if $theme == light {
+        color: $c-black;
+        background-color: $c-white;
+      } @else {
+        color: $c-white;
+        background-color: $c-primary;
+      }
     }
   }
 
