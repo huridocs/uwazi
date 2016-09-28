@@ -127,6 +127,7 @@ describe('references', () => {
         expect(result[0].text).toBe('sourceRange');
         expect(result[0].connectedDocument).toBe('source1');
         expect(result[0].connectedDocumentTitle).toBe('source1 title');
+        expect(result[0].connectedDocumentIcon).toBe('icon1');
         expect(result[0].connectedDocumentType).toBe('document');
         expect(result[0].connectedDocumentTemplate).toBe('template3_id');
         expect(result[0].connectedDocumentPublished).toBe(false);
@@ -137,6 +138,7 @@ describe('references', () => {
         expect(result[1].text).toBe('targetRange');
         expect(result[1].connectedDocument).toBe('doc3');
         expect(result[1].connectedDocumentTitle).toBe('doc3 title');
+        expect(result[1].connectedDocumentIcon).toBe('icon3');
         expect(result[1].connectedDocumentType).toBe('entity');
         expect(result[1].connectedDocumentTemplate).toBe('template1_id');
         expect(result[1].connectedDocumentPublished).toBe(true);

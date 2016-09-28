@@ -17,6 +17,7 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentTemplate = connectedDocument.template;
   connection.connectedDocumentType = connectedDocument.type;
   connection.connectedDocumentTitle = connectedDocument.title;
+  connection.connectedDocumentIcon = connectedDocument.icon;
   connection.connectedDocumentPublished = Boolean(connectedDocument.published);
   return connection;
 };
