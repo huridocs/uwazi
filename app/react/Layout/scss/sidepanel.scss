@@ -39,7 +39,7 @@ $c-sidebar: $c-white;
     display: block;
     font-family: $f-special;
     font-size: $f-size-lg;
-    margin: 0 0 15px;
+    margin: 0 30px 15px 0;
   }
   .item-type {
     top: 0;
@@ -142,7 +142,7 @@ $c-sidebar: $c-white;
 .sidepanel-header,
 .sidepanel-footer {
   background: $c-sidebar;
-  padding: 15px;
+  padding: 20px;
   z-index: 1;
 }
 
