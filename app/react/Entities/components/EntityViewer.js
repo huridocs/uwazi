@@ -190,12 +190,15 @@ export class EntityViewer extends Component {
             entityBeingEdited={entityBeingEdited}/>
 
           <div className="sidepanel-body">
-            <ShowIf if={!entityBeingEdited}>
-              <h1 className="item-name">{entity.title}</h1>
-            </ShowIf>
-            <ShowIf if={!entityBeingEdited}>
-              <TemplateLabel template={entity.template}/>
-            </ShowIf>
+            <div className="item-info">
+              <img className="item-icon" src="http://icons.iconarchive.com/icons/custom-icon-design/all-country-flag/16/Ecuador-Flag-icon.png" />
+              <ShowIf if={!entityBeingEdited}>
+                <h1 className="item-name">{entity.title}</h1>
+              </ShowIf>
+              <ShowIf if={!entityBeingEdited}>
+                <TemplateLabel template={entity.template}/>
+              </ShowIf>
+            </div>
 
             {(() => {
               if (entityBeingEdited) {

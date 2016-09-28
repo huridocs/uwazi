@@ -57,6 +57,7 @@ export class ViewMetadataPanel extends Component {
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">
             <div className="item-info">
+              <img className="item-icon" src="http://icons.iconarchive.com/icons/custom-icon-design/all-country-flag/16/Ecuador-Flag-icon.png" />
               <h1 className="item-name">test</h1>
               <span className="item-type item-type-3">
                 <i className="item-type__icon fa fa-bank"></i><span className="item-type__name">Test Entity</span>

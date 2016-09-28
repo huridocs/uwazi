@@ -80,6 +80,10 @@
   }
 }
 
+.item-icon {
+  margin: -3px 6px 0 0;
+}
+
 $item-width: auto;
 $item-padding: 15px;
 
@@ -150,7 +154,7 @@ $item-padding: 15px;
 .item-type-18 .item-type__name { background-color: $c-type-18; }
 
 .item-name {
-  display: block;
+  display: inline;
   font-family: $f-special;
   color: $c-black;
 }

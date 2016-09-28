@@ -36,13 +36,12 @@ $c-sidebar: $c-white;
 
 
   h1 {
-    display: block;
     font-family: $f-special;
     font-size: $f-size-lg;
-    margin: 0 30px 15px 0;
   }
   .item-type {
-    top: 0;
+    display: block;
+    margin-top: 15px;
   }
 
   .closeSidepanel {

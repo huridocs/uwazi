@@ -16,20 +16,18 @@
   .sidepanel-header {
     display: none;
   }
-  .sidepanel-body {
-    .item-name {
-      padding: 30px 30px 0;
-    }
-    .item-type {
-      margin-left: 30px;
-    }
+  .item-info {
+    padding: 30px;
+  }
+  .item-icon {
+    margin: -7px 10px 0 0;
+  }
+  .item-name {
+    font-weight: 300;
+    font-size: $f-size-xl !important;
   }
   .view {
     padding: 15px;
-  }
-  h1 {
-    font-weight: 300;
-    font-size: $f-size-xl;
   }
   dt {
     width: 25%;
