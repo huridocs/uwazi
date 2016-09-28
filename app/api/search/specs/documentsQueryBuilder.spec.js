@@ -23,7 +23,10 @@ describe('documentQueryBuilder', () => {
 
   describe('filterMetadata', () => {
     it('should add filter conditions', () => {
-      let baseQuery = queryBuilder().filterMetadata({property1: {value: 'value1', type: 'text'}, property2:  {value: 'value2', type: 'text'}}).query();
+      let baseQuery = queryBuilder().filterMetadata({
+        property1: {value: 'value1', type: 'text'},
+        property2: {value: 'value2', type: 'text'}
+      }).query();
       expect(baseQuery.filter.bool.must[0]).toEqual({match: {'doc.metadata.property1': 'value1'}});
       expect(baseQuery.filter.bool.must[1]).toEqual({match: {'doc.metadata.property2': 'value2'}});
     });
