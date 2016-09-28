@@ -2,51 +2,13 @@ import React, {Component, PropTypes} from 'react';
 import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
-
-import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, DropdownList} from 'app/Forms';
-
-import {fontawesomeIcons} from 'app/utils/fontawesomeIcons';
-import countries from 'world-countries';
-import Flag from 'react-flags';
-
-class ListItem extends Component {
-
-  render() {
-    const {item} = this.props;
-    const style = {display: 'inline-block', width: '25px'};
-    let icon;
-    if (item.type === 'Icons') {
-      icon = <span style={style}>
-               <i className={`fa fa-${item._id}`}></i>
-             </span>;
-    }
-
-    if (item.type === 'Flags') {
-      icon = <span style={style}>
-               <Flag name={item._id}
-                     format="png"
-                     pngSize={16}
-                     shiny={true}
-                     alt={`${item.label} flag`}
-                     basePath="/flag-images"/>
-             </span>;
-    }
-
-    return (
-      <span>
-        {icon}
-        {item.label}
-      </span>
-    );
-  }
-}
+import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/Forms';
 
 export class MetadataForm extends Component {
 
   onSubmit(entity) {
     this.props.onSubmit(entity);
   }
-
 
   render() {
     let {metadata, state} = this.props;
@@ -69,16 +31,6 @@ export class MetadataForm extends Component {
     const templateOptions = templates.map((t) => {
       return {label: t.name, value: t._id};
     });
-
-    // ---
-    const listOptions = fontawesomeIcons.map(icon => {
-      return {_id: icon, type: 'Icons', label: icon};
-    }).concat(countries.map(country => {
-      return {_id: country.cca3, type: 'Flags', label: country.name.common};
-    }));
-
-
-    // ---
 
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
@@ -105,19 +57,9 @@ export class MetadataForm extends Component {
         <FormGroup>
           <label>Icon / Flag</label>
           <FormField model={`${model}.icon`}>
-            <DropdownList valueField="_id"
-                          textField="label"
-                          data={listOptions}
-                          valueComponent={ListItem}
-                          itemComponent={ListItem}
-                          filter="contains"
-                          groupBy="type"/>
+            <IconSelector/>
           </FormField>
         </FormGroup>
-
-        <pre>
-          {JSON.stringify(this.props, null, ' ')}
-        </pre>
 
         {template.properties.map((property, index) => {
           return (

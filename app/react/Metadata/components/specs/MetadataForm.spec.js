@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 import {MetadataForm} from '../MetadataForm';
 import {Form} from 'react-redux-form';
-import {FormField, Select, MultiSelect, DatePicker} from 'app/Forms';
+import {FormField, Select, MultiSelect, DatePicker, IconSelector} from 'app/Forms';
 
 describe('MetadataForm', () => {
   let component;
@@ -54,6 +54,12 @@ describe('MetadataForm', () => {
     render();
     let template = component.find(Select).first();
     expect(template.props().options).toEqual([{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}]);
+  });
+
+  it('should render an icon selector linked to the icon property', () => {
+    render();
+    let template = component.find(IconSelector).parent();
+    expect(template.props().model).toBe('metadata.icon');
   });
 
   describe('on template change', () => {
