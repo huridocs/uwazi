@@ -1,5 +1,7 @@
 import TemplateLabel from './TemplateLabel';
+import Icon from './Icon';
 
 export {
-  TemplateLabel
+  TemplateLabel,
+  Icon
 };
