@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
-import {TemplateLabel} from 'app/Layout';
+import {TemplateLabel, Icon} from 'app/Layout';
 import {formater} from 'app/Metadata';
 import marked from 'marked';
 
@@ -30,7 +30,7 @@ export class Doc extends Component {
       return (
         <dl key={index}>
           <dt>{property.label}</dt>
-          <dd>{value}</dd>
+          <dd><Icon className="item-icon" data={property.icon} size="xs"/>{value}</dd>
         </dl>
       );
     });
@@ -41,7 +41,7 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, creationDate, template} = this.props.doc;
+    let {title, _id, creationDate, template, icon} = this.props.doc;
     let documentViewUrl = `/${this.props.doc.type}/${_id}`;
 
     let active;
@@ -57,7 +57,7 @@ export class Doc extends Component {
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
         <div className="item-info">
-          <img className="item-icon" src="http://icons.iconarchive.com/icons/custom-icon-design/all-country-flag/16/Ecuador-Flag-icon.png" />
+          <Icon className="item-icon" data={icon} size="sm"/>
           <ItemName>{title}</ItemName>
         </div>
         <div className="item-metadata">

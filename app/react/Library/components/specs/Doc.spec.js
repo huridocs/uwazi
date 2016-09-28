@@ -59,11 +59,11 @@ describe('Doc', () => {
         render();
         const metadata = component.find('.item-metadata');
         expect(metadata.children().length).toBe(2);
-        expect(metadata.children().first().html()).toContain('should appear 1');
-        expect(metadata.children().first().html()).toContain('yes');
-        expect(metadata.children().last().html()).toContain('should appear 2');
-        expect(metadata.children().last().html()).toContain('13');
-        expect(metadata.children().last().html()).toContain('1977');
+        expect(metadata.children().first().text()).toContain('should appear 1');
+        expect(metadata.children().first().text()).toContain('yes');
+        expect(metadata.children().last().text()).toContain('should appear 2');
+        expect(metadata.children().last().text()).toContain('13');
+        expect(metadata.children().last().text()).toContain('1977');
       });
     });
   });
