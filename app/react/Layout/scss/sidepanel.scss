@@ -36,18 +36,12 @@ $c-sidebar: $c-white;
 
 
   h1 {
-    display: block;
     font-family: $f-special;
-    font-weight: 300;
     font-size: $f-size-lg;
-    margin: 0;
-    &.item-name {
-      font-size: $f-size-xl;
-      margin-bottom: 15px;
-    }
   }
   .item-type {
-    top: 0;
+    display: block;
+    margin-top: 15px;
   }
 
   .closeSidepanel {
@@ -147,7 +141,7 @@ $c-sidebar: $c-white;
 .sidepanel-header,
 .sidepanel-footer {
   background: $c-sidebar;
-  padding: 15px;
+  padding: 20px;
   z-index: 1;
 }
 
@@ -156,19 +150,24 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-header {
-  top: 54px;
+  position: relative;
+  min-height: $header-height;
   border-bottom: 2px solid $c-grey-light;
 
   &.no-border {
     border-bottom: 0;
   }
 
+  .item-info {
+    padding: 0 0 30px;
+  }
+
   .nav-tabs {
     position: absolute;
     left: 0;
-    top: 0;
-    height: 54px;
-    right: 54px;
+    bottom: 0;
+    height: $header-height;
+    right: $header-height;
     border: 0;
   }
   .connectionsNumber {
@@ -184,7 +183,7 @@ $c-sidebar: $c-white;
   bottom: 0;
   left: 15px;
   right: 15px;
-  padding-top: 0;
+  padding: 0 0 30px;
   text-align: center;
   background: linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
 

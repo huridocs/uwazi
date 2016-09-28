@@ -44,7 +44,7 @@ nav ul {
 	}
 }
 
-$nav-height: 48px;
+$nav-height: $header-height;
 
 .nav > li > a {
   padding: 0px 10px;
