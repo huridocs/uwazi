@@ -21,10 +21,10 @@ describe('SearchResults', () => {
     results = component.find('.item-info');
   };
 
-  it('should render a list with all the results', () => {
+  it('should render a list with all the results (with their icons)', () => {
     render();
-    expect(results.first().text()).toBe('result1');
-    expect(results.last().text()).toBe('result2');
+    expect(results.first().text()).toBe('<Connect(Icon) />result1');
+    expect(results.last().text()).toBe('<Connect(Icon) />result2');
   });
 
   describe('onClick', () => {

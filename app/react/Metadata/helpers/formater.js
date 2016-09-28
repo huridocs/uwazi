@@ -23,6 +23,22 @@ export default {
     return {label: property.label, value, showInCard};
   },
 
+  getSelectOptions(option, thesauriType) {
+    let value = '';
+    let icon;
+    if (option) {
+      value = option.label;
+      icon = option.icon;
+    }
+
+    let url;
+    if (option && thesauriType === 'template') {
+      url = `/entity/${option.id}`;
+    }
+
+    return {value, url, icon};
+  },
+
   select(property, thesauriValue, thesauris, showInCard) {
     let thesauri = thesauris.find(t => t._id === property.content);
 
@@ -30,17 +46,9 @@ export default {
       return v.id.toString() === thesauriValue.toString();
     });
 
-    let value = '';
-    if (option) {
-      value = option.label;
-    }
+    const {value, url, icon} = this.getSelectOptions(option, thesauri.type);
 
-    let url;
-    if (option && thesauri.type === 'template') {
-      url = `/entity/${option.id}`;
-    }
-
-    return {label: property.label, value, url, showInCard};
+    return {label: property.label, value, icon, url, showInCard};
   },
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
@@ -51,17 +59,7 @@ export default {
         return v.id.toString() === thesauriValue.toString();
       });
 
-      let value = '';
-      if (option) {
-        value = option.label;
-      }
-
-      let url;
-      if (option && thesauri.type === 'template') {
-        url = `/entity/${option.id}`;
-      }
-
-      return {value, url};
+      return this.getSelectOptions(option, thesauri.type);
     });
 
     return {label: property.label, value: values, showInCard};

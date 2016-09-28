@@ -23,12 +23,12 @@ describe('thesauris', () => {
       .catch(done.fail);
     });
 
-    it('should also return entity templates with the entitties as optiones', (done) => {
+    it('should also return entity templates with the entitties as options', (done) => {
       thesauris.get()
       .then((response) => {
         let docs = response.rows;
         expect(docs[2].name).toBe('Judge');
-        expect(docs[2].values).toEqual([{id: 'entityID', label: 'Dredd'}]);
+        expect(docs[2].values).toEqual([{id: 'entityID', label: 'Dredd', icon: 'Icon'}]);
         done();
       })
       .catch(done.fail);

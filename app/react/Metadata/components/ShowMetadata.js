@@ -1,17 +1,20 @@
 import React, {Component, PropTypes} from 'react';
+
 import {Link} from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
-
+import {Icon} from 'app/Layout/Icon';
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 
 export class ShowMetadata extends Component {
   getValue(property) {
     if (property.url) {
-      return <Link to={property.url}>{property.value}</Link>;
+      return <Link to={property.url}>
+               <Icon className="item-icon item-icon-center" data={property.icon} />
+               {property.value}
+             </Link>;
     }
     if (typeof property.value === 'object') {
-      console.log(property.value);
       return <ul>
                {property.value.map((value, indx) => {
                  if (value.url) {
@@ -30,12 +33,10 @@ export class ShowMetadata extends Component {
   }
 
   render() {
-    const {entity, showTitle, showType} = this.props;
+    const {entity} = this.props;
 
     return (
       <div className="view">
-        {showTitle ? <dl><dt>Title</dt><dd>{entity.title}</dd></dl> : ''}
-        {showType ? <dl><dt>Type</dt><dd>{entity.documentType}</dd></dl> : ''}
 
         <ShowIf if={entity.template === 'cd951f1feec188a75916812d43252418' || entity.template === '6e2bfa14cc35c78b202a63e5c63ec969'}>
           <dl>
@@ -44,10 +45,11 @@ export class ShowMetadata extends Component {
         </ShowIf>
 
         {entity.metadata.map((property, index) => {
+          const value = this.getValue(property);
           return (
             <dl key={index}>
               <dt>{property.label}</dt>
-              <dd>{this.getValue(property)}</dd>
+              <dd>{value}</dd>
             </dl>
           );
         })}

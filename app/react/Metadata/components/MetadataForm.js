@@ -2,8 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
-
-import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange} from 'app/Forms';
+import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/Forms';
 
 export class MetadataForm extends Component {
 
@@ -52,6 +51,13 @@ export class MetadataForm extends Component {
                 this.props.changeTemplate(model, metadata, templates.find((t) => t._id === e.target.value));
               }}
             />
+          </FormField>
+        </FormGroup>
+
+        <FormGroup>
+          <label>Icon / Flag</label>
+          <FormField model={`${model}.icon`}>
+            <IconSelector/>
           </FormField>
         </FormGroup>
 

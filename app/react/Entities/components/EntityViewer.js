@@ -14,7 +14,7 @@ import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
-import {TemplateLabel} from 'app/Layout';
+import {TemplateLabel, Icon} from 'app/Layout';
 
 export class EntityViewer extends Component {
 
@@ -118,16 +118,11 @@ export class EntityViewer extends Component {
           </ShowIf>
         </div>
         {group.refs.map((reference, index) => {
-          let referenceIcon = 'fa-sign-out';
-          if (reference.inbound) {
-            referenceIcon = typeof reference.range.start === 'undefined' ? '' : 'fa-sign-in';
-          }
-
           return (
             <div key={index} className='item'>
               <div className="item-info">
                 <div className="item-name">
-                  <i className={`fa ${referenceIcon}`}></i>
+                  <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
                   {reference.connectedDocumentTitle}
                   {(() => {
                     if (reference.text) {
@@ -191,10 +186,11 @@ export class EntityViewer extends Component {
 
           <div className="sidepanel-body">
             <ShowIf if={!entityBeingEdited}>
-              <h1 className="item-name">{entity.title}</h1>
-            </ShowIf>
-            <ShowIf if={!entityBeingEdited}>
-              <TemplateLabel template={entity.template}/>
+              <div className="item-info">
+                <Icon className="item-icon item-icon-center" data={entity.icon} size="md"/>
+                <h1 className="item-name">{entity.title}</h1>
+                <TemplateLabel template={entity.template}/>
+              </div>
             </ShowIf>
 
             {(() => {
