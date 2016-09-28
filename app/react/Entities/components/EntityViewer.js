@@ -118,16 +118,11 @@ export class EntityViewer extends Component {
           </ShowIf>
         </div>
         {group.refs.map((reference, index) => {
-          let referenceIcon = 'fa-sign-out';
-          if (reference.inbound) {
-            referenceIcon = typeof reference.range.start === 'undefined' ? '' : 'fa-sign-in';
-          }
-
           return (
             <div key={index} className='item'>
               <div className="item-info">
                 <div className="item-name">
-                  <i className={`fa ${referenceIcon}`}></i>
+                  <Icon className="item-icon" data={reference.connectedDocumentIcon} />
                   {reference.connectedDocumentTitle}
                   {(() => {
                     if (reference.text) {

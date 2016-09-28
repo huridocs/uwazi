@@ -1,14 +1,18 @@
 import React, {Component, PropTypes} from 'react';
+
 import {Link} from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
-
+import {Icon} from 'app/Layout/Icon';
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 
 export class ShowMetadata extends Component {
   getValue(property) {
     if (property.url) {
-      return <Link to={property.url}>{property.value}</Link>;
+      return <Link to={property.url}>
+               <Icon className="item-icon" data={property.icon} />
+               {property.value}
+             </Link>;
     }
     if (typeof property.value === 'object') {
       return <ul>
@@ -29,7 +33,7 @@ export class ShowMetadata extends Component {
   }
 
   render() {
-    const {entity, showTitle, showType} = this.props;
+    const {entity} = this.props;
 
     return (
       <div className="view">
@@ -41,10 +45,11 @@ export class ShowMetadata extends Component {
         </ShowIf>
 
         {entity.metadata.map((property, index) => {
+          const value = this.getValue(property);
           return (
             <dl key={index}>
               <dt>{property.label}</dt>
-              <dd>{this.getValue(property)}</dd>
+              <dd>{value}</dd>
             </dl>
           );
         })}
