@@ -8,6 +8,7 @@ import {TemplateLabel} from 'app/Layout';
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
+import {Icon} from 'app/Layout';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -87,7 +88,9 @@ export class ConnectionsList extends Component {
                 <div className="item-info">
                   <div className="item-name">
                     <i className={`fa ${referenceIcon}`}></i>
-                    &nbsp;{reference.connectedDocumentTitle}
+                    &nbsp;
+                    <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
+                    {reference.connectedDocumentTitle}
                     {(() => {
                       if (reference.text) {
                         return <div className="item-snippet">

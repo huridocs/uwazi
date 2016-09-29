@@ -11,13 +11,15 @@ export default {
     {"_id":"c08ef2532f0bd008ac5174b45e033c04","type":"reference", "title":"targetDocument", "targetDocument": "target"},
     {"_id":"c08ef2532f0bd008ac5174b45e033c05","type":"reference", "title":"targetDocument", "targetDocument": "target"},
     {"_id":"c08ef2532f0bd008ac5174b45e033c06","type":"reference", "title":"targetDocument1", "targetDocument": "target1"},
-    {"_id":"source1", title: "source1 title", type: "document", template: "template3_id"},
-    {"_id":"doc3", title: "doc3 title", type: "entity", template: "template1_id", published: true},
+    {"_id":"source1", title: "source1 title", type: "document", template: "template3_id", icon: 'icon1'},
+    {"_id":"doc3", title: "doc3 title", type: "entity", template: "template1_id", published: true, icon: 'icon3'},
     {"_id":"doc4", title: "doc4 title", type: "document", template: "template1_id"},
     {"_id":"doc5", title: "doc5 title", type: "document", template: "template2_id"},
 
     //document-based existing reference
     {"_id":"c08ef2532f0bd008ac5174b45e033c10", "type":"reference", "title":"reference1", "sourceDocument": "id_testing", "targetDocument": "value2", "targetRange": "range1", "sourceRange": {text: 'sourceRange'}, "relationtype": 'relation1'},
+    //inbound existing reference
+    {"_id":"inbound", "type":"reference", "title":"indound_reference_1", "sourceDocument": "value2", "targetDocument": "id_testing", sourceType: "metadata", sourceProperty: "selectName"},
     //selectValues
     {"_id":"selectValue", title: "selectValue", type: "entity"},
     {"_id":"value1", title: "value1", type: "entity"},

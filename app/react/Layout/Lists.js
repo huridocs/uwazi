@@ -5,7 +5,7 @@ let List = ({children}) => {
 };
 
 let ItemName = ({children}) => {
-  return <div className="item-name">{children}</div>;
+  return <div className="item-name"><span>{children}</span></div>;
 };
 
 let ItemFooter = ({children, onClick}) => {

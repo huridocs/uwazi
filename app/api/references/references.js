@@ -17,6 +17,7 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentTemplate = connectedDocument.template;
   connection.connectedDocumentType = connectedDocument.type;
   connection.connectedDocumentTitle = connectedDocument.title;
+  connection.connectedDocumentIcon = connectedDocument.icon;
   connection.connectedDocumentPublished = Boolean(connectedDocument.published);
   return connection;
 };
@@ -116,7 +117,6 @@ export default {
         }));
       }, []);
 
-
       const toDelete = references.filter((ref) => {
         let isInValues = false;
         values.forEach((item) => {
@@ -124,7 +124,7 @@ export default {
             isInValues = true;
           }
         });
-        return !isInValues && ref.sourceType === 'metadata';
+        return !ref.inbound && !isInValues && ref.sourceType === 'metadata';
       });
 
       const toCreate = values.filter((item) => {

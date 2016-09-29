@@ -1,8 +1,9 @@
+$theme:               light;
+
 $c-grey: 				      #D0CDC6;
 $c-white: 				    lighten($c-grey, 100%);
 $c-grey-lighten:      lighten($c-grey, 18%);
 $c-grey-light:        lighten($c-grey, 11%);
-
 $c-grey-dark: 				darken($c-grey, 40%);
 $c-black: 				    #444444;
 
