@@ -51,14 +51,20 @@ describe('IconSelector', () => {
     component = shallow(<IconSelector {...props}/>);
   };
 
+  it('should have an empty option', () => {
+    render();
+    expect(component.find(DropdownList).props().data[0]._id).toBe(null);
+    expect(component.find(DropdownList).props().data[0].type).toBe('Empty');
+  });
+
   it('should render a DropdownList with icons and flags, extending passed props', () => {
     render();
     const firstFlagIndex = component.find(DropdownList).props().data.length - countries.length;
-    expect(component.find(DropdownList).props().data.length).toBeGreaterThan(100);
+    expect(component.find(DropdownList).props().data.length).toBe(fontawesomeIcons.length + countries.length + 1);
 
-    expect(component.find(DropdownList).props().data[0].type).toBe('Icons');
-    expect(component.find(DropdownList).props().data[0]._id).toBe(fontawesomeIcons[0]);
-    expect(component.find(DropdownList).props().data[0].label).toBe(fontawesomeIcons[0]);
+    expect(component.find(DropdownList).props().data[1].type).toBe('Icons');
+    expect(component.find(DropdownList).props().data[1]._id).toBe(fontawesomeIcons[0]);
+    expect(component.find(DropdownList).props().data[1].label).toBe(fontawesomeIcons[0]);
 
     expect(component.find(DropdownList).props().data[firstFlagIndex].type).toBe('Flags');
     expect(component.find(DropdownList).props().data[firstFlagIndex]._id).toBe(countries[0].cca3);
@@ -66,7 +72,7 @@ describe('IconSelector', () => {
 
     expect(component.find(DropdownList).props().valueComponent).toBe(ListItem);
     expect(component.find(DropdownList).props().itemComponent).toBe(ListItem);
-    expect(component.find(DropdownList).props().defaultValue).toEqual({});
+    expect(component.find(DropdownList).props().defaultValue).toBe(component.find(DropdownList).props().data[0]);
     expect(component.find(DropdownList).props().onChange).toBe('Function');
   });
 });

@@ -16,7 +16,7 @@ export class ListItem extends Component {
 
   render() {
     const {item} = this.props;
-    let icon;
+    let icon = <span>No icon / flag</span>;
     if (item.type === 'Icons') {
       icon = <span style={style}>
                <i className={`fa fa-${item._id}`}></i>
@@ -45,9 +45,10 @@ export class ListItem extends Component {
 
 export class IconSelector extends Component {
   componentWillMount() {
-    const listOptions = fontawesomeIcons.map(icon => {
+    const listOptions = [{_id: null, type: 'Empty'}]
+    .concat(fontawesomeIcons.map(icon => {
       return {_id: icon, type: 'Icons', label: icon};
-    }).concat(countries.map(country => {
+    })).concat(countries.map(country => {
       return {_id: country.cca3, type: 'Flags', label: country.name.common};
     }));
 
@@ -61,7 +62,7 @@ export class IconSelector extends Component {
                     data={this.state.listOptions}
                     valueComponent={ListItem}
                     itemComponent={ListItem}
-                    defaultValue={{}}
+                    defaultValue={this.state.listOptions[0]}
                     filter="contains"
                     groupBy="type"
                     {... this.props}/>
