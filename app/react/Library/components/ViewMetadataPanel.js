@@ -15,7 +15,6 @@ import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {browserHistory} from 'react-router';
 import {MetadataFormButtons} from 'app/Metadata';
-import {TemplateLabel, Icon} from 'app/Layout';
 
 export class ViewMetadataPanel extends Component {
 
@@ -56,11 +55,6 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">
-            <div className="item-info">
-              <Icon className="item-icon item-icon-center" data={rawDoc.get('icon') ? rawDoc.get('icon').toJS() : {}} size="sm"/>
-              <h1 className="item-name">{rawDoc.get('title')}</h1>
-              <TemplateLabel template={rawDoc.get('template')}/>
-            </div>
             <ul className="nav nav-tabs">
               <li>
                 <div className="tab-link tab-link-active">

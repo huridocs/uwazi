@@ -199,7 +199,6 @@ export class EntityViewer extends Component {
               }
               return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
             })()}
-
           </div>
         </aside>
         <aside className="side-panel entity-connections">

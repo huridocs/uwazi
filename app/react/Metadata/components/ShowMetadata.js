@@ -4,6 +4,8 @@ import {Link} from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
 import {Icon} from 'app/Layout/Icon';
+import {TemplateLabel} from 'app/Layout';
+
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 
 export class ShowMetadata extends Component {
@@ -33,10 +35,24 @@ export class ShowMetadata extends Component {
   }
 
   render() {
-    const {entity} = this.props;
+    const {entity, showTitle, showType} = this.props;
+
+    let header = '';
+    if (showTitle || showType) {
+      let title = '';
+      if (showTitle) {
+        title = <div>
+                  <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+                  <h1 className="item-name">{entity.title}</h1>
+                </div>;
+      }
+      const type = showType ? <TemplateLabel template={entity.template}/> : '';
+      header = <div className="item-info">{title}{type}</div>;
+    }
 
     return (
       <div className="view">
+        {header}
 
         <ShowIf if={entity.template === 'cd951f1feec188a75916812d43252418' || entity.template === '6e2bfa14cc35c78b202a63e5c63ec969'}>
           <dl>
