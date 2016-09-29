@@ -18,7 +18,6 @@ import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {browserHistory} from 'react-router';
 import {TocForm, ShowToc} from 'app/Documents';
 import {MetadataFormButtons} from 'app/Metadata';
-import {TemplateLabel, Icon} from 'app/Layout';
 
 export class ViewMetadataPanel extends Component {
   deleteDocument() {
@@ -53,11 +52,6 @@ export class ViewMetadataPanel extends Component {
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
-          <div className="item-info">
-            <Icon className="item-icon item-icon-center" data={doc.icon ? doc.icon : {}} size="sm"/>
-            <h1 className="item-name">{doc.title}</h1>
-            <TemplateLabel template={doc.template}/>
-          </div>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
           <Tabs selectedTab={this.props.tab || 'metadata'}
             handleSelect={(tab) => {
