@@ -93,7 +93,8 @@ const target = {
     if (typeof dragIndex === 'undefined') {
       let item = monitor.getItem();
       item.inserting = true;
-      return props.addProperty(item, 0);
+      item.index = 0;
+      return props.addProperty({label: item.label, type: item.type, inserting: true}, 0);
     }
     if (dragIndex === hoverIndex) {
       return;
