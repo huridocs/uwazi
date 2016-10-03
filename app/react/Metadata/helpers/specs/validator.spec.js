@@ -16,10 +16,14 @@ describe('metadata validator', () => {
       expect(required('  ')).toBe(false);
       expect(required('value')).toBe(true);
     });
+
+    it('should return false on an empty array', () => {
+      expect(required([])).toBe(false);
+    });
   });
 
   describe('generate', () => {
-    it('should should generate an validation based on the template passed', () => {
+    it('should should generate a validation based on the template passed', () => {
       let validationObject = validator.generate(template);
       expect(validationObject.title).toEqual({required});
       expect(validationObject['metadata.field1']).toEqual({required});
