@@ -40,8 +40,8 @@ import NewRelationType from 'app/RelationTypes/NewRelationType';
 
 import Library from 'app/Library/Library';
 
-export default (
-  <Route path='/' component={App}>
+const routes = (
+  <Route>
     <IndexRoute component={Library} />
     <Route path='settings' component={Settings}>
       <Route path='account' component={AccountSettings} />
@@ -69,6 +69,16 @@ export default (
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path='entity/:entityId' component={EntityView} />
     <Route path='page/:pageId' component={PageView} />
+  </Route>
+);
+
+export default (
+  <Route path='/' component={App}>
+    {routes}
+    <Route path=':lang'>
+      {routes}
+      <Route path="*" component={NoMatch} />
+    </Route>
     <Route path="*" component={NoMatch} />
   </Route>
 );
