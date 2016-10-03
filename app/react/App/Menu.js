@@ -31,6 +31,15 @@ class Menu extends Component {
           <ul className="menuNav-list">
             <li className="menuNav-item">
               <I18NMenu location={this.props.location}/>
+                <ul className="Dropdown-list">
+                  <li className="Dropdown-option is-active"><span>ES</span></li>
+                  <li className="Dropdown-option"><span>EN</span></li>
+                  <li className="Dropdown-option"><span>PO</span></li>
+                </ul>
+                <span className="Dropdown-label">
+                  <i className="fa fa-caret-down"></i>
+                </span>
+              </div>
             </li>
             <li className="menuNav-item"><a onClick={this.goToLibrary.bind(this)} className="menuNav-btn btn btn-default"><i className="fa fa-th"></i></a></li>
             <NeedAuthorization>
