@@ -51,8 +51,7 @@ export class ViewMetadataPanel extends Component {
   }
 
   render() {
-    const {metadata, docBeingEdited} = this.props;
-
+    const {metadata, docBeingEdited, rawDoc} = this.props;
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-header">
@@ -68,7 +67,7 @@ export class ViewMetadataPanel extends Component {
 
         <MetadataFormButtons
           delete={this.deleteDocument.bind(this)}
-          data={this.props.rawDoc}
+          data={rawDoc}
           formStatePath='library.metadata'
           entityBeingEdited={docBeingEdited}
         />

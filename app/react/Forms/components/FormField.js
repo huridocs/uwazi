@@ -1,12 +1,24 @@
 import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
+import DropdownList from './DropdownList';
+import IconSelector from './IconSelector';
+
 const FieldController = createFieldClass({
   Select: controls.select,
   MultiSelect: controls.select,
+  MultiDate: controls.select,
+  MultiDateRange: controls.select,
   DatePicker: controls.text,
   MarkDown: controls.text,
   Nested: controls.select,
-  NestedMultiselect: controls.select
+  NestedMultiselect: controls.select,
+  DropdownList: controls.select,
+  IconSelector: controls.select
+}, {
+  componentMap: {
+    DropdownList: DropdownList,
+    IconSelector: IconSelector
+  }
 });
 
 class FormField extends Component {

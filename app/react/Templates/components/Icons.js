@@ -5,5 +5,7 @@ export default {
   date: 'fa fa-calendar',
   text: 'fa fa-font',
   markdown: 'fa fa-file-text-o',
-  nested: 'fa fa-cubes'
+  nested: 'fa fa-cubes',
+  multidate: 'fa fa-calendar',
+  multidaterange: 'fa fa-calendar'
 };

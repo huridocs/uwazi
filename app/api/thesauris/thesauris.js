@@ -13,7 +13,7 @@ let autoincrementValuesId = (thesauri) => {
       value.id = nextId;
       nextId += 1;
     }
-    
+
     value.id = value.id.toString();
     return value;
   });
@@ -60,7 +60,7 @@ export default {
     return entities.getByTemplate(template._id)
     .then((response) => {
       template.values = response.rows.map((entity) => {
-        return {id: entity._id, label: entity.title};
+        return {id: entity._id, label: entity.title, icon: entity.icon};
       });
       return template;
     });

@@ -41,6 +41,12 @@ export class TemplateCreator extends Component {
               <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
                 <PropertyOption label='Violated articles' type='nested'/>
               </ShowIf>
+              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                <PropertyOption label='Multi Date' type='multidate'/>
+              </ShowIf>
+              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                <PropertyOption label='Multi Date Range' type='multidaterange'/>
+              </ShowIf>
             </ul>
           </div>
         </aside>

@@ -17,7 +17,7 @@ describe('references', () => {
     it('should return all the references in the database', (done) => {
       references.getAll()
       .then((result) => {
-        expect(result.rows.length).toBe(8);
+        expect(result.rows.length).toBe(9);
         expect(result.rows[0].type).toBe('reference');
         expect(result.rows[0].title).toBe('reference1');
         done();
@@ -26,7 +26,8 @@ describe('references', () => {
   });
 
   describe('saveEntityBasedReferences', () => {
-    it('should create references for each option on selects/multiselects using entities (not affecting document references)', (done) => {
+    it('should create references for each option on selects/multiselects using entities ' +
+       '(not affecting document references or inbound refences)', (done) => {
       const entity = {
         _id: 'id_testing',
         template,
@@ -41,13 +42,14 @@ describe('references', () => {
         return references.getByDocument(entity._id);
       })
       .then((refs) => {
-        expect(refs.length).toBe(4);
+        expect(refs.length).toBe(5);
 
         expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toBe('id_testing');
         expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceType).toBe('metadata');
         expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
         expect(refs.filter((ref) => ref.targetDocument === 'value2')[0].sourceDocument).toBe('id_testing');
         expect(refs.filter((ref) => ref.targetDocument === 'value2')[1]._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+        expect(refs.find((ref) => ref.sourceDocument === 'value2')._id).toBe('inbound');
 
         done();
       })
@@ -68,7 +70,7 @@ describe('references', () => {
         return references.getByDocument(entity._id);
       })
       .then((refs) => {
-        expect(refs.length).toBe(2);
+        expect(refs.length).toBe(3);
         done();
       })
       .catch(catchErrors(done));
@@ -98,7 +100,7 @@ describe('references', () => {
           return references.getByDocument(entity._id);
         })
         .then((refs) => {
-          expect(refs.length).toBe(3);
+          expect(refs.length).toBe(4);
 
           expect(refs.find((ref) => ref.targetDocument === 'value1')._id).not.toBe(generatedIds[0]);
           expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
@@ -125,6 +127,7 @@ describe('references', () => {
         expect(result[0].text).toBe('sourceRange');
         expect(result[0].connectedDocument).toBe('source1');
         expect(result[0].connectedDocumentTitle).toBe('source1 title');
+        expect(result[0].connectedDocumentIcon).toBe('icon1');
         expect(result[0].connectedDocumentType).toBe('document');
         expect(result[0].connectedDocumentTemplate).toBe('template3_id');
         expect(result[0].connectedDocumentPublished).toBe(false);
@@ -135,6 +138,7 @@ describe('references', () => {
         expect(result[1].text).toBe('targetRange');
         expect(result[1].connectedDocument).toBe('doc3');
         expect(result[1].connectedDocumentTitle).toBe('doc3 title');
+        expect(result[1].connectedDocumentIcon).toBe('icon3');
         expect(result[1].connectedDocumentType).toBe('entity');
         expect(result[1].connectedDocumentTemplate).toBe('template1_id');
         expect(result[1].connectedDocumentPublished).toBe(true);

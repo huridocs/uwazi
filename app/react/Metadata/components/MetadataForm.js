@@ -2,8 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
-
-import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested} from 'app/Forms';
+import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/Forms';
 
 export class MetadataForm extends Component {
 
@@ -55,6 +54,13 @@ export class MetadataForm extends Component {
           </FormField>
         </FormGroup>
 
+        <FormGroup>
+          <label>Icon / Flag</label>
+          <FormField model={`${model}.icon`}>
+            <IconSelector/>
+          </FormField>
+        </FormGroup>
+
         {template.properties.map((property, index) => {
           return (
             <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
@@ -78,6 +84,12 @@ export class MetadataForm extends Component {
                   }
                   if (property.type === 'nested') {
                     return <Nested/>;
+                  }
+                  if (property.type === 'multidate') {
+                    return <MultiDate/>;
+                  }
+                  if (property.type === 'multidaterange') {
+                    return <MultiDateRange/>;
                   }
                   return <input className="form-control"/>;
                 })()}
