@@ -72,7 +72,7 @@ class App extends Component {
             <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
-            <Menu onClick={this.toggleMenu.bind(this)} className={navClass} />
+            <Menu location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
@@ -86,7 +86,8 @@ class App extends Component {
 
 App.propTypes = {
   fetch: PropTypes.func,
-  children: PropTypes.object
+  children: PropTypes.object,
+  location: PropTypes.object
 };
 
 App.childContextTypes = {

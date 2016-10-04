@@ -4,6 +4,7 @@ import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {bindActionCreators} from 'redux';
+import I18NMenu from './I18NMenu';
 
 class Menu extends Component {
 
@@ -29,16 +30,7 @@ class Menu extends Component {
         <li className="menuActions">
           <ul className="menuNav-list">
             <li className="menuNav-item">
-              <div className="Dropdown">
-                <ul className="Dropdown-list">
-                  <li className="Dropdown-option is-active"><span>ES</span></li>
-                  <li className="Dropdown-option"><span>EN</span></li>
-                  <li className="Dropdown-option"><span>PO</span></li>
-                </ul>
-                <span className="Dropdown-label">
-                  <i className="fa fa-caret-down"></i>
-                </span>
-              </div>
+              <I18NMenu location={this.props.location}/>
             </li>
             <li className="menuNav-item"><a onClick={this.goToLibrary.bind(this)} className="menuNav-btn btn btn-default"><i className="fa fa-th"></i></a></li>
             <NeedAuthorization>
@@ -61,6 +53,7 @@ class Menu extends Component {
 
 Menu.propTypes = {
   user: PropTypes.object,
+  location: PropTypes.object,
   search: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
