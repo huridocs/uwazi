@@ -8,6 +8,7 @@ coverage
 npm-debug
 uploads/*
 uwazi-fixtures
+cejil-fixtures
 conversions/*.json
 app/api/upload/specs/uploads/*
 uploaded_documents/*

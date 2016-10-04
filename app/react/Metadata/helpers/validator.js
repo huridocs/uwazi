@@ -1,4 +1,8 @@
 export function required(val) {
+  if (Array.isArray(val)) {
+    return Boolean(val.length);
+  }
+
   return !!val && val.trim() !== '';
 }
 

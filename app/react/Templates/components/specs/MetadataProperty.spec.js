@@ -212,6 +212,7 @@ describe('MetadataProperty', () => {
           delete monitor.getItem().index;
           backend.simulateHover([target.getHandlerId()]);
 
+          expect(monitor.getItem().index).toBe(0);
           expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', type: 'type', inserting: true}, 0);
         });
       });

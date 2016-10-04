@@ -85,6 +85,10 @@ export default {
   },
 
   saveEntityBasedReferences(entity) {
+    if (!entity.template) {
+      return Promise.resolve([]);
+    }
+
     return templates.getById(entity.template)
     .then((template) => {
       const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');

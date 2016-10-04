@@ -10,7 +10,10 @@ import {uploadDocumentsPath} from '../config/paths';
 export default (app) => {
   app.post('/api/documents', needsAuthorization, (req, res) => {
     return documents.save(req.body, req.user)
-    .then(doc => res.json(doc));
+    .then(doc => res.json(doc))
+    .catch(error => {
+      res.json({error: error});
+    });
   });
 
   app.get('/api/documents/html', (req, res) => {
