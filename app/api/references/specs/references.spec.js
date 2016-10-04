@@ -26,6 +26,20 @@ describe('references', () => {
   });
 
   describe('saveEntityBasedReferences', () => {
+    describe('when entity has no template', () => {
+      it('should return a resolved promise', (done) => {
+        const entity = {_id: 'id_testing'};
+        references.saveEntityBasedReferences(entity)
+        .then((refs) => {
+          expect(refs).toEqual([]);
+          done();
+        })
+        .catch(() => {
+          done.fail('should not failt when entity has no template');
+        });
+      });
+    });
+
     it('should create references for each option on selects/multiselects using entities ' +
        '(not affecting document references or inbound refences)', (done) => {
       const entity = {
