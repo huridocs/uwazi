@@ -4,7 +4,7 @@ import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {bindActionCreators} from 'redux';
-import I18NMenu from './I18NMenu';
+import {I18NMenu} from 'app/I18N';
 
 class Menu extends Component {
 

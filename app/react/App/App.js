@@ -91,7 +91,8 @@ App.propTypes = {
 };
 
 App.childContextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
+  locale: PropTypes.string
 };
 
 App.contextTypes = {
