@@ -21,7 +21,7 @@ describe('entities', () => {
     let getDocuments = () => request.get(dbURL + '/_design/entities/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    it('should create a new document for each language in settings with a language property and a shared id', (done) => {
+    it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
       spyOn(date, 'currentUTC').and.returnValue('universal time');
       let doc = {title: 'Batman begins'};
       let user = {_id: 'user Id'};
