@@ -260,20 +260,264 @@ export class TimelineViewer extends Component {
       }
     }
     return (
-      <div>
-        <ShowIf if={Boolean(this.state && this.state.years && this.state.years.related)}>
-          <div className="timeline">
-            {years.related}
+      <div className="timeline">
+          <div className="timeline-track">
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year timeline-year-active">
+                  <span className="timeline-track-label item-type__name">Medidas provisionales</span>
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Sep 22, 1995 Blake. Resolución de la CorteIDH de 22 de septiembre de 1995" href="/document/11577e4ed9d14cf21daaeea264b4e974">
+
+                  </a>
+                  <a className="timeline-item timeline-item-type-6" data-toggle="tooltip" data-placement="top" data-animation="false" title="Aug 16, 1995 Blake. Resolución del Presidente de 16 de agosto de 1995" href="/document/11577e4ed9d14cf21daaeea264b59b85">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active"></div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Apr 18, 1997 Blake. Resolución de la CorteIDH de 18 de abril de 1997" href="/document/11577e4ed9d14cf21daaeea264b53f07">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active"></div>
+              <div className="timeline-year timeline-year-active"></div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Aug 18, 2000 Blake. Resolución de la CorteIDH de 18 de agosto de 2000" href="/document/11577e4ed9d14cf21daaeea264b631b6">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jun 2, 2001 Blake. Resolución de la CorteIDH de 2 de junio de 2001" href="/document/11577e4ed9d14cf21daaeea264b6c255">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active"></div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jun 6, 2003 Blake. Resolución de la CorteIDH de 6 de junio de 2003" href="/document/11577e4ed9d14cf21daaeea264b5b74e">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Nov 17, 2004 Blake. Resolución de la CorteIDH de 17 de noviembre de 2004" href="/document/11577e4ed9d14cf21daaeea264b66809">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jun 14, 2005 Blake. Resolución de la CorteIDH de 14 de junio de 2005" href="/document/11577e4ed9d14cf21daaeea264b5fa51">
+
+                  </a>
+              </div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
+              <div className="timeline-year"></div>
           </div>
-        </ShowIf>
-        <div className="timeline">
-          {(() => {
-            if (!this.state || !this.state.years) {
-              return <Loader/>;
-            }
-          })()}
-          {years.main}
-        </div>
+          <div className="timeline-track">
+              <div className="timeline-year">
+
+              </div>
+              <div className="timeline-year">
+
+              </div>
+              <div className="timeline-year">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <span className="timeline-track-label item-type__name">Causa</span>
+                  <span className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="Nov 18, 1993 Presentación ante la comisión">
+                    <span className="timeline-milestone "><span>Mar 1993</span></span>
+                  </span></div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <span className="timeline-item" data-toggle="tooltip" data-placement="top" data-animation="false" title="Aug 5, 1995 Presentación ante la corte"></span></div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-2" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jul 2, 1996 Blake. Excepciones Preliminares. Sentencia de 2 de julio de 1996" href="/document/11577e4ed9d14cf21daaeea264b89f3a"><i className="fa fa-legal"></i></a></div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-2" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jan 24, 1998 Blake. Fondo. Sentencia de 24 de enero de 1998" href="/document/11577e4ed9d14cf21daaeea264b83fee"><i className="fa fa-legal"></i></a></div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-2" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jan 22, 1999 Blake. Reparaciones y Costas. Sentencia de 22 de enero de 1999" href="/document/11577e4ed9d14cf21daaeea264b8fa89"><i className="fa fa-legal"></i></a><a className="timeline-item timeline-item-type-2" data-toggle="tooltip" data-placement="top" data-animation="false"
+                      title="Oct 1, 1999 Blake. Interpretación. Sentencia de 1 de octubre de 1999" href="/document/11577e4ed9d14cf21daaeea264b9727c"><i className="fa fa-legal"></i></a></div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Nov 27, 2002 Blake. Resolución de la CorteIDH de 27 de noviembre de 2002" href="/document/11577e4ed9d14cf21daaeea264b748c3">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Nov 27, 2003 Blake. Resolución de la CorteIDH de 27 de noviembre de 2003" href="/document/11577e4ed9d14cf21daaeea264b800a4">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Nov 27, 2007 Blake. Resolución de la CorteIDH de 27 de noviembre de 2007" href="/document/11577e4ed9d14cf21daaeea264b7b3a9">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Jan 22, 2009 Blake. Resolución de la CorteIDH de 22 de enero de 2009" href="/document/11577e4ed9d14cf21daaeea264b7026b">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+              </div>
+              <div className="timeline-year timeline-year-active">
+
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Aug 21, 2014 Blake [y otros casos]. Resolución de la CorteIDH de 21 de agosto de 2014" href="/document/11577e4ed9d14cf21daaeea264b9de69">
+
+                  </a>
+              </div>
+              <div className="timeline-year timeline-year-active">
+                  <a className="timeline-item timeline-item-type-9" data-toggle="tooltip" data-placement="top" data-animation="false" title="Nov 24, 2015 Blake [y otros casos]. Resolución de la CorteIDH de 24 de noviembre de 2015" href="/document/11577e4ed9d14cf21daaeea264ba1e56">
+
+                  </a>
+              </div>
+              <div className="timeline-year">
+
+              </div>
+              <div className="timeline-year">
+
+              </div>
+              <div className="timeline-year">
+
+              </div>
+          </div>
+          <div className="timeline-track">
+              <div className="timeline-year">
+                  <div className="timeline-label timeline-label-text"><span>1990</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1991</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1992</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1993</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1994</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label timeline-label-text"><span>1995</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1996</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1997</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1998</span></div>
+                </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>1999</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label timeline-label-text"><span>2000</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2001</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2002</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2003</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2004</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label timeline-label-text"><span>2005</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2006</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2007</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2008</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2009</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label timeline-label-text"><span>2010</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2011</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2012</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2013</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2014</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label timeline-label-text"><span>2015</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2016</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2017</span></div>
+              </div>
+              <div className="timeline-year">
+                  <div className="timeline-label "><span>2018</span></div>
+              </div>
+          </div>
       </div>
     );
   }

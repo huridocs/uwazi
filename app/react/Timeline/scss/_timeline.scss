@@ -1,13 +1,65 @@
-$timeline-item-size: 20px;
+$timeline-item-size: 18px;
 .timeline {
-  padding-bottom: 15px;
-  display: flex;
-  min-height: $timeline-item-size * 2 + 15px;
+  padding-bottom: 30px;
 
-  &-year {
+  &-track {
     display: flex;
+    flex-wrap: nowrap;
+  }
+  &-year {
+    position: relative;
+    display: flex;
+    align-items: center;
     flex-direction: column-reverse;
-    width: $timeline-item-size;
+    width: 100%;
+    padding-top: 20px;
+  }
+  &-track:first-child &-year,
+  &-track:last-child &-year{
+    padding-top: 0;
+  }
+  &-track:not(:last-of-type) &-year:not(:first-of-type) {
+    border-left: 1px solid $c-grey-light;
+  }
+  &-track:not(:last-of-type) &-year:nth-child(5n+1) {
+    background: $c-grey-lighten;
+  }
+  &-year-active {
+    border-bottom: 1px solid $c-primary;
+    padding-bottom: 5px;
+  }
+  &-track-label {
+    z-index: 1;
+    background: $c-primary;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    left: -1px;
+    margin: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  &-milestone {
+    position: absolute;
+    top: -2px;
+    right: calc(100% + 9px);
+    padding: 1px 6px;
+    white-space: nowrap;
+    font-size: 9px;
+    background: #fff;
+    color: $c-grey-dark;
+    border: 1px solid $c-grey;
+    border-radius: 3px;
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      display: block;
+      width: 10px;
+      height: 1px;
+      background: $c-grey;
+    }
   }
   &-label {
     position: relative;
@@ -24,15 +76,16 @@ $timeline-item-size: 20px;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      display: block;
+      display: none;
       width: 1px;
       height: 6px;
-      top: 6px;
+      top: 15px;
       background: #ccc;
     }
   }
 
   &-label-text {
+    display: block;
     span {
       display: block;
       position: relative;
@@ -42,22 +95,24 @@ $timeline-item-size: 20px;
       text-align: center;
       font-size: $f-size-sm;
       padding-top: $timeline-item-size;
+      white-space: nowrap;
     }
     &:before {
       content: '';
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      display: block;
+      display: none;
       width: 1px;
       height: 10px;
-      top: 4px;
+      top: 13px;
       background: $c-black;
     }
   }
 
   a.timeline-item,
   .timeline-item {
+    position: relative;
     width: $timeline-item-size - 2px;
     height: $timeline-item-size - 2px;
     margin: 1px;
