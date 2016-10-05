@@ -8,7 +8,7 @@ import settings from '../settings';
 import ID from 'shared/uniqueId';
 
 export default {
-  save(doc, user, language = 'en') {
+  save(doc, {user, language}) {
     doc.type = 'entity';
     if (!doc._id) {
       doc.user = user;
@@ -36,16 +36,6 @@ export default {
       return Promise.all([response, references.saveEntityBasedReferences(response.json.rows[0].value)]);
     })
     .then(([response]) => response.json.rows[0].value);
-  },
-
-  getUploadsByUser(user) {
-    let url = `${dbURL}/_design/entities/_view/uploads?key="${user._id}"&descending=true`;
-
-    return request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
-      return response.json;
-    });
   },
 
   countByTemplate(templateId) {
@@ -79,17 +69,6 @@ export default {
       });
 
       return Promise.all(updates);
-    });
-  },
-
-  list(keys) {
-    let url = `${dbURL}/_design/entities/_view/list`;
-    if (keys) {
-      url += `?keys=${JSON.stringify(keys)}`;
-    }
-    return request.get(url)
-    .then((response) => {
-      return sanitizeResponse(response.json);
     });
   },
 

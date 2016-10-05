@@ -26,7 +26,7 @@ describe('entities', () => {
       let doc = {title: 'Batman begins'};
       let user = {_id: 'user Id'};
 
-      entities.save(doc, user)
+      entities.save(doc, {user, language: 'es'})
       .then(getDocuments)
       .then((docs) => {
         let createdDocumentEs = docs.find((d) => d.title === 'Batman begins' && d.language === 'es');
@@ -50,7 +50,7 @@ describe('entities', () => {
       let doc = {title: 'the dark knight'};
       let user = {_id: 'user Id'};
 
-      entities.save(doc, user, 'en')
+      entities.save(doc, {user, language: 'en'})
       .then((createdDocument) => {
         expect(createdDocument._id).toBeDefined();
         expect(createdDocument._rev).toBeDefined();
@@ -67,7 +67,7 @@ describe('entities', () => {
       let doc = {title: 'Batman begins'};
       let user = {_id: 'user Id'};
 
-      entities.save(doc, user)
+      entities.save(doc, {user, language: 'es'})
       .then(() => {
         expect(references.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
         expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
@@ -83,7 +83,7 @@ describe('entities', () => {
         getDocument()
         .then((doc) => {
           let modifiedDoc = {_id: doc._id, _rev: doc._rev, sharedId: doc.sharedId, language: doc.language};
-          return entities.save(modifiedDoc, 'another_user');
+          return entities.save(modifiedDoc, {user: 'another_user', language: 'en'});
         })
         .then(getDocuments)
         .then((docs) => {
@@ -99,7 +99,7 @@ describe('entities', () => {
         getDocument()
         .then((doc) => {
           let modifiedDoc = {_id: doc._id, _rev: doc._rev, test: 'test', sharedId: doc.sharedId, language: doc.language};
-          return entities.save(modifiedDoc);
+          return entities.save(modifiedDoc, {language: 'en'});
         })
         .then(getDocuments)
         .then((docs) => {
@@ -116,7 +116,7 @@ describe('entities', () => {
     it('should return how many entities using the template passed', (done) => {
       entities.countByTemplate('template1')
       .then((count) => {
-        expect(count).toBe(2);
+        expect(count).toBe(3);
         done();
       })
       .catch(done.fail);
@@ -129,20 +129,6 @@ describe('entities', () => {
         done();
       })
       .catch(done.fail);
-    });
-  });
-
-  describe('getUploadsByUser', () => {
-    it('should request all unpublished entities for the user', (done) => {
-      let user = {_id: 'c08ef2532f0bd008ac5174b45e033c94'};
-      entities.getUploadsByUser(user)
-      .then((response) => {
-        expect(response.rows.length).toBe(1);
-        expect(response.rows[0].title).toBe('unpublished');
-        expect(response.rows[0]._id).toBe('d0298a48d1221c5ceb53c4879301508f');
-        done();
-      })
-      .catch(catchErrors(done));
     });
   });
 
@@ -187,32 +173,6 @@ describe('entities', () => {
         done();
       })
       .catch(done.fail);
-    });
-  });
-
-  describe('list', () => {
-    it('should return a list of entities with the title', (done) => {
-      entities.list()
-      .then((results) => {
-        expect(results.rows.length).toBe(7);
-        expect(results.rows[0].title).toBe('Batman finishes');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when giving a list of keys', () => {
-      it('should return only those entities', (done) => {
-        entities.list(['8202c463d6158af8065022d9b5014ccb', 'd0298a48d1221c5ceb53c4879301507f'])
-        .then((results) => {
-          expect(results.rows.length).toBe(2);
-          expect(results.rows[0].title).toBe('Penguin almost done');
-          done();
-        })
-        .catch(() => {
-          done();
-        });
-      });
     });
   });
 

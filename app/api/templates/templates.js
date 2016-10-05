@@ -53,6 +53,7 @@ export default {
     return save(template);
   },
 
+  /// MAL !! deberia hacer un count de documents y entitites ??? revisar
   delete(template) {
     let url = `${dbURL}/${template._id}?rev=${template._rev}`;
 
