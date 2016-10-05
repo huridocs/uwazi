@@ -12,11 +12,17 @@ import ReferencesAPI from 'app/Viewer/referencesAPI';
 import moment from 'moment';
 
 const countryTemplate = 'e8e039070aa95f8f964c281d450d1022';
-const admissibilityReport = 'e8e039070aa95f8f964c281d4583100d';
-const judgement = '5c7180d3dd310766a1c6817c165ed5f4';
-const orderOfThePresident = 'd0565557e2c6f741bb73738c56868584';
+const renderableTemplates = {
+  judgement: '5c7180d3dd310766a1c6817c165ed5f4',
+  admissibilityReport: 'e8e039070aa95f8f964c281d4583100d',
+  orderOfThePresident: 'd0565557e2c6f741bb73738c56868584',
+  orderOfTheCourt: 'ea4dab90522f811e06c208ceef46db95'
+};
+
+const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
+
 const caseDatesLabels = [
-  'Envio a la corte',
+  'Envío a la corte',
   'Presentación ante la comisión',
   'Presentación ante la corte'
 ];
@@ -56,17 +62,11 @@ export class TimelineViewer extends Component {
   }
 
   assignAdditionalData(reference) {
-    if (reference.data.template === judgement) {
-      reference.additionalData = {type: 'judgement'};
-    }
-
-    if (reference.data.template === admissibilityReport) {
-      reference.additionalData = {type: 'admissibilityReport'};
-    }
-
-    if (reference.data.template === orderOfThePresident) {
-      reference.additionalData = {type: 'orderOfThePresident'};
-    }
+    Object.keys(renderableTemplates).forEach(templateName => {
+      if (reference.data.template === renderableTemplates[templateName]) {
+        reference.additionalData = {type: templateName};
+      }
+    });
 
     reference.additionalData.className = this.getTemplateType(reference.data.template);
     reference.additionalData.date = reference.data.metadata.fecha;
@@ -76,7 +76,7 @@ export class TimelineViewer extends Component {
     return entity.metadata.reduce((dates, metadata) => {
       if (caseDatesLabels.indexOf(metadata.label) !== -1) {
         metadata.value.forEach(date => {
-          dates.push({label: metadata.label, timestamp: date});
+          dates.push({label: metadata.label, timestamp: date.timestamp});
         });
       }
       return dates;
@@ -108,9 +108,7 @@ export class TimelineViewer extends Component {
   arrangeYears(references, caseDates) {
     let years = {};
     references.forEach(reference => {
-      const isDesiredTemplate = reference.data.template === admissibilityReport ||
-                                reference.data.template === judgement ||
-                                reference.data.template === orderOfThePresident;
+      const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
       const hasDate = reference.data.metadata.fecha !== null;
       if (isDesiredTemplate && hasDate) {
         this.assignDataToYear(years, reference.data.metadata.fecha, reference);

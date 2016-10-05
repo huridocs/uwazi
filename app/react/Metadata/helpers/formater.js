@@ -9,7 +9,7 @@ export default {
 
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
-      return {value: moment.utc(timestamp, 'X').format('MMM DD YYYY')};
+      return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('MMM DD YYYY')};
     });
     return {label: property.label, value, showInCard};
   },
