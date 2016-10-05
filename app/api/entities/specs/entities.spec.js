@@ -7,7 +7,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import references from 'api/references';
 
-describe('entities', () => {
+fdescribe('entities', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
 
@@ -21,7 +21,7 @@ describe('entities', () => {
     let getDocuments = () => request.get(dbURL + '/_design/entities/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    it('should create a new document with logged user id and UTC date', (done) => {
+    it('should create a new document for each language in settings with a language property and a shared id', (done) => {
       spyOn(date, 'currentUTC').and.returnValue('universal time');
       let doc = {title: 'Batman begins'};
       let user = {_id: 'user Id'};
@@ -29,10 +29,34 @@ describe('entities', () => {
       entities.save(doc, user)
       .then(getDocuments)
       .then((docs) => {
-        let createdDocument = docs.find((d) => d.title === 'Batman begins');
+        let createdDocumentEs = docs.find((d) => d.title === 'Batman begins' && d.language === 'es');
+        let createdDocumentEn = docs.find((d) => d.title === 'Batman begins' && d.language === 'en');
+
+        expect(createdDocumentEs.sharedId).toBe(createdDocumentEn.sharedId);
+
+        expect(createdDocumentEs.title).toBe(doc.title);
+        expect(createdDocumentEs.user).toEqual(user);
+        expect(createdDocumentEs.creationDate).toEqual('universal time');
+
+        expect(createdDocumentEn.title).toBe(doc.title);
+        expect(createdDocumentEn.user).toEqual(user);
+        expect(createdDocumentEn.creationDate).toEqual('universal time');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should return the newly created document for the passed language', (done) => {
+      let doc = {title: 'the dark knight'};
+      let user = {_id: 'user Id'};
+
+      entities.save(doc, user, 'en')
+      .then((createdDocument) => {
+        expect(createdDocument._id).toBeDefined();
+        expect(createdDocument._rev).toBeDefined();
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
-        expect(createdDocument.creationDate).toEqual('universal time');
+        expect(createdDocument.language).toEqual('en');
         done();
       })
       .catch(catchErrors(done));
@@ -53,27 +77,12 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    it('should return the newly created document', (done) => {
-      let doc = {title: 'the dark knight'};
-      let user = {_id: 'user Id'};
-
-      entities.save(doc, user)
-      .then((createdDocument) => {
-        expect(createdDocument._id).toBeDefined();
-        expect(createdDocument._rev).toBeDefined();
-        expect(createdDocument.title).toBe(doc.title);
-        expect(createdDocument.user).toEqual(user);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
     describe('when document have _id', () => {
       it('should not assign again user and creation date', (done) => {
         spyOn(date, 'currentUTC').and.returnValue('another_date');
         getDocument()
         .then((doc) => {
-          let modifiedDoc = {_id: doc._id, _rev: doc._rev};
+          let modifiedDoc = {_id: doc._id, _rev: doc._rev, sharedId: doc.sharedId, language: doc.language};
           return entities.save(modifiedDoc, 'another_user');
         })
         .then(getDocuments)
@@ -89,7 +98,7 @@ describe('entities', () => {
       it('should be able to partially update it', (done) => {
         getDocument()
         .then((doc) => {
-          let modifiedDoc = {_id: doc._id, _rev: doc._rev, test: 'test'};
+          let modifiedDoc = {_id: doc._id, _rev: doc._rev, test: 'test', sharedId: doc.sharedId, language: doc.language};
           return entities.save(modifiedDoc);
         })
         .then(getDocuments)

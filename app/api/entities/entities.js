@@ -4,26 +4,38 @@ import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils'
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import references from '../references/references.js';
+import settings from '../settings';
+import ID from 'shared/uniqueId';
 
 export default {
-  save(doc, user) {
+  save(doc, user, language = 'en') {
     doc.type = 'entity';
     if (!doc._id) {
       doc.user = user;
       doc.creationDate = date.currentUTC();
     }
 
-    let url = dbURL;
-    if (doc._id) {
-      url = dbURL + '/_design/entities/_update/partialUpdate/' + doc._id;
-    }
+    const sharedId = doc.sharedId || ID();
+    return settings.get()
+    .then(({languages}) => {
+      if (doc._id) {
+        return request.post(dbURL + '/_design/entities/_update/partialUpdate/' + doc._id, doc);
+      }
 
-    return request.post(url, doc)
-    .then(response => request.get(`${dbURL}/${response.json.id}`))
-    .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response.json)]);
+      const docs = languages.map((lang) => {
+        let langDoc = Object.assign({}, doc);
+        langDoc.language = lang.key;
+        langDoc.sharedId = sharedId;
+        return langDoc;
+      });
+
+      return request.post(`${dbURL}/_bulk_docs`, {docs});
     })
-    .then(([response]) => response.json);
+    .then(() => request.get(`${dbURL}/_design/entities/_view/by_language`, {key: [sharedId, language]}))
+    .then(response => {
+      return Promise.all([response, references.saveEntityBasedReferences(response.json.rows[0].value)]);
+    })
+    .then(([response]) => response.json.rows[0].value);
   },
 
   getUploadsByUser(user) {
