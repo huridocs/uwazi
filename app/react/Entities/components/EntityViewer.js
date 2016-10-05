@@ -111,10 +111,10 @@ export class EntityViewer extends Component {
       <div className="item-group" key={group.key}>
         <div className="item-group-header">
           <ShowIf if={group.connectionType === 'metadata'}>
-            <div>Is <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
+            <div><b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
           </ShowIf>
           <ShowIf if={group.connectionType === 'connection'}>
-            <div>Connected as <b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
+            <div><b>{group.connectionLabel} {group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
           </ShowIf>
         </div>
         {group.refs.map((reference, index) => {

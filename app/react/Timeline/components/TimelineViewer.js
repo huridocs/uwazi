@@ -11,7 +11,7 @@ import ReferencesAPI from 'app/Viewer/referencesAPI';
 
 import moment from 'moment';
 
-const countryTemplate = 'e8e039070aa95f8f964c281d450d1022';
+// const countryTemplate = 'e8e039070aa95f8f964c281d450d1022';
 const renderableTemplates = {
   judgement: '5c7180d3dd310766a1c6817c165ed5f4',
   admissibilityReport: 'e8e039070aa95f8f964c281d4583100d',
@@ -128,7 +128,7 @@ export class TimelineViewer extends Component {
 
     this.fetchReferences(entity)
     .then(references => {
-      usefulReferences = references.filter(r => r.connectedDocumentTemplate !== countryTemplate);
+      usefulReferences = references.filter(r => desiredTemplates.indexOf(r.connectedDocumentTemplate) !== -1);
       return this.fetchReferenceData(usefulReferences);
     })
     .then(referencesData => {
