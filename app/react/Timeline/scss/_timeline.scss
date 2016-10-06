@@ -14,7 +14,9 @@ $timeline-item-size: 18px;
     width: 100%;
     padding-top: 20px;
   }
-  &-track:first-child &-year,
+  &-track:first-child &-year {
+    padding-top: 2px;
+  }
   &-track:last-child &-year{
     padding-top: 0;
   }
@@ -134,7 +136,7 @@ $timeline-item-size: 18px;
   .timeline-item {
     position: relative;
     width: 80%;
-    padding-top: 80%;
+    max-width: $timeline-item-size;
     margin: 1px;
     text-align: center;
     background: $c-white;
@@ -143,6 +145,12 @@ $timeline-item-size: 18px;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     border-radius: 50%;
     border-width: 0;
+
+    &:before {
+      content: '';
+      float: left;
+      padding-top: 100%;
+    }
 
     &-type-1  { background-color: $c-type-1  };
     &-type-2  { background-color: $c-type-2  };
