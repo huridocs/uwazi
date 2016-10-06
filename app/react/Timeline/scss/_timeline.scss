@@ -1,17 +1,89 @@
-$timeline-item-size: 20px;
+$timeline-item-size: 18px;
 .timeline {
-  padding-bottom: 15px;
-  display: flex;
-  min-height: $timeline-item-size * 2 + 15px;
+  padding-bottom: 10px;
 
-  &-year {
+  &-track {
     display: flex;
+    flex-wrap: nowrap;
+  }
+  &-year {
+    position: relative;
+    display: flex;
+    align-items: center;
     flex-direction: column-reverse;
-    width: $timeline-item-size;
+    width: 100%;
+    padding-top: 20px;
+  }
+  &-track:first-child &-year,
+  &-track:last-child &-year{
+    padding-top: 0;
+  }
+  &-track:not(:last-of-type) &-year {
+    border-left: 1px solid $c-grey-light;
+  }
+  &-track:not(:last-of-type) &-year.nth5 {
+    background: lighten($c-grey, 16%);
+  }
+
+  &-year-active {
+    border-bottom: 1px solid $c-primary;
+    padding-bottom: 5px;
+
+    &.type-1  { border-bottom-color: $c-type-1;  }
+    &.type-2  { border-bottom-color: $c-type-2;  }
+    &.type-3  { border-bottom-color: $c-type-3;  }
+    &.type-4  { border-bottom-color: $c-type-4;  }
+    &.type-5  { border-bottom-color: $c-type-5;  }
+    &.type-6  { border-bottom-color: $c-type-6;  }
+    &.type-7  { border-bottom-color: $c-type-7;  }
+    &.type-8  { border-bottom-color: $c-type-8;  }
+    &.type-9  { border-bottom-color: $c-type-9;  }
+    &.type-10 { border-bottom-color: $c-type-10; }
+    &.type-11 { border-bottom-color: $c-type-11; }
+    &.type-12 { border-bottom-color: $c-type-12; }
+    &.type-13 { border-bottom-color: $c-type-13; }
+    &.type-14 { border-bottom-color: $c-type-14; }
+    &.type-15 { border-bottom-color: $c-type-15; }
+    &.type-16 { border-bottom-color: $c-type-16; }
+    &.type-17 { border-bottom-color: $c-type-17; }
+    &.type-18 { border-bottom-color: $c-type-18; }
+  }
+  &-track-label {
+    z-index: 1;
+    background: $c-primary;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    left: -1px;
+    margin: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  &-milestone {
+    position: absolute;
+    top: -2px;
+    right: calc(100% + 9px);
+    padding: 1px 6px;
+    white-space: nowrap;
+    font-size: 9px;
+    background: #fff;
+    color: $c-grey-dark;
+    border: 1px solid $c-grey;
+    border-radius: 3px;
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      display: block;
+      width: 10px;
+      height: 1px;
+      background: $c-grey;
+    }
   }
   &-label {
     position: relative;
-    width: $timeline-item-size;
+    //width: $timeline-item-size;
     height: $timeline-item-size;
   }
 
@@ -24,15 +96,16 @@ $timeline-item-size: 20px;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      display: block;
+      display: none;
       width: 1px;
       height: 6px;
-      top: 6px;
+      top: 15px;
       background: #ccc;
     }
   }
 
   &-label-text {
+    display: block;
     span {
       display: block;
       position: relative;
@@ -42,30 +115,31 @@ $timeline-item-size: 20px;
       text-align: center;
       font-size: $f-size-sm;
       padding-top: $timeline-item-size;
+      white-space: nowrap;
     }
     &:before {
       content: '';
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      display: block;
+      display: none;
       width: 1px;
       height: 10px;
-      top: 4px;
+      top: 13px;
       background: $c-black;
     }
   }
 
   a.timeline-item,
   .timeline-item {
-    width: $timeline-item-size - 2px;
-    height: $timeline-item-size - 2px;
+    position: relative;
+    width: 80%;
+    padding-top: 80%;
     margin: 1px;
     text-align: center;
     background: $c-white;
     color: $c-white;
     font-size: $timeline-item-size - 9px;
-    line-height: $timeline-item-size - 2px;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     border-radius: 50%;
     border-width: 0;
@@ -88,5 +162,13 @@ $timeline-item-size: 20px;
     &-type-16 { background-color: $c-type-16 };
     &-type-17 { background-color: $c-type-17 };
     &-type-18 { background-color: $c-type-18 };
+
+    .fa {
+      position: absolute;
+      top: 47%;
+      left: 47%;
+      transform: translateX(-50%) translateY(-50%);
+    }
   }
+
 }
