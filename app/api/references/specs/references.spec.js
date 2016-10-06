@@ -61,8 +61,8 @@ describe('references', () => {
         expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceDocument).toBe('id_testing');
         expect(refs.find((ref) => ref.targetDocument === 'selectValue').sourceType).toBe('metadata');
         expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
-        expect(refs.filter((ref) => ref.targetDocument === 'value2')[0].sourceDocument).toBe('id_testing');
-        expect(refs.filter((ref) => ref.targetDocument === 'value2')[1]._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+        expect(refs.find((ref) => ref.targetDocument === 'value2' && ref.sourceType === 'metadata').sourceDocument).toBe('id_testing');
+        expect(refs.find((ref) => ref.targetDocument === 'value2' && ref.sourceType !== 'metadata')._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
         expect(refs.find((ref) => ref.sourceDocument === 'value2')._id).toBe('inbound');
 
         done();
@@ -118,9 +118,9 @@ describe('references', () => {
 
           expect(refs.find((ref) => ref.targetDocument === 'value1')._id).not.toBe(generatedIds[0]);
           expect(refs.find((ref) => ref.targetDocument === 'value1').sourceDocument).toBe('id_testing');
-          expect(refs.filter((ref) => ref.targetDocument === 'value2')[0]._id).toBe(generatedIds[1]);
-          expect(refs.filter((ref) => ref.targetDocument === 'value2')[0].sourceDocument).toBe('id_testing');
-          expect(refs.filter((ref) => ref.targetDocument === 'value2')[1]._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+          expect(refs.find((ref) => ref.targetDocument === 'value2' && ref.sourceType === 'metadata')._id).toBe(generatedIds[1]);
+          expect(refs.find((ref) => ref.targetDocument === 'value2' && ref.sourceType !== 'metadata').sourceDocument).toBe('id_testing');
+          expect(refs.find((ref) => ref.targetDocument === 'value2' && ref.sourceType !== 'metadata')._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
 
           done();
         })
