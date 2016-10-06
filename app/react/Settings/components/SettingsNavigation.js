@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 
 export class SettingsNavigation extends Component {
 
@@ -8,19 +8,19 @@ export class SettingsNavigation extends Component {
     <div className="panel panel-default">
       <div className="panel-heading">Settings</div>
         <div className="list-group">
-          <Link to='/settings/account' activeClassName="active" className="list-group-item">Account</Link>
-          <Link to='/settings/collection' activeClassName="active" className="list-group-item">Collection</Link>
-          <Link to='/settings/navlinks' activeClassName="active" className="list-group-item">Menu</Link>
-          <Link to='/settings/pages' activeClassName="active" className="list-group-item">Pages</Link>
+          <I18NLink to='/settings/account' activeClassName="active" className="list-group-item">Account</I18NLink>
+          <I18NLink to='/settings/collection' activeClassName="active" className="list-group-item">Collection</I18NLink>
+          <I18NLink to='/settings/navlinks' activeClassName="active" className="list-group-item">Menu</I18NLink>
+          <I18NLink to='/settings/pages' activeClassName="active" className="list-group-item">Pages</I18NLink>
         </div>
       </div>
       <div className="panel panel-default">
         <div className="panel-heading">Metadata</div>
         <div className="list-group">
-          <Link to='/settings/documents' activeClassName="active" className="list-group-item">Documents</Link>
-          <Link to='/settings/connections' activeClassName="active" className="list-group-item">Connections</Link>
-          <Link to='/settings/dictionaries' activeClassName="active" className="list-group-item">Dictionaries</Link>
-          <Link to='/settings/entities' activeClassName="active" className="list-group-item">Entities</Link>
+          <I18NLink to='/settings/documents' activeClassName="active" className="list-group-item">Documents</I18NLink>
+          <I18NLink to='/settings/connections' activeClassName="active" className="list-group-item">Connections</I18NLink>
+          <I18NLink to='/settings/dictionaries' activeClassName="active" className="list-group-item">Dictionaries</I18NLink>
+          <I18NLink to='/settings/entities' activeClassName="active" className="list-group-item">Entities</I18NLink>
         </div>
       </div>
     </div>;

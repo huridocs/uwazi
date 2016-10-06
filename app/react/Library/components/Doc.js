@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
 import {TemplateLabel, Icon} from 'app/Layout';
@@ -65,11 +65,11 @@ export class Doc extends Component {
         </div>
         <ItemFooter>
           <TemplateLabel template={template}/>
-          <Link to={documentViewUrl} className="item-shortcut">
+          <I18NLink to={documentViewUrl} className="item-shortcut">
             <span className="itemShortcut-arrow">
               <i className="fa fa-external-link"></i>
             </span>
-          </Link>
+          </I18NLink>
         </ItemFooter>
       </RowList.Item>
     );

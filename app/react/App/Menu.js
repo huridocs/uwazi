@@ -1,10 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
 import {NeedAuthorization} from 'app/Auth';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {bindActionCreators} from 'redux';
-import {I18NMenu} from 'app/I18N';
+import {I18NLink, I18NMenu} from 'app/I18N';
 
 class Menu extends Component {
 
@@ -18,7 +17,7 @@ class Menu extends Component {
 
     const navLinks = links.map(link =>
       <li key={link.get('localID')}>
-        <Link to={link.get('url') || '/'} className="btn btn-default">{link.get('title')}</Link>
+        <I18NLink to={link.get('url') || '/'} className="btn btn-default">{link.get('title')}</I18NLink>
       </li>
     );
 
@@ -34,14 +33,14 @@ class Menu extends Component {
             </li>
             <li className="menuNav-item"><a onClick={this.goToLibrary.bind(this)} className="menuNav-btn btn btn-default"><i className="fa fa-th"></i></a></li>
             <NeedAuthorization>
-              <li className="menuNav-item"><Link to='/uploads' className="menuNav-btn btn btn-default"><span><i className="fa fa-cloud-upload"></i></span></Link></li>
+              <li className="menuNav-item"><I18NLink to='/uploads' className="menuNav-btn btn btn-default"><span><i className="fa fa-cloud-upload"></i></span></I18NLink></li>
             </NeedAuthorization>
             <NeedAuthorization>
-              <li className="menuNav-item"><Link to='/settings/account' className="menuNav-btn btn btn-default"><i className="fa fa-cog"></i></Link></li>
+              <li className="menuNav-item"><I18NLink to='/settings/account' className="menuNav-btn btn btn-default"><i className="fa fa-cog"></i></I18NLink></li>
             </NeedAuthorization>
             {(() => {
               if (!user._id) {
-                return <li className="menuNav-item"><Link to='/login' className="menuNav-btn btn btn-default"><i className="fa fa-power-off"></i></Link></li>;
+                return <li className="menuNav-item"><I18NLink to='/login' className="menuNav-btn btn btn-default"><i className="fa fa-power-off"></i></I18NLink></li>;
               }
             })()}
           </ul>

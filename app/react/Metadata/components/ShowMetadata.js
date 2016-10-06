@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
 import {Icon} from 'app/Layout/Icon';
@@ -11,16 +11,16 @@ import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 export class ShowMetadata extends Component {
   getValue(property) {
     if (property.url) {
-      return <Link to={property.url}>
+      return <I18NLink to={property.url}>
                <Icon className="item-icon item-icon-center" data={property.icon} />
                {property.value}
-             </Link>;
+             </I18NLink>;
     }
     if (typeof property.value === 'object') {
       return <ul>
                {property.value.map((value, indx) => {
                  if (value.url) {
-                   return <li key={indx}><Link to={value.url}>{value.value}</Link></li>;
+                   return <li key={indx}><I18NLink to={value.url}>{value.value}</I18NLink></li>;
                  }
                  return <li key={indx}>{value.value}</li>;
                })}

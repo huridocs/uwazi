@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import Cookie from 'tiny-cookie';
+import utils from '../utils';
 
 export class I18NMenu extends Component {
 
@@ -15,20 +15,13 @@ export class I18NMenu extends Component {
   }
 
   changeLanguage(locale) {
-    Cookie.set('locale', locale);
-  }
-
-  getUrlLocale(path, languages = []) {
-    return (languages.find((lang) => {
-      let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
-      return path.match(regexp);
-    }) || {}).key;
+    utils.saveLocale(locale);
   }
 
   render() {
     const languages = this.props.languages.toJS();
     let path = this.props.location.pathname;
-    let locale = this.getUrlLocale(path, languages);
+    let locale = utils.getUrlLocale(path, languages);
 
     if (locale) {
       let regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
@@ -36,7 +29,7 @@ export class I18NMenu extends Component {
     }
 
     if (!locale) {
-      locale = languages.find((lang) => lang.default).key;
+      locale = utils.getDefaultLocale(languages);
     }
 
     return (

@@ -86,7 +86,7 @@ describe('I18NMenu', () => {
       render();
       let links = component.find(Link);
       links.first().simulate('click');
-      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en');
+      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', {expires: 3650});
     });
   });
 });

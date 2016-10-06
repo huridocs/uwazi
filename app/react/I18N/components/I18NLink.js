@@ -11,15 +11,16 @@ export class I18NLink extends Component {
   render() {
     let locale = this.props.locale || '';
     let to = this.sanitize(`/${locale}/${this.props.to}`);
-    return <Link to={to} activeClass={this.props.activeClass}>{this.props.children}</Link>;
+    return <Link to={to} className={this.props.className} activeClass={this.props.activeClass}>{this.props.children}</Link>;
   }
 }
 
 I18NLink.propTypes = {
   locale: PropTypes.string,
-  children: PropTypes.string,
+  children: PropTypes.any,
   to: PropTypes.string,
-  activeClass: PropTypes.string
+  activeClass: PropTypes.string,
+  className: PropTypes.string
 };
 
 export function mapStateToProps(state) {

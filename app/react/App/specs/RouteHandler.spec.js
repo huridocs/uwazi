@@ -113,17 +113,6 @@ describe('RouteHandler', () => {
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'po'});
       });
     });
-
-    describe('on server side', () => {
-      it('should set the state.locale to the coockie language', () => {
-        location.pathname = '/templates/2452345';
-        RouteHandler.locale = 'de';
-        Cookie.remove('locale');
-        component = shallow(<RouteHandler location={location}/>, {context});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'de'});
-        delete RouteHandler.locale;
-      });
-    });
   });
 
   describe('when the locale isnt at the url nor the coockie', () => {

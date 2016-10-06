@@ -18,16 +18,15 @@ export function toUrlParams(_data) {
   }, []).join('&');
 }
 
-let _fetch = (url, data, method, cookie) => {
+let _fetch = (url, data, method, _headers) => {
   let response;
   let params = '';
   let body;
 
-  let headers = {
+  let headers = Object.assign({
     Accept: 'application/json',
     'Content-Type': 'application/json'
-  };
-  headers.Cookie = cookie;
+  }, _headers);
 
   if (method === 'GET' || method === 'DELETE') {
     params = toUrlParams(data);

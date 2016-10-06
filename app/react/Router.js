@@ -13,6 +13,7 @@ import NoMatch from './App/NoMatch';
 import {isClient, getPropsFromRoute} from './utils';
 import store from './store';
 import api from 'app/utils/api';
+import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 
 if (isClient) {
@@ -89,7 +90,7 @@ function handleRedirect(res, redirectLocation) {
 
 function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
-  const routeProps = getPropsFromRoute(renderProps, ['requestState', '__redux']);
+  const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
     try {
@@ -107,26 +108,36 @@ function handleRoute(res, renderProps, req) {
   }
 
   if (routeProps.requestState) {
-    api.authorize(cookie);
+    api.cookie(cookie);
     RouteHandler.renderedFromServer = true;
-    RouteHandler.locale = cookie.locale;
     let query;
     if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
       query = JSONUtils.parseNested(renderProps.location.query);
     }
-    return Promise.all([
-      routeProps.requestState(renderProps.params, query),
-      api.get('user'),
-      api.get('settings')
-    ])
-    .then(([initialData, user, settings]) => {
-      initialData.user = user.json;
-      initialData.settings = {collection: settings.json};
-      initialData.settings.collection.links = initialData.settings.collection.links || [];
-      renderPage(initialData, true);
+
+    let locale;
+    return api.get('settings').then((response) => {
+      let languages = response.json.languages;
+      let path = req.url;
+      locale = I18NUtils.getLocale(path, languages, req.cookies);
+      api.locale(locale);
     })
-    .catch((error) => {
-      console.trace(error);
+    .then(() => {
+      return Promise.all([
+        routeProps.requestState(renderProps.params, query),
+        api.get('user'),
+        api.get('settings')
+      ])
+      .then(([initialData, user, settings]) => {
+        initialData.user = user.json;
+        initialData.locale = locale;
+        initialData.settings = {collection: settings.json};
+        initialData.settings.collection.links = initialData.settings.collection.links || [];
+        renderPage(initialData, true);
+      })
+      .catch((error) => {
+        console.trace(error);
+      });
     });
   }
 

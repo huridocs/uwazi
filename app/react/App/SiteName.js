@@ -1,7 +1,7 @@
 import React, {PropTypes, Component} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 
 export class SiteName extends Component {
   render() {
@@ -14,7 +14,7 @@ export class SiteName extends Component {
             {name: 'description', content: 'Uwazi docs'}
           ]}
         />
-        <Link to="/">{this.props.siteName}</Link>
+        <I18NLink to="/">{this.props.siteName}</I18NLink>
       </div>
     );
   }

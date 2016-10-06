@@ -1,8 +1,9 @@
 import {Component, PropTypes} from 'react';
 import JSONUtils from 'shared/JSONUtils';
 import Cookie from 'tiny-cookie';
-import {isClient} from 'app/utils';
 import {actions} from 'app/BasicReducer';
+import {I18NUtils} from 'app/I18N';
+import api from 'app/utils/api';
 
 class RouteHandler extends Component {
 
@@ -23,37 +24,24 @@ class RouteHandler extends Component {
     return result;
   }
 
-  getUrlLocale(path, languages = []) {
-    return (languages.find((lang) => {
-      let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
-      return path.match(regexp);
-    }) || {}).key;
-  }
-
-  getCoockieLocale() {
-    if (isClient && Cookie.get('locale')) {
-      return Cookie.get('locale');
+  setLocale() {
+    if (this.context.store && this.context.store.getState) {
+      let languages = this.context.store.getState().settings.collection.toJS().languages;
+      let locale = I18NUtils.getLocale(this.props.location.pathname, languages);
+      this.context.store.dispatch(actions.set('locale', locale));
+      api.locale(locale);
+      if (!I18NUtils.getCoockieLocale()) {
+        I18NUtils.saveLocale(locale);
+      }
     }
-    return RouteHandler.locale;
-  }
-
-  getDefaultLocale(languages = []) {
-    return (languages.find((language) => language.default) || {}).key;
   }
 
   constructor(props, context) {
     super(props, context);
-    if (!this.isRenderedFromServer() && this.setReduxState) {
-      this.getClientState(this.props);
-    }
 
-    if (context.store && context.store.getState) {
-      let languages = context.store.getState().settings.collection.toJS().languages;
-      let locale = this.getUrlLocale(props.location.pathname, languages) || this.getCoockieLocale() || this.getDefaultLocale(languages);
-      context.store.dispatch(actions.set('locale', locale));
-      if (!Cookie.get('locale')) {
-        Cookie.set('locale', locale);
-      }
+    if (!this.isRenderedFromServer() && this.setReduxState) {
+      this.setLocale();
+      this.getClientState(this.props);
     }
   }
 
@@ -71,6 +59,7 @@ class RouteHandler extends Component {
   componentWillReceiveProps(props) {
     if (props.params !== this.props.params) {
       this.emptyState();
+      this.setLocale();
       this.getClientState(props);
     }
   }
