@@ -38,6 +38,13 @@ export default {
     .then(([response]) => response.json.rows[0].value);
   },
 
+  get(id, language) {
+    return request.get(`${dbURL}/_design/entities_and_docs/_view/by_language`, {key: [id, language]})
+    .then((response) => {
+      return sanitizeResponse(response.json);
+    });
+  },
+
   countByTemplate(templateId) {
     return request.get(`${dbURL}/_design/entities/_view/count_by_template?group_level=1&key="${templateId}"`)
     .then((response) => {

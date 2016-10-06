@@ -21,20 +21,9 @@ export default (app) => {
   });
 
   app.get('/api/entities', (req, res) => {
-    let id = '';
-    let url = dbUrl + '/_design/entities/_view/all';
-
-    if (req.query && req.query._id) {
-      id = '?key="' + req.query._id + '"';
-      url = dbUrl + '/_design/entities/_view/all' + id;
-    }
-
-    request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value);
-      res.json(response.json);
-    })
-    .catch(console.log);
+    entities.get(req.query.sharedId, req.language)
+    .then(response => res.json(response))
+    .catch(error => res.json({error: error}));
   });
 
   app.delete('/api/entities', needsAuthorization, (req, res) => {

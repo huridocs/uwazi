@@ -112,6 +112,22 @@ describe('entities', () => {
     });
   });
 
+  describe('get', () => {
+    it('should return matching document for language', (done) => {
+      let id = 'sharedId';
+
+      Promise.all([
+        entities.get(id, 'en'),
+        entities.get(id, 'es')
+      ])
+      .then(([enDoc, esDoc]) => {
+        expect(enDoc.rows[0].title).toBe('doc1 english');
+        expect(esDoc.rows[0].title).toBe('doc1 spanish');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', (done) => {
       entities.countByTemplate('template1')

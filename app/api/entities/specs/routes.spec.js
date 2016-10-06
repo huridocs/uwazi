@@ -39,31 +39,21 @@ describe('entities', () => {
     });
   });
 
-  describe('/api/entities', () => {
-    //it('should return a list of entities returned from the list view', (done) => {
-      //routes.get('/api/entities')
-      //.then((response) => {
-        //expect(response.rows.length).toBe(7);
-        //expect(response.rows[0].title).toEqual('Batman finishes');
-        //expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
-        //done();
-      //})
-      //.catch(catchErrors(done));
-    //});
+  describe('GET', () => {
+    it('should return matching document', (done) => {
+      spyOn(entities, 'get').and.returnValue(Promise.resolve('result'));
+      let req = {
+        query: {sharedId: 'id'},
+        language: 'lang'
+      };
 
-    describe('when passing id', () => {
-      it('should return matching document', (done) => {
-        let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}};
-
-        routes.get('/api/entities', req)
-        .then((response) => {
-          let docs = response.rows;
-          expect(docs.length).toBe(1);
-          expect(docs[0].title).toBe('Penguin almost done');
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+      routes.get('/api/entities', req)
+      .then((response) => {
+        expect(entities.get).toHaveBeenCalledWith('id', 'lang');
+        expect(response).toBe('result');
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 
