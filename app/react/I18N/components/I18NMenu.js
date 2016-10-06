@@ -18,13 +18,11 @@ export class I18NMenu extends Component {
     Cookie.set('locale', locale);
   }
 
-  getUrlLocale(path, languages) {
-    return languages.reduce((locale, lang) => {
+  getUrlLocale(path, languages = []) {
+    return (languages.find((lang) => {
       let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
-      if (path.match(regexp)) {
-        return path.match(regexp)[0].replace(/\//g, '');
-      }
-    });
+      return path.match(regexp);
+    }) || {}).key;
   }
 
   render() {

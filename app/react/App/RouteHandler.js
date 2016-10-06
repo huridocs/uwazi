@@ -24,14 +24,10 @@ class RouteHandler extends Component {
   }
 
   getUrlLocale(path, languages = []) {
-    return languages.reduce((locale, lang) => {
+    return (languages.find((lang) => {
       let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
-      if (path.match(regexp)) {
-        return path.match(regexp)[0].replace(/\//g, '');
-      }
-
-      return locale;
-    }, null);
+      return path.match(regexp);
+    }) || {}).key;
   }
 
   getCoockieLocale() {
