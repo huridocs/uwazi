@@ -4,12 +4,14 @@ import {Link} from 'react-router';
 
 import {I18NMenu} from '../I18NMenu';
 import Immutable from 'immutable';
+import Cookie from 'tiny-cookie';
 
 describe('I18NMenu', () => {
   let component;
   let props;
 
   beforeEach(() => {
+    spyOn(Cookie, 'set');
     let languages = [
       {key: 'en', label: 'English', default: true},
       {key: 'es', label: 'Español'}
@@ -76,6 +78,15 @@ describe('I18NMenu', () => {
       expect(links.length).toBe(2);
       expect(links.first().props().to).toBe('/en/');
       expect(links.last().props().to).toBe('/es/');
+    });
+  });
+
+  describe('when switching language', () => {
+    it('should save the locale in to a coockie', () => {
+      render();
+      let links = component.find(Link);
+      links.first().simulate('click');
+      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en');
     });
   });
 });

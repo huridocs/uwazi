@@ -1,5 +1,8 @@
 import {Component, PropTypes} from 'react';
 import JSONUtils from 'shared/JSONUtils';
+import Cookie from 'tiny-cookie';
+import {isClient} from 'app/utils';
+import {actions} from 'app/BasicReducer';
 
 class RouteHandler extends Component {
 
@@ -20,11 +23,41 @@ class RouteHandler extends Component {
     return result;
   }
 
-  constructor(props) {
-    super(props);
+  getUrlLocale(path, languages = []) {
+    return languages.reduce((locale, lang) => {
+      let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
+      if (path.match(regexp)) {
+        return path.match(regexp)[0].replace(/\//g, '');
+      }
 
+      return locale;
+    }, null);
+  }
+
+  getCoockieLocale() {
+    if (isClient && Cookie.get('locale')) {
+      return Cookie.get('locale');
+    }
+    return RouteHandler.locale;
+  }
+
+  getDefaultLocale(languages = []) {
+    return (languages.find((language) => language.default) || {}).key;
+  }
+
+  constructor(props, context) {
+    super(props, context);
     if (!this.isRenderedFromServer() && this.setReduxState) {
       this.getClientState(this.props);
+    }
+
+    if (context.store && context.store.getState) {
+      let languages = context.store.getState().settings.collection.toJS().languages;
+      let locale = this.getUrlLocale(props.location.pathname, languages) || this.getCoockieLocale() || this.getDefaultLocale(languages);
+      context.store.dispatch(actions.set('locale', locale));
+      if (!Cookie.get('locale')) {
+        Cookie.set('locale', locale);
+      }
     }
   }
 
@@ -62,7 +95,8 @@ RouteHandler.contextTypes = {
 };
 
 RouteHandler.propTypes = {
-  params: PropTypes.object
+  params: PropTypes.object,
+  location: PropTypes.object
 };
 
 export default RouteHandler;

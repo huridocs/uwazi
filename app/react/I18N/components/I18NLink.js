@@ -17,7 +17,7 @@ export class I18NLink extends Component {
 
 I18NLink.propTypes = {
   locale: PropTypes.string,
-  children: PropTypes.object,
+  children: PropTypes.string,
   to: PropTypes.string,
   activeClass: PropTypes.string
 };

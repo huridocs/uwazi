@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 
 class Footer extends Component {
 
@@ -27,20 +27,20 @@ class Footer extends Component {
             <li className="footer-nav_separator">&nbsp;</li>
 
             <li className="footer-nav_item">
-              <Link to="/">Library</Link>
+              <I18NLink to="/">Library</I18NLink>
             </li>
             <li className="footer-nav_item">
-              <Link to="/uploads">Uploads</Link>
+              <I18NLink to="/uploads">Uploads</I18NLink>
             </li>
             {(() => {
               if (!this.props.user._id) {
                 return <li className="footer-nav_item">
-                        <Link to="/login">Login</Link>
+                        <I18NLink to="/login">Login</I18NLink>
                        </li>;
               }
 
               return <li className="footer-nav_item">
-                <Link to="/settings">Settings</Link>
+                <I18NLink to="/settings">Settings</I18NLink>
               </li>;
             })()}
 

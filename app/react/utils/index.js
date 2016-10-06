@@ -2,8 +2,6 @@ export function getPropsFromRoute({routes}, componentProps) {
   let props = {};
   const lastRoute = routes[routes.length - 1];
 
-  console.log(lastRoute);
-
   routes.reduceRight((prevRoute, currRoute) => {
     componentProps.forEach(componentProp => {
       if (!props[componentProp] && currRoute.component && currRoute.component[componentProp]) {

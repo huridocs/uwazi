@@ -23,7 +23,10 @@ let _fetch = (url, data, method, cookie) => {
   let params = '';
   let body;
 
-  let headers = {Accept: 'application/json', 'Content-Type': 'application/json'};
+  let headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  };
   headers.Cookie = cookie;
 
   if (method === 'GET' || method === 'DELETE') {

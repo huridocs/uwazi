@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
+import Cookie from 'tiny-cookie';
 
 export class I18NMenu extends Component {
 
@@ -13,32 +14,46 @@ export class I18NMenu extends Component {
     this.setState({open: !this.state.open});
   }
 
+  changeLanguage(locale) {
+    Cookie.set('locale', locale);
+  }
+
+  getUrlLocale(path, languages) {
+    return languages.reduce((locale, lang) => {
+      let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
+      if (path.match(regexp)) {
+        return path.match(regexp)[0].replace(/\//g, '');
+      }
+    });
+  }
+
   render() {
     const languages = this.props.languages.toJS();
     let path = this.props.location.pathname;
-    let language;
+    let locale = this.getUrlLocale(path, languages);
 
-    languages.forEach((lang) => {
-      let regexp = new RegExp(`^\/?${lang.key}\/|^\/?${lang.key}$`);
-
-      if (path.match(regexp)) {
-        language = path.match(regexp)[0].replace(/\//g, '');
-      }
-
+    if (locale) {
+      let regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
       path = path.replace(regexp, '/');
-    });
+    }
 
-    if (!language) {
-      language = languages.find((lang) => lang.default).key;
+    if (!locale) {
+      locale = languages.find((lang) => lang.default).key;
     }
 
     return (
-      <div className={this.state.open ? 'Dropdown is-active': 'Dropdown'} onClick={this.toggle.bind(this)}>
+      <div className={this.state.open ? 'Dropdown is-active' : 'Dropdown'} onClick={this.toggle.bind(this)}>
         <ul className="Dropdown-list language">
           {(() => {
             return languages.map((lang) => {
-              return <li className={'Dropdown-option' + (language === lang.key ? ' is-active' : '')} key={lang.key}>
-                      <Link activeClass='is-active' to={`/${lang.key}${path}${this.props.location.search}`} >{lang.key}</Link>
+              return <li className={'Dropdown-option' + (locale === lang.key ? ' is-active' : '')} key={lang.key}>
+                      <Link
+                        activeClass='is-active'
+                        onClick={this.changeLanguage.bind(this, lang.key)}
+                        to={`/${lang.key}${path}${this.props.location.search}`}
+                      >
+                        {lang.key}
+                      </Link>
                      </li>;
             });
           })()}

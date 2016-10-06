@@ -89,7 +89,6 @@ function handleRedirect(res, redirectLocation) {
 
 function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
-
   const routeProps = getPropsFromRoute(renderProps, ['requestState', '__redux']);
 
   function renderPage(initialData, isRedux) {
@@ -110,6 +109,7 @@ function handleRoute(res, renderProps, req) {
   if (routeProps.requestState) {
     api.authorize(cookie);
     RouteHandler.renderedFromServer = true;
+    RouteHandler.locale = cookie.locale;
     let query;
     if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
       query = JSONUtils.parseNested(renderProps.location.query);

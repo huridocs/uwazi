@@ -82,9 +82,6 @@ describe('NavlinksSettings', () => {
     });
 
     it('should decorate the component as a Drag and Drop context', () => {
-      // const DecoratedComponent = DragDropContext.DecoratedComponent;
-      // console.log(<DecoratedComponent {...props} />);
-      // console.log(shallow(<DecoratedComponent {...props} />));
       expect(new DragDropContext().constructor.name).toBe('DragDropContextContainer');
     });
   });
