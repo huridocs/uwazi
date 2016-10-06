@@ -1,6 +1,6 @@
 $timeline-item-size: 18px;
 .timeline {
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 
   &-track {
     display: flex;
@@ -18,15 +18,35 @@ $timeline-item-size: 18px;
   &-track:last-child &-year{
     padding-top: 0;
   }
-  &-track:not(:last-of-type) &-year:not(:first-of-type) {
+  &-track:not(:last-of-type) &-year {
     border-left: 1px solid $c-grey-light;
   }
-  &-track:not(:last-of-type) &-year:nth-child(5n+1) {
-    background: $c-grey-lighten;
+  &-track:not(:last-of-type) &-year.nth5 {
+    background: lighten($c-grey, 16%);
   }
+
   &-year-active {
     border-bottom: 1px solid $c-primary;
     padding-bottom: 5px;
+
+    &.type-1  { border-bottom-color: $c-type-1;  }
+    &.type-2  { border-bottom-color: $c-type-2;  }
+    &.type-3  { border-bottom-color: $c-type-3;  }
+    &.type-4  { border-bottom-color: $c-type-4;  }
+    &.type-5  { border-bottom-color: $c-type-5;  }
+    &.type-6  { border-bottom-color: $c-type-6;  }
+    &.type-7  { border-bottom-color: $c-type-7;  }
+    &.type-8  { border-bottom-color: $c-type-8;  }
+    &.type-9  { border-bottom-color: $c-type-9;  }
+    &.type-10 { border-bottom-color: $c-type-10; }
+    &.type-11 { border-bottom-color: $c-type-11; }
+    &.type-12 { border-bottom-color: $c-type-12; }
+    &.type-13 { border-bottom-color: $c-type-13; }
+    &.type-14 { border-bottom-color: $c-type-14; }
+    &.type-15 { border-bottom-color: $c-type-15; }
+    &.type-16 { border-bottom-color: $c-type-16; }
+    &.type-17 { border-bottom-color: $c-type-17; }
+    &.type-18 { border-bottom-color: $c-type-18; }
   }
   &-track-label {
     z-index: 1;
@@ -142,7 +162,7 @@ $timeline-item-size: 18px;
     &-type-16 { background-color: $c-type-16 };
     &-type-17 { background-color: $c-type-17 };
     &-type-18 { background-color: $c-type-18 };
-    
+
     .fa {
       position: absolute;
       top: 47%;
