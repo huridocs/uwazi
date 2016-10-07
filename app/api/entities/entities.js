@@ -55,10 +55,10 @@ export default {
     });
   },
 
-  getByTemplate(templateId) {
-    return request.get(`${dbURL}/_design/entities/_view/by_template?&key="${templateId}"`)
+  getByTemplate(templateId, language) {
+    return request.get(`${dbURL}/_design/entities/_view/by_template`, {key: [templateId, language]})
     .then((response) => {
-      return sanitizeResponse(response.json);
+      return sanitizeResponse(response.json).rows;
     });
   },
 

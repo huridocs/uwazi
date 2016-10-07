@@ -14,7 +14,7 @@ describe('thesauris', () => {
 
   describe('get()', () => {
     it('should return all thesauris by default', (done) => {
-      thesauris.get()
+      thesauris.get(null, 'es')
       .then((response) => {
         let docs = response.rows;
         expect(docs[0].name).toBe('secret recipes');
@@ -24,7 +24,7 @@ describe('thesauris', () => {
     });
 
     it('should also return entity templates with the entitties as options', (done) => {
-      thesauris.get()
+      thesauris.get(null, 'es')
       .then((response) => {
         let docs = response.rows;
         expect(docs[2].name).toBe('Judge');

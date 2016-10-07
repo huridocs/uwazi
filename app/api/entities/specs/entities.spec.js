@@ -148,6 +148,19 @@ describe('entities', () => {
     });
   });
 
+  describe('getByTemplate', () => {
+    it('should return all entities with passed template and language', (done) => {
+      entities.getByTemplate('template1', 'en')
+      .then((docs) => {
+        expect(docs.length).toBe(2);
+        expect(docs[0].title).toBe('doc1 english');
+        expect(docs[1].title).toBe('doc2');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
   describe('updateMetadataProperties', () => {
     let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/entities/_view/metadata_by_template?key="' + template + '"')
     .then((response) => {

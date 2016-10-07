@@ -56,17 +56,17 @@ export default {
     });
   },
 
-  templateToThesauri(template) {
-    return entities.getByTemplate(template._id)
+  templateToThesauri(template, language) {
+    return entities.getByTemplate(template._id, language)
     .then((response) => {
-      template.values = response.rows.map((entity) => {
+      template.values = response.map((entity) => {
         return {id: entity._id, label: entity.title, icon: entity.icon};
       });
       return template;
     });
   },
 
-  get(thesauriId) {
+  get(thesauriId, language) {
     let url = `${dbUrl}/_design/thesauris/_view/all`;
     if (thesauriId) {
       url += `?key="${thesauriId}"`;
@@ -76,7 +76,7 @@ export default {
       let thesauris = sanitizeResponse(response.json);
       let requests = thesauris.rows.map((result, index) => {
         if (result.type === 'template') {
-          return this.templateToThesauri(result)
+          return this.templateToThesauri(result, language)
           .then((templateTransformedInThesauri) => {
             thesauris.rows[index] = templateTransformedInThesauri;
           });
