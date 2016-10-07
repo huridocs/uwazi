@@ -1,11 +1,15 @@
 import React from 'react';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
+import {fromJS} from 'immutable';
 
-import {CreateReferencePanel} from 'app/Viewer/components/CreateReferencePanel';
 import SidePanel from 'app/Layout/SidePanel';
 import SearchResults from 'app/Viewer/components/SearchResults';
 import {Select} from 'app/Forms';
+import CreateTargetConnectionPanel from '../ViewerSaveTargetReferenceMenu';
+import CreateConnectionPanel from '../ViewerSaveReferenceMenu';
+
+import {CreateReferencePanel, mapStateToProps} from 'app/Viewer/components/CreateReferencePanel';
 
 describe('CreateReferencePanel', () => {
   let component;
@@ -37,6 +41,40 @@ describe('CreateReferencePanel', () => {
 
     expect(component.find(SidePanel).length).toBe(1);
     expect(component.find(SidePanel).props().open).toBeUndefined();
+  });
+
+  describe('Footer', () => {
+    it('should render footer with a CreateConnectionPanel on referencePanel', () => {
+      props.creatingToTarget = false;
+      props.creatingBasicConnection = false;
+      render();
+
+      expect(component.find(CreateTargetConnectionPanel).parent().props().if).toBe(false);
+      expect(component.find(CreateConnectionPanel).first().parent().props().if).toBe(true);
+      expect(component.find(CreateConnectionPanel).first().props().basic).toBeUndefined();
+      expect(component.find(CreateConnectionPanel).last().parent().props().if).toBe(false);
+    });
+
+    it('should render footer with a CreateConnectionPanel on targetReferencePanel', () => {
+      props.creatingToTarget = true;
+      props.creatingBasicConnection = false;
+      render();
+
+      expect(component.find(CreateTargetConnectionPanel).parent().props().if).toBe(true);
+      expect(component.find(CreateConnectionPanel).first().parent().props().if).toBe(false);
+      expect(component.find(CreateConnectionPanel).last().parent().props().if).toBe(false);
+    });
+
+    it('should render footer with a CreateConnectionPanel on connectionPanel', () => {
+      props.creatingToTarget = false;
+      props.creatingBasicConnection = true;
+      render();
+
+      expect(component.find(CreateTargetConnectionPanel).parent().props().if).toBe(false);
+      expect(component.find(CreateConnectionPanel).first().parent().props().if).toBe(false);
+      expect(component.find(CreateConnectionPanel).last().parent().props().if).toBe(true);
+      expect(component.find(CreateConnectionPanel).last().props().basic).toBe(true);
+    });
   });
 
   describe('when props.referencePanel', () => {
@@ -80,6 +118,61 @@ describe('CreateReferencePanel', () => {
 
       component.find(SearchResults).simulate('click');
       expect(props.selectTargetDocument).toHaveBeenCalled();
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    let state;
+    let uiState;
+
+    function prepareState() {
+      state = {
+        documentViewer: {
+          uiState: fromJS(uiState)
+        }
+      };
+    }
+
+    beforeEach(() => {
+      uiState = {
+        panel: '',
+        reference: {}
+      };
+      prepareState();
+    });
+
+    it('should not open on documentViewer state panel other than supported', () => {
+      expect(mapStateToProps(state).open).toBe(false);
+    });
+
+    it('should open on documentViewer state referencePanel', () => {
+      uiState.panel = 'referencePanel';
+      prepareState();
+      const restuls = mapStateToProps(state);
+
+      expect(restuls.open).toBe(true);
+      expect(restuls.creatingToTarget).toBe(false);
+      expect(restuls.creatingBasicConnection).toBe(false);
+    });
+
+    it('should open on documentViewer state targetReferencePanel', () => {
+      uiState.panel = 'targetReferencePanel';
+      prepareState();
+      const restuls = mapStateToProps(state);
+
+      expect(restuls.open).toBe(true);
+      expect(restuls.creatingToTarget).toBe(true);
+      expect(restuls.creatingBasicConnection).toBe(false);
+    });
+
+    it('should open on documentViewer state targetReferencePanel', () => {
+      uiState.panel = 'connectionPanel';
+      prepareState();
+      const restuls = mapStateToProps(state);
+
+      expect(restuls.open).toBe(true);
+      expect(restuls.creatingToTarget).toBe(false);
+      expect(restuls.creatingBasicConnection).toBe(true);
     });
   });
 });

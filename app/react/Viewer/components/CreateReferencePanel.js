@@ -11,8 +11,8 @@ import {selectTargetDocument, closePanel} from 'app/Viewer/actions/uiActions';
 import {setRelationType} from 'app/Viewer/actions/referencesActions';
 import {Select} from 'app/Forms';
 import {showModal} from 'app/Modals/actions/modalActions';
-import CreateTargetConnectionMenu from './ViewerSaveTargetReferenceMenu';
-import CreateConnectionMenu from './ViewerSaveReferenceMenu';
+import CreateTargetConnectionPanel from './ViewerSaveTargetReferenceMenu';
+import CreateConnectionPanel from './ViewerSaveReferenceMenu';
 import ShowIf from 'app/App/ShowIf';
 
 export class CreateReferencePanel extends Component {
@@ -49,10 +49,13 @@ export class CreateReferencePanel extends Component {
 
       <div className="sidepanel-footer">
         <ShowIf if={this.props.creatingToTarget}>
-          <CreateTargetConnectionMenu />
+          <CreateTargetConnectionPanel />
         </ShowIf>
-        <ShowIf if={!this.props.creatingToTarget}>
-          <CreateConnectionMenu />
+        <ShowIf if={!this.props.creatingToTarget && !this.props.creatingBasicConnection}>
+          <CreateConnectionPanel />
+        </ShowIf>
+        <ShowIf if={!this.props.creatingToTarget && this.props.creatingBasicConnection}>
+          <CreateConnectionPanel basic={true} />
         </ShowIf>
       </div>
 
@@ -74,6 +77,7 @@ export class CreateReferencePanel extends Component {
 CreateReferencePanel.propTypes = {
   open: PropTypes.bool,
   creatingToTarget: PropTypes.bool,
+  creatingBasicConnection: PropTypes.bool,
   results: PropTypes.object,
   reference: PropTypes.object,
   searching: PropTypes.bool,
@@ -86,12 +90,14 @@ CreateReferencePanel.propTypes = {
   relationType: PropTypes.string
 };
 
-const mapStateToProps = (state) => {
+export const mapStateToProps = (state) => {
   let uiState = state.documentViewer.uiState.toJS();
-
   return {
-    open: uiState.panel === 'referencePanel' || uiState.panel === 'targetReferencePanel',
+    open: uiState.panel === 'referencePanel' ||
+          uiState.panel === 'targetReferencePanel' ||
+          uiState.panel === 'connectionPanel',
     creatingToTarget: uiState.panel === 'targetReferencePanel',
+    creatingBasicConnection: uiState.panel === 'connectionPanel',
     reference: uiState.reference,
     results: state.documentViewer.results,
     searching: uiState.viewerSearching,
