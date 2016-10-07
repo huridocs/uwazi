@@ -61,9 +61,19 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
-    it('should dispatch a SHOW_TAB connections', () => {
+    it('should dispatch a SHOW_TAB references by default', () => {
       actions.activateReference('id')(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'connections'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
+    });
+
+    it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
+      actions.activateReference('id', 'another tab')(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'another tab'});
+    });
+
+    it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
+      actions.activateReference('id', [])(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
     });
 
     it('should scroll to the elements', (done) => {
