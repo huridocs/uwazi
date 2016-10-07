@@ -18,7 +18,7 @@ export function setReferences(references) {
   };
 }
 
-export function saveReference(reference) {
+export function saveReference(reference, tab) {
   return function (dispatch) {
     return refenrecesAPI.save(reference)
     .then((referenceCreated) => {
@@ -31,7 +31,7 @@ export function saveReference(reference) {
       dispatch(actions.unset('viewer/targetDocHTML'));
       dispatch(actions.unset('viewer/targetDocReferences'));
 
-      dispatch(uiActions.activateReference(referenceCreated._id));
+      dispatch(uiActions.activateReference(referenceCreated._id, tab));
       dispatch(notify('saved successfully !', 'success'));
     });
   };
