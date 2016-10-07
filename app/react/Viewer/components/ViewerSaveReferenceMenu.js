@@ -9,17 +9,30 @@ export class ViewerSaveReferenceMenu extends Component {
   render() {
     let reference = this.props.reference;
     reference.sourceDocument = this.props.sourceDocument;
-    let referenceReady = !validate(reference, {
+
+    let tab = 'connections';
+
+    const validator = {
       sourceDocument: {presence: true},
       targetDocument: {presence: true},
-      sourceRange: {presence: true},
       relationType: {presence: true}
-    });
+    };
+
+    if (this.props.basic) {
+      delete reference.sourceRange;
+    }
+
+    if (!this.props.basic) {
+      validator.sourceRange = {presence: true};
+      tab = 'references';
+    }
+
+    let referenceReady = !validate(reference, validator);
 
     return (
       <button className="btn btn-success" disabled={!referenceReady} onClick={() => {
         if (referenceReady) {
-          this.props.saveReference(reference);
+          this.props.saveReference(reference, tab);
         }
       }} >
       <i className="fa fa-save"></i>
@@ -31,7 +44,8 @@ export class ViewerSaveReferenceMenu extends Component {
 ViewerSaveReferenceMenu.propTypes = {
   saveReference: PropTypes.func,
   sourceDocument: PropTypes.string,
-  reference: PropTypes.object
+  reference: PropTypes.object,
+  basic: PropTypes.bool
 };
 
 function mapDispatchToProps(dispatch) {

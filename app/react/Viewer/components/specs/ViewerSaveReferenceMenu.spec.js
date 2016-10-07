@@ -11,43 +11,127 @@ describe('ViewerSaveReferenceMenu', () => {
     component = shallow(<ViewerSaveReferenceMenu {...props}/>);
   };
 
-  it('shuld render save button when reference is complete', () => {
-    props = {
-      saveReference: jasmine.createSpy('saveReference'),
-      reference: {
-        sourceRange: 'range',
-        targetDocument: 'target',
-        relationType: 'relation'
-      },
-      sourceDocument: 'source'
-    };
-    render();
+  describe('Basic reference', () => {
+    it('should render save button when reference is complete and pass connections as tab to activate', () => {
+      props = {
+        basic: true,
+        saveReference: jasmine.createSpy('saveReference'),
+        reference: {
+          targetDocument: 'target',
+          relationType: 'relation'
+        },
+        sourceDocument: 'source'
+      };
+      render();
 
-    let button = component.find('button');
-    expect(button.props().disabled).toBe(false);
-    button.simulate('click');
-    expect(props.saveReference).toHaveBeenCalledWith({
-      sourceRange: 'range',
-      targetDocument: 'target',
-      sourceDocument: 'source',
-      relationType: 'relation'
+      let button = component.find('button');
+      expect(button.props().disabled).toBe(false);
+      button.simulate('click');
+      expect(props.saveReference).toHaveBeenCalledWith({
+        targetDocument: 'target',
+        relationType: 'relation',
+        sourceDocument: 'source'
+      }, 'connections');
+    });
+
+    it('should delete any range if passed', () => {
+      props = {
+        basic: true,
+        saveReference: jasmine.createSpy('saveReference'),
+        reference: {
+          sourceRange: 'passed range',
+          targetDocument: 'target',
+          relationType: 'relation'
+        },
+        sourceDocument: 'source'
+      };
+      render();
+
+      let button = component.find('button');
+      expect(button.props().disabled).toBe(false);
+      button.simulate('click');
+      expect(props.saveReference).toHaveBeenCalledWith({
+        targetDocument: 'target',
+        relationType: 'relation',
+        sourceDocument: 'source'
+      }, 'connections');
+    });
+
+    it('should render a disabled button when reference doesnt have a target', () => {
+      props = {
+        saveReference: jasmine.createSpy('saveReference'),
+        reference: {
+          targetDocument: '',
+          relationType: 'relation'
+        },
+        sourceDocument: 'source'
+      };
+      render();
+
+      let button = component.find('button');
+      expect(button.props().disabled).toBe(true);
+      button.simulate('click');
+      expect(props.saveReference).not.toHaveBeenCalled();
+    });
+
+    it('should render a disabled button when reference doesnt have a relation type', () => {
+      props = {
+        saveReference: jasmine.createSpy('saveReference'),
+        reference: {
+          targetDocument: 'target',
+          relationType: ''
+        },
+        sourceDocument: 'source'
+      };
+      render();
+
+      let button = component.find('button');
+      expect(button.props().disabled).toBe(true);
+      button.simulate('click');
+      expect(props.saveReference).not.toHaveBeenCalled();
     });
   });
 
-  it('should render a disabled button when reference its not complete', () => {
-    props = {
-      saveReference: jasmine.createSpy('saveReference'),
-      reference: {
-        sourceRange: '',
-        targetDocument: ''
-      },
-      sourceDocument: ''
-    };
-    render();
+  describe('Ranged references', () => {
+    it('should render save button when reference is complete', () => {
+      props = {
+        saveReference: jasmine.createSpy('saveReference'),
+        reference: {
+          sourceRange: 'range',
+          targetDocument: 'target',
+          relationType: 'relation'
+        },
+        sourceDocument: 'source'
+      };
+      render();
 
-    let button = component.find('button');
-    expect(button.props().disabled).toBe(true);
-    button.simulate('click');
-    expect(props.saveReference).not.toHaveBeenCalled();
+      let button = component.find('button');
+      expect(button.props().disabled).toBe(false);
+      button.simulate('click');
+      expect(props.saveReference).toHaveBeenCalledWith({
+        sourceRange: 'range',
+        targetDocument: 'target',
+        relationType: 'relation',
+        sourceDocument: 'source'
+      }, 'references');
+    });
+
+    it('should render a disabled button when reference it missing range', () => {
+      props = {
+        saveReference: jasmine.createSpy('saveReference'),
+        reference: {
+          sourceRange: '',
+          targetDocument: 'target',
+          relationType: 'relation'
+        },
+        sourceDocument: ''
+      };
+      render();
+
+      let button = component.find('button');
+      expect(button.props().disabled).toBe(true);
+      button.simulate('click');
+      expect(props.saveReference).not.toHaveBeenCalled();
+    });
   });
 });
