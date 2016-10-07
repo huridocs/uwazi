@@ -56,6 +56,12 @@ export default function () {
       return this;
     },
 
+    language(language) {
+      let match = {match: {'doc.language': language}};
+      baseQuery.query.bool.must.push(match);
+      return this;
+    },
+
     sort(property, order = 'desc') {
       let sort = {};
       sort[`doc.${property}`] = {order, ignore_unmapped: true};

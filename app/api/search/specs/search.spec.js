@@ -62,12 +62,13 @@ describe('search', () => {
         filters: {property1: 'value1', property2: 'value2'},
         fields: ['field'],
         types: ['ruling']
-      })
+      }, 'es')
       .then((results) => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm', ['field'])
         .filterMetadata({property1: 'value1', property2: 'value2'})
         .filterByTemplate(['ruling'])
+        .language('es')
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
@@ -85,12 +86,13 @@ describe('search', () => {
         sort: 'title',
         order: 'asc',
         types: ['ruling']
-      })
+      }, 'es')
       .then((results) => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
         .filterMetadata({property1: 'value1', property2: 'value2'})
         .filterByTemplate(['ruling'])
+        .language('es')
         .sort('title', 'asc').query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});

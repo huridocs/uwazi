@@ -21,6 +21,16 @@ describe('documentQueryBuilder', () => {
     });
   });
 
+  describe('language', () => {
+    it('should set language', () => {
+      let baseQuery = queryBuilder().language('es').query();
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {'doc.language': 'es'}});
+
+      baseQuery = queryBuilder().language('en').query();
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {'doc.language': 'en'}});
+    });
+  });
+
   describe('filterMetadata', () => {
     it('should add filter conditions', () => {
       let baseQuery = queryBuilder().filterMetadata({

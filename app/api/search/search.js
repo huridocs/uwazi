@@ -6,12 +6,12 @@ import request from 'shared/JSONRequest';
 import sanitizeResponse from '../utils/sanitizeResponse';
 
 export default {
-  search(query) {
-    //console.log(query);
+  search(query, language) {
     let documentsQuery = queryBuilder()
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)
-    .filterByTemplate(query.types);
+    .filterByTemplate(query.types)
+    .language(language);
 
     if (query.sort) {
       documentsQuery.sort(query.sort, query.order);
