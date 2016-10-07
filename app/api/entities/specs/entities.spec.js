@@ -196,10 +196,16 @@ describe('entities', () => {
     it('should delete the document in the database', (done) => {
       request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
       .then((response) => {
-        return entities.delete(response.json._id, response.json._rev);
+        return entities.delete(response.json.sharedId);
       })
       .then(() => {
         return request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`);
+      })
+      .then(done.fail)
+      .catch((error) => {
+        expect(error.json.error).toBe('not_found');
+        expect(error.json.reason).toBe('deleted');
+        return request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`);
       })
       .then(done.fail)
       .catch((error) => {
@@ -212,7 +218,7 @@ describe('entities', () => {
     it('should delete the document references', (done) => {
       request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
       .then((response) => {
-        return entities.delete(response.json._id, response.json._rev);
+        return entities.delete(response.json._id);
       })
       .then(() => {
         return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);

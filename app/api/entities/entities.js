@@ -81,9 +81,11 @@ export default {
 
   delete(id) {
     let docsToDelete = [];
-    return request.get(`${dbURL}/${id}`)
+    //return request.get(`${dbURL}/${id}`)
+    return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="${id}"`)
     .then((response) => {
-      docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
+      const docs = sanitizeResponse(response.json).rows;
+      docs.forEach((doc) => docsToDelete.push({_id: doc._id, _rev: doc._rev}));
       return request.get(`${dbURL}/_design/references/_view/by_source?key="${id}"`);
     })
     .then((response) => {
