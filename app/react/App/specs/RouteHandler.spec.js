@@ -71,13 +71,13 @@ describe('RouteHandler', () => {
     describe('when params change', () => {
       it('should request the clientState', () => {
         spyOn(instance, 'getClientState');
-        instance.componentWillReceiveProps({params: {id: '456'}});
-        expect(instance.getClientState).toHaveBeenCalledWith({params: {id: '456'}});
+        instance.componentWillReceiveProps({params: {id: '456'}, location: {pathname: '/es', query: ''}});
+        expect(instance.getClientState).toHaveBeenCalledWith({params: {id: '456'}, location: {pathname: '/es', query: ''}});
       });
 
       it('should call emptyState', () => {
         spyOn(instance, 'emptyState');
-        instance.componentWillReceiveProps({params: {id: '456'}});
+        instance.componentWillReceiveProps({params: {id: '456'}, location: {pathname: '/es', query: ''}});
         expect(instance.emptyState).toHaveBeenCalled();
       });
     });
@@ -89,38 +89,35 @@ describe('RouteHandler', () => {
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });
+
+    describe('when handling a specific language url', () => {
+      it('should set the state.locale to the url language', () => {
+        instance.componentWillReceiveProps({location: {pathname: '/es/templates/2452345', query: ''}, params: {id: '1'}});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'es'});
+      });
+    });
+
+    describe('when the locale isnt at the url', () => {
+      describe('on client side', () => {
+        it('should set the state.locale to the coockie language', () => {
+          spyOn(Cookie, 'get').and.returnValue('po');
+          instance.componentWillReceiveProps({location: {pathname: '/templates/2452345', query: ''}, params: {id: '1'}});
+          expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'po'});
+        });
+      });
+    });
+
+    describe('when the locale isnt at the url nor the coockie', () => {
+      it('should set the state.locale to the thefault language', () => {
+        Cookie.remove('locale');
+        instance.componentWillReceiveProps({location: {pathname: '/templates/2452345', query: ''}, params: {id: '1'}});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'en'});
+      });
+    });
   });
 
   it('should have a default setReduxState method', () => {
     component = shallow(<RouteHandler/>);
     expect(component.instance().setReduxState).toBeDefined();
-  });
-
-  describe('when handling a specific language url', () => {
-    it('should set the state.locale to the url language', () => {
-      location.pathname = '/es/templates/2452345';
-      component = shallow(<RouteHandler location={location}/>, {context});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'es'});
-    });
-  });
-
-  describe('when the locale isnt at the url', () => {
-    describe('on client side', () => {
-      it('should set the state.locale to the coockie language', () => {
-        location.pathname = '/templates/2452345';
-        spyOn(Cookie, 'get').and.returnValue('po');
-        component = shallow(<RouteHandler location={location}/>, {context});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'po'});
-      });
-    });
-  });
-
-  describe('when the locale isnt at the url nor the coockie', () => {
-    it('should set the state.locale to the thefault language', () => {
-      location.pathname = '/templates/2452345';
-      Cookie.remove('locale');
-      component = shallow(<RouteHandler location={location}/>, {context});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'en'});
-    });
   });
 });

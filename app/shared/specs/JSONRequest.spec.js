@@ -64,9 +64,9 @@ describe('JSONRequest', () => {
       });
     });
 
-    describe('when passing a cookie', () => {
-      it('should send the cookie in the headers', (done) => {
-        request.get('http://localhost:3000/api/test', {}, 'cookie')
+    describe('when passing headers', () => {
+      it('should send them', (done) => {
+        request.get('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
         .then(() => {
           let headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');

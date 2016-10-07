@@ -65,8 +65,8 @@ export default {
     return _fetch(url, data, 'POST');
   },
 
-  get: (url, data, cookie) => {
-    return _fetch(url, data, 'GET', cookie);
+  get: (url, data, headers) => {
+    return _fetch(url, data, 'GET', headers);
   },
 
   delete: (url, data) => {
