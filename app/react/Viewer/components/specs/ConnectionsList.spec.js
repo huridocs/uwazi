@@ -72,13 +72,14 @@ describe('ConnectionsList', () => {
         panel: 'ConnectionsList',
         activeReference: 'ref1'
       });
+      props.referencesSection = 'tabName';
     });
 
     describe('when document is source document', () => {
       it('should activate it', () => {
         render();
         component.find('.item').last().simulate('click');
-        expect(props.activateReference).toHaveBeenCalledWith('ref1');
+        expect(props.activateReference).toHaveBeenCalledWith('ref1', 'tabName');
         expect(component.find('.item').last().node.props.className).toContain('relationship-active');
       });
     });
