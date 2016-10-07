@@ -81,7 +81,6 @@ export default {
 
   delete(id) {
     let docsToDelete = [];
-    //return request.get(`${dbURL}/${id}`)
     return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="${id}"`)
     .then((response) => {
       const docs = sanitizeResponse(response.json).rows;
