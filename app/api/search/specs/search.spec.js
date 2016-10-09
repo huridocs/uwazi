@@ -43,7 +43,7 @@ describe('search', () => {
   describe('getUploadsByUser', () => {
     it('should request all unpublished entities or documents for the user', (done) => {
       let user = {_id: 'c08ef2532f0bd008ac5174b45e033c94'};
-      search.getUploadsByUser(user)
+      search.getUploadsByUser(user, 'es')
       .then((response) => {
         expect(response.rows.length).toBe(1);
         expect(response.rows[0].title).toBe('unpublished');
@@ -120,32 +120,6 @@ describe('search', () => {
         done();
       })
       .catch(done.fail);
-    });
-  });
-
-  describe('list', () => {
-    it('should return a list of documents and entities with the title', (done) => {
-      search.list()
-      .then((results) => {
-        expect(results.rows.length).toBe(7);
-        expect(results.rows[0].title).toBe('Batman finishes');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when giving a list of keys', () => {
-      it('should return only those search', (done) => {
-        search.list(['8202c463d6158af8065022d9b5014ccb', 'd0298a48d1221c5ceb53c4879301507f'])
-        .then((results) => {
-          expect(results.rows.length).toBe(2);
-          expect(results.rows[0].title).toBe('Penguin almost done');
-          done();
-        })
-        .catch(() => {
-          done();
-        });
-      });
     });
   });
 });

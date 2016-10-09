@@ -42,10 +42,10 @@ export default {
     .catch(console.log);
   },
 
-  getUploadsByUser(user) {
-    let url = `${dbURL}/_design/search/_view/uploads?key="${user._id}"&descending=true`;
+  getUploadsByUser(user, language) {
+    let url = `${dbURL}/_design/search/_view/uploads`;
 
-    return request.get(url)
+    return request.get(url, {key: [user._id, language]})
     .then(response => {
       response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
       return response.json;
@@ -72,17 +72,6 @@ export default {
         return 0;
       }
       return response.json.rows[0].value;
-    });
-  },
-
-  list(keys) {
-    let url = `${dbURL}/_design/search/_view/list`;
-    if (keys) {
-      url += `?keys=${JSON.stringify(keys)}`;
-    }
-    return request.get(url)
-    .then((response) => {
-      return sanitizeResponse(response.json);
     });
   }
 };
