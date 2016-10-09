@@ -14,7 +14,7 @@ describe('UploadBox', () => {
   let instance;
 
   let documentCreation = new Promise((resolve) => {
-    resolve({_id: 'abc1'});
+    resolve({sharedId: 'abc1'});
   });
 
   let props = {

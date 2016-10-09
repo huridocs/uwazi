@@ -24,14 +24,15 @@ describe('documents', () => {
     it('should create a new document with use user', (done) => {
       let req = {
         body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}
+        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        language: 'es'
       };
 
       spyOn(documents, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/documents', req)
       .then((document) => {
         expect(document).toBe('document');
-        expect(documents.save).toHaveBeenCalledWith(req.body, req.user);
+        expect(documents.save).toHaveBeenCalledWith(req.body, {user: req.user, language: req.language});
         done();
       })
       .catch(done.fail);
