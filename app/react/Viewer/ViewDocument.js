@@ -23,7 +23,6 @@ export default class ViewDocument extends RouteHandler {
       relationTypesAPI.get()
     ])
     .then(([doc, docHTML, references, templates, thesauris, relationTypes]) => {
-      console.log(doc);
       return {
         templates,
         documentViewer: {
