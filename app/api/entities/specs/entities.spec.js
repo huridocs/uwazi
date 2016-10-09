@@ -211,7 +211,8 @@ describe('entities', () => {
       .then((response) => {
         return entities.delete(response.json.sharedId);
       })
-      .then(() => {
+      .then((deletedDocuments) => {
+        console.log(deletedDocuments);
         return request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`);
       })
       .then(done.fail)
@@ -228,6 +229,7 @@ describe('entities', () => {
       });
     });
 
+    // refactor to delete refernces based on sharedId
     it('should delete the document references', (done) => {
       request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
       .then((response) => {

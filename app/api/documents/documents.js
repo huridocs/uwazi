@@ -114,32 +114,9 @@ export default {
   },
 
   delete(id) {
-    let docsToDelete = [];
-    return request.get(`${dbURL}/${id}`)
-    .then((response) => {
-      docsToDelete.push({_id: response.json._id, _rev: response.json._rev});
-
-      this.deleteFile(response.json);
-      return request.get(`${dbURL}/_design/references/_view/by_source?key="${id}"`);
-    })
-    .then((response) => {
-      sanitizeResponse(response.json);
-      docsToDelete = docsToDelete.concat(response.json.rows);
-      return request.get(`${dbURL}/_design/references/_view/by_target?key="${id}"`);
-    })
-    //.then((response) => {
-    //sanitizeResponse(response.json);
-    //docsToDelete = docsToDelete.concat(response.json.rows);
-    //return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
-    //})
-    .then((response) => {
-      sanitizeResponse(response.json);
-      docsToDelete = docsToDelete.concat(response.json.rows);
-      docsToDelete.map((doc) => doc._deleted = true);
-      return request.post(`${dbURL}/_bulk_docs`, {docs: docsToDelete});
-    })
-    .then((response) => {
-      return response.json;
+    return entities.delete(id)
+    .then((deletedDocuments) => {
+      return deletedDocuments;
     });
   }
 };
