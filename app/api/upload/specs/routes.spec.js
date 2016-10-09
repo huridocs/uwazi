@@ -5,6 +5,8 @@ import {db_url as dbURL} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import documents from '../../documents/documents';
+import entities from 'api/entities';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('upload routes', () => {
   let routes;
@@ -26,7 +28,7 @@ describe('upload routes', () => {
             filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
             path: __dirname + '/uploads/f2082bf51b6ef839690485d7153e847a.pdf',
             size: 171411271};
-    req = {headers: {}, body: {document: '8202c463d6158af8065022d9b5014ccb'}, files: [file], io};
+    req = {language: 'es', user: 'admin', headers: {}, body: {document: 'id'}, files: [file], io};
 
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -40,33 +42,49 @@ describe('upload routes', () => {
       routes.post('/api/upload', req)
       .then(() => {
         setTimeout(() => {
-          request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`)
-          .then((doc) => {
-            expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', '8202c463d6158af8065022d9b5014ccb');
-            expect(doc.json.processed).toBe(true);
-            expect(doc.json.fullText).toMatch(/Test file/);
-            return documents.getHTML('8202c463d6158af8065022d9b5014ccb');
+          return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="id"`)
+          .then((docs) => {
+            expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
+            expect(docs.json.rows[0].value.processed).toBe(true);
+            expect(docs.json.rows[0].value.fullText).toMatch(/Test file/);
+            expect(docs.json.rows[0].value.language).toBe('en');
+
+            expect(docs.json.rows[1].value.processed).toBe(true);
+            expect(docs.json.rows[1].value.fullText).toMatch(/Test file/);
+            expect(docs.json.rows[1].value.language).toBe('es');
+            return Promise.all([
+              documents.getHTML(docs.json.rows[0].value._id),
+              documents.getHTML(docs.json.rows[1].value._id)
+            ]);
           })
-          .then((conversion) => {
-            expect(conversion.fullText).not.toBeDefined();
-            expect(conversion.pages.length).toBe(1);
-            expect(conversion.css).toMatch(/ff0/);
+          .then(([conversion1, conversion2]) => {
+            expect(conversion1.fullText).not.toBeDefined();
+            expect(conversion1.pages.length).toBe(1);
+            expect(conversion1.css).toMatch(/ff0/);
+
+            expect(conversion2.fullText).not.toBeDefined();
+            expect(conversion2.pages.length).toBe(1);
+            expect(conversion2.css).toMatch(/ff0/);
             done();
           })
-          .catch(done.fail);
+          .catch(catchErrors(done));
         }, 1000);
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
-        spyOn(documents, 'save');
-        iosocket.emit.and.callFake((eventName, docId) => {
+        iosocket.emit.and.callFake((eventName) => {
           expect(eventName).toBe('conversionFailed');
-          expect(docId).toBe('8202c463d6158af8065022d9b5014ccb');
-          expect(documents.save).toHaveBeenCalledWith({_id: '8202c463d6158af8065022d9b5014ccb', processed: false});
-          done();
+          setTimeout(() => {
+            entities.getAllLanguages('id')
+            .then((docs) => {
+              expect(docs.rows[0].processed).toBe(false);
+              expect(docs.rows[1].processed).toBe(false);
+              done();
+            });
+          }, 10);
         });
 
         req.files = ['invalid_file'];

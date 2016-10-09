@@ -45,6 +45,17 @@ export default {
     });
   },
 
+  saveMultiple(docs) {
+    return request.post(`${dbURL}/_bulk_docs`, {docs});
+  },
+
+  getAllLanguages(id) {
+    return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="${id}"`)
+    .then((response) => {
+      return sanitizeResponse(response.json);
+    });
+  },
+
   countByTemplate(templateId) {
     return request.get(`${dbURL}/_design/entities/_view/count_by_template?group_level=1&key="${templateId}"`)
     .then((response) => {
