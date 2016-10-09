@@ -41,27 +41,15 @@ describe('documents', () => {
 
   describe('/api/documents', () => {
     it('should return documents.get', (done) => {
+      let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}, language: 'es'};
       spyOn(documents, 'get').and.returnValue(new Promise((resolve) => resolve('documents')));
-      routes.get('/api/documents')
+      routes.get('/api/documents', req)
       .then((response) => {
+        expect(documents.get).toHaveBeenCalledWith(req.query._id, req.language);
         expect(response).toBe('documents');
         done();
       })
       .catch(console.log);
-    });
-
-    describe('when passing id', () => {
-      it('should pass the id to documents.get', (done) => {
-        spyOn(documents, 'get').and.returnValue(new Promise((resolve) => resolve('documents')));
-        let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}};
-
-        routes.get('/api/documents', req)
-        .then(() => {
-          expect(documents.get).toHaveBeenCalledWith(req.query._id);
-          done();
-        })
-        .catch(done.fail);
-      });
     });
   });
 

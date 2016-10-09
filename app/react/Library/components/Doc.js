@@ -41,8 +41,8 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, creationDate, template, icon} = this.props.doc;
-    let documentViewUrl = `/${this.props.doc.type}/${_id}`;
+    let {title, creationDate, template, icon, sharedId} = this.props.doc;
+    let documentViewUrl = `/${this.props.doc.type}/${sharedId}`;
 
     let active;
     if (this.props.selectedDocument) {

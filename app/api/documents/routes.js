@@ -39,7 +39,7 @@ export default (app) => {
       id = req.query._id;
     }
 
-    documents.get(id).then(response => {
+    documents.get(id, req.language).then(response => {
       res.json(response);
     })
     .catch(console.log);
