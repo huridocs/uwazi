@@ -8,16 +8,12 @@ import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import fs from 'fs';
 import uniqueID from 'shared/uniqueID';
-import references from '../references/references.js';
+//import references from '../references/references.js';
+import entities from 'api/entities';
 
 export default {
-  save(doc, user) {
+  save(doc, params) {
     doc.type = 'document';
-    if (!doc._id) {
-      doc.user = user;
-      doc.creationDate = date.currentUTC();
-    }
-
     if (doc.toc) {
       doc.toc = doc.toc.map((tocEntry) => {
         if (!tocEntry._id) {
@@ -28,67 +24,10 @@ export default {
       });
     }
 
-    let url = dbURL;
-    if (doc._id) {
-      url = dbURL + '/_design/documents/_update/partialUpdate/' + doc._id;
-    }
-
-    return request.post(url, doc)
-    .then(response => {
-      return this.get(response.json.id);
-    })
-    .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0])]);
-    })
-    .then(([response]) => response.rows[0]);
+    return entities.save(doc, params);
   },
 
-  get(docId) {
-    let url = dbURL + '/_design/documents/_view/docs';
-    let id;
-
-    if (docId) {
-      id = '?key="' + docId + '"';
-      url = dbURL + '/_design/documents/_view/docs' + id;
-    }
-
-    return request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value);
-      return response.json;
-    });
-  },
-
-  search(query) {
-    let documentsQuery = queryBuilder()
-    .fullTextSearch(query.searchTerm, query.fields)
-    .filterMetadata(query.filters)
-    .filterByTemplate(query.types);
-
-    if (query.sort) {
-      documentsQuery.sort(query.sort, query.order);
-    }
-
-    if (query.from) {
-      documentsQuery.from(query.from);
-    }
-
-    if (query.limit) {
-      documentsQuery.limit(query.limit);
-    }
-
-    return elastic.search({index: elasticIndex, body: documentsQuery.query()})
-    .then((response) => {
-      let rows = response.hits.hits.map((hit) => {
-        let result = hit._source.doc;
-        result._id = hit._id;
-        return result;
-      });
-
-      return {rows, totalRows: response.hits.total};
-    })
-    .catch(console.log);
-  },
+  get: entities.get,
 
   getUploadsByUser(user) {
     let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"&descending=true`;
@@ -97,19 +36,6 @@ export default {
     .then(response => {
       response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
       return response.json;
-    });
-  },
-
-  matchTitle(searchTerm) {
-    let query = queryBuilder().fullTextSearch(searchTerm, ['doc.title']).highlight(['doc.title']).limit(5).query();
-    return elastic.search({index: elasticIndex, body: query})
-    .then((response) => {
-      return response.hits.hits.map((hit) => {
-        let result = hit._source.doc;
-        result._id = hit._id;
-        result.title = hit.highlight['doc.title'][0];
-        return result;
-      });
     });
   },
 
@@ -172,17 +98,6 @@ export default {
 
         resolve(path);
       });
-    });
-  },
-
-  list(keys) {
-    let url = `${dbURL}/_design/documents/_view/list`;
-    if (keys) {
-      url += `?keys=${JSON.stringify(keys)}`;
-    }
-    return request.get(url)
-    .then((response) => {
-      return sanitizeResponse(response.json);
     });
   },
 

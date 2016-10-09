@@ -26,35 +26,6 @@ export default (app) => {
     .then(results => res.json(results));
   });
 
-  app.get('/api/documents/list', (req, res) => {
-    let keys;
-    if (req.query.keys) {
-      keys = JSON.parse(req.query.keys);
-    }
-
-    return documents.list(keys)
-    .then(results => res.json(results));
-  });
-
-  app.get('/api/documents/search', (req, res) => {
-    if (req.query.filters) {
-      req.query.filters = JSON.parse(req.query.filters);
-    }
-    if (req.query.types) {
-      req.query.types = JSON.parse(req.query.types);
-    }
-    if (req.query.fields) {
-      req.query.fields = JSON.parse(req.query.fields);
-    }
-    return documents.search(req.query)
-    .then(results => res.json(results));
-  });
-
-  app.get('/api/documents/match_title', (req, res) => {
-    return documents.matchTitle(req.query.searchTerm)
-    .then(results => res.json(results));
-  });
-
   app.get('/api/documents/uploads', needsAuthorization, (req, res) => {
     documents.getUploadsByUser(req.user)
     .then(response => res.json(response))

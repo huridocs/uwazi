@@ -9,7 +9,7 @@ import ID from 'shared/uniqueId';
 
 export default {
   save(doc, {user, language}) {
-    doc.type = 'entity';
+    doc.type = doc.type || 'entity';
     if (!doc._id) {
       doc.user = user;
       doc.creationDate = date.currentUTC();
@@ -31,11 +31,11 @@ export default {
 
       return request.post(`${dbURL}/_bulk_docs`, {docs});
     })
-    .then(() => request.get(`${dbURL}/_design/entities/_view/by_language`, {key: [sharedId, language]}))
+    .then(() => this.get(sharedId, language))
     .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response.json.rows[0].value)]);
+      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0])]);
     })
-    .then(([response]) => response.json.rows[0].value);
+    .then(([response]) => response.rows[0]);
   },
 
   get(id, language) {

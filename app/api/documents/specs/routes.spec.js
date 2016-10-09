@@ -64,23 +64,6 @@ describe('documents', () => {
     });
   });
 
-  describe('/api/documents/list', () => {
-    it('return the list from documents passing the keys', (done) => {
-      let req = {
-        query: {keys: JSON.stringify(['1', '2'])}
-      };
-
-      spyOn(documents, 'list').and.returnValue(new Promise((resolve) => resolve('document')));
-      routes.get('/api/documents/list', req)
-      .then((document) => {
-        expect(document).toBe('document');
-        expect(documents.list).toHaveBeenCalledWith(['1', '2']);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
   describe('/api/documents/html', () => {
     it('should get the thml conversion', (done) => {
       spyOn(documents, 'getHTML').and.returnValue(new Promise((resolve) => resolve('html')));
@@ -105,55 +88,6 @@ describe('documents', () => {
       .then((response) => {
         expect(documents.countByTemplate).toHaveBeenCalledWith('templateId');
         expect(response).toEqual(2);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
-  describe('/api/documents/search', () => {
-    it('should search documents and return the results', (done) => {
-      spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
-      let filtersValue = JSON.stringify({property: 'property'});
-      let types = JSON.stringify(['ruling', 'judgement']);
-      let fields = JSON.stringify(['field1', 'field2']);
-      let req = {query: {searchTerm: 'test', filters: filtersValue, types, fields}};
-
-      routes.get('/api/documents/search', req)
-      .then((response) => {
-        expect(documents.search).toHaveBeenCalledWith(
-          {searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement'], fields: ['field1', 'field2']}
-        );
-        expect(response).toEqual('results');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when has no filters or types', () => {
-      it('should search documents and return the results', (done) => {
-        spyOn(documents, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
-        let req = {query: {}};
-
-        routes.get('/api/documents/search', req)
-        .then((response) => {
-          expect(documents.search).toHaveBeenCalledWith({});
-          expect(response).toEqual('results');
-          done();
-        })
-        .catch(done.fail);
-      });
-    });
-  });
-
-  describe('/api/documents/match_title', () => {
-    it('should search documents by title and return the results', (done) => {
-      spyOn(documents, 'matchTitle').and.returnValue(new Promise((resolve) => resolve('results')));
-      let req = {query: {searchTerm: 'test'}};
-
-      routes.get('/api/documents/match_title', req)
-      .then((response) => {
-        expect(response).toEqual('results');
         done();
       })
       .catch(done.fail);
