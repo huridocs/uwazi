@@ -1,5 +1,3 @@
-import request from '../../shared/JSONRequest.js';
-import {db_url as dbURL} from '../config/database.js';
 import multer from 'multer';
 import PDF from './PDF';
 import ID from 'shared/uniqueID';
