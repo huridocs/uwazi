@@ -68,12 +68,12 @@ describe('documents', () => {
   describe('/api/documents/html', () => {
     it('should get the thml conversion', (done) => {
       spyOn(documents, 'getHTML').and.returnValue(new Promise((resolve) => resolve('html')));
-      let req = {query: {_id: 'test'}};
+      let req = {query: {_id: 'test'}, language: 'es'};
 
       routes.get('/api/documents/html', req)
       .then((response) => {
         expect(response).toEqual('html');
-        expect(documents.getHTML).toHaveBeenCalledWith('test');
+        expect(documents.getHTML).toHaveBeenCalledWith('test', 'es');
         done();
       })
       .catch(done.fail);

@@ -17,7 +17,7 @@ export default (app) => {
   });
 
   app.get('/api/documents/html', (req, res) => {
-    return documents.getHTML(req.query._id)
+    return documents.getHTML(req.query._id, req.language)
     .then(doc => res.json(doc));
   });
 

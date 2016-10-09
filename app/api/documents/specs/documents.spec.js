@@ -84,8 +84,8 @@ describe('documents', () => {
 
   describe('saveHTML', () => {
     it('should save html conversion', (done) => {
-      documents.saveHTML({pages: ['pages'], document: 'documentId'})
-      .then(() => documents.getHTML('documentId'))
+      documents.saveHTML({pages: ['pages'], document: '8202c463d6158af8065022d9b5014ccb'})
+      .then(() => documents.getHTML('id', 'es'))
       .then((conversion) => {
         expect(conversion.pages[0]).toBe('pages');
         done();

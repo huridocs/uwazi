@@ -66,23 +66,27 @@ export default {
     });
   },
 
-  getHTML(documentId) {
-    let path = `${__dirname}/../../../conversions/${documentId}.json`;
-    return new Promise((resolve, reject) => {
-      fs.readFile(path, (err, conversionJSON) => {
-        if (err) {
-          reject(err);
-        }
-
-        try {
-          let conversion = JSON.parse(conversionJSON);
-          if (conversion.css) {
-            conversion.css = conversion.css.replace(/(\..*?){/g, '._' + documentId + ' $1 {');
+  getHTML(id, language) {
+    return this.get(id, language)
+    .then((docResponse) => {
+      const doc = docResponse.rows[0];
+      let path = `${__dirname}/../../../conversions/${doc._id}.json`;
+      return new Promise((resolve, reject) => {
+        fs.readFile(path, (err, conversionJSON) => {
+          if (err) {
+            reject(err);
           }
-          resolve(conversion);
-        } catch (e) {
-          reject(e);
-        }
+
+          try {
+            let conversion = JSON.parse(conversionJSON);
+            if (conversion.css) {
+              conversion.css = conversion.css.replace(/(\..*?){/g, '._' + doc._id + ' $1 {');
+            }
+            resolve(conversion);
+          } catch (e) {
+            reject(e);
+          }
+        });
       });
     });
   },
@@ -124,9 +128,9 @@ export default {
       return request.get(`${dbURL}/_design/references/_view/by_target?key="${id}"`);
     })
     //.then((response) => {
-      //sanitizeResponse(response.json);
-      //docsToDelete = docsToDelete.concat(response.json.rows);
-      //return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
+    //sanitizeResponse(response.json);
+    //docsToDelete = docsToDelete.concat(response.json.rows);
+    //return request.get(`${dbURL}/_design/documents/_view/conversions_id?key="${id}"`);
     //})
     .then((response) => {
       sanitizeResponse(response.json);

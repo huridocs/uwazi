@@ -53,8 +53,8 @@ describe('upload routes', () => {
             expect(docs.json.rows[1].value.fullText).toMatch(/Test file/);
             expect(docs.json.rows[1].value.language).toBe('es');
             return Promise.all([
-              documents.getHTML(docs.json.rows[0].value._id),
-              documents.getHTML(docs.json.rows[1].value._id)
+              documents.getHTML(docs.json.rows[0].value.sharedId, 'es'),
+              documents.getHTML(docs.json.rows[0].value.sharedId, 'en')
             ]);
           })
           .then(([conversion1, conversion2]) => {
