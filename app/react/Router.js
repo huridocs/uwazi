@@ -101,14 +101,10 @@ function handleRoute(res, renderProps, req) {
     }
   }
 
-  let cookie;
-
-  if (req.cookies) {
-    cookie = serialize(req.cookies);
-  }
-
   if (routeProps.requestState) {
-    api.cookie(cookie);
+    if (req.cookies) {
+      api.cookie('connect.sid='+req.cookies['connect.sid']);
+    }
     RouteHandler.renderedFromServer = true;
     let query;
     if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
