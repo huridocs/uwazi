@@ -1,11 +1,8 @@
 import {db_url as dbURL} from 'api/config/database.js';
 import documents from '../documents.js';
-import elastic from '../elastic';
-import elasticResult from './elasticResult';
 import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
-import queryBuilder from 'api/documents/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import fs from 'fs';
@@ -14,15 +11,9 @@ import references from 'api/references';
 import entities from 'api/entities';
 
 describe('documents', () => {
-  let result;
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     mockID();
-    result = elasticResult().withDocs([
-      {title: 'doc1', _id: 'id1'},
-      {title: 'doc2', _id: 'id2'}
-    ]).toObject();
-
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
@@ -172,12 +163,15 @@ describe('documents', () => {
     });
   });
 
-  fdescribe('delete', () => {
+  describe('delete', () => {
     beforeEach(() => {
+      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014ccb.json');
+      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc1.json');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
     });
 
-    fit('should delete the document in the database', (done) => {
+    it('should delete the document in the database', (done) => {
       request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`)
       .then((response) => {
         return documents.delete(response.json.sharedId);
@@ -243,15 +237,17 @@ describe('documents', () => {
       //});
     //});
 
-    fit('should delete the original file', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      .then((response) => {
-        return documents.delete(response.json._id, response.json._rev);
-      })
+    it('should delete the original file and conversion files', (done) => {
+      documents.delete('id')
       .then(() => {
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
+
+        expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014ccb.json')).toBe(false);
+        expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014cc1.json')).toBe(false);
         done();
-      });
+      })
+      .catch(catchErrors(done.fail));
     });
   });
 });

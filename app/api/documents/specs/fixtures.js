@@ -2,7 +2,7 @@ export default {
   "docs":[
     {"_id":"8202c463d6158af8065022d9b5014a18", "type":"document","title":"Batman finishes", "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014a18.pdf'}},
     {"_id":"8202c463d6158af8065022d9b5014ccb", "sharedId": "id", "language":"es", "type":"document","title":"Penguin almost done", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf'}},
-    {"_id":"8202c463d6158af8065022d9b5014cc1", "sharedId": "id", "language":"en", "type":"document","title":"Penguin almost done english", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
+    {"_id":"8202c463d6158af8065022d9b5014cc1", "sharedId": "id", "language":"en", "type":"document","title":"Penguin almost done english", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
     {"_id":"d0298a48d1221c5ceb53c4879301507f", "type":"document","title":"Right there", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c95"}},
     {"_id":"d0298a48d1221c5ceb53c4879301508f", "type":"document","title":"unpublished", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c94"}},
     // metadata property name changes

@@ -1,14 +1,9 @@
 import {db_url as dbURL} from 'api/config/database';
-import {index as elasticIndex} from 'api/config/elasticIndexes';
-import elastic from './elastic';
-import queryBuilder from './documentQueryBuilder';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
-import date from 'api/utils/date.js';
-import sanitizeResponse from '../utils/sanitizeResponse';
 import fs from 'fs';
 import uniqueID from 'shared/uniqueID';
-//import references from '../references/references.js';
+import {deleteFiles} from '../utils/files.js';
 import entities from 'api/entities';
 
 export default {
@@ -105,18 +100,18 @@ export default {
     });
   },
 
-  deleteFile(doc) {
-    let filePath = `./uploaded_documents/${doc.file.filename}`;
+  deleteFiles(deletedDocs) {
+    let filesToDelete = deletedDocs.map((doc) => {
+      return `./uploaded_documents/${doc.file.filename}`;
+    });
 
-    if (fs.existsSync(filePath)) {
-      fs.unlink(filePath);
-    }
+    return deleteFiles(filesToDelete);
   },
 
   delete(id) {
     return entities.delete(id)
     .then((deletedDocuments) => {
-      return deletedDocuments;
+      return this.deleteFiles(deletedDocuments);
     });
   }
 };
