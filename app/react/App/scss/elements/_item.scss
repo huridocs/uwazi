@@ -80,9 +80,6 @@
   }
 }
 
-.item-icon {
-  margin: -3px 6px 0 0;
-}
 
 $item-width: auto;
 $item-padding: 15px;
@@ -91,6 +88,15 @@ $item-padding: 15px;
   width: $item-width;
   padding: $item-padding;
   flex: 1;
+  
+  .item-icon {
+    top: -2px;
+  }
+}
+
+.item-icon {
+  position: relative;
+  margin-right: 6px;
 }
 
 .item-type__icon {
@@ -182,6 +188,9 @@ $item-padding: 15px;
   }
   dd {
     margin-left: 10px;
+  }
+  .item-icon {
+    top: -1px;
   }
 }
 
