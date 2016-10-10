@@ -12,7 +12,7 @@ import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {CreateConnectionPanel} from 'app/Connections';
-import {openPanel} from 'app/Connections/actions/uiActions';
+import * as connectionsActions from 'app/Connections/actions/uiActions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
@@ -91,6 +91,22 @@ export class EntityViewer extends Component {
     });
 
     return groupedReferences;
+  }
+
+  // --------------
+
+  // This is aparently NOT being used!
+  // relationType(id, relationTypes) {
+  //   let type = relationTypes.find((relation) => relation._id === id);
+  //   if (type) {
+  //     return type.name;
+  //   }
+  // }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.entity._id !== nextProps.entity._id) {
+      this.props.closeConnectionsPanel();
+    }
   }
 
   render() {
@@ -200,7 +216,7 @@ export class EntityViewer extends Component {
           </div>
           <NeedAuthorization>
             <div className="sidepanel-footer">
-            <button onClick={(this.props.openPanel.bind(null, 'basic', entity._id))}
+            <button onClick={(this.props.openConnectionsPanel.bind(null, 'basic', entity._id))}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
@@ -229,7 +245,8 @@ EntityViewer.propTypes = {
   resetForm: PropTypes.func,
   deleteEntity: PropTypes.func,
   deleteReference: PropTypes.func,
-  openPanel: PropTypes.func
+  openConnectionsPanel: PropTypes.func,
+  closeConnectionsPanel: PropTypes.func
 };
 
 EntityViewer.contextTypes = {
@@ -263,7 +280,8 @@ function mapDispatchToProps(dispatch) {
     resetForm: actions.resetReduxForm,
     deleteEntity,
     deleteReference,
-    openPanel
+    openConnectionsPanel: connectionsActions.openPanel,
+    closeConnectionsPanel: connectionsActions.closePanel
   }, dispatch);
 }
 
