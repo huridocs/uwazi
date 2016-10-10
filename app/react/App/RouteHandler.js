@@ -1,6 +1,5 @@
 import {Component, PropTypes} from 'react';
 import JSONUtils from 'shared/JSONUtils';
-import Cookie from 'tiny-cookie';
 import {actions} from 'app/BasicReducer';
 import {I18NUtils} from 'app/I18N';
 import api from 'app/utils/api';

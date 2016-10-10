@@ -32,7 +32,7 @@ jasmine.loadConfig({
     'shared/**/*[sS]pec.js'
   ],
   helpers: [
-    '/api/utils/jasmineHelpers.js',
+    '/api/utils/jasmineHelpers.js'
   ]
 });
 

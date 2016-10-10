@@ -45,7 +45,7 @@ describe('settings', () => {
     });
 
     it('should be able to partially update it', (done) => {
-      request.get(dbURL + '/bc739d367ef40c434bd0ff6a18c9fbec')
+      request.get(dbURL + '/1')
       .then((doc) => {
         let modifiedDoc = {_id: doc.json._id, _rev: doc.json._rev, test: 'test'};
         return settings.save(modifiedDoc);
