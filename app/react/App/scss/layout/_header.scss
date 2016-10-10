@@ -17,7 +17,7 @@ header {
 		font-family: $f-special;
 		font-weight: 300;
 		margin: 0;
-    width: calc(100% - 54px * 2px);
+    width: calc(100% - 2 * 54px);
 		@media(min-width: 1024px) {
 		  padding: 0 15px;
       width: auto;
