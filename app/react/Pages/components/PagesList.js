@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {bindActionCreators} from 'redux';
 
 import {deletePage} from 'app/Pages/actions/pageActions';
@@ -27,12 +27,12 @@ export class PagesList extends Component {
         <ul className="list-group pages">
           {pages.map((page, index) =>
             <li key={index} className="list-group-item">
-              <Link to={'/settings/pages/edit/' + page.get('_id')}>{page.get('title')}</Link>
+              <I18NLink to={'/settings/pages/edit/' + page.get('_id')}>{page.get('title')}</I18NLink>
               <div className="list-group-item-actions">
-                <Link to={'/settings/pages/edit/' + page.get('_id')} className="btn btn-default btn-xs">
+                <I18NLink to={'/settings/pages/edit/' + page.get('_id')} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
                   <span>Edit</span>
-                </Link>
+                </I18NLink>
                 <button onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>
                   <span>Delete</span>
@@ -42,11 +42,11 @@ export class PagesList extends Component {
           )}
         </ul>
         <div className="panel-body">
-          <Link to="/settings/pages/new" className="btn btn-success">
+          <I18NLink to="/settings/pages/new" className="btn btn-success">
             <i className="fa fa-plus"></i>
             &nbsp;
             <span>Add page</span>
-          </Link>
+          </I18NLink>
         </div>
       </div>
     );

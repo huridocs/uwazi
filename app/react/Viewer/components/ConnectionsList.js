@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {NeedAuthorization} from 'app/Auth';
 import {TemplateLabel} from 'app/Layout';
 
@@ -120,13 +120,13 @@ export class ConnectionsList extends Component {
                     </ShowIf>
                     &nbsp;
                     <ShowIf if={!this.props.targetDoc}>
-                      <Link to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                      <I18NLink to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
                             onClick={e => e.stopPropagation()}
                             className="item-shortcut">
                         <span className="itemShortcut-arrow">
                           <i className="fa fa-external-link"></i>
                         </span>
-                      </Link>
+                      </I18NLink>
                     </ShowIf>
                   </div>
                 </div>

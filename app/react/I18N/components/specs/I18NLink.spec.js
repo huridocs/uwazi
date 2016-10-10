@@ -7,12 +7,14 @@ import {I18NLink} from '../I18NLink';
 describe('I18NLink', () => {
   let component;
   let props;
+  let clickAction = () => {};
 
   beforeEach(() => {
     props = {
       locale: 'es',
       to: '/templates',
-      activeClass: 'is-active'
+      activeClass: 'is-active',
+      onClick: clickAction
     };
   });
 
@@ -36,10 +38,11 @@ describe('I18NLink', () => {
       });
     });
 
-    it('should pass activeClass', () => {
+    it('should pass other props', () => {
       render();
       let link = component.find(Link);
       expect(link.props().activeClass).toBe('is-active');
+      expect(link.props().onClick).toBe(clickAction);
     });
   });
 });

@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 
 import {newEntity} from 'app/Uploads/actions/uploadsActions';
 import ShowIf from 'app/App/ShowIf';
@@ -51,12 +51,12 @@ export class UploadsMenu extends Component {
       </ShowIf>
       <ShowIf if={!!metadataBeingEdited.processed && metadataBeingEdited.type === 'document'}>
         <div className="float-btn__sec view">
-          <Link to={`document/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
+          <I18NLink to={`document/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></I18NLink>
         </div>
       </ShowIf>
       <ShowIf if={!!metadataBeingEdited._id && metadataBeingEdited.type === 'entity'}>
         <div className="float-btn__sec view">
-          <Link to={`entity/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></Link>
+          <I18NLink to={`entity/${metadataBeingEdited._id}`}><span>View</span><i className="fa fa-file-o"></i></I18NLink>
         </div>
       </ShowIf>
       <ShowIf if={!!metadataBeingEdited._id}>
