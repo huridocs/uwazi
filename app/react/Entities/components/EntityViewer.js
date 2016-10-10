@@ -11,6 +11,8 @@ import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
+import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
+import {openPanel} from 'app/Viewer/actions/uiActions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
@@ -161,12 +163,6 @@ export class EntityViewer extends Component {
       <div className="row entity-content">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
         <aside className="side-panel entity-metadata">
-          <ShowIf if={!entityBeingEdited}>
-            <div className="sidepanel-header">
-
-            </div>
-          </ShowIf>
-
           <MetadataFormButtons
             delete={this.deleteEntity.bind(this)}
             data={this.props.rawEntity}
@@ -195,17 +191,26 @@ export class EntityViewer extends Component {
             <ul className="nav nav-tabs">
               <li>
                 <div className="tab-link tab-link-active">
-                  <i className="fa fa-sitemap"></i>
+                  <i className="fa fa-share-alt"></i>
                   <span className="connectionsNumber">{references.length}</span>
                 </div>
               </li>
             </ul>
             &nbsp;
           </div>
+          <NeedAuthorization>
+            <div className="sidepanel-footer">
+            <button onClick={(this.props.openPanel.bind(null, 'connectionPanel'))} className="create-connection btn btn-success">
+              <i className="fa fa-plus"></i>
+              <span className="btn-label">New</span>
+            </button>
+            </div>
+          </NeedAuthorization>
           <div className="sidepanel-body">
             {referencesHtml}
           </div>
         </aside>
+        <CreateReferencePanel halfWidth={true}/>
       </div>
     );
   }
@@ -222,7 +227,8 @@ EntityViewer.propTypes = {
   loadInReduxForm: PropTypes.func,
   resetForm: PropTypes.func,
   deleteEntity: PropTypes.func,
-  deleteReference: PropTypes.func
+  deleteReference: PropTypes.func,
+  openPanel: PropTypes.func
 };
 
 EntityViewer.contextTypes = {
@@ -255,7 +261,8 @@ function mapDispatchToProps(dispatch) {
     loadInReduxForm: actions.loadInReduxForm,
     resetForm: actions.resetReduxForm,
     deleteEntity,
-    deleteReference
+    deleteReference,
+    openPanel
   }, dispatch);
 }
 
