@@ -187,7 +187,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <ShowIf if={!entityBeingEdited}>
               <div className="item-info">
-                <Icon className="item-icon item-icon-center" data={entity.icon} size="md"/>
+                <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
                 <h1 className="item-name">{entity.title}</h1>
                 <TemplateLabel template={entity.template}/>
               </div>

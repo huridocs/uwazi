@@ -42,7 +42,7 @@ export class ShowMetadata extends Component {
       let title = '';
       if (showTitle) {
         title = <div>
-                  <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+                  <Icon className="item-icon item-icon-center" data={entity.icon} />
                   <h1 className="item-name">{entity.title}</h1>
                 </div>;
       }
