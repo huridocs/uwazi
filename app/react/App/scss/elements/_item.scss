@@ -284,7 +284,7 @@ $item-padding: 15px;
   max-width: 1024px;
   margin: 0 auto;
   text-align: center;
-  @include desktop {
+  @media(min-width: 1024px) {
     text-align: right;
     #documents-counter {
       text-align: left;

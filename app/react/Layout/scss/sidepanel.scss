@@ -14,20 +14,12 @@ $c-sidebar: $c-white;
   bottom: 0;
   border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;
-  max-width: 320px - 54px;
   transition: right 500ms;
-  width: 90%;
+  width: calc(100% - 54px);
   &.is-hidden {
-    right: -90%;
+    right: -100%;
   }
   @media(min-width: 1024px) {
-    width: 25%;
-    max-width: 9999px;
-    &.is-hidden {
-      right: -25%;
-    }
-  }
-  @media(min-width: 1200px) {
     width: 33.333%;
     &.is-hidden {
       right: -33.333%;
