@@ -9,6 +9,7 @@ import thesauri from 'app/Thesauris/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
+import connections from 'app/Connections';
 
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
@@ -35,6 +36,7 @@ export default combineReducers({
   pages: createReducer('pages', []),
   documentViewer,
   contextMenu,
+  connections: connections.reducer,
   modals,
   uploads,
   user,

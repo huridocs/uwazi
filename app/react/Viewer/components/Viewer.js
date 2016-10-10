@@ -81,7 +81,7 @@ const mapStateToProps = ({documentViewer}) => {
     doc: documentViewer.doc,
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
-    showConnections: uiState.tab === 'connections'
+    showConnections: uiState.tab === 'references'
   };
 };
 

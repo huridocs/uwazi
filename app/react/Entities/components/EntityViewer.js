@@ -11,8 +11,8 @@ import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
-import CreateReferencePanel from 'app/Viewer/components/CreateReferencePanel';
-import {openPanel} from 'app/Viewer/actions/uiActions';
+import {CreateConnectionPanel} from 'app/Connections';
+import {openPanel} from 'app/Connections/actions/uiActions';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
@@ -200,7 +200,8 @@ export class EntityViewer extends Component {
           </div>
           <NeedAuthorization>
             <div className="sidepanel-footer">
-            <button onClick={(this.props.openPanel.bind(null, 'connectionPanel'))} className="create-connection btn btn-success">
+            <button onClick={(this.props.openPanel.bind(null, 'basic', entity._id))}
+                    className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
             </button>
@@ -210,7 +211,7 @@ export class EntityViewer extends Component {
             {referencesHtml}
           </div>
         </aside>
-        <CreateReferencePanel halfWidth={true}/>
+        <CreateConnectionPanel/>
       </div>
     );
   }
