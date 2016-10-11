@@ -9,6 +9,7 @@ import Cookie from 'tiny-cookie';
 describe('I18NMenu', () => {
   let component;
   let props;
+  let instance;
 
   beforeEach(() => {
     spyOn(Cookie, 'set');
@@ -27,24 +28,26 @@ describe('I18NMenu', () => {
 
   let render = () => {
     component = shallow(<I18NMenu {...props} />);
+    instance = component.instance();
+    spyOn(instance, 'reload');
   };
 
   describe('when there is NO language in the url', () => {
     it('should render links for each language', () => {
       render();
-      let links = component.find(Link);
+      let links = component.find('a');
       expect(links.length).toBe(2);
-      expect(links.first().props().to).toBe('/en/templates/2452345?query=weneedmoreclerics');
-      expect(links.last().props().to).toBe('/es/templates/2452345?query=weneedmoreclerics');
+      expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
+      expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
     });
 
     it('should work fine with triky urls', () => {
       props.location.pathname = '/entity/2452345';
       render();
-      let links = component.find(Link);
+      let links = component.find('a');
       expect(links.length).toBe(2);
-      expect(links.first().props().to).toBe('/en/entity/2452345?query=weneedmoreclerics');
-      expect(links.last().props().to).toBe('/es/entity/2452345?query=weneedmoreclerics');
+      expect(links.first().props().href).toBe('/en/entity/2452345?query=weneedmoreclerics');
+      expect(links.last().props().href).toBe('/es/entity/2452345?query=weneedmoreclerics');
     });
 
     it('should render as active the default language', () => {
@@ -57,10 +60,10 @@ describe('I18NMenu', () => {
     it('should render links for each language', () => {
       props.location.pathname = '/es/templates/2452345';
       render();
-      let links = component.find(Link);
+      let links = component.find('a');
       expect(links.length).toBe(2);
-      expect(links.first().props().to).toBe('/en/templates/2452345?query=weneedmoreclerics');
-      expect(links.last().props().to).toBe('/es/templates/2452345?query=weneedmoreclerics');
+      expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
+      expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
       expect(component.find('li').last().props().className).toBe('Dropdown-option is-active');
     });
 
@@ -74,17 +77,17 @@ describe('I18NMenu', () => {
       props.location.pathname = '/es';
       props.location.search = '';
       render();
-      let links = component.find(Link);
+      let links = component.find('a');
       expect(links.length).toBe(2);
-      expect(links.first().props().to).toBe('/en/');
-      expect(links.last().props().to).toBe('/es/');
+      expect(links.first().props().href).toBe('/en/');
+      expect(links.last().props().href).toBe('/es/');
     });
   });
 
   describe('when switching language', () => {
     it('should save the locale in to a coockie', () => {
       render();
-      let links = component.find(Link);
+      let links = component.find('a');
       links.first().simulate('click');
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', {expires: 3650});
     });

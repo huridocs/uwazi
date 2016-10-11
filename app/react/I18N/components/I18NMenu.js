@@ -1,12 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
 import utils from '../utils';
 
 export class I18NMenu extends Component {
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {open: false};
   }
 
@@ -14,7 +13,16 @@ export class I18NMenu extends Component {
     this.setState({open: !this.state.open});
   }
 
-  changeLanguage(locale) {
+  changeLanguage(locale, url) {
+    this.saveCookie(locale);
+    this.reload(url);
+  }
+
+  reload(url) {
+    window.location.href = url;
+  }
+
+  saveCookie(locale) {
     utils.saveLocale(locale);
   }
 
@@ -37,14 +45,11 @@ export class I18NMenu extends Component {
         <ul className="Dropdown-list language">
           {(() => {
             return languages.map((lang) => {
+              let url = `/${lang.key}${path}${this.props.location.search}`;
               return <li className={'Dropdown-option' + (locale === lang.key ? ' is-active' : '')} key={lang.key}>
-                      <Link
-                        activeClass='is-active'
-                        onClick={this.changeLanguage.bind(this, lang.key)}
-                        to={`/${lang.key}${path}${this.props.location.search}`}
-                      >
+                      <a href={url} onClick={this.changeLanguage.bind(this, lang.key, url)}>
                         {lang.key}
-                      </Link>
+                      </a>
                      </li>;
             });
           })()}
@@ -60,6 +65,10 @@ export class I18NMenu extends Component {
 I18NMenu.propTypes = {
   languages: PropTypes.object,
   location: PropTypes.object
+};
+
+I18NMenu.contextTypes = {
+  router: PropTypes.object
 };
 
 export function mapStateToProps({settings}) {
