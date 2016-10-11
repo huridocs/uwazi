@@ -7,7 +7,7 @@ import ContextMenu from 'app/ContextMenu';
 import {loadDefaultViewerMenu} from '../actions/documentActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
-import CreateReferencePanel from './CreateReferencePanel';
+import {CreateConnectionPanel} from 'app/Connections';
 import ViewMetadataPanel from './ViewMetadataPanel';
 
 import ViewerDefaultMenu from './ViewerDefaultMenu';
@@ -51,8 +51,7 @@ export class Viewer extends Component {
         <ConfirmCloseForm />
         <ConfirmCloseReferenceForm />
         <ViewMetadataPanel />
-        <CreateReferencePanel />
-        <ViewMetadataPanel />
+        <CreateConnectionPanel />
 
         <ContextMenu>
           <ViewerDefaultMenu/>
