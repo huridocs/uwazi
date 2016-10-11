@@ -24,10 +24,7 @@ export function search(searchTerm) {
   return function (dispatch) {
     dispatch(searching());
 
-    let query = {
-      searchTerm,
-      fields: ['doc.title']
-    };
+    let query = {searchTerm, fields: ['doc.title']};
 
     return api.get('search', query)
     .then((response) => {

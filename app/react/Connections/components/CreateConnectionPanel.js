@@ -50,7 +50,7 @@ export class CreateConnectionPanel extends Component {
         <ShowIf if={!this.props.creatingToTarget && !this.props.creatingBasicConnection}>
           <SaveConnection />
         </ShowIf>*/}
-        <ShowIf if={connection.type === 'basic'}>
+        <ShowIf if={connection.type !== 'targetRanged'}>
           <SaveButton/>
         </ShowIf>
       </div>
@@ -82,6 +82,7 @@ CreateConnectionPanel.propTypes = {
 export const mapStateToProps = (state) => {
   const {connections, relationTypes} = state;
   // console.log(connections);
+  // console.log(relationTypes);
   // console.log(connections.connection.toJS());
   return {
     uiState: connections.uiState,

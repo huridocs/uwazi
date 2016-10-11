@@ -17,8 +17,6 @@ export class SaveButton extends Component {
     let connection = this.props.connection.toJS();
     delete connection.type;
 
-    // let tab = 'connections';
-
     const validator = {
       sourceDocument: {presence: true},
       targetDocument: {presence: true},
@@ -31,10 +29,10 @@ export class SaveButton extends Component {
 
     if (this.props.type !== 'basic') {
       validator.sourceRange = {presence: true};
-      // tab = 'references';
     }
 
     let connectionReady = !validate(connection, validator);
+    // console.log('En button POST:', connection);
 
     return (
       <button className="btn btn-success"
