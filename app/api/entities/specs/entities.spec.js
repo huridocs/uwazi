@@ -212,7 +212,6 @@ describe('entities', () => {
         return entities.delete(response.json.sharedId);
       })
       .then((deletedDocuments) => {
-        console.log(deletedDocuments);
         return request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`);
       })
       .then(done.fail)
