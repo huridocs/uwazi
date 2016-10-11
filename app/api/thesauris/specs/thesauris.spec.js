@@ -28,7 +28,7 @@ describe('thesauris', () => {
       .then((response) => {
         let docs = response.rows;
         expect(docs[2].name).toBe('Judge');
-        expect(docs[2].values).toEqual([{id: 'entityID', label: 'Dredd', icon: 'Icon'}]);
+        expect(docs[2].values).toEqual([{id: 'sharedId', label: 'Dredd', icon: 'Icon'}]);
         done();
       })
       .catch(done.fail);

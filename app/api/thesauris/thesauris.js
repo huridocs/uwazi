@@ -60,7 +60,7 @@ export default {
     return entities.getByTemplate(template._id, language)
     .then((response) => {
       template.values = response.map((entity) => {
-        return {id: entity.id, label: entity.title, icon: entity.icon};
+        return {id: entity.sharedId, label: entity.title, icon: entity.icon};
       });
       return template;
     });

@@ -12,7 +12,7 @@ function deleteFile(file) {
 }
 
 function deleteFiles(files) {
-  return Promise.all(files.map((file) => deleteFile(file)));
+  return Promise.all(files.map((file) => deleteFile(file)))
 }
 
 export {deleteFiles, deleteFile};
