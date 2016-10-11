@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
+import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
 const initialState = [];
 
@@ -21,6 +22,12 @@ export default function referencesReducer(state = initialState, action = {}) {
       return reference.get('_id') !== action.reference._id;
     });
   }
+
+  // TEST!!!
+  if (action.type === connectionsTypes.CONNECTION_CREATED) {
+    return state.push(Immutable.fromJS(action.connection));
+  }
+  // --------
 
   return Immutable.fromJS(state);
 }

@@ -26,11 +26,11 @@ export function saveReference(reference, tab) {
         type: types.ADD_CREATED_REFERENCE,
         reference: referenceCreated
       });
-
+      // OJO!!!! MUY IMPORTANTE VERIFICAR ESTO!!!
       dispatch(actions.unset('viewer/targetDoc'));
       dispatch(actions.unset('viewer/targetDocHTML'));
       dispatch(actions.unset('viewer/targetDocReferences'));
-
+      // -----------------------------------------
       dispatch(uiActions.activateReference(referenceCreated._id, tab));
       dispatch(notify('saved successfully !', 'success'));
     });

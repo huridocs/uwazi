@@ -1,11 +1,22 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
+import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
 const initialState = {reference: {}};
 
 let unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
 export default function (state = initialState, action = {}) {
+  // TEST!!!
+  if (action.type === connectionsTypes.CONNECTION_CREATED) {
+    const tab = action.connection.sourceRange.text ? 'references' : 'connections';
+    let newState = state.set('activeReference', action.connection._id);
+    newState = newState.set('panel', 'viewMetadataPanel');
+    newState = newState.set('tab', tab);
+    newState = newState.setIn(['reference', 'sourceRange'], null);
+    return newState;
+  }
+  // ----------------------
   if (action.type === types.HIGHLIGHT_REFERENCE) {
     return state.set('highlightedReference', action.reference);
   }

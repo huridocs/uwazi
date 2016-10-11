@@ -14,9 +14,11 @@ const resetState = (state) => {
 };
 
 export default function (state = initialState, action = {}) {
+  let newState;
+
   switch (action.type) {
   case types.OPEN_CONNECTION_PANEL:
-    const newState = resetState(state.set('type', action.connectionType));
+    newState = resetState(state.set('type', action.connectionType));
     return newState.set('sourceDocument', action.sourceDocument);
 
   case types.SET_RELATION_TYPE:
@@ -36,6 +38,7 @@ export default function (state = initialState, action = {}) {
     return state.set('sourceRange', action.sourceRange);
 
   case viewerTypes.UNSET_SELECTION:
+  case types.CONNECTION_CREATED:
     return state.delete('sourceRange');
 
   default:
