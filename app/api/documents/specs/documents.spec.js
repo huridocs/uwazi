@@ -167,6 +167,7 @@ describe('documents', () => {
     beforeEach(() => {
       fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014ccb.json');
       fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc1.json');
+      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc2.json');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
     });
@@ -221,22 +222,6 @@ describe('documents', () => {
       });
     });
 
-    //it('should delete the document conversion', (done) => {
-      //request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      //.then((response) => {
-        //return documents.delete(response.json._id, response.json._rev);
-      //})
-      //.then(() => {
-        //return request.get(`${dbURL}/a9a88a38dbd9fedc9d5051741a14a1d9`);
-      //})
-      //.then(done.fail)
-      //.catch((error) => {
-        //expect(error.json.error).toBe('not_found');
-        //expect(error.json.reason).toBe('deleted');
-        //done();
-      //});
-    //});
-
     it('should delete the original file and conversion files', (done) => {
       documents.delete('id')
       .then(() => {
@@ -247,7 +232,7 @@ describe('documents', () => {
         expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014cc1.json')).toBe(false);
         done();
       })
-      .catch(catchErrors(done.fail));
+      .catch(done.fail);
     });
   });
 });
