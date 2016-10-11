@@ -49,6 +49,14 @@ export class ViewMetadataPanel extends Component {
     this.props.saveDocument(doc);
   }
 
+  // TEST!!!
+  componentWillReceiveProps(nextProps) {
+    if (this.props.doc._id !== nextProps.doc._id) {
+      this.props.closeConnectionsPanel();
+    }
+  }
+  // --------
+
   render() {
     const {doc, docBeingEdited} = this.props;
 
@@ -188,6 +196,7 @@ ViewMetadataPanel.propTypes = {
   tab: PropTypes.string,
   saveDocument: PropTypes.func,
   openConnectionsPanel: PropTypes.func,
+  closeConnectionsPanel: PropTypes.func,
   closePanel: PropTypes.func,
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
@@ -237,6 +246,7 @@ function mapDispatchToProps(dispatch) {
     loadInReduxForm: actions.loadInReduxForm,
     showModal: modals.actions.showModal,
     openConnectionsPanel: connectionsActions.openPanel,
+    closeConnectionsPanel: connectionsActions.closePanel,
     resetForm: formActions.reset,
     showTab,
     saveDocument,
