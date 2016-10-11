@@ -12,11 +12,12 @@ import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
 import {CreateConnectionPanel} from 'app/Connections';
-import * as connectionsActions from 'app/Connections/actions/uiActions';
+import {uiActions as connectionsActions} from 'app/Connections';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
+
 
 export class EntityViewer extends Component {
 
@@ -216,7 +217,7 @@ export class EntityViewer extends Component {
           </div>
           <NeedAuthorization>
             <div className="sidepanel-footer">
-            <button onClick={(this.props.openConnectionsPanel.bind(null, 'basic', entity._id))}
+            <button onClick={this.props.openConnectionsPanel.bind(null, 'basic', entity._id)}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
