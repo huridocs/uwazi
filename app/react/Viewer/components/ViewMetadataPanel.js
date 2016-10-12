@@ -49,14 +49,6 @@ export class ViewMetadataPanel extends Component {
     this.props.saveDocument(doc);
   }
 
-  // TEST!!!
-  componentWillReceiveProps(nextProps) {
-    if (this.props.doc._id !== nextProps.doc._id) {
-      this.props.closeConnectionsPanel();
-    }
-  }
-  // --------
-
   render() {
     const {doc, docBeingEdited} = this.props;
 

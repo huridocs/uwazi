@@ -29,7 +29,7 @@ export function search(searchTerm, connectionType) {
     return api.get('search', query)
     .then((response) => {
       let results = response.json.rows;
-      if (connectionType === 'targetedRange') {
+      if (connectionType === 'targetRanged') {
         results = results.filter(r => r.type !== 'entity');
       }
       dispatch(actions.set('connections/searchResults', results));
@@ -40,14 +40,20 @@ export function search(searchTerm, connectionType) {
 export function saveConnection(connection, callback) {
   return function (dispatch) {
     dispatch({type: types.CREATING_CONNECTION});
+    delete connection.type;
+
     return refenrecesAPI.save(connection)
     .then((referenceCreated) => {
-      dispatch({
-        type: types.CONNECTION_CREATED,
-        connection: referenceCreated
-      });
+      dispatch({type: types.CONNECTION_CREATED, connection: referenceCreated});
       callback(referenceCreated);
       dispatch(notify('saved successfully !', 'success'));
     });
+  };
+}
+
+export function selectRangedTarget(connection, onRangedConnect) {
+  return function (dispatch) {
+    dispatch({type: types.CREATING_RANGED_CONNECTION});
+    onRangedConnect(connection.targetDocument);
   };
 }

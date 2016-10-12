@@ -104,11 +104,11 @@ export class EntityViewer extends Component {
   //   }
   // }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.entity._id !== nextProps.entity._id) {
-      this.props.closeConnectionsPanel();
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (this.props.entity._id !== nextProps.entity._id) {
+  //     this.props.closeConnectionsPanel();
+  //   }
+  // }
 
   render() {
     let {entity, entityBeingEdited, references} = this.props;
@@ -228,7 +228,7 @@ export class EntityViewer extends Component {
             {referencesHtml}
           </div>
         </aside>
-        <CreateConnectionPanel onCreate={this.props.addReference}/>
+        <CreateConnectionPanel containerId={entity._id} onCreate={this.props.addReference}/>
       </div>
     );
   }

@@ -1,6 +1,7 @@
-import * as types from 'app/Viewer/actions/actionTypes';
 import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
+import * as types from 'app/Viewer/actions/actionTypes';
+import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
 import {viewerSearching} from 'app/Viewer/actions/uiActions';
 import {actions} from 'app/BasicReducer';
@@ -8,6 +9,7 @@ import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
 import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
+import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 
 export function setDocument(document, html) {
@@ -79,6 +81,19 @@ export function loadTargetDocument(id) {
     });
   };
 }
+
+// TEST!!
+export function cancelTargetDocument() {
+  return function (dispatch) {
+    dispatch({type: connectionsTypes.CANCEL_RANGED_CONNECTION});
+    dispatch(actions.unset('viewer/targetDoc'));
+    dispatch(actions.unset('viewer/targetDocHTML'));
+    dispatch(actions.unset('viewer/targetDocReferences'));
+    dispatch(selectionActions.unsetTargetSelection());
+    dispatch(uiActions.openPanel('viewMetadataPanel'));
+  };
+}
+// ------
 
 export function viewerSearchDocuments(searchTerm) {
   return function (dispatch) {

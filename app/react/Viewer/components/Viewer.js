@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 
 import ContextMenu from 'app/ContextMenu';
 
-import {loadDefaultViewerMenu} from '../actions/documentActions';
+import {loadDefaultViewerMenu, loadTargetDocument} from '../actions/documentActions';
 import {addReference} from '../actions/referencesActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
@@ -53,7 +53,9 @@ export class Viewer extends Component {
         <ConfirmCloseForm />
         <ConfirmCloseReferenceForm />
         <ViewMetadataPanel />
-        <CreateConnectionPanel onCreate={this.props.addReference} />
+        <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : this.props.doc.get('_id')}
+                               onCreate={this.props.addReference}
+                               onRangedConnect={this.props.loadTargetDocument} />
 
         <ContextMenu>
           <ViewerDefaultMenu/>
@@ -62,7 +64,6 @@ export class Viewer extends Component {
       </div>
     );
   }
-
 }
 
 Viewer.propTypes = {
@@ -70,6 +71,7 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
+  loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool
 };
 
@@ -88,7 +90,7 @@ const mapStateToProps = ({documentViewer}) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({addReference}, dispatch);
+  return bindActionCreators({addReference, loadTargetDocument}, dispatch);
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Viewer);

@@ -2,7 +2,7 @@
 import Immutable from 'immutable';
 import * as types from '../actions/actionTypes';
 
-const initialState = {open: false};
+const initialState = {open: false, connecting: false};
 
 export default function (state = initialState, action = {}) {
   switch (action.type) {
@@ -10,7 +10,7 @@ export default function (state = initialState, action = {}) {
     return state.set('open', true);
 
   case types.CLOSE_CONNECTION_PANEL:
-    return state.set('open', false);
+    return state.set('connecting', false).set('open', false);
 
   case types.SEARCHING_CONNECTIONS:
     return state.set('searching', true);
@@ -21,9 +21,14 @@ export default function (state = initialState, action = {}) {
   case types.CREATING_CONNECTION:
     return state.set('creating', true);
 
+  case types.CREATING_RANGED_CONNECTION:
+    return state.set('connecting', true);
+
+  case types.CANCEL_RANGED_CONNECTION:
+    return state.set('connecting', false);
+
   case types.CONNECTION_CREATED:
-    let newState = state.set('open', false);
-    return newState.set('creating', false);
+    return state.set('creating', false).set('connecting', false).set('open', false);
 
   default:
     return Immutable.fromJS(state);
