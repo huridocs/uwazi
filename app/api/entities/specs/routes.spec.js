@@ -43,7 +43,7 @@ describe('entities', () => {
     it('should return matching document', (done) => {
       spyOn(entities, 'get').and.returnValue(Promise.resolve('result'));
       let req = {
-        query: {sharedId: 'id'},
+        query: {_id: 'id'},
         language: 'lang'
       };
 

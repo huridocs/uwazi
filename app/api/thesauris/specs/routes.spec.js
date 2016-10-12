@@ -19,9 +19,11 @@ describe('thesauris routes', () => {
 
   describe('GET', () => {
     it('should return all thesauris by default', (done) => {
-      routes.get('/api/thesauris')
+      spyOn(thesauris, 'get').and.callThrough();
+      routes.get('/api/thesauris', {language: 'es'})
       .then((response) => {
         let docs = response.rows;
+        expect(thesauris.get).toHaveBeenCalledWith(undefined, 'es');
         expect(docs[0].name).toBe('secret recipes');
         done();
       })
@@ -44,7 +46,7 @@ describe('thesauris routes', () => {
 
     describe('when there is a db error', () => {
       it('return the error in the response', (done) => {
-        let req = {query: {_id: 'non_existent_id'}};
+        let req = {query: {_id: 'non_existent_id'}, language: 'es'};
 
         database.reset_testing_database()
         .then(() => routes.get('/api/thesauris', req))

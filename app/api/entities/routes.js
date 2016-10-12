@@ -21,7 +21,7 @@ export default (app) => {
   });
 
   app.get('/api/entities', (req, res) => {
-    entities.get(req.query.sharedId, req.language)
+    entities.get(req.query._id, req.language)
     .then(response => res.json(response))
     .catch(error => res.json({error: error}));
   });

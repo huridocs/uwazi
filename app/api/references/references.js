@@ -2,6 +2,7 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import sanitizeResponse from 'api/utils/sanitizeResponse';
 import templates from 'api/templates';
+import entities from 'api/entities';
 
 let normalizeConnection = (connection, docId) => {
   connection.targetRange = connection.targetRange || {text: ''};
@@ -30,15 +31,16 @@ export default {
     });
   },
 
-  getByDocument(docId) {
-    return request.get(`${dbURL}/_design/references/_view/by_document?key="${docId}"`)
+  getByDocument(id, language) {
+    return request.get(`${dbURL}/_design/references/_view/by_document?key="${id}"`)
     .then((response) => {
-      let connections = sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, docId));
+      let connections = sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, id));
       let requestDocuments = [];
       connections.forEach((connection) => {
-        let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
+        //let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
+        let promise = entities.get(connection.connectedDocument, language)
         .then((connectedDocument) => {
-          normalizeConnectedDocumentData(connection, connectedDocument.json);
+          normalizeConnectedDocumentData(connection, connectedDocument.rows[0]);
         });
         requestDocuments.push(promise);
       });
@@ -67,7 +69,7 @@ export default {
     });
   },
 
-  save(connection) {
+  save(connection, language) {
     connection.type = 'reference';
     return request.post(dbURL, connection)
     .then((result) => {
@@ -77,14 +79,14 @@ export default {
       return normalizeConnection(result.json, connection.sourceDocument);
     })
     .then((result) => {
-      return Promise.all([result, request.get(`${dbURL}/${result.connectedDocument}`)]);
+      return Promise.all([result, entities.get(result.connectedDocument, language)]);
     })
     .then(([result, connectedDocument]) => {
-      return normalizeConnectedDocumentData(result, connectedDocument.json);
+      return normalizeConnectedDocumentData(result, connectedDocument.rows[0]);
     });
   },
 
-  saveEntityBasedReferences(entity) {
+  saveEntityBasedReferences(entity, language) {
     if (!entity.template) {
       return Promise.resolve([]);
     }
@@ -106,7 +108,7 @@ export default {
     .then((properties) => {
       return Promise.all([
         properties,
-        this.getByDocument(entity._id)
+        this.getByDocument(entity.sharedId, language)
       ]);
     })
     .then(([properties, references]) => {
@@ -144,10 +146,10 @@ export default {
       const deletes = toDelete.map((ref) => this.delete(ref));
       const creates = toCreate.map((item) => this.save({
         sourceType: 'metadata',
-        sourceDocument: entity._id,
+        sourceDocument: entity.sharedId,
         targetDocument: item.value,
         sourceProperty: item.property
-      }));
+      }, language));
 
       return Promise.all(deletes.concat(creates));
     });
