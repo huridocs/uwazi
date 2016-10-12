@@ -40,7 +40,7 @@ export class CreateConnectionPanel extends Component {
         <div className="relationship-steps">
           <h2>Select document<small>2</small></h2>
         </div>
-        <SearchForm />
+        <SearchForm connectionType={connection.type}/>
       </div>
 
       <div className="sidepanel-footer">
@@ -51,7 +51,7 @@ export class CreateConnectionPanel extends Component {
           <SaveConnection />
         </ShowIf>*/}
         <ShowIf if={connection.type !== 'targetRanged'}>
-          <SaveButton/>
+          <SaveButton onCreate={this.props.onCreate}/>
         </ShowIf>
       </div>
 
@@ -76,6 +76,7 @@ CreateConnectionPanel.propTypes = {
   setRelationType: PropTypes.func,
   setTargetDocument: PropTypes.func,
   searchResults: PropTypes.object,
+  onCreate: PropTypes.func,
   closePanel: PropTypes.func
 };
 

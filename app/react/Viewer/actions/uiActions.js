@@ -65,10 +65,9 @@ export function activateReference(reference, tab) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});
     dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     dispatch(showTab(tabName));
-    // HOW TO DO THIS ON THE REDUCER?
     setTimeout(() => {
       scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer');
-      scroller.to(`.document-metadata .item[data-id="${reference}"]`, '.document-metadata .sidepanel-body');
+      scroller.to(`.metadata-sidepanel .item[data-id="${reference}"]`, '.metadata-sidepanel .sidepanel-body');
     });
   };
 }

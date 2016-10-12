@@ -80,7 +80,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference('id')(dispatch);
       setTimeout(() => {
         expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-        expect(scroller.to).toHaveBeenCalledWith('.document-metadata .item[data-id="id"]', '.document-metadata .sidepanel-body');
+        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item[data-id="id"]', '.metadata-sidepanel .sidepanel-body');
         done();
       });
     });

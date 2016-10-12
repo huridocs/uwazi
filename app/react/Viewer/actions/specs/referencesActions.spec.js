@@ -13,7 +13,7 @@ import scroller from 'app/Viewer/utils/Scroller';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('referencesActions', () => {
+describe('Viewer referencesActions', () => {
   describe('setReferences()', () => {
     it('should return a SET_REFERENCES type action with the references', () => {
       let action = actions.setReferences('references');
@@ -43,31 +43,43 @@ describe('referencesActions', () => {
       .mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})});
     });
 
-    describe('saveReference', () => {
-      it('should save the reference, on success add it and dispatch a success notification', (done) => {
-        let reference = {reference: 'reference', targetDocument: 2};
+    describe('addReference', () => {
+      let getState;
+      let store;
+      let reference;
 
+      beforeEach(() => {
+        store = mockStore({});
+        getState = jasmine.createSpy('getState').and.returnValue({
+          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
+        });
+        reference = {
+          _id: 'addedRefernce',
+          reference: 'reference',
+          sourceRange: {text: 'Text'},
+          targetDocument: 2
+        };
+      });
+
+      it('should add the reference', () => {
         const expectedActions = [
-          {type: types.ADD_CREATED_REFERENCE, reference: {_id: 'referenceCreated'}},
+          {type: types.ADD_REFERENCE, reference: reference},
           {type: 'viewer/targetDoc/UNSET'},
           {type: 'viewer/targetDocHTML/UNSET'},
           {type: 'viewer/targetDocReferences/UNSET'},
-          {type: 'ACTIVE_REFERENCE', reference: 'referenceCreated'},
+          {type: 'ACTIVE_REFERENCE', reference: 'addedRefernce'},
           {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'},
-          {type: 'SHOW_TAB', tab: 'references'},
-          {type: notificationsTypes.NOTIFY, notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}}
+          {type: 'SHOW_TAB', tab: 'references'}
         ];
 
-        const store = mockStore({});
-        let getState = jasmine.createSpy('getState').and.returnValue({
-          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
-        });
-        actions.saveReference(reference)(store.dispatch, getState)
-        .then(() => {
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        actions.addReference(reference)(store.dispatch, getState);
+        expect(store.getActions()).toEqual(expectedActions);
+      });
+
+      it('should open the connections tab if sourceRange text is empty', () => {
+        reference.sourceRange.text = '';
+        actions.addReference(reference)(store.dispatch, getState);
+        expect(store.getActions()).toContain({type: 'SHOW_TAB', tab: 'connections'});
       });
     });
 

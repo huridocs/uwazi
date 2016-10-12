@@ -6,10 +6,6 @@ export class SearchResults extends Component {
   render() {
     const loading = <div className="cs-loader-container">&nbsp;<Loader /></div>;
     const results = this.props.results.toJS().map((result, index) => {
-      if (this.props.creatingToTarget && result.type === 'entity') {
-        return false;
-      }
-
       return (
         <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}
              key={index} onClick={() => this.props.onClick(result._id)}>

@@ -26,7 +26,8 @@ describe('EntityViewer', () => {
         {_id: 'ref3', connectedDocumentTemplate: 'template2', sourceType: 'metadata', sourceProperty: 'source_property'},
         {_id: 'ref4', connectedDocumentTemplate: 'template1', sourceType: 'metadata', sourceProperty: 'source_property'}
       ]),
-      deleteReference: jasmine.createSpy('deleteReference')
+      deleteReference: jasmine.createSpy('deleteReference'),
+      openConnectionsPanel: jasmine.createSpy('openConnectionsPanel')
     };
   });
 

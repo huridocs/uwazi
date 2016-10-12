@@ -10,7 +10,7 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
+import {deleteEntity, addReference, deleteReference} from 'app/Entities/actions/actions';
 import {CreateConnectionPanel} from 'app/Connections';
 import {uiActions as connectionsActions} from 'app/Connections';
 import {actions} from 'app/Metadata';
@@ -228,11 +228,10 @@ export class EntityViewer extends Component {
             {referencesHtml}
           </div>
         </aside>
-        <CreateConnectionPanel/>
+        <CreateConnectionPanel onCreate={this.props.addReference}/>
       </div>
     );
   }
-
 }
 
 EntityViewer.propTypes = {
@@ -245,6 +244,7 @@ EntityViewer.propTypes = {
   loadInReduxForm: PropTypes.func,
   resetForm: PropTypes.func,
   deleteEntity: PropTypes.func,
+  addReference: PropTypes.func,
   deleteReference: PropTypes.func,
   openConnectionsPanel: PropTypes.func,
   closeConnectionsPanel: PropTypes.func
@@ -280,6 +280,7 @@ function mapDispatchToProps(dispatch) {
     loadInReduxForm: actions.loadInReduxForm,
     resetForm: actions.resetReduxForm,
     deleteEntity,
+    addReference,
     deleteReference,
     openConnectionsPanel: connectionsActions.openPanel,
     closeConnectionsPanel: connectionsActions.closePanel

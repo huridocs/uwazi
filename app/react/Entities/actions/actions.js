@@ -24,6 +24,10 @@ export function deleteEntity(entity) {
   };
 }
 
+export function addReference(reference) {
+  return actions.push('entityView/references', reference);
+}
+
 export function deleteReference(reference) {
   return function (dispatch) {
     return refenrecesAPI.delete(reference)

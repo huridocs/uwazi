@@ -7,7 +7,7 @@ export default function targetDocumentReducer(state = initialState, action = {})
     return Object.assign({}, action.html, action.document);
   }
 
-  if (action.type === types.ADD_CREATED_REFERENCE) {
+  if (action.type === types.ADD_REFERENCE) {
     return initialState;
   }
 

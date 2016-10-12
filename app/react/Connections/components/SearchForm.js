@@ -8,8 +8,8 @@ import SearchInput from 'app/Layout/SearchInput';
 import debounce from 'app/utils/debounce';
 
 export class SearchForm extends Component {
-  search(searchTerm) {
-    this.props.search(searchTerm);
+  search(searchTerm, connectionType) {
+    this.props.search(searchTerm, connectionType);
   }
 
   componentWillMount() {
@@ -19,13 +19,14 @@ export class SearchForm extends Component {
 
   render() {
     return (
-      <SearchInput onChange={(e) => this.search(e.target.value)}/>
+      <SearchInput onChange={(e) => this.search(e.target.value, this.props.connectionType)}/>
     );
   }
 }
 
 SearchForm.propTypes = {
-  search: PropTypes.func
+  search: PropTypes.func,
+  connectionType: PropTypes.string
 };
 
 function mapDispatchToProps(dispatch) {

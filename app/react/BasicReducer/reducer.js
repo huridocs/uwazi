@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import {fromJS as Immutable} from 'immutable';
 
 const SET = 'SET';
 const UNSET = 'UNSET';
@@ -9,22 +9,21 @@ export default function createReducer(namespace, defaultValue) {
   return (currentState = defaultValue, action = {}) => {
     switch (action.type) {
     case `${namespace}/${SET}`:
-      return Immutable.fromJS(action.value);
+      return Immutable(action.value);
 
     case `${namespace}/${UNSET}`:
-      return Immutable.fromJS(defaultValue);
+      return Immutable(defaultValue);
 
     case `${namespace}/${PUSH}`:
-      currentState.push(action.value);
-      return Immutable.fromJS(currentState);
+      return currentState.push(Immutable(action.value));
 
     case `${namespace}/${REMOVE}`:
-      return Immutable.fromJS(currentState).filter((object) => {
+      return Immutable(currentState).filter((object) => {
         return object.get('_id') !== action.value._id;
       });
 
     default:
-      return Immutable.fromJS(currentState);
+      return Immutable(currentState);
     }
   };
 }

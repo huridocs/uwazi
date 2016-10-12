@@ -4,7 +4,7 @@ import 'jasmine-immutablejs-matchers';
 import referencesReducer from 'app/Viewer/reducers/referencesReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-describe('documentReducer', () => {
+describe('Viewer referencesReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = referencesReducer();
@@ -26,7 +26,7 @@ describe('documentReducer', () => {
 
   describe('ADD_CREATED_REFERENCE', () => {
     it('should should add reference passed', () => {
-      let newState = referencesReducer(Immutable.fromJS([1]), {type: types.ADD_CREATED_REFERENCE, reference: 2});
+      let newState = referencesReducer(Immutable.fromJS([1]), {type: types.ADD_REFERENCE, reference: 2});
       let expected = Immutable.fromJS([1, 2]);
 
       expect(newState).toBeImmutable();

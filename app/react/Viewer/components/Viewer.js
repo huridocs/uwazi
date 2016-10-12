@@ -1,10 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
+import {bindActionCreators} from 'redux';
 
 import ContextMenu from 'app/ContextMenu';
 
 import {loadDefaultViewerMenu} from '../actions/documentActions';
+import {addReference} from '../actions/referencesActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import {CreateConnectionPanel} from 'app/Connections';
@@ -51,7 +53,7 @@ export class Viewer extends Component {
         <ConfirmCloseForm />
         <ConfirmCloseReferenceForm />
         <ViewMetadataPanel />
-        <CreateConnectionPanel />
+        <CreateConnectionPanel onCreate={this.props.addReference} />
 
         <ContextMenu>
           <ViewerDefaultMenu/>
@@ -66,6 +68,7 @@ export class Viewer extends Component {
 Viewer.propTypes = {
   doc: PropTypes.object,
   panelIsOpen: PropTypes.bool,
+  addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
   showConnections: PropTypes.bool
 };
@@ -84,4 +87,8 @@ const mapStateToProps = ({documentViewer}) => {
   };
 };
 
-export default connect(mapStateToProps)(Viewer);
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({addReference}, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Viewer);

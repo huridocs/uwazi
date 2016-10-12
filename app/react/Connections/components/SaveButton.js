@@ -9,7 +9,7 @@ export class SaveButton extends Component {
 
   onClick(enabled, connection) {
     if (enabled) {
-      this.props.saveConnection(connection, 'connections');
+      this.props.saveConnection(connection, this.props.onCreate);
     }
   }
 
@@ -46,6 +46,7 @@ export class SaveButton extends Component {
 
 SaveButton.propTypes = {
   saveConnection: PropTypes.func,
+  onCreate: PropTypes.func,
   type: PropTypes.string,
   connection: PropTypes.object,
   saving: PropTypes.bool

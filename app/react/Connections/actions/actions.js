@@ -20,7 +20,7 @@ export function setTargetDocument(id) {
   };
 }
 
-export function search(searchTerm) {
+export function search(searchTerm, connectionType) {
   return function (dispatch) {
     dispatch(searching());
 
@@ -28,30 +28,26 @@ export function search(searchTerm) {
 
     return api.get('search', query)
     .then((response) => {
-      dispatch(actions.set('connections/searchResults', response.json.rows));
+      let results = response.json.rows;
+      if (connectionType === 'targetedRange') {
+        results = results.filter(r => r.type !== 'entity');
+      }
+      dispatch(actions.set('connections/searchResults', results));
     });
   };
 }
 
-export function saveConnection(connection) {
+export function saveConnection(connection, callback) {
   return function (dispatch) {
     dispatch({type: types.CREATING_CONNECTION});
     return refenrecesAPI.save(connection)
     .then((referenceCreated) => {
-      // REMOVE TIMEOUT!
-      setTimeout(() => {
-        dispatch({
-          type: types.CONNECTION_CREATED,
-          connection: referenceCreated
-        });
-
-        // dispatch(actions.unset('viewer/targetDoc'));
-        // dispatch(actions.unset('viewer/targetDocHTML'));
-        // dispatch(actions.unset('viewer/targetDocReferences'));
-
-        // dispatch(uiActions.activateReference(referenceCreated._id, tab));
-        dispatch(notify('saved successfully !', 'success'));
-      }, 1000);
+      dispatch({
+        type: types.CONNECTION_CREATED,
+        connection: referenceCreated
+      });
+      callback(referenceCreated);
+      dispatch(notify('saved successfully !', 'success'));
     });
   };
 }

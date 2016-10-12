@@ -5,7 +5,7 @@ import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as actions from 'app/Viewer/actions/uiActions';
 
-describe('documentReducer', () => {
+describe('Viewer uiReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = uiReducer();
@@ -165,11 +165,11 @@ describe('documentReducer', () => {
     });
   });
 
-  describe('ADD_CREATED_REFERENCE', () => {
+  describe('ADD_REFERENCE', () => {
     it('should set reference = {} and panel=false', () => {
       let newState = uiReducer(Immutable.fromJS(
         {panel: 'panel', reference: {sourceRange: 'sourceRange'}}
-      ), {type: types.ADD_CREATED_REFERENCE});
+      ), {type: types.ADD_REFERENCE});
       let expected = Immutable.fromJS({panel: false, reference: {}});
 
       expect(newState).toEqualImmutable(expected);

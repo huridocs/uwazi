@@ -18,22 +18,17 @@ export function setReferences(references) {
   };
 }
 
-export function saveReference(reference, tab) {
+export function addReference(reference) {
   return function (dispatch) {
-    return refenrecesAPI.save(reference)
-    .then((referenceCreated) => {
-      dispatch({
-        type: types.ADD_CREATED_REFERENCE,
-        reference: referenceCreated
-      });
-      // OJO!!!! MUY IMPORTANTE VERIFICAR ESTO!!!
-      dispatch(actions.unset('viewer/targetDoc'));
-      dispatch(actions.unset('viewer/targetDocHTML'));
-      dispatch(actions.unset('viewer/targetDocReferences'));
-      // -----------------------------------------
-      dispatch(uiActions.activateReference(referenceCreated._id, tab));
-      dispatch(notify('saved successfully !', 'success'));
+    const tab = reference.sourceRange.text ? 'references' : 'connections';
+    dispatch({
+      type: types.ADD_REFERENCE,
+      reference: reference
     });
+    dispatch(actions.unset('viewer/targetDoc'));
+    dispatch(actions.unset('viewer/targetDocHTML'));
+    dispatch(actions.unset('viewer/targetDocReferences'));
+    dispatch(uiActions.activateReference(reference._id, tab));
   };
 }
 
