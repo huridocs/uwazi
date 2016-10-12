@@ -62,9 +62,9 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    describe('when published property changes', () => {
-      it('should should replicate the change for all the languages', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', published: false};
+    describe('when published/template property changes', () => {
+      it('should replicate the change for all the languages', (done) => {
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', published: false, template: 'newTemplate'};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
@@ -76,7 +76,9 @@ describe('entities', () => {
         })
         .then(([docES, docEN]) => {
           expect(docES.rows[0].published).toBe(false);
+          expect(docES.rows[0].template).toBe('newTemplate');
           expect(docEN.rows[0].published).toBe(false);
+          expect(docEN.rows[0].template).toBe('newTemplate');
           done();
         })
         .catch(catchErrors(done));

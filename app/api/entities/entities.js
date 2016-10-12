@@ -26,6 +26,7 @@ export default {
               return doc;
             }
             d.published = doc.published;
+            d.template = doc.template;
             return d;
           });
           return Promise.all(docs.map(d => request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)));
