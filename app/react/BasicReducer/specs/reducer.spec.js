@@ -35,6 +35,19 @@ describe('BasicReducer', () => {
     });
   });
 
+  describe('Push', () => {
+    fit('should add an element to an array', () => {
+      let reducer1 = createReducer('namespace1', []);
+      let reducer2 = createReducer('namespace2', []);
+
+      let newState1 = reducer1([{_id: '1'}], actions.push('namespace1', {_id: '2'}));
+      let newState2 = reducer2([{_id: '1'}], actions.push('namespace1', {_id: '2'}));
+
+      expect(newState1.toJS()).toEqual([{_id: '1'}, {_id: '2'}]);
+      expect(newState2.toJS()).toEqual([{_id: '1'}]);
+    });
+  });
+
   describe('Delete', () => {
     it('should delete an element from the array based on the id', () => {
       let reducer1 = createReducer('namespace1', []);
