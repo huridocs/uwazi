@@ -64,23 +64,23 @@ export class AccountSettings extends Component {
     return (
       <div className="account-settings">
         <div className="panel panel-default">
-          <div className="panel-heading">{t('Email address')}</div>
+          <div className="panel-heading">{t('System', 'Email address')}</div>
           <div className="panel-body">
             <form onSubmit={this.updateEmail.bind(this)}>
               <div className="form-group">
-                <label htmlFor="collection_name">{t('Email')}</label>
+                <label htmlFor="collection_name">{t('System', 'Email')}</label>
                 <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
               </div>
-              <button type="submit" className="btn btn-success">{t('Update')}</button>
+              <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
             </form>
           </div>
         </div>
         <div className="panel panel-default">
-          <div className="panel-heading">{t('Change password')}</div>
+          <div className="panel-heading">{t('System', 'Change password')}</div>
           <div className="panel-body">
             <form onSubmit={this.updatePassword.bind(this)}>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                <label htmlFor="password">{t('New password')}</label>
+                <label htmlFor="password">{t('System', 'New password')}</label>
                 <input
                   type="password"
                   onChange={this.passwordChange.bind(this)}
@@ -89,7 +89,7 @@ export class AccountSettings extends Component {
                   className="form-control"/>
               </div>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                <label htmlFor="repeatPassword">{t('Confirm new password')}</label>
+                <label htmlFor="repeatPassword">{t('System', 'Confirm new password')}</label>
                 <input
                   type="password"
                   onChange={this.repeatPasswordChange.bind(this)}
@@ -102,18 +102,18 @@ export class AccountSettings extends Component {
                   return <div className="validation-error validation-error-centered">
                             <i className="fa fa-exclamation-triangle"></i>
                             &nbsp;
-                            {t('bothFieldsRequired', 'Both fields are required and should match.')}
+                            {t('System', 'bothFieldsRequired', 'Both fields are required and should match.')}
                         </div>;
                 }
               })()}
-              <button type="submit" className="btn btn-success">{t('Update')}</button>
+              <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
             </form>
           </div>
         </div>
         <div className="panel panel-default">
-          <div className="panel-heading">{t('Close admin session')}</div>
+          <div className="panel-heading">{t('System', 'Close admin session')}</div>
           <div className="panel-body">
-            <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> {t('Logout')}</span></a>
+            <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> {t('System', 'Logout')}</span></a>
           </div>
         </div>
       </div>

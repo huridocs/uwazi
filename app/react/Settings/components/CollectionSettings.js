@@ -32,14 +32,14 @@ export class CollectionSettings extends Component {
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('Collection settings')}</div>
+        <div className="panel-heading">{t('System', 'Collection settings')}</div>
         <div className="panel-body">
           <form onSubmit={this.updateSettings.bind(this)}>
             <div className="form-group">
               <label htmlFor="collection_name">Name</label>
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
-            <button type="submit" className="btn btn-success">{t('Update')}</button>
+            <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
           </form>
         </div>
       </div>

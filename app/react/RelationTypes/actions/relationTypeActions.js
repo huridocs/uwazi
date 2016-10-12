@@ -8,7 +8,7 @@ export function saveRelationType(relationType) {
   return function (dispatch) {
     return api.save(relationType).then(() => {
       dispatch({type: types.RELATION_TYPE_SAVED});
-      notifications.notify(t('RelationType saved'), 'success')(dispatch);
+      notifications.notify(t('System', 'RelationType saved'), 'success')(dispatch);
     });
   };
 }

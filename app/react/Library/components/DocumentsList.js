@@ -34,7 +34,7 @@ export class DocumentsList extends Component {
         <div className="sort-by">
           <div className="row">
             <p id="documents-counter" className="col-sm-7 text-left documents-counter">
-              {`${documents.rows.length} ${t('of')} ${documents.totalRows} ${t('documents')}`}
+              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
             </p>
             <SortButtons />
           </div>

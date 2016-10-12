@@ -15,16 +15,16 @@ export class DocumentTypesList extends Component {
         accept: () => {
           this.props.deleteTemplate(template);
         },
-        title: `${t('confirmDeleteDocumentTypeTitle', 'Confirm delete document type:')} ${template.name}`,
-        message: t('confirmDeleteDocumentTypeMessage', 'Are you sure you want to delete this document type?')
+        title: `${t('System', 'Confirm delete document type title', 'Confirm delete document type:')} ${template.name}`,
+        message: t('System', 'Confirm delete document type message', 'Are you sure you want to delete this document type?')
       });
     })
     .catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: `${t('cantDeleteDocumentTypeTitle', 'Cannot delete document type:')} ${template.name}`,
-        message: t('cantDeleteDocumentTypeMessage', 'This document type has associated documnets and cannot be deleted.')
+        title: `${t('System', 'Cannot delete document type title', 'Cannot delete document type:')} ${template.name}`,
+        message: t('System', 'Cannot delete document type message', 'This document type has associated documnets and cannot be deleted.')
       });
     });
   }
@@ -42,11 +42,11 @@ export class DocumentTypesList extends Component {
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/documents/edit/' + template._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
-                  <span>{t('Edit')}</span>
+                  <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>
-                  <span>{t('Delete')}</span>
+                  <span>{t('System', 'Delete')}</span>
                 </button>
               </div>
             </li>;
@@ -56,7 +56,7 @@ export class DocumentTypesList extends Component {
         <I18NLink to="/settings/documents/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>{t('Add document')}</span>
+          <span>{t('System', 'Add document')}</span>
         </I18NLink>
       </div>
     </div>;

@@ -27,20 +27,20 @@ class Footer extends Component {
             <li className="footer-nav_separator">&nbsp;</li>
 
             <li className="footer-nav_item">
-              <I18NLink to="/">{t('Library')}</I18NLink>
+              <I18NLink to="/">{t('System', 'Library')}</I18NLink>
             </li>
             <li className="footer-nav_item">
-              <I18NLink to="/uploads">{t('Uploads')}</I18NLink>
+              <I18NLink to="/uploads">{t('System', 'Uploads')}</I18NLink>
             </li>
             {(() => {
               if (!this.props.user._id) {
                 return <li className="footer-nav_item">
-                        <I18NLink to="/login">{t('Login')}</I18NLink>
+                        <I18NLink to="/login">{t('System', 'Login')}</I18NLink>
                        </li>;
               }
 
               return <li className="footer-nav_item">
-                <I18NLink to="/settings">{t('Settings')}</I18NLink>
+                <I18NLink to="/settings">{t('System', 'Settings')}</I18NLink>
               </li>;
             })()}
 

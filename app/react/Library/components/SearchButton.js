@@ -27,7 +27,7 @@ export class SearchButton extends Component {
       <a href='#' className={'search-button btn ' + activeClass} onClick={toggle}>
         <div className="searchButton-open">
           <i className="fa fa-search"></i>
-          <span>{t('Search')}...</span>
+          <span>{t('System', 'Search')}...</span>
         </div>
         <div className="searchButton-close">
           <i className="fa fa-chevron-right"></i>
