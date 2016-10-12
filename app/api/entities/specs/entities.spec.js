@@ -62,6 +62,27 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    describe('when published property changes', () => {
+      it('should should replicate the change for all the languages', (done) => {
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', published: false};
+
+        entities.save(doc, {language: 'en'})
+        .then((updatedDoc) => {
+          expect(updatedDoc.language).toBe('en');
+          return Promise.all([
+            entities.get('shared', 'es'),
+            entities.get('shared', 'en')
+          ]);
+        })
+        .then(([docES, docEN]) => {
+          expect(docES.rows[0].published).toBe(false);
+          expect(docEN.rows[0].published).toBe(false);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     it('should saveEntityBasedReferences', (done) => {
       spyOn(date, 'currentUTC').and.returnValue('universal time');
       let doc = {title: 'Batman begins'};
@@ -99,7 +120,7 @@ describe('entities', () => {
         getDocument()
         .then((doc) => {
           let modifiedDoc = {_id: doc._id, _rev: doc._rev, test: 'test', sharedId: doc.sharedId, language: doc.language};
-          return entities.save(modifiedDoc, {language: 'en'});
+          return entities.save(modifiedDoc, {language: 'es'});
         })
         .then(getDocuments)
         .then((docs) => {

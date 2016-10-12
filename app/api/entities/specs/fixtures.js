@@ -1,7 +1,7 @@
 export default {
   "docs":[
     {"_id":"8202c463d6158af8065022d9b5014a18", "sharedId": "shared", "type":"entity", "language": "en", "title":"Batman finishes", "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
-    {"_id":"8202c463d6158af8065022d9b5014ccb", "sharedId": "shared", "language": "en", "type":"entity","title":"Penguin almost done", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
+    {"_id":"8202c463d6158af8065022d9b5014ccb", "sharedId": "shared", "language": "es", "type":"entity","title":"Penguin almost done", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
     {"_id":"d0298a48d1221c5ceb53c4879301507f", "type":"entity","title":"Right there", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c95"}},
     {"_id":"d0298a48d1221c5ceb53c4879301508f", "type":"entity","title":"unpublished", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c94"}},
     // metadata property name changes

@@ -19,7 +19,17 @@ export default {
     return settings.get()
     .then(({languages}) => {
       if (doc._id) {
-        return request.post(dbURL + '/_design/entities/_update/partialUpdate/' + doc._id, doc);
+        return this.getAllLanguages(doc.sharedId)
+        .then((docLanguages) => {
+          const docs = docLanguages.rows.map((d) => {
+            if (d._id === doc._id) {
+              return doc;
+            }
+            d.published = doc.published;
+            return d;
+          });
+          return Promise.all(docs.map(d => request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)));
+        }).then(docs => docs.find(d => d.language === language));
       }
 
       const docs = languages.map((lang) => {
