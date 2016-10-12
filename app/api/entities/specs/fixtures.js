@@ -11,8 +11,8 @@ export default {
     {"_id":"d0298a48d1221c5ceb53c48793015081", "type":"entity", "sharedId": "sharedId2", "language": "en","title":"doc2", "template": 'template1', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
     {"_id":"d0298a48d1221c5ceb53c48793015082", "type":"entity","title":"doc3", "template": 'template2', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
     //references
-    {"_id":"c08ef2532f0bd008ac5174b45e033c00","type":"reference", "title":"reference1", "sourceDocument": "8202c463d6158af8065022d9b5014a18", relationtype: 'relation1'},
-    {"_id":"c08ef2532f0bd008ac5174b45e033c01","type":"reference", "title":"reference2", "sourceDocument": "source2", relationtype: 'relation2', "targetDocument": "8202c463d6158af8065022d9b5014a18"},
+    {"_id":"c08ef2532f0bd008ac5174b45e033c00","type":"reference", "title":"reference1", "sourceDocument": "shared", relationtype: 'relation1'},
+    {"_id":"c08ef2532f0bd008ac5174b45e033c01","type":"reference", "title":"reference2", "sourceDocument": "source2", relationtype: 'relation2', "targetDocument": "shared"},
     //select/multiselect/date sync
     {"_id":"8202c463d6158af8065022d9b5014a19", "template": "c08ef2532f0bd008ac5174b45e033c93", "sharedId": "shared1", "language": "en", "type":"entity", "title":"EN", "published": true, "metadata": {text: 'text'}, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},
     {"_id":"8202c463d6158af8065022d9b5014c11", "template": "c08ef2532f0bd008ac5174b45e033c93", "sharedId": "shared1", "language": "es", "type":"entity", "title":"ES", "creationDate": '1', "published": true, "metadata": {text: 'text'}, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}},

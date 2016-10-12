@@ -312,11 +312,10 @@ describe('entities', () => {
       });
     });
 
-    // refactor to delete refernces based on sharedId
     it('should delete the document references', (done) => {
       request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
       .then((response) => {
-        return entities.delete(response.json._id);
+        return entities.delete(response.json.sharedId);
       })
       .then(() => {
         return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
@@ -332,7 +331,7 @@ describe('entities', () => {
     it('should delete references to the document', (done) => {
       request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
       .then((response) => {
-        return entities.delete(response.json._id, response.json._rev);
+        return entities.delete(response.json.sharedId);
       })
       .then(() => {
         return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`);

@@ -188,40 +188,6 @@ describe('documents', () => {
       });
     });
 
-    // refactor to delete refernces based on sharedId
-    xit('should delete the document references', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      .then((response) => {
-        return documents.delete(response.json.sharedId);
-      })
-      .then(() => {
-        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
-      })
-      .then(done.fail)
-      .catch((error) => {
-        expect(error.json.error).toBe('not_found');
-        expect(error.json.reason).toBe('deleted');
-        done();
-      });
-    });
-
-    // refactor to delete refernces based on sharedId
-    xit('should delete references to the document', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      .then((response) => {
-        return documents.delete(response.json._id, response.json._rev);
-      })
-      .then(() => {
-        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`);
-      })
-      .then(done.fail)
-      .catch((error) => {
-        expect(error.json.error).toBe('not_found');
-        expect(error.json.reason).toBe('deleted');
-        done();
-      });
-    });
-
     it('should delete the original file and conversion files', (done) => {
       documents.delete('id')
       .then(() => {
