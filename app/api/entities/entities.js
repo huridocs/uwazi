@@ -5,6 +5,7 @@ import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import references from '../references/references.js';
 import settings from '../settings';
+import templates from '../templates';
 import ID from 'shared/uniqueId';
 
 export default {
@@ -19,8 +20,13 @@ export default {
     return settings.get()
     .then(({languages}) => {
       if (doc._id) {
-        return this.getAllLanguages(doc.sharedId)
-        .then((docLanguages) => {
+        return Promise.all([
+          this.getAllLanguages(doc.sharedId),
+          templates.getById(doc.template)
+        ])
+        .then(([docLanguages, templateResult]) => {
+          const template = templateResult || {properties: []};
+          const toSyncProperties = template.properties.filter(p => p.type.match('select|multiselect|date')).map(p => p.name);
           const docs = docLanguages.rows.map((d) => {
             if (d._id === doc._id) {
               return doc;
@@ -28,12 +34,16 @@ export default {
             if (!d.metadata) {
               d.metadata = doc.metadata;
             }
+            toSyncProperties.forEach((p) => {
+              d.metadata[p] = doc.metadata[p];
+            });
             d.published = doc.published;
             d.template = doc.template;
             return d;
           });
+
           return Promise.all(docs.map(d => request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)));
-        }).then(docs => docs.find(d => d.language === language));
+        });
       }
 
       const docs = languages.map((lang) => {
@@ -47,7 +57,8 @@ export default {
     })
     .then(() => this.get(sharedId, language))
     .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0])]);
+      //test language
+      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0], language)]);
     })
     .then(([response]) => response.rows[0]);
   },

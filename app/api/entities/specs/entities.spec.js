@@ -64,7 +64,7 @@ describe('entities', () => {
 
     describe('when other languages have no metadata', () => {
       it('should replicate metadata being saved', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: 'newMetadata'};
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: {text: 'newMetadata'}, template: "c08ef2532f0bd008ac5174b45e033c93"};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
@@ -76,8 +76,8 @@ describe('entities', () => {
           ]);
         })
         .then(([docES, docEN, docPT]) => {
-          expect(docEN.rows[0].metadata).toBe('newMetadata');
-          expect(docES.rows[0].metadata).toBe('newMetadata');
+          expect(docEN.rows[0].metadata.text).toBe('newMetadata');
+          expect(docES.rows[0].metadata.text).toBe('newMetadata');
           expect(docPT.rows[0].metadata).toEqual({test: 'test'});
           done();
         })
@@ -87,7 +87,7 @@ describe('entities', () => {
 
     describe('when published/template property changes', () => {
       it('should replicate the change for all the languages', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', published: false, template: 'newTemplate'};
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: {}, published: false, template: "c08ef2532f0bd008ac5174b45e033c93"};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
@@ -99,13 +99,51 @@ describe('entities', () => {
         })
         .then(([docES, docEN]) => {
           expect(docES.rows[0].published).toBe(false);
-          expect(docES.rows[0].template).toBe('newTemplate');
+          expect(docES.rows[0].template).toBe('c08ef2532f0bd008ac5174b45e033c93');
           expect(docEN.rows[0].published).toBe(false);
-          expect(docEN.rows[0].template).toBe('newTemplate');
+          expect(docEN.rows[0].template).toBe('c08ef2532f0bd008ac5174b45e033c93');
           done();
         })
         .catch(catchErrors(done));
       });
+    });
+
+    it('should sync select/multiselect/dates', (done) => {
+      let doc = {_id: '8202c463d6158af8065022d9b5014a19', sharedId: 'shared1', template: 'c08ef2532f0bd008ac5174b45e033c93', metadata: {
+        text: 'changedText',
+        select: 'select',
+        multiselect: 'multiselect',
+        date: 'date'
+      }};
+
+      entities.save(doc, {language: 'en'})
+      .then((updatedDoc) => {
+        expect(updatedDoc.language).toBe('en');
+        return Promise.all([
+          entities.get('shared1', 'en'),
+          entities.get('shared1', 'es'),
+          entities.get('shared1', 'pt')
+        ]);
+      })
+      .then(([docEN, docES, docPT]) => {
+
+        expect(docEN.rows[0].metadata.text).toBe('changedText');
+        expect(docEN.rows[0].metadata.select).toBe('select');
+        expect(docEN.rows[0].metadata.multiselect).toBe('multiselect');
+        expect(docEN.rows[0].metadata.date).toBe('date');
+
+        expect(docES.rows[0].metadata.text).toBe('text');
+        expect(docES.rows[0].metadata.select).toBe('select');
+        expect(docES.rows[0].metadata.multiselect).toBe('multiselect');
+        expect(docES.rows[0].metadata.date).toBe('date');
+
+        expect(docPT.rows[0].metadata.text).toBe('text');
+        expect(docPT.rows[0].metadata.select).toBe('select');
+        expect(docPT.rows[0].metadata.multiselect).toBe('multiselect');
+        expect(docPT.rows[0].metadata.date).toBe('date');
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
     it('should saveEntityBasedReferences', (done) => {
@@ -128,7 +166,7 @@ describe('entities', () => {
         spyOn(date, 'currentUTC').and.returnValue('another_date');
         getDocument()
         .then((doc) => {
-          let modifiedDoc = {_id: doc._id, _rev: doc._rev, sharedId: doc.sharedId, language: doc.language};
+          let modifiedDoc = {_id: doc._id, _rev: doc._rev, sharedId: doc.sharedId, language: doc.language, template: doc.template};
           return entities.save(modifiedDoc, {user: 'another_user', language: 'en'});
         })
         .then(getDocuments)

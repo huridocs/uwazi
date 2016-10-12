@@ -12,6 +12,7 @@ export default (app) => {
     return documents.save(req.body, {user: req.user, language: req.language})
     .then(doc => res.json(doc))
     .catch(error => {
+      console.log(error);
       res.json({error: error});
     });
   });
