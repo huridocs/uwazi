@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {I18NLink} from 'app/I18N';
+import {I18NLink, t} from 'app/I18N';
 import {deleteTemplate, checkTemplateCanBeDeleted} from 'app/Templates/actions/templatesActions';
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
@@ -15,23 +15,23 @@ export class DocumentTypesList extends Component {
         accept: () => {
           this.props.deleteTemplate(template);
         },
-        title: 'Confirm delete document type: ' + template.name,
-        message: 'Are you sure you want to delete this document type?'
+        title: `${t('confirmDeleteDocumentTypeTitle', 'Confirm delete document type:')} ${template.name}`,
+        message: t('confirmDeleteDocumentTypeMessage', 'Are you sure you want to delete this document type?')
       });
     })
     .catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: 'Cannot delete document type: ' + template.name,
-        message: 'This document type has associated documnets and cannot be deleted.'
+        title: `${t('cantDeleteDocumentTypeTitle', 'Cannot delete document type:')} ${template.name}`,
+        message: t('cantDeleteDocumentTypeMessage', 'This document type has associated documnets and cannot be deleted.')
       });
     });
   }
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Documents</div>
+      <div className="panel-heading">{t('Documents')}</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
           if (template.isEntity) {
@@ -42,11 +42,11 @@ export class DocumentTypesList extends Component {
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/documents/edit/' + template._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
-                  <span>Edit</span>
+                  <span>{t('Edit')}</span>
                 </I18NLink>
                 <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>
-                  <span>Delete</span>
+                  <span>{t('Delete')}</span>
                 </button>
               </div>
             </li>;
@@ -56,7 +56,7 @@ export class DocumentTypesList extends Component {
         <I18NLink to="/settings/documents/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>Add document</span>
+          <span>{t('Add document')}</span>
         </I18NLink>
       </div>
     </div>;

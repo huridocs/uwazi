@@ -5,6 +5,7 @@ import {actions} from 'app/BasicReducer';
 
 import UsersAPI from 'app/Users/UsersAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
+import {t} from 'app/I18N';
 
 
 export class AccountSettings extends Component {
@@ -37,7 +38,7 @@ export class AccountSettings extends Component {
     let userData = Object.assign({}, this.props.user, {email: this.state.email});
     UsersAPI.save(userData)
     .then((result) => {
-      this.props.notify('Email updated', 'success');
+      this.props.notify(t('Email updated'), 'success');
       this.props.setUser(Object.assign(userData, {_rev: result.rev}));
     });
   }
@@ -53,7 +54,7 @@ export class AccountSettings extends Component {
 
     UsersAPI.save(Object.assign({}, this.props.user, {password: this.state.password}))
     .then((result) => {
-      this.props.notify('Password updated', 'success');
+      this.props.notify(t('Password updated'), 'success');
       this.props.setUser(Object.assign(this.props.user, {_rev: result.rev}));
     });
     this.setState({password: '', repeatPassword: ''});
@@ -63,23 +64,23 @@ export class AccountSettings extends Component {
     return (
       <div className="account-settings">
         <div className="panel panel-default">
-          <div className="panel-heading">Email address</div>
+          <div className="panel-heading">{t('Email address')}</div>
           <div className="panel-body">
             <form onSubmit={this.updateEmail.bind(this)}>
               <div className="form-group">
-                <label htmlFor="collection_name">Email</label>
+                <label htmlFor="collection_name">{t('Email')}</label>
                 <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
               </div>
-              <button type="submit" className="btn btn-success">Update</button>
+              <button type="submit" className="btn btn-success">{t('Update')}</button>
             </form>
           </div>
         </div>
         <div className="panel panel-default">
-          <div className="panel-heading">Change password</div>
+          <div className="panel-heading">{t('Change password')}</div>
           <div className="panel-body">
             <form onSubmit={this.updatePassword.bind(this)}>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                <label htmlFor="password">New password</label>
+                <label htmlFor="password">{t('New password')}</label>
                 <input
                   type="password"
                   onChange={this.passwordChange.bind(this)}
@@ -88,7 +89,7 @@ export class AccountSettings extends Component {
                   className="form-control"/>
               </div>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                <label htmlFor="repeatPassword">Confirm new password</label>
+                <label htmlFor="repeatPassword">{t('Confirm new password')}</label>
                 <input
                   type="password"
                   onChange={this.repeatPasswordChange.bind(this)}
@@ -101,18 +102,18 @@ export class AccountSettings extends Component {
                   return <div className="validation-error validation-error-centered">
                             <i className="fa fa-exclamation-triangle"></i>
                             &nbsp;
-                            Both fields are required and should match.
+                            {t('bothFieldsRequired', 'Both fields are required and should match.')}
                         </div>;
                 }
               })()}
-              <button type="submit" className="btn btn-success">Update</button>
+              <button type="submit" className="btn btn-success">{t('Update')}</button>
             </form>
           </div>
         </div>
         <div className="panel panel-default">
-          <div className="panel-heading">Close admin session</div>
+          <div className="panel-heading">{t('Close admin session')}</div>
           <div className="panel-body">
-            <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> Logout</span></a>
+            <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> {t('Logout')}</span></a>
           </div>
         </div>
       </div>

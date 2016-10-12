@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions} from 'react-redux-form';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
+import {t} from 'app/I18N';
 
 export class SortButtons extends Component {
   sort(property, defaultOrder) {
@@ -51,14 +52,14 @@ export class SortButtons extends Component {
 
     return (
       <p className="col-sm-5">
-        Sort by
+        {t('Sort by')}
         {additionalSorts}
         <span className={sortingTitle ? 'active' : ''} onClick={() => this.sort('title.raw', 'asc')}>
           A-Z
           {sortingTitle ? <i className={'fa fa-caret-' + order}></i> : ''}
         </span>
         <span className={sortingRecent ? 'active' : ''} onClick={() => this.sort('creationDate', 'desc')}>
-          Recent
+          {t('Recent')}
           {sortingRecent ? <i className={'fa fa-caret-' + order}></i> : ''}
         </span>
       </p>

@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {actions} from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
+import {t} from 'app/I18N';
 
 export class CollectionSettings extends Component {
 
@@ -23,7 +24,7 @@ export class CollectionSettings extends Component {
     const {_id, _rev, site_name} = this.props.settings;
     SettingsAPI.save({_id, _rev, site_name})
     .then((result) => {
-      this.props.notify('Settings updated.', 'success');
+      this.props.notify(t('Settings updated.'), 'success');
       this.props.setSettings(Object.assign(this.props.settings, result));
     });
   }
@@ -31,14 +32,14 @@ export class CollectionSettings extends Component {
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">Collection settings</div>
+        <div className="panel-heading">{t('Collection settings')}</div>
         <div className="panel-body">
           <form onSubmit={this.updateSettings.bind(this)}>
             <div className="form-group">
               <label htmlFor="collection_name">Name</label>
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
-            <button type="submit" className="btn btn-success">Update</button>
+            <button type="submit" className="btn btn-success">{t('Update')}</button>
           </form>
         </div>
       </div>

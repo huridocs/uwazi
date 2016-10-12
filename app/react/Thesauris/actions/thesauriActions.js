@@ -1,4 +1,5 @@
 import {actions as formActions} from 'react-redux-form';
+import {t} from 'app/I18N';
 
 import * as types from 'app/Thesauris/actions/actionTypes';
 import api from 'app/Thesauris/ThesaurisAPI';
@@ -9,7 +10,7 @@ export function saveThesauri(thesauri) {
   return function (dispatch) {
     return api.save(thesauri).then(() => {
       dispatch({type: types.THESAURI_SAVED});
-      notifications.notify('Thesauri saved', 'success')(dispatch);
+      notifications.notify(t('Thesauri saved'), 'success')(dispatch);
     });
   };
 }

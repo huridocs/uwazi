@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 import RouteHandler from 'app/App/RouteHandler';
+import {t} from 'app/I18N';
 
 import auth from 'app/Auth';
 
@@ -51,28 +52,28 @@ export class Login extends RouteHandler {
           <Form onSubmit={this.submit.bind(this)} model="login.form">
             <div className={'form-group login-email' + (this.state.error ? ' has-error' : '')}>
               <Field model="login.form.username">
-                <label htmlFor="username">{this.state.recoverPassword ? 'EMAIL' : 'LOGIN'}</label>
+                <label htmlFor="username">{this.state.recoverPassword ? t('Email') : t('User')}</label>
                 <input type="text" name="username" id="username" className="form-control"/>
               </Field>
             </div>
             <div className={'form-group login-password ' + (this.state.error ? 'has-error' : '') + (this.state.recoverPassword ? ' is-hidden' : '')}>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('Password')}</label>
               <div className="input-group">
                 <Field model="login.form.password">
                   <input type="password" name="password" id="password" className="form-control"/>
                 </Field>
                   <div className="input-group-btn">
-                    <div title="Don't remember your password?"
+                    <div title="{t('forgotPassword', 'Don\'t remember your password?')}"
                       onClick={this.setRecoverPassword.bind(this)} className={'btn' + (this.state.error ? ' btn-danger' : ' btn-default')}
                     >
                       <i className="fa fa-question"></i>
                     </div>
                   </div>
               </div>
-              <div className="required">Login failed</div>
+              <div className="required">{t('Login failed')}</div>
             </div>
             <button type="submit" className={'btn btn-block btn-lg ' + (this.state.recoverPassword ? 'btn-success' : 'btn-primary')}>
-              {this.state.recoverPassword ? 'Send recovery email' : 'Login'}
+              {this.state.recoverPassword ? t('Send recovery email') : t('loginButton', 'Login')}
             </button>
           </Form>
         </div>
