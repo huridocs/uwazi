@@ -62,6 +62,29 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    describe('when other languages have no metadata', () => {
+      it('should replicate metadata being saved', (done) => {
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: 'newMetadata'};
+
+        entities.save(doc, {language: 'en'})
+        .then((updatedDoc) => {
+          expect(updatedDoc.language).toBe('en');
+          return Promise.all([
+            entities.get('shared', 'es'),
+            entities.get('shared', 'en'),
+            entities.get('shared', 'pt')
+          ]);
+        })
+        .then(([docES, docEN, docPT]) => {
+          expect(docEN.rows[0].metadata).toBe('newMetadata');
+          expect(docES.rows[0].metadata).toBe('newMetadata');
+          expect(docPT.rows[0].metadata).toEqual({test: 'test'});
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     describe('when published/template property changes', () => {
       it('should replicate the change for all the languages', (done) => {
         let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', published: false, template: 'newTemplate'};

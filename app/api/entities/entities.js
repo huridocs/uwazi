@@ -25,6 +25,9 @@ export default {
             if (d._id === doc._id) {
               return doc;
             }
+            if (!d.metadata) {
+              d.metadata = doc.metadata;
+            }
             d.published = doc.published;
             d.template = doc.template;
             return d;
