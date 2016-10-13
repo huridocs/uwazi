@@ -15,12 +15,6 @@ describe('Viewer uiActions', () => {
       expect(action).toEqual({type: types.OPEN_PANEL, panel: 'a panel'});
     });
   });
-  describe('viewerSearching()', () => {
-    it('should return a VIEWER_SEARCHING', () => {
-      let action = actions.viewerSearching();
-      expect(action).toEqual({type: types.VIEWER_SEARCHING});
-    });
-  });
   describe('selectTargetDocument()', () => {
     it('should return a SELECT_TARGET_DOCUMENT with id', () => {
       let action = actions.selectTargetDocument('id');

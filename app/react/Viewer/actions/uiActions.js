@@ -16,11 +16,11 @@ export function openPanel(panel) {
   };
 }
 
-export function viewerSearching() {
-  return {
-    type: types.VIEWER_SEARCHING
-  };
-}
+// export function viewerSearching() {
+//   return {
+//     type: types.VIEWER_SEARCHING
+//   };
+// }
 
 export function resetReferenceCreation() {
   return function (dispatch) {

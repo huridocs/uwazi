@@ -170,28 +170,6 @@ describe('documentActions', () => {
       });
     });
 
-    describe('viewerSearchDocuments', () => {
-      it('should searchDocuments with passed searchTerm', (done) => {
-        let searchTerm = 'term';
-
-        spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: 'documents'}}));
-
-        const expectedActions = [
-          {type: types.VIEWER_SEARCHING},
-          {type: 'viewer/documentResults/SET', value: 'documents'}
-        ];
-        const store = mockStore({});
-
-        store.dispatch(actions.viewerSearchDocuments(searchTerm))
-        .then(() => {
-          expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['doc.title']});
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));

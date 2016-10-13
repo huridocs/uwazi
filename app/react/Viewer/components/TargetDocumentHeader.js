@@ -2,11 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {actions} from 'app/BasicReducer';
-import {unsetTargetSelection, unsetSelection} from '../actions/selectionActions';
 import {addReference, saveTargetRangedReference} from '../actions/referencesActions';
 import {cancelTargetDocument} from '../actions/documentActions';
-import {actions as connectionsActions} from 'app/Connections';
 
 export class TargetDocumentHeader extends Component {
   render() {
@@ -40,15 +37,11 @@ export class TargetDocumentHeader extends Component {
 }
 
 TargetDocumentHeader.propTypes = {
-  unset: PropTypes.func,
-  unsetTargetSelection: PropTypes.func,
-  unsetSelection: PropTypes.func,
-  saveTargetRangedReference: PropTypes.func,
-  cancelTargetDocument: PropTypes.func,
   connection: PropTypes.object,
   reference: PropTypes.object,
   targetDocument: PropTypes.string,
-  saveConnection: PropTypes.func,
+  saveTargetRangedReference: PropTypes.func,
+  cancelTargetDocument: PropTypes.func,
   addReference: PropTypes.func
 };
 
@@ -63,12 +56,8 @@ function mapStateToProps({documentViewer, connections}) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    unset: actions.unset,
-    saveConnection: connectionsActions.saveConnection,
     saveTargetRangedReference,
     cancelTargetDocument,
-    unsetTargetSelection,
-    unsetSelection,
     addReference
   }, dispatch);
 }

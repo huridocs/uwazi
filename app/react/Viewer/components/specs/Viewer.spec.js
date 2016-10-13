@@ -15,7 +15,7 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({})
+      doc: Immutable({_id: 'id'})
     };
   });
 
