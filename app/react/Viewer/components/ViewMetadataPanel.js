@@ -126,7 +126,7 @@ export class ViewMetadataPanel extends Component {
         </NeedAuthorization>
 
         <NeedAuthorization>
-          <ShowIf if={this.props.tab === 'connections'}>
+          <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc}>
             <div className="sidepanel-footer">
             <button onClick={this.props.openConnectionsPanel.bind(null, 'basic', doc._id)}
                     className="create-connection btn btn-success">
@@ -200,7 +200,8 @@ ViewMetadataPanel.propTypes = {
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
   removeFromToc: PropTypes.func,
-  indentTocElement: PropTypes.func
+  indentTocElement: PropTypes.func,
+  isTargetDoc: PropTypes.bool
 };
 
 ViewMetadataPanel.contextTypes = {
@@ -229,7 +230,8 @@ const mapStateToProps = ({documentViewer}) => {
     references,
     tocForm: documentViewer.tocForm || [],
     tocBeingEdited: documentViewer.tocBeingEdited,
-    tocFormState: documentViewer.tocFormState
+    tocFormState: documentViewer.tocFormState,
+    isTargetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 
