@@ -23,10 +23,19 @@ describe('Connections actions', () => {
         expect(store.getActions()).toContain({type: 'SEARCHING_CONNECTIONS'});
       });
 
-      fit('should set the results upon getting results', (done) => {
+      fit('should set the results upon response', (done) => {
         actions.immidiateSearch(store.dispatch, 'term')
         .then(() => {
           const expectedAction = {type: 'connections/searchResults/SET', value: [{type: 'entity'}, {type: 'doc'}]};
+          expect(store.getActions()).toContain(expectedAction);
+          done();
+        });
+      });
+
+      fit('should not include entities if targetRanged', (done) => {
+        actions.immidiateSearch(store.dispatch, 'term', 'targetRanged')
+        .then(() => {
+          const expectedAction = {type: 'connections/searchResults/SET', value: [{type: 'doc'}]};
           expect(store.getActions()).toContain(expectedAction);
           done();
         });
