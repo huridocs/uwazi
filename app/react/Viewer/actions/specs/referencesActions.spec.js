@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 
 import {mockID} from 'shared/uniqueID.js';
 import {APIURL} from 'app/config.js';
+import {actions as connectionsActions} from 'app/Connections';
 import * as actions from 'app/Viewer/actions/referencesActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
@@ -26,9 +27,7 @@ describe('Viewer referencesActions', () => {
       mockID();
       spyOn(scroller, 'to');
       backend.restore();
-      backend
-      .mock(APIURL + 'references', 'POST', {body: JSON.stringify({_id: 'referenceCreated'})})
-      .mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})});
+      backend.mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})});
     });
 
     describe('addReference', () => {
@@ -68,6 +67,38 @@ describe('Viewer referencesActions', () => {
         reference.sourceRange.text = '';
         actions.addReference(reference)(store.dispatch, getState);
         expect(store.getActions()).toContain({type: 'SHOW_TAB', tab: 'connections'});
+      });
+    });
+
+    describe('saveTargetRangedReference', () => {
+      let store;
+      let saveConnectionDispatch;
+      let connection;
+      let targetRange;
+      let onCreate;
+
+      beforeEach(() => {
+        saveConnectionDispatch = jasmine.createSpy('saveConnectionDispatch').and.returnValue('returnValue');
+        connectionsActions.saveConnection = jasmine.createSpy('saveConnection').and.returnValue(saveConnectionDispatch);
+        store = mockStore({});
+        connection = {sourceDocument: 'sourceId'};
+        targetRange = {text: 'target text'};
+        onCreate = () => {};
+      });
+
+      it('should unset the targetDocReferences', () => {
+        const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch);
+        expect(store.getActions()).toContain({type: 'viewer/targetDocReferences/UNSET'});
+        expect(connectionsActions.saveConnection).toHaveBeenCalledWith({sourceDocument: 'sourceId', targetRange: {text: 'target text'}}, onCreate);
+        expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch);
+        expect(returnValue).toBe('returnValue');
+      });
+
+      it('should not act if targetRange empty', () => {
+        targetRange.text = '';
+        const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch);
+        expect(store.getActions().length).toBe(0);
+        expect(returnValue).toBeUndefined();
       });
     });
 

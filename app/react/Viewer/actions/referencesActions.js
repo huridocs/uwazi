@@ -6,13 +6,6 @@ import {actions} from 'app/BasicReducer';
 import * as uiActions from './uiActions';
 import {actions as connectionsActions} from 'app/Connections';
 
-// export function setRelationType(relationType) {
-//   return {
-//     type: types.SET_RELATION_TYPE,
-//     relationType
-//   };
-// }
-
 export function setReferences(references) {
   return {
     type: types.SET_REFERENCES,
@@ -33,17 +26,15 @@ export function addReference(reference) {
   };
 }
 
-// TEST!!!
 export function saveTargetRangedReference(connection, targetRange, onCreate) {
   return function (dispatch) {
-    if (targetRange) {
+    if (targetRange.text) {
       dispatch(actions.unset('viewer/targetDocReferences'));
       connection.targetRange = targetRange;
       return connectionsActions.saveConnection(connection, onCreate)(dispatch);
     }
   };
 }
-// ---
 
 export function deleteReference(reference) {
   return function (dispatch) {
