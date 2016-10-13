@@ -19,7 +19,7 @@ describe('ViewMetadataPanel', () => {
       rawDoc: fromJS({}),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
-      openConnectionsPanel: jasmine.createSpy('openConnectionsPanel'),
+      startNewConnection: jasmine.createSpy('startNewConnection'),
       references: fromJS([
         {_id: 'reference1', range: {start: 0}},
         {_id: 'reference2', range: {}},
