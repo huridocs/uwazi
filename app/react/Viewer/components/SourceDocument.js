@@ -35,14 +35,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  // ASK about why only unset if panel is closed!!!
-  // return Object.assign({}, stateProps, dispatchProps, ownProps, {
-  //   unsetSelection: () => {
-  //     if (!stateProps.panelIsOpen) {
-  //       dispatchProps.unsetSelection();
-  //     }
-  //   }
-  // });
   return Object.assign({}, stateProps, dispatchProps, ownProps, {unsetSelection: dispatchProps.unsetSelection});
 }
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);

@@ -15,7 +15,6 @@ import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
-// import ConfirmCloseReferenceForm from './ConfirmCloseReferenceForm';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 
@@ -51,9 +50,7 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        {/*<ConfirmCloseReferenceForm />*/}
         <ViewMetadataPanel />
-        {/* // TEST!!! */}
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : this.props.doc.get('_id')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
