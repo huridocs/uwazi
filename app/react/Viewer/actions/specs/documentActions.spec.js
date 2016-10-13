@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 
-import api from 'app/utils/api';
 import {mockID} from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
