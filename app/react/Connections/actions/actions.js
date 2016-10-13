@@ -1,7 +1,7 @@
 import {actions} from 'app/BasicReducer';
 import {notify} from 'app/Notifications';
-import refenrecesAPI from 'app/Viewer/referencesAPI';
 import api from 'app/utils/api';
+import referencesAPI from 'app/Viewer/referencesAPI';
 import debounce from 'app/utils/debounce';
 
 import * as types from './actionTypes';
@@ -20,6 +20,15 @@ export function immidiateSearch(dispatch, searchTerm, connectionType) {
     }
     dispatch(actions.set('connections/searchResults', results));
   });
+}
+
+const debouncedSearch = debounce(immidiateSearch, 400);
+
+export function search(searchTerm, connectionType) {
+  return function (dispatch) {
+    dispatch(actions.set('connections/searchTerm', searchTerm));
+    return debouncedSearch(dispatch, searchTerm, connectionType);
+  };
 }
 
 export function startNewConnection(connectionType, sourceDocument) {
@@ -46,21 +55,12 @@ export function setTargetDocument(id) {
   };
 }
 
-const debouncedSearch = debounce(immidiateSearch, 400);
-
-export function search(searchTerm, connectionType) {
-  return function (dispatch) {
-    dispatch(actions.set('connections/searchTerm', searchTerm));
-    return debouncedSearch(dispatch, searchTerm, connectionType);
-  };
-}
-
 export function saveConnection(connection, callback) {
   return function (dispatch) {
     dispatch({type: types.CREATING_CONNECTION});
     delete connection.type;
 
-    return refenrecesAPI.save(connection)
+    return referencesAPI.save(connection)
     .then((referenceCreated) => {
       dispatch({type: types.CONNECTION_CREATED, connection: referenceCreated});
       callback(referenceCreated);
