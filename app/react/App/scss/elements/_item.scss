@@ -1,7 +1,7 @@
 .item-group {
   display: flex;
   flex-wrap: wrap;
-  max-width: 1024px;
+  max-width: 960px;
   list-style-type: none;
   padding: 0;
   margin: auto;
@@ -281,7 +281,7 @@ $item-padding: 15px;
 .sort-by {
   display: table;
   width: 100%;
-  max-width: 1024px;
+  max-width: 960px;
   margin: 0 auto;
   text-align: center;
   @media(min-width: 1024px) {
