@@ -3,7 +3,6 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
-// import {viewerSearching} from 'app/Viewer/actions/uiActions';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
@@ -82,7 +81,6 @@ export function loadTargetDocument(id) {
   };
 }
 
-// TEST!!
 export function cancelTargetDocument() {
   return function (dispatch) {
     dispatch({type: connectionsTypes.CANCEL_RANGED_CONNECTION});
@@ -93,23 +91,6 @@ export function cancelTargetDocument() {
     dispatch(uiActions.openPanel('viewMetadataPanel'));
   };
 }
-// ------
-
-// export function viewerSearchDocuments(searchTerm) {
-//   return function (dispatch) {
-//     dispatch(viewerSearching());
-
-//     let search = {
-//       searchTerm,
-//       fields: ['doc.title']
-//     };
-
-//     return api.get('search', search)
-//     .then((response) => {
-//       dispatch(actions.set('viewer/documentResults', response.json.rows));
-//     });
-//   };
-// }
 
 export function editToc(toc) {
   return function (dispatch) {
