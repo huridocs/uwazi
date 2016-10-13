@@ -9,15 +9,11 @@ export class SaveButton extends Component {
 
   onClick(enabled, connection) {
     if (enabled) {
-      switch (this.props.action) {
-      case 'save':
+      if (this.props.action === 'save') {
         this.props.saveConnection(connection, this.props.onCreate);
-        break;
-      case 'connect':
+      }
+      if (this.props.action === 'connect') {
         this.props.selectRangedTarget(connection, this.props.onRangedConnect);
-        break;
-      default:
-        break;
       }
     }
   }
@@ -39,26 +35,18 @@ export class SaveButton extends Component {
       validator.sourceRange = {presence: true};
     }
 
-    let connectionReady = !validate(connection, validator);
-    let disabled = !connectionReady || this.props.busy;
-    // console.log('En button POST:', connection);
+    const connectionReady = !validate(connection, validator);
+    const disabled = !connectionReady || this.props.busy;
+    const buttonClass = this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
+    const iClass = this.props.action === 'save' ? 'fa fa-save' : 'fa fa-arrow-right';
 
-    switch (this.props.action) {
-    case 'save':
-      return <button className="btn btn-success"
-                     disabled={disabled}
-                     onClick={this.onClick.bind(this, !disabled, connection)}>
-               <i className={this.props.busy ? 'fa fa-spinner fa-spin' : 'fa fa-save'}></i>
-             </button>;
-    case 'connect':
-      return <button className="edit-metadata btn btn-success"
-                     disabled={!connectionReady}
-                     onClick={this.onClick.bind(this, !disabled, connection)}>
-               <i className={this.props.busy ? 'fa fa-spinner fa-spin' : 'fa fa-arrow-right'}></i>
-             </button>;
-    default:
-      return;
-    }
+    return (
+      <button className={buttonClass}
+              disabled={disabled}
+              onClick={this.onClick.bind(this, !disabled, connection)}>
+        <i className={this.props.busy ? 'fa fa-spinner fa-spin' : iClass}></i>
+      </button>
+    );
   }
 }
 
