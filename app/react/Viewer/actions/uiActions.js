@@ -16,12 +16,6 @@ export function openPanel(panel) {
   };
 }
 
-// export function viewerSearching() {
-//   return {
-//     type: types.VIEWER_SEARCHING
-//   };
-// }
-
 export function resetReferenceCreation() {
   return function (dispatch) {
     dispatch({type: types.RESET_REFERENCE_CREATION});
