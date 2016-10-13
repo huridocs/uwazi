@@ -11,7 +11,6 @@ export class PageViewer extends Component {
           <div className="main-wrapper">
             <div className="document">
               <div className="page">
-              <h1>{page.get('title')}</h1>
                 <div className="markdownViewer"
                   dangerouslySetInnerHTML={{__html: marked(page.getIn(['metadata', 'content']) || '', {sanitize: true})}}/>
                 </div>
