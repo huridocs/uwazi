@@ -35,15 +35,15 @@ export class SaveButton extends Component {
       validator.sourceRange = {presence: true};
     }
 
-    const connectionReady = !validate(connection, validator);
-    const disabled = !connectionReady || this.props.busy;
+    const connectionValid = !validate(connection, validator);
+    const enabled = connectionValid && !this.props.busy;
     const buttonClass = this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
     const iClass = this.props.action === 'save' ? 'fa fa-save' : 'fa fa-arrow-right';
 
     return (
       <button className={buttonClass}
-              disabled={disabled}
-              onClick={this.onClick.bind(this, !disabled, connection)}>
+              disabled={!enabled}
+              onClick={this.onClick.bind(this, enabled, connection)}>
         <i className={this.props.busy ? 'fa fa-spinner fa-spin' : iClass}></i>
       </button>
     );
