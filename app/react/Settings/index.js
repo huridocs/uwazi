@@ -8,6 +8,7 @@ import DocumentTypesList from './components/DocumentTypesList';
 import EntityTypesList from './components/EntityTypesList';
 import RelationTypesList from './components/RelationTypesList';
 import ThesaurisList from './components/ThesaurisList';
+import TranslationsList from './components/TranslationsList';
 
 export {
   Settings,
@@ -18,5 +19,6 @@ export {
   DocumentTypesList,
   EntityTypesList,
   RelationTypesList,
-  ThesaurisList
+  ThesaurisList,
+  TranslationsList
 };

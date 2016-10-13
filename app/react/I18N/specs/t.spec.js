@@ -30,7 +30,7 @@ describe('t', () => {
 
     state = {
       locale: 'es',
-      dictionaries: Immutable.fromJS(dictionaries)
+      translations: Immutable.fromJS(dictionaries)
     };
 
     spyOn(store, 'getState').and.returnValue(state);

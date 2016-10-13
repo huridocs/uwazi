@@ -123,12 +123,12 @@ function handleRoute(res, renderProps, req) {
         routeProps.requestState(renderProps.params, query),
         api.get('user'),
         api.get('settings'),
-        api.get('settings/dictionaries')
+        api.get('i18n/translations')
       ])
-      .then(([initialData, user, settings, dictionaries]) => {
+      .then(([initialData, user, settings, translations]) => {
         initialData.user = user.json;
         initialData.locale = locale;
-        initialData.dictionaries = dictionaries.json;
+        initialData.translations = translations.json.rows;
         initialData.settings = {collection: settings.json};
         initialData.settings.collection.links = initialData.settings.collection.links || [];
         renderPage(initialData, true);

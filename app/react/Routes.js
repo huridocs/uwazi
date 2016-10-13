@@ -15,7 +15,8 @@ import {
   DocumentTypesList,
   EntityTypesList,
   RelationTypesList,
-  ThesaurisList
+  ThesaurisList,
+  TranslationsList
 } from 'app/Settings';
 
 import Pages from 'app/Pages/Pages';
@@ -37,6 +38,8 @@ import NewThesauri from 'app/Thesauris/NewThesauri';
 
 import EditRelationType from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
+
+import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
 
@@ -62,6 +65,8 @@ const routes = (
       <Route path='dictionaries' component={ThesaurisList} />
       <Route path='dictionaries/new' component={NewThesauri} />
       <Route path='dictionaries/edit/:thesauriId' component={EditThesauri} />
+      <Route path='translations' component={TranslationsList} />
+      <Route path='translations/edit/:context' component={EditTranslations} />
     </Route>
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
