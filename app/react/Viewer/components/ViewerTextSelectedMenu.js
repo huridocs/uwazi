@@ -3,14 +3,13 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {addToToc} from '../actions/documentActions';
 
-import {uiActions as connectionsActions} from 'app/Connections';
+import {actions as connectionsActions} from 'app/Connections';
 import {openPanel} from 'app/Viewer/actions/uiActions';
 
 export class ViewerTextSelectedMenu extends Component {
-  // TEST!!!
   showPanel(type) {
     this.props.openPanel('viewMetadataPanel');
-    this.props.openConnectionsPanel(type, this.props.doc.get('_id'));
+    this.props.startNewConnection(type, this.props.doc.get('_id'));
   }
 
   render() {
@@ -40,7 +39,7 @@ export class ViewerTextSelectedMenu extends Component {
 ViewerTextSelectedMenu.propTypes = {
   doc: PropTypes.object,
   reference: PropTypes.object,
-  openConnectionsPanel: PropTypes.func,
+  startNewConnection: PropTypes.func,
   openPanel: PropTypes.func,
   addToToc: PropTypes.func,
   active: PropTypes.bool
@@ -48,16 +47,14 @@ ViewerTextSelectedMenu.propTypes = {
 
 function mapStateToProps({documentViewer}) {
   return {
-    // TEST
     doc: documentViewer.doc,
-    // -----
     reference: documentViewer.uiState.get('reference')
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    openConnectionsPanel: connectionsActions.openPanel,
+    startNewConnection: connectionsActions.startNewConnection,
     openPanel,
     addToToc
   }, dispatch);

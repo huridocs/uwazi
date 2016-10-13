@@ -12,7 +12,8 @@ import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity, addReference, deleteReference} from 'app/Entities/actions/actions';
 import {CreateConnectionPanel} from 'app/Connections';
-import {uiActions as connectionsActions} from 'app/Connections';
+import {uiActions as connectionsUiActions} from 'app/Connections';
+import {actions as connectionsActions} from 'app/Connections';
 import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
@@ -217,7 +218,7 @@ export class EntityViewer extends Component {
           </div>
           <NeedAuthorization>
             <div className="sidepanel-footer">
-            <button onClick={this.props.openConnectionsPanel.bind(null, 'basic', entity._id)}
+            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity._id)}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
@@ -246,7 +247,7 @@ EntityViewer.propTypes = {
   deleteEntity: PropTypes.func,
   addReference: PropTypes.func,
   deleteReference: PropTypes.func,
-  openConnectionsPanel: PropTypes.func,
+  startNewConnection: PropTypes.func,
   closeConnectionsPanel: PropTypes.func
 };
 
@@ -282,8 +283,8 @@ function mapDispatchToProps(dispatch) {
     deleteEntity,
     addReference,
     deleteReference,
-    openConnectionsPanel: connectionsActions.openPanel,
-    closeConnectionsPanel: connectionsActions.closePanel
+    startNewConnection: connectionsActions.startNewConnection,
+    closeConnectionsPanel: connectionsUiActions.closePanel
   }, dispatch);
 }
 

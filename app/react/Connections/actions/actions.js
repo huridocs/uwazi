@@ -2,9 +2,35 @@ import {actions} from 'app/BasicReducer';
 import {notify} from 'app/Notifications';
 import refenrecesAPI from 'app/Viewer/referencesAPI';
 import api from 'app/utils/api';
+import debounce from 'app/utils/debounce';
 
-import {searching} from './uiActions';
 import * as types from './actionTypes';
+import * as uiActions from './uiActions';
+
+export function immidiateSearch(dispatch, searchTerm, connectionType) {
+  dispatch(uiActions.searching());
+
+  let query = {searchTerm, fields: ['doc.title']};
+
+  return api.get('search', query)
+  .then((response) => {
+    let results = response.json.rows;
+    if (connectionType === 'targetRanged') {
+      results = results.filter(r => r.type !== 'entity');
+    }
+    dispatch(actions.set('connections/searchResults', results));
+  });
+}
+
+export function startNewConnection(connectionType, sourceDocument) {
+  return function (dispatch) {
+    return immidiateSearch(dispatch, '', connectionType)
+    .then(() => {
+      dispatch(actions.set('connections/searchTerm', ''));
+      dispatch(uiActions.openPanel(connectionType, sourceDocument));
+    });
+  };
+}
 
 export function setRelationType(relationType) {
   return {
@@ -20,20 +46,12 @@ export function setTargetDocument(id) {
   };
 }
 
+const debouncedSearch = debounce(immidiateSearch, 400);
+
 export function search(searchTerm, connectionType) {
   return function (dispatch) {
-    dispatch(searching());
-
-    let query = {searchTerm, fields: ['doc.title']};
-
-    return api.get('search', query)
-    .then((response) => {
-      let results = response.json.rows;
-      if (connectionType === 'targetRanged') {
-        results = results.filter(r => r.type !== 'entity');
-      }
-      dispatch(actions.set('connections/searchResults', results));
-    });
+    dispatch(actions.set('connections/searchTerm', searchTerm));
+    return debouncedSearch(dispatch, searchTerm, connectionType);
   };
 }
 

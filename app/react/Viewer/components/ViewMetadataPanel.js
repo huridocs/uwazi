@@ -4,7 +4,8 @@ import SidePanel from 'app/Layout/SidePanel';
 import {formater, ShowMetadata} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
 import {saveDocument, saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
-import {uiActions as connectionsActions} from 'app/Connections';
+import {actions as connectionsActions} from 'app/Connections';
+import {uiActions as connectionsUiActions} from 'app/Connections';
 import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 
@@ -128,7 +129,7 @@ export class ViewMetadataPanel extends Component {
         <NeedAuthorization>
           <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc}>
             <div className="sidepanel-footer">
-            <button onClick={this.props.openConnectionsPanel.bind(null, 'basic', doc._id)}
+            <button onClick={this.props.startNewConnection.bind(null, 'basic', doc._id)}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
@@ -187,7 +188,7 @@ ViewMetadataPanel.propTypes = {
   showTab: PropTypes.func,
   tab: PropTypes.string,
   saveDocument: PropTypes.func,
-  openConnectionsPanel: PropTypes.func,
+  startNewConnection: PropTypes.func,
   closeConnectionsPanel: PropTypes.func,
   closePanel: PropTypes.func,
   showModal: PropTypes.func,
@@ -239,8 +240,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     showModal: modals.actions.showModal,
-    openConnectionsPanel: connectionsActions.openPanel,
-    closeConnectionsPanel: connectionsActions.closePanel,
+    startNewConnection: connectionsActions.startNewConnection,
+    closeConnectionsPanel: connectionsUiActions.closePanel,
     resetForm: formActions.reset,
     showTab,
     saveDocument,
