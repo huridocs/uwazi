@@ -19,7 +19,7 @@ export class ActionButton extends Component {
   }
 
   render() {
-    let connection = this.props.connection.toJS();
+    const connection = this.props.connection.toJS();
 
     const validator = {
       sourceDocument: {presence: true},
