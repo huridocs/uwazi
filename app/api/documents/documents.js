@@ -4,7 +4,7 @@ import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils
 import fs from 'fs';
 import uniqueID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
-import entities from 'api/entities';
+import entities from '../entities';
 
 export default {
   save(doc, params) {

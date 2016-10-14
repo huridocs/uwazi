@@ -1,7 +1,7 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
-import documents from 'api/documents/documents';
+import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import validateTemplate from 'api/templates/validateTemplate';
 
 let checkDuplicated = (template) => {
@@ -28,18 +28,6 @@ let save = (template) => {
   });
 };
 
-let update = (template) => {
-  return request.get(`${dbURL}/${template._id}`)
-  .then((response) => {
-    let currentProperties = response.json.properties;
-    let newProperties = template.properties;
-    let updatedNames = getUpdatedNames(currentProperties, newProperties);
-    let deletedProperties = getDeletedProperties(currentProperties, newProperties);
-    return documents.updateMetadataProperties(template._id, updatedNames, deletedProperties);
-  })
-  .then(() => save(template));
-};
-
 export default {
   save(template) {
     template.type = 'template';
@@ -47,17 +35,42 @@ export default {
     template.properties = generateNamesAndIds(template.properties);
 
     if (template._id) {
-      return update(template);
+      return request.get(`${dbURL}/${template._id}`)
+      .then((response) => {
+        let currentProperties = response.json.properties;
+        let newProperties = template.properties;
+        let updatedNames = getUpdatedNames(currentProperties, newProperties);
+        let deletedProperties = getDeletedProperties(currentProperties, newProperties);
+        return this.updateMetadataProperties(template._id, updatedNames, deletedProperties);
+      })
+      .then(() => save(template));
     }
 
     return save(template);
+  },
+
+  updateMetadataProperties(templateId, nameMatches, deleteProperties) {
+    return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
+    .then((response) => {
+      let documents = response.json.rows.map((r) => r.value);
+      documents = updateMetadataNames(documents, nameMatches);
+      documents = deleteMetadataProperties(documents, deleteProperties);
+
+      let updates = [];
+      documents.forEach((document) => {
+        let url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
+        updates.push(request.post(url, document));
+      });
+
+      return Promise.all(updates);
+    });
   },
 
   /// MAL !! deberia hacer un count de documents y entitites ??? revisar
   delete(template) {
     let url = `${dbURL}/${template._id}?rev=${template._rev}`;
 
-    return documents.countByTemplate(template._id)
+    return this.countByTemplate(template._id)
     .then((count) => {
       if (count > 0) {
         return Promise.reject({key: 'documents_using_template', value: count});
@@ -67,6 +80,16 @@ export default {
     })
     .then((response) => {
       return response.json;
+    });
+  },
+
+  countByTemplate(templateId) {
+    return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
+    .then((response) => {
+      if (!response.json.rows.length) {
+        return 0;
+      }
+      return response.json.rows[0].value;
     });
   },
 

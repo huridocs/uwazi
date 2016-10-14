@@ -4,6 +4,7 @@ import sanitize from 'sanitize-filename';
 import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import documents from './documents';
+import templates from '../templates';
 import needsAuthorization from '../auth/authMiddleware';
 import {uploadDocumentsPath} from '../config/paths';
 
@@ -23,7 +24,7 @@ export default (app) => {
   });
 
   app.get('/api/documents/count_by_template', (req, res) => {
-    return documents.countByTemplate(req.query.templateId)
+    return templates.countByTemplate(req.query.templateId)
     .then(results => res.json(results));
   });
 

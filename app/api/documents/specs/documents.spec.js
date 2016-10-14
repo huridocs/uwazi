@@ -85,25 +85,25 @@ describe('documents', () => {
     });
   });
 
-  describe('countByTemplate', () => {
-    it('should return how many documents using the template passed', (done) => {
-      documents.countByTemplate('template1')
-      .then((count) => {
-        expect(count).toBe(2);
-        done();
-      })
-      .catch(done.fail);
-    });
+  //describe('countByTemplate', () => {
+    //it('should return how many documents using the template passed', (done) => {
+      //documents.countByTemplate('template1')
+      //.then((count) => {
+        //expect(count).toBe(2);
+        //done();
+      //})
+      //.catch(done.fail);
+    //});
 
-    it('should return 0 when no count found', (done) => {
-      documents.countByTemplate('newTemplate')
-      .then((count) => {
-        expect(count).toBe(0);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
+    //it('should return 0 when no count found', (done) => {
+      //documents.countByTemplate('newTemplate')
+      //.then((count) => {
+        //expect(count).toBe(0);
+        //done();
+      //})
+      //.catch(done.fail);
+    //});
+  //});
 
   describe('getUploadsByUser', () => {
     it('should request all unpublished documents for the user', (done) => {
@@ -116,50 +116,6 @@ describe('documents', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('updateMetadataProperties', () => {
-    let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/documents/_view/metadata_by_template?key="' + template + '"')
-    .then((response) => {
-      return response.json.rows.map((r) => r.value);
-    });
-
-    it('should update metadata property names on the documents matching the template', (done) => {
-      let nameChanges = {property1: 'new_name1', property2: 'new_name2'};
-      documents.updateMetadataProperties('template1', nameChanges)
-      .then(() => getDocumentsByTemplate('template1'))
-      .then((docs) => {
-        expect(docs[0].metadata.new_name1).toBe('value1');
-        expect(docs[0].metadata.new_name2).toBe('value2');
-        expect(docs[0].metadata.property3).toBe('value3');
-
-        expect(docs[1].metadata.new_name1).toBe('value1');
-        expect(docs[1].metadata.new_name2).toBe('value2');
-        expect(docs[1].metadata.property3).toBe('value3');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should delete properties passed', (done) => {
-      let nameChanges = {property2: 'new_name'};
-      let deleteProperties = ['property1', 'property3'];
-      documents.updateMetadataProperties('template1', nameChanges, deleteProperties)
-      .then(() => getDocumentsByTemplate('template1'))
-      .then((docs) => {
-        expect(docs[0].metadata.property1).not.toBeDefined();
-        expect(docs[0].metadata.new_name).toBe('value2');
-        expect(docs[0].metadata.property2).not.toBeDefined();
-        expect(docs[0].metadata.property3).not.toBeDefined();
-
-        expect(docs[1].metadata.property1).not.toBeDefined();
-        expect(docs[1].metadata.new_name).toBe('value2');
-        expect(docs[1].metadata.property2).not.toBeDefined();
-        expect(docs[1].metadata.property3).not.toBeDefined();
-        done();
-      })
-      .catch(done.fail);
     });
   });
 

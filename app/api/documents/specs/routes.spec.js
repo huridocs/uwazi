@@ -3,6 +3,7 @@ import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import documents from '../documents';
+import templates from '../../templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('documents', () => {
@@ -70,12 +71,12 @@ describe('documents', () => {
 
   describe('/api/documents/count_by_template', () => {
     it('should return count of documents using a specific template', (done) => {
-      spyOn(documents, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
+      spyOn(templates, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
       let req = {query: {templateId: 'templateId'}};
 
       routes.get('/api/documents/count_by_template', req)
       .then((response) => {
-        expect(documents.countByTemplate).toHaveBeenCalledWith('templateId');
+        expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
         expect(response).toEqual(2);
         done();
       })
