@@ -12,13 +12,10 @@ import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity, addReference, deleteReference} from 'app/Entities/actions/actions';
 import {CreateConnectionPanel} from 'app/Connections';
-import {uiActions as connectionsUiActions} from 'app/Connections';
 import {actions as connectionsActions} from 'app/Connections';
-import {actions} from 'app/Metadata';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
-
 
 export class EntityViewer extends Component {
 
@@ -94,22 +91,6 @@ export class EntityViewer extends Component {
 
     return groupedReferences;
   }
-
-  // --------------
-
-  // This is aparently NOT being used!
-  // relationType(id, relationTypes) {
-  //   let type = relationTypes.find((relation) => relation._id === id);
-  //   if (type) {
-  //     return type.name;
-  //   }
-  // }
-
-  // componentWillReceiveProps(nextProps) {
-  //   if (this.props.entity._id !== nextProps.entity._id) {
-  //     this.props.closeConnectionsPanel();
-  //   }
-  // }
 
   render() {
     let {entity, entityBeingEdited, references} = this.props;
@@ -242,13 +223,10 @@ EntityViewer.propTypes = {
   references: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
-  loadInReduxForm: PropTypes.func,
-  resetForm: PropTypes.func,
   deleteEntity: PropTypes.func,
   addReference: PropTypes.func,
   deleteReference: PropTypes.func,
-  startNewConnection: PropTypes.func,
-  closeConnectionsPanel: PropTypes.func
+  startNewConnection: PropTypes.func
 };
 
 EntityViewer.contextTypes = {
@@ -278,13 +256,10 @@ const mapStateToProps = (state) => {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    loadInReduxForm: actions.loadInReduxForm,
-    resetForm: actions.resetReduxForm,
     deleteEntity,
     addReference,
     deleteReference,
-    startNewConnection: connectionsActions.startNewConnection,
-    closeConnectionsPanel: connectionsUiActions.closePanel
+    startNewConnection: connectionsActions.startNewConnection
   }, dispatch);
 }
 
