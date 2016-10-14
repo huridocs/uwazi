@@ -40,7 +40,7 @@ describe('SearchResults', () => {
     expect(component.find('.item').at(1).props().className).toContain('is-selected');
   });
 
-  it('should add the loader when searching for resulst', () => {
+  it('should add the loader when searching for results', () => {
     props.searching = true;
     render();
     expect(component.find(Loader).length).toBe(1);
