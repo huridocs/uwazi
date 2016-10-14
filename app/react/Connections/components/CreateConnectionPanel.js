@@ -18,7 +18,7 @@ export class CreateConnectionPanel extends Component {
     const {uiState, searchResults} = this.props;
     const connection = this.props.connection.toJS();
     const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
-    const open = this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument;
+    const open = Boolean(this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument);
 
     return (
       <SidePanel open={open} className="create-reference">
@@ -49,9 +49,7 @@ export class CreateConnectionPanel extends Component {
           <ActionButton action="save" onCreate={this.props.onCreate}/>
         </ShowIf>
         <ShowIf if={connection.type === 'targetRanged'}>
-          <ActionButton action="connect"
-                        onCreate={this.props.onCreate}
-                        onRangedConnect={this.props.onRangedConnect}/>
+          <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
         </ShowIf>
       </div>
 
@@ -60,9 +58,7 @@ export class CreateConnectionPanel extends Component {
           results={searchResults}
           searching={uiState.get('searching')}
           selected={connection.targetDocument}
-          onClick={this.props.setTargetDocument}
-          creatingToTarget={false}
-        />
+          onClick={this.props.setTargetDocument}/>
       </div>
     </SidePanel>
     );
