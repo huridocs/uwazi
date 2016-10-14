@@ -50,9 +50,11 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props, context);
 
+    //test ?
+    let locale = this.getLocale(props);
+    this.setApiLocale(locale);
+    //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
-      let locale = this.getLocale(props);
-      this.setApiLocale(locale);
       this.getClientState(this.props);
     }
   }

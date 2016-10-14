@@ -61,8 +61,8 @@ let _fetch = (url, data, method, _headers) => {
 };
 
 export default {
-  post: (url, data) => {
-    return _fetch(url, data, 'POST');
+  post: (url, data, headers) => {
+    return _fetch(url, data, 'POST', headers);
   },
 
   get: (url, data, headers) => {

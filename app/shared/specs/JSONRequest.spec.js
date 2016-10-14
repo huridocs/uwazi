@@ -1,7 +1,7 @@
 import backend from 'fetch-mock';
 import request from '../JSONRequest';
 
-describe('JSONRequest', () => {
+fdescribe('JSONRequest', () => {
   beforeEach(() => {
     backend.restore();
     backend
@@ -36,6 +36,19 @@ describe('JSONRequest', () => {
           expect(response.status).toBe(400);
           done();
         });
+      });
+    });
+
+    describe('when passing headers', () => {
+      it('should send them', (done) => {
+        request.post('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
+        .then(() => {
+          let headers = backend.calls().matched[0][1].headers;
+          expect(headers.Cookie).toBe('cookie');
+
+          done();
+        })
+        .catch(done.fail);
       });
     });
   });

@@ -20,7 +20,7 @@ class TestController extends RouteHandler {
   }
 }
 
-describe('RouteHandler', () => {
+fdescribe('RouteHandler', () => {
   let component;
   let instance;
   let routeParams = {id: '123'};
