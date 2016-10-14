@@ -8,7 +8,8 @@ export class SearchResults extends Component {
     const results = this.props.results.toJS().map((result, index) => {
       return (
         <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}
-             key={index} onClick={() => this.props.onClick(result._id)}>
+             key={index}
+             onClick={() => this.props.onClick(result._id)}>
           <div className="item-info">
             <div className="item-name">
               <Icon className="item-icon item-icon-center" data={result.icon} />
@@ -37,8 +38,7 @@ SearchResults.propTypes = {
   results: PropTypes.object,
   selected: PropTypes.string,
   searching: PropTypes.bool,
-  onClick: PropTypes.func,
-  creatingToTarget: PropTypes.bool
+  onClick: PropTypes.func
 };
 
 export default SearchResults;
