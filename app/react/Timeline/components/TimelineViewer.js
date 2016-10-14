@@ -201,7 +201,7 @@ export class TimelineViewer extends Component {
     let usefulReferences;
     const isCase = entity.template === caseTemplate;
 
-    this.fetchReferences(entity._id)
+    this.fetchReferences(entity.sharedId)
     .then(references => {
       const relatedReferences = this.getRelatedReferences(references, isCase ? matterTemplate : caseTemplate);
       return Promise.all([references, relatedReferences]);
@@ -258,7 +258,7 @@ export class TimelineViewer extends Component {
               {track.years[year].map((reference, index) => {
                 if (reference.reference) {
                   return (
-                    <I18NLink to={`/${reference.reference.connectedDocumentType}/${reference.data._id}`}
+                    <I18NLink to={`/${reference.reference.connectedDocumentType}/${reference.data.sharedId}`}
                           key={index}
                           className={`timeline-item ${reference.additionalData.className}`}
                           data-toggle="tooltip"
