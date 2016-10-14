@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import {saveConnection, selectRangedTarget} from '../actions/actions';
 import validate from 'validate.js';
 
-export class SaveButton extends Component {
+export class ActionButton extends Component {
 
   onClick(enabled, connection) {
     if (enabled) {
@@ -50,18 +50,18 @@ export class SaveButton extends Component {
   }
 }
 
-SaveButton.propTypes = {
+ActionButton.propTypes = {
+  type: PropTypes.string,
+  connection: PropTypes.object,
   saveConnection: PropTypes.func,
   selectRangedTarget: PropTypes.func,
   onCreate: PropTypes.func,
   onRangedConnect: PropTypes.func,
   action: PropTypes.string,
-  type: PropTypes.string,
-  connection: PropTypes.object,
   busy: PropTypes.bool
 };
 
-function mapStateToProps({connections}) {
+export function mapStateToProps({connections}) {
   return {
     type: connections.connection.get('type'),
     connection: connections.connection,
@@ -73,4 +73,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({saveConnection, selectRangedTarget}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SaveButton);
+export default connect(mapStateToProps, mapDispatchToProps)(ActionButton);
