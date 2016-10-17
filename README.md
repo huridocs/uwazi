@@ -73,7 +73,11 @@
 
     - Inside Docker
 
-      If you are running into issues trying to run pdf2htmlEX due to library dependencies or other problems, you may try to run pdf2htmlEX as a docker container.  For this, uninstall any pdf2htmlEX installation you have on your system, and create an executable under /usr/local/bin:
+      If you are running into issues trying to run pdf2htmlEX due to library dependencies or other problems, you may try to run pdf2htmlEX as a docker container.  For this, uninstall any pdf2htmlEX installation you have on your system.
+
+      Install Docker engine: https://docs.docker.com/installation/
+
+      Then, create a new pdf2htmlEX executable under /usr/local/bin:
 
       ```
       $ sudo touch /usr/local/bin/pdf2htmlEX
