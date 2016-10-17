@@ -1,6 +1,6 @@
 $timeline-item-size: 18px;
 .timeline {
-  padding-bottom: 10px;
+  padding: 0 50px 10px;
 
   &-track {
     display: flex;
@@ -63,9 +63,12 @@ $timeline-item-size: 18px;
   }
   &-milestone {
     position: absolute;
-    top: -2px;
+    top: 0;
     right: calc(100% + 9px);
-    padding: 1px 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1px 3px;
     white-space: nowrap;
     font-size: 9px;
     background: #fff;
