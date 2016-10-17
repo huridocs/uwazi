@@ -54,7 +54,7 @@ describe('upload routes', () => {
             done();
           })
           .catch(done.fail);
-        }, 500);
+        }, 1000);
       })
       .catch(done.fail);
     });
