@@ -3,6 +3,7 @@ import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import validateTemplate from 'api/templates/validateTemplate';
+import translations from 'api/i18n/translations';
 
 let checkDuplicated = (template) => {
   return request.get(`${dbURL}/_design/templates/_view/all`)
@@ -19,10 +20,41 @@ let checkDuplicated = (template) => {
   });
 };
 
+let addTemplateTranslation = (template) => {
+  let values = {};
+  values[template.name] = template.name;
+  template.properties.forEach((property) => {
+    values[property.label] = property.label;
+  });
+
+  translations.addContext(template.name, values);
+};
+
+let updateTranslation = (currentTemplate, template) => {
+  let currentProperties = currentTemplate.properties;
+  let newProperties = template.properties;
+
+  let updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  if (currentTemplate.name !== template.name) {
+    updatedLabels[currentTemplate.name] = template.name;
+  }
+  let deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  let context = template.properties.reduce((ctx, prop) => {
+    ctx[prop.label] = prop.label;
+    return ctx;
+  }, {});
+
+  context[template.name] = template.name;
+
+  translations.updateContext(currentTemplate.name, template.name, updatedLabels, deletedPropertiesByLabel, context);
+};
+
 let save = (template) => {
   return checkDuplicated(template)
   .then(() => validateTemplate(template))
-  .then(() => request.post(dbURL, template))
+  .then(() => {
+    return request.post(dbURL, template);
+  })
   .then((response) => {
     return response.json;
   });
@@ -46,6 +78,7 @@ export default {
       .then(() => save(template));
     }
 
+    addTemplateTranslation(template);
     return save(template);
   },
 
@@ -75,7 +108,7 @@ export default {
       if (count > 0) {
         return Promise.reject({key: 'documents_using_template', value: count});
       }
-
+      translations.deleteContext(template.name);
       return request.delete(url);
     })
     .then((response) => {

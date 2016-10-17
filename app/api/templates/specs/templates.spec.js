@@ -5,6 +5,7 @@ import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import translations from 'api/i18n/translations';
 
 describe('templates', () => {
   beforeEach((done) => {
@@ -54,6 +55,25 @@ describe('templates', () => {
       });
     });
 
+    it('should add it to the translations', (done) => {
+      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+      let newTemplate = {name: 'created template', properties: [
+        {label: 'label 1'},
+        {label: 'label 2'}
+      ]};
+
+      templates.save(newTemplate)
+      .then(() => {
+        let expectedValues = {
+          'created template': 'created template',
+          'label 1': 'label 1',
+          'label 2': 'label 2'
+        };
+        expect(translations.addContext).toHaveBeenCalledWith('created template', expectedValues);
+        done();
+      });
+    });
+
     it('should assign a safe property name based on the label to each', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
@@ -94,6 +114,39 @@ describe('templates', () => {
             label_1: 'new_label_1',
             label_2: 'new_label_2'
           }, []);
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should update update the translation context for it', (done) => {
+        let newTemplate = {name: 'created template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
+        let template;
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
+        spyOn(translations, 'updateContext');
+        templates.save(newTemplate)
+        .then((createdTemplate) => getTemplate(createdTemplate.id))
+        .then((_template) => {
+          template = _template;
+          spyOn(translations, 'addContext');
+          template.name = 'new title';
+          template.properties[0].label = 'new label 1';
+          template.properties.pop();
+          template.properties.push({label: 'label 3'});
+          return templates.save(template);
+        })
+        .then(() => {
+          expect(translations.addContext).not.toHaveBeenCalled();
+          expect(translations.updateContext).toHaveBeenCalledWith(
+            'created template',
+            'new title',
+            {
+              'label 1': 'new label 1',
+              'created template': 'new title'
+            },
+            ['label 2'],
+            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
+          );
           done();
         })
         .catch(done.fail);
@@ -216,6 +269,21 @@ describe('templates', () => {
         let docs = response.json.rows;
         expect(docs.length).toBe(1);
         expect(docs[0].value.name).toBe('template_test2');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should delete the template translation', (done) => {
+      spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(0));
+      spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+
+      request.get(dbURL + '/c08ef2532f0bd008ac5174b45e033c93')
+      .then(template => {
+        return templates.delete(template.json);
+      })
+      .then(() => {
+        expect(translations.deleteContext).toHaveBeenCalledWith('template_test');
         done();
       })
       .catch(catchErrors(done));

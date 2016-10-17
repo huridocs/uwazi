@@ -123,7 +123,7 @@ function handleRoute(res, renderProps, req) {
         routeProps.requestState(renderProps.params, query),
         api.get('user'),
         api.get('settings'),
-        api.get('i18n/translations')
+        api.get('translations')
       ])
       .then(([initialData, user, settings, translations]) => {
         initialData.user = user.json;

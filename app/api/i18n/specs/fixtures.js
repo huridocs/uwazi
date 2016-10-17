@@ -7,7 +7,9 @@ export default {
       values: {
         'System': {
           'Password': 'Password',
-          'Account': 'Account'
+          'Account': 'Account',
+          'Email': 'E-Mail',
+          'Age': 'Age'
         }
       }
     },
@@ -18,9 +20,26 @@ export default {
       values: {
         'System': {
           'Password': 'Contraseña',
-          'Account': 'Cuenta'
+          'Account': 'Cuenta',
+          'Email': 'Correo electronico',
+          'Age': 'Edad'
         }
       }
+    },
+    {
+      _id: '4',
+      type: 'settings',
+      "languages": [
+       {
+           "key": "es",
+           "label": "Español"
+       },
+       {
+           "key": "en",
+           "label": "English",
+           "default": true
+       }
+   ]
     }
   ]
 };

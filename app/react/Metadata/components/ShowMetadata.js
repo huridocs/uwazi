@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 
-import {I18NLink} from 'app/I18N';
+import {I18NLink, t} from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
 import {Icon} from 'app/Layout/Icon';
@@ -36,7 +37,6 @@ export class ShowMetadata extends Component {
 
   render() {
     const {entity, showTitle, showType} = this.props;
-
     let header = '';
     if (showTitle || showType) {
       let title = '';
@@ -49,6 +49,14 @@ export class ShowMetadata extends Component {
       const type = showType ? <TemplateLabel template={entity.template}/> : '';
       header = <div className="item-info">{title}{type}</div>;
     }
+
+    const templates = this.props.templates.toJS();
+    let context = templates.reduce((result, template) => {
+      if (template._id === entity.template) {
+        return template.name;
+      }
+      return result;
+    }, '');
 
     return (
       <div className="view">
@@ -64,7 +72,7 @@ export class ShowMetadata extends Component {
           const value = this.getValue(property);
           return (
             <dl key={index}>
-              <dt>{property.label}</dt>
+              <dt>{t(context, property.label)}</dt>
               <dd>{value}</dd>
             </dl>
           );
@@ -76,8 +84,13 @@ export class ShowMetadata extends Component {
 
 ShowMetadata.propTypes = {
   entity: PropTypes.object,
+  templates: PropTypes.object,
   showTitle: PropTypes.bool,
   showType: PropTypes.bool
 };
 
-export default ShowMetadata;
+const mapStateToProps = ({templates}) => {
+  return {templates};
+};
+
+export default connect(mapStateToProps)(ShowMetadata);

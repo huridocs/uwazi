@@ -8,6 +8,7 @@ import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
+import {I18NApi} from 'app/I18N';
 
 export class Settings extends RouteHandler {
 
@@ -17,10 +18,11 @@ export class Settings extends RouteHandler {
       TemplatesAPI.get(),
       ThesaurisAPI.get(),
       ThesaurisAPI.getDictionaries(),
-      RelationTypesAPI.get()
+      RelationTypesAPI.get(),
+      I18NApi.get()
     ])
-    .then(([user, templates, thesauris, dictionaries, relationTypes]) => {
-      return {user, templates, thesauris, dictionaries, relationTypes};
+    .then(([user, templates, thesauris, dictionaries, relationTypes, translations]) => {
+      return {user, templates, thesauris, dictionaries, relationTypes, translations};
     });
   }
 
@@ -30,6 +32,7 @@ export class Settings extends RouteHandler {
     this.context.store.dispatch(actions.set('thesauris', state.thesauris));
     this.context.store.dispatch(actions.set('dictionaries', state.dictionaries));
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
+    this.context.store.dispatch(actions.set('translations', state.translations));
   }
 
   render() {

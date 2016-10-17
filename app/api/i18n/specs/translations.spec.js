@@ -36,4 +36,82 @@ describe('translations', () => {
       }).catch(catchErrors(done));
     });
   });
+
+  describe('addEntry()', () => {
+    it('should add the new key to each dictionary in the given context', (done) => {
+      translations.addEntry('System', 'Key', 'default')
+      .then((result) => {
+        expect(result).toBe('ok');
+        return translations.get();
+      })
+      .then((result) => {
+        expect(result.rows[0].values.System.Key).toBe('default');
+        expect(result.rows[1].values.System.Key).toBe('default');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('addContext()', () => {
+    it('should add a context with his values', (done) => {
+      let values = {Name: 'Name', Surname: 'Surname'};
+      translations.addContext('Judge', values)
+      .then((result) => {
+        expect(result).toBe('ok');
+        return translations.get();
+      })
+      .then((result) => {
+        expect(result.rows[0].values.Judge).toEqual(values);
+        expect(result.rows[1].values.Judge).toEqual(values);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('deleteContext()', () => {
+    it('should add a context with his values', (done) => {
+      translations.deleteContext('System')
+      .then((result) => {
+        expect(result).toBe('ok');
+        return translations.get();
+      })
+      .then((result) => {
+        expect(result.rows[0].values.System).not.toBeDefined();
+        expect(result.rows[1].values.System).not.toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('updateContext()', () => {
+    it('should add a context with his values', (done) => {
+      let keyNameChanges = {Password: 'Pass', Account: 'Acc', 'System': 'Interface'};
+      let deletedProperties = ['Age'];
+      let context = {Pass: 'Pass', Acc: 'Acc', Email: 'Email', Name: 'Name', Interface: 'Interface'};
+
+      translations.updateContext('System', 'Interface', keyNameChanges, deletedProperties, context)
+      .then((result) => {
+        expect(result).toBe('ok');
+        return translations.get();
+      })
+      .then((result) => {
+        expect(result.rows[0].values.Interface.Pass).toBe('Pass');
+        expect(result.rows[0].values.Interface.Interface).toBe('Interface');
+        expect(result.rows[1].values.Interface.Pass).toBe('Contraseña');
+
+        expect(result.rows[0].values.Interface.Age).not.toBeDefined();
+        expect(result.rows[1].values.Interface.Age).not.toBeDefined();
+        expect(result.rows[0].values.Interface.System).not.toBeDefined();
+        expect(result.rows[1].values.Interface.System).not.toBeDefined();
+
+        expect(result.rows[0].values.Interface.Name).toBe('Name');
+        expect(result.rows[1].values.Interface.Name).toBe('Name');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
 });

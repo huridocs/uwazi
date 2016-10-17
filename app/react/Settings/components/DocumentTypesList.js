@@ -31,7 +31,7 @@ export class DocumentTypesList extends Component {
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">{t('Documents')}</div>
+      <div className="panel-heading">{t('System', 'Documents')}</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
           if (template.isEntity) {

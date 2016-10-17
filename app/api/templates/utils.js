@@ -10,25 +10,25 @@ export function generateNamesAndIds(properties) {
   });
 }
 
-export function getUpdatedNames(oldProperties = [], newProperties) {
+export function getUpdatedNames(oldProperties = [], newProperties, prop = 'name') {
   let propertiesWithNewName = {};
   oldProperties.forEach((property) => {
     let newProperty = newProperties.find((p) => p.id === property.id);
     if (newProperty && newProperty.name !== property.name) {
-      propertiesWithNewName[property.name] = newProperty.name;
+      propertiesWithNewName[property[prop]] = newProperty[prop];
     }
   });
 
   return propertiesWithNewName;
 }
 
-export function getDeletedProperties(oldProperties = [], newProperties) {
+export function getDeletedProperties(oldProperties = [], newProperties, prop = 'name') {
   let deletedProperties = [];
 
   oldProperties.forEach((property) => {
     let newProperty = newProperties.find((p) => p.id === property.id);
     if (!newProperty) {
-      deletedProperties.push(property.name);
+      deletedProperties.push(property[prop]);
     }
   });
 
