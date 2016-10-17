@@ -48,7 +48,7 @@ export default (app) => {
   });
 
   app.delete('/api/documents', needsAuthorization, (req, res) => {
-    documents.delete(req.query._id)
+    documents.delete(req.query.sharedId)
     .then((response) => {
       res.json(response);
     })

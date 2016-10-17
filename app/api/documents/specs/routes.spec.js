@@ -90,10 +90,10 @@ describe('documents', () => {
     });
 
     it('should use documents to delete it', (done) => {
-      let req = {query: {_id: 123, _rev: 456}};
+      let req = {query: {sharedId: 123, _rev: 456}};
       return routes.delete('/api/documents', req)
       .then(() => {
-        expect(documents.delete).toHaveBeenCalledWith(req.query._id);
+        expect(documents.delete).toHaveBeenCalledWith(req.query.sharedId);
         done();
       })
       .catch(done.fail);

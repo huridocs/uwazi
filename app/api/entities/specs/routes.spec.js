@@ -78,10 +78,10 @@ describe('entities', () => {
     });
 
     it('should use entities to delete it', (done) => {
-      let req = {query: {_id: 123, _rev: 456}};
+      let req = {query: {sharedId: 123, _rev: 456}};
       return routes.delete('/api/entities', req)
       .then(() => {
-        expect(entities.delete).toHaveBeenCalledWith(req.query._id);
+        expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
         done();
       })
       .catch(catchErrors(done));

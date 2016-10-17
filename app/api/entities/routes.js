@@ -27,7 +27,7 @@ export default (app) => {
   });
 
   app.delete('/api/entities', needsAuthorization, (req, res) => {
-    entities.delete(req.query._id)
+    entities.delete(req.query.sharedId)
     .then((response) => {
       res.json(response);
     })
