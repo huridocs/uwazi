@@ -95,7 +95,7 @@
       docker run -t --rm -u $(id -u):$(id -g) -v /:/pdf bwits/pdf2htmlex pdf2htmlEX $args
       ```
 
-      * NOTE: this is a very rudimentary script, any feedback on how to improve this would be greatl appreciated.
+      * NOTE: this is a very rudimentary script, any feedback on how to improve this would be greatly appreciated.
 
 #Development
 
