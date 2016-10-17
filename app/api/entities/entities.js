@@ -11,7 +11,7 @@ import ID from 'shared/uniqueId';
 export default {
   save(doc, {user, language}) {
     doc.type = doc.type || 'entity';
-    if (!doc._id) {
+    if (!doc.sharedId) {
       doc.user = user;
       doc.creationDate = date.currentUTC();
     }
@@ -19,7 +19,7 @@ export default {
     const sharedId = doc.sharedId || ID();
     return settings.get()
     .then(({languages}) => {
-      if (doc._id) {
+      if (doc.sharedId) {
         return Promise.all([
           this.getAllLanguages(doc.sharedId),
           templates.getById(doc.template)

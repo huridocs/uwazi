@@ -1,7 +1,7 @@
 import backend from 'fetch-mock';
 import request from '../JSONRequest';
 
-fdescribe('JSONRequest', () => {
+describe('JSONRequest', () => {
   beforeEach(() => {
     backend.restore();
     backend
