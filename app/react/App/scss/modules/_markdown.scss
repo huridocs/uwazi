@@ -102,14 +102,28 @@
     text-transform: uppercase;
     &:first-child {
       padding: 5px 5px 5px 0;
+  }
+  table {
+    width: 100%;
+  }
+  th, td {
+    padding: 15px;
+    &:first-child {
+      padding-left: 0;
+    }
+    &:last-child {
+      padding-right: 0;
     }
   }
-
-  td {
-    padding: 5px;
-    &:first-child {
-      padding: 5px 5px 5px 0;
-    }
+  th {
+    font-family: $f-special;
+    font-weight: 300;
+  }
+  th:not(:last-of-type), td:not(:last-of-type) {
+    border-right: 1px solid $c-grey-light;
+  }
+  th, tr:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
   }
 }
 
