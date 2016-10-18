@@ -41,23 +41,23 @@ export class DocumentsList extends Component {
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
-          <div className="row">
-            <div className="col-sm-12 text-center documents-counter">
-              {documents.rows.length} of {documents.totalRows} documents
-            </div>
-            {(() => {
-              if (documents.rows.length < documents.totalRows && !this.state.loading) {
-                return <div className="col-sm-12 text-center">
-                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">Load more</button>
-                </div>;
-              }
-              if (this.state.loading) {
-                return <Loader/>;
-              }
-            })()}
+        <div className="row">
+          <div className="col-sm-12 text-center documents-counter">
+            {documents.rows.length} of {documents.totalRows} documents
           </div>
-          <Footer/>
-          </div>
+          {(() => {
+            if (documents.rows.length < documents.totalRows && !this.state.loading) {
+              return <div className="col-sm-12 text-center">
+              <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">Load more</button>
+              </div>;
+            }
+            if (this.state.loading) {
+              return <Loader/>;
+            }
+          })()}
+        </div>
+        <Footer/>
+        </div>
       </main>
     );
   }

@@ -61,6 +61,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pdftohtmljs_uwazi": "0.3.7",
+    "query-string": "^4.2.3",
     "react": "15.0.2",
     "react-addons-shallow-compare": "15.0.2",
     "react-datepicker": "^0.28.2",
