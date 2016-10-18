@@ -28,7 +28,7 @@ describe('PageViewer', () => {
   });
 
   describe('Custom list markdown element', () => {
-    fit('should render the page content', () => {
+    it('should render the page content', () => {
       props.page = props.page.setIn(['metadata', 'content'],
         '## title\nSome text with a [URL](http://google.com) inside.' +
         '\n\n{list}(http://someurl:3000/es/?parameters=values)' +

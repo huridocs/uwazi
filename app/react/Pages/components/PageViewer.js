@@ -8,48 +8,37 @@ const listPlaceholder = '{---UWAZILIST---}';
 
 export class PageViewer extends Component {
   render() {
-    // List escape code: {list}(http://someurl.com/es/?parameters=values)
-    const listMatch = /{list}\((.*?)\)/g;
-
-    const {page} = this.props;
-
-    let lists = [];
-
+    const {page, itemLists} = this.props;
     const content = page.getIn(['metadata', 'content']) || '';
-    const newContent = content.replace(listMatch, (_, group) => {
-      lists.push(group);
-      return listPlaceholder;
-    });
+    const lists = itemLists.toJS();
 
-    const tokens = marked.lexer(newContent, {sanitize: true});
+    const tokens = marked.lexer(content, {sanitize: true});
 
-    const sectionsData = tokens.reduce((memo, token) => {
+    const sections = tokens.reduce((memo, token) => {
       const listMatches = new RegExp(listPlaceholder, 'g').exec(token.text);
       if (token.type === 'paragraph' && listMatches) {
-        memo.sections.push('list');
-        memo.previousType = 'list';
-      } else {
-        if (!memo.previousType || memo.previousType !== 'markdown') {
-          memo.sections.push('markdown');
-        }
-        memo.previousType = 'markdown';
+        memo.push('list');
+      } else if (!memo.length || memo[memo.length - 1] !== 'markdown') {
+        memo.push('markdown');
       }
       return memo;
-    }, {sections: []});
+    }, []);
 
-    const html = marked(newContent, {sanitize: true});
+    const html = marked(content, {sanitize: true});
+    const htmlSplits = html.split(`<p>${listPlaceholder}</p>\n`).filter(i => i.length);
 
-    const htmlSplits = html.split('<p>{---UWAZILIST---}</p>\n').filter(i => i.length);
-
-    const pageHtml = sectionsData.sections.map((type, index) => {
-      if (type === 'list') {
-        return <Link key={index} to={lists.shift()}>Esto si funciona</Link>;
+    const pageHtml = sections.map((type, index) => {
+      if (type === 'list' && lists.length) {
+        return <div key={index} className="markdownViewer">
+                   <Link to={`/${lists.shift().params}`}>Esto si funciona</Link>
+                 </div>;
       }
-      if (type === 'markdown') {
+      if (type === 'markdown' && htmlSplits.length) {
         return <div key={index}
                     className="markdownViewer"
                     dangerouslySetInnerHTML={{__html: htmlSplits.shift()}}/>;
       }
+      return false;
     });
 
     return (
@@ -69,11 +58,15 @@ export class PageViewer extends Component {
 }
 
 PageViewer.propTypes = {
-  page: PropTypes.object
+  page: PropTypes.object,
+  itemLists: PropTypes.object
 };
 
-const mapStateToProps = (state) => {
-  return {page: state.page.pageView};
+const mapStateToProps = ({page}) => {
+  return {
+    page: page.pageView,
+    itemLists: page.itemLists
+  };
 };
 
 export default connect(mapStateToProps)(PageViewer);
