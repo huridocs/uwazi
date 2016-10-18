@@ -1,5 +1,10 @@
 .page-viewer {
+  .document {
+    max-width: 960px;
+  }
   .page {
-    padding: 30px 45px;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 }
