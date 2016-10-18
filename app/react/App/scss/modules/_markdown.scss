@@ -32,10 +32,12 @@
   }
 }
 
-.markdownViewer {
+.page-viewer .markdownViewer {
   background: $c-white;
   box-shadow: 0 0 0 9999px $c-white;
+}
 
+.markdownViewer {
   h1 {
     font-weight: 600;
     font-size: 32px;
