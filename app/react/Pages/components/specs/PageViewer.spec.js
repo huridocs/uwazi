@@ -22,7 +22,6 @@ describe('PageViewer', () => {
   describe('render', () => {
     it('should render the page content', () => {
       render();
-      expect(component.text()).toBe('Page 1');
       expect(component.find('.markdownViewer').props().dangerouslySetInnerHTML.__html).toContain('MarkdownContent');
     });
   });
