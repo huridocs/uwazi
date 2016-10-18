@@ -35,7 +35,7 @@
 .markdownViewer {
   background: $c-white;
   box-shadow: 0 0 0 9999px $c-white;
-  
+
   h1 {
     font-weight: 600;
     font-size: 32px;
@@ -72,7 +72,7 @@
     color: $c-primary;
     background-color: $c-primary-lighten;
   }
-  a {
+  p a {
     display: inline-block;
     color: $c-primary;
     border-bottom: 1px dotted $c-primary-light;

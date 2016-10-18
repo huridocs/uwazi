@@ -23,7 +23,7 @@
   top: 0;
   background: $c-white;
   border-radius: 4px;
-  border: 1px solid $c-grey-lighten;
+  border: 1px solid $c-grey-light;
   box-shadow: 0 10px 20px -5px rgba(0, 0, 0, .05);
   opacity: 1;
   zoom: 1;
@@ -88,7 +88,7 @@ $item-padding: 15px;
   width: $item-width;
   padding: $item-padding;
   flex: 1;
-  
+
   .item-icon {
     top: -2px;
   }
@@ -239,7 +239,7 @@ $item-padding: 15px;
   &:hover {
     color: $c-white !important;
     border-color: $c-primary !important;
-    background-color: $c-primary;
+    background-color: $c-primary!important;
   }
 }
 
