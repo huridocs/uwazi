@@ -88,6 +88,7 @@
 
 .btn-primary {
   background-color: $c-primary;
+  border-color: $c-primary;
   &:hover {
     background-color: $c-primary-dark;
   }
