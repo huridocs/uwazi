@@ -257,12 +257,10 @@ header {
       color: $c-black;
       background-color: $c-white;
       border-color: $c-white;
-      box-shadow: 0 0 30px 10px $c-white;
     } @else {
       color: $c-white;
       background-color: $c-primary;
       border-color: $c-primary;
-      box-shadow: 0 0 30px 10px $c-primary;
     }
     @media(min-width: 1024px) {
       position: relative;

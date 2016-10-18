@@ -89,8 +89,11 @@
 .btn-primary {
   background-color: $c-primary;
   border-color: $c-primary;
-  &:hover {
+  &:hover,
+  &:focus,
+  &:active {
     background-color: $c-primary-dark;
+    border-color: $c-primary-dark;
   }
 }
 
