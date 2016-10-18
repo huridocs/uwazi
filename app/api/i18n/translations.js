@@ -37,11 +37,11 @@ export default {
     });
   },
 
-  addContext(context, values) {
+  addContext(contextName, values) {
     return this.get()
     .then((result) => {
       return Promise.all(result.rows.map((translation) => {
-        translation.values[context] = values;
+        translation.values[contextName] = values;
         return this.save(translation);
       }));
     })
@@ -68,6 +68,11 @@ export default {
     .then(([translations, siteSettings]) => {
       let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;
       return Promise.all(translations.rows.map((translation) => {
+        if (!translation.values[oldContextName]) {
+          translation.values[newContextName] = context;
+          return this.save(translation);
+        }
+
         deletedProperties.forEach((key) => {
           delete translation.values[oldContextName][key];
         });
