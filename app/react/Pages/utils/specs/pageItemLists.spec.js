@@ -14,7 +14,7 @@ describe('Pages: pageItemLists util', () => {
               '\n\n```javascript\nCode\n```';
   });
 
-  fit('should extract the search URLs from the lists', () => {
+  it('should extract the search URLs from the lists', () => {
     const params = pageLists.generate(content).params;
     expect(params.length).toBe(4);
     expect(params[0]).toBe('?parameters=values');
@@ -23,13 +23,13 @@ describe('Pages: pageItemLists util', () => {
     expect(params[3]).toBe('?a=b');
   });
 
-  fit('should return the content with list placeholders', () => {
+  it('should return the content with list placeholders', () => {
     const newContent = pageLists.generate(content).content;
     expect(newContent).toContain('{---UWAZILIST---}');
     expect(newContent).not.toContain('?different=parameters');
   });
 
-  fit('should return empty if no content', () => {
+  it('should return empty if no content', () => {
     const listsData = pageLists.generate();
     expect(listsData.params).toEqual([]);
     expect(listsData.content).toBe('');

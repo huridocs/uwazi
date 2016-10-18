@@ -4,6 +4,7 @@ import {actions} from 'app/BasicReducer';
 
 import PageView from '../PageView';
 import api from 'app/Search/SearchAPI';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import PagesAPI from 'app/Pages/PagesAPI';
 import PageViewer from 'app/Pages/components/PageViewer';
 import RouteHandler from 'app/App/RouteHandler';
@@ -23,6 +24,7 @@ describe('PageView', () => {
     });
 
     spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve([page]));
+    spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve('templates'));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
       params: ['?a=1&b=2', '', '?x=1&y=2&limit=24']
@@ -39,7 +41,7 @@ describe('PageView', () => {
   });
 
   describe('static requestState()', () => {
-    fit('should request page for view', (done) => {
+    it('should request page for view', (done) => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
         expect(PagesAPI.get).toHaveBeenCalledWith('abc2');
@@ -49,7 +51,7 @@ describe('PageView', () => {
       .catch(done.fail);
     });
 
-    fit('should request each list inside the content limited to 6 items and set the state', (done) => {
+    it('should request each list inside the content limited to 6 items and set the state', (done) => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
         expect(api.search.calls.count()).toBe(3);
@@ -69,10 +71,18 @@ describe('PageView', () => {
       })
       .catch(done.fail);
     });
+
+    it('should set the state templates', (done) => {
+      PageView.requestState({pageId: 'abc2'})
+      .then((response) => {
+        expect(response.templates).toBe('templates');
+        done();
+      });
+    });
   });
 
   describe('setReduxState()', () => {
-    fit('should set pageView data', () => {
+    it('should set pageView data', () => {
       spyOn(actions, 'set').and.callFake(path => {
         if (path === 'page/pageView') {
           return 'PAGE DATA SET';

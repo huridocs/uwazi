@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import marked from 'marked';
 
-import {Link} from 'react-router';
+import {ItemList} from './ItemList';
 
 const listPlaceholder = '{---UWAZILIST---}';
 
@@ -29,9 +29,10 @@ export class PageViewer extends Component {
 
     const pageHtml = sections.map((type, index) => {
       if (type === 'list' && lists.length) {
+        const listData = lists.shift();
         return <div key={index} className="markdownViewer">
-                   <Link to={`/${lists.shift().params}`}>Esto si funciona</Link>
-                 </div>;
+                 <ItemList link={`/${listData.params}`} items={listData.items}/>
+               </div>;
       }
       if (type === 'markdown' && htmlSplits.length) {
         return <div key={index}
