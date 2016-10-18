@@ -26,4 +26,20 @@ describe('PageViewer', () => {
       expect(component.find('.markdownViewer').props().dangerouslySetInnerHTML.__html).toContain('MarkdownContent');
     });
   });
+
+  describe('Custom list markdown element', () => {
+    fit('should render the page content', () => {
+      props.page = props.page.setIn(['metadata', 'content'],
+        '## title\nSome text with a [URL](http://google.com) inside.' +
+        '\n\n{list}(http://someurl:3000/es/?parameters=values)' +
+        '\n\nWhich should be in its own line, separated with TWO line breaks (to create a new <p> Element)' +
+        '\n\nAnd should allow multiple lists with different values' +
+        '\n\n{list}(http://anotherurl:4000/es/?different=parameters)' +
+        '\n\n{list}(http://anotherurl:5000/es/?a=b)' +
+        '\n\n```javascript\nCode\n```'
+      );
+      render();
+      expect(component.find('.markdownViewer').props().dangerouslySetInnerHTML.__html).toBe('joder');
+    });
+  });
 });
