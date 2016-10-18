@@ -117,35 +117,6 @@ describe('thesauris routes', () => {
       .catch(done.fail);
     });
 
-    it('should set a unique id for each value when missing', (done) => {
-      let req = {body: {name: 'Enigma questions', values: [
-        {id: '1', label: 'A fly without wings is a walk?'},
-        {id: '3', label: 'Wait for a waiter makes you a waiter?'},
-        {label: 'If you have one eye, you blink or wink?'},
-        {id: '8', label: 'Is there another word for synonym?'},
-        {label: 'If you shouldnt talk to strangers, how you make friends?'}
-      ]}};
-      let postResponse;
-
-      routes.post('/api/thesauris', req)
-      .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let newDoc = response.json.rows.find((template) => {
-          return template.value.name === 'Enigma questions';
-        });
-
-        expect(newDoc.value.name).toBe('Enigma questions');
-        expect(newDoc.value.values[2].id).toEqual('9');
-        expect(newDoc.value.values[4].id).toEqual('10');
-        expect(newDoc.value._rev).toBe(postResponse.rev);
-        done();
-      })
-      .catch(done.fail);
-    });
-
     describe('when passing _id and _rev', () => {
       it('edit an existing one', (done) => {
         request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94')
