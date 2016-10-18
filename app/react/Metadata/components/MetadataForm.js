@@ -11,6 +11,13 @@ export class MetadataForm extends Component {
     this.props.onSubmit(entity);
   }
 
+  translateOptions(thesauri) {
+    return thesauri.values.map((option) => {
+      option.label = t(thesauri.name, option.label);
+      return option;
+    });
+  }
+
   render() {
     let {metadata, state} = this.props;
     let templates = this.props.templates.toJS();
@@ -73,10 +80,12 @@ export class MetadataForm extends Component {
               <FormField model={`${model}.metadata.${property.name}`} >
                 {(() => {
                   if (property.type === 'select') {
-                    return <Select optionsValue='id' options={thesauris.find((opt) => opt._id.toString() === property.content.toString()).values} />;
+                    let thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+                    return <Select optionsValue='id' options={this.translateOptions(thesauri)}/>;
                   }
                   if (property.type === 'multiselect') {
-                    return <MultiSelect optionsValue='id' options={thesauris.find((opt) => opt._id.toString() === property.content.toString()).values} />;
+                    let thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+                    return <MultiSelect optionsValue='id' options={this.translateOptions(thesauri)} />;
                   }
                   if (property.type === 'date') {
                     return <DatePicker/>;

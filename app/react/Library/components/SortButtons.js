@@ -31,7 +31,7 @@ export class SortButtons extends Component {
               <span key={sorts.length + 1}
                     className={search.sort === sortString ? 'active' : ''}
                     onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
-                {property.label}
+                {t(template.name, property.label)}
                 {search.sort === sortString ? <i className={'fa fa-caret-' + order}></i> : ''}
               </span>
           });

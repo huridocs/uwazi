@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {t} from 'app/I18N';
 
 export default {
 
@@ -23,16 +24,16 @@ export default {
     return {label: property.label, value, showInCard};
   },
 
-  getSelectOptions(option, thesauriType) {
+  getSelectOptions(option, thesauri) {
     let value = '';
     let icon;
     if (option) {
-      value = option.label;
+      value = t(thesauri.name, option.label);
       icon = option.icon;
     }
 
     let url;
-    if (option && thesauriType === 'template') {
+    if (option && thesauri.type === 'template') {
       url = `/entity/${option.id}`;
     }
 
@@ -40,26 +41,26 @@ export default {
   },
 
   select(property, thesauriValue, thesauris, showInCard) {
-    let thesauri = thesauris.find(t => t._id === property.content);
+    let thesauri = thesauris.find(thes => thes._id === property.content);
 
     let option = thesauri.values.find(v => {
       return v.id.toString() === thesauriValue.toString();
     });
 
-    const {value, url, icon} = this.getSelectOptions(option, thesauri.type);
+    const {value, url, icon} = this.getSelectOptions(option, thesauri);
 
     return {label: property.label, value, icon, url, showInCard};
   },
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
-    let thesauri = thesauris.find(t => t._id === property.content);
+    let thesauri = thesauris.find(thes => thes._id === property.content);
 
     let values = thesauriValues.map((thesauriValue) => {
       let option = thesauri.values.find(v => {
         return v.id.toString() === thesauriValue.toString();
       });
 
-      return this.getSelectOptions(option, thesauri.type);
+      return this.getSelectOptions(option, thesauri);
     });
 
     return {label: property.label, value: values, showInCard};
