@@ -72,6 +72,18 @@
     color: $c-primary;
     background-color: $c-primary-lighten;
   }
+  a {
+    display: inline-block;
+    color: $c-primary;
+    border-bottom: 1px dotted $c-primary-light;
+    text-decoration: none !important;
+    padding: 0 2px;
+    &:hover {
+      color: $c-primary;
+      border-bottom: 1px solid $c-primary;
+      background-color: $c-primary-lighten;
+    }
+  }
   img {
     max-width: 100%;
   }

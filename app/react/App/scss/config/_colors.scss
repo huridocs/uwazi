@@ -7,7 +7,8 @@ $c-grey-light:        lighten($c-grey, 11%);
 $c-grey-dark: 				darken($c-grey, 40%);
 $c-black: 				    #444444;
 
-$c-primary:           #3c5ec7;
+$c-primary:           #607d8b;
+//$c-primary:         #C3112F;
 $c-primary-lighten:   lighten($c-primary, 45%);
 $c-primary-light:     lighten($c-primary, 35%);
 $c-primary-dark:      darken($c-primary, 20%);
@@ -37,7 +38,7 @@ $c-type-16:           #795548;
 $c-type-17:           #9E9E9E;
 $c-type-18:           #607D8B;
 
-$c-background:        #F6F6F6;
+$c-background:        #FCFCFC;
 
 $c-success:           $c-type-10;
 $c-success-light:     lighten($c-type-10, 30%);

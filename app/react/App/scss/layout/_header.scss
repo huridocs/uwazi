@@ -5,6 +5,7 @@ header {
   min-height: $header-height;
   justify-content: space-between;
   border-bottom: 1px solid $c-grey-light;
+  overflow: hidden;
   @if $theme == light {
     background: $c-white;
   } @else {
@@ -89,6 +90,10 @@ header {
     list-style: none;
     padding: 0;
     margin: 0;
+    @media(min-width: 1024px) {
+      overflow: hidden;
+      white-space: nowrap;
+    }
   }
   li {
     padding: 0;
@@ -224,13 +229,11 @@ header {
   padding: 0;
   z-index: 3;
   transition: width 225ms;
+  color: $c-black;
+  background: $c-white;
   @if $theme == light {
-    color: $c-black;
-    background: $c-white;
     border-left: 1px solid $c-grey-light;
   } @else {
-    color: $c-white;
-    background: $c-primary;
     border-left: 1px solid $c-primary-dark;
   }
   @media(min-width: 1024px) {
@@ -238,13 +241,7 @@ header {
     &:hover,
     &:focus,
     &:active {
-      @if $theme == light {
-        background-color: $c-grey-light;
-        color: $c-black;
-      } @else {
-        background-color: $c-primary-dark;
-        color: $c-white;
-      }
+      color: $c-grey-dark;
     }
   }
 
@@ -255,11 +252,14 @@ header {
   &.is-active {
     position: absolute;
     width: $header-height;
-    border-color: $c-white;
     margin-left: 0;
     @if $theme == light {
+      color: $c-black;
+      background-color: $c-white;
       border-color: $c-white;
     } @else {
+      color: $c-white;
+      background-color: $c-primary;
       border-color: $c-primary;
     }
     @media(min-width: 1024px) {
