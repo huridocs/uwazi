@@ -98,7 +98,7 @@ describe('templates', () => {
       .catch(done.fail);
     });
 
-    describe('when updateng a property label', () => {
+    describe('when updating a property label', () => {
       it('should update the name and update all documents using this template', (done) => {
         let newTemplate = {name: 'created_template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
         spyOn(templates, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
