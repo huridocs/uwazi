@@ -86,7 +86,7 @@ export default {
   },
 
   prepareMetadata(doc, templates, thesauris) {
-    let template = templates.find(t => t._id === doc.template);
+    let template = templates.find(temp => temp._id === doc.template);
 
     if (!template || !thesauris.length) {
       return Object.assign({}, doc, {metadata: [], documentType: ''});

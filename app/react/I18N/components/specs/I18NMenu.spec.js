@@ -1,6 +1,5 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import {Link} from 'react-router';
 
 import {I18NMenu} from '../I18NMenu';
 import Immutable from 'immutable';

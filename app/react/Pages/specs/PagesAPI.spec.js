@@ -3,7 +3,6 @@ import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('pagesAPI', () => {
-  let arrayResponse = [{pages: 'array'}];
   let singleResponse = [{pages: 'single'}];
   let listResponse = [{pages: 'list'}];
 
