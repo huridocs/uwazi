@@ -9,7 +9,7 @@ describe('Page actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', _rev: 'newRev'}));
+    spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', sharedId: 'newSharedId', _rev: 'newRev'}));
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
@@ -42,11 +42,11 @@ describe('Page actions', () => {
       });
 
       it('should dispatch a page saved with response', () => {
-        expect(dispatch).toHaveBeenCalledWith({type: 'PAGE_SAVED', data: {_id: 'newId', _rev: 'newRev'}});
+        expect(dispatch).toHaveBeenCalledWith({type: 'PAGE_SAVED', data: {_id: 'newId', sharedId: 'newSharedId', _rev: 'newRev'}});
       });
 
       it('should merge response data', () => {
-        expect(formActions.merge).toHaveBeenCalledWith('page.data', {_id: 'newId', _rev: 'newRev'});
+        expect(formActions.merge).toHaveBeenCalledWith('page.data', {_id: 'newId', sharedId: 'newSharedId', _rev: 'newRev'});
         expect(dispatch).toHaveBeenCalledWith('PAGE DATA MERGED');
       });
 
