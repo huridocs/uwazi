@@ -137,6 +137,7 @@ header {
       background: $c-white;
       border-color: $c-primary;
     } @else {
+      color: $c-white;
       background: $c-primary;
       border-color: $c-white;
     }
