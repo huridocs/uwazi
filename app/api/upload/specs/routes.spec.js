@@ -79,12 +79,12 @@ describe('upload routes', () => {
           expect(eventName).toBe('conversionFailed');
           setTimeout(() => {
             entities.getAllLanguages('id')
-            .then((docs) => {
+            .then(docs => {
               expect(docs.rows[0].processed).toBe(false);
               expect(docs.rows[1].processed).toBe(false);
               done();
             });
-          }, 10);
+          }, 100);
         });
 
         req.files = ['invalid_file'];
