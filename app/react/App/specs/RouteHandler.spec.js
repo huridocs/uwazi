@@ -107,8 +107,8 @@ describe('RouteHandler', () => {
       });
     });
 
-    describe('when the locale isnt at the url nor the coockie', () => {
-      it('should set the state.locale to the thefault language', () => {
+    describe('when the locale isnt at the url nor the cookie', () => {
+      it('should set the state.locale to the default language', () => {
         Cookie.remove('locale');
         instance.componentWillReceiveProps({location: {pathname: '/templates/2452345', query: ''}, params: {id: '1'}});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'locale/SET', value: 'en'});
