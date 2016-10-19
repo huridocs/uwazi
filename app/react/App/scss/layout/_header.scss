@@ -5,7 +5,8 @@ header {
   min-height: $header-height;
   justify-content: space-between;
   border-bottom: 1px solid $c-grey-light;
-  overflow: hidden;
+  /* Removed for language selector. Check for side-effects!
+  /*overflow: hidden;*/
   @if $theme == light {
     background: $c-white;
   } @else {
@@ -146,6 +147,7 @@ header {
 
 .menuActions {
   .menuNav-list {
+    overflow: visible;
     display: flex;
   }
 }
@@ -173,12 +175,25 @@ header {
     left: 50%;
     transform: translateX(-50%);
     margin-left: 0;
+
+    .Dropdown-option {
+      padding-right: 5px;
+    }
+
   }
-  .Dropdown-option.is-active {
-    @if $theme == light {
-      color: $c-black;
-    } @else {
-      color: $c-white;
+  .Dropdown:not(.is-active) {
+    .Dropdown-label {
+      @if $theme != light {
+        color: $c-white;
+      }
+    }
+
+    a {
+      @if $theme == light {
+        color: $c-black;
+      } @else {
+        color: $c-white;
+      }
     }
   }
 }
