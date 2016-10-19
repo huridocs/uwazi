@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {I18NLink} from 'app/I18N';
+import {I18NLink, t} from 'app/I18N';
 import {deleteThesauri, checkThesauriCanBeDeleted} from 'app/Thesauris/actions/thesaurisActions';
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
@@ -31,7 +31,7 @@ export class ThesaurisList extends Component {
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Dictionaries</div>
+      <div className="panel-heading">{t('System', 'Dictionaries')}</div>
       <ul className="list-group relation-types">
         {this.props.dictionaries.toJS().map((dictionary, index) => {
           return <li key={index} className="list-group-item">
@@ -39,11 +39,11 @@ export class ThesaurisList extends Component {
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/dictionaries/edit/' + dictionary._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
-                  <span>Edit</span>
+                  <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <button onClick={this.deleteThesauri.bind(this, dictionary)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>
-                  <span>Delete</span>
+                  <span>{t('System', 'Delete')}</span>
                 </button>
               </div>
             </li>;
@@ -53,7 +53,7 @@ export class ThesaurisList extends Component {
         <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>Add dictionary</span>
+          <span>{t('System', 'Add dictionary')}</span>
         </I18NLink>
       </div>
     </div>;

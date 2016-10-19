@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {I18NLink} from 'app/I18N';
+import {I18NLink, t} from 'app/I18N';
 import {deleteRelationType, checkRelationTypeCanBeDeleted} from 'app/RelationTypes/actions/relationTypesActions';
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
@@ -31,7 +31,7 @@ export class RelationTypesList extends Component {
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">Connections</div>
+      <div className="panel-heading">{t('System', 'Connections')}</div>
       <ul className="list-group relation-types">
         {this.props.relationTypes.toJS().map((relationType, index) => {
           return <li key={index} className="list-group-item">
@@ -39,11 +39,11 @@ export class RelationTypesList extends Component {
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/connections/edit/' + relationType._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>
-                  <span>Edit</span>
+                  <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <button onClick={this.deleteRelationType.bind(this, relationType)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>
-                  <span>Delete</span>
+                  <span>{t('System', 'Delete')}</span>
                 </button>
               </div>
             </li>;
@@ -53,7 +53,7 @@ export class RelationTypesList extends Component {
         <I18NLink to="/settings/connections/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>Add connection</span>
+          <span>{t('System', 'Add connection')}</span>
         </I18NLink>
       </div>
     </div>;
