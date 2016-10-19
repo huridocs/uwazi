@@ -48,7 +48,7 @@ export class PageCreator extends Component {
             <div className="panel-body">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
-                  <i className="fa fa-terminal"></i> http://{window.location.host}/page/{page.data._id}
+                  <i className="fa fa-terminal"></i> http://{window.location.host}/page/{page.data.sharedId}
                 </div>
               </ShowIf>
               <FormField model="page.data.metadata.content">

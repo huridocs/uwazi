@@ -2,20 +2,15 @@ import api from 'app/utils/api';
 
 export default {
   get(id) {
-    let url = 'pages';
-    if (id) {
-      url += `?_id=${id}`;
-    }
-
-    return api.get(url)
+    return api.get(`pages?sharedId=${id}`)
     .then((response) => {
-      return response.json.rows;
+      return response.json;
     });
   },
 
-  list(keys) {
+  list() {
     let url = 'pages/list';
-    return api.get(url, {keys: keys})
+    return api.get(url)
     .then((response) => {
       return response.json.rows;
     });

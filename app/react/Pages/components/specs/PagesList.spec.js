@@ -13,9 +13,9 @@ describe('PagesList', () => {
   beforeEach(() => {
     props = {
       pages: fromJS([
-        {_id: 1, title: 'Page 1'},
-        {_id: 2, title: 'Page 2'},
-        {_id: 3, title: 'Page 3'}
+        {_id: 1, title: 'Page 1', sharedId: 'a1'},
+        {_id: 2, title: 'Page 2', sharedId: 'a2'},
+        {_id: 3, title: 'Page 3', sharedId: 'a3'}
       ]),
       deletePage: jasmine.createSpy('deletePage').and.returnValue(Promise.resolve())
     };
@@ -34,7 +34,7 @@ describe('PagesList', () => {
       render();
       expect(component.find('ul.pages').find('li').length).toBe(3);
       let nameLink = component.find('ul.pages').find('li').last().find(I18NLink).first();
-      expect(nameLink.props().to).toBe('/settings/pages/edit/3');
+      expect(nameLink.props().to).toBe('/settings/pages/edit/a3');
       expect(nameLink.props().children).toBe('Page 3');
     });
 
@@ -47,7 +47,7 @@ describe('PagesList', () => {
   describe('deletePage', () => {
     beforeEach(() => {
       render();
-      component.instance().deletePage(Map({_id: 3, title: 'Judge'}));
+      component.instance().deletePage(Map({_id: 3, title: 'Judge', sharedId: 'a3'}));
     });
 
     it('should confirm the action', () => {
@@ -56,7 +56,7 @@ describe('PagesList', () => {
 
     it('should call on props.deletePage if confirmed', () => {
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deletePage).toHaveBeenCalledWith({_id: 3});
+      expect(props.deletePage).toHaveBeenCalledWith({_id: 3, sharedId: 'a3'});
     });
   });
 });
