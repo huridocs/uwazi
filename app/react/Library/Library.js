@@ -65,14 +65,12 @@ export default class Library extends RouteHandler {
 
   render() {
     return (
-      <div>
+      <div className="row panels-layout">
         <Helmet title='Library' />
-        <div className="row panels-layout">
-          <DocumentsList />
-          <ConfirmCloseForm />
-          <LibraryFilters />
-          <ViewMetadataPanel />
-        </div>
+        <DocumentsList />
+        <ConfirmCloseForm />
+        <LibraryFilters />
+        <ViewMetadataPanel />
       </div>
     );
   }
