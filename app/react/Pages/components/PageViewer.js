@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import Helmet from 'react-helmet';
 import marked from 'marked';
 
 import {ItemList} from './ItemList';
@@ -44,6 +45,7 @@ export class PageViewer extends Component {
 
     return (
       <div className="row">
+        <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
         <main className="document-viewer page-viewer">
           <div className="main-wrapper">
             <div className="document">

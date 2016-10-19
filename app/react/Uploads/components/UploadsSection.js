@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import Helmet from 'react-helmet';
 
 import ContextMenu from 'app/ContextMenu';
 
@@ -35,6 +36,7 @@ export class UploadsSection extends Component {
     }
     return (
       <div className="row">
+        <Helmet title="Uploads"/>
         <main className={className}>
           <UploadBox />
           <UploadsList socket={this.socket}/>
