@@ -199,7 +199,7 @@ export class EntityViewer extends Component {
           </div>
           <NeedAuthorization>
             <div className="sidepanel-footer">
-            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity._id)}
+            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
@@ -210,7 +210,7 @@ export class EntityViewer extends Component {
             {referencesHtml}
           </div>
         </aside>
-        <CreateConnectionPanel containerId={entity._id} onCreate={this.props.addReference}/>
+        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
       </div>
     );
   }

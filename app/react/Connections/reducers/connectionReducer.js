@@ -28,7 +28,7 @@ export default function (state = initialState, action = {}) {
     return state.set('targetDocument', action.id);
 
   case 'connections/searchResults/SET':
-    const targetInResults = action.value.find(v => v._id === state.get('targetDocument'));
+    const targetInResults = action.value.find(v => v.sharedId === state.get('targetDocument'));
     if (!targetInResults) {
       return state.delete('targetDocument');
     }

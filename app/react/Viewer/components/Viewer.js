@@ -51,7 +51,7 @@ export class Viewer extends Component {
 
         <ConfirmCloseForm />
         <ViewMetadataPanel />
-        <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : this.props.doc.get('_id')}
+        <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : this.props.doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
 

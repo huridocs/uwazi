@@ -23,7 +23,7 @@ describe('PageView', () => {
       return Promise.resolve({rows: ['resultsFor:' + (searchCalls += 1)]});
     });
 
-    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve([page]));
+    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(page));
     spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve('templates'));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
