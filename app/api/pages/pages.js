@@ -2,7 +2,7 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import date from 'api/utils/date.js';
 import sanitizeResponse from '../utils/sanitizeResponse';
-import ID from 'shared/uniqueId';
+import ID from 'shared/uniqueID';
 import settings from '../settings';
 
 export default {

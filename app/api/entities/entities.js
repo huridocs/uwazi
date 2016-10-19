@@ -6,7 +6,7 @@ import sanitizeResponse from '../utils/sanitizeResponse';
 import references from '../references/references.js';
 import settings from '../settings';
 import templates from '../templates';
-import ID from 'shared/uniqueId';
+import ID from 'shared/uniqueID';
 
 export default {
   save(doc, {user, language}) {
