@@ -1,4 +1,5 @@
 import createReducer, * as actions from 'app/BasicReducer/reducer';
+import {fromJS as Immutable} from 'immutable';
 
 describe('BasicReducer', () => {
   describe('createReducer', () => {
@@ -32,6 +33,20 @@ describe('BasicReducer', () => {
 
       expect(newState1.toJS()).toEqual({});
       expect(newState2.toJS()).toEqual({defaultValue: 'default'});
+    });
+  });
+
+  describe('Push', () => {
+    it('should add an element to an array', () => {
+      let reducer1 = createReducer('namespace1', []);
+      let reducer2 = createReducer('namespace2', []);
+
+      let newState1 = reducer1(Immutable([{_id: '1'}]), actions.push('namespace1', {_id: '2'}));
+      let newState2 = reducer2(Immutable([{_id: '1'}]), actions.push('namespace1', {_id: '2'}));
+
+      expect(newState1.toJS()).toEqual([{_id: '1'}, {_id: '2'}]);
+      expect(newState1.get(1).toJS()).toEqual({_id: '2'});
+      expect(newState2.toJS()).toEqual([{_id: '1'}]);
     });
   });
 

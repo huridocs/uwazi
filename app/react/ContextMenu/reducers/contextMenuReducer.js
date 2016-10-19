@@ -38,8 +38,11 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', panels[action.panel]);
   }
 
-  if (action.type === ViewerActions.UNSET_SELECTION || action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU
-    || action.type === ViewerActions.ADD_CREATED_REFERENCE || action.type === ViewerActions.CLOSE_PANEL || action.type === 'viewer/targetDoc/SET') {
+  if (action.type === ViewerActions.UNSET_SELECTION ||
+      action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU ||
+      action.type === ViewerActions.ADD_REFERENCE ||
+      action.type === ViewerActions.CLOSE_PANEL ||
+      action.type === 'viewer/targetDoc/SET') {
     return state.set('type', 'ViewerDefaultMenu');
   }
 

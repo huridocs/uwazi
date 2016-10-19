@@ -1,12 +1,13 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import configureMockStore from 'redux-mock-store';
-import Immutable from 'immutable';
+import {fromJS} from 'immutable';
 import {formater} from 'app/Metadata';
 
 import DocumentForm from '../../containers/DocumentForm';
 import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
+import Connections from '../ConnectionsList';
 
 describe('ViewMetadataPanel', () => {
   let component;
@@ -15,9 +16,16 @@ describe('ViewMetadataPanel', () => {
   beforeEach(() => {
     props = {
       doc: {metadata: []},
-      rawDoc: Immutable.fromJS({}),
+      rawDoc: fromJS({}),
       showModal: jasmine.createSpy('showModal'),
-      references: Immutable.fromJS([{_id: 'reference'}])
+      openPanel: jasmine.createSpy('openPanel'),
+      startNewConnection: jasmine.createSpy('startNewConnection'),
+      references: fromJS([
+        {_id: 'reference1', range: {start: 0}},
+        {_id: 'reference2', range: {}},
+        {_id: 'reference3', range: {}},
+        {_id: 'reference4', range: {start: 0}}
+      ])
     };
   });
 
@@ -30,6 +38,15 @@ describe('ViewMetadataPanel', () => {
 
     expect(component.find(SidePanel).length).toBe(1);
     expect(component.find(SidePanel).props().open).toBeUndefined();
+  });
+
+  it('should split references acording to their type', () => {
+    render();
+    expect(component.find(Connections).first().parent().props().for).toBe('references');
+    expect(component.find(Connections).first().props().references).toEqual(fromJS([props.references.get(0).toJS(), props.references.get(3).toJS()]));
+    expect(component.find(Connections).last().parent().props().for).toBe('connections');
+    expect(component.find(Connections).last().props().references).toEqual(fromJS([props.references.get(1).toJS(), props.references.get(2).toJS()]));
+    expect(component.find(Connections).last().props().referencesSection).toBe('connections');
   });
 
   describe('when props.open', () => {
@@ -85,14 +102,14 @@ describe('ViewMetadataPanel', () => {
   describe('PanelContainer', () => {
     let state = {
       documentViewer: {
-        uiState: Immutable.fromJS({
+        uiState: fromJS({
           panel: ''
         }),
-        doc: Immutable.fromJS({}),
-        targetDoc: Immutable.fromJS({}),
-        references: Immutable.fromJS([{_id: 'reference'}]),
-        templates: Immutable.fromJS(['template']),
-        thesauris: Immutable.fromJS(['thesauris']),
+        doc: fromJS({}),
+        targetDoc: fromJS({}),
+        references: fromJS([{_id: 'reference'}]),
+        templates: fromJS(['template']),
+        thesauris: fromJS(['thesauris']),
         docForm: {}
       }
     };

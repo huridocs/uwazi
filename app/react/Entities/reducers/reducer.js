@@ -6,8 +6,8 @@ import uiState from './uiReducer';
 
 export default combineReducers({
   entity: createReducer('entityView/entity', {}),
-  references: createReducer('entityView/references', []),
   entityForm: modelReducer('entityView.entityForm'),
   entityFormState: formReducer('entityView.entityForm'),
+  references: createReducer('entityView/references', []),
   uiState
 });

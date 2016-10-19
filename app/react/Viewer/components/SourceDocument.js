@@ -24,7 +24,8 @@ const mapStateToProps = ({user, documentViewer}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  let actions = {setSelection,
+  let actions = {
+    setSelection,
     unsetSelection,
     onClick: resetReferenceCreation,
     highlightReference,
@@ -34,12 +35,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  return Object.assign({}, stateProps, dispatchProps, ownProps, {
-    unsetSelection: () => {
-      if (!stateProps.panelIsOpen) {
-        dispatchProps.unsetSelection();
-      }
-    }
-  });
+  return Object.assign({}, stateProps, dispatchProps, ownProps, {unsetSelection: dispatchProps.unsetSelection});
 }
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Document);

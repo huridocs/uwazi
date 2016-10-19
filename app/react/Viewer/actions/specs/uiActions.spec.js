@@ -15,12 +15,6 @@ describe('Viewer uiActions', () => {
       expect(action).toEqual({type: types.OPEN_PANEL, panel: 'a panel'});
     });
   });
-  describe('viewerSearching()', () => {
-    it('should return a VIEWER_SEARCHING', () => {
-      let action = actions.viewerSearching();
-      expect(action).toEqual({type: types.VIEWER_SEARCHING});
-    });
-  });
   describe('selectTargetDocument()', () => {
     it('should return a SELECT_TARGET_DOCUMENT with id', () => {
       let action = actions.selectTargetDocument('id');
@@ -61,16 +55,26 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
-    it('should dispatch a SHOW_TAB connections', () => {
+    it('should dispatch a SHOW_TAB references by default', () => {
       actions.activateReference('id')(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'connections'});
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
+    });
+
+    it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
+      actions.activateReference('id', 'another tab')(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'another tab'});
+    });
+
+    it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
+      actions.activateReference('id', [])(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
     });
 
     it('should scroll to the elements', (done) => {
       actions.activateReference('id')(dispatch);
       setTimeout(() => {
         expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-        expect(scroller.to).toHaveBeenCalledWith('.document-metadata .item[data-id="id"]', '.document-metadata .sidepanel-body');
+        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item[data-id="id"]', '.metadata-sidepanel .sidepanel-body');
         done();
       });
     });
