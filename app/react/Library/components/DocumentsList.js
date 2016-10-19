@@ -44,7 +44,7 @@ export class DocumentsList extends Component {
         </RowList>
         <div className="row">
           <div className="col-sm-12 text-center documents-counter">
-              {`${documents.rows.length} ${t('of')} ${documents.totalRows} ${t('documents')}`}
+              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
           </div>
           {(() => {
             if (documents.rows.length < documents.totalRows && !this.state.loading) {
