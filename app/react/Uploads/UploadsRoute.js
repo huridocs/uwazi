@@ -1,4 +1,5 @@
 import React from 'react';
+import Helmet from 'react-helmet';
 
 import RouteHandler from 'app/App/RouteHandler';
 import {setUploads, setTemplates, setThesauris} from 'app/Uploads/actions/uploadsActions';
@@ -24,6 +25,11 @@ export default class UploadsRoute extends RouteHandler {
   }
 
   render() {
-    return <UploadsSection />;
+    return (
+      <div>
+        <Helmet title="Uploads"/>
+        <UploadsSection />
+      </div>
+    );
   }
 }

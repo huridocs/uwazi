@@ -7,7 +7,6 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import './scss/styles.scss';
 import './scss/fixes.scss';
 
-import Helmet from 'react-helmet';
 import Notifications from 'app/Notifications';
 import Menu from './Menu';
 import SiteName from './SiteName';
@@ -64,13 +63,6 @@ class App extends Component {
 
     return (
       <div id="app">
-        <Helmet
-          titleTemplate='Uwazi - %s'
-          meta={[
-            {'char-set': 'utf-8'},
-            {name: 'description', content: 'Uwazi docs'}
-          ]}
-        />
         <Notifications />
         <div className="content">
           <nav>

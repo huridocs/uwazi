@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import {fromJS as Immutable} from 'immutable';
 
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import TargetDocument from 'app/Viewer/components/TargetDocument';
@@ -14,8 +15,7 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      setDefaultViewerMenu: jasmine.createSpy('setDefaultViewerMenu'),
-      resetDocumentViewer: jasmine.createSpy('resetDocumentViewer')
+      doc: Immutable({})
     };
   });
 

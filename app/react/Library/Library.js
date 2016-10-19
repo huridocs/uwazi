@@ -1,4 +1,5 @@
 import React from 'react';
+import Helmet from 'react-helmet';
 
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
@@ -18,10 +19,12 @@ import {actions as formActions} from 'react-redux-form';
 export default class Library extends RouteHandler {
 
   static renderTools() {
-    return <div className="searchBox">
+    return (
+      <div className="searchBox">
         <SearchBar/>
         <SearchButton/>
-      </div>;
+      </div>
+    );
   }
 
   static requestState(params, query = {filters: {}, types: []}) {
@@ -61,11 +64,16 @@ export default class Library extends RouteHandler {
   }
 
   render() {
-    return <div className="row panels-layout">
-      <DocumentsList />
-      <ConfirmCloseForm />
-      <LibraryFilters />
-      <ViewMetadataPanel />
-    </div>;
+    return (
+      <div>
+        <Helmet title='Library' />
+        <div className="row panels-layout">
+          <DocumentsList />
+          <ConfirmCloseForm />
+          <LibraryFilters />
+          <ViewMetadataPanel />
+        </div>
+      </div>
+    );
   }
 }

@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import Helmet from 'react-helmet';
 
 import ContextMenu from 'app/ContextMenu';
 
@@ -36,6 +37,7 @@ export class Viewer extends Component {
 
     return (
       <div className="row">
+        <Helmet title={this.props.doc.get('title') ? this.props.doc.get('title') : 'Document'} />
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={!this.props.targetDoc}>
@@ -63,6 +65,7 @@ export class Viewer extends Component {
 }
 
 Viewer.propTypes = {
+  doc: PropTypes.object,
   panelIsOpen: PropTypes.bool,
   targetDoc: PropTypes.bool,
   showConnections: PropTypes.bool
@@ -75,6 +78,7 @@ Viewer.contextTypes = {
 const mapStateToProps = ({documentViewer}) => {
   let uiState = documentViewer.uiState.toJS();
   return {
+    doc: documentViewer.doc,
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     showConnections: uiState.tab === 'connections'

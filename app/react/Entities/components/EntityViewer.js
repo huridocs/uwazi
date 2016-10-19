@@ -91,18 +91,7 @@ export class EntityViewer extends Component {
     return groupedReferences;
   }
 
-  // --------------
-
-  // This is aparently NOT being used!
-  // relationType(id, relationTypes) {
-  //   let type = relationTypes.find((relation) => relation._id === id);
-  //   if (type) {
-  //     return type.name;
-  //   }
-  // }
-
   render() {
-    // let {entity, entityBeingEdited, references, relationTypes} = this.props;
     let {entity, entityBeingEdited, references} = this.props;
     references = references.toJS();
 
@@ -170,7 +159,7 @@ export class EntityViewer extends Component {
 
     return (
       <div className="row entity-content">
-        <Helmet title="Entity" />
+        <Helmet title={entity.title ? entity.title : 'Entity'} />
         <aside className="side-panel entity-metadata">
           <ShowIf if={!entityBeingEdited}>
             <div className="sidepanel-header">
