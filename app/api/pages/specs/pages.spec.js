@@ -4,7 +4,7 @@ import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
-import {mockID} from 'shared/uniqueId';
+import {mockID} from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 
 describe('pages', () => {
