@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {bindActionCreators} from 'redux';
-import {I18NLink, I18NMenu} from 'app/I18N';
+import {I18NLink, I18NMenu, t} from 'app/I18N';
 
 class Menu extends Component {
 
@@ -17,7 +17,7 @@ class Menu extends Component {
 
     const navLinks = links.map(link =>
       <li key={link.get('localID')}>
-        <I18NLink to={link.get('url') || '/'} className="btn btn-default">{link.get('title')}</I18NLink>
+        <I18NLink to={link.get('url') || '/'} className="btn btn-default">{t('Menu', link.get('title'))}</I18NLink>
       </li>
     );
 
