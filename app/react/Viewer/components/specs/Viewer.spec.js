@@ -16,8 +16,6 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      setDefaultViewerMenu: jasmine.createSpy('setDefaultViewerMenu'),
-      resetDocumentViewer: jasmine.createSpy('resetDocumentViewer'),
       doc: Immutable({_id: 'id'}),
       targetDoc: false,
       addReference: () => {},
