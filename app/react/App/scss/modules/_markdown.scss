@@ -30,6 +30,10 @@
       border-bottom: 1px solid $c-primary;
     }
   }
+  .tab-content {
+    float: left;
+    width: 100%;
+  }
 }
 
 .page-viewer .markdownViewer {
