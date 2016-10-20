@@ -37,7 +37,6 @@ export default {
       let connections = sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, id));
       let requestDocuments = [];
       connections.forEach((connection) => {
-        //let promise = request.get(`${dbURL}/${connection.connectedDocument}`)
         let promise = entities.get(connection.connectedDocument, language)
         .then((connectedDocument) => {
           normalizeConnectedDocumentData(connection, connectedDocument.rows[0]);
