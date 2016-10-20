@@ -37,6 +37,7 @@
   box-shadow: 0 0 0 9999px $c-white;
 }
 
+.markdownEditor,
 .markdownViewer {
   h1 {
     font-weight: 600;
@@ -74,8 +75,9 @@
     color: $c-primary;
     background-color: $c-primary-lighten;
   }
-  p a {
-    display: inline-block;
+  p a,
+  td a {
+    display: inline;
     color: $c-primary;
     border-bottom: 1px dotted $c-primary-light;
     text-decoration: none !important;
@@ -83,7 +85,6 @@
     &:hover {
       color: $c-primary;
       border-bottom: 1px solid $c-primary;
-      background-color: $c-primary-lighten;
     }
   }
   img {
@@ -101,22 +102,17 @@
     width: 100%;
   }
   th, td {
-    padding: 15px;
-    &:first-child {
-      padding-left: 0;
-    }
-    &:last-child {
-      padding-right: 0;
-    }
+    padding: 7px 10px;
   }
   th {
     font-family: $f-special;
     font-weight: 300;
+    background-color: $c-primary-lighten;
   }
-  th:not(:last-of-type), td:not(:last-of-type) {
-    border-right: 1px solid $c-grey-light;
+  th:not(:last-of-type) {
+    border-right: 1px solid $c-white;
   }
-  th, tr:not(:last-of-type) {
+  tr:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
 }
