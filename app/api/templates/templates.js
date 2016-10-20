@@ -73,6 +73,7 @@ export default {
         let newProperties = template.properties;
         let updatedNames = getUpdatedNames(currentProperties, newProperties);
         let deletedProperties = getDeletedProperties(currentProperties, newProperties);
+        updateTranslation(response.json, template);
         return this.updateMetadataProperties(template._id, updatedNames, deletedProperties);
       })
       .then(() => save(template));
