@@ -18,6 +18,7 @@ export class PageCreator extends Component {
   render() {
     const {formState, page, savingPage} = this.props;
     let backUrl = '/settings/pages';
+    let pageUrl = 'http://'+ window.location.host +'/page/'+ page.data.sharedId;
 
     let nameGroupClass = 'template-name form-group';
     if (formState.fields.title && !formState.fields.title.valid && (formState.submitFailed || formState.fields.title.dirty)) {
@@ -48,7 +49,8 @@ export class PageCreator extends Component {
             <div className="panel-body">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
-                  <i className="fa fa-terminal"></i> http://{window.location.host}/page/{page.data.sharedId}
+                  <i className="fa fa-terminal"></i> {pageUrl}
+                  <a target="_blank" href={pageUrl} className="pull-right">(view page)</a>
                 </div>
               </ShowIf>
               <FormField model="page.data.metadata.content">

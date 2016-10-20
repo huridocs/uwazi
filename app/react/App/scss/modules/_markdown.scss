@@ -30,6 +30,10 @@
       border-bottom: 1px solid $c-primary;
     }
   }
+  .tab-content {
+    float: left;
+    width: 100%;
+  }
 }
 
 .page-viewer .markdownViewer {
@@ -37,6 +41,7 @@
   box-shadow: 0 0 0 9999px $c-white;
 }
 
+.markdownEditor,
 .markdownViewer {
   h1 {
     font-weight: 600;
@@ -74,8 +79,9 @@
     color: $c-primary;
     background-color: $c-primary-lighten;
   }
-  p a {
-    display: inline-block;
+  p a,
+  td a {
+    display: inline;
     color: $c-primary;
     border-bottom: 1px dotted $c-primary-light;
     text-decoration: none !important;
@@ -83,7 +89,6 @@
     &:hover {
       color: $c-primary;
       border-bottom: 1px solid $c-primary;
-      background-color: $c-primary-lighten;
     }
   }
   img {
@@ -97,19 +102,22 @@
     margin-bottom: 5px;
   }
 
-  th {
-    padding: 5px;
-    text-transform: uppercase;
-    &:first-child {
-      padding: 5px 5px 5px 0;
-    }
+  table {
+    width: 100%;
   }
-
-  td {
-    padding: 5px;
-    &:first-child {
-      padding: 5px 5px 5px 0;
-    }
+  th, td {
+    padding: 7px 10px;
+  }
+  th {
+    font-family: $f-special;
+    font-weight: 300;
+    background-color: $c-primary-lighten;
+  }
+  th:not(:last-of-type) {
+    border-right: 1px solid $c-white;
+  }
+  tr:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
   }
 }
 
@@ -120,5 +128,23 @@
   .tab-link {
     padding: 15px 15px 0;
     font-size: $f-size-sm;
+  }
+}
+
+.side-panel {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size;
+    }
+  }
+}
+
+.item {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size-sm;
+    }
   }
 }
