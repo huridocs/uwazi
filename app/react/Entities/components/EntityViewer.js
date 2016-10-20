@@ -83,6 +83,7 @@ export class EntityViewer extends Component {
 
   groupReferences() {
     const references = this.props.references.toJS();
+
     const groupedReferences = [];
     references.forEach((reference) => {
       const groupData = this.getGroupData(reference, groupedReferences);
@@ -241,7 +242,7 @@ const mapStateToProps = (state) => {
 
 
   let references = state.entityView.references
-                   .filterNot(ref => ref.get('sourceDocument') === entity._id && ref.get('sourceType') === 'metadata')
+                   .filterNot(ref => ref.get('sourceDocument') === entity.sharedId && ref.get('sourceType') === 'metadata')
                    .filter(ref => !!state.user.get('_id') || ref.get('connectedDocumentPublished'));
 
   return {
