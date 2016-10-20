@@ -1,11 +1,10 @@
-import request from '../../shared/JSONRequest.js';
-import {db_url as dbURL} from '../config/database.js';
 import multer from 'multer';
 import PDF from './PDF';
-import documents from 'api/documents/documents';
 import ID from 'shared/uniqueID';
 import needsAuthorization from '../auth/authMiddleware';
 import {uploadDocumentsPath} from '../config/paths';
+import documents from 'api/documents';
+import entities from 'api/entities';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,13 +19,16 @@ export default (app) => {
   let upload = multer({storage: storage});
 
   app.post('/api/upload', needsAuthorization, upload.any(), (req, res) => {
-    request.get(dbURL + '/' + req.body.document)
+    //request.get(dbURL + '/' + req.body.document)
+    entities.getAllLanguages(req.body.document)
     .then((response) => {
-      let doc = response.json;
-      doc.file = req.files[0];
-      doc.uploaded = true;
+      const docs = response.rows.map((doc) => {
+        doc.file = req.files[0];
+        doc.uploaded = true;
+        return doc;
+      });
 
-      return request.post(dbURL, doc);
+      return entities.saveMultiple(docs);
     })
     .then(() => {
       res.json(req.files[0]);
@@ -35,30 +37,42 @@ export default (app) => {
 
       return Promise.all([
         new PDF(file, req.files[0].originalname).convert(),
-        request.get(dbURL + '/' + req.body.document)
+        //request.get(dbURL + '/' + req.body.document)
+        entities.getAllLanguages(req.body.document)
       ]);
     })
-    .then((response) => {
-      let document = response[1].json;
-      let conversion = response[0];
-      conversion.document = document._id;
-
+    .then(([conversion, docsResponse]) => {
       let socket = req.io.getSocket();
       if (socket) {
-        socket.emit('documentProcessed', document._id);
+        socket.emit('documentProcessed', req.body.document);
       }
 
-      document.processed = true;
-      document.fullText = conversion.fullText;
+      const docs = docsResponse.rows.map((doc) => {
+        doc.processed = true;
+        doc.fullText = conversion.fullText;
+        return doc;
+      });
+
       delete conversion.fullText;
-      return Promise.all([
-        request.post(dbURL, document),
-        documents.saveHTML(conversion)
-      ]);
+      let saves = docs.map((doc) => {
+        const conv = Object.assign({}, conversion, {document: doc._id});
+        return documents.saveHTML(conv);
+      });
+
+      saves.push(entities.saveMultiple(docs));
+
+      return Promise.all(saves);
     })
     .catch((err) => {
       if (err.error === 'conversion_error') {
-        documents.save({_id: req.body.document, processed: false});
+        entities.getAllLanguages(req.body.document)
+        .then((response) => {
+          const docs = response.rows.map((doc) => {
+            doc.processed = false;
+            return doc;
+          });
+          entities.saveMultiple(docs);
+        });
         let socket = req.io.getSocket();
         socket.emit('conversionFailed', req.body.document);
       }

@@ -32,7 +32,8 @@ export default class ViewDocument extends RouteHandler {
           templates,
           thesauris,
           relationTypes
-        }
+        },
+        relationTypes
       };
     });
   }
@@ -52,7 +53,9 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(setReferences([]));
   }
 
-  setReduxState({documentViewer}) {
+  setReduxState(state) {
+    const {documentViewer} = state;
+    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));
     this.context.store.dispatch(actions.set('viewer/doc', documentViewer.doc));
     this.context.store.dispatch(actions.set('viewer/templates', documentViewer.templates));
@@ -65,8 +68,4 @@ export default class ViewDocument extends RouteHandler {
   render() {
     return <Viewer />;
   }
-
 }
-
-//when all components are integrated with redux we can remove this
-ViewDocument.__redux = true;

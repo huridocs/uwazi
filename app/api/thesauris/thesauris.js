@@ -2,22 +2,11 @@ import request from '../../shared/JSONRequest.js';
 import {db_url as dbUrl} from '../config/database.js';
 import sanitizeResponse from 'api/utils/sanitizeResponse.js';
 import entities from 'api/entities/entities';
+import translations from 'api/i18n/translations';
+import {generateIds, getUpdatedNames, getDeletedProperties} from 'api/templates/utils';
 
 let autoincrementValuesId = (thesauri) => {
-  let nextId = thesauri.values.reduce((latestId, value) => {
-    return parseInt(value.id, 10) >= latestId ? parseInt(value.id, 10) : latestId;
-  }, 0) + 1;
-
-  thesauri.values.map((value) => {
-    if (!value.id) {
-      value.id = nextId;
-      nextId += 1;
-    }
-
-    value.id = value.id.toString();
-    return value;
-  });
-
+  thesauri.values = generateIds(thesauri.values);
   return thesauri;
 };
 
@@ -37,6 +26,44 @@ let checkDuplicated = (thesauri) => {
   });
 };
 
+function _save(thesauri) {
+  let context = thesauri.values.reduce((ctx, value) => {
+    ctx[value.label] = value.label;
+    return ctx;
+  }, {});
+  context[thesauri.name] = thesauri.name;
+
+  translations.addContext(thesauri.name, context);
+  return request.post(dbUrl, thesauri);
+}
+
+let updateTranslation = (current, thesauri) => {
+  let currentProperties = current.values;
+  let newProperties = thesauri.values;
+
+  let updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  if (current.name !== thesauri.name) {
+    updatedLabels[current.name] = thesauri.name;
+  }
+  let deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  let context = thesauri.values.reduce((ctx, prop) => {
+    ctx[prop.label] = prop.label;
+    return ctx;
+  }, {});
+
+  context[thesauri.name] = thesauri.name;
+
+  translations.updateContext(current.name, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+};
+
+function _update(thesauri) {
+  return request.get(`${dbUrl}/${thesauri._id}`)
+  .then((response) => {
+    updateTranslation(response.json, thesauri);
+    return request.post(dbUrl, thesauri);
+  });
+}
+
 export default {
   save(thesauri) {
     thesauri.type = 'thesauri';
@@ -46,7 +73,10 @@ export default {
 
     return checkDuplicated(thesauri)
     .then(() => {
-      return request.post(dbUrl, thesauri);
+      if (thesauri._id) {
+        return _update(thesauri);
+      }
+      return _save(thesauri);
     })
     .then((response) => {
       return response.json;
@@ -56,17 +86,17 @@ export default {
     });
   },
 
-  templateToThesauri(template) {
-    return entities.getByTemplate(template._id)
+  templateToThesauri(template, language) {
+    return entities.getByTemplate(template._id, language)
     .then((response) => {
-      template.values = response.rows.map((entity) => {
-        return {id: entity._id, label: entity.title, icon: entity.icon};
+      template.values = response.map((entity) => {
+        return {id: entity.sharedId, label: entity.title, icon: entity.icon};
       });
       return template;
     });
   },
 
-  get(thesauriId) {
+  get(thesauriId, language) {
     let url = `${dbUrl}/_design/thesauris/_view/all`;
     if (thesauriId) {
       url += `?key="${thesauriId}"`;
@@ -76,7 +106,7 @@ export default {
       let thesauris = sanitizeResponse(response.json);
       let requests = thesauris.rows.map((result, index) => {
         if (result.type === 'template') {
-          return this.templateToThesauri(result)
+          return this.templateToThesauri(result, language)
           .then((templateTransformedInThesauri) => {
             thesauris.rows[index] = templateTransformedInThesauri;
           });
@@ -111,7 +141,11 @@ export default {
   },
 
   delete(thesauriId, rev) {
-    return request.delete(`${dbUrl}/${thesauriId}`, {rev})
+    return request.get(`${dbUrl}/${thesauriId}`)
+    .then((response) => {
+      translations.deleteContext(response.json.name);
+      return request.delete(`${dbUrl}/${thesauriId}`, {rev});
+    })
     .then((response) => {
       return response.json;
     })

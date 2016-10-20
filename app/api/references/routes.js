@@ -3,7 +3,7 @@ import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
   app.post('/api/references', needsAuthorization, (req, res) => {
-    references.save(req.body)
+    references.save(req.body, req.language)
     .then((response) => {
       res.json(response);
     })
@@ -23,7 +23,7 @@ export default app => {
   });
 
   app.get('/api/references/by_document/:id', (req, res) => {
-    references.getByDocument(req.params.id)
+    references.getByDocument(req.params.id, req.language)
     .then((response) => {
       res.json(response);
     })

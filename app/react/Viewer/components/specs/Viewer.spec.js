@@ -1,9 +1,11 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import {fromJS as Immutable} from 'immutable';
 
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import TargetDocument from 'app/Viewer/components/TargetDocument';
 import ContextMenu from 'app/ContextMenu';
+import {CreateConnectionPanel} from 'app/Connections';
 import {Viewer} from 'app/Viewer/components/Viewer';
 import ShowIf from 'app/App/ShowIf';
 
@@ -14,8 +16,10 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      setDefaultViewerMenu: jasmine.createSpy('setDefaultViewerMenu'),
-      resetDocumentViewer: jasmine.createSpy('resetDocumentViewer')
+      doc: Immutable({_id: 'id', sharedId: 'sharedId'}),
+      targetDoc: false,
+      addReference: () => {},
+      loadTargetDocument: () => {}
     };
   });
 
@@ -36,7 +40,7 @@ describe('Viewer', () => {
     expect(component.find('.document-viewer').hasClass('with-panel')).toBe(true);
   });
 
-  it('should add  show-target-document className when targetDocument loaded', () => {
+  it('should add show-target-document className when targetDocument loaded', () => {
     props.panelIsOpen = true;
     props.targetDoc = true;
     render();
@@ -54,6 +58,25 @@ describe('Viewer', () => {
     expect(component.find(SourceDocument).length).toBe(1);
     expect(component.find(TargetDocument).length).toBe(1);
     expect(component.find(ContextMenu).length).toBe(1);
+  });
+
+  describe('createConnectionPanel', () => {
+    it('should include the create connections panel with correct props', () => {
+      render();
+      const createConnectionElement = component.find(CreateConnectionPanel).first();
+      expect(component.find(CreateConnectionPanel).length).toBe(1);
+      expect(createConnectionElement.props().containerId).toBe('sharedId');
+      expect(createConnectionElement.props().onCreate).toBe(props.addReference);
+      expect(createConnectionElement.props().onRangedConnect).toBe(props.loadTargetDocument);
+    });
+
+    it('should mark "target" as containerId if targetDocument', () => {
+      props.targetDoc = true;
+      render();
+      const createConnectionElement = component.find(CreateConnectionPanel).first();
+      expect(component.find(CreateConnectionPanel).length).toBe(1);
+      expect(createConnectionElement.props().containerId).toBe('target');
+    });
   });
 
   describe('on mount', () => {

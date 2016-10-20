@@ -1,4 +1,3 @@
-@import "config/theme";
 @import "config/typography";
 @import "config/colors";
 @import "config/materials";
@@ -11,6 +10,7 @@
 @import "elements/panel";
 @import "elements/breadcrumbs";
 @import "elements/draggable";
+@import "elements/dropdown";
 
 @import "layout/header";
 @import "layout/content";

@@ -55,6 +55,8 @@ describe('ViewDocument', () => {
         expect(templatesResponse).toEqual(templates.rows);
         expect(thesaurisResponse).toEqual(thesauris.rows);
         expect(relationTypesResponse).toEqual(relationTypes.rows);
+
+        expect(state.relationTypes).toEqual(relationTypes.rows);
         done();
       })
       .catch(done.fail);
@@ -72,9 +74,11 @@ describe('ViewDocument', () => {
           templates: 'templates',
           thesauris: 'thesauris',
           relationTypes: 'relationTypes'
-        }
+        },
+        relationTypes: 'relationTypes'
       });
 
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'relationTypes/SET', value: 'relationTypes'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: 'references'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/doc/SET', value: 'doc'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/docHTML/SET', value: 'docHTML'});

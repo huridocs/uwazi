@@ -4,6 +4,7 @@ import database from 'api/utils/database.js';
 import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import translations from 'api/i18n/translations';
 
 describe('relationtypes', () => {
 
@@ -49,6 +50,15 @@ describe('relationtypes', () => {
           done();
         }).catch(catchErrors(done));
       });
+
+      it('should create a new translation for it', (done) => {
+        spyOn(translations, 'addContext');
+        relationtypes.save({name: 'Indiferent'})
+        .then(() => {
+          expect(translations.addContext).toHaveBeenCalledWith('Indiferent', {Indiferent: 'Indiferent'});
+          done();
+        }).catch(catchErrors(done));
+      });
     });
 
     describe('when the relation type exists', () => {
@@ -64,6 +74,20 @@ describe('relationtypes', () => {
           expect(result.type).toBe('relationtype');
           expect(result._id).toBe('8202c463d6158af8065022d9b5014a18');
           expect(result._rev).toBeDefined();
+          done();
+        }).catch(catchErrors(done));
+      });
+
+      it('should update the translation for it', (done) => {
+        spyOn(translations, 'updateContext');
+        request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+        .then((result) => {
+          let relationtype = result.json;
+          relationtype.name = 'Pro';
+          return relationtypes.save(relationtype);
+        })
+        .then(() => {
+          expect(translations.updateContext).toHaveBeenCalledWith('Against', 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
           done();
         }).catch(catchErrors(done));
       });
@@ -97,6 +121,20 @@ describe('relationtypes', () => {
           done();
         });
       });
+
+      it('should remove the translation', (done) => {
+        request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+        .then((result) => {
+          let relationtype = result.json;
+          spyOn(translations, 'deleteContext');
+          return relationtypes.delete(relationtype);
+        })
+        .then(() => {
+          expect(translations.deleteContext).toHaveBeenCalledWith('Against');
+          done();
+        });
+      });
+
 
       it('when its been use should not delete it and return false', (done) => {
         request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`)

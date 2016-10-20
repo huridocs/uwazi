@@ -20,17 +20,17 @@ export default (app) => {
     if (req.query.aggregations) {
       req.query.aggregations = JSON.parse(req.query.aggregations);
     }
-    return search.search(req.query)
+    return search.search(req.query, req.language)
     .then(results => res.json(results));
   });
 
   app.get('/api/search/match_title', (req, res) => {
-    return search.matchTitle(req.query.searchTerm)
+    return search.matchTitle(req.query.searchTerm, req.language)
     .then(results => res.json(results));
   });
 
   app.get('/api/search/unpublished', needsAuthorization, (req, res) => {
-    search.getUploadsByUser(req.user)
+    search.getUploadsByUser(req.user, req.language)
     .then(response => res.json(response))
     .catch(error => res.json({error: error}));
   });

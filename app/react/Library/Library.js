@@ -1,4 +1,5 @@
 import React from 'react';
+import Helmet from 'react-helmet';
 
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
@@ -14,14 +15,17 @@ import ViewMetadataPanel from './components/ViewMetadataPanel';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
+import {t} from 'app/I18N';
 
 export default class Library extends RouteHandler {
 
   static renderTools() {
-    return <div className="searchBox">
+    return (
+      <div className="searchBox">
         <SearchBar/>
         <SearchButton/>
-      </div>;
+      </div>
+    );
   }
 
   static requestState(params, query = {filters: {}, types: []}) {
@@ -61,11 +65,14 @@ export default class Library extends RouteHandler {
   }
 
   render() {
-    return <div className="row panels-layout">
-      <DocumentsList />
-      <ConfirmCloseForm />
-      <LibraryFilters />
-      <ViewMetadataPanel />
-    </div>;
+    return (
+      <div className="row panels-layout">
+        <Helmet title={t('System', 'Library')} />
+        <DocumentsList />
+        <ConfirmCloseForm />
+        <LibraryFilters />
+        <ViewMetadataPanel />
+      </div>
+    );
   }
 }

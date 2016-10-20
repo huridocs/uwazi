@@ -2,14 +2,9 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import refenrecesAPI from 'app/Viewer/referencesAPI';
 import {notify} from 'app/Notifications';
 import {actions} from 'app/BasicReducer';
-import * as uiActions from './uiActions';
 
-export function setRelationType(relationType) {
-  return {
-    type: types.SET_RELATION_TYPE,
-    relationType
-  };
-}
+import * as uiActions from './uiActions';
+import {actions as connectionsActions} from 'app/Connections';
 
 export function setReferences(references) {
   return {
@@ -17,23 +12,27 @@ export function setReferences(references) {
     references
   };
 }
-
-export function saveReference(reference) {
+export function addReference(reference) {
   return function (dispatch) {
-    return refenrecesAPI.save(reference)
-    .then((referenceCreated) => {
-      dispatch({
-        type: types.ADD_CREATED_REFERENCE,
-        reference: referenceCreated
-      });
-
-      dispatch(actions.unset('viewer/targetDoc'));
-      dispatch(actions.unset('viewer/targetDocHTML'));
-      dispatch(actions.unset('viewer/targetDocReferences'));
-
-      dispatch(uiActions.activateReference(referenceCreated._id));
-      dispatch(notify('saved successfully !', 'success'));
+    const tab = reference.sourceRange.text ? 'references' : 'connections';
+    dispatch({
+      type: types.ADD_REFERENCE,
+      reference: reference
     });
+    dispatch(actions.unset('viewer/targetDoc'));
+    dispatch(actions.unset('viewer/targetDocHTML'));
+    dispatch(actions.unset('viewer/targetDocReferences'));
+    dispatch(uiActions.activateReference(reference._id, tab));
+  };
+}
+
+export function saveTargetRangedReference(connection, targetRange, onCreate) {
+  return function (dispatch) {
+    if (targetRange.text) {
+      dispatch(actions.unset('viewer/targetDocReferences'));
+      connection.targetRange = targetRange;
+      return connectionsActions.saveConnection(connection, onCreate)(dispatch);
+    }
   };
 }
 

@@ -17,7 +17,7 @@ export function savePage(data) {
     return api.save(data)
     .then((response) => {
       dispatch({type: types.PAGE_SAVED, data: response});
-      dispatch(formActions.merge('page.data', {_id: response._id, _rev: response._rev}));
+      dispatch(formActions.merge('page.data', {_id: response._id, sharedId: response.sharedId, _rev: response._rev}));
       dispatch(notify('Saved successfully.', 'success'));
     });
   };

@@ -1,7 +1,6 @@
 import PDFObject from '../PDF.js';
 import childProcess from 'child_process';
 import EventEmitter from 'events';
-import fs from 'fs';
 
 class Events extends EventEmitter {}
 

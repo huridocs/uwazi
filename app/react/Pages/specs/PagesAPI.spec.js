@@ -3,45 +3,32 @@ import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('pagesAPI', () => {
-  let arrayResponse = [{pages: 'array'}];
   let singleResponse = [{pages: 'single'}];
   let listResponse = [{pages: 'list'}];
 
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'pages', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'pages?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
-    .mock(APIURL + 'pages/list?keys=%5B%221%22%2C%222%22%5D', 'GET', {body: JSON.stringify({rows: listResponse})})
+    .mock(APIURL + 'pages?sharedId=documentId', 'GET', {body: JSON.stringify(singleResponse)})
+    .mock(APIURL + 'pages/list', 'GET', {body: JSON.stringify({rows: listResponse})})
     .mock(APIURL + 'pages', 'POST', {body: JSON.stringify({backednResponse: 'post'})})
-    .mock(APIURL + 'pages?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'delete'})});
+    .mock(APIURL + 'pages?sharedId=id', 'DELETE', {body: JSON.stringify({backednResponse: 'delete'})});
   });
 
   describe('get()', () => {
-    it('should request pages', (done) => {
-      pagesAPI.get()
+    it('should request for the page', (done) => {
+      pagesAPI.get('documentId')
       .then((response) => {
-        expect(response).toEqual(arrayResponse);
+        expect(response).toEqual(singleResponse);
         done();
       })
       .catch(done.fail);
-    });
-
-    describe('when passing an id', () => {
-      it('should request for the page', (done) => {
-        pagesAPI.get('documentId')
-        .then((response) => {
-          expect(response).toEqual(singleResponse);
-          done();
-        })
-        .catch(done.fail);
-      });
     });
   });
 
   describe('list()', () => {
     it('should request pages list', (done) => {
-      pagesAPI.list(['1', '2'])
+      pagesAPI.list()
       .then((response) => {
         expect(response).toEqual(listResponse);
         done();
@@ -66,7 +53,7 @@ describe('pagesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {_id: 'id'};
+      let document = {sharedId: 'id'};
       pagesAPI.delete(document)
       .then((response) => {
         expect(response).toEqual({backednResponse: 'delete'});

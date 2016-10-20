@@ -1,22 +1,59 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import Helmet from 'react-helmet';
 import marked from 'marked';
+
+import {ItemList} from './ItemList';
+
+const listPlaceholder = '{---UWAZILIST---}';
 
 export class PageViewer extends Component {
   render() {
-    let {page} = this.props;
+    const {page, itemLists} = this.props;
+    const content = page.getIn(['metadata', 'content']) || '';
+    const lists = itemLists.toJS();
+
+    const tokens = marked.lexer(content, {sanitize: true});
+
+    const sections = tokens.reduce((memo, token) => {
+      const listMatches = new RegExp(listPlaceholder, 'g').exec(token.text);
+      if (token.type === 'paragraph' && listMatches) {
+        memo.push('list');
+      } else if (!memo.length || memo[memo.length - 1] !== 'markdown') {
+        memo.push('markdown');
+      }
+      return memo;
+    }, []);
+
+    const html = marked(content, {sanitize: true});
+    const htmlSplits = html.split(`<p>${listPlaceholder}</p>\n`).filter(i => i.length);
+
+    const pageHtml = sections.map((type, index) => {
+      if (type === 'list' && lists.length) {
+        const listData = lists.shift();
+        return <div key={index} className="markdownViewer">
+                 <ItemList link={`/${listData.params}`} items={listData.items}/>
+               </div>;
+      }
+      if (type === 'markdown' && htmlSplits.length) {
+        return <div key={index}
+                    className="markdownViewer"
+                    dangerouslySetInnerHTML={{__html: htmlSplits.shift()}}/>;
+      }
+      return false;
+    });
+
     return (
       <div className="row">
+        <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
         <main className="document-viewer page-viewer">
           <div className="main-wrapper">
             <div className="document">
               <div className="page">
-              <h1>{page.get('title')}</h1>
-                <div className="markdownViewer"
-                  dangerouslySetInnerHTML={{__html: marked(page.getIn(['metadata', 'content']) || '', {sanitize: true})}}/>
-                </div>
+                {pageHtml}
               </div>
             </div>
+          </div>
         </main>
       </div>
     );
@@ -24,11 +61,15 @@ export class PageViewer extends Component {
 }
 
 PageViewer.propTypes = {
-  page: PropTypes.object
+  page: PropTypes.object,
+  itemLists: PropTypes.object
 };
 
-const mapStateToProps = (state) => {
-  return {page: state.page.pageView};
+const mapStateToProps = ({page}) => {
+  return {
+    page: page.pageView,
+    itemLists: page.itemLists
+  };
 };
 
 export default connect(mapStateToProps)(PageViewer);

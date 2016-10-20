@@ -16,12 +16,6 @@ export function openPanel(panel) {
   };
 }
 
-export function viewerSearching() {
-  return {
-    type: types.VIEWER_SEARCHING
-  };
-}
-
 export function resetReferenceCreation() {
   return function (dispatch) {
     dispatch({type: types.RESET_REFERENCE_CREATION});
@@ -58,14 +52,16 @@ export function showTab(tab) {
   };
 }
 
-export function activateReference(reference) {
+export function activateReference(reference, tab) {
+  const tabName = tab && !Array.isArray(tab) ? tab : 'references';
+
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference});
     dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
-    dispatch(showTab('connections'));
+    dispatch(showTab(tabName));
     setTimeout(() => {
       scroller.to(`.document-viewer a[data-id="${reference}"]`, '.document-viewer');
-      scroller.to(`.document-metadata .item[data-id="${reference}"]`, '.document-metadata .sidepanel-body');
+      scroller.to(`.metadata-sidepanel .item[data-id="${reference}"]`, '.metadata-sidepanel .sidepanel-body');
     });
   };
 }

@@ -2,7 +2,7 @@
 // There is partial testing of added functionality, but this requires a full test.
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
@@ -10,8 +10,9 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, deleteReference} from 'app/Entities/actions/actions';
-import {actions} from 'app/Metadata';
+import {deleteEntity, addReference, deleteReference} from 'app/Entities/actions/actions';
+import {CreateConnectionPanel} from 'app/Connections';
+import {actions as connectionsActions} from 'app/Connections';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
@@ -91,18 +92,7 @@ export class EntityViewer extends Component {
     return groupedReferences;
   }
 
-  // --------------
-
-  // This is aparently NOT being used!
-  // relationType(id, relationTypes) {
-  //   let type = relationTypes.find((relation) => relation._id === id);
-  //   if (type) {
-  //     return type.name;
-  //   }
-  // }
-
   render() {
-    // let {entity, entityBeingEdited, references, relationTypes} = this.props;
     let {entity, entityBeingEdited, references} = this.props;
     references = references.toJS();
 
@@ -152,14 +142,14 @@ export class EntityViewer extends Component {
                     </ShowIf>
                   </NeedAuthorization>
                   &nbsp;
-                  <Link
+                  <I18NLink
                     to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
                     onClick={e => e.stopPropagation()}
                     className="item-shortcut">
                     <span className="itemShortcut-arrow">
                       <i className="fa fa-external-link"></i>
                     </span>
-                  </Link>
+                  </I18NLink>
                 </div>
               </div>
             </div>
@@ -170,14 +160,8 @@ export class EntityViewer extends Component {
 
     return (
       <div className="row entity-content">
-        <Helmet title="Entity" />
+        <Helmet title={entity.title ? entity.title : 'Entity'} />
         <aside className="side-panel entity-metadata">
-          <ShowIf if={!entityBeingEdited}>
-            <div className="sidepanel-header">
-
-            </div>
-          </ShowIf>
-
           <MetadataFormButtons
             delete={this.deleteEntity.bind(this)}
             data={this.props.rawEntity}
@@ -187,7 +171,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <ShowIf if={!entityBeingEdited}>
               <div className="item-info">
-                <Icon className="item-icon item-icon-center" data={entity.icon} size="md"/>
+                <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
                 <h1 className="item-name">{entity.title}</h1>
                 <TemplateLabel template={entity.template}/>
               </div>
@@ -206,21 +190,30 @@ export class EntityViewer extends Component {
             <ul className="nav nav-tabs">
               <li>
                 <div className="tab-link tab-link-active">
-                  <i className="fa fa-sitemap"></i>
+                  <i className="fa fa-share-alt"></i>
                   <span className="connectionsNumber">{references.length}</span>
                 </div>
               </li>
             </ul>
             &nbsp;
           </div>
+          <NeedAuthorization>
+            <div className="sidepanel-footer">
+            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
+                    className="create-connection btn btn-success">
+              <i className="fa fa-plus"></i>
+              <span className="btn-label">New</span>
+            </button>
+            </div>
+          </NeedAuthorization>
           <div className="sidepanel-body">
             {referencesHtml}
           </div>
         </aside>
+        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
       </div>
     );
   }
-
 }
 
 EntityViewer.propTypes = {
@@ -230,10 +223,10 @@ EntityViewer.propTypes = {
   references: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
-  loadInReduxForm: PropTypes.func,
-  resetForm: PropTypes.func,
   deleteEntity: PropTypes.func,
-  deleteReference: PropTypes.func
+  addReference: PropTypes.func,
+  deleteReference: PropTypes.func,
+  startNewConnection: PropTypes.func
 };
 
 EntityViewer.contextTypes = {
@@ -263,10 +256,10 @@ const mapStateToProps = (state) => {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    loadInReduxForm: actions.loadInReduxForm,
-    resetForm: actions.resetReduxForm,
     deleteEntity,
-    deleteReference
+    addReference,
+    deleteReference,
+    startNewConnection: connectionsActions.startNewConnection
   }, dispatch);
 }
 

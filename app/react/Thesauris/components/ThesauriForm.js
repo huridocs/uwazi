@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {Field, Form, actions as formActions} from 'react-redux-form';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import 'app/Thesauris/scss/thesauris.scss';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -42,7 +42,7 @@ export class ThesauriForm extends Component {
           >
             <div className="panel panel-default thesauri">
               <div className="panel-heading">
-                <Link to="/settings/dictionaries" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <I18NLink to="/settings/dictionaries" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
                 <Field model="thesauri.data.name">
                   <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />

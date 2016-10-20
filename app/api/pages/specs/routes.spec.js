@@ -24,14 +24,15 @@ describe('Pages Routes', () => {
     it('should create a new document with use user', (done) => {
       let req = {
         body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}
+        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        language: 'lang'
       };
 
       spyOn(pages, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/pages', req)
       .then((document) => {
         expect(document).toBe('document');
-        expect(pages.save).toHaveBeenCalledWith(req.body, req.user);
+        expect(pages.save).toHaveBeenCalledWith(req.body, req.user, 'lang');
         done();
       })
       .catch(catchErrors(done));
@@ -39,44 +40,33 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages', () => {
-    it('should return a list of pages returned from the list view', (done) => {
-      routes.get('/api/pages')
+    it('should ask pages model for the page in the current locale', (done) => {
+      let req = {
+        query: {sharedId: '123'},
+        language: 'es'
+      };
+      spyOn(pages, 'get').and.returnValue(Promise.resolve('page'));
+      routes.get('/api/pages', req)
       .then((response) => {
-        expect(response.rows.length).toBe(3);
-        expect(response.rows[0].title).toEqual('Batman finishes');
-        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b50dda18');
+        expect(pages.get).toHaveBeenCalledWith('123', 'es');
+        expect(response).toBe('page');
         done();
       })
       .catch(catchErrors(done));
-    });
-
-    describe('when passing id', () => {
-      it('should return matching document', (done) => {
-        let req = {query: {_id: '8202c463d6158af8065022d9b50ddccb'}};
-
-        routes.get('/api/pages', req)
-        .then((response) => {
-          let docs = response.rows;
-          expect(docs.length).toBe(1);
-          expect(docs[0].title).toBe('Penguin almost done');
-          done();
-        })
-        .catch(catchErrors(done));
-      });
     });
   });
 
   describe('/api/pages/list', () => {
     it('return the list from pages passing the keys', (done) => {
       let req = {
-        query: {keys: JSON.stringify(['1', '2'])}
+        language: 'es'
       };
 
       spyOn(pages, 'list').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.get('/api/pages/list', req)
       .then((document) => {
         expect(document).toBe('document');
-        expect(pages.list).toHaveBeenCalledWith(['1', '2']);
+        expect(pages.list).toHaveBeenCalledWith('es');
         done();
       })
       .catch(catchErrors(done));
@@ -89,10 +79,10 @@ describe('Pages Routes', () => {
     });
 
     it('should use pages to delete it', (done) => {
-      let req = {query: {_id: 123, _rev: 456}};
+      let req = {query: {_id: 123, _rev: 456, sharedId: '456'}};
       return routes.delete('/api/pages', req)
       .then(() => {
-        expect(pages.delete).toHaveBeenCalledWith(req.query._id);
+        expect(pages.delete).toHaveBeenCalledWith(req.query.sharedId);
         done();
       })
       .catch(catchErrors(done));

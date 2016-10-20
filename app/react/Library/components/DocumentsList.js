@@ -8,6 +8,7 @@ import {RowList} from 'app/Layout/Lists';
 import {loadMoreDocuments} from 'app/Library/actions/libraryActions';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
+import {t} from 'app/I18N';
 
 export class DocumentsList extends Component {
 
@@ -33,7 +34,7 @@ export class DocumentsList extends Component {
         <div className="sort-by">
           <div className="row">
             <p id="documents-counter" className="col-sm-7 text-left documents-counter">
-              {documents.rows.length} of {documents.totalRows} documents
+              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
             </p>
             <SortButtons />
           </div>
@@ -41,23 +42,23 @@ export class DocumentsList extends Component {
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
-          <div className="row">
-            <div className="col-sm-12 text-center documents-counter">
-              {documents.rows.length} of {documents.totalRows} documents
-            </div>
-            {(() => {
-              if (documents.rows.length < documents.totalRows && !this.state.loading) {
-                return <div className="col-sm-12 text-center">
-                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">Load more</button>
-                </div>;
-              }
-              if (this.state.loading) {
-                return <Loader/>;
-              }
-            })()}
+        <div className="row">
+          <div className="col-sm-12 text-center documents-counter">
+              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
           </div>
-          <Footer/>
-          </div>
+          {(() => {
+            if (documents.rows.length < documents.totalRows && !this.state.loading) {
+              return <div className="col-sm-12 text-center">
+              <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">{t('Load more')}</button>
+              </div>;
+            }
+            if (this.state.loading) {
+              return <Loader/>;
+            }
+          })()}
+        </div>
+        <Footer/>
+        </div>
       </main>
     );
   }

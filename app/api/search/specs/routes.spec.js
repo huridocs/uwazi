@@ -37,12 +37,13 @@ describe('search routes', () => {
       let filtersValue = JSON.stringify({property: 'property'});
       let types = JSON.stringify(['ruling', 'judgement']);
       let fields = JSON.stringify(['field1', 'field2']);
-      let req = {query: {searchTerm: 'test', filters: filtersValue, types, fields}};
+      let req = {query: {searchTerm: 'test', filters: filtersValue, types, fields}, language: 'es'};
 
       routes.get('/api/search', req)
       .then((response) => {
         expect(search.search).toHaveBeenCalledWith(
-          {searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement'], fields: ['field1', 'field2']}
+          {searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement'], fields: ['field1', 'field2']},
+          'es'
         );
         expect(response).toEqual('results');
         done();
@@ -53,11 +54,11 @@ describe('search routes', () => {
     describe('when has no filters or types', () => {
       it('should search search and return the results', (done) => {
         spyOn(search, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
-        let req = {query: {}};
+        let req = {query: {}, language: 'es'};
 
         routes.get('/api/search', req)
         .then((response) => {
-          expect(search.search).toHaveBeenCalledWith({});
+          expect(search.search).toHaveBeenCalledWith({}, 'es');
           expect(response).toEqual('results');
           done();
         })
@@ -69,11 +70,12 @@ describe('search routes', () => {
   describe('/api/search/match_title', () => {
     it('should search search by title and return the results', (done) => {
       spyOn(search, 'matchTitle').and.returnValue(new Promise((resolve) => resolve('results')));
-      let req = {query: {searchTerm: 'test'}};
+      let req = {query: {searchTerm: 'test'}, language: 'es'};
 
       routes.get('/api/search/match_title', req)
       .then((response) => {
         expect(response).toEqual('results');
+        expect(search.matchTitle).toHaveBeenCalledWith('test', 'es');
         done();
       })
       .catch(catchErrors(done));

@@ -9,8 +9,15 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
     //test
     let entity = Object.assign({}, onlyReadEntity);
     //
+
     if (!entity.template) {
       entity.template = templates[0]._id;
+      if (entity.type === 'document' && templates.find(t => !t.isEntity)) {
+        entity.template = templates.find(t => !t.isEntity)._id;
+      }
+      if (entity.type === 'entity' && templates.find(t => t.isEntity)) {
+        entity.template = templates.find(t => t.isEntity)._id;
+      }
     }
 
     if (!entity.metadata) {
@@ -22,7 +29,6 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
       if (!entity.metadata[property.name] && property.type !== 'date') {
         entity.metadata[property.name] = '';
       }
-
       if (!entity.metadata[property.name] && property.type === 'multiselect') {
         entity.metadata[property.name] = [];
       }

@@ -61,6 +61,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pdftohtmljs_uwazi": "0.3.7",
+    "query-string": "^4.2.3",
     "react": "15.0.2",
     "react-addons-shallow-compare": "15.0.2",
     "react-datepicker": "^0.28.2",
@@ -84,6 +85,7 @@
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
     "superagent": "1.6.1",
+    "tiny-cookie": "^0.5.5",
     "validate.js": "^0.9.0",
     "world-countries": "^1.8.0"
   },

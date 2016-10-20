@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
 import {TemplateLabel, Icon} from 'app/Layout';
@@ -30,7 +30,7 @@ export class Doc extends Component {
       return (
         <dl key={index}>
           <dt>{property.label}</dt>
-          <dd><Icon className="item-icon item-icon-center" data={property.icon} size="xs"/>{value}</dd>
+          <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
         </dl>
       );
     });
@@ -41,8 +41,8 @@ export class Doc extends Component {
   }
 
   render() {
-    let {title, _id, creationDate, template, icon} = this.props.doc;
-    let documentViewUrl = `/${this.props.doc.type}/${_id}`;
+    let {title, creationDate, template, icon, sharedId} = this.props.doc;
+    let documentViewUrl = `/${this.props.doc.type}/${sharedId}`;
 
     let active;
     if (this.props.selectedDocument) {
@@ -57,7 +57,7 @@ export class Doc extends Component {
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
         <div className="item-info">
-          <Icon className="item-icon item-icon-center" data={icon} size="sm"/>
+          <Icon className="item-icon item-icon-center" data={icon} />
           <ItemName>{title}</ItemName>
         </div>
         <div className="item-metadata">
@@ -65,11 +65,11 @@ export class Doc extends Component {
         </div>
         <ItemFooter>
           <TemplateLabel template={template}/>
-          <Link to={documentViewUrl} className="item-shortcut">
+          <I18NLink to={documentViewUrl} className="item-shortcut">
             <span className="itemShortcut-arrow">
               <i className="fa fa-external-link"></i>
             </span>
-          </Link>
+          </I18NLink>
         </ItemFooter>
       </RowList.Item>
     );

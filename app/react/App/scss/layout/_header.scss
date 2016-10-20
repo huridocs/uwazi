@@ -1,28 +1,30 @@
 header {
-	z-index: 40;
-	position: fixed;
-	top: 0;
+  z-index: 40;
+  position: fixed;
+  top: 0;
   min-height: $header-height;
   justify-content: space-between;
   border-bottom: 1px solid $c-grey-light;
+  /* Removed for language selector. Check for side-effects!
+  /*overflow: hidden;*/
   @if $theme == light {
     background: $c-white;
   } @else {
     background: $c-primary;
   }
 
-	h1 {
+  h1 {
     float: left;
-		font-size: $f-size-lg;
-		font-family: $f-special;
-		font-weight: 300;
-		margin: 0;
-    width: calc(100% - 54*2px);
-		@media(min-width: 1024px) {
-		  padding: 0 15px;
+    font-size: $f-size-lg;
+    font-family: $f-special;
+    font-weight: 300;
+    margin: 0;
+    width: calc(100% - 2 * 54px);
+    @media(min-width: 1024px) {
+      padding: 0 15px;
       width: auto;
       max-width: 320px;
-		}
+    }
 
     a {
       display: block;
@@ -30,14 +32,18 @@ header {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: $header-height + 2px;
+      line-height: $header-height;
       height: $header-height;
-      color: $c-black;
+      @if $theme == light {
+        color: $c-black !important;
+      } @else {
+        color: $c-white !important;
+      }
     }
-	}
+  }
 
-	/* menu buttons */
-	.menu-button {
+  /* menu buttons */
+  .menu-button {
     z-index: 1;
     float: left;
     width: $header-height;
@@ -52,10 +58,10 @@ header {
     } @else {
       color: $c-white;
     }
-		@media(min-width: 1024px) {
-			display: none;
-		}
-	}
+    @media(min-width: 1024px) {
+      display: none;
+    }
+  }
 }
 
 .menuNav {
@@ -85,65 +91,109 @@ header {
     list-style: none;
     padding: 0;
     margin: 0;
-  }
-  li {
-    padding: 0;
-    width: 100%;
     @media(min-width: 1024px) {
-      display: inline-block;
-      width: auto;
-    }
-  }
-  .btn {
-    display: block;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    min-width: $header-height;
-    height: $header-height;
-    line-height: $header-height + 2px;
-    padding: 0 15px;
-    @if $theme == light {
-      color: $c-black;
-      background: $c-white;
-    } @else {
-      color: $c-white;
-      background: $c-primary;
-    }
-    &:hover,
-    &:active,
-    &:focus {
-      @if $theme == light {
-        background: $c-white;
-        border-color: $c-primary;
-      } @else {
-        background: $c-primary;
-        border-color: $c-white;
-      }
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 }
 
-.menuItems {}
+.menuNav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuNav-item {
+  position: relative;
+  padding: 0;
+  width: 100%;
+  @media(min-width: 1024px) {
+    display: inline-block;
+    width: auto;
+    min-width: $header-height;
+  }
+}
+
+.menuNav-btn {
+  display: block;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  min-width: $header-height;
+  height: $header-height;
+  line-height: $header-height + 2px;
+  padding: 0 15px;
+  @if $theme == light {
+    color: $c-black;
+    background: $c-white;
+  } @else {
+    color: $c-white;
+    background: $c-primary;
+  }
+  &:hover,
+  &:active,
+  &:focus {
+    @if $theme == light {
+      background: $c-white;
+      border-color: $c-primary;
+    } @else {
+      color: $c-white;
+      background: $c-primary;
+      border-color: $c-white;
+    }
+  }
+}
+
 .menuActions {
-  ul {
+  .menuNav-list {
+    overflow: visible;
     display: flex;
   }
 }
 
 @media(max-width: 1023px) {
-  .menuItems li {
+  .menuItems .menuNav-item {
     @if $theme == light {
       border-bottom: 1px solid $c-grey-light;
     } @else {
       border-bottom: 1px solid $c-primary-dark;
     }
   }
-  .menuActions li:not(:last-child) .btn {
+  .menuActions .menuNav-item:not(:last-child) {
     @if $theme == light {
       border-right: 1px solid $c-grey-light;
     } @else {
       border-right: 1px solid $c-primary-dark;
+    }
+  }
+}
+
+.menuNav {
+  .Dropdown {
+    top: 19px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 0;
+
+    .Dropdown-option {
+      padding-right: 5px;
+    }
+
+  }
+  .Dropdown:not(.is-active) {
+    .Dropdown-label {
+      @if $theme != light {
+        color: $c-white;
+      }
+    }
+
+    a {
+      @if $theme == light {
+        color: $c-black;
+      } @else {
+        color: $c-white;
+      }
     }
   }
 }
@@ -153,15 +203,14 @@ header {
   right: 0;
   display: block;
   float: right;
-  width: 0;
-  max-width: 320px - $header-height;
+  width: calc(0%);
   transition: all 500ms;
 
   &.is-active {
-    width: 90%;
+    width: calc(100% - 54px);
   }
 
-  @include desktop {
+  @media(min-width: 1024px) {
     position: relative;
     max-width: 9999px;
     &.is-active {
@@ -221,19 +270,19 @@ header {
   padding: 0;
   z-index: 3;
   transition: width 225ms;
+  color: $c-black;
+  background: $c-white;
   @if $theme == light {
-    color: $c-black;
-    background: $c-white;
     border-left: 1px solid $c-grey-light;
   } @else {
-    color: $c-white;
-    background: $c-primary;
     border-left: 1px solid $c-primary-dark;
   }
   @media(min-width: 1024px) {
     width: $header-height*2;
-    &:hover {
-      background-color: $c-grey-light;
+    &:hover,
+    &:focus,
+    &:active {
+      color: $c-grey-dark;
     }
   }
 
@@ -244,11 +293,14 @@ header {
   &.is-active {
     position: absolute;
     width: $header-height;
-    border-color: $c-white;
     margin-left: 0;
     @if $theme == light {
+      color: $c-black;
+      background-color: $c-white;
       border-color: $c-white;
     } @else {
+      color: $c-white;
+      background-color: $c-primary;
       border-color: $c-primary;
     }
     @media(min-width: 1024px) {
@@ -288,25 +340,25 @@ header {
 }
 
 .search-suggestions {
-	display: none;
-	position: absolute;
+  display: none;
+  position: absolute;
   top: $header-height - 1px;
   left: 0;
   width: 100%;
   background: $c-white;
   z-index: 40;
-	color: $c-black;
+  color: $c-black;
   border: 1px solid $c-grey-light;
-	border-top: 0;
-	line-height: 1em;
-	&.is-active {
-		display: block;
-	}
+  border-top: 0;
+  line-height: 1em;
+  &.is-active {
+    display: block;
+  }
 
-	p {
-		position: relative;
+  p {
+    position: relative;
     margin: 0;
-	}
+  }
 
   a, button {
     color: $c-black;
@@ -322,32 +374,32 @@ header {
     }
   }
 
-	.fa-external-link {
-		position: absolute;
-		top: 10px;
-		right: 15px;
-	}
+  .fa-external-link {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+  }
 
 }
 .search-suggestions-title {
-	border-bottom: 1px solid $c-grey-light;
-	font-size: $f-size-xs;
-	color: $c-grey-dark;
-	text-transform: uppercase;
-	letter-spacing: 0.3em;
-	padding-bottom: 5px;
-	margin-top: 15px;
+  border-bottom: 1px solid $c-grey-light;
+  font-size: $f-size-xs;
+  color: $c-grey-dark;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  padding-bottom: 5px;
+  margin-top: 15px;
 }
 
 .search-suggestions-all {
-	font-style: italic;
-	border-top: 1px solid $c-grey;
+  font-style: italic;
+  border-top: 1px solid $c-grey;
 
   button {
     padding: 15px 30px;
   }
 
-	.fa {
-		margin-right: 5px;
-	}
+  .fa {
+    margin-right: 5px;
+  }
 }

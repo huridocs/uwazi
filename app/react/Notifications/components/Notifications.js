@@ -7,7 +7,7 @@ export class Notifications extends Component {
 
   render() {
     return (
-        <div>
+        <div className="alert-wrapper">
           {this.props.notifications.map((notification) => {
             return <Notification key={notification.id} {...notification}/>;
           })}

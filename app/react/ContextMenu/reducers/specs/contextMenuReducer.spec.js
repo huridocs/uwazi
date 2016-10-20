@@ -60,10 +60,10 @@ describe('contextMenuReducer', () => {
     });
   });
 
-  describe('ADD_CREATED_REFERENCE', () => {
+  describe('ADD_REFERENCE', () => {
     it('should set type to ViewerDefaultMenu', () => {
       let currentState = Immutable.fromJS({type: null});
-      let newState = contextMenuReducer(currentState, {type: ViewerTypes.ADD_CREATED_REFERENCE});
+      let newState = contextMenuReducer(currentState, {type: ViewerTypes.ADD_REFERENCE});
       let expected = Immutable.fromJS({type: 'ViewerDefaultMenu'});
 
       expect(newState).toBeImmutable();

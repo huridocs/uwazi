@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 
-import api from 'app/utils/api';
 import {mockID} from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
@@ -150,48 +149,6 @@ describe('documentActions', () => {
       .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
 
-    describe('loadTargetDocument', () => {
-      it('should loadTargetDocument with id passed', (done) => {
-        let targetId = 'targetId';
-
-        const expectedActions = [
-          {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
-          {type: 'viewer/targetDocHTML/SET', value: 'html'},
-          {type: 'viewer/targetDocReferences/SET', value: [{connectedDocument: '1'}]}
-        ];
-        const store = mockStore({});
-
-        store.dispatch(actions.loadTargetDocument(targetId))
-        .then(() => {
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-
-    describe('viewerSearchDocuments', () => {
-      it('should searchDocuments with passed searchTerm', (done) => {
-        let searchTerm = 'term';
-
-        spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: 'documents'}}));
-
-        const expectedActions = [
-          {type: types.VIEWER_SEARCHING},
-          {type: 'viewer/documentResults/SET', value: 'documents'}
-        ];
-        const store = mockStore({});
-
-        store.dispatch(actions.viewerSearchDocuments(searchTerm))
-        .then(() => {
-          expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['doc.title']});
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
@@ -268,6 +225,43 @@ describe('documentActions', () => {
         })
         .then(done)
         .catch(done.fail);
+      });
+    });
+
+    describe('loadTargetDocument', () => {
+      it('should loadTargetDocument with id passed', (done) => {
+        let targetId = 'targetId';
+
+        const expectedActions = [
+          {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
+          {type: 'viewer/targetDocHTML/SET', value: 'html'},
+          {type: 'viewer/targetDocReferences/SET', value: [{connectedDocument: '1'}]}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.loadTargetDocument(targetId))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('cancelTargetDocument', () => {
+      it('should reset ranged connection defaults', () => {
+        const expectedActions = [
+          {type: 'CANCEL_RANGED_CONNECTION'},
+          {type: 'viewer/targetDoc/UNSET'},
+          {type: 'viewer/targetDocHTML/UNSET'},
+          {type: 'viewer/targetDocReferences/UNSET'},
+          {type: 'UNSET_TARGET_SELECTION'},
+          {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.cancelTargetDocument());
+        expect(store.getActions()).toEqual(expectedActions);
       });
     });
   });

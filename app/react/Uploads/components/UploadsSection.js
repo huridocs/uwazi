@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import Helmet from 'react-helmet';
 
 import ContextMenu from 'app/ContextMenu';
 
@@ -11,6 +12,7 @@ import UploadsFormPanel from './UploadsFormPanel';
 import UploadFailedModal from './UploadFailedModal';
 import UploadsMenu from './UploadsMenu';
 import ReadyToPublishModal from './ReadyToPublishModal';
+import {t} from 'app/I18N';
 
 import io from 'socket.io-client';
 
@@ -35,6 +37,7 @@ export class UploadsSection extends Component {
     }
     return (
       <div className="row">
+        <Helmet title={t('System', 'Uploads')}/>
         <main className={className}>
           <UploadBox />
           <UploadsList socket={this.socket}/>

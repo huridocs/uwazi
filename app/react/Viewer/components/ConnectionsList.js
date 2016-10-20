@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {NeedAuthorization} from 'app/Auth';
 import {TemplateLabel} from 'app/Layout';
 
@@ -28,7 +28,7 @@ export class ConnectionsList extends Component {
 
   clickReference(reference) {
     if (!this.props.targetDoc) {
-      this.props.activateReference(reference._id);
+      this.props.activateReference(reference._id, this.props.referencesSection);
     }
     if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
       this.props.selectReference(reference._id, this.props.references.toJS());
@@ -48,6 +48,7 @@ export class ConnectionsList extends Component {
   render() {
     const uiState = this.props.uiState.toJS();
     const relationTypes = this.props.relationTypes.toJS();
+    const useSourceTargetIcons = typeof this.props.useSourceTargetIcons !== 'undefined' ? this.props.useSourceTargetIcons : true;
 
     const references = this.props.references.toJS().sort((a, b) => {
       let aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
@@ -87,9 +88,10 @@ export class ConnectionsList extends Component {
                 data-id={reference._id}>
                 <div className="item-info">
                   <div className="item-name">
-                    <i className={`fa ${referenceIcon}`}></i>
-                    &nbsp;
-                    <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
+                    <ShowIf if={useSourceTargetIcons}>
+                      <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
+                    </ShowIf>
+                      <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
                     {reference.connectedDocumentTitle}
                     {(() => {
                       if (reference.text) {
@@ -118,13 +120,13 @@ export class ConnectionsList extends Component {
                     </ShowIf>
                     &nbsp;
                     <ShowIf if={!this.props.targetDoc}>
-                      <Link to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                      <I18NLink to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
                             onClick={e => e.stopPropagation()}
                             className="item-shortcut">
                         <span className="itemShortcut-arrow">
                           <i className="fa fa-external-link"></i>
                         </span>
-                      </Link>
+                      </I18NLink>
                     </ShowIf>
                   </div>
                 </div>
@@ -148,7 +150,9 @@ ConnectionsList.propTypes = {
   deactivateReference: PropTypes.func,
   closePanel: PropTypes.func,
   deleteReference: PropTypes.func,
-  targetDoc: PropTypes.bool
+  targetDoc: PropTypes.bool,
+  referencesSection: PropTypes.string,
+  useSourceTargetIcons: PropTypes.bool
 };
 
 ConnectionsList.contextTypes = {

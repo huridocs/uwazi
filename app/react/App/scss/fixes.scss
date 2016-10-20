@@ -15,7 +15,7 @@ header {
 }
 
 .container {
-  max-width: 1024px;
+  max-width: 960px;
 }
 .container-fluid {
   margin-right: 0;
@@ -27,10 +27,6 @@ header {
 @media (max-width: 1023px) {
   .col-xs-12 {
     width: 100%;
-  }
-  .side-panel {
-    width: 80%;
-    max-width: 360px;
   }
 }
 

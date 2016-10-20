@@ -1,5 +1,10 @@
 @import "../../../App/scss/config/colors.scss";
 
+.cs-loader-container {
+  position: relative;
+  min-height: 30px;
+}
+
 .cs-loader {
   position: relative;
   top: 0;

@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import t from '../I18N/t';
 
 export class TemplateLabel extends Component {
   render() {
@@ -17,11 +18,10 @@ export class TemplateLabel extends Component {
       return result;
     }, '');
 
-
     return (
       <span className={typeIndex}>
         <i className={`item-type__icon fa ${icon}`}></i>
-        <span className="item-type__name">{name}</span>
+        <span className="item-type__name">{t(name, name)}</span>
       </span>
     );
   }
@@ -37,4 +37,3 @@ const mapStateToProps = ({templates}) => {
 };
 
 export default connect(mapStateToProps)(TemplateLabel);
-

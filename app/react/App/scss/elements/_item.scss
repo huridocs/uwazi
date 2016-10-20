@@ -1,7 +1,7 @@
 .item-group {
   display: flex;
   flex-wrap: wrap;
-  max-width: 1024px;
+  max-width: 960px;
   list-style-type: none;
   padding: 0;
   margin: auto;
@@ -24,7 +24,7 @@
   background: $c-white;
   border-radius: 4px;
   border: 1px solid $c-grey-light;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, .05);
   opacity: 1;
   zoom: 1;
 
@@ -45,7 +45,7 @@
 
   &:before {
     content: " ";
-    display: block;
+    display: none;
     position: absolute;
     top: -1px;
     right: -1px;
@@ -60,8 +60,8 @@
   }
   &.is-active,
   &.is-selected {
-    border-color: $c-primary;
-    box-shadow: $shadow;
+    border-color: $c-primary-light;
+    box-shadow: 0 10px 20px -5px transparentize($c-primary, 0.85);
     &:before {
       border-color: $c-background $c-background $c-primary $c-primary;
     }
@@ -80,9 +80,6 @@
   }
 }
 
-.item-icon {
-  margin: -3px 6px 0 0;
-}
 
 $item-width: auto;
 $item-padding: 15px;
@@ -91,6 +88,15 @@ $item-padding: 15px;
   width: $item-width;
   padding: $item-padding;
   flex: 1;
+
+  .item-icon {
+    top: -2px;
+  }
+}
+
+.item-icon {
+  position: relative;
+  margin-right: 6px;
 }
 
 .item-type__icon {
@@ -183,6 +189,9 @@ $item-padding: 15px;
   dd {
     margin-left: 10px;
   }
+  .item-icon {
+    top: -1px;
+  }
 }
 
 .item-actions {
@@ -230,7 +239,7 @@ $item-padding: 15px;
   &:hover {
     color: $c-white !important;
     border-color: $c-primary !important;
-    background-color: $c-primary;
+    background-color: $c-primary!important;
   }
 }
 
@@ -272,10 +281,10 @@ $item-padding: 15px;
 .sort-by {
   display: table;
   width: 100%;
-  max-width: 1024px;
+  max-width: 960px;
   margin: 0 auto;
   text-align: center;
-  @include desktop {
+  @media(min-width: 1024px) {
     text-align: right;
     #documents-counter {
       text-align: left;

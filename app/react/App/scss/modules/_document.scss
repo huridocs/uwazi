@@ -5,9 +5,6 @@
 
   &.is-active {
     @media(min-width: 1024px) {
-      width: 75%;
-    }
-    @media(min-width: 1200px) {
       width: 66.666%;
     }
   }
@@ -26,10 +23,6 @@
   position: relative;
   font-size: $f-size-lg;
   font-family: sans-serif;
-
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: bold;
-  }
 }
 
 .document-viewer {
@@ -113,7 +106,7 @@
     width: 100%;
     left: 0;
     padding: 15px;
-    @include desktop {
+    @media(min-width: 1024px) {
       left: auto;
       max-width: 800px;
       padding: 15px 0;

@@ -14,7 +14,7 @@ describe('EditPage', () => {
   let context;
 
   beforeEach(() => {
-    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve([page]));
+    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(page));
     RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<EditPage />, {context});

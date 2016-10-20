@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import languageMiddleware from './utils/languageMiddleware';
 import db_config from './config/database';
 import elasticConfig from './config/elasticIndexes';
 
@@ -9,6 +10,7 @@ export default (app, server) => {
 
   //common middlewares
   app.use(bodyParser.json());
+  app.use(languageMiddleware);
 
   //module routes
   require('./auth/routes.js')(app);
@@ -24,4 +26,5 @@ export default (app, server) => {
   require('./pages/routes.js')(app);
   require('./upload/routes.js')(app);
   require('./settings/routes.js')(app);
+  require('./i18n/routes.js')(app);
 };

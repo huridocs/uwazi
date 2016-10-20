@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 
-import {Link} from 'react-router';
+import {I18NLink, t} from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
 import {Icon} from 'app/Layout/Icon';
@@ -11,16 +12,16 @@ import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 export class ShowMetadata extends Component {
   getValue(property) {
     if (property.url) {
-      return <Link to={property.url}>
+      return <I18NLink to={property.url}>
                <Icon className="item-icon item-icon-center" data={property.icon} />
                {property.value}
-             </Link>;
+             </I18NLink>;
     }
     if (typeof property.value === 'object') {
       return <ul>
                {property.value.map((value, indx) => {
                  if (value.url) {
-                   return <li key={indx}><Link to={value.url}>{value.value}</Link></li>;
+                   return <li key={indx}><I18NLink to={value.url}>{value.value}</I18NLink></li>;
                  }
                  return <li key={indx}>{value.value}</li>;
                })}
@@ -36,19 +37,26 @@ export class ShowMetadata extends Component {
 
   render() {
     const {entity, showTitle, showType} = this.props;
-
     let header = '';
     if (showTitle || showType) {
       let title = '';
       if (showTitle) {
         title = <div>
-                  <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+                  <Icon className="item-icon item-icon-center" data={entity.icon} />
                   <h1 className="item-name">{entity.title}</h1>
                 </div>;
       }
       const type = showType ? <TemplateLabel template={entity.template}/> : '';
       header = <div className="item-info">{title}{type}</div>;
     }
+
+    const templates = this.props.templates.toJS();
+    let context = templates.reduce((result, template) => {
+      if (template._id === entity.template) {
+        return template.name;
+      }
+      return result;
+    }, '');
 
     return (
       <div className="view">
@@ -64,7 +72,7 @@ export class ShowMetadata extends Component {
           const value = this.getValue(property);
           return (
             <dl key={index}>
-              <dt>{property.label}</dt>
+              <dt>{t(context, property.label)}</dt>
               <dd>{value}</dd>
             </dl>
           );
@@ -76,8 +84,13 @@ export class ShowMetadata extends Component {
 
 ShowMetadata.propTypes = {
   entity: PropTypes.object,
+  templates: PropTypes.object,
   showTitle: PropTypes.bool,
   showType: PropTypes.bool
 };
 
-export default ShowMetadata;
+const mapStateToProps = ({templates}) => {
+  return {templates};
+};
+
+export default connect(mapStateToProps)(ShowMetadata);
