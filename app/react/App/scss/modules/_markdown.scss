@@ -126,3 +126,21 @@
     font-size: $f-size-sm;
   }
 }
+
+.side-panel {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size;
+    }
+  }
+}
+
+.item {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size-sm;
+    }
+  }
+}
