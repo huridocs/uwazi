@@ -31,7 +31,7 @@ export class EditTranslationForm extends Component {
                   if (this.props.translations.length) {
                     return Object.keys(this.props.translations[0].values[context]).map((value) => {
                       return <li key={value} className="list-group-item">
-                        <div>{value}</div>
+                        <h5>{value}</h5>
                         {this.props.translations.map((translation, i) => {
                           return <FormGroup key={`${translation.locale}-${value}-${i}`}>
                           <div className="input-group">

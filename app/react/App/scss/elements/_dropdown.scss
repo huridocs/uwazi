@@ -50,3 +50,12 @@
     display: block;
   }
 }
+
+.Dropdown:not(.is-active) {
+  cursor: pointer;
+  
+  a:hover,
+  .Dropdown-option:hover {
+    text-decoration: none;
+  }
+}
