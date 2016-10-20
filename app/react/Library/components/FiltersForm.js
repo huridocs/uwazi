@@ -9,6 +9,7 @@ import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {store} from 'app/store';
+import {t} from 'app/I18N';
 
 export class FiltersForm extends Component {
 
@@ -18,7 +19,15 @@ export class FiltersForm extends Component {
     }
   }
 
+  getFilteredDocumentTypeName() {
+    let selectedDocumentTypes = this.props.documentTypes.toJS();
+    if (selectedDocumentTypes.length) {
+      return this.props.templates.toJS().find((tmpl) => tmpl._id === selectedDocumentTypes[0]).name;
+    }
+  }
+
   render() {
+    let translationContext = this.getFilteredDocumentTypeName();
     let fields = this.props.fields.toJS();
     fields = libraryHelper.parseWithAggregations(fields, this.props.aggregations.toJS())
     .filter((field) => (field.type !== 'select' && field.type !== 'multiselect') || field.options.length);
@@ -31,13 +40,13 @@ export class FiltersForm extends Component {
 
           if (documentTypes.length === 0) {
             return <div className="empty-state select-type">
-                    <i className="fa fa-arrow-up"></i><b>Select to start filtering</b>
+                    <i className="fa fa-arrow-up"></i><b>{t('System', 'Select to start filtering')}</b>
                   </div>;
           }
 
           if (activeTypes.length > 0 && fields.length === 0) {
             return <div className="empty-state no-filters">
-                    <i className="fa fa-close"></i><b>No common filters</b>
+                    <i className="fa fa-close"></i><b>{t('System','No common filters')}</b>
                   </div>;
           }
         })()}
@@ -50,7 +59,7 @@ export class FiltersForm extends Component {
                 <FormField model={`search.filters.${property.name}`}>
                   <ul className={propertyClass}>
                     <li>
-                      {property.label}
+                      {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
                       <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </li>
@@ -71,7 +80,7 @@ export class FiltersForm extends Component {
               <FormGroup key={index}>
                   <ul className={propertyClass}>
                     <li>
-                      {property.label}
+                      {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
                       <div className="nested-strict">
                         <FormField model={`search.filters.${property.name}.strict`}>
@@ -102,7 +111,7 @@ export class FiltersForm extends Component {
               <FormGroup key={index}>
                 <ul className={propertyClass}>
                   <li>
-                    {property.label}
+                    {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
                     <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                   </li>
@@ -124,7 +133,7 @@ export class FiltersForm extends Component {
                 <ul className={propertyClass}>
                   <li>
                     <label>
-                      {property.label}
+                      {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
                       <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
                     </label>

@@ -61,9 +61,32 @@ EditTranslationForm.propTypes = {
   formState: PropTypes.object
 };
 
+function translationExists(translations, locale) {
+  return translations.find((tr) => tr.locale === locale);
+}
+
+function getDefaultTranslation(translations, languages) {
+  let defaultLocale = languages.find((lang) => lang.default).key;
+  return translations.find((tr) => tr.locale === defaultLocale);
+}
+
 export function mapStateToProps(state) {
+
+  let translations = state.translationsForm;
+  if (translations.length) {
+    let languages = state.settings.collection.toJS().languages;
+    languages.forEach((lang) => {
+      if (!translationExists(translations, lang.key)) {
+        let defaultTranslation = getDefaultTranslation(translations, languages);
+        let translation = {locale: lang.key};
+        translation.values = Object.assign({}, defaultTranslation.values);
+        translations.push(translation);
+      }
+    });
+  }
+
   return {
-    translations: state.translationsForm,
+    translations,
     formState: state.translationsFormState
   };
 }
