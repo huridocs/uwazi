@@ -40,7 +40,10 @@
       }
     }
 
-    .form-group, .form-control {
+    .form-group {
+      margin: 0 0 5px;
+    }
+    .form-control {
       margin: 0;
     }
 }

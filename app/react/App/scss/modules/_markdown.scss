@@ -30,6 +30,10 @@
       border-bottom: 1px solid $c-primary;
     }
   }
+  .tab-content {
+    float: left;
+    width: 100%;
+  }
 }
 
 .page-viewer .markdownViewer {
@@ -124,5 +128,23 @@
   .tab-link {
     padding: 15px 15px 0;
     font-size: $f-size-sm;
+  }
+}
+
+.side-panel {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size;
+    }
+  }
+}
+
+.item {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size-sm;
+    }
   }
 }
