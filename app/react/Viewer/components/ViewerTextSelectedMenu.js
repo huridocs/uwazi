@@ -9,7 +9,7 @@ import {openPanel} from 'app/Viewer/actions/uiActions';
 export class ViewerTextSelectedMenu extends Component {
   showPanel(type) {
     this.props.openPanel('viewMetadataPanel');
-    this.props.startNewConnection(type, this.props.doc.get('_id'));
+    this.props.startNewConnection(type, this.props.doc.get('sharedId'));
   }
 
   render() {

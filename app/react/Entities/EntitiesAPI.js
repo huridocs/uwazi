@@ -45,14 +45,6 @@ export default {
     });
   },
 
-  list(keys) {
-    let url = 'entities/list';
-    return api.get(url, {keys: keys})
-    .then((response) => {
-      return response.json.rows;
-    });
-  },
-
   save(entity) {
     return api.post('entities', entity)
     .then((response) => {

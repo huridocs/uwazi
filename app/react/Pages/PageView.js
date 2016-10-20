@@ -26,8 +26,7 @@ export class PageView extends RouteHandler {
 
   static requestState({pageId}) {
     return Promise.all([PagesAPI.get(pageId), TemplatesAPI.get()])
-    .then(([pages, templates]) => {
-      const page = pages[0];
+    .then(([page, templates]) => {
       const listsData = prepareLists(page);
       page.metadata.content = listsData.content;
 

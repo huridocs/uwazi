@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {edit, finishEdit, publishEntity} from 'app/Uploads/actions/uploadsActions';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {actions} from 'app/Metadata';
 
 export class UploadEntity extends Component {
@@ -42,9 +42,9 @@ export class UploadEntity extends Component {
       </div>
       <ItemFooter onClick={this.publish.bind(this)}>
         <ItemFooter.Label status="success">Ready to publish</ItemFooter.Label>
-        <Link to={`/entity/${entity._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+        <I18NLink to={`/entity/${entity.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
           <i className="fa fa-file-o"></i><span>View</span><i className="fa fa-angle-right"></i>
-        </Link>
+        </I18NLink>
       </ItemFooter>
     </RowList.Item>
     );

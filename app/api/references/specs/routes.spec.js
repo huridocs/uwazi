@@ -21,11 +21,11 @@ describe('references routes', () => {
 
   describe('POST', () => {
     it('should save a reference', (done) => {
-      let req = {body: {name: 'created_reference'}};
+      let req = {body: {name: 'created_reference'}, language: 'es'};
 
       routes.post('/api/references', req)
       .then(() => {
-        expect(references.save).toHaveBeenCalledWith(req.body);
+        expect(references.save).toHaveBeenCalledWith(req.body, req.language);
         done();
       })
       .catch(catchErrors(done));
@@ -47,13 +47,13 @@ describe('references routes', () => {
 
   describe('GET by_document', () => {
     it('should return references.getByDocument', (done) => {
-      let req = {params: {id: 'documentId'}};
+      let req = {params: {id: 'documentId'}, language: 'es'};
 
       spyOn(references, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
 
       routes.get('/api/references/by_document/:id', req)
       .then((response) => {
-        expect(references.getByDocument).toHaveBeenCalledWith('documentId');
+        expect(references.getByDocument).toHaveBeenCalledWith('documentId', 'es');
         expect(response).toBe('byDocument');
         done();
       })

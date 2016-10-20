@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {Field, Form, actions as formActions} from 'react-redux-form';
 import {connect} from 'react-redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {saveRelationType, resetRelationType} from 'app/RelationTypes/actions/relationTypeActions';
@@ -36,7 +36,7 @@ export class RelationTypeForm extends Component {
           >
             <div className="panel panel-default">
               <div className="panel-heading relationType">
-                <Link to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <I18NLink to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
                 <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
                   <Field model="relationType.name">

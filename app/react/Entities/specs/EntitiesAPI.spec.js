@@ -7,14 +7,12 @@ describe('EntitiesAPI', () => {
   let searchResponse = [{entities: 'search'}];
   let filteredSearchResult = [{entities: 'Alfred'}];
   let singleResponse = [{entities: 'single'}];
-  let listResponse = [{entities: 'list'}];
 
   beforeEach(() => {
     backend.restore();
     backend
     .mock(APIURL + 'entities', 'GET', {body: JSON.stringify({rows: arrayResponse})})
     .mock(APIURL + 'entities/search', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'entities/list?keys=%5B%221%22%2C%222%22%5D', 'GET', {body: JSON.stringify({rows: listResponse})})
     .mock(APIURL + 'entities/uploads', 'GET', {body: JSON.stringify({rows: 'uploads'})})
     .mock(APIURL + 'entities/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
     .mock(APIURL + 'entities/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
@@ -54,17 +52,6 @@ describe('EntitiesAPI', () => {
         })
         .catch(done.fail);
       });
-    });
-  });
-
-  describe('list()', () => {
-    it('should request entities list', (done) => {
-      entitiesAPI.list(['1', '2'])
-      .then((response) => {
-        expect(response).toEqual(listResponse);
-        done();
-      })
-      .catch(done.fail);
     });
   });
 

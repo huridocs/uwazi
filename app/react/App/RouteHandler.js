@@ -1,5 +1,8 @@
 import {Component, PropTypes} from 'react';
 import JSONUtils from 'shared/JSONUtils';
+import {actions} from 'app/BasicReducer';
+import {I18NUtils} from 'app/I18N';
+import api from 'app/utils/api';
 
 class RouteHandler extends Component {
 
@@ -20,9 +23,37 @@ class RouteHandler extends Component {
     return result;
   }
 
-  constructor(props) {
-    super(props);
+  setLocale(props) {
+    let locale = this.getLocale(props);
+    this.setApiLocale(locale);
+    this.setStateLocale(locale);
+  }
 
+  getLocale(props) {
+    if (this.context.store && this.context.store.getState) {
+      let languages = this.context.store.getState().settings.collection.toJS().languages;
+      return I18NUtils.getLocale(props.location.pathname, languages);
+    }
+  }
+
+  setApiLocale(locale) {
+    api.locale(locale);
+  }
+
+  setStateLocale(locale) {
+    this.context.store.dispatch(actions.set('locale', locale));
+    if (!I18NUtils.getCoockieLocale()) {
+      I18NUtils.saveLocale(locale);
+    }
+  }
+
+  constructor(props, context) {
+    super(props, context);
+
+    //test ?
+    let locale = this.getLocale(props);
+    this.setApiLocale(locale);
+    //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
       this.getClientState(this.props);
     }
@@ -42,6 +73,7 @@ class RouteHandler extends Component {
   componentWillReceiveProps(props) {
     if (props.params !== this.props.params) {
       this.emptyState();
+      this.setLocale(props);
       this.getClientState(props);
     }
   }
@@ -62,7 +94,8 @@ RouteHandler.contextTypes = {
 };
 
 RouteHandler.propTypes = {
-  params: PropTypes.object
+  params: PropTypes.object,
+  location: PropTypes.object
 };
 
 export default RouteHandler;

@@ -2,7 +2,7 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'doc.title', 'doc.icon', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata', 'doc.type']
+      include: [ 'doc.title', 'doc.icon', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata', 'doc.type', 'doc.sharedId']
     },
     from: 0,
     size: 12,
@@ -53,6 +53,12 @@ export default function () {
           }
         });
       }
+      return this;
+    },
+
+    language(language) {
+      let match = {match: {'doc.language': language}};
+      baseQuery.query.bool.must.push(match);
       return this;
     },
 

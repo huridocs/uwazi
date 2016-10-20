@@ -129,7 +129,7 @@ export class ViewMetadataPanel extends Component {
         <NeedAuthorization>
           <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc}>
             <div className="sidepanel-footer">
-            <button onClick={this.props.startNewConnection.bind(null, 'basic', doc._id)}
+            <button onClick={this.props.startNewConnection.bind(null, 'basic', doc.sharedId)}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>

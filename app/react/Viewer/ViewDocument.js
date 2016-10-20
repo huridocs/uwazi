@@ -68,8 +68,4 @@ export default class ViewDocument extends RouteHandler {
   render() {
     return <Viewer />;
   }
-
 }
-
-//when all components are integrated with redux we can remove this
-ViewDocument.__redux = true;

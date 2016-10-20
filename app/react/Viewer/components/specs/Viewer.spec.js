@@ -16,7 +16,7 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({_id: 'id'}),
+      doc: Immutable({_id: 'id', sharedId: 'sharedId'}),
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {}
@@ -65,7 +65,7 @@ describe('Viewer', () => {
       render();
       const createConnectionElement = component.find(CreateConnectionPanel).first();
       expect(component.find(CreateConnectionPanel).length).toBe(1);
-      expect(createConnectionElement.props().containerId).toBe('id');
+      expect(createConnectionElement.props().containerId).toBe('sharedId');
       expect(createConnectionElement.props().onCreate).toBe(props.addReference);
       expect(createConnectionElement.props().onRangedConnect).toBe(props.loadTargetDocument);
     });

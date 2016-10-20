@@ -10,9 +10,9 @@ export default class EditPage extends RouteHandler {
 
   static requestState({pageId}) {
     return pagesAPI.get(pageId)
-    .then(pages => {
+    .then(page => {
       return {
-        page: {data: pages[0]}
+        page: {data: page}
       };
     });
   }

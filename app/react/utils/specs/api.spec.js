@@ -28,8 +28,8 @@ describe('Login', () => {
     });
 
     describe('when authorizing', () => {
-      it('should send the authorization in the headers', (done) => {
-        api.authorize('cookie');
+      it('should send the authorization cookie in the headers', (done) => {
+        api.cookie('cookie');
         api.get('test_get')
         .then(() => {
           let headers = backend.calls().matched[0][1].headers;

@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 import {DropTarget} from 'react-dnd';
 import {Form} from 'react-redux-form';
 import {FormField} from 'app/Forms';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {actions as formActions} from 'react-redux-form';
 
 import {inserted, addProperty} from 'app/Templates/actions/templateActions';
@@ -30,7 +30,7 @@ export class MetadataTemplate extends Component {
               validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
             >
               <div className="metadataTemplate-heading panel-heading">
-                <Link to={this.props.backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>
+                <I18NLink to={this.props.backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
                 <div className={nameGroupClass}>
                   <FormField model="template.data.name">

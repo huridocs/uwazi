@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import Loader from 'app/components/Elements/Loader';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 
 import DocumentsAPI from 'app/Documents/DocumentsAPI';
@@ -201,7 +201,7 @@ export class TimelineViewer extends Component {
     let usefulReferences;
     const isCase = entity.template === caseTemplate;
 
-    this.fetchReferences(entity._id)
+    this.fetchReferences(entity.sharedId)
     .then(references => {
       const relatedReferences = this.getRelatedReferences(references, isCase ? matterTemplate : caseTemplate);
       return Promise.all([references, relatedReferences]);
@@ -258,7 +258,7 @@ export class TimelineViewer extends Component {
               {track.years[year].map((reference, index) => {
                 if (reference.reference) {
                   return (
-                    <Link to={`/${reference.reference.connectedDocumentType}/${reference.data._id}`}
+                    <I18NLink to={`/${reference.reference.connectedDocumentType}/${reference.data.sharedId}`}
                           key={index}
                           className={`timeline-item ${reference.additionalData.className}`}
                           data-toggle="tooltip"
@@ -273,7 +273,7 @@ export class TimelineViewer extends Component {
                       <ShowIf if={reference.additionalData.type === 'judgement'}>
                         <i className="fa fa-legal"></i>
                       </ShowIf>
-                    </Link>
+                    </I18NLink>
                   );
                 }
 

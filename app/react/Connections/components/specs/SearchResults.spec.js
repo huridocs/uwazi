@@ -11,7 +11,7 @@ describe('SearchResults', () => {
 
   beforeEach(() => {
     props = {
-      results: Immutable([{_id: 'r1'}, {_id: 'r2'}]),
+      results: Immutable([{sharedId: 'r1'}, {sharedId: 'r2'}]),
       onClick: jasmine.createSpy('onClick'),
       selected: 'r2',
       searching: false

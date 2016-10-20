@@ -15,6 +15,7 @@ import ViewMetadataPanel from './components/ViewMetadataPanel';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
+import {t} from 'app/I18N';
 
 export default class Library extends RouteHandler {
 
@@ -66,7 +67,7 @@ export default class Library extends RouteHandler {
   render() {
     return (
       <div className="row panels-layout">
-        <Helmet title='Library' />
+        <Helmet title={t('System', 'Library')} />
         <DocumentsList />
         <ConfirmCloseForm />
         <LibraryFilters />

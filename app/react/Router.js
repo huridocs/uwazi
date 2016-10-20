@@ -13,6 +13,7 @@ import NoMatch from './App/NoMatch';
 import {isClient, getPropsFromRoute} from './utils';
 import store from './store';
 import api from 'app/utils/api';
+import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 
 if (isClient) {
@@ -24,18 +25,6 @@ if (isClient) {
     </Provider>,
     document.getElementById('root')
   );
-}
-
-function serialize(obj) {
-  let str = [];
-
-  for (let p in obj) {
-    if (obj.hasOwnProperty(p)) {
-      str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-    }
-  }
-
-  return str.join('&');
 }
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
@@ -89,8 +78,7 @@ function handleRedirect(res, redirectLocation) {
 
 function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
-
-  const routeProps = getPropsFromRoute(renderProps, ['requestState', '__redux']);
+  const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
     try {
@@ -101,32 +89,41 @@ function handleRoute(res, renderProps, req) {
     }
   }
 
-  let cookie;
-
-  if (req.cookies) {
-    cookie = serialize(req.cookies);
-  }
-
   if (routeProps.requestState) {
-    api.authorize(cookie);
+    if (req.cookies) {
+      api.cookie('connect.sid='+req.cookies['connect.sid']);
+    }
     RouteHandler.renderedFromServer = true;
     let query;
     if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
       query = JSONUtils.parseNested(renderProps.location.query);
     }
-    return Promise.all([
-      routeProps.requestState(renderProps.params, query),
-      api.get('user'),
-      api.get('settings')
-    ])
-    .then(([initialData, user, settings]) => {
-      initialData.user = user.json;
-      initialData.settings = {collection: settings.json};
-      initialData.settings.collection.links = initialData.settings.collection.links || [];
-      renderPage(initialData, true);
+
+    let locale;
+    return api.get('settings').then((response) => {
+      let languages = response.json.languages;
+      let path = req.url;
+      locale = I18NUtils.getLocale(path, languages, req.cookies);
+      api.locale(locale);
     })
-    .catch((error) => {
-      console.trace(error);
+    .then(() => {
+      return Promise.all([
+        routeProps.requestState(renderProps.params, query),
+        api.get('user'),
+        api.get('settings'),
+        api.get('translations')
+      ])
+      .then(([initialData, user, settings, translations]) => {
+        initialData.user = user.json;
+        initialData.locale = locale;
+        initialData.translations = translations.json.rows;
+        initialData.settings = {collection: settings.json};
+        initialData.settings.collection.links = initialData.settings.collection.links || [];
+        renderPage(initialData, true);
+      })
+      .catch((error) => {
+        console.trace(error);
+      });
     });
   }
 

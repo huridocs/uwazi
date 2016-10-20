@@ -7,9 +7,9 @@ export class SearchResults extends Component {
     const loading = <div className="cs-loader-container">&nbsp;<Loader /></div>;
     const results = this.props.results.toJS().map((result, index) => {
       return (
-        <div className={'item ' + (this.props.selected === result._id ? 'is-selected' : '')}
+        <div className={'item ' + (this.props.selected === result.sharedId ? 'is-selected' : '')}
              key={index}
-             onClick={() => this.props.onClick(result._id)}>
+             onClick={() => this.props.onClick(result.sharedId)}>
           <div className="item-info">
             <div className="item-name">
               <Icon className="item-icon item-icon-center" data={result.icon} />

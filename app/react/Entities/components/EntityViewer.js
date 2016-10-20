@@ -2,7 +2,7 @@
 // There is partial testing of added functionality, but this requires a full test.
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
@@ -142,14 +142,14 @@ export class EntityViewer extends Component {
                     </ShowIf>
                   </NeedAuthorization>
                   &nbsp;
-                  <Link
+                  <I18NLink
                     to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
                     onClick={e => e.stopPropagation()}
                     className="item-shortcut">
                     <span className="itemShortcut-arrow">
                       <i className="fa fa-external-link"></i>
                     </span>
-                  </Link>
+                  </I18NLink>
                 </div>
               </div>
             </div>
@@ -199,7 +199,7 @@ export class EntityViewer extends Component {
           </div>
           <NeedAuthorization>
             <div className="sidepanel-footer">
-            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity._id)}
+            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>
@@ -210,7 +210,7 @@ export class EntityViewer extends Component {
             {referencesHtml}
           </div>
         </aside>
-        <CreateConnectionPanel containerId={entity._id} onCreate={this.props.addReference}/>
+        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
       </div>
     );
   }

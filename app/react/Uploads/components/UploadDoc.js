@@ -4,8 +4,8 @@ import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {edit, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
-import {Link} from 'react-router';
 import {actions} from 'app/Metadata';
+import {I18NLink} from 'app/I18N';
 
 export class UploadDoc extends Component {
   showModal(modal, e) {
@@ -89,11 +89,11 @@ export class UploadDoc extends Component {
           }
           return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
         })()}
-        <Link to={`/document/${doc._id}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+        <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
           <span className="itemShortcut-arrow">
             <i className="fa fa-external-link"></i>
           </span>
-        </Link>
+        </I18NLink>
       </ItemFooter>
     </RowList.Item>
     );

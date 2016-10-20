@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {connect} from 'react-redux';
 import {Form} from 'react-redux-form';
 import {FormField, MarkDown} from 'app/Forms';
@@ -32,7 +32,7 @@ export class PageCreator extends Component {
             onSubmit={this.props.savePage}
             validators={validator()}>
             <div className="metadataTemplate-heading panel-heading">
-              <Link to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</Link>&nbsp;
+              <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>&nbsp;
               <div className={nameGroupClass}>
                 <FormField model="page.data.title">
                   <input placeholder="Page name" className="form-control"/>
@@ -48,7 +48,7 @@ export class PageCreator extends Component {
             <div className="panel-body">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
-                  <i className="fa fa-terminal"></i> http://{window.location.host}/page/{page.data._id}
+                  <i className="fa fa-terminal"></i> http://{window.location.host}/page/{page.data.sharedId}
                 </div>
               </ShowIf>
               <FormField model="page.data.metadata.content">

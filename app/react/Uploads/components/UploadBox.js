@@ -11,7 +11,7 @@ export class UploadBox extends Component {
       let doc = {title: this.extractTitle(file)};
       this.props.createDocument(doc)
       .then((newDoc) => {
-        this.props.uploadDocument(newDoc._id, file);
+        this.props.uploadDocument(newDoc.sharedId, file);
       });
     });
     this.props.finishEdit();

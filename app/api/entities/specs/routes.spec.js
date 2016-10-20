@@ -24,59 +24,33 @@ describe('entities', () => {
     it('should create a new document with use user', (done) => {
       let req = {
         body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}
+        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        language: 'lang'
       };
 
       spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/entities', req)
       .then((document) => {
         expect(document).toBe('document');
-        expect(entities.save).toHaveBeenCalledWith(req.body, req.user);
+        expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
         done();
       })
       .catch(catchErrors(done));
     });
   });
 
-  describe('/api/entities', () => {
-    it('should return a list of entities returned from the list view', (done) => {
-      routes.get('/api/entities')
-      .then((response) => {
-        expect(response.rows.length).toBe(7);
-        expect(response.rows[0].title).toEqual('Batman finishes');
-        expect(response.rows[0]._id).toEqual('8202c463d6158af8065022d9b5014a18');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    describe('when passing id', () => {
-      it('should return matching document', (done) => {
-        let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}};
-
-        routes.get('/api/entities', req)
-        .then((response) => {
-          let docs = response.rows;
-          expect(docs.length).toBe(1);
-          expect(docs[0].title).toBe('Penguin almost done');
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-    });
-  });
-
-  describe('/api/entities/list', () => {
-    it('return the list from entities passing the keys', (done) => {
+  describe('GET', () => {
+    it('should return matching document', (done) => {
+      spyOn(entities, 'get').and.returnValue(Promise.resolve('result'));
       let req = {
-        query: {keys: JSON.stringify(['1', '2'])}
+        query: {_id: 'id'},
+        language: 'lang'
       };
 
-      spyOn(entities, 'list').and.returnValue(new Promise((resolve) => resolve('document')));
-      routes.get('/api/entities/list', req)
-      .then((document) => {
-        expect(document).toBe('document');
-        expect(entities.list).toHaveBeenCalledWith(['1', '2']);
+      routes.get('/api/entities', req)
+      .then((response) => {
+        expect(entities.get).toHaveBeenCalledWith('id', 'lang');
+        expect(response).toBe('result');
         done();
       })
       .catch(catchErrors(done));
@@ -104,10 +78,10 @@ describe('entities', () => {
     });
 
     it('should use entities to delete it', (done) => {
-      let req = {query: {_id: 123, _rev: 456}};
+      let req = {query: {sharedId: 123, _rev: 456}};
       return routes.delete('/api/entities', req)
       .then(() => {
-        expect(entities.delete).toHaveBeenCalledWith(req.query._id);
+        expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
         done();
       })
       .catch(catchErrors(done));

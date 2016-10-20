@@ -19,9 +19,11 @@ describe('thesauris routes', () => {
 
   describe('GET', () => {
     it('should return all thesauris by default', (done) => {
-      routes.get('/api/thesauris')
+      spyOn(thesauris, 'get').and.callThrough();
+      routes.get('/api/thesauris', {language: 'es'})
       .then((response) => {
         let docs = response.rows;
+        expect(thesauris.get).toHaveBeenCalledWith(undefined, 'es');
         expect(docs[0].name).toBe('secret recipes');
         done();
       })
@@ -44,7 +46,7 @@ describe('thesauris routes', () => {
 
     describe('when there is a db error', () => {
       it('return the error in the response', (done) => {
-        let req = {query: {_id: 'non_existent_id'}};
+        let req = {query: {_id: 'non_existent_id'}, language: 'es'};
 
         database.reset_testing_database()
         .then(() => routes.get('/api/thesauris', req))
@@ -109,35 +111,6 @@ describe('thesauris routes', () => {
 
         expect(newDoc.value.name).toBe('Scarecrow nightmares');
         expect(newDoc.value.values).toEqual([]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should set a unique id for each value when missing', (done) => {
-      let req = {body: {name: 'Enigma questions', values: [
-        {id: '1', label: 'A fly without wings is a walk?'},
-        {id: '3', label: 'Wait for a waiter makes you a waiter?'},
-        {label: 'If you have one eye, you blink or wink?'},
-        {id: '8', label: 'Is there another word for synonym?'},
-        {label: 'If you shouldnt talk to strangers, how you make friends?'}
-      ]}};
-      let postResponse;
-
-      routes.post('/api/thesauris', req)
-      .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let newDoc = response.json.rows.find((template) => {
-          return template.value.name === 'Enigma questions';
-        });
-
-        expect(newDoc.value.name).toBe('Enigma questions');
-        expect(newDoc.value.values[2].id).toEqual('9');
-        expect(newDoc.value.values[4].id).toEqual('10');
         expect(newDoc.value._rev).toBe(postResponse.rev);
         done();
       })

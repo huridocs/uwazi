@@ -2,6 +2,7 @@ import {db_url as dbURL} from 'api/config/database.js';
 import request from 'shared/JSONRequest';
 import database from 'api/utils/database.js';
 
+import translations from 'api/i18n/translations';
 import settings from '../settings.js';
 import fixtures from './fixtures.js';
 
@@ -9,6 +10,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('settings', () => {
   beforeEach((done) => {
+    spyOn(translations, 'updateContext');
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
@@ -45,7 +47,7 @@ describe('settings', () => {
     });
 
     it('should be able to partially update it', (done) => {
-      request.get(dbURL + '/bc739d367ef40c434bd0ff6a18c9fbec')
+      request.get(dbURL + '/1')
       .then((doc) => {
         let modifiedDoc = {_id: doc.json._id, _rev: doc.json._rev, test: 'test'};
         return settings.save(modifiedDoc);
@@ -57,6 +59,32 @@ describe('settings', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    describe('when has links', () => {
+      it('should create a translation context for the links', (done) => {
+        let config = {site_name: 'My collection', links: [{title: 'Page one'}]};
+        settings.save(config)
+        .then(() => {
+          expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], {'Page one': 'Page one'});
+          done();
+        }).catch(catchErrors(done));
+      });
+
+      describe('updating the links', () => {
+        it('should update the translation context for the links', (done) => {
+          let config = {site_name: 'My collection', links: [{title: 'Page one', localID:'1'}, {title: 'Page two', localID: '2'}]};
+          settings.save(config)
+          .then(() => {
+            config = {site_name: 'My collection', links: [{title: 'Page 1', localID:'1'}, {title: 'Page three', localID: '3'}]};
+            return settings.save(config);
+          })
+          .then(() => {
+            expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {'Page one': 'Page 1'}, ['Page two'], {'Page 1': 'Page 1', 'Page three': 'Page three'});
+            done();
+          }).catch(catchErrors(done));
+        });
+      });
     });
   });
 

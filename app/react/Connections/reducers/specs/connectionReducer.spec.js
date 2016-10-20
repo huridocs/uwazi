@@ -42,13 +42,13 @@ describe('Connections connection reducer', () => {
 
   describe('When setting the search results', () => {
     it('should keep targetDocument if id within new results', () => {
-      const results = [{_id: '1'}, {_id: '3'}];
+      const results = [{sharedId: '1'}, {sharedId: '3'}];
       const newState = reducer(Immutable({targetDocument: '3'}), {type: 'connections/searchResults/SET', value: results});
       expect(newState.toJS()).toEqual({targetDocument: '3'});
     });
 
     it('should delete targetDocument if id not within new results', () => {
-      const results = [{_id: '1'}, {_id: '3'}];
+      const results = [{sharedId: '1'}, {sharedId: '3'}];
       const newState = reducer(Immutable({targetDocument: '2'}), {type: 'connections/searchResults/SET', value: results});
       expect(newState.toJS()).toEqual({});
     });
