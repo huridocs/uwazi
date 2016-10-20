@@ -12,6 +12,9 @@ const mockStore = configureMockStore(middlewares);
 
 describe('Connections actions', () => {
   let store;
+  const getState = () => {
+    return {locale: 'es'};
+  };
 
   beforeEach(() => {
     mockID();
@@ -94,18 +97,25 @@ describe('Connections actions', () => {
     let connection;
 
     beforeEach(() => {
-      connection = {sourceDocument: 'sourceId'};
+      connection = {sourceDocument: 'sourceId', type: 'basic'};
     });
 
-    it('should set the creating flag to true and attemp to save the connection', () => {
-      actions.saveConnection(connection)(store.dispatch);
+    it('should set the creating flag to true and attempt to save the connection', () => {
+      actions.saveConnection(connection)(store.dispatch, getState);
       expect(store.getActions()).toEqual([{type: 'CREATING_CONNECTION'}]);
-      expect(referencesAPI.save).toHaveBeenCalledWith(connection);
+      expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId'});
+    });
+
+    it('should attempt to save the connection with language if not basic', () => {
+      connection.type = 'ranged';
+      actions.saveConnection(connection)(store.dispatch, getState);
+      expect(store.getActions()).toEqual([{type: 'CREATING_CONNECTION'}]);
+      expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId', language: 'es'});
     });
 
     it('should broadcast the created connection, execute the callback and broadcast success', (done) => {
       const callback = jasmine.createSpy('callback');
-      actions.saveConnection(connection, callback)(store.dispatch)
+      actions.saveConnection(connection, callback)(store.dispatch, getState)
       .then(() => {
         expect(store.getActions()).toContain({type: 'CONNECTION_CREATED', connection: 'newReference'});
         expect(callback).toHaveBeenCalledWith('newReference');
