@@ -209,13 +209,7 @@ ViewMetadataPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = ({documentViewer, locale}) => {
-  const excludeReference = (ref) => {
-    const isOutboundMetadata = !ref.get('inbound') && ref.get('sourceType') === 'metadata';
-    const isOtherLocale = ref.get('language') && ref.get('language') !== locale;
-    return isOtherLocale || isOutboundMetadata;
-  };
-
+const mapStateToProps = ({documentViewer}) => {
   let doc = formater.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
   let references = documentViewer.references;
 
@@ -223,8 +217,6 @@ const mapStateToProps = ({documentViewer, locale}) => {
     doc = formater.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
     references = documentViewer.targetDocReferences;
   }
-
-  references = references.filterNot(excludeReference);
 
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',

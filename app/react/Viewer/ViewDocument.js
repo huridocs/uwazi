@@ -10,10 +10,11 @@ import templatesAPI from 'app/Templates/TemplatesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
+import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 export default class ViewDocument extends RouteHandler {
 
-  static requestState({documentId}) {
+  static requestState({documentId, lang}) {
     return Promise.all([
       api.get('documents', {_id: documentId}),
       api.get('documents/html', {_id: documentId}),
@@ -28,7 +29,7 @@ export default class ViewDocument extends RouteHandler {
         documentViewer: {
           doc: doc.json.rows[0],
           docHTML: docHTML.json,
-          references,
+          references: referencesUtils.filterRelevant(references, lang),
           templates,
           thesauris,
           relationTypes

@@ -235,19 +235,12 @@ EntityViewer.contextTypes = {
 };
 
 const mapStateToProps = (state) => {
-  const excludeReference = (ref, entity) => {
-    const isOtherLocale = ref.get('language') && ref.get('language') !== state.locale;
-    const isSourceAndMetadata = ref.get('sourceDocument') === entity.sharedId && ref.get('sourceType') === 'metadata';
-    return isOtherLocale || isSourceAndMetadata;
-  };
-
   let entity = state.entityView.entity.toJS();
   let templates = state.templates.toJS();
   let thesauris = state.thesauris.toJS();
   let relationTypes = state.relationTypes.toJS();
 
   let references = state.entityView.references
-                   .filterNot(ref => excludeReference(ref, entity))
                    .filter(ref => !!state.user.get('_id') || ref.get('connectedDocumentPublished'));
 
   return {
