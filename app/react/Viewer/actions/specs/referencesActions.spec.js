@@ -72,6 +72,7 @@ describe('Viewer referencesActions', () => {
 
     describe('saveTargetRangedReference', () => {
       let store;
+      const getState = {};
       let saveConnectionDispatch;
       let connection;
       let targetRange;
@@ -87,10 +88,10 @@ describe('Viewer referencesActions', () => {
       });
 
       it('should unset the targetDocReferences', () => {
-        const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch);
+        const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch, getState);
         expect(store.getActions()).toContain({type: 'viewer/targetDocReferences/UNSET'});
         expect(connectionsActions.saveConnection).toHaveBeenCalledWith({sourceDocument: 'sourceId', targetRange: {text: 'target text'}}, onCreate);
-        expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch);
+        expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch, getState);
         expect(returnValue).toBe('returnValue');
       });
 

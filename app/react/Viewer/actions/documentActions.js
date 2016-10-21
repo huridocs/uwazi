@@ -8,6 +8,7 @@ import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
 import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
+import referencesUtils from '../utils/referencesUtils';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 
@@ -67,7 +68,7 @@ export function deleteDocument(doc) {
 
 
 export function loadTargetDocument(id) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     return Promise.all([
       api.get('documents?_id=' + id),
       api.get('documents/html?_id=' + id),
@@ -76,7 +77,7 @@ export function loadTargetDocument(id) {
     .then(([docResponse, htmlResponse, references]) => {
       dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
       dispatch(actions.set('viewer/targetDocHTML', htmlResponse.json));
-      dispatch(actions.set('viewer/targetDocReferences', references));
+      dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };
 }

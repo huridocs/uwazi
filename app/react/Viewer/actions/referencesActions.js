@@ -27,11 +27,11 @@ export function addReference(reference) {
 }
 
 export function saveTargetRangedReference(connection, targetRange, onCreate) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     if (targetRange.text) {
       dispatch(actions.unset('viewer/targetDocReferences'));
       connection.targetRange = targetRange;
-      return connectionsActions.saveConnection(connection, onCreate)(dispatch);
+      return connectionsActions.saveConnection(connection, onCreate)(dispatch, getState);
     }
   };
 }

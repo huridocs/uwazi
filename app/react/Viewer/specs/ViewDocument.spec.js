@@ -6,6 +6,7 @@ import {APIURL} from 'app/config.js';
 import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
+import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 describe('ViewDocument', () => {
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
@@ -24,6 +25,8 @@ describe('ViewDocument', () => {
     component = shallow(<ViewDocument />, {context});
     instance = component.instance();
 
+    spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
+
     backend.restore();
     backend
     .mock(APIURL + 'templates', 'GET', {body: JSON.stringify(templates)})
@@ -39,24 +42,34 @@ describe('ViewDocument', () => {
   });
 
   describe('static requestState', () => {
-    it('should request for the document passed, the thesauris and return an object to fit in the state', (done) => {
-      ViewDocument.requestState({documentId: 'documentId'})
+    it('should request for the document passed, the thesauris and return an object to populate the state', (done) => {
+      ViewDocument.requestState({documentId: 'documentId', lang: 'es'})
       .then((state) => {
         let documentResponse = state.documentViewer.doc;
         let html = state.documentViewer.docHTML;
-        let referencesResponse = state.documentViewer.references;
         let templatesResponse = state.documentViewer.templates;
         let thesaurisResponse = state.documentViewer.thesauris;
         let relationTypesResponse = state.documentViewer.relationTypes;
 
         expect(documentResponse._id).toBe('1');
         expect(html).toEqual(docHTML);
-        expect(referencesResponse).toEqual(references);
         expect(templatesResponse).toEqual(templates.rows);
         expect(thesaurisResponse).toEqual(thesauris.rows);
         expect(relationTypesResponse).toEqual(relationTypes.rows);
 
         expect(state.relationTypes).toEqual(relationTypes.rows);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should filter the relevant language and by-source references', (done) => {
+      ViewDocument.requestState({documentId: 'documentId', lang: 'es'})
+      .then((state) => {
+        let referencesResponse = state.documentViewer.references;
+
+        expect(referencesUtils.filterRelevant).toHaveBeenCalledWith(references, 'es');
+        expect(referencesResponse).toEqual(['filteredReferences']);
         done();
       })
       .catch(done.fail);

@@ -240,9 +240,7 @@ const mapStateToProps = (state) => {
   let thesauris = state.thesauris.toJS();
   let relationTypes = state.relationTypes.toJS();
 
-
   let references = state.entityView.references
-                   .filterNot(ref => ref.get('sourceDocument') === entity.sharedId && ref.get('sourceType') === 'metadata')
                    .filter(ref => !!state.user.get('_id') || ref.get('connectedDocumentPublished'));
 
   return {
