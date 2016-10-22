@@ -1,14 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
-import {searchDocuments} from 'app/Library/actions/libraryActions';
+import {toUrlParams} from '../../shared/JSONRequest';
 import {bindActionCreators} from 'redux';
 import {I18NLink, I18NMenu, t} from 'app/I18N';
 
 class Menu extends Component {
 
-  goToLibrary() {
-    this.props.searchDocuments(this.props.search);
+  libraryUrl() {
+    return toUrlParams(this.props.search);
   }
 
   render() {
@@ -31,8 +31,11 @@ class Menu extends Component {
             <li className="menuNav-item">
               <I18NMenu location={this.props.location}/>
             </li>
-            <li className="menuNav-item"><a onClick={this.goToLibrary.bind(this)}
-                                            className="menuNav-btn btn btn-default"><i className="fa fa-th"></i></a></li>
+            <li className="menuNav-item">
+              <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+                  <i className="fa fa-th"></i>
+              </I18NLink>
+            </li>
             <NeedAuthorization>
               <li className="menuNav-item">
                 <I18NLink to='/uploads' className="menuNav-btn btn btn-default">
@@ -79,8 +82,4 @@ export function mapStateToProps({user, search, settings}) {
   return {user, search, links: settings.collection.get('links')};
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Menu);
+export default connect(mapStateToProps)(Menu);
