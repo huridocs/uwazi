@@ -24,7 +24,7 @@ export class SortButtons extends Component {
     const additionalSorts = templates.toJS().reduce((sorts, template) => {
       template.properties.forEach(property => {
         if (property.sortable && !sorts.find(s => s.property === property.name)) {
-          const sortString = 'metadata.' + property.name + '.raw';
+          const sortString = 'metadata.' + property.name;
           sorts.push({
             property: property.name,
             html:
@@ -46,7 +46,7 @@ export class SortButtons extends Component {
   render() {
     let {search, templates} = this.props;
     let order = search.order === 'asc' ? 'up' : 'down';
-    let sortingTitle = search.sort === 'title.raw';
+    let sortingTitle = search.sort === 'title';
     let sortingRecent = search.sort === 'creationDate';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
 
@@ -54,7 +54,7 @@ export class SortButtons extends Component {
       <p className="col-sm-5">
         {t('System', 'Sort by')}
         {additionalSorts}
-        <span className={sortingTitle ? 'active' : ''} onClick={() => this.sort('title.raw', 'asc')}>
+        <span className={sortingTitle ? 'active' : ''} onClick={() => this.sort('title', 'asc')}>
           A-Z
           {sortingTitle ? <i className={'fa fa-caret-' + order}></i> : ''}
         </span>

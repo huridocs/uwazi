@@ -5,6 +5,16 @@ curl -X DELETE http://localhost:9200/${1:-uwazi_development}/
 echo -e "\n\nCreating ${1:-uwazi_development} index"
 curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
 {
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "folding": {
+          "tokenizer": "standard",
+          "filter":  [ "lowercase", "asciifolding" ]
+        }
+      }
+    }
+  },
   "mappings" : {
     "_default_" : {
       "_all" : {"enabled" : true, "omit_norms" : true},
@@ -22,8 +32,11 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
           "match" : "*",
           "match_mapping_type" : "string",
           "mapping" : {
-            "type" : "string", "index" : "analyzed", "omit_norms" : true,
-            "fielddata" : { "format" : "disabled" },
+            "type" : "string",
+            "index" : "analyzed",
+            "omit_norms" : true,
+            "analyzer": "folding",
+            "fielddata" : { "format" : "enabled" },
             "fields" : {
               "raw" : {"type": "string", "index" : "not_analyzed", "doc_values" : true, "ignore_above" : 256}
             }
