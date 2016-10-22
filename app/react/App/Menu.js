@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import {toUrlParams} from '../../shared/JSONRequest';
-import {bindActionCreators} from 'redux';
 import {I18NLink, I18NMenu, t} from 'app/I18N';
 
 class Menu extends Component {
