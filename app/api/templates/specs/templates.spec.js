@@ -63,13 +63,14 @@ describe('templates', () => {
       ]};
 
       templates.save(newTemplate)
-      .then(() => {
+      .then((response) => {
         let expectedValues = {
           'created template': 'created template',
           'label 1': 'label 1',
           'label 2': 'label 2'
         };
-        expect(translations.addContext).toHaveBeenCalledWith('created template', expectedValues);
+
+        expect(translations.addContext).toHaveBeenCalledWith(response.id, 'created template', expectedValues);
         done();
       });
     });
@@ -135,10 +136,10 @@ describe('templates', () => {
           template.properties.push({label: 'label 3'});
           return templates.save(template);
         })
-        .then(() => {
+        .then((response) => {
           expect(translations.addContext).not.toHaveBeenCalled();
           expect(translations.updateContext).toHaveBeenCalledWith(
-            'created template',
+            response.id,
             'new title',
             {
               'label 1': 'new label 1',
@@ -283,7 +284,7 @@ describe('templates', () => {
         return templates.delete(template.json);
       })
       .then(() => {
-        expect(translations.deleteContext).toHaveBeenCalledWith('template_test');
+        expect(translations.deleteContext).toHaveBeenCalledWith('c08ef2532f0bd008ac5174b45e033c93');
         done();
       })
       .catch(catchErrors(done));

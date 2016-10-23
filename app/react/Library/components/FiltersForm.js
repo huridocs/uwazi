@@ -19,15 +19,8 @@ export class FiltersForm extends Component {
     }
   }
 
-  getFilteredDocumentTypeName() {
-    let selectedDocumentTypes = this.props.documentTypes.toJS();
-    if (selectedDocumentTypes.length) {
-      return this.props.templates.toJS().find((tmpl) => tmpl._id === selectedDocumentTypes[0]).name;
-    }
-  }
-
   render() {
-    let translationContext = this.getFilteredDocumentTypeName();
+    let translationContext = this.props.documentTypes.toJS()[0];
     let fields = this.props.fields.toJS();
     fields = libraryHelper.parseWithAggregations(fields, this.props.aggregations.toJS())
     .filter((field) => (field.type !== 'select' && field.type !== 'multiselect') || field.options.length);

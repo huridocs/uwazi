@@ -97,7 +97,7 @@ describe('thesauris', () => {
       })
       .then((response) => {
         expect(response.ok).toBe(true);
-        expect(translations.deleteContext).toHaveBeenCalledWith('secret recipes');
+        expect(translations.deleteContext).toHaveBeenCalledWith('c08ef2532f0bd008ac5174b45e033c93');
         done();
       })
       .catch(done.fail);
@@ -141,9 +141,9 @@ describe('thesauris', () => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
       spyOn(translations, 'addContext');
       thesauris.save(data)
-      .then(() => {
+      .then((response) => {
         expect(translations.addContext)
-        .toHaveBeenCalledWith('Batman wish list', {
+        .toHaveBeenCalledWith(response.id, 'Batman wish list', {
           'Batman wish list': 'Batman wish list',
           'Joker BFF': 'Joker BFF'
         });
@@ -208,10 +208,10 @@ describe('thesauris', () => {
           spyOn(translations, 'updateContext');
           return thesauris.save(data);
         })
-        .then(() => {
+        .then((response) => {
           expect(translations.updateContext)
           .toHaveBeenCalledWith(
-            'Top 2 scify books',
+            response.id,
             'Top 1 games',
             {'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games'},
             ['Fundation'],

@@ -10,22 +10,30 @@ describe('t', () => {
     let dictionaries = [
       {
         locale: 'en',
-        values: {
-          System: {
-            Search: 'Search',
-            confirmDeleteDocument: 'Are you sure you want to delete this document?',
-            confirmDeleteEntity: 'Are you sure you want to delete this entity?'
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            values: {
+              Search: 'Search',
+              confirmDeleteDocument: 'Are you sure you want to delete this document?',
+              confirmDeleteEntity: 'Are you sure you want to delete this entity?'
+            }
           }
-        }
+        ]
       },
       {
         locale: 'es',
-        values: {
-          System: {
-            Search: 'Buscar',
-            confirmDeleteDocument: '¿Esta seguro que quiere borrar este documento?'
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            values: {
+              Search: 'Buscar',
+              confirmDeleteDocument: '¿Esta seguro que quiere borrar este documento?'
+            }
           }
-        }
+        ]
       }
     ];
 

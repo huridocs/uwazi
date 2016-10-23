@@ -27,7 +27,7 @@ let addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  translations.addContext(template.name, values);
+  translations.addContext(template._id, template.name, values);
 };
 
 let updateTranslation = (currentTemplate, template) => {
@@ -46,7 +46,7 @@ let updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  translations.updateContext(currentTemplate.name, template.name, updatedLabels, deletedPropertiesByLabel, context);
+  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 let save = (template) => {
@@ -79,8 +79,12 @@ export default {
       .then(() => save(template));
     }
 
-    addTemplateTranslation(template);
-    return save(template);
+    return save(template)
+    .then((response) => {
+      template._id = response.id;
+      addTemplateTranslation(template);
+      return response;
+    });
   },
 
   updateMetadataProperties(templateId, nameMatches, deleteProperties) {
@@ -109,7 +113,7 @@ export default {
       if (count > 0) {
         return Promise.reject({key: 'documents_using_template', value: count});
       }
-      translations.deleteContext(template.name);
+      translations.deleteContext(template._id);
       return request.delete(url);
     })
     .then((response) => {

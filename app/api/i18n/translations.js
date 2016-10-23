@@ -23,12 +23,12 @@ export default {
     .then(response => request.get(`${dbURL}/${response.json.id}`)).then((response) => response.json);
   },
 
-  addEntry(context, key, defaultValue) {
+  addEntry(contextId, key, defaultValue) {
     return this.get()
     .then((result) => {
       return Promise.all(result.rows.map((translation) => {
-        translation.values[context] = translation.values[context] || {};
-        translation.values[context][key] = defaultValue;
+        let context = translation.contexts.find((ctx) => ctx.id === contextId);
+        context.values[key] = defaultValue;
         return this.save(translation);
       }));
     })
@@ -37,11 +37,11 @@ export default {
     });
   },
 
-  addContext(contextName, values) {
+  addContext(id, contextName, values) {
     return this.get()
     .then((result) => {
       return Promise.all(result.rows.map((translation) => {
-        translation.values[contextName] = values;
+        translation.contexts.push({id, label: contextName, values});
         return this.save(translation);
       }));
     })
@@ -50,11 +50,11 @@ export default {
     });
   },
 
-  deleteContext(context) {
+  deleteContext(id) {
     return this.get()
     .then((result) => {
       return Promise.all(result.rows.map((translation) => {
-        delete translation.values[context];
+        translation.contexts = translation.contexts.filter((tr) => tr.id !== id);
         return this.save(translation);
       }));
     })
@@ -63,41 +63,39 @@ export default {
     });
   },
 
-  updateContext(oldContextName, newContextName, keyNamesChanges, deletedProperties, context) {
+  updateContext(id, newContextName, keyNamesChanges, deletedProperties, values) {
     return Promise.all([this.get(), settings.get()])
     .then(([translations, siteSettings]) => {
       let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;
       return Promise.all(translations.rows.map((translation) => {
-        if (!translation.values[oldContextName]) {
-          translation.values[newContextName] = context;
+        let context = translation.contexts.find((tr) => tr.id === id);
+        if (!context) {
+          translation.contexts.push({id, label: newContextName, values});
           return this.save(translation);
         }
 
         deletedProperties.forEach((key) => {
-          delete translation.values[oldContextName][key];
+          delete context.values[key];
         });
 
         Object.keys(keyNamesChanges).forEach((originalKey) => {
           let newKey = keyNamesChanges[originalKey];
-          translation.values[oldContextName][newKey] = translation.values[oldContextName][originalKey];
+          context.values[newKey] = context.values[originalKey];
 
           if (translation.locale === defaultLanguage) {
-            translation.values[oldContextName][newKey] = newKey;
+            context.values[newKey] = newKey;
           }
 
-          delete translation.values[oldContextName][originalKey];
+          delete context.values[originalKey];
         });
 
-        Object.keys(context).forEach((key) => {
-          if (!translation.values[oldContextName][key]) {
-            translation.values[oldContextName][key] = key;
+        Object.keys(values).forEach((key) => {
+          if (!context.values[key]) {
+            context.values[key] = key;
           }
         });
 
-        if (oldContextName !== newContextName) {
-          translation.values[newContextName] = translation.values[oldContextName];
-          delete translation.values[oldContextName];
-        }
+        context.label = newContextName;
 
         return this.save(translation);
       }));
