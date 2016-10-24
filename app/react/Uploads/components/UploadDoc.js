@@ -31,7 +31,6 @@ export class UploadDoc extends Component {
     let message = 'Ready to publish';
     let progress = 0;
 
-
     let itsProcessing = doc.uploaded && typeof doc.processed === 'undefined';
 
     if (itsProcessing) {
@@ -111,11 +110,11 @@ UploadDoc.propTypes = {
   templates: PropTypes.object
 };
 
-export function mapStateToProps(state, props) {
+export function mapStateToProps({uploads}, props) {
   return {
-    progress: state.uploads.progress.get(props.doc.get('_id')),
-    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited'),
-    templates: state.uploads.templates
+    progress: uploads.progress.get(props.doc.get('sharedId')),
+    metadataBeingEdited: uploads.uiState.get('metadataBeingEdited'),
+    templates: uploads.templates
   };
 }
 
