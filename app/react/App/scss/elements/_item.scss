@@ -104,6 +104,13 @@ $item-padding: 15px;
   width: calc(100% - 35px);
 }
 
+.item-label-group {
+  width: calc(100% - 70px);
+  .item-type {
+    width: 100%;
+  }
+}
+
 .item-type__icon {
   font-size: 14px;
 }
