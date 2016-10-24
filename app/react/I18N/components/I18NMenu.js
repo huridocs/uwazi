@@ -29,16 +29,10 @@ export class I18NMenu extends Component {
   render() {
     const languages = this.props.languages.toJS();
     let path = this.props.location.pathname;
-    let locale = utils.getUrlLocale(path, languages);
+    let locale = utils.getLocale(path, languages);
 
-    if (locale) {
-      let regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
-      path = path.replace(regexp, '/');
-    }
-
-    if (!locale) {
-      locale = utils.getDefaultLocale(languages);
-    }
+    let regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
+    path = path.replace(regexp, '/');
 
     return (
       <div className={this.state.open ? 'Dropdown is-active' : 'Dropdown'} onClick={this.toggle.bind(this)}>
