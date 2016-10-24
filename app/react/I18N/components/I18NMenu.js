@@ -35,23 +35,18 @@ export class I18NMenu extends Component {
     path = path.replace(regexp, '/');
 
     return (
-      <div className={this.state.open ? 'Dropdown is-active' : 'Dropdown'} onClick={this.toggle.bind(this)}>
-        <ul className="Dropdown-list language">
-          {(() => {
-            return languages.map((lang) => {
-              let url = `/${lang.key}${path}${this.props.location.search}`;
-              return <li className={'Dropdown-option' + (locale === lang.key ? ' is-active' : '')} key={lang.key}>
-                      <a href={url} onClick={this.changeLanguage.bind(this, lang.key, url)}>
-                        {lang.key}
-                      </a>
-                     </li>;
-            });
-          })()}
-        </ul>
-        <span className="Dropdown-label">
-          <i className="fa fa-caret-down"></i>
-        </span>
-      </div>
+      <ul className="menuNav-I18NMenu">
+        {(() => {
+          return languages.map((lang) => {
+            let url = `/${lang.key}${path}${this.props.location.search}`;
+            return <li className={'menuNav-item' + (locale === lang.key ? ' is-active' : '')} key={lang.key}>
+                    <a className="menuNav-btn btn btn-default" href={url} onClick={this.changeLanguage.bind(this, lang.key, url)}>
+                      {lang.key}
+                    </a>
+                   </li>;
+          });
+        })()}
+      </ul>
     );
   }
 }
