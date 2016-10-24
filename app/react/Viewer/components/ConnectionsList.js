@@ -109,7 +109,9 @@ export class ConnectionsList extends Component {
                   </dl>
                 </div>
                 <div className="item-actions">
-                  <TemplateLabel template={reference.connectedDocumentTemplate} />
+                  <div className="item-label-group">
+                    <TemplateLabel template={reference.connectedDocumentTemplate} />
+                  </div>
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
                       <NeedAuthorization>

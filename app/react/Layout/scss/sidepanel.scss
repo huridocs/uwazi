@@ -150,8 +150,11 @@ $c-sidebar: $c-white;
   z-index: 1;
 }
 
-.sidepanel-footer + .sidepanel-body .view {
-  padding-bottom: 75px;
+.sidepanel-footer + .sidepanel-body > .view,
+.sidepanel-footer + .sidepanel-body > form,
+.sidepanel-footer + .sidepanel-body > .tab-content,
+.sidepanel-footer + .sidepanel-body > div:last-child {
+  padding-bottom: 90px;
 }
 
 .sidepanel-header {
@@ -195,7 +198,15 @@ $c-sidebar: $c-white;
   background:      -o-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
   background:    -moz-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
   background:         linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-
+  
+  .entity-connections & {
+    background: transparentize($c-grey-lighten, .9);
+    background: -webkit-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
+    background:      -o-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
+    background:    -moz-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
+    background:         linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);  
+  }
+  
   .btn {
     position: relative;
     border-radius: 50%;
