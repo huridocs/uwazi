@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {I18NLink} from 'app/I18N';
+import {I18NLink, t} from 'app/I18N';
 import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
 import {TemplateLabel, Icon} from 'app/Layout';
@@ -19,7 +19,7 @@ export class Doc extends Component {
     this.props.selectDocument(this.props.doc);
   }
 
-  formatMetadata(populatedMetadata, creationDate) {
+  formatMetadata(populatedMetadata, creationDate, translationContext) {
     let metadata = populatedMetadata
     .filter(p => p.showInCard && (p.value && p.value.length > 0 || p.markdown))
     .map((property, index) => {
@@ -29,7 +29,7 @@ export class Doc extends Component {
       }
       return (
         <dl key={index}>
-          <dt>{property.label}</dt>
+          <dt>{t(translationContext, property.label)}</dt>
           <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
         </dl>
       );
@@ -52,7 +52,7 @@ export class Doc extends Component {
     const className = this.props.doc.type === 'entity' ? 'item-entity' : 'item-document';
 
     const populatedMetadata = formater.prepareMetadata(this.props.doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
-    const metadata = this.formatMetadata(populatedMetadata, creationDate);
+    const metadata = this.formatMetadata(populatedMetadata, creationDate, template);
 
     return (
       <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>

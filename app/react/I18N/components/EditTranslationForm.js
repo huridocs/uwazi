@@ -2,15 +2,20 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 import {connect} from 'react-redux';
-import {I18NLink} from 'app/I18N';
+import {I18NLink, t, actions} from 'app/I18N';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import {actions} from 'app/I18N';
 
 export class EditTranslationForm extends Component {
 
   render() {
-    let context = this.props.context;
+    let contextId = this.props.context;
+    let defaultTranslationContext = {values: []};
+    if (this.props.translations.length) {
+      defaultTranslationContext = this.props.translations[0].contexts.find((ctx) => ctx.id === contextId) || defaultTranslationContext;
+    }
+
+    let contextName = defaultTranslationContext.label;
     return (
       <div className="row relationType">
           <Form
@@ -22,21 +27,23 @@ export class EditTranslationForm extends Component {
                 <I18NLink to="/settings/translations" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
                 <button type="submit" className="btn btn-success save-template">
-                  <i className="fa fa-save"/> Save
+                  <i className="fa fa-save"/> {t('System', 'Save')}
                 </button>
               </div>
               <ul className="list-group">
-                <li className="list-group-item"><b>{context}</b></li>
+                <li className="list-group-item"><b>{contextName}</b></li>
                 {(() => {
                   if (this.props.translations.length) {
-                    return Object.keys(this.props.translations[0].values[context]).map((value) => {
+                    return Object.keys(defaultTranslationContext.values).map((value) => {
                       return <li key={value} className="list-group-item">
                         <h5>{value}</h5>
                         {this.props.translations.map((translation, i) => {
+                          let context = translation.contexts.find((ctx) => ctx.id === contextId);
+                          let index = translation.contexts.indexOf(context);
                           return <FormGroup key={`${translation.locale}-${value}-${i}`}>
                           <div className="input-group">
                           <span className="input-group-addon">{translation.locale}</span>
-                            <Field model={`translationsForm[${i}].values[${context}][${value}]`}>
+                            <Field model={`translationsForm[${i}].contexts[${index}].values[${value}]`}>
                               <input className="form-control" type="text" />
                             </Field>
                           </div>

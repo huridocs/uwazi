@@ -14,11 +14,11 @@ export class TranslationsList extends Component {
     return <div className="panel panel-default">
       <div className="panel-heading">{t('System', 'Translations')}</div>
       <ul className="list-group relation-types">
-        {Object.keys(defaultTranslation.values).map((context, index) => {
+        {defaultTranslation.contexts.map((context, index) => {
           return <li key={index} className="list-group-item">
-              <I18NLink to={'/settings/translations/edit/' + context}>{context}</I18NLink>
+              <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)}>{context.label}</I18NLink>
               <div className="list-group-item-actions">
-                <I18NLink to={'/settings/translations/edit/' + context} className="btn btn-default btn-xs">
+                <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)} className="btn btn-default btn-xs">
                   <i className="fa fa-language"></i>
                   <span>{t('System', 'Translate')}</span>
                 </I18NLink>

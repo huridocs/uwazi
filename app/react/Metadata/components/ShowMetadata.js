@@ -50,14 +50,6 @@ export class ShowMetadata extends Component {
       header = <div className="item-info">{title}{type}</div>;
     }
 
-    const templates = this.props.templates.toJS();
-    let context = templates.reduce((result, template) => {
-      if (template._id === entity.template) {
-        return template.name;
-      }
-      return result;
-    }, '');
-
     return (
       <div className="view">
         {header}
@@ -72,7 +64,7 @@ export class ShowMetadata extends Component {
           const value = this.getValue(property);
           return (
             <dl key={index}>
-              <dt>{t(context, property.label)}</dt>
+              <dt>{t(entity.template, property.label)}</dt>
               <dd>{value}</dd>
             </dl>
           );

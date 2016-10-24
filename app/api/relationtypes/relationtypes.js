@@ -23,22 +23,25 @@ let checkDuplicated = (relationtype) => {
 function _save(relationtype) {
   let values = {};
   values[relationtype.name] = relationtype.name;
-  translations.addContext(relationtype.name, values);
-  return request.post(dbUrl, relationtype);
+  return request.post(dbUrl, relationtype)
+  .then((response) => {
+    translations.addContext(response.json.id, relationtype.name, values);
+    return response;
+  });
 }
 
-function updateTranslation(oldName, newName) {
+function updateTranslation(id, oldName, newName) {
   let updatedNames = {};
   updatedNames[oldName] = newName;
   let values = {};
   values[newName] = newName;
-  translations.updateContext(oldName, newName, updatedNames, [], values);
+  translations.updateContext(id, newName, updatedNames, [], values);
 }
 
 function _update(relationtype) {
   return request.get(`${dbUrl}/${relationtype._id}`)
   .then((response) => {
-    updateTranslation(response.json.name, relationtype.name);
+    updateTranslation(relationtype._id, response.json.name, relationtype.name);
     return request.post(dbUrl, relationtype);
   });
 }
@@ -78,7 +81,7 @@ export default {
     return references.countByRelationType(relationtype._id)
     .then((referencesUsingIt) => {
       if (referencesUsingIt === 0) {
-        translations.deleteContext(relationtype.name);
+        translations.deleteContext(relationtype._id);
         return request.delete(`${dbUrl}/${relationtype._id}`, {rev: relationtype._rev})
         .then(() => true);
       }

@@ -54,8 +54,8 @@ describe('relationtypes', () => {
       it('should create a new translation for it', (done) => {
         spyOn(translations, 'addContext');
         relationtypes.save({name: 'Indiferent'})
-        .then(() => {
-          expect(translations.addContext).toHaveBeenCalledWith('Indiferent', {Indiferent: 'Indiferent'});
+        .then((response) => {
+          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'});
           done();
         }).catch(catchErrors(done));
       });
@@ -86,8 +86,8 @@ describe('relationtypes', () => {
           relationtype.name = 'Pro';
           return relationtypes.save(relationtype);
         })
-        .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Against', 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
+        .then((response) => {
+          expect(translations.updateContext).toHaveBeenCalledWith(response._id, 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
           done();
         }).catch(catchErrors(done));
       });
@@ -130,7 +130,7 @@ describe('relationtypes', () => {
           return relationtypes.delete(relationtype);
         })
         .then(() => {
-          expect(translations.deleteContext).toHaveBeenCalledWith('Against');
+          expect(translations.deleteContext).toHaveBeenCalledWith('8202c463d6158af8065022d9b5014a18');
           done();
         });
       });

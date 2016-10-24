@@ -39,14 +39,14 @@ describe('translations', () => {
 
   describe('addEntry()', () => {
     it('should add the new key to each dictionary in the given context', (done) => {
-      translations.addEntry('System', 'Key', 'default')
+      translations.addEntry('123', 'Key', 'default')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].values.System.Key).toBe('default');
-        expect(result.rows[1].values.System.Key).toBe('default');
+        expect(result.rows[0].contexts[0].values.Key).toBe('default');
+        expect(result.rows[1].contexts[0].values.Key).toBe('default');
         done();
       })
       .catch(catchErrors(done));
@@ -56,14 +56,14 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with his values', (done) => {
       let values = {Name: 'Name', Surname: 'Surname'};
-      translations.addContext('Judge', values)
+      translations.addContext('456', 'Judge', values)
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].values.Judge).toEqual(values);
-        expect(result.rows[1].values.Judge).toEqual(values);
+        expect(result.rows[0].contexts[1].values).toEqual(values);
+        expect(result.rows[1].contexts[1].values).toEqual(values);
         done();
       })
       .catch(catchErrors(done));
@@ -72,14 +72,14 @@ describe('translations', () => {
 
   describe('deleteContext()', () => {
     it('should add a context with his values', (done) => {
-      translations.deleteContext('System')
+      translations.deleteContext('123')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].values.System).not.toBeDefined();
-        expect(result.rows[1].values.System).not.toBeDefined();
+        expect(result.rows[0].contexts.length).toBe(0);
+        expect(result.rows[1].contexts.length).toBe(0);
         done();
       })
       .catch(catchErrors(done));
@@ -92,23 +92,24 @@ describe('translations', () => {
       let deletedProperties = ['Age'];
       let context = {Pass: 'Pass', Acc: 'Acc', Email: 'Email', Name: 'Name', Interface: 'Interface'};
 
-      translations.updateContext('System', 'Interface', keyNameChanges, deletedProperties, context)
+      translations.updateContext('123', 'Interface', keyNameChanges, deletedProperties, context)
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].values.Interface.Pass).toBe('Pass');
-        expect(result.rows[0].values.Interface.Interface).toBe('Interface');
-        expect(result.rows[1].values.Interface.Pass).toBe('Contraseña');
+        expect(result.rows[0].contexts[0].label).toBe('Interface');
+        expect(result.rows[0].contexts[0].values.Pass).toBe('Pass');
+        expect(result.rows[0].contexts[0].values.Interface).toBe('Interface');
+        expect(result.rows[1].contexts[0].values.Pass).toBe('Contraseña');
 
-        expect(result.rows[0].values.Interface.Age).not.toBeDefined();
-        expect(result.rows[1].values.Interface.Age).not.toBeDefined();
-        expect(result.rows[0].values.Interface.System).not.toBeDefined();
-        expect(result.rows[1].values.Interface.System).not.toBeDefined();
+        expect(result.rows[0].contexts[0].values.Age).not.toBeDefined();
+        expect(result.rows[1].contexts[0].values.Age).not.toBeDefined();
+        expect(result.rows[0].contexts[0].values.System).not.toBeDefined();
+        expect(result.rows[1].contexts[0].values.System).not.toBeDefined();
 
-        expect(result.rows[0].values.Interface.Name).toBe('Name');
-        expect(result.rows[1].values.Interface.Name).toBe('Name');
+        expect(result.rows[0].contexts[0].values.Name).toBe('Name');
+        expect(result.rows[1].contexts[0].values.Name).toBe('Name');
         done();
       })
       .catch(catchErrors(done));

@@ -11,7 +11,7 @@ describe('TranslationsList', () => {
 
   beforeEach(() => {
     props = {
-      translations: Immutable.fromJS([{key: 'es', values: {ContextOne: {}, ContextTwo: {}}}]),
+      translations: Immutable.fromJS([{key: 'es', contexts: [{id: '1', label: 'Test'}, {id: '2', label: 'Test 2'}]}]),
       settings: Immutable.fromJS({languages: [{locale: 'es', default: true}]})
     };
 

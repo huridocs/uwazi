@@ -13,7 +13,7 @@ export class MetadataForm extends Component {
 
   translateOptions(thesauri) {
     return thesauri.values.map((option) => {
-      option.label = t(thesauri.name, option.label);
+      option.label = t(thesauri._id, option.label);
       return option;
     });
   }
@@ -31,7 +31,6 @@ export class MetadataForm extends Component {
 
     let thesauris = this.props.thesauris.toJS();
     let template = templates.find((tmpl) => tmpl._id === metadata.template);
-    let translationContext = template.name;
     const {model} = this.props;
     if (!template) {
       return <div />;
@@ -74,7 +73,7 @@ export class MetadataForm extends Component {
           return (
             <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
               <label>
-                {t(translationContext, property.label)}
+                {t(template._id, property.label)}
                 {property.required ? <span className="required">*</span> : ''}
               </label>
               <FormField model={`${model}.metadata.${property.name}`} >

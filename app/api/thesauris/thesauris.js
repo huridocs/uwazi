@@ -33,8 +33,11 @@ function _save(thesauri) {
   }, {});
   context[thesauri.name] = thesauri.name;
 
-  translations.addContext(thesauri.name, context);
-  return request.post(dbUrl, thesauri);
+  return request.post(dbUrl, thesauri)
+  .then((response) => {
+    translations.addContext(response.json.id, thesauri.name, context);
+    return response;
+  });
 }
 
 let updateTranslation = (current, thesauri) => {
@@ -53,7 +56,7 @@ let updateTranslation = (current, thesauri) => {
 
   context[thesauri.name] = thesauri.name;
 
-  translations.updateContext(current.name, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+  translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 function _update(thesauri) {
@@ -141,11 +144,8 @@ export default {
   },
 
   delete(thesauriId, rev) {
-    return request.get(`${dbUrl}/${thesauriId}`)
-    .then((response) => {
-      translations.deleteContext(response.json.name);
-      return request.delete(`${dbUrl}/${thesauriId}`, {rev});
-    })
+    translations.deleteContext(thesauriId);
+    return request.delete(`${dbUrl}/${thesauriId}`, {rev})
     .then((response) => {
       return response.json;
     })
