@@ -95,7 +95,7 @@ export function searchDocuments(readOnlySearch, limit) {
     search.types = filters.documentTypes;
     search.limit = limit;
     dispatch(hideSuggestions());
-    browserHistory.push(`/${toUrlParams(search)}`);
+    browserHistory.push(`library/${toUrlParams(search)}`);
   };
 }
 

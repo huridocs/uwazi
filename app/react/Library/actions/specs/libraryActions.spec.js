@@ -158,7 +158,7 @@ describe('libraryActions', () => {
         expected.types = ['decision'];
         expected.limit = limit;
 
-        expect(browserHistory.push).toHaveBeenCalledWith(`/${toUrlParams(expected)}`);
+        expect(browserHistory.push).toHaveBeenCalledWith(`library/${toUrlParams(expected)}`);
       });
 
       it('should dispatch a HIDE_SUGGESTIONS action', () => {

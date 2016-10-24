@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, IndexRoute} from 'react-router';
+import {Route} from 'react-router';
 
 import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
@@ -42,7 +42,6 @@ import NewRelationType from 'app/RelationTypes/NewRelationType';
 import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
-import RouteHandler from 'app/App/RouteHandler';
 
 import store from './store';
 
