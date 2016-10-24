@@ -18,7 +18,7 @@ describe('SortButtons', () => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
       merge: jasmine.createSpy('merge'),
-      search: {order: 'desc', sort: 'title.raw'},
+      search: {order: 'desc', sort: 'title'},
       templates: immutable([
         {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]}
       ])
@@ -47,7 +47,7 @@ describe('SortButtons', () => {
 
     describe('when active', () => {
       it('should set the option active and add a caret', () => {
-        props.search.sort = 'metadata.sortable_name.raw';
+        props.search.sort = 'metadata.sortable_name';
         render();
         expect(component.find('span').first().find('i').props().className).toBe('fa fa-caret-down');
       });
@@ -57,7 +57,7 @@ describe('SortButtons', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
         component.find('span').first().simulate('click');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name.raw', order: 'asc'});
+        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
 
         const templates = props.templates.toJS();
         templates[0].properties[1].type = 'date';
@@ -66,7 +66,7 @@ describe('SortButtons', () => {
         render();
 
         component.find('span').first().simulate('click');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name.raw', order: 'desc'});
+        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'desc'});
       });
     });
   });
@@ -74,31 +74,31 @@ describe('SortButtons', () => {
   describe('sort', () => {
     it('should merge with searchTerm and filtersForm and toggle between asc/desc', () => {
       render();
-      instance.sort('title.raw');
-      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title.raw', order: 'asc'});
+      instance.sort('title');
+      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
       props.search.order = 'asc';
       render();
-      instance.sort('title.raw');
-      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title.raw', order: 'desc'});
-      expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title.raw', order: 'desc'});
+      instance.sort('title');
+      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
+      expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'desc'});
     });
 
     describe('when changing property being sorted', () => {
       it('should use default order', () => {
-        props.search = {order: 'desc', sort: 'title.raw'};
+        props.search = {order: 'desc', sort: 'title'};
         render();
-        instance.sort('title.raw');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title.raw', order: 'asc'});
+        instance.sort('title');
+        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
         props.searchDocuments.calls.reset();
-        props.search = {order: 'desc', sort: 'title.raw'};
+        props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'desc');
         expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'creationDate', order: 'desc'});
 
         props.searchDocuments.calls.reset();
-        props.search = {order: 'desc', sort: 'title.raw'};
+        props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'asc');
         expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc'});
@@ -106,9 +106,9 @@ describe('SortButtons', () => {
     });
   });
 
-  describe('when filtering title.raw property asc', () => {
-    it('should set active title.raw with up arrow', () => {
-      props.search = {order: 'asc', sort: 'title.raw'};
+  describe('when filtering title property asc', () => {
+    it('should set active title with up arrow', () => {
+      props.search = {order: 'asc', sort: 'title'};
       render();
       let title = component.find('span').at(1);
       expect(title.hasClass('active')).toBe(true);
@@ -116,9 +116,9 @@ describe('SortButtons', () => {
     });
   });
 
-  describe('when filtering title.raw property desc', () => {
-    it('should set active title.raw with up arrow', () => {
-      props.search = {order: 'desc', sort: 'title.raw'};
+  describe('when filtering title property desc', () => {
+    it('should set active title with up arrow', () => {
+      props.search = {order: 'desc', sort: 'title'};
       render();
       let title = component.find('span').at(1);
       expect(title.hasClass('active')).toBe(true);
