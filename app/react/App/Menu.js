@@ -7,7 +7,7 @@ import {I18NLink, I18NMenu, t} from 'app/I18N';
 class Menu extends Component {
 
   libraryUrl() {
-    return toUrlParams(this.props.search);
+    return 'library' + toUrlParams(this.props.search);
   }
 
   render() {
