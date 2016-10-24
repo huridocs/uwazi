@@ -146,16 +146,24 @@ function ServerRouter(req, res) {
     res.redirect(302, '/login');
   }
 
-  match({routes: Routes, location: req.url}, (error, redirectLocation, renderProps) => {
-    if (error) {
-      handleError(error);
-    } else if (redirectLocation) {
-      handleRedirect(res, redirectLocation);
-    } else if (renderProps) {
-      handleRoute(res, renderProps, req);
-    } else {
-      handle404(res);
+  api.get('settings')
+  .then((response) => {
+    let location = req.url;
+    if (location === '/' && response.json.home_page) {
+      location = response.json.home_page;
     }
+
+    match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
+      if (error) {
+        handleError(error);
+      } else if (redirectLocation) {
+        handleRedirect(res, redirectLocation);
+      } else if (renderProps) {
+        handleRoute(res, renderProps, req);
+      } else {
+        handle404(res);
+      }
+    });
   });
 }
 

@@ -42,6 +42,7 @@ import NewRelationType from 'app/RelationTypes/NewRelationType';
 import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
+import RouteHandler from 'app/App/RouteHandler';
 
 import store from './store';
 
