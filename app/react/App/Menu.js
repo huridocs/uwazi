@@ -28,9 +28,6 @@ class Menu extends Component {
         <li className="menuActions">
           <ul className="menuNav-list">
             <li className="menuNav-item">
-              <I18NMenu location={this.props.location}/>
-            </li>
-            <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                   <i className="fa fa-th"></i>
               </I18NLink>
@@ -61,6 +58,7 @@ class Menu extends Component {
               }
             })()}
           </ul>
+          <I18NMenu location={this.props.location}/>
         </li>
       </ul>
     );

@@ -99,6 +99,18 @@ $item-padding: 15px;
   margin-right: 6px;
 }
 
+.item-type {
+  white-space: nowrap;
+  width: calc(100% - 35px);
+}
+
+.item-label-group {
+  width: calc(100% - 70px);
+  .item-type {
+    width: 100%;
+  }
+}
+
 .item-type__icon {
   font-size: 14px;
 }
@@ -112,7 +124,7 @@ $item-padding: 15px;
   letter-spacing: 0.1em;
   top: 2px;
   position: relative;
-  max-width: 200px;
+  max-width: calc(100% - 20px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
