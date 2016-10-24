@@ -43,9 +43,23 @@ import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
 
+import store from './store';
+
+function getIndexRoute(nextState, callBack) {
+  let collectionSettings = store().getState().settings.collection.toJS();
+  let indexRoute = {
+    component: Library,
+    onEnter: (nxtState, replace) => {
+      if (collectionSettings.home_page) {
+        replace(collectionSettings.home_page);
+      }
+    }
+  };
+  callBack(null, indexRoute);
+}
+
 const routes = (
-  <Route>
-    <IndexRoute component={Library} />
+  <Route getIndexRoute={getIndexRoute}>
     <Route path='settings' component={Settings}>
       <Route path='account' component={AccountSettings} />
       <Route path='collection' component={CollectionSettings} />
@@ -68,6 +82,7 @@ const routes = (
       <Route path='translations' component={TranslationsList} />
       <Route path='translations/edit/:context' component={EditTranslations} />
     </Route>
+    <Route path='library' component={Library} />
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
     <Route path='resetpassword/:key' component={ResetPassword} />
