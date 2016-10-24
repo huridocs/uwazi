@@ -67,7 +67,7 @@ export class SearchBar extends Component {
             className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' is-active' : '')}
             >
             {suggestions.toJS().map((suggestion, index) => {
-              let documentViewUrl = '/document/' + suggestion._id;
+              let documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
               return <p key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
