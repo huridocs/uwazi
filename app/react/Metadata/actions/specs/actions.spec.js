@@ -80,20 +80,26 @@ describe('documentFormActions', () => {
 
   describe('changeTemplate', () => {
     it('should change the document template and reset metadata properties (preserving types)', () => {
-      spyOn(formActions, 'setInitial').and.returnValue('forminitial');
-      spyOn(formActions, 'change').and.returnValue('formMerge');
+      spyOn(formActions, 'reset').and.returnValue('formReset');
+      spyOn(formActions, 'load').and.returnValue('formLoad');
       let dispatch = jasmine.createSpy('dispatch');
 
       let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
       let template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp', type: 'nested'}]};
 
+      jasmine.clock().install();
 
       actions.changeTemplate('formNamespace', doc, template)(dispatch);
 
       let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: '', newProp: []}};
-      expect(dispatch).toHaveBeenCalledWith('formMerge');
-      expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
-      expect(formActions.change).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(dispatch).toHaveBeenCalledWith('formReset');
+      expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
+
+      jasmine.clock().tick(0);
+
+      expect(dispatch).toHaveBeenCalledWith('formLoad');
+      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      jasmine.clock().uninstall();
     });
   });
 });

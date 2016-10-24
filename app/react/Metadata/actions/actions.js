@@ -63,7 +63,9 @@ export function changeTemplate(form, onlyReadEntity, template) {
     resetMetadata(entity.metadata, template, {resetExisting: true});
     entity.template = template._id;
 
-    dispatch(formActions.setInitial(form));
-    dispatch(formActions.change(form, entity));
+    dispatch(formActions.reset(form));
+    setTimeout(() => {
+      dispatch(formActions.load(form, entity));
+    });
   };
 }
