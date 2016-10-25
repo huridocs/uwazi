@@ -1,3 +1,5 @@
+// Entire component is UNTESTED!
+// TEST
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -14,7 +16,7 @@ export class UploadsFormPanel extends Component {
   }
 
   close() {
-    if (this.props.formState.dirty) {
+    if (this.props.dirty) {
       return this.context.confirm({
         accept: () => {
           this.props.finishEdit();
@@ -53,7 +55,7 @@ UploadsFormPanel.propTypes = {
   finishEdit: PropTypes.func,
   title: PropTypes.string,
   metadataType: PropTypes.string,
-  formState: PropTypes.object
+  dirty: PropTypes.bool
 };
 
 UploadsFormPanel.contextTypes = {
@@ -71,7 +73,7 @@ const mapStateToProps = ({uploads}) => {
     open: typeof uiState.get('metadataBeingEdited') === 'object',
     metadataType,
     title: uploads.metadata.title,
-    formState: uploads.metadataForm
+    dirty: uploads.metadataForm.dirty
   };
 };
 
