@@ -53,7 +53,6 @@ UploadsFormPanel.propTypes = {
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
   finishEdit: PropTypes.func,
-  title: PropTypes.string,
   metadataType: PropTypes.string,
   dirty: PropTypes.bool
 };
@@ -72,7 +71,6 @@ const mapStateToProps = ({uploads}) => {
   return {
     open: typeof uiState.get('metadataBeingEdited') === 'object',
     metadataType,
-    title: uploads.metadata.title,
     dirty: uploads.metadataForm.dirty
   };
 };
