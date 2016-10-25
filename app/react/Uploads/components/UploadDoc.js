@@ -77,22 +77,30 @@ export class UploadDoc extends Component {
         <ItemName>{doc.title}</ItemName>
       </div>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
-        {(() => {
-          if (itsUploading || itsProcessing) {
-            return <ItemFooter.ProgressBar progress={progress} />;
-          }
-          if (doc.processed) {
-            return <ItemFooter.Label status={status}>
-                    {message}
-                   </ItemFooter.Label>;
-          }
-          return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
-        })()}
-        <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-          <span className="itemShortcut-arrow">
-            <i className="fa fa-external-link"></i>
+        <div className="item-label-group">
+          <span className="item-type item-type-0">
+            <i className="item-type__icon fa fa-file-text-o"></i>
+            <span className="item-type__name">Document</span>
           </span>
-        </I18NLink>
+          {(() => {
+            if (itsUploading || itsProcessing) {
+              return <ItemFooter.ProgressBar progress={progress} />;
+            }
+            if (doc.processed) {
+              return <ItemFooter.Label status={status}>
+                      {message}
+                     </ItemFooter.Label>;
+            }
+            return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
+          })()}
+        </div>
+        <div className="item-shortcut-group">
+          <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+            <span className="itemShortcut-arrow">
+              <i className="fa fa-external-link"></i>
+            </span>
+          </I18NLink>
+        </div>
       </ItemFooter>
     </RowList.Item>
     );
