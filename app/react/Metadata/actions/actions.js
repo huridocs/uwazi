@@ -57,7 +57,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 }
 
 export function changeTemplate(form, onlyReadEntity, template) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     //test
     let entity = Object.assign({}, onlyReadEntity);
     //

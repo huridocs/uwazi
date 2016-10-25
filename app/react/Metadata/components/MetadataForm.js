@@ -51,20 +51,20 @@ export class MetadataForm extends Component {
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
-        <FormGroup {...state.fields.title} update={true}>
+        <FormGroup {...state.fields.title}>
           <label>{t('System', 'Title')} <span className="required">*</span></label>
           <FormField model={`${model}.title`}>
             <textarea className="form-control"/>
           </FormField>
         </FormGroup>
 
-        <FormGroup update={true}>
+        <FormGroup>
           <label>{t('System', 'Type')} <span className="required">*</span></label>
           <FormField>
             <Select options={templateOptions}
               value={template._id}
               onChange={(e) => {
-                this.props.changeTemplate(model, metadata, templates.find((tmpl) => tmpl._id === e.target.value));
+                this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl._id === e.target.value));
               }}
             />
           </FormField>

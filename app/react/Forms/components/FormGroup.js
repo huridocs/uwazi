@@ -5,7 +5,7 @@ import FormField from './FormField';
 export class FormGroup extends Component {
 
   shouldComponentUpdate(nextProps) {
-    return this.props.update || this.props.hasError !== nextProps.hasError;
+    return this.props.hasError !== nextProps.hasError;
   }
 
   render() {
@@ -38,7 +38,6 @@ let childrenType = PropTypes.oneOfType([
 
 FormGroup.propTypes = {
   hasError: PropTypes.bool,
-  update: PropTypes.bool,
   children: childrenType
 };
 
