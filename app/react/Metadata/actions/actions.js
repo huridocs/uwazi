@@ -1,4 +1,7 @@
+import superagent from 'superagent';
 import {actions as formActions} from 'react-redux-form';
+import {APIURL} from 'app/config.js';
+import * as types from './actionTypes';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -67,5 +70,22 @@ export function changeTemplate(form, onlyReadEntity, template) {
     setTimeout(() => {
       dispatch(formActions.load(form, entity));
     });
+  };
+}
+
+export function reuploadDocument(docId, file) {
+  return function (dispatch) {
+    dispatch({type: types.START_REUPLOAD_DOCUMENT, doc: docId});
+    superagent.post(APIURL + 'reupload')
+    .set('Accept', 'application/json')
+    .field('document', docId)
+    .attach('file', file, file.name)
+    .on('progress', (data) => {
+      dispatch({type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent)});
+    })
+    .on('response', () => {
+      dispatch({type: types.REUPLOAD_COMPLETE, doc: docId});
+    })
+    .end();
   };
 }

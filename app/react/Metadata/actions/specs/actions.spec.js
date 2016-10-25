@@ -1,5 +1,13 @@
 import * as actions from '../actions';
 import {actions as formActions} from 'react-redux-form';
+import superagent from 'superagent';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import {APIURL} from 'app/config.js';
+import * as types from '../actionTypes';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('documentFormActions', () => {
   describe('loadInReduxForm', () => {
@@ -100,6 +108,40 @@ describe('documentFormActions', () => {
       expect(dispatch).toHaveBeenCalledWith('formLoad');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       jasmine.clock().uninstall();
+    });
+  });
+
+  describe('reuploadDocument', () => {
+    it('should upload the file while dispatching the upload progress', () => {
+      let mockUpload = superagent.post(APIURL + 'reupload');
+      spyOn(mockUpload, 'field').and.callThrough();
+      spyOn(mockUpload, 'attach').and.callThrough();
+      spyOn(superagent, 'post').and.returnValue(mockUpload);
+
+      const expectedActions = [
+        {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
+        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
+        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
+        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'}
+      ];
+      const store = mockStore({});
+
+      // needed to work with firefox/chrome and phantomjs
+      let file = {name: 'filename'};
+      let isChrome = typeof File === 'function';
+      if (isChrome) {
+        file = new File([], 'filename');
+      }
+      //
+
+      store.dispatch(actions.reuploadDocument('abc1', file));
+      expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+      expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+
+      mockUpload.emit('progress', {percent: 55.1});
+      mockUpload.emit('progress', {percent: 65});
+      mockUpload.emit('response');
+      expect(store.getActions()).toEqual(expectedActions);
     });
   });
 });

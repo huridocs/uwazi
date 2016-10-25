@@ -4,6 +4,8 @@ import {bindActionCreators} from 'redux';
 
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
+import t from 'app/I18N/t';
+import UploadButton from './UploadButton';
 
 import * as actions from '../actions/actions';
 
@@ -19,7 +21,7 @@ export class MetadataFormButtons extends Component {
             onClick={() => this.props.loadInReduxForm(this.props.formStatePath, data, this.props.templates.toJS())}
             className="edit-metadata btn btn-primary">
             <i className="fa fa-pencil"></i>
-            <span className="btn-label">Edit</span>
+            <span className="btn-label">{t('System', 'Edit')}</span>
           </button>
         </ShowIf>
       </NeedAuthorization>
@@ -28,25 +30,30 @@ export class MetadataFormButtons extends Component {
           onClick={() => this.props.resetForm(this.props.formStatePath)}
           className="cancel-edit-metadata btn btn-primary">
           <i className="fa fa-close"></i>
-          <span className="btn-label">Cancel</span>
+          <span className="btn-label">{t('System', 'Cancel')}</span>
         </button>
       </ShowIf>
       <ShowIf if={entityBeingEdited}>
         <button type="submit" form={formName} className="btn btn-success">
           <i className="fa fa-save"></i>
-          <span className="btn-label">Save</span>
+          <span className="btn-label">{t('System', 'Save')}</span>
         </button>
       </ShowIf>
       <ShowIf if={data.type === 'document'}>
         <a className="btn btn-primary" href={'/api/documents/download?_id=' + data._id} target="_blank">
           <i className="fa fa-cloud-download"></i>
-          <span className="btn-label">Download</span>
+          <span className="btn-label">{t('System', 'Download')}</span>
         </a>
       </ShowIf>
       <NeedAuthorization>
+        <ShowIf if={data.type === 'document'}>
+          <UploadButton documentId={data._id} />
+        </ShowIf>
+      </NeedAuthorization>
+      <NeedAuthorization>
         <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>
           <i className="fa fa-trash"></i>
-          <span className="btn-label">Delete</span>
+          <span className="btn-label">{t('System', 'Delete')}</span>
         </button>
       </NeedAuthorization>
     </div>;

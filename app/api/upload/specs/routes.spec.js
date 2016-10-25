@@ -44,6 +44,7 @@ describe('upload routes', () => {
         setTimeout(() => {
           return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="id"`)
           .then((docs) => {
+            expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
             expect(docs.json.rows[0].value.processed).toBe(true);
             expect(docs.json.rows[0].value.fullText).toMatch(/Test file/);
@@ -76,15 +77,16 @@ describe('upload routes', () => {
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
         iosocket.emit.and.callFake((eventName) => {
-          expect(eventName).toBe('conversionFailed');
-          setTimeout(() => {
-            entities.getAllLanguages('id')
-            .then(docs => {
-              expect(docs.rows[0].processed).toBe(false);
-              expect(docs.rows[1].processed).toBe(false);
-              done();
-            });
-          }, 100);
+          if (eventName === 'conversionFailed') {
+            setTimeout(() => {
+              entities.getAllLanguages('id')
+              .then(docs => {
+                expect(docs.rows[0].processed).toBe(false);
+                expect(docs.rows[1].processed).toBe(false);
+                done();
+              });
+            }, 100);
+          }
         });
 
         req.files = ['invalid_file'];
