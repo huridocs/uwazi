@@ -18,6 +18,14 @@ export class MetadataForm extends Component {
     });
   }
 
+  shouldComponentUpdate(nextProps) {
+    const templateChanged = !this.props.metadata.template || this.props.metadata.template !== nextProps.metadata.template;
+    const validityChanged = this.props.state.valid !== nextProps.state.valid;
+    const touchedChanged = this.props.state.touched !== nextProps.state.touched;
+
+    return templateChanged || validityChanged || touchedChanged;
+  }
+
   render() {
     let {metadata, state} = this.props;
     let templates = this.props.templates.toJS();
@@ -43,14 +51,14 @@ export class MetadataForm extends Component {
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
-        <FormGroup {...state.fields.title}>
+        <FormGroup {...state.fields.title} update={true}>
           <label>{t('System', 'Title')} <span className="required">*</span></label>
           <FormField model={`${model}.title`}>
             <textarea className="form-control"/>
           </FormField>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup update={true}>
           <label>{t('System', 'Type')} <span className="required">*</span></label>
           <FormField>
             <Select options={templateOptions}
