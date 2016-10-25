@@ -1,11 +1,16 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 import FormField from './FormField';
 
 export class FormGroup extends Component {
 
+  shouldComponentUpdate(nextProps) {
+    return this.props.hasError !== nextProps.hasError;
+  }
+
   render() {
     let className = 'form-group';
-    if ((this.props.touched === true || this.props.submitFailed) && this.props.valid === false) {
+    if (this.props.hasError) {
       className += ' has-error';
     }
 
@@ -32,10 +37,12 @@ let childrenType = PropTypes.oneOfType([
 ]);
 
 FormGroup.propTypes = {
-  touched: PropTypes.bool,
-  valid: PropTypes.bool,
-  submitFailed: PropTypes.bool,
+  hasError: PropTypes.bool,
   children: childrenType
 };
 
-export default FormGroup;
+export const mapStateToProps = ({}, props) => {
+  return {hasError: (props.touched || props.submitFailed) && props.valid === false};
+};
+
+export default connect(mapStateToProps)(FormGroup);
