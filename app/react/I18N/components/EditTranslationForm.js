@@ -1,3 +1,5 @@
+// Entire component is UNTESTED!!!
+// Test!!
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
@@ -8,11 +10,43 @@ import FormGroup from 'app/DocumentForm/components/FormGroup';
 
 export class EditTranslationForm extends Component {
 
+  translationExists(translations, locale) {
+    return translations.find((tr) => tr.locale === locale);
+  }
+
+  getDefaultTranslation(translations, languages) {
+    let defaultLocale = languages.find((lang) => lang.default).key;
+    return translations.find((tr) => tr.locale === defaultLocale);
+  }
+
+  prepareTranslations() {
+    const translations = this.props.translationsForm;
+    if (translations.length) {
+      let languages = this.props.settings.collection.toJS().languages;
+      languages.forEach((lang) => {
+        if (!this.translationExists(translations, lang.key)) {
+          let defaultTranslation = this.getDefaultTranslation(translations, languages);
+          let translation = {locale: lang.key};
+          translation.values = Object.assign({}, defaultTranslation.values);
+          translations.push(translation);
+        }
+      });
+    }
+
+    return translations;
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.translationsForm.length !== nextProps.translationsForm.length;
+  }
+
   render() {
     let contextId = this.props.context;
     let defaultTranslationContext = {values: []};
-    if (this.props.translations.length) {
-      defaultTranslationContext = this.props.translations[0].contexts.find((ctx) => ctx.id === contextId) || defaultTranslationContext;
+
+    const translations = this.prepareTranslations.call(this);
+    if (translations.length) {
+      defaultTranslationContext = translations[0].contexts.find((ctx) => ctx.id === contextId) || defaultTranslationContext;
     }
 
     let contextName = defaultTranslationContext.label;
@@ -20,8 +54,7 @@ export class EditTranslationForm extends Component {
       <div className="row relationType">
           <Form
             model="translationsForm"
-            onSubmit={this.props.saveTranslations}
-          >
+            onSubmit={this.props.saveTranslations}>
             <div className="panel panel-default">
               <div className="panel-heading">
                 <I18NLink to="/settings/translations" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
@@ -33,11 +66,11 @@ export class EditTranslationForm extends Component {
               <ul className="list-group">
                 <li className="list-group-item"><b>{contextName}</b></li>
                 {(() => {
-                  if (this.props.translations.length) {
+                  if (translations.length) {
                     return Object.keys(defaultTranslationContext.values).map((value) => {
                       return <li key={value} className="list-group-item">
                         <h5>{value}</h5>
-                        {this.props.translations.map((translation, i) => {
+                        {translations.map((translation, i) => {
                           let context = translation.contexts.find((ctx) => ctx.id === contextId);
                           let index = translation.contexts.indexOf(context);
                           return <FormGroup key={`${translation.locale}-${value}-${i}`}>
@@ -63,38 +96,17 @@ export class EditTranslationForm extends Component {
 
 EditTranslationForm.propTypes = {
   context: PropTypes.string,
-  translations: PropTypes.array,
+  translationsForm: PropTypes.array,
+  settings: PropTypes.object,
   saveTranslations: PropTypes.func,
   formState: PropTypes.object
 };
 
-function translationExists(translations, locale) {
-  return translations.find((tr) => tr.locale === locale);
-}
-
-function getDefaultTranslation(translations, languages) {
-  let defaultLocale = languages.find((lang) => lang.default).key;
-  return translations.find((tr) => tr.locale === defaultLocale);
-}
-
-export function mapStateToProps(state) {
-
-  let translations = state.translationsForm;
-  if (translations.length) {
-    let languages = state.settings.collection.toJS().languages;
-    languages.forEach((lang) => {
-      if (!translationExists(translations, lang.key)) {
-        let defaultTranslation = getDefaultTranslation(translations, languages);
-        let translation = {locale: lang.key};
-        translation.values = Object.assign({}, defaultTranslation.values);
-        translations.push(translation);
-      }
-    });
-  }
-
+export function mapStateToProps({translationsForm, translationsFormState, settings}) {
   return {
-    translations,
-    formState: state.translationsFormState
+    translationsForm,
+    settings,
+    formState: translationsFormState
   };
 }
 
