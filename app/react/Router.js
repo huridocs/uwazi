@@ -15,8 +15,10 @@ import store from './store';
 import api from 'app/utils/api';
 import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
+import Perf from 'react-addons-perf';
 
 if (isClient) {
+  window.perf = Perf;
   ReactDOM.render(
     <Provider store={store()}>
       <CustomProvider>

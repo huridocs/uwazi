@@ -63,6 +63,7 @@
     "pdftohtmljs_uwazi": "0.3.7",
     "query-string": "^4.2.3",
     "react": "15.0.2",
+    "react-addons-perf": "15.0.2",
     "react-addons-shallow-compare": "15.0.2",
     "react-datepicker": "^0.28.2",
     "react-dnd": "2.1.4",
