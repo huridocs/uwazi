@@ -117,7 +117,7 @@ $item-padding: 15px;
 .item-type__name {
   color: $c-white;
   border-radius: 3px;
-  margin-left: 5px;
+  margin: 0 5px;
   padding: 2px 4px 1px;
   font-size: $f-size-xs;
   text-transform: uppercase;
@@ -131,7 +131,7 @@ $item-padding: 15px;
   display: inline-block;
 }
 
-.item-type-0 .item-type__icon  { color: $c-primary; }
+.item-type-0 .item-type__icon  { color: $c-grey; }
 .item-type-1 .item-type__icon  { color: $c-type-1; }
 .item-type-2 .item-type__icon  { color: $c-type-2; }
 .item-type-3 .item-type__icon  { color: $c-type-3; }
@@ -151,7 +151,7 @@ $item-padding: 15px;
 .item-type-17 .item-type__icon { color: $c-type-17; }
 .item-type-18 .item-type__icon { color: $c-type-18; }
 
-.item-type-0 .item-type__name  { background-color: $c-primary; }
+.item-type-0 .item-type__name  { box-shadow: inset 0 0 0 1px $c-grey; color: $c-grey; }
 .item-type-1 .item-type__name  { background-color: $c-type-1; }
 .item-type-2 .item-type__name  { background-color: $c-type-2; }
 .item-type-3 .item-type__name  { background-color: $c-type-3; }
@@ -332,10 +332,15 @@ $item-padding: 15px;
     margin: 0;
     position: absolute;
     left: 0;
-    bottom: -2px;
+    bottom: 0;
     width: 100%;
-    height: 2px;
+    height: 4px;
   }
+  
+  .progress-bar {
+    background: $c-grey;
+  }
+  
   .progress-bar-striped, .progress-striped .progress-bar {
     background-image: -webkit-linear-gradient(45deg,rgba(255,255,255,.5) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.5) 75%,transparent 75%,transparent);
     background-image: -o-linear-gradient(45deg,rgba(255,255,255,.5) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.5) 50%,rgba(255,255,255,.5) 75%,transparent 75%,transparent);
@@ -343,34 +348,16 @@ $item-padding: 15px;
     -webkit-background-size: 40px 40px;
     background-size: 40px 40px;
   }
-
-  // please delete item1, item2, item3... and let only the proper classes (like item-danger).
-  &.item3,
-  &.item5,
-  &.item6,
-  &.item7,
-  &.item10,
-  &.item11,
-  &.item12,
-  &.item-success {
-    border-bottom: 2px solid #8BC74C;
-  }
-  &.item2,
-  &.item9,
-  &.item-warning {
-    border-bottom: 2px solid orange;
-  }
-
-  &.item4,
-  &.item8,
-  &.item-danger {
-    border-bottom: 2px solid #ED353D;
-  }
-
-  &.item1,
+  
   &.item-processing {
-    border-bottom: 2px solid $c-white;
     cursor: default;
+  }
+  
+  &.item-processing,
+  &.item-danger {
+    .item-shortcut {
+      display: none;
+    }
   }
 }
 
@@ -383,8 +370,22 @@ $item-padding: 15px;
   padding: 0;
 }
 
+.label-success,
+.label-warning,
+.label-danger {
+  
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .fa {
+    margin-right: 3px;
+  }
+}
+
 .label-info {
-  color: $c-primary;
+  color: $c-grey;
 }
 
 .label-success {
@@ -401,6 +402,10 @@ $item-padding: 15px;
 
 .label-default {
   color: $c-grey-dark;
+}
+
+.label-progress {
+  display: inline;
 }
 
 .documents-counter {

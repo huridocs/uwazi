@@ -20,7 +20,7 @@ let ProgressBar = ({progress}) => {
     icon = 'fa fa-clock-o';
   }
   return (
-    <div>
+    <div className="label-progress">
       <span className="label label-info">
         <i className={icon}></i>&nbsp;
         <span>{message}</span>

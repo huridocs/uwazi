@@ -6,6 +6,7 @@ import {edit, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {actions} from 'app/Metadata';
 import {I18NLink} from 'app/I18N';
+import {TemplateLabel, Icon} from 'app/Layout';
 
 export class UploadDoc extends Component {
   showModal(modal, e) {
@@ -74,25 +75,31 @@ export class UploadDoc extends Component {
     return (
       <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
       <div className="item-info">
+        <Icon className="item-icon item-icon-center" data={doc.icon} />
         <ItemName>{doc.title}</ItemName>
       </div>
       <ItemFooter onClick={this.showModal.bind(this, modal)}>
-        {(() => {
-          if (itsUploading || itsProcessing) {
-            return <ItemFooter.ProgressBar progress={progress} />;
-          }
-          if (doc.processed) {
-            return <ItemFooter.Label status={status}>
-                    {message}
-                   </ItemFooter.Label>;
-          }
-          return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
-        })()}
-        <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-          <span className="itemShortcut-arrow">
-            <i className="fa fa-external-link"></i>
-          </span>
-        </I18NLink>
+        <div className="item-label-group">
+          <TemplateLabel template={doc.template}/>
+          {(() => {
+            if (itsUploading || itsProcessing) {
+              return <ItemFooter.ProgressBar progress={progress} />;
+            }
+            if (doc.processed) {
+              return <ItemFooter.Label status={status}>
+                      {message}
+                     </ItemFooter.Label>;
+            }
+            return <ItemFooter.Label status={status}>{message}</ItemFooter.Label>;
+          })()}
+        </div>
+        <div className="item-shortcut-group">
+          <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+            <span className="itemShortcut-arrow">
+              <i className="fa fa-external-link"></i>
+            </span>
+          </I18NLink>
+        </div>
       </ItemFooter>
     </RowList.Item>
     );
@@ -110,11 +117,11 @@ UploadDoc.propTypes = {
   templates: PropTypes.object
 };
 
-export function mapStateToProps({uploads}, props) {
+export function mapStateToProps({uploads, templates}, props) {
   return {
     progress: uploads.progress.get(props.doc.get('sharedId')),
     metadataBeingEdited: uploads.uiState.get('metadataBeingEdited'),
-    templates: uploads.templates
+    templates
   };
 }
 

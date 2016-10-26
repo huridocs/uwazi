@@ -34,8 +34,8 @@ describe('UploadsRoute', () => {
       UploadsRoute.requestState()
       .then((state) => {
         expect(state.uploads.documents).toEqual(documents);
-        expect(state.uploads.templates).toEqual(templates);
-        expect(state.uploads.thesauris).toEqual(thesauris);
+        expect(state.templates).toEqual(templates);
+        expect(state.thesauris).toEqual(thesauris);
         done();
       })
       .catch(done.fail);
@@ -44,7 +44,7 @@ describe('UploadsRoute', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({uploads: {documents, templates, thesauris}});
+      instance.setReduxState({uploads: {documents}, templates, thesauris});
     });
 
     it('should call setDocuments with the documents', () => {
@@ -52,11 +52,11 @@ describe('UploadsRoute', () => {
     });
 
     it('should call setTemplates with the templates', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_TEMPLATES_UPLOADS, templates});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: templates});
     });
 
     it('should call setThesauris with the thesauris', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_THESAURIS_UPLOADS, thesauris});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: thesauris});
     });
   });
 });
