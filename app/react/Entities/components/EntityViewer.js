@@ -2,7 +2,6 @@
 // There is partial testing of added functionality, but this requires a full test.
 import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
-import {I18NLink} from 'app/I18N';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
@@ -16,6 +15,7 @@ import {actions as connectionsActions} from 'app/Connections';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
+import ReferencesGroup from './ReferencesGroup';
 
 export class EntityViewer extends Component {
 
@@ -74,9 +74,8 @@ export class EntityViewer extends Component {
 
     if (reference.sourceType !== 'metadata') {
       return this.conformGroupData('connection', groupedReferences, {
-        key: reference.relationType + '-' + reference.connectedDocumentTemplate,
-        connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name,
-        templateLabel: referenceTemplate ? referenceTemplate.name : 'documents without metadata'
+        key: reference.relationType,
+        connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name
       });
     }
   }
@@ -92,72 +91,11 @@ export class EntityViewer extends Component {
 
     return groupedReferences;
   }
+  // --
 
   render() {
     let {entity, entityBeingEdited, references} = this.props;
     references = references.toJS();
-
-    const groupedReferences = this.groupReferences(references);
-    const referencesHtml = groupedReferences.map((group) =>
-      <div className="item-group" key={group.key}>
-        <div className="item-group-header">
-          <ShowIf if={group.connectionType === 'metadata'}>
-            <div><b>{group.connectionLabel}</b> in <b>{group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
-          </ShowIf>
-          <ShowIf if={group.connectionType === 'connection'}>
-            <div><b>{group.connectionLabel} {group.templateLabel}</b> <span className="count">{group.refs.length}</span></div>
-          </ShowIf>
-        </div>
-        {group.refs.map((reference, index) => {
-          return (
-            <div key={index} className='item'>
-              <div className="item-info">
-                <div className="item-name">
-                  <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
-                  {reference.connectedDocumentTitle}
-                  {(() => {
-                    if (reference.text) {
-                      return <div className="item-snippet">
-                        {reference.text}
-                      </div>;
-                    }
-                  })()}
-                </div>
-              </div>
-              <div className="item-actions">
-                <div className="item-label-group">
-                  <TemplateLabel template={reference.connectedDocumentTemplate}/>
-                  &nbsp;&nbsp;
-                  <ShowIf if={!reference.connectedDocumentPublished}>
-                    <span className="label label-warning">
-                      <i className="fa fa-warning"></i> Unpublished
-                    </span>
-                  </ShowIf>
-                </div>
-                <div className="item-shortcut-group">
-                  <NeedAuthorization>
-                    <ShowIf if={reference.sourceType !== 'metadata'}>
-                      <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
-                        <i className="fa fa-trash"></i>
-                      </a>
-                    </ShowIf>
-                  </NeedAuthorization>
-                  &nbsp;
-                  <I18NLink
-                    to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
-                    onClick={e => e.stopPropagation()}
-                    className="item-shortcut">
-                    <span className="itemShortcut-arrow">
-                      <i className="fa fa-external-link"></i>
-                    </span>
-                  </I18NLink>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
 
     return (
       <div className="row entity-content">
@@ -208,7 +146,9 @@ export class EntityViewer extends Component {
             </div>
           </NeedAuthorization>
           <div className="sidepanel-body">
-            {referencesHtml}
+            {this.groupReferences(references).map((group) =>
+              <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
+            )}
           </div>
         </aside>
         <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
