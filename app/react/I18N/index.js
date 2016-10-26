@@ -6,7 +6,7 @@ import I18NUtils from './utils';
 import I18NApi from './I18NApi';
 import * as actions from './actions/I18NActions';
 
-export default {
+export {
   I18NMenu,
   I18NLink,
   I18NUtils,
