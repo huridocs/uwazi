@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {t} from 'app/I18N';
+import t from 'app/I18N/t';
 
 export default {
 

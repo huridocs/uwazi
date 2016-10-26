@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {I18NLink, t} from 'app/I18N';
+import {I18NLink} from 'app/I18N';
+import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
 import {Icon} from 'app/Layout/Icon';

@@ -3,7 +3,7 @@ import {Form} from 'react-redux-form';
 
 import validator from '../helpers/validator';
 import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/Forms';
-import {t} from 'app/I18N';
+import t from 'app/I18N/t';
 
 export class MetadataForm extends Component {
 

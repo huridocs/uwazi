@@ -17,7 +17,9 @@ import uploads from 'app/Uploads/reducers/reducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducer';
+import {reducer as metadata} from 'app/Metadata';
 import locale from 'app/I18N/reducer';
+
 
 import {modelReducer, formReducer} from 'react-redux-form';
 
@@ -47,5 +49,6 @@ export default combineReducers({
   user,
   login,
   settings,
+  metadata,
   search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });

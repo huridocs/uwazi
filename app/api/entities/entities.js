@@ -70,6 +70,13 @@ export default {
     });
   },
 
+  getById(id) {
+    return request.get(`${dbURL}/${id}`)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   saveMultiple(docs) {
     return request.post(`${dbURL}/_bulk_docs`, {docs});
   },

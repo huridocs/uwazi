@@ -4,6 +4,7 @@ import validator from './helpers/validator';
 import MetadataForm from './components/MetadataForm';
 import MetadataFormButtons from './components/MetadataFormButtons';
 import ShowMetadata from './components/ShowMetadata';
+import reducer from './reducers/reducer';
 
 export default {
   validator,
@@ -11,5 +12,6 @@ export default {
   formater,
   MetadataForm,
   MetadataFormButtons,
-  ShowMetadata
+  ShowMetadata,
+  reducer
 };
