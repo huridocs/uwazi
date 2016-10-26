@@ -34,7 +34,7 @@ export class ThesauriForm extends Component {
     }
 
     return (
-      <div className="row thesauri">
+      <div className="thesauri">
           <Form
             model="thesauri.data"
             onSubmit={this.props.saveThesauri}

@@ -28,7 +28,7 @@ export class RelationTypeForm extends Component {
 
   render() {
     return (
-      <div className="row relationType">
+      <div className="relationType">
           <Form
             model="relationType"
             onSubmit={this.props.saveRelationType}

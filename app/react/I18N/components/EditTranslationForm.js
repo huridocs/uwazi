@@ -17,7 +17,7 @@ export class EditTranslationForm extends Component {
 
     let contextName = defaultTranslationContext.label;
     return (
-      <div className="row relationType">
+      <div className="relationType">
           <Form
             model="translationsForm"
             onSubmit={this.props.saveTranslations}
