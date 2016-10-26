@@ -110,7 +110,7 @@ function mapStateToProps(state) {
   return {
     documentBeingEdited: docId,
     metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited'),
-    templates: state.uploads.templates
+    templates: state.templates
   };
 }
 

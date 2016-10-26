@@ -5,6 +5,7 @@ import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
 import {edit, finishEdit, publishEntity} from 'app/Uploads/actions/uploadsActions';
 import {I18NLink} from 'app/I18N';
 import {actions} from 'app/Metadata';
+import {TemplateLabel, Icon} from 'app/Layout';
 
 export class UploadEntity extends Component {
   publish(e) {
@@ -38,14 +39,12 @@ export class UploadEntity extends Component {
     return (
       <RowList.Item status="success" active={active} onClick={this.edit.bind(this, entity, active)}>
       <div className="item-info">
+        <Icon className="item-icon item-icon-center" data={entity.icon} />
         <ItemName>{entity.title}</ItemName>
       </div>
       <ItemFooter onClick={this.publish.bind(this)}>
         <div className="item-label-group">
-          <span className="item-type item-type-0">
-            <i className="item-type__icon fa fa-bank"></i>
-            <span className="item-type__name">Entity</span>
-          </span>
+          <TemplateLabel template={entity.template}/>
           <ItemFooter.Label status="success">Ready to publish</ItemFooter.Label>
         </div>
         <div className="item-shortcut-group">
@@ -75,7 +74,7 @@ UploadEntity.contextTypes = {
 
 export function mapStateToProps(state) {
   return {
-    templates: state.uploads.templates,
+    templates: state.templates,
     metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited')
   };
 }
