@@ -82,6 +82,7 @@ export class NestedMultiselect extends Component {
                               options={this.getOptions(prop.key)}
                               onChange={this.onChange.bind(this, prop.key)}
                               showAll={true}
+                              hideSearch={true}
                             />
                           </FormField>
                         </ShowIf>

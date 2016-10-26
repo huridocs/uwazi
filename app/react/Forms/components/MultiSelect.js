@@ -7,7 +7,7 @@ export class MultiSelect extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {filter: '', showAll: false};
+    this.state = {filter: '', showAll: props.showAll};
     this.optionsToShow = typeof props.optionsToShow !== 'undefined' ? props.optionsToShow : 5;
   }
 
@@ -75,7 +75,7 @@ export class MultiSelect extends Component {
     return (
       <ul className="multiselect is-active">
       <li className="multiselectActions">
-        <ShowIf if={this.props.options.length > this.optionsToShow}>
+        <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.hideSearch}>
           <div className="form-group">
             <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)}></i>
             <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
@@ -110,7 +110,7 @@ export class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={this.props.options.length > this.optionsToShow}>
+          <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
               <span>Show {this.state.showAll ? 'less' : this.props.options.length - this.optionsToShow +' more'}</span>
@@ -132,7 +132,9 @@ MultiSelect.propTypes = {
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
   prefix: PropTypes.string,
-  optionsToShow: PropTypes.number
+  optionsToShow: PropTypes.number,
+  showAll: PropTypes.bool,
+  hideSearch: PropTypes.bool
 };
 
 export default MultiSelect;
