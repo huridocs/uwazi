@@ -95,7 +95,6 @@ export class EntityViewer extends Component {
   // --
 
   render() {
-    console.log('render');
     let {entity, entityBeingEdited, references} = this.props;
     references = references.toJS();
 
