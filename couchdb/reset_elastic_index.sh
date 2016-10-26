@@ -9,7 +9,7 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
     "analysis": {
       "analyzer": {
         "folding": {
-          "tokenizer": "standard",
+          "tokenizer": "keyword",
           "filter":  [ "lowercase", "asciifolding" ]
         }
       }
