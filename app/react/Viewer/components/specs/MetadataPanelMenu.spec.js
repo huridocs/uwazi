@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import {MetadataPanelMenu} from '../MetadataPanelMenu';
 import {MenuButtons} from 'app/ContextMenu';
 
-describe('MetadataPanelMenu', () => {
+fdescribe('MetadataPanelMenu', () => {
   let component;
   let props;
 
