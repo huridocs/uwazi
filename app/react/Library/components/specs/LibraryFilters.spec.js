@@ -11,11 +11,13 @@ describe('LibraryFilters', () => {
   let props;
 
   beforeEach(() => {
-    templates = [{name: 'decision'}, {name: 'ruling'}];
+    templates = Immutable.fromJS([{name: 'decision'}, {name: 'ruling'}]);
     props = {
       templates,
       aggregations: Immutable.fromJS({types: {buckets: [{key: 'decision', doc_count: 2}]}}),
-      documentTypes: [],
+      filters: Immutable.fromJS({
+        documentTypes: []
+      }),
       searchTerm: 'Bruce Wayne',
       form: {isBatman: {value: true}},
       searchDocuments: jasmine.createSpy('searchDocuments'),
@@ -26,7 +28,7 @@ describe('LibraryFilters', () => {
 
   it('should render a MultiSelect to filter for all types and one for each document type', () => {
     let multiselect = component.find(MultiSelect);
-    expect(multiselect.props().options).toEqual(templates);
+    expect(multiselect.props().options).toEqual(templates.toJS());
   });
 
   describe('maped state', () => {
@@ -41,11 +43,10 @@ describe('LibraryFilters', () => {
       };
       let state = mapStateToProps(store);
       expect(state).toEqual({
-        properties: 'filters state',
-        documentTypes: ['Decision'],
+        filters: store.library.filters,
         searchTerm: 'Zerg Rush',
         open: true,
-        templates: [],
+        templates: store.templates,
         aggregations: store.library.aggregations
       });
     });

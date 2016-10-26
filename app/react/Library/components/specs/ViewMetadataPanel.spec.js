@@ -18,8 +18,7 @@ describe('ViewMetadataPanel', () => {
       rawDoc: Immutable.fromJS({}),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       resetForm: jasmine.createSpy('resetForm'),
-      showModal: jasmine.createSpy('showModal'),
-      formState: {}
+      showModal: jasmine.createSpy('showModal')
     };
   });
 
@@ -53,8 +52,8 @@ describe('ViewMetadataPanel', () => {
 
     describe('when the form is dirty', () => {
       it('should open the confirmation modal', () => {
+        props.formDirty = true;
         render();
-        props.formState.dirty = true;
         component.find('i.close-modal').simulate('click');
         expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.metadata);
       });
