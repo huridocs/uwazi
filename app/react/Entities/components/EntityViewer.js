@@ -16,6 +16,7 @@ import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
 import ReferencesGroup from './ReferencesGroup';
+import {createSelector} from 'reselect';
 
 export class EntityViewer extends Component {
 
@@ -94,6 +95,7 @@ export class EntityViewer extends Component {
   // --
 
   render() {
+    console.log('render');
     let {entity, entityBeingEdited, references} = this.props;
     references = references.toJS();
 
@@ -174,21 +176,33 @@ EntityViewer.contextTypes = {
   confirm: PropTypes.func
 };
 
+const selectEntity = createSelector(
+  state => state.entityView.entity,
+  entity => entity.toJS()
+);
+
+const selectTemplates = createSelector(s => s.templates, t => t.toJS());
+const selectThesauris = createSelector(s => s.thesauris, t => t.toJS());
+const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
+const prepareMetadata = createSelector(
+  selectEntity,
+  selectTemplates,
+  selectThesauris,
+  (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
+);
+const selectReferences = createSelector(
+  s => !!s.user.get('_id'),
+  s => s.entityView.references,
+  (loged, references) => references.filter(ref => loged || ref.get('connectedDocumentPublished'))
+);
+
 const mapStateToProps = (state) => {
-  let entity = state.entityView.entity.toJS();
-  let templates = state.templates.toJS();
-  let thesauris = state.thesauris.toJS();
-  let relationTypes = state.relationTypes.toJS();
-
-  let references = state.entityView.references
-                   .filter(ref => !!state.user.get('_id') || ref.get('connectedDocumentPublished'));
-
   return {
     rawEntity: state.entityView.entity,
-    templates,
-    relationTypes,
-    entity: formater.prepareMetadata(entity, templates, thesauris),
-    references,
+    templates: selectTemplates(state),
+    relationTypes: selectRelationTypes(state),
+    entity: prepareMetadata(state),
+    references: selectReferences(state),
     entityBeingEdited: !!state.entityView.entityForm._id
   };
 };
