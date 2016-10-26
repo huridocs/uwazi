@@ -55,7 +55,6 @@ export class FilterSuggestions extends Component {
                        </span>;
               }
             })()}
-            <i className="fa fa-info-circle"></i>
           </div>;
   }
 
@@ -104,7 +103,6 @@ export class FilterSuggestions extends Component {
                        </span>;
               }
             })()}
-            <i className="fa fa-info-circle"></i>
           </div>
             {this.filterSuggestions(label, type, content, hasThesauri)}
            </div>;

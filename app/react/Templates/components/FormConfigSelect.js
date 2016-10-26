@@ -40,7 +40,7 @@ export class FormConfigSelect extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-sm-4">
+          <div className="col-sm-12">
             <div className={labelClass}>
               <span className="input-group-addon">
               Label
@@ -50,12 +50,30 @@ export class FormConfigSelect extends Component {
               </FormField>
             </div>
           </div>
+        </div>
+        <div className="row">
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">Thesauri</span>
               <SelectField model={`template.data.properties[${index}].content`}>
                 <Select options={optionGroups} optionsLabel="name" optionsValue="_id"/>
               </SelectField>
+            </div>
+          </div>
+          <div className="col-sm-4">
+            <div className="input-group">
+              <span className="input-group-addon">
+                <FormField model={`template.data.properties[${index}].showInCard`}>
+                  <input id={'showInCard' + this.props.index} type="checkbox"/>
+                </FormField>
+              </span>
+              <label htmlFor={'showInCard' + this.props.index}
+                     className="form-control"
+                     title="This property will appear in the library cards as part of the basic info.">
+                Show in cards
+                &nbsp;
+                <i className="fa fa-question-circle"></i>
+              </label>
             </div>
           </div>
           <div className="col-sm-4">
@@ -83,7 +101,7 @@ export class FormConfigSelect extends Component {
 
         <div className="well well-metadata-creator">
           <div className="row">
-            <div className="col-sm-4">
+            <div>
               <FormField model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
@@ -95,26 +113,8 @@ export class FormConfigSelect extends Component {
                 <i className="fa fa-question-circle"></i>
               </label>
             </div>
-            <div className="col-sm-8 border-bottom">
+            <div>
               <FilterSuggestions {...ptoperty} />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].showInCard`}>
-                <input id={'showInCard' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'showInCard' + this.props.index}
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className="col-sm-8 help">
-              Show this property in the library card's basic info.
             </div>
           </div>
         </div>
