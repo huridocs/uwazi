@@ -3,6 +3,7 @@ import {createFieldClass, controls} from 'react-redux-form';
 import {FormField, MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
+import advancedSortUtil from 'app/utils/advancedSort';
 
 export class NestedMultiselect extends Component {
 
@@ -50,9 +51,10 @@ export class NestedMultiselect extends Component {
     if (!aggregations[this.props.property.name]) {
       return [];
     }
-    return aggregations[this.props.property.name][prop].buckets.map((item) => {
+    let options = aggregations[this.props.property.name][prop].buckets.map((item) => {
       return {label: item.key, value: item.key, results: item.filtered.total.filtered.doc_count};
     }).filter((option) => option.results);
+    return advancedSortUtil.advancedSort(options, {property: 'value', treatAs: 'dottedList', listTypes: [Number, Number, String]});
   }
 
   render() {
@@ -98,6 +100,7 @@ export class NestedMultiselect extends Component {
                               onChange={this.onChange.bind(this, prop.key)}
                               showAll={true}
                               hideSearch={true}
+                              noSort={true}
                               filter={this.state.filter}
                             />
                           </FormField>
