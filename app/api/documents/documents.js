@@ -22,7 +22,13 @@ export default {
     return entities.save(doc, params);
   },
 
-  get: entities.get,
+  get: (id, language) => {
+    return entities.get(id, language)
+    .then((doc) => {
+      delete doc.rows[0].fullText;
+      return doc;
+    });
+  },
 
   getUploadsByUser(user) {
     let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"&descending=true`;
