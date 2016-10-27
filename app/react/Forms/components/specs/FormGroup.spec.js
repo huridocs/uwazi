@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import FormGroup from '../FormGroup';
+import {FormGroup, mapStateToProps} from '../FormGroup';
 import FormField from '../FormField';
 
 describe('FormGroup', () => {
@@ -28,27 +28,24 @@ describe('FormGroup', () => {
     expect(field.length).toBe(1);
   });
 
-  it('should render errors when touched and invalid', () => {
-    props.touched = true;
-    props.valid = false;
+  it('should render errors when hasErrors', () => {
+    props.hasError = true;
     render();
     let group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(true);
   });
 
-  it('should render errors when touched and submitFailed', () => {
-    props.touched = false;
-    props.submitFailed = true;
-    props.valid = false;
-    render();
-    let group = component.find('.form-group');
-    expect(group.hasClass('has-error')).toBe(true);
-  });
+  describe('mapStateToProps', () => {
+    it('should return hasError true when touched and invalid', () => {
+      expect(mapStateToProps({}, {touched: true, valid: false})).toEqual({hasError: true});
+    });
 
-  it('should not render errors when submitFailed with no errors', () => {
-    props.submitFailed = true;
-    render();
-    let group = component.find('.form-group');
-    expect(group.hasClass('has-error')).toBe(false);
+    it('should return hasError true when submitFailed and valid false', () => {
+      expect(mapStateToProps({}, {submitFailed: true, valid: false})).toEqual({hasError: true});
+    });
+
+    it('should return hasError false when submitFailed with no errors', () => {
+      expect(mapStateToProps({}, {submitFailed: true})).toEqual({hasError: false});
+    });
   });
 });

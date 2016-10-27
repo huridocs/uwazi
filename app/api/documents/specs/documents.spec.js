@@ -29,6 +29,7 @@ describe('documents', () => {
         ])
         .then(([docEs, docEn]) => {
           expect(docEs.rows[0].title).toBe('Penguin almost done');
+          expect(docEs.rows[0].fullText).not.toBeDefined();
           expect(docEn.rows[0].title).toBe('Penguin almost done english');
           done();
         })

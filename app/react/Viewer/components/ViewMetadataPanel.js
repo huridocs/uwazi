@@ -20,6 +20,7 @@ import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {browserHistory} from 'react-router';
 import {TocForm, ShowToc} from 'app/Documents';
 import {MetadataFormButtons} from 'app/Metadata';
+import {createSelector} from 'reselect';
 
 import {fromJS} from 'immutable';
 
@@ -38,7 +39,7 @@ export class ViewMetadataPanel extends Component {
   }
 
   close() {
-    if (this.props.formState.dirty) {
+    if (this.props.formDirty) {
       return this.props.showModal('ConfirmCloseForm', this.props.doc);
     }
     this.props.resetForm('documentViewer.docForm');
@@ -179,7 +180,7 @@ export class ViewMetadataPanel extends Component {
 
 ViewMetadataPanel.propTypes = {
   doc: PropTypes.object,
-  formState: PropTypes.object,
+  formDirty: PropTypes.bool,
   templates: PropTypes.object,
   rawDoc: PropTypes.object,
   docBeingEdited: PropTypes.bool,
@@ -209,12 +210,25 @@ ViewMetadataPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
+const selectTemplates = createSelector(s => s.templates, t => t.toJS());
+const selectThesauris = createSelector(s => s.thesauris, t => t.toJS());
+const getSourceDoc = createSelector(s => s.doc, d => d.toJS());
+const getTargetDoc = createSelector(s => s.targetDoc, t => t.toJS());
+const getSourceMetadata = createSelector(
+  getSourceDoc, selectTemplates, selectThesauris,
+  (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
+);
+const getTargetMetadata = createSelector(
+  getTargetDoc, selectTemplates, selectThesauris,
+  (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
+);
+
 const mapStateToProps = ({documentViewer}) => {
-  let doc = formater.prepareMetadata(documentViewer.doc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+  let doc = getSourceMetadata(documentViewer);
   let references = documentViewer.references;
 
   if (documentViewer.targetDoc.get('_id')) {
-    doc = formater.prepareMetadata(documentViewer.targetDoc.toJS(), documentViewer.templates.toJS(), documentViewer.thesauris.toJS());
+    doc = getTargetMetadata(documentViewer);
     references = documentViewer.targetDocReferences;
   }
 
@@ -224,7 +238,7 @@ const mapStateToProps = ({documentViewer}) => {
     doc,
     rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.docForm._id,
-    formState: documentViewer.docFormState,
+    formDirty: documentViewer.docFormState.dirty,
     tab: documentViewer.uiState.get('tab'),
     references,
     tocForm: documentViewer.tocForm || [],

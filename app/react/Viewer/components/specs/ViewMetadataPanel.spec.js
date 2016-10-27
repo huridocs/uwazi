@@ -61,7 +61,7 @@ describe('ViewMetadataPanel', () => {
   describe('close', () => {
     describe('when form is dirty', () => {
       it('should showModal ConfirmCloseForm', () => {
-        props.formState = {dirty: true};
+        props.formDirty = true;
         render();
         component.find('i.close-modal').simulate('click');
         expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
@@ -73,7 +73,7 @@ describe('ViewMetadataPanel', () => {
         props.closePanel = jasmine.createSpy('closePanel');
         props.resetForm = jasmine.createSpy('resetForm');
         props.showTab = jasmine.createSpy('showConnections');
-        props.formState = {dirty: false};
+        props.formDirty = false;
         props.docBeingEdited = true;
         render();
 
@@ -106,6 +106,7 @@ describe('ViewMetadataPanel', () => {
           panel: ''
         }),
         doc: fromJS({}),
+        docFormState: {dirty: false},
         targetDoc: fromJS({}),
         references: fromJS([{_id: 'reference'}]),
         templates: fromJS(['template']),

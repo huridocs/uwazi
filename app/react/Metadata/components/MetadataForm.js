@@ -18,6 +18,14 @@ export class MetadataForm extends Component {
     });
   }
 
+  shouldComponentUpdate(nextProps) {
+    const templateChanged = !this.props.metadata.template || this.props.metadata.template !== nextProps.metadata.template;
+    const validityChanged = this.props.state.valid !== nextProps.state.valid;
+    const touchedChanged = this.props.state.touched !== nextProps.state.touched;
+
+    return templateChanged || validityChanged || touchedChanged;
+  }
+
   render() {
     let {metadata, state} = this.props;
     let templates = this.props.templates.toJS();
@@ -56,7 +64,7 @@ export class MetadataForm extends Component {
             <Select options={templateOptions}
               value={template._id}
               onChange={(e) => {
-                this.props.changeTemplate(model, metadata, templates.find((tmpl) => tmpl._id === e.target.value));
+                this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl._id === e.target.value));
               }}
             />
           </FormField>
@@ -70,6 +78,30 @@ export class MetadataForm extends Component {
         </FormGroup>
 
         {template.properties.map((property, index) => {
+          const getField = (propertyType) => {
+            let thesauri;
+            switch (propertyType) {
+            case 'select':
+              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+              return <Select optionsValue='id' options={this.translateOptions(thesauri)}/>;
+            case 'multiselect':
+              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+              return <MultiSelect optionsValue='id' options={this.translateOptions(thesauri)} />;
+            case 'date':
+              return <DatePicker/>;
+            case 'markdown':
+              return <MarkDown/>;
+            case 'nested':
+              return <Nested/>;
+            case 'multidate':
+              return <MultiDate/>;
+            case 'multidaterange':
+              return <MultiDateRange/>;
+            default:
+              return <input className="form-control"/>;
+            }
+          };
+
           return (
             <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
               <label>
@@ -77,32 +109,7 @@ export class MetadataForm extends Component {
                 {property.required ? <span className="required">*</span> : ''}
               </label>
               <FormField model={`${model}.metadata.${property.name}`} >
-                {(() => {
-                  if (property.type === 'select') {
-                    let thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-                    return <Select optionsValue='id' options={this.translateOptions(thesauri)}/>;
-                  }
-                  if (property.type === 'multiselect') {
-                    let thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-                    return <MultiSelect optionsValue='id' options={this.translateOptions(thesauri)} />;
-                  }
-                  if (property.type === 'date') {
-                    return <DatePicker/>;
-                  }
-                  if (property.type === 'markdown') {
-                    return <MarkDown/>;
-                  }
-                  if (property.type === 'nested') {
-                    return <Nested/>;
-                  }
-                  if (property.type === 'multidate') {
-                    return <MultiDate/>;
-                  }
-                  if (property.type === 'multidaterange') {
-                    return <MultiDateRange/>;
-                  }
-                  return <input className="form-control"/>;
-                })()}
+                {getField(property.type)}
               </FormField>
             </FormGroup>
             );

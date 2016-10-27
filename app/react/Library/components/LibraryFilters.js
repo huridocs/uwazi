@@ -21,7 +21,8 @@ export class LibraryFilters extends Component {
 
   render() {
     const aggregations = this.props.aggregations.toJS();
-    this.props.templates.map((template) => {
+    const documentTypes = this.props.filters.toJS().documentTypes;
+    this.props.templates.toJS().map((template) => {
       template.results = 0;
       template.total = 0;
       let aggregationsMatch;
@@ -49,9 +50,9 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <div className="documentTypes-selector">
             <MultiSelect
-              value={this.props.documentTypes}
+              value={documentTypes}
               prefix="documentTypes"
-              options={this.props.templates}
+              options={this.props.templates.toJS()}
               optionsValue="_id"
               optionsLabel="name"
               onChange={this.handleFilterDocType.bind(this)}
@@ -65,7 +66,7 @@ export class LibraryFilters extends Component {
 }
 
 LibraryFilters.propTypes = {
-  templates: PropTypes.array,
+  templates: PropTypes.object,
   aggregations: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
@@ -76,13 +77,14 @@ LibraryFilters.propTypes = {
   documentTypes: PropTypes.array
 };
 
-export function mapStateToProps(state) {
-  let props = state.library.filters.toJS();
-  props.searchTerm = state.library.ui.toJS().searchTerm;
-  props.open = state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument');
-  props.templates = state.templates.toJS();
-  props.aggregations = state.library.aggregations;
-  return props;
+export function mapStateToProps({library, templates}) {
+  return {
+    templates,
+    filters: library.filters,
+    searchTerm: library.ui.get('searchTerm'),
+    open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocument'),
+    aggregations: library.aggregations
+  };
 }
 
 function mapDispatchToProps(dispatch) {

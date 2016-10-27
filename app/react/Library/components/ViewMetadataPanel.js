@@ -15,6 +15,7 @@ import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {browserHistory} from 'react-router';
 import {MetadataFormButtons} from 'app/Metadata';
+import {createSelector} from 'reselect';
 
 export class ViewMetadataPanel extends Component {
 
@@ -43,7 +44,7 @@ export class ViewMetadataPanel extends Component {
   }
 
   close() {
-    if (this.props.formState.dirty) {
+    if (this.props.formDirty) {
       return this.props.showModal('ConfirmCloseForm', this.props.metadata);
     }
     this.props.unselectDocument();
@@ -97,7 +98,7 @@ ViewMetadataPanel.propTypes = {
   saveDocument: PropTypes.func,
   unselectDocument: PropTypes.func,
   resetForm: PropTypes.func,
-  formState: PropTypes.object,
+  formDirty: PropTypes.bool,
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
   loadInReduxForm: PropTypes.func,
@@ -108,16 +109,25 @@ ViewMetadataPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
+const selectedDocument = state => state.library.ui.get('selectedDocument') || Immutable.fromJS({});
+const getTemplates = state => state.templates;
+const selectThesauris = state => state.thesauris;
+const formatMetadata = createSelector(
+  selectedDocument,
+  getTemplates,
+  selectThesauris,
+  (doc, templates, thesauris) => {
+  return formater.prepareMetadata(doc ? doc.toJS() : {}, templates.toJS(), thesauris.toJS());
+});
+
 const mapStateToProps = (state) => {
   return {
     open: state.library.ui.get('selectedDocument') ? true : false,
     docBeingEdited: !!state.library.metadata._id,
-    formState: state.library.metadataForm,
+    formDirty: state.library.metadataForm.dirty,
     rawDoc: state.library.ui.get('selectedDocument') || Immutable.fromJS({}),
-    templates: state.templates,
-    metadata: formater.prepareMetadata(state.library.ui.get('selectedDocument') ? state.library.ui.get('selectedDocument').toJS() : {},
-                                       state.templates.toJS(),
-                                       state.thesauris.toJS())
+    templates: getTemplates(state),
+    metadata: formatMetadata(state)
   };
 };
 
