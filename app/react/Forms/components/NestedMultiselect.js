@@ -63,7 +63,13 @@ export class NestedMultiselect extends Component {
             <li className="multiselectActions">
               <div className="form-group">
                 <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)}></i>
-                <input className="form-control" type='text' placeholder={t('System', 'Search item')} value={this.state.filter} onChange={this.filter.bind(this)}/>
+                <input
+                  className="form-control"
+                  type='text'
+                  placeholder={t('System', 'Search item')}
+                  value={this.state.filter}
+                  onChange={this.filter.bind(this)}
+                />
               </div>
             </li>
             {(() => {
