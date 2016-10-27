@@ -64,6 +64,15 @@ header {
   }
 }
 
+@media(min-width: 1024px) {
+  .menuActions {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row-reverse;
+    flex-direction: row-reverse;
+  }
+}
+
 .menuNav {
   padding: 0;
   margin: 0;
@@ -150,9 +159,6 @@ header {
   .menuNav-list {
     overflow: visible;
     display: flex;
-    @media(min-width: 1024px) {
-      float: right;
-    }
   }
 }
 
