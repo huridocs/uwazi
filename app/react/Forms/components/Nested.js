@@ -10,7 +10,6 @@ export class Nested extends Component {
   }
 
   parseValue(rows = []) {
-    console.log(rows);
     if (!rows[0]) {
       return '';
     }
@@ -20,7 +19,7 @@ export class Nested extends Component {
     result += keys.map(() => '-').join(' | ') + ' |\n';
     result += rows.map((row) => {
       return keys.map((key) => row[key].join(',')).join(' | ');
-    }).join('|\n') + ' |';
+    }).join(' |\n') + ' |';
 
     return result;
   }
