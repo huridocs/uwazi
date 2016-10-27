@@ -72,11 +72,11 @@ export default {
     }
 
     let keys = Object.keys(rows[0]);
-    let result = keys.join(' | ') + '\n';
-    result += keys.map(() => '-').join(' | ') + '\n';
+    let result = keys.join(' | ') + ' |\n';
+    result += keys.map(() => '-').join(' | ') + ' |\n';
     result += rows.map((row) => {
       return keys.map((key) => row[key].join(', ')).join(' | ');
-    }).join('\n');
+    }).join('| \n') + ' |';
 
     return this.markdown(property, result, showInCard);
   },

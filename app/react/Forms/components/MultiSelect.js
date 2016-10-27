@@ -2,12 +2,13 @@ import React, {Component, PropTypes} from 'react';
 import {createFieldClass, controls} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
 import {Icon} from 'app/Layout/Icon';
+import {t} from 'app/I18N';
 
 export class MultiSelect extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {filter: '', showAll: props.showAll};
+    this.state = {filter: props.filter || '', showAll: props.showAll};
     this.optionsToShow = typeof props.optionsToShow !== 'undefined' ? props.optionsToShow : 5;
   }
 
@@ -27,6 +28,12 @@ export class MultiSelect extends Component {
       return false;
     }
     return this.props.value.includes(value);
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.filter) {
+      this.setState({filter: props.filter});
+    }
   }
 
   filter(e) {
@@ -78,7 +85,7 @@ export class MultiSelect extends Component {
         <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.hideSearch}>
           <div className="form-group">
             <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)}></i>
-            <input className="form-control" type='text' placeholder="Search item" value={this.state.filter} onChange={this.filter.bind(this)}/>
+            <input className="form-control" type='text' placeholder={t('System', 'Search item')} value={this.state.filter} onChange={this.filter.bind(this)}/>
           </div>
         </ShowIf>
       </li>
@@ -131,6 +138,7 @@ MultiSelect.propTypes = {
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
+  filter: PropTypes.string,
   prefix: PropTypes.string,
   optionsToShow: PropTypes.number,
   showAll: PropTypes.bool,
