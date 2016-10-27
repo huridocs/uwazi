@@ -67,6 +67,7 @@ export class LibraryFilters extends Component {
 
 LibraryFilters.propTypes = {
   templates: PropTypes.object,
+  filters: PropTypes.object,
   aggregations: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
