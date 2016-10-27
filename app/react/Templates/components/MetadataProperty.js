@@ -9,6 +9,7 @@ import {reorderProperty, addProperty} from 'app/Templates/actions/templateAction
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
 import FormConfigNested from './FormConfigNested';
+import ShowIf from 'app/App/ShowIf';
 import Icons from './Icons';
 
 export class MetadataProperty extends Component {
@@ -57,9 +58,11 @@ export class MetadataProperty extends Component {
             <i className="fa fa-pencil"></i> Edit
           </button>
         </div>
-        <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
-          {this.renderForm()}
-        </div>
+        <ShowIf if={editingProperty === localID}>
+          <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
+            {this.renderForm()}
+          </div>
+        </ShowIf>
       </li>
     ));
   }
