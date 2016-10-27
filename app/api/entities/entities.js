@@ -26,7 +26,7 @@ export default {
         ])
         .then(([docLanguages, templateResult]) => {
           const template = templateResult || {properties: []};
-          const toSyncProperties = template.properties.filter(p => p.type.match('select|multiselect|date')).map(p => p.name);
+          const toSyncProperties = template.properties.filter(p => p.type.match('select|multiselect|date|multidate|multidaterange')).map(p => p.name);
           const docs = docLanguages.rows.map((d) => {
             if (d._id === doc._id) {
               return doc;

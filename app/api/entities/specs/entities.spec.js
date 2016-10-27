@@ -64,7 +64,8 @@ describe('entities', () => {
 
     describe('when other languages have no metadata', () => {
       it('should replicate metadata being saved', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: {text: 'newMetadata'}, template: "c08ef2532f0bd008ac5174b45e033c93"};
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared',
+                   metadata: {text: 'newMetadata'}, template: 'c08ef2532f0bd008ac5174b45e033c93'};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
@@ -87,7 +88,8 @@ describe('entities', () => {
 
     describe('when published/template property changes', () => {
       it('should replicate the change for all the languages', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: {}, published: false, template: "c08ef2532f0bd008ac5174b45e033c93"};
+        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: {},
+                   published: false, template: 'c08ef2532f0bd008ac5174b45e033c93'};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
@@ -108,12 +110,14 @@ describe('entities', () => {
       });
     });
 
-    it('should sync select/multiselect/dates', (done) => {
+    it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
       let doc = {_id: '8202c463d6158af8065022d9b5014a19', sharedId: 'shared1', template: 'c08ef2532f0bd008ac5174b45e033c93', metadata: {
         text: 'changedText',
         select: 'select',
         multiselect: 'multiselect',
-        date: 'date'
+        date: 'date',
+        multidate: 'multidate',
+        multidaterange: 'multidaterange'
       }};
 
       entities.save(doc, {language: 'en'})
@@ -126,21 +130,26 @@ describe('entities', () => {
         ]);
       })
       .then(([docEN, docES, docPT]) => {
-
         expect(docEN.rows[0].metadata.text).toBe('changedText');
         expect(docEN.rows[0].metadata.select).toBe('select');
         expect(docEN.rows[0].metadata.multiselect).toBe('multiselect');
         expect(docEN.rows[0].metadata.date).toBe('date');
+        expect(docEN.rows[0].metadata.multidate).toBe('multidate');
+        expect(docEN.rows[0].metadata.multidaterange).toBe('multidaterange');
 
         expect(docES.rows[0].metadata.text).toBe('text');
         expect(docES.rows[0].metadata.select).toBe('select');
         expect(docES.rows[0].metadata.multiselect).toBe('multiselect');
         expect(docES.rows[0].metadata.date).toBe('date');
+        expect(docES.rows[0].metadata.multidate).toBe('multidate');
+        expect(docES.rows[0].metadata.multidaterange).toBe('multidaterange');
 
         expect(docPT.rows[0].metadata.text).toBe('text');
         expect(docPT.rows[0].metadata.select).toBe('select');
         expect(docPT.rows[0].metadata.multiselect).toBe('multiselect');
         expect(docPT.rows[0].metadata.date).toBe('date');
+        expect(docPT.rows[0].metadata.multidate).toBe('multidate');
+        expect(docPT.rows[0].metadata.multidaterange).toBe('multidaterange');
         done();
       })
       .catch(catchErrors(done));
