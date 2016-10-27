@@ -83,7 +83,7 @@ export class FilterSuggestions extends Component {
     let icon = this.getTypeIcon(type);
 
 
-    return <div className="filter-suggestions col-sm-12">
+    return <div className="filter-suggestions">
     <div className={activeClass} title={title}>
             <span>
               <i className="fa fa-file-o"></i> {this.props.data.name}

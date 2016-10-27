@@ -57,15 +57,8 @@
         color: $c-grey-dark;
         text-decoration: none;
       }
-      .btn {
-        padding: 2px 4px;
-        line-height: 1em;
+      .btn:not(:last-of-type) {
         margin-left: 5px;
-
-        span {
-          margin-left: 5px;
-          font-size: $f-size-sm;
-        }
       }
 
       &.error {

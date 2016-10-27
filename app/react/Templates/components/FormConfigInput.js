@@ -21,7 +21,7 @@ export class FormConfigInput extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-sm-6">
+          <div className="col-sm-12">
             <div className={labelClass}>
               <span className="input-group-addon">
                 Label
@@ -31,7 +31,25 @@ export class FormConfigInput extends Component {
               </FormField>
             </div>
           </div>
-          <div className="col-sm-6">
+        </div>
+        <div className="row">
+          <div className="col-sm-4">
+            <div className="input-group">
+              <span className="input-group-addon">
+                <FormField model={`template.data.properties[${index}].showInCard`}>
+                  <input id={'showInCard' + this.props.index} type="checkbox"/>
+                </FormField>
+              </span>
+              <label htmlFor={'showInCard' + this.props.index}
+                     className="form-control"
+                     title="This property will appear in the library cards as part of the basic info.">
+                Show in cards
+                &nbsp;
+                <i className="fa fa-question-circle"></i>
+              </label>
+            </div>
+          </div>
+          <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
                 <FormField model={`template.data.properties[${index}].required`}>
@@ -41,6 +59,24 @@ export class FormConfigInput extends Component {
               <label htmlFor={'required' + index} className="form-control">Required</label>
             </div>
           </div>
+          <ShowIf if={type === 'text' || type === 'date'}>
+            <div className="col-sm-4">
+              <div className="input-group">
+                <span className="input-group-addon">
+                  <FormField model={`template.data.properties[${index}].sortable`}>
+                    <input id={'sortable' + this.props.index} type="checkbox"/>
+                  </FormField>
+                </span>
+                <label htmlFor={'sortable' + this.props.index}
+                  title="Library items will be able to be sorted by this property."
+                  className="form-control">
+                  Sortable
+                  &nbsp;
+                  <i className="fa fa-question-circle"></i>
+                </label>
+              </div>
+            </div>
+          </ShowIf>
         </div>
         {(() => {
           if (duplicatedLabel) {
@@ -55,8 +91,8 @@ export class FormConfigInput extends Component {
         })()}
 
         <div className="well well-metadata-creator">
-          <div className="row">
-            <div className="col-sm-4">
+          <div>
+            <div>
               <FormField model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
@@ -68,48 +104,10 @@ export class FormConfigInput extends Component {
                 <i className="fa fa-question-circle"></i>
               </label>
             </div>
-            <div className="col-sm-8 border-bottom">
+            <div>
               <FilterSuggestions {...ptoperty} />
             </div>
           </div>
-
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].showInCard`}>
-                <input id={'showInCard' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'showInCard' + this.props.index}
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className={'col-sm-8 help' + (type === 'text' || type === 'date' ? ' border-bottom' : '')}>
-              Show this property in the library card's basic info.
-            </div>
-          </div>
-
-          <ShowIf if={type === 'text' || type === 'date'}>
-            <div className="row">
-              <div className="col-sm-4">
-                <FormField model={`template.data.properties[${index}].sortable`}>
-                  <input id={'sortable' + this.props.index} type="checkbox"/>
-                </FormField>
-                &nbsp;
-                <label htmlFor={'sortable' + this.props.index}
-                       title="Library items will be able to be sorted by this property.">
-                  Sortable
-                  &nbsp;
-                  <i className="fa fa-question-circle"></i>
-                </label>
-              </div>
-              <div className="col-sm-8 help">
-                Use this property to sort library items.
-              </div>
-            </div>
-          </ShowIf>
 
         </div>
 

@@ -15,3 +15,7 @@ dt {
 	font-style: italic;
   color: $c-grey-dark;
 }
+
+input[type="radio"], input[type="checkbox"] {
+  cursor: pointer;
+}

@@ -52,7 +52,7 @@ export class FormConfigSelect extends Component {
           </div>
         </div>
         <div className="row">
-          <div className="col-sm-4">
+          <div className="col-sm-12">
             <div className="input-group">
               <span className="input-group-addon">Thesauri</span>
               <SelectField model={`template.data.properties[${index}].content`}>
@@ -60,6 +60,8 @@ export class FormConfigSelect extends Component {
               </SelectField>
             </div>
           </div>
+        </div>
+        <div className="row">
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
@@ -100,7 +102,7 @@ export class FormConfigSelect extends Component {
         })()}
 
         <div className="well well-metadata-creator">
-          <div className="row">
+          <div>
             <div>
               <FormField model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>

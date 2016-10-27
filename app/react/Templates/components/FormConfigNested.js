@@ -44,7 +44,7 @@ export class FormConfigNested extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-sm-4">
+          <div className="col-sm-12">
             <div className={labelClass}>
               <span className="input-group-addon">
               Label
@@ -54,6 +54,8 @@ export class FormConfigNested extends Component {
               </FormField>
             </div>
           </div>
+        </div>
+        <div className="row">
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
@@ -65,47 +67,58 @@ export class FormConfigNested extends Component {
             </div>
           </div>
         </div>
-        <div>Properties <button className="btn btn-primary" onClick={this.addProperty.bind(this)}>Add</button></div>
-        {(() => {
-          return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
-            return <div key={nestedIndex} className="row">
-              <div className="col-sm-4">
-                <div className="input-group">
-                  <span className="input-group-addon">Key</span>
-                  <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
-                    <input className="form-control"/>
-                  </FormField>
+        <div className="well well-metadata-creator">
+          {(() => {
+            return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
+              return <div key={nestedIndex} className="row">
+                <div className="col-sm-5">
+                  <div className="input-group">
+                    <span className="input-group-addon">Key</span>
+                    <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
+                      <input className="form-control"/>
+                    </FormField>
+                  </div>
                 </div>
-              </div>
-              <div className="col-sm-4">
-                <div className="input-group">
-                  <span className="input-group-addon">Label</span>
-                  <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
-                    <input className="form-control"/>
-                  </FormField>
+                <div className="col-sm-5">
+                  <div className="input-group">
+                    <span className="input-group-addon">Label</span>
+                    <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
+                      <input className="form-control"/>
+                    </FormField>
+                  </div>
                 </div>
-              </div>
-              <div className="col-sm-2">
-                <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>Remove</button>
-              </div>
-            </div>;
-          });
-        })()}
-        {(() => {
-          if (duplicatedLabel) {
-            return <div className="row has-error">
-                    <div className="col-sm-4">
-                    <i className="fa fa-exclamation-triangle"></i>
-                      &nbsp;
-                      Duplicated label
-                    </div>
-                  </div>;
-          }
-        })()}
+                <div className="col-sm-2">
+                  <button className="btn btn-danger btn-xs" onClick={this.removeProperty.bind(this, nestedIndex)}>
+                    <i className="fa fa-trash"></i>
+                    &nbsp;
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </div>;
+            });
+          })()}
+          {(() => {
+            if (duplicatedLabel) {
+              return <div className="row has-error">
+                      <div className="col-sm-4">
+                      <i className="fa fa-exclamation-triangle"></i>
+                        &nbsp;
+                        Duplicated label
+                      </div>
+                    </div>;
+            }
+          })()}
+          <div>
+            <button className="btn btn-success" onClick={this.addProperty.bind(this)}>
+              <i className="fa fa-plus"></i>
+              <span>Add property</span>
+            </button>
+          </div>
+        </div>
 
         <div className="well well-metadata-creator">
-          <div className="row">
-            <div className="col-sm-4">
+          <div>
+            <div>
               <FormField model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </FormField>
@@ -117,26 +130,8 @@ export class FormConfigNested extends Component {
                 <i className="fa fa-question-circle"></i>
               </label>
             </div>
-            <div className="col-sm-8 border-bottom">
+            <div>
               <FilterSuggestions {...property} />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].showInCard`}>
-                <input id={'showInCard' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'showInCard' + this.props.index}
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className="col-sm-8 help">
-              Show this property in the library card's basic info.
             </div>
           </div>
         </div>
