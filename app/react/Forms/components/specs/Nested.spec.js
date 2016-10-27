@@ -27,7 +27,7 @@ describe('Nested', () => {
     render();
     let markdown = component.find(MarkDown);
     expect(markdown.length).toBe(1);
-    expect(markdown.props().value).toBe('prop1 | prop2\n- | -\n1,2 | 1,2\n2.1,3 | 2');
+    expect(markdown.props().value).toBe('prop1 | prop2 |\n- | - |\n1,2 | 1,2 |\n2.1,3 | 2 |');
   });
 
   describe('onChange', () => {
