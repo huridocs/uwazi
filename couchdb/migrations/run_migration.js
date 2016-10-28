@@ -13,4 +13,4 @@ require('babel-core/register')({
 
 var db_config = require('../../app/api/config/database.js');
 db_config.db_url = db_config.development;
-require('./conversions_to_files.js');
+require('./date_fields_to_int.js');
