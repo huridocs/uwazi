@@ -7,7 +7,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-describe('templates', () => {
+fdescribe('templates', () => {
   beforeEach((done) => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -159,13 +159,26 @@ describe('templates', () => {
 
     describe('when passing _id and _rev', () => {
       it('edit an existing one', (done) => {
-        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         getTemplate()
         .then((template) => {
           let edited = {_id: template._id, _rev: template._rev, name: 'changed name'};
           return templates.save(edited);
         })
         .then((savedTemplate) => getTemplate(savedTemplate.id))
+        .then((template) => {
+          expect(template.name).toBe('changed name');
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should return the saved template', (done) => {
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
+        getTemplate()
+        .then((template) => {
+          let edited = {_id: template._id, _rev: template._rev, name: 'changed name'};
+          return templates.save(edited);
+        })
         .then((template) => {
           expect(template.name).toBe('changed name');
           done();
