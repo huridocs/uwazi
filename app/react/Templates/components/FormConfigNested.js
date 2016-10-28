@@ -71,28 +71,22 @@ export class FormConfigNested extends Component {
           {(() => {
             return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
               return <div key={nestedIndex} className="row">
-                <div className="col-sm-5">
+                <div className="col-sm-12">
                   <div className="input-group">
                     <span className="input-group-addon">Key</span>
                     <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
                       <input className="form-control"/>
                     </FormField>
-                  </div>
-                </div>
-                <div className="col-sm-5">
-                  <div className="input-group">
                     <span className="input-group-addon">Label</span>
                     <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
                       <input className="form-control"/>
                     </FormField>
+                    <span className="input-group-btn">
+                      <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>
+                        <i className="fa fa-trash"></i>
+                      </button>
+                    </span>
                   </div>
-                </div>
-                <div className="col-sm-2">
-                  <button className="btn btn-danger btn-xs" onClick={this.removeProperty.bind(this, nestedIndex)}>
-                    <i className="fa fa-trash"></i>
-                    &nbsp;
-                    <span>Delete</span>
-                  </button>
                 </div>
               </div>;
             });
