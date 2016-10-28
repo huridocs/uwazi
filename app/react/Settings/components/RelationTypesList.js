@@ -36,15 +36,15 @@ export class RelationTypesList extends Component {
         {this.props.relationTypes.toJS().map((relationType, index) => {
           return <li key={index} className="list-group-item">
               <I18NLink to={'/settings/connections/edit/' + relationType._id}>{relationType.name}</I18NLink>
-              <div className="list-group-item-actions">
+              <div className="pull-right">
                 <I18NLink to={'/settings/connections/edit/' + relationType._id} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>
+                  <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <button onClick={this.deleteRelationType.bind(this, relationType)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash"></i>
+                <a onClick={this.deleteRelationType.bind(this, relationType)} className="btn btn-danger btn-xs template-remove">
+                  <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </button>
+                </a>
               </div>
             </li>;
         })}

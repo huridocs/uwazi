@@ -29,15 +29,15 @@ export class PagesList extends Component {
           {pages.map((page, index) =>
             <li key={index} className="list-group-item">
               <I18NLink to={'/settings/pages/edit/' + page.get('sharedId')}>{page.get('title')}</I18NLink>
-              <div className="list-group-item-actions">
+              <div className="pull-right">
                 <I18NLink to={'/settings/pages/edit/' + page.get('sharedId')} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>
+                  <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <button onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash"></i>
+                <a onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
+                  <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </button>
+                </a>
               </div>
             </li>
           )}

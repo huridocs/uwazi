@@ -17,7 +17,7 @@ export class TranslationsList extends Component {
         {defaultTranslation.contexts.map((context, index) => {
           return <li key={index} className="list-group-item">
               <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)}>{context.label}</I18NLink>
-              <div className="list-group-item-actions">
+              <div className="pull-right">
                 <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)} className="btn btn-default btn-xs">
                   <i className="fa fa-language"></i>
                   <span>{t('System', 'Translate')}</span>
