@@ -38,13 +38,13 @@ describe('FormConfigInput', () => {
   it('should not allow sortable on types others than text or date', () => {
     props.type = 'text';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(FormField).parent().parent().parent().nodes[3].props.if).toBe(true);
+    expect(component.find(FormField).parent().parent().parent().parent().nodes[2].props.if).toBe(true);
     props.type = 'date';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(FormField).parent().parent().parent().nodes[3].props.if).toBe(true);
+    expect(component.find(FormField).parent().parent().parent().parent().nodes[2].props.if).toBe(true);
     props.type = 'markdown';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(FormField).parent().parent().parent().nodes[3].props.if).toBe(false);
+    expect(component.find(FormField).parent().parent().parent().parent().nodes[2].props.if).toBe(false);
   });
 
   describe('validation', () => {
