@@ -16,11 +16,6 @@
   }
 }
 
-.metadataTemplate-list,
-.metadataTemplate-constructor {
-  background: $c-grey-lighten;
-}
-
 .metadata {
   @include draggable;
 }
@@ -68,17 +63,15 @@
 */
 
 .well-metadata-creator {
-  padding: 0 15px 0 12px;
-  background: #EEE;
-  border-color: #CCC;
+  padding-top: 15px;
+  
+  &:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
+    padding-bottom: 20px;
+  }
 
   label {
     color: $c-black;
-  }
-
-  input, label {
-    margin-top: 10px;
-    cursor: pointer;
   }
 
   small {
@@ -87,20 +80,9 @@
     line-height: 1.3em;
     padding-left: 15px;
   }
-
-  .col-sm-8 {
-    background: $c-white;
-    padding-top: 10px;
-    padding-bottom: 5px;
-    border-left: 1px solid $c-grey-light;
-
-    &.border-bottom {
-      border-bottom: 1px dashed $c-grey-light;
-    }
-
-    &.help {
-      color: $c-grey-dark;
-    }
+  
+  .row {
+    margin-bottom: 8px;
   }
 
   .property-atributes {
@@ -116,9 +98,11 @@
     &.is-active {
       opacity: 1;
     }
-
     span {
       margin: 0 5px;
+    }
+    > span:first-of-type {
+      margin-left: 0;
     }
     span.conflict {
       color: #86714A;

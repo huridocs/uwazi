@@ -33,8 +33,8 @@ describe('FormConfigSelect', () => {
     const formFields = component.find(FormField);
     expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
     expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
-    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].filter');
-    expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].showInCard');
+    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].showInCard');
+    expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].filter');
 
     expect(component.find(SelectField).node.props.model).toBe('template.data.properties[0].content');
   });

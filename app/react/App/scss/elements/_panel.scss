@@ -11,6 +11,7 @@
 
 .panel > .list-group .list-group-item {
     //border-width: 1px 0 1px 3px;
+    line-height: 23px;
     border-color: $c-grey-light;
     border-left-color: transparent;
     outline: none;
@@ -57,25 +58,14 @@
         color: $c-grey-dark;
         text-decoration: none;
       }
-      .btn {
-        padding: 2px 4px;
-        line-height: 1em;
+      .btn:not(:first-of-type) {
         margin-left: 5px;
-
-        span {
-          margin-left: 5px;
-          font-size: $f-size-sm;
-        }
       }
 
       &.error {
-        display: inherit;
-        border-bottom: 1px solid #ED353D;
-        margin-bottom: -1px;
-
-        &:last-child {
-          border-bottom: 1px solid #ED353D;
-        }
+        display: block;
+        border: 1px solid #ED353D !important;
+        box-shadow: 0 4px 10px -5px rgba(255, 0, 0, 0.3) !important;
 
         .property-name, .property-name .fa {
           color: #ED353D;
