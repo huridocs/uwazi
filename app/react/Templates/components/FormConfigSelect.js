@@ -101,7 +101,7 @@ export class FormConfigSelect extends Component {
           }
         })()}
 
-        <div className="well well-metadata-creator">
+        <div className="well-metadata-creator">
           <div>
             <div>
               <FormField model={`template.data.properties[${index}].filter`}>

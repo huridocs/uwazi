@@ -63,9 +63,12 @@
 */
 
 .well-metadata-creator {
-  padding: 8px 12px;
-  background: #EEE;
-  border-color: #CCC;
+  padding-top: 15px;
+  
+  &:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
+    padding-bottom: 20px;
+  }
 
   label {
     color: $c-black;

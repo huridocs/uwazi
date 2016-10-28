@@ -67,7 +67,8 @@ export class FormConfigNested extends Component {
             </div>
           </div>
         </div>
-        <div className="well well-metadata-creator">
+        <div className="well-metadata-creator">
+          <p>Properties</p>
           {(() => {
             return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
               return <div key={nestedIndex} className="row">
@@ -110,7 +111,7 @@ export class FormConfigNested extends Component {
           </div>
         </div>
 
-        <div className="well well-metadata-creator">
+        <div className="well-metadata-creator">
           <div>
             <div>
               <FormField model={`template.data.properties[${index}].filter`}>
