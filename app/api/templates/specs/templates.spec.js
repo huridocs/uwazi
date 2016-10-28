@@ -7,7 +7,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-describe('templates', () => {
+fdescribe('templates', () => {
   beforeEach((done) => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -97,6 +97,36 @@ describe('templates', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    it('should not repeat names', (done) => {
+      let newTemplate = {name: 'created_template', properties: [
+        {label: 'label 1'},
+        {label: 'label 2'},
+        {label: 'label 3'},
+        {label: 'name'},
+        {label: 'test2', name: 'name--1'},
+        {label: 'label 4', name: 'name'},
+        {label: 'test', name: 'label_1'}
+      ]};
+
+      templates.save(newTemplate)
+      .then(getAllTemplates)
+      .then((allTemplates) => {
+        let newDoc = allTemplates.find((template) => {
+          return template.value.name === 'created_template';
+        });
+
+        expect(newDoc.value.properties[0].name).toEqual('label_1--1');
+        expect(newDoc.value.properties[1].name).toEqual('label_2');
+        expect(newDoc.value.properties[2].name).toEqual('label_3');
+        expect(newDoc.value.properties[3].name).toEqual('name--2');
+        expect(newDoc.value.properties[4].name).toEqual('name--1');
+        expect(newDoc.value.properties[5].name).toEqual('name');
+        expect(newDoc.value.properties[6].name).toEqual('label_1');
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
     it('should set a default value of [] to properties', (done) => {
