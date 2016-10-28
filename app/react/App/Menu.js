@@ -3,11 +3,13 @@ import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import {toUrlParams} from '../../shared/JSONRequest';
 import {I18NLink, I18NMenu, t} from 'app/I18N';
+import {processFilters} from 'app/Library/actions/libraryActions';
 
 class Menu extends Component {
 
   libraryUrl() {
-    return 'library' + toUrlParams(this.props.search);
+    const params = processFilters(this.props.search, this.props.filters.toJS());
+    return '/library/' + toUrlParams(params);
   }
 
   render() {
@@ -69,14 +71,19 @@ Menu.propTypes = {
   user: PropTypes.object,
   location: PropTypes.object,
   search: PropTypes.object,
+  filters: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
   searchDocuments: PropTypes.func,
   links: PropTypes.object
 };
 
-export function mapStateToProps({user, search, settings}) {
-  return {user, search, links: settings.collection.get('links')};
+export function mapStateToProps({user, search, settings, library}) {
+  return {
+    user,
+    search,
+    filters: library.filters,
+    links: settings.collection.get('links')};
 }
 
 export default connect(mapStateToProps)(Menu);

@@ -59,41 +59,46 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
+export function processFilters(readOnlySearch, filters, limit) {
+  const search = Object.assign({}, readOnlySearch);
+  search.aggregations = filters.properties
+  .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+  .map((property) => {
+    if (property.type === 'nested') {
+      return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
+    }
+    return {name: property.name, nested: false};
+  });
+
+  search.filters = {};
+  filters.properties.forEach((property) => {
+    if (!property.active) {
+      return;
+    }
+    let type = 'text';
+    if (property.type === 'date' || property.type === 'multidate') {
+      type = 'range';
+    }
+    if (property.type === 'select' || property.type === 'multiselect') {
+      type = 'multiselect';
+    }
+    if (property.type === 'nested') {
+      type = 'nested';
+    }
+    if (property.type === 'multidaterange') {
+      type = 'nestedrange';
+    }
+    search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
+  });
+  search.types = filters.documentTypes;
+  search.limit = limit;
+  return search;
+}
+
 export function searchDocuments(readOnlySearch, limit) {
   return function (dispatch, getState) {
     const filters = getState().library.filters.toJS();
-    const search = Object.assign({}, readOnlySearch);
-    search.aggregations = filters.properties
-    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
-    .map((property) => {
-      if (property.type === 'nested') {
-        return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
-      }
-      return {name: property.name, nested: false};
-    });
-
-    search.filters = {};
-    filters.properties.forEach((property) => {
-      if (!property.active) {
-        return;
-      }
-      let type = 'text';
-      if (property.type === 'date' || property.type === 'multidate') {
-        type = 'range';
-      }
-      if (property.type === 'select' || property.type === 'multiselect') {
-        type = 'multiselect';
-      }
-      if (property.type === 'nested') {
-        type = 'nested';
-      }
-      if (property.type === 'multidaterange') {
-        type = 'nestedrange';
-      }
-      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
-    });
-    search.types = filters.documentTypes;
-    search.limit = limit;
+    const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
     browserHistory.push(`/library/${toUrlParams(search)}`);
   };

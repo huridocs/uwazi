@@ -3,8 +3,8 @@ import {shallow} from 'enzyme';
 
 import {ItemList} from '../ItemList';
 import {RowList} from 'app/Layout/Lists';
-import {Link} from 'react-router';
 import Doc from 'app/Library/components/Doc';
+import {I18NLink} from 'app/I18N';
 
 describe('ItemList', () => {
   let component;
@@ -31,6 +31,6 @@ describe('ItemList', () => {
 
   it('should have a button to the Link provided', () => {
     render();
-    expect(component.find(Link).props().to).toBe(props.link);
+    expect(component.find(I18NLink).props().to).toBe(props.link);
   });
 });
