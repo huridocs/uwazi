@@ -66,6 +66,22 @@ export class FormConfigNested extends Component {
               <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
             </div>
           </div>
+          <div className="col-sm-4">
+            <div className="input-group">
+              <span className="input-group-addon">
+                <FormField model={`template.data.properties[${index}].showInCard`}>
+                  <input id={'showInCard' + this.props.index} type="checkbox"/>
+                </FormField>
+              </span>
+              <label htmlFor={'showInCard' + this.props.index}
+                     className="form-control"
+                     title="This property will appear in the library cards as part of the basic info.">
+                Show in cards
+                &nbsp;
+                <i className="fa fa-question-circle"></i>
+              </label>
+            </div>
+          </div>
         </div>
         <div className="well-metadata-creator">
           <p>Properties</p>
