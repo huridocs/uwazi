@@ -28,7 +28,7 @@ describe('LibraryFilters', () => {
 
   it('should render a MultiSelect to filter for all types and one for each document type', () => {
     let multiselect = component.find(MultiSelect);
-    expect(multiselect.props().options).toEqual(templates.toJS());
+    expect((multiselect.props().options.map(o => o.name))).toEqual(templates.toJS().map(o => o.name));
   });
 
   describe('maped state', () => {
