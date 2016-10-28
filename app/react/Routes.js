@@ -50,6 +50,7 @@ function getIndexRoute(nextState, callBack) {
   let indexRoute = {
     component: Library,
     onEnter: (nxtState, replace) => {
+      console.log(nxtState);
       if (collectionSettings.home_page) {
         replace(collectionSettings.home_page);
       }
