@@ -2,7 +2,9 @@ import uuid from 'node-uuid';
 
 export function generateNames(properties) {
   return properties.map((property) => {
-    property.name = property.label.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    if (!property.name) {
+      property.name = property.label.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    }
     return property;
   });
 }

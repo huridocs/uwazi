@@ -68,14 +68,6 @@ export default {
 
     if (template._id) {
       return request.get(`${dbURL}/${template._id}`)
-      .then((response) => {
-        let currentProperties = response.json.properties;
-        let newProperties = template.properties;
-        let updatedNames = getUpdatedNames(currentProperties, newProperties);
-        let deletedProperties = getDeletedProperties(currentProperties, newProperties);
-        updateTranslation(response.json, template);
-        return this.updateMetadataProperties(template._id, updatedNames, deletedProperties);
-      })
       .then(() => save(template));
     }
 
@@ -84,23 +76,6 @@ export default {
       template._id = response.id;
       addTemplateTranslation(template);
       return response;
-    });
-  },
-
-  updateMetadataProperties(templateId, nameMatches, deleteProperties) {
-    return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
-    .then((response) => {
-      let documents = response.json.rows.map((r) => r.value);
-      documents = updateMetadataNames(documents, nameMatches);
-      documents = deleteMetadataProperties(documents, deleteProperties);
-
-      let updates = [];
-      documents.forEach((document) => {
-        let url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
-        updates.push(request.post(url, document));
-      });
-
-      return Promise.all(updates);
     });
   },
 
