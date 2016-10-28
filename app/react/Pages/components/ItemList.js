@@ -1,10 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {Link} from 'react-router';
 import {RowList} from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import {t} from 'app/I18N';
+import {t, I18NLink} from 'app/I18N';
 
 export class ItemList extends Component {
   render() {
@@ -16,9 +15,9 @@ export class ItemList extends Component {
         </RowList>
         <div className="row">
           <div className="col-sm-12 text-center">
-            <Link to={`${link}`}>
+            <I18NLink to={`${link}`}>
               <button className="btn btn-default">{t('System', 'View in library')}</button>
-            </Link>
+            </I18NLink>
           </div>
         </div>
       </div>

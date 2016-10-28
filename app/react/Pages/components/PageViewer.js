@@ -32,7 +32,7 @@ export class PageViewer extends Component {
       if (type === 'list' && lists.length) {
         const listData = lists.shift();
         return <div key={index} className="markdownViewer">
-                 <ItemList link={`/${listData.params}`} items={listData.items}/>
+                 <ItemList link={`/library/${listData.params}`} items={listData.items}/>
                </div>;
       }
       if (type === 'markdown' && htmlSplits.length) {

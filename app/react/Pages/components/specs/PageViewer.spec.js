@@ -52,17 +52,17 @@ describe('PageViewer', () => {
       expect(component.find('.markdownViewer').at(0).props().dangerouslySetInnerHTML.__html).toContain('title');
       expect(component.find('.markdownViewer').at(0).props().dangerouslySetInnerHTML.__html).toContain('Some text with a');
 
-      expect(component.find('.markdownViewer').at(1).find(ItemList).props().link).toBe('/param1');
+      expect(component.find('.markdownViewer').at(1).find(ItemList).props().link).toBe('/library/param1');
       expect(component.find('.markdownViewer').at(1).find(ItemList).props().items).toEqual(props.itemLists.getIn([0, 'items']).toJS());
 
       expect(component.find('.markdownViewer').at(2).props().dangerouslySetInnerHTML.__html).toContain('should be in its own line');
       expect(component.find('.markdownViewer').at(2).props().dangerouslySetInnerHTML.__html).toContain('should allow multiple lists');
 
 
-      expect(component.find('.markdownViewer').at(3).find(ItemList).props().link).toBe('/param2');
+      expect(component.find('.markdownViewer').at(3).find(ItemList).props().link).toBe('/library/param2');
       expect(component.find('.markdownViewer').at(3).find(ItemList).props().items).toEqual(props.itemLists.getIn([1, 'items']).toJS());
 
-      expect(component.find('.markdownViewer').at(4).find(ItemList).props().link).toBe('/param3');
+      expect(component.find('.markdownViewer').at(4).find(ItemList).props().link).toBe('/library/param3');
       expect(component.find('.markdownViewer').at(4).find(ItemList).props().items).toEqual(props.itemLists.getIn([2, 'items']).toJS());
 
       expect(component.find('.markdownViewer').at(5).props().dangerouslySetInnerHTML.__html).toContain('code');
@@ -76,7 +76,7 @@ describe('PageViewer', () => {
 
       render();
 
-      expect(component.find('.markdownViewer').at(3).find(ItemList).props().link).toBe('/param3');
+      expect(component.find('.markdownViewer').at(3).find(ItemList).props().link).toBe('/library/param3');
       expect(component.find('.markdownViewer').at(3).find(ItemList).props().items).toEqual(props.itemLists.getIn([1, 'items']).toJS());
 
       expect(component.find('.markdownViewer').at(4).props().dangerouslySetInnerHTML.__html).toContain('code');
