@@ -36,6 +36,16 @@ export class FormConfigInput extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
+                <FormField model={`template.data.properties[${index}].required`}>
+                  <input id={'required' + index} type="checkbox"/>
+                </FormField>
+              </span>
+              <label htmlFor={'required' + index} className="form-control">Required</label>
+            </div>
+          </div>
+          <div className="col-sm-4">
+            <div className="input-group">
+              <span className="input-group-addon">
                 <FormField model={`template.data.properties[${index}].showInCard`}>
                   <input id={'showInCard' + this.props.index} type="checkbox"/>
                 </FormField>
@@ -47,16 +57,6 @@ export class FormConfigInput extends Component {
                 &nbsp;
                 <i className="fa fa-question-circle"></i>
               </label>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + index} type="checkbox"/>
-                </FormField>
-              </span>
-              <label htmlFor={'required' + index} className="form-control">Required</label>
             </div>
           </div>
           <ShowIf if={type === 'text' || type === 'date'}>
