@@ -1,6 +1,7 @@
 import {fromJS as Immutable} from 'immutable';
 
 const SET = 'SET';
+const UPDATE = 'UPDATE';
 const UNSET = 'UNSET';
 const REMOVE = 'REMOVE';
 const PUSH = 'PUSH';
@@ -21,10 +22,19 @@ export default function createReducer(namespace, defaultValue) {
       return Immutable(currentState).filter((object) => {
         return object.get('_id') !== action.value._id;
       });
+    case `${namespace}/${UPDATE}`:
+      return currentState.set(currentState.findIndex(o => o.get('_id') === action.value._id), Immutable(action.value));
 
     default:
       return Immutable(currentState);
     }
+  };
+}
+
+export function update(namespace, value) {
+  return {
+    type: `${namespace}/${UPDATE}`,
+    value
   };
 }
 

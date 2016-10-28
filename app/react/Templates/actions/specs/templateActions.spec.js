@@ -99,7 +99,7 @@ describe('templateActions', () => {
       spyOn(notifications, 'notify');
       backend.restore();
       backend
-      .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok', id: 'id', rev: 'rev'})});
+      .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok', _id: 'id', _rev: 'rev'})});
     });
 
     describe('saveTemplate', () => {
@@ -111,7 +111,8 @@ describe('templateActions', () => {
 
         const expectedActions = [
           {type: types.SAVING_TEMPLATE},
-          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', id: 'id', rev: 'rev'}},
+          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
+          {type: 'templates/UPDATE', value: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
           {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Saved successfully.', type: 'success', id: 'unique_id'}}
         ];
