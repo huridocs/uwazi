@@ -7,7 +7,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-fdescribe('templates', () => {
+describe('templates', () => {
   beforeEach((done) => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
