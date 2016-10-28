@@ -65,6 +65,16 @@ export class FormConfigSelect extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
+                <FormField model={`template.data.properties[${index}].required`}>
+                  <input id={'required' + this.props.index} type="checkbox"/>
+                </FormField>
+              </span>
+              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
+            </div>
+          </div>
+          <div className="col-sm-4">
+            <div className="input-group">
+              <span className="input-group-addon">
                 <FormField model={`template.data.properties[${index}].showInCard`}>
                   <input id={'showInCard' + this.props.index} type="checkbox"/>
                 </FormField>
@@ -76,16 +86,6 @@ export class FormConfigSelect extends Component {
                 &nbsp;
                 <i className="fa fa-question-circle"></i>
               </label>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + this.props.index} type="checkbox"/>
-                </FormField>
-              </span>
-              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
             </div>
           </div>
         </div>
