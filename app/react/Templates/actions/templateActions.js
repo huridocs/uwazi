@@ -70,6 +70,7 @@ export function saveTemplate(data) {
     dispatch({type: types.SAVING_TEMPLATE});
     return api.save(data)
     .then((response) => {
+      dispatch({type: types.TEMPLATE_SAVED, data: response});
       dispatch(actions.update('templates', response));
 
       dispatch(formActions.merge('template.data', {_id: response._id, _rev: response._rev}));

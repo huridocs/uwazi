@@ -172,6 +172,37 @@ describe('templates', () => {
         .catch(done.fail);
       });
 
+      it('should update update the translation context for it', (done) => {
+        let newTemplate = {name: 'created template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
+        let template;
+        spyOn(translations, 'updateContext');
+        templates.save(newTemplate)
+        .then((_template) => {
+          template = _template;
+          spyOn(translations, 'addContext');
+          template.name = 'new title';
+          template.properties[0].label = 'new label 1';
+          template.properties.pop();
+          template.properties.push({label: 'label 3'});
+          return templates.save(template);
+        })
+        .then((response) => {
+          expect(translations.addContext).not.toHaveBeenCalled();
+          expect(translations.updateContext).toHaveBeenCalledWith(
+            response._id,
+            'new title',
+            {
+              'label 1': 'new label 1',
+              'created template': 'new title'
+            },
+            ['label 2'],
+            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
+          );
+          done();
+        })
+        .catch(done.fail);
+      });
+
       it('should return the saved template', (done) => {
         spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         getTemplate()

@@ -68,6 +68,9 @@ export default {
 
     if (template._id) {
       return request.get(`${dbURL}/${template._id}`)
+      .then((response) => {
+        updateTranslation(response.json, template);
+      })
       .then(() => save(template))
       .then(response => this.getById(response.id));
     }
