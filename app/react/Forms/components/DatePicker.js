@@ -23,7 +23,7 @@ export class DatePicker extends Component {
       value.utc().endOf('day');
     }
 
-    this.props.onChange(value.utc().format('X'));
+    this.props.onChange(parseInt(value.utc().format('X'), 10));
   }
 
   componentWillReceiveProps(newProps) {

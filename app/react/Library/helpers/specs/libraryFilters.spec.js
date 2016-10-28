@@ -31,7 +31,7 @@ describe('library helper', () => {
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
       expect(state.search.filters).toEqual({});
       expect(state.search.order).toEqual('desc');
-      expect(state.search.sort).toEqual('title.raw');
+      expect(state.search.sort).toEqual('title');
     });
 
     it('should return the query transformed to the application state', () => {
