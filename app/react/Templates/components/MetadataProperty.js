@@ -52,7 +52,8 @@ export class MetadataProperty extends Component {
             <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
               <i className="fa fa-pencil"></i> Edit
             </button>
-            <button type="button" className="btn btn-danger btn-xs property-remove" onClick={() => this.props.removeProperty('RemovePropertyModal', index)} >
+            <button type="button" className="btn btn-danger btn-xs property-remove"
+              onClick={() => this.props.removeProperty('RemovePropertyModal', index)} >
               <i className="fa fa-trash"></i> Delete
             </button>
            </div>
