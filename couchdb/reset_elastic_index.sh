@@ -28,6 +28,22 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
           }
         }
       }, {
+        "fullText_fields" : {
+          "path_match" : "doc.fullText",
+          "match_mapping_type" : "string",
+          "mapping" : {
+            "type" : "string",
+            "index" : "analyzed",
+            "omit_norms" : true,
+            "analyzer": "standard",
+            "fielddata" : { "format" : "enabled" },
+            "fields" : {
+              "raw" : {"type": "string", "index" : "not_analyzed", "doc_values" : true, "ignore_above" : 256}
+            }
+          }
+        }
+      }
+      , {
         "string_fields" : {
           "match" : "*",
           "match_mapping_type" : "string",
@@ -42,7 +58,8 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
             }
           }
         }
-      }, {
+      }
+      , {
         "float_fields" : {
           "match" : "*",
           "match_mapping_type" : "float",
