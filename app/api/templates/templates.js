@@ -75,7 +75,7 @@ export default {
     .then((response) => {
       template._id = response.id;
       addTemplateTranslation(template);
-      return response;
+      return this.getById(response.id);
     });
   },
 

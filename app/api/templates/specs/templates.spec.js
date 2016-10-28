@@ -7,7 +7,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-fdescribe('templates', () => {
+describe('templates', () => {
   beforeEach((done) => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -19,6 +19,18 @@ fdescribe('templates', () => {
   describe('save', () => {
     let getAllTemplates = () => request.get(dbURL + '/_design/templates/_view/all').then((response) => response.json.rows);
     let getTemplate = (id = 'c08ef2532f0bd008ac5174b45e033c94') => request.get(dbURL + `/${id}`).then((response) => response.json);
+
+    it('should return the saved template', (done) => {
+      let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
+
+      templates.save(newTemplate)
+      .then((template) => {
+        expect(template._id).toBeDefined();
+        expect(template.name).toBe('created_template');
+        done();
+      })
+      .catch(done.fail);
+    });
 
     it('should create a template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
@@ -70,7 +82,7 @@ fdescribe('templates', () => {
           'label 2': 'label 2'
         };
 
-        expect(translations.addContext).toHaveBeenCalledWith(response.id, 'created template', expectedValues);
+        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues);
         done();
       });
     });
