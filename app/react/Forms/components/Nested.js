@@ -26,20 +26,23 @@ export class Nested extends Component {
 
   onChange(e) {
     let value = e.target.value || '';
+    let formatedValues = [];
     this.setState({value});
-    let rows = value.split('\n').filter((row) => row);
-    let keys = rows[0].split('|').map((key) => key.trim()).filter((key) => key);
-    let entries = rows.splice(2);
-    let formatedValues = entries.map((row) => {
-      return row.split('|').reduce((result, val, index) => {
-        if (!keys[index]) {
+    if (value) {
+      let rows = value.split('\n').filter((row) => row);
+      let keys = rows[0].split('|').map((key) => key.trim()).filter((key) => key);
+      let entries = rows.splice(2);
+      formatedValues = entries.map((row) => {
+        return row.split('|').reduce((result, val, index) => {
+          if (!keys[index]) {
+            return result;
+          }
+          let values = val.split(',').map((v) => v.trim()).filter((v) => v);
+          result[keys[index]] = values;
           return result;
-        }
-        let values = val.split(',').map((v) => v.trim()).filter((v) => v);
-        result[keys[index]] = values;
-        return result;
-      }, {});
-    });
+        }, {});
+      });
+    }
 
     this.props.onChange(formatedValues);
   }
