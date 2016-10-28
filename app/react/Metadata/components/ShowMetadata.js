@@ -18,6 +18,11 @@ export class ShowMetadata extends Component {
                {property.value}
              </I18NLink>;
     }
+
+    if (typeof property.value === 'object' && !property.value.length) {
+      return;
+    }
+
     if (typeof property.value === 'object') {
       return <ul>
                {property.value.map((value, indx) => {
@@ -33,7 +38,9 @@ export class ShowMetadata extends Component {
       return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
     }
 
-    return property.value;
+    if (property.value) {
+      return property.value;
+    }
   }
 
   render() {
@@ -63,6 +70,9 @@ export class ShowMetadata extends Component {
 
         {entity.metadata.map((property, index) => {
           const value = this.getValue(property);
+          if (!value) {
+            return false;
+          }
           return (
             <dl key={index}>
               <dt>{t(entity.template, property.label)}</dt>
