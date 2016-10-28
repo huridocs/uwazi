@@ -63,13 +63,9 @@
       }
 
       &.error {
-        display: inherit;
-        border-bottom: 1px solid #ED353D;
-        margin-bottom: -1px;
-
-        &:last-child {
-          border-bottom: 1px solid #ED353D;
-        }
+        display: block;
+        border: 1px solid #ED353D !important;
+        box-shadow: 0 4px 10px -5px rgba(255, 0, 0, 0.3) !important;
 
         .property-name, .property-name .fa {
           color: #ED353D;
