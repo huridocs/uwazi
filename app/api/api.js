@@ -27,4 +27,5 @@ export default (app, server) => {
   require('./upload/routes.js')(app);
   require('./settings/routes.js')(app);
   require('./i18n/routes.js')(app);
+  require('./attachments/routes.js')(app);
 };
