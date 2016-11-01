@@ -13,7 +13,7 @@ import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from './ConnectionsList';
-import {AttachmentsList} from 'app/Attachments';
+import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
@@ -147,6 +147,14 @@ export class ViewMetadataPanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
+        <NeedAuthorization>
+          <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc}>
+            <div className="sidepanel-footer">
+              <UploadAttachment entityId={doc._id}/>
+            </div>
+          </ShowIf>
+        </NeedAuthorization>
+
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="toc">
@@ -181,8 +189,7 @@ export class ViewMetadataPanel extends Component {
             </TabContent>
             <TabContent for="attachments">
               <AttachmentsList files={fromJS(attachments)}
-                               parentId={doc._id}
-                               uploadButton={!this.props.isTargetDoc} />
+                               parentId={doc._id} />
             </TabContent>
           </Tabs>
         </div>

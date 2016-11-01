@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+
 import filesize from 'filesize';
-import UploadAttachment from './UploadAttachment';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import t from 'app/I18N/t';
@@ -61,25 +61,17 @@ export class AttachmentsList extends Component {
       );
     });
 
-    return (
-      <div>
-        <div className="item-group">{list}</div>
-        <NeedAuthorization>
-          <ShowIf if={this.props.uploadButton}>
-            <div className="sidepanel-footer">
-              <UploadAttachment entityId={parentId}/>
-            </div>
-          </ShowIf>
-        </NeedAuthorization>
-      </div>
-    );
+    return <div className="item-group">{list}</div>;
   }
 }
 
 AttachmentsList.propTypes = {
   files: PropTypes.object,
-  parentId: PropTypes.string,
-  uploadButton: PropTypes.bool
+  parentId: PropTypes.string
 };
 
-export default connect()(AttachmentsList);
+function mapStateToProps() {
+  return {progress: null};
+}
+
+export default connect(mapStateToProps)(AttachmentsList);

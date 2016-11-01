@@ -13,10 +13,10 @@ export class UploadAttachment extends Component {
 
   renderUploadButton() {
     return (
-      <label htmlFor="upload-button-input" className="btn btn-primary">
+      <label htmlFor="upload-attachment-input" className="btn btn-primary">
         <i className="fa fa-cloud-upload"></i>
         <span className="btn-label">{t('System', 'Upload')}</span>
-        <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
+        <input onChange={this.onChange.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
       </label>
     );
   }
