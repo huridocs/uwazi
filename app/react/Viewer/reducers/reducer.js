@@ -3,12 +3,12 @@ import {combineReducers} from 'redux';
 import createReducer from 'app/BasicReducer';
 import {modelReducer, formReducer} from 'react-redux-form';
 
-import doc from './docReducer';
+import {addAttachmentsReducer} from 'app/Attachments';
 import references from './referencesReducer';
 import uiState from './uiReducer';
 
 export default combineReducers({
-  doc,
+  doc: addAttachmentsReducer(createReducer('viewer/doc', {})),
   docHTML: createReducer('viewer/docHTML', {pages: []}),
   targetDoc: createReducer('viewer/targetDoc', {}),
   targetDocHTML: createReducer('viewer/targetDocHTML', {pages: []}),

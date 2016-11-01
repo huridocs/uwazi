@@ -47,4 +47,15 @@ export default (app) => {
     })
     .catch(error => res.json({error: error}));
   });
+
+  app.delete('/api/attachments/delete', needsAuthorization, (req, res) => {
+    return request.get(`${dbUrl}/${req.query.entityId}`)
+    .then(entityResponse => {
+      const entity = entityResponse.json;
+      entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
+      return entities.saveMultiple([entity]);
+    })
+    .then(response => res.json(response.json[0]))
+    .catch(error => res.json({error: error}));
+  });
 };

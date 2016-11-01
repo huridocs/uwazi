@@ -1,15 +1,24 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import filesize from 'filesize';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import t from 'app/I18N/t';
 
+import {deleteAttachment} from '../actions/actions';
+
 export class AttachmentsList extends Component {
 
-  deleteAttachment(file) {
-    console.log('deleteAttachment:', file);
+  deleteAttachment(attachment) {
+    this.context.confirm({
+      accept: () => {
+        this.props.deleteAttachment(this.props.parentId, attachment);
+      },
+      title: 'Confirm delete',
+      message: 'Are you sure you want to delete this attachment?'
+    });
   }
 
   getExtension(filename) {
@@ -39,7 +48,7 @@ export class AttachmentsList extends Component {
           </ShowIf>
           <div className="item-actions">
             <div className="item-label-group">
-              <span className="item-type item-type-1">
+              <span className="item-type item-type-18">
                 <span className="item-type__name no-icon">{this.getExtension(file.filename)}</span>
               </span>
             </div>
@@ -67,11 +76,20 @@ export class AttachmentsList extends Component {
 
 AttachmentsList.propTypes = {
   files: PropTypes.object,
-  parentId: PropTypes.string
+  parentId: PropTypes.string,
+  deleteAttachment: PropTypes.func
+};
+
+AttachmentsList.contextTypes = {
+  confirm: PropTypes.func
 };
 
 function mapStateToProps() {
   return {progress: null};
 }
 
-export default connect(mapStateToProps)(AttachmentsList);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({deleteAttachment}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AttachmentsList);

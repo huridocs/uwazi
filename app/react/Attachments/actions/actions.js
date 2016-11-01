@@ -1,5 +1,7 @@
 import {APIURL} from 'app/config.js';
+import api from 'app/utils/api';
 import superagent from 'superagent';
+import {notify} from 'app/Notifications/actions/notificationsActions';
 
 import * as types from './actionTypes';
 
@@ -17,5 +19,15 @@ export function uploadAttachment(entityId, file) {
       dispatch({type: types.ATTACHMENT_COMPLETE, entity: entityId, file: JSON.parse(result.text)});
     })
     .end();
+  };
+}
+
+export function deleteAttachment(entityId, attachment) {
+  return function (dispatch) {
+    return api.delete('attachments/delete', {entityId, filename: attachment.filename})
+    .then(() => {
+      dispatch({type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment});
+      dispatch(notify('Attachment deleted', 'success'));
+    });
   };
 }
