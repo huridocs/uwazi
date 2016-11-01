@@ -13,3 +13,5 @@ conversions/*.json
 app/api/upload/specs/uploads/*
 uploaded_documents/*
 !uploads/index.html
+attachments/*
+!attachments/index.html
