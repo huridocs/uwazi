@@ -11,6 +11,7 @@ uwazi-fixtures
 cejil-fixtures
 conversions/*.json
 app/api/upload/specs/uploads/*
+app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*
 !uploads/index.html
 attachments/*

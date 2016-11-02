@@ -1,8 +1,9 @@
-import {db_url as dbUrl} from '../config/database.js';
+import {db_url as dbUrl} from '../config/database';
 import needsAuthorization from '../auth/authMiddleware';
 import multer from 'multer';
 import ID from 'shared/uniqueID';
-import request from '../../shared/JSONRequest.js';
+import request from '../../shared/JSONRequest';
+import fs from 'fs';
 
 import path from 'path';
 import sanitize from 'sanitize-filename';
@@ -55,7 +56,15 @@ export default (app) => {
       entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
       return entities.saveMultiple([entity]);
     })
-    .then(response => res.json(response.json[0]))
+    .then(response => {
+      fs.unlink(attachmentsPath + req.query.filename, (err) => {
+        if (err) {
+          throw err;
+        }
+
+        res.json(response.json[0]);
+      });
+    })
     .catch(error => res.json({error: error}));
   });
 };

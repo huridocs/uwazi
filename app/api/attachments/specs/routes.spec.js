@@ -1,22 +1,31 @@
-import {db_url as dbUrl} from '../../config/database.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
+import fs from 'fs';
+import {db_url as dbUrl} from '../../config/database';
+import database from '../../utils/database';
+import fixtures from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import {catchErrors} from 'api/utils/jasmineHelpers';
-import {attachmentsPath} from '../../config/paths';
-import request from '../../../shared/JSONRequest.js';
+import paths, {attachmentsPath} from '../../config/paths';
+import request from '../../../shared/JSONRequest';
 
-import attachmentsRoutes from '../routes.js';
+import attachmentsRoutes from '../routes';
 
 describe('Attachments Routes', () => {
   let routes;
+  let originalAttachmentsPath;
 
   beforeEach((done) => {
+    originalAttachmentsPath = paths.attachmentsPath;
+    paths.attachmentsPath = __dirname + '/uploads/';
+
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
     .catch(done.fail);
     routes = instrumentRoutes(attachmentsRoutes);
+  });
+
+  afterEach(() => {
+    paths.attachmentsPath = originalAttachmentsPath;
   });
 
   describe('/download', () => {
@@ -71,15 +80,22 @@ describe('Attachments Routes', () => {
   describe('/delete', () => {
     let req;
 
-    beforeEach(() => {
-      req = {user: 'admin', headers: {}, query: {entityId: '8abcc463d6158af8065022d9b5014a18', filename: 'match.doc'}};
+    beforeEach((done) => {
+      req = {user: 'admin', headers: {}, query: {entityId: '8abcc463d6158af8065022d9b5014a18', filename: 'toDelete.txt'}};
+      fs.writeFile(paths.attachmentsPath + 'toDelete.txt', 'dummy file', (err) => {
+        if (err) {
+          done.fail(err);
+        }
+        done();
+      });
     });
 
     it('should need authorization', () => {
       expect(routes.delete('/api/attachments/delete')).toNeedAuthorization();
     });
 
-    it('should remove the passed file from attachments', (done) => {
+    it('should remove the passed file from attachments and delte the local file', (done) => {
+      expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
       routes.delete('/api/attachments/delete', req)
       .then(addedFile => {
         return Promise.all([addedFile, request.get(`${dbUrl}/${req.query.entityId}`)]);
@@ -88,6 +104,7 @@ describe('Attachments Routes', () => {
         expect(dbEntity.json.attachments.length).toBe(1);
         expect(dbEntity.json.attachments[0].filename).toBe('other.doc');
         expect(response.ok).toBe(true);
+        expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(false);
         done();
       })
       .catch(done.fail);
