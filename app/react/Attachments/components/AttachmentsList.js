@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import filesize from 'filesize';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
+import {advancedSort} from 'app/utils/advancedSort';
 import t from 'app/I18N/t';
 
 import {deleteAttachment} from '../actions/actions';
@@ -26,10 +27,10 @@ export class AttachmentsList extends Component {
   }
 
   render() {
-    const {files, parentId} = this.props;
+    const {parentId} = this.props;
+    const files = advancedSort(this.props.files.toJS(), {property: 'originalname'});
 
-    const list = files.map((immutableFile, index) => {
-      const file = immutableFile.toJS();
+    const list = files.map((file, index) => {
       const sizeString = file.size ? filesize(file.size) : '';
 
       return (
