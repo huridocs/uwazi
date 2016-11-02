@@ -30,10 +30,8 @@ export class UploadAttachment extends Component {
     );
   }
 
-
   render() {
-    let progress;
-    // let progress = this.props.progress.get(this.props.documentId);
+    const progress = this.props.progress.get(this.props.entityId);
     if (progress) {
       return this.renderProgress(progress);
     }
@@ -43,11 +41,16 @@ export class UploadAttachment extends Component {
 
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
-  entityId: PropTypes.string
+  entityId: PropTypes.string,
+  progress: PropTypes.object
 };
+
+export function mapStateToProps({attachments}) {
+  return {progress: attachments.progress};
+}
 
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({uploadAttachment}, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(UploadAttachment);
+export default connect(mapStateToProps, mapDispatchToProps)(UploadAttachment);
