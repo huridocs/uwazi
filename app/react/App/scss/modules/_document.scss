@@ -12,6 +12,10 @@
   .cs-loader {
     height: 80px;
   }
+
+  // Hack to solve issue selecting text in some documents
+  div.c { pointer-events: none; }
+  div.c>* { pointer-events: auto; padding-right: 100px; }
 }
 
 .document-article {
