@@ -72,10 +72,12 @@
 }
 
 .validation-error {
-  color: #ED353D;
+  color: $c-danger;
   position: relative;
-  top: 3px;
+  top: 1px;
   height: 0;
+  font-weight: bold;
+  font-size: $f-size-sm;
 
   &-centered {
     width: 100%;

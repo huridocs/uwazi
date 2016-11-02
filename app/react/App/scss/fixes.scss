@@ -271,7 +271,6 @@ header {
   }
   .form-group {
     width: 100%;
-    line-height: 32px;
   }
 }
 
@@ -281,7 +280,7 @@ header {
   .form-group, input {
     margin: 0;
   }
-  input {
+  .form-group {
     width: 100%;
   }
 }

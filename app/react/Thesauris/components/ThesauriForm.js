@@ -44,24 +44,24 @@ export class ThesauriForm extends Component {
               <div className="panel-heading">
                 <I18NLink to="/settings/dictionaries" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
-                <Field model="thesauri.data.name">
-                  <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
-                </Field>
+                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
+                  <Field model="thesauri.data.name">
+                    <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
+                    {(() => {
+                      if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                        return <div className="validation-error">
+                                  <i className="fa fa-exclamation-triangle"></i>
+                                  &nbsp;
+                                  Duplicated name
+                              </div>;
+                      }
+                    })()}
+                  </Field>
+                </FormGroup>
                 &nbsp;
                 <button className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save
                 </button>
-                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-                {(() => {
-                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                    return <div className="validation-error">
-                              <i className="fa fa-exclamation-triangle"></i>
-                              &nbsp;
-                              Duplicated name
-                          </div>;
-                  }
-                })()}
-                </FormGroup>
               </div>
               <ul className="thesauri-values list-group">
                 <li className="list-group-item"><b>Items:</b></li>
