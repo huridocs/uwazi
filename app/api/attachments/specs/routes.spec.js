@@ -97,14 +97,25 @@ describe('Attachments Routes', () => {
     it('should remove the passed file from attachments and delte the local file', (done) => {
       expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
       routes.delete('/api/attachments/delete', req)
-      .then(addedFile => {
-        return Promise.all([addedFile, request.get(`${dbUrl}/${req.query.entityId}`)]);
+      .then(response => {
+        return Promise.all([response, request.get(`${dbUrl}/${req.query.entityId}`)]);
       })
       .then(([response, dbEntity]) => {
         expect(dbEntity.json.attachments.length).toBe(1);
         expect(dbEntity.json.attachments[0].filename).toBe('other.doc');
         expect(response.ok).toBe(true);
         expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(false);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should not fail if, for some reason, file doesnt exist', (done) => {
+      expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
+      fs.unlinkSync(paths.attachmentsPath + 'toDelete.txt');
+      routes.delete('/api/attachments/delete', req)
+      .then(response => {
+        expect(response.error).toBeDefined();
         done();
       })
       .catch(done.fail);

@@ -57,14 +57,18 @@ export default (app) => {
       return entities.saveMultiple([entity]);
     })
     .then(response => {
-      fs.unlink(attachmentsPath + req.query.filename, (err) => {
-        if (err) {
-          throw err;
-        }
-
-        res.json(response.json[0]);
+      return new Promise((resolve, reject) => {
+        fs.unlink(attachmentsPath + req.query.filename, (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(res.json(response.json[0]));
+        });
       });
     })
-    .catch(error => res.json({error: error}));
+    .catch(error => {
+      res.json({error: error});
+    });
   });
 };
