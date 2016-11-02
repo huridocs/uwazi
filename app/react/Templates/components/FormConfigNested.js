@@ -54,6 +54,17 @@ export class FormConfigNested extends Component {
               </FormField>
             </div>
           </div>
+          {(() => {
+            if (duplicatedLabel) {
+              return <div className="validation-error">
+                <div className="col-sm-12">
+                  <i className="fa fa-exclamation-triangle"></i>
+                  &nbsp;
+                  Duplicated label
+                </div>
+              </div>;
+            }
+          })()}
         </div>
         <div className="row">
           <div className="col-sm-4">
@@ -107,17 +118,6 @@ export class FormConfigNested extends Component {
                 </div>
               </div>;
             });
-          })()}
-          {(() => {
-            if (duplicatedLabel) {
-              return <div className="row has-error">
-                      <div className="col-sm-4">
-                      <i className="fa fa-exclamation-triangle"></i>
-                        &nbsp;
-                        Duplicated label
-                      </div>
-                    </div>;
-            }
           })()}
           <div>
             <button className="btn btn-success" onClick={this.addProperty.bind(this)}>

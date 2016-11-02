@@ -50,6 +50,17 @@ export class FormConfigSelect extends Component {
               </FormField>
             </div>
           </div>
+          {(() => {
+            if (duplicatedLabel) {
+              return <div className="validation-error">
+                <div className="col-sm-12">
+                  <i className="fa fa-exclamation-triangle"></i>
+                  &nbsp;
+                  Duplicated label
+                </div>
+              </div>;
+            }
+          })()}
         </div>
         <div className="row">
           <div className="col-sm-12">
@@ -89,17 +100,6 @@ export class FormConfigSelect extends Component {
             </div>
           </div>
         </div>
-        {(() => {
-          if (duplicatedLabel) {
-            return <div className="row has-error">
-                    <div className="col-sm-4">
-                    <i className="fa fa-exclamation-triangle"></i>
-                      &nbsp;
-                      Duplicated label
-                    </div>
-                  </div>;
-          }
-        })()}
 
         <div className="well-metadata-creator">
           <div>
