@@ -291,6 +291,7 @@ $item-padding: 15px;
 /* sort-by controller */
 
 .sort-by {
+  position: relative;
   display: table;
   width: 100%;
   max-width: 960px;
@@ -301,28 +302,6 @@ $item-padding: 15px;
     #documents-counter {
       text-align: left;
     }
-  }
-  .label {
-    font-weight: normal;
-    background: $c-primary-lighten;
-    border: 1px solid $c-grey;
-    color: $c-grey-dark;
-    .fa {
-      margin-left: 0;
-      margin-right: 5px;
-    }
-  }
-  span {
-    border-bottom: 1px dotted $c-grey-dark;
-    cursor: pointer;
-    margin-left: 15px;
-    &.active {
-      color: $c-primary;
-      font-weight: bold;
-    }
-  }
-  .fa {
-    margin-left: 5px;
   }
 }
 

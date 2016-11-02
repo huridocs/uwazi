@@ -1,0 +1,10 @@
+.order-by-arrow {
+  color: #607d8b;
+  font-size: 22px;
+}
+
+.Dropdown.is-active {
+  .order-by-arrow {
+    display: none;
+  }
+}

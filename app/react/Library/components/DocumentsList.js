@@ -32,12 +32,12 @@ export class DocumentsList extends Component {
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
         <div className="main-wrapper">
         <div className="sort-by">
-          <div className="row">
-            <p id="documents-counter" className="col-sm-7 text-left documents-counter">
+
+            <p id="documents-counter" className="u-floatLeft documents-counter">
               {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
             </p>
             <SortButtons />
-          </div>
+
         </div>
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
