@@ -6,6 +6,20 @@ import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {t} from 'app/I18N';
 
 export class SortButtons extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {active: false};
+  }
+
+  handleClick(property) {
+    if (!this.state.active) {
+      return;
+    }
+
+    this.sort(property);
+  }
+
   sort(property, defaultOrder) {
     let {search} = this.props;
     let order = defaultOrder;
@@ -20,7 +34,11 @@ export class SortButtons extends Component {
     this.props.searchDocuments(filters);
   }
 
-  getAdditionalSorts(templates, search, order) {
+  changeOrder() {
+    this.sort(this.props.search.sort);
+  }
+
+  getAdditionalSorts(templates, search) {
     const additionalSorts = templates.toJS().reduce((sorts, template) => {
       template.properties.forEach(property => {
         if (property.sortable && !sorts.find(s => s.property === property.name)) {
@@ -28,11 +46,11 @@ export class SortButtons extends Component {
           sorts.push({
             property: property.name,
             html:
-              <li className="Dropdown-option" key={sorts.length + 1}>
-                    className={search.sort === sortString ? 'active' : ''}
-                    onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
+              <li
+                key={sorts.length + 1}
+                className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
+                onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
                 {t(template.name, property.label)}
-                {search.sort === sortString ? <i className={'fa fa-caret-' + order}></i> : ''}
               </li>
           });
         }
@@ -43,28 +61,29 @@ export class SortButtons extends Component {
     return additionalSorts.map(s => s.html);
   }
 
+  toggle() {
+    this.setState({active: !this.state.active});
+  }
+
   render() {
     let {search, templates} = this.props;
     let order = search.order === 'asc' ? 'up' : 'down';
     let sortingTitle = search.sort === 'title';
     let sortingRecent = search.sort === 'creationDate';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
-
     return (
-      <div className="Dropdown u-floatRight">
+      <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <span className="Dropdown-label">{t('System', 'Sort by')}</span>
-        <ul className="Dropdown-list">
-        <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')} onClick={() => this.sort('title')}>
-          A-Z
-          {sortingTitle ? <i className={'fa fa-caret-' + order}></i> : ''}
-        </li>
-          {additionalSorts}
-          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')} onClick={() => this.sort('creationDate')}>
+        <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
+          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')} onClick={() => this.handleClick('title')}>
+            A-Z
+          </li>
+          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')} onClick={() => this.handleClick('creationDate')}>
             Recent
-            {sortingRecent ? <i className={'fa fa-caret-' + order}></i> : ''}
           </li>
           {additionalSorts}
         </ul>
+        <i onClick={this.changeOrder.bind(this)} className={'order-by-arrow fa fa-caret-' + order}></i>
       </div>
     );
   }

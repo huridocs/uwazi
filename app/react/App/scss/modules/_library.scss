@@ -1,0 +1,9 @@
+.order-by-arrow {
+  color: #607d8b;
+}
+
+.Dropdown.is-active {
+  .order-by-arrow {
+    display: none;
+  }
+}

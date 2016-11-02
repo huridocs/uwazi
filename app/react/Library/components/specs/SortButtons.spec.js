@@ -28,8 +28,8 @@ describe('SortButtons', () => {
   describe('Sort options', () => {
     it('should use templates sortable properties as options', () => {
       render();
-      expect(component.find('span').length).toBe(3);
-      expect(component.find('span').first().text()).toBe('sortableProperty');
+      expect(component.find('li').length).toBe(3);
+      expect(component.find('li').last().text()).toBe('sortableProperty');
     });
 
     describe('when multiple options have the same name', () => {
@@ -40,23 +40,24 @@ describe('SortButtons', () => {
         ]);
         render();
 
-        expect(component.find('span').length).toBe(3);
-        expect(component.find('span').first().text()).toBe('sortableProperty');
+        expect(component.find('li').length).toBe(3);
+        expect(component.find('li').last().text()).toBe('sortableProperty');
       });
     });
 
     describe('when active', () => {
-      it('should set the option active and add a caret', () => {
+      it('should set the option active', () => {
         props.search.sort = 'metadata.sortable_name';
         render();
-        expect(component.find('span').first().find('i').props().className).toBe('fa fa-caret-down');
+        expect(component.find('li').last().hasClass('is-active')).toBe(true);
       });
     });
 
     describe('clicking an option', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
-        component.find('span').first().simulate('click');
+        component.setState({active: true});
+        component.find('li').last().simulate('click');
         expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
 
         const templates = props.templates.toJS();
@@ -65,7 +66,7 @@ describe('SortButtons', () => {
 
         render();
 
-        component.find('span').first().simulate('click');
+        component.find('li').last().simulate('click');
         expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'desc'});
       });
     });
@@ -106,36 +107,23 @@ describe('SortButtons', () => {
     });
   });
 
-  describe('when filtering title property asc', () => {
-    it('should set active title with up arrow', () => {
+  describe('when filtering title property', () => {
+    it('should set active title', () => {
       props.search = {order: 'asc', sort: 'title'};
       render();
-      let title = component.find('span').at(1);
-      expect(title.hasClass('active')).toBe(true);
-      expect(title.find('i').hasClass('fa-caret-up')).toBe(true);
-    });
-  });
-
-  describe('when filtering title property desc', () => {
-    it('should set active title with up arrow', () => {
-      props.search = {order: 'desc', sort: 'title'};
-      render();
-      let title = component.find('span').at(1);
-      expect(title.hasClass('active')).toBe(true);
-      expect(title.find('i').hasClass('fa-caret-down')).toBe(true);
+      let title = component.find('li').at(0);
+      expect(title.hasClass('is-active')).toBe(true);
     });
   });
 
   describe('when filtering creationDate property asc', () => {
-    it('should set active recent with up arrow', () => {
+    it('should set active recent', () => {
       props.search = {order: 'asc', sort: 'creationDate'};
       render();
-      let title = component.find('span').first();
-      let recent = component.find('span').last();
-      expect(title.hasClass('active')).toBe(false);
-      expect(recent.hasClass('active')).toBe(true);
-      expect(title.find('i').length).toBe(0);
-      expect(recent.find('i').hasClass('fa-caret-up')).toBe(true);
+      let title = component.find('li').at(0);
+      let recent = component.find('li').at(1);
+      expect(title.hasClass('is-active')).toBe(false);
+      expect(recent.hasClass('is-active')).toBe(true);
     });
   });
 });
