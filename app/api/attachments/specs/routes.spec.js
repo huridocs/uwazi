@@ -1,8 +1,10 @@
+import {db_url as dbUrl} from '../../config/database.js';
 import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import {attachmentsPath} from '../../config/paths';
+import request from '../../../shared/JSONRequest.js';
 
 import attachmentsRoutes from '../routes.js';
 
@@ -33,9 +35,10 @@ describe('Attachments Routes', () => {
 
   describe('/upload', () => {
     let req;
+    let file;
 
     beforeEach(() => {
-      const file = {fieldname: 'file',
+      file = {fieldname: 'file',
             originalname: 'new original name.miss',
             encoding: '7bit',
             mimetype: 'application/octet-stream',
@@ -43,13 +46,51 @@ describe('Attachments Routes', () => {
             filename: 'mockfile.doc',
             path: __dirname + '/uploads/mockfile.doc',
             size: 171411271};
-      req = {user: 'admin', headers: {}, body: {_id: 'id'}, files: [file]};
+      req = {user: 'admin', headers: {}, body: {entityId: '8abcc463d6158af8065022d9b5014a19'}, files: [file]};
     });
 
-    it('should add the uploaded file to the document', (done) => {
-      routes.post('/api/upload', req)
-      .then(() => {
-      });
+    it('should need authorization', () => {
+      expect(routes.post('/api/attachments/upload')).toNeedAuthorization();
+    });
+
+    it('should add the uploaded file to attachments', (done) => {
+      routes.post('/api/attachments/upload', req)
+      .then(addedFile => {
+        return Promise.all([addedFile, request.get(`${dbUrl}/${req.body.entityId}`)]);
+      })
+      .then(([addedFile, dbEntity]) => {
+        expect(dbEntity.json.attachments.length).toBe(3);
+        expect(dbEntity.json.attachments[2]).toEqual(file);
+        expect(addedFile.filename).toBe('mockfile.doc');
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('/delete', () => {
+    let req;
+
+    beforeEach(() => {
+      req = {user: 'admin', headers: {}, query: {entityId: '8abcc463d6158af8065022d9b5014a18', filename: 'match.doc'}};
+    });
+
+    it('should need authorization', () => {
+      expect(routes.delete('/api/attachments/delete')).toNeedAuthorization();
+    });
+
+    it('should remove the passed file from attachments', (done) => {
+      routes.delete('/api/attachments/delete', req)
+      .then(addedFile => {
+        return Promise.all([addedFile, request.get(`${dbUrl}/${req.query.entityId}`)]);
+      })
+      .then(([response, dbEntity]) => {
+        expect(dbEntity.json.attachments.length).toBe(1);
+        expect(dbEntity.json.attachments[0].filename).toBe('other.doc');
+        expect(response.ok).toBe(true);
+        done();
+      })
+      .catch(done.fail);
     });
   });
 });
