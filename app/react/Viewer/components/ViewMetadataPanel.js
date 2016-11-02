@@ -13,6 +13,7 @@ import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from './ConnectionsList';
+import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
@@ -61,6 +62,7 @@ export class ViewMetadataPanel extends Component {
     const connections = propReferences.filter(r => {
       return typeof r.range.start === 'undefined';
     });
+    const attachments = doc.attachments ? doc.attachments : [];
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -91,6 +93,12 @@ export class ViewMetadataPanel extends Component {
                 <TabLink to="connections">
                   <i className="fa fa-share-alt"></i>
                   <span className="connectionsNumber">{connections.length}</span>
+                </TabLink>
+              </li>
+              <li>
+                <TabLink to="attachments">
+                  <i className="fa fa-paperclip"></i>
+                  <span className="connectionsNumber">{attachments.length}</span>
                 </TabLink>
               </li>
             </ul>
@@ -139,6 +147,14 @@ export class ViewMetadataPanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
+        <NeedAuthorization>
+          <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc}>
+            <div className="sidepanel-footer">
+              <UploadAttachment entityId={doc._id}/>
+            </div>
+          </ShowIf>
+        </NeedAuthorization>
+
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="toc">
@@ -170,6 +186,10 @@ export class ViewMetadataPanel extends Component {
               <Connections references={fromJS(connections)}
                            referencesSection="connections"
                            useSourceTargetIcons={false} />
+            </TabContent>
+            <TabContent for="attachments">
+              <AttachmentsList files={fromJS(attachments)}
+                               parentId={doc._id} />
             </TabContent>
           </Tabs>
         </div>

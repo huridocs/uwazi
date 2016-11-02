@@ -4,12 +4,14 @@ import React, {Component, PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {fromJS as Immutable} from 'immutable';
 
 import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, addReference, deleteReference} from 'app/Entities/actions/actions';
+import {deleteEntity, addReference, deleteReference} from '../actions/actions';
+import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
 import {actions as connectionsActions} from 'app/Connections';
 import EntityForm from '../containers/EntityForm';
@@ -17,6 +19,8 @@ import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
 import ReferencesGroup from './ReferencesGroup';
 import {createSelector} from 'reselect';
+import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
+import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 
 export class EntityViewer extends Component {
 
@@ -95,8 +99,10 @@ export class EntityViewer extends Component {
   // --
 
   render() {
-    let {entity, entityBeingEdited, references} = this.props;
-    references = references.toJS();
+    let {entity, entityBeingEdited, tab} = this.props;
+    const selectedTab = tab || 'references';
+    const references = this.props.references.toJS();
+    const attachments = entity.attachments ? entity.attachments : [];
 
     return (
       <div className="row entity-content">
@@ -126,33 +132,68 @@ export class EntityViewer extends Component {
           </div>
         </aside>
         <aside className="side-panel entity-connections">
+
           <div className="sidepanel-header">
-            <ul className="nav nav-tabs">
-              <li>
-                <div className="tab-link tab-link-active">
-                  <i className="fa fa-share-alt"></i>
-                  <span className="connectionsNumber">{references.length}</span>
-                </div>
-              </li>
-            </ul>
+            <Tabs selectedTab={selectedTab}
+                  handleSelect={tabName => {
+                    this.props.showTab(tabName);
+                  }}>
+              <ul className="nav nav-tabs">
+                <li>
+                  <TabLink to="references">
+                    <i className="fa fa-share-alt"></i>
+                    <span className="connectionsNumber">{references.length}</span>
+                  </TabLink>
+                </li>
+                <li>
+                  <TabLink to="attachments">
+                    <i className="fa fa-paperclip"></i>
+                    <span className="connectionsNumber">{attachments.length}</span>
+                  </TabLink>
+                </li>
+              </ul>
+            </Tabs>
             &nbsp;
           </div>
+
           <NeedAuthorization>
-            <div className="sidepanel-footer">
-            <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
-                    className="create-connection btn btn-success">
-              <i className="fa fa-plus"></i>
-              <span className="btn-label">New</span>
-            </button>
-            </div>
+            <ShowIf if={selectedTab === 'references'}>
+              <div className="sidepanel-footer">
+                <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
+                        className="create-connection btn btn-success">
+                  <i className="fa fa-plus"></i>
+                  <span className="btn-label">New</span>
+                </button>
+              </div>
+            </ShowIf>
           </NeedAuthorization>
+
+          <NeedAuthorization>
+            <ShowIf if={this.props.tab === 'attachments'}>
+              <div className="sidepanel-footer">
+                <UploadAttachment entityId={entity._id}/>
+              </div>
+            </ShowIf>
+          </NeedAuthorization>
+
           <div className="sidepanel-body">
-            {this.groupReferences(references).map((group) =>
-              <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
-            )}
+            <Tabs selectedTab={selectedTab}>
+              <TabContent for="references">
+                {this.groupReferences(references).map((group) =>
+                  <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
+                )}
+              </TabContent>
+              <TabContent for="attachments">
+                <AttachmentsList files={Immutable(attachments)}
+                                 parentId={entity._id} />
+              </TabContent>
+            </Tabs>
           </div>
+
         </aside>
+
         <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
+
       </div>
     );
   }
@@ -168,7 +209,9 @@ EntityViewer.propTypes = {
   deleteEntity: PropTypes.func,
   addReference: PropTypes.func,
   deleteReference: PropTypes.func,
-  startNewConnection: PropTypes.func
+  startNewConnection: PropTypes.func,
+  tab: PropTypes.string,
+  showTab: PropTypes.func
 };
 
 EntityViewer.contextTypes = {
@@ -202,7 +245,8 @@ const mapStateToProps = (state) => {
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
     references: selectReferences(state),
-    entityBeingEdited: !!state.entityView.entityForm._id
+    entityBeingEdited: !!state.entityView.entityForm._id,
+    tab: state.entityView.uiState.get('tab')
   };
 };
 
@@ -211,6 +255,7 @@ function mapDispatchToProps(dispatch) {
     deleteEntity,
     addReference,
     deleteReference,
+    showTab,
     startNewConnection: connectionsActions.startNewConnection
   }, dispatch);
 }

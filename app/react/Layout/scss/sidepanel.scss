@@ -135,7 +135,8 @@ $c-sidebar: $c-white;
       }
     }
 
-    &.relationship-hover {
+    &.relationship-hover,
+    &.highlight-hover:hover {
       background: $c-secondary-lighten;
     }
 
