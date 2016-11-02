@@ -103,7 +103,6 @@ export class EntityViewer extends Component {
     const selectedTab = tab || 'references';
     const references = this.props.references.toJS();
     const attachments = entity.attachments ? entity.attachments : [];
-    const displayNone = {display: 'none'};
 
     return (
       <div className="row entity-content">
