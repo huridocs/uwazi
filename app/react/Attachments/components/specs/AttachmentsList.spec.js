@@ -24,7 +24,7 @@ describe('AttachmentsList', () => {
     component = shallow(<AttachmentsList {...props} />);
   };
 
-  fit('should render a list of attachments (files)', () => {
+  it('should render a list of attachments (files)', () => {
     render();
     expect(component.find('.item').length).toBe(2);
   });
