@@ -21,7 +21,7 @@ export class TemplateLabel extends Component {
     return (
       <span className={typeIndex}>
         <i className={`item-type__icon fa ${icon}`}></i>
-        <span className="item-type__name">{t(name, name)}</span>
+        <span className="item-type__name">{t(this.props.template, name)}</span>
       </span>
     );
   }
