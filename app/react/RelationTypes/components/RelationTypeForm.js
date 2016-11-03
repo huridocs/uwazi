@@ -41,21 +41,21 @@ export class RelationTypeForm extends Component {
                 <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
                   <Field model="relationType.name">
                       <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
+                      {(() => {
+                        if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
+                          return <div className="validation-error">
+                                    <i className="fa fa-exclamation-triangle"></i>
+                                    &nbsp;
+                                    Duplicated name
+                                </div>;
+                        }
+                      })()}
                   </Field>
                 </FormGroup>
                 &nbsp;
                 <button type="submit" className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save
                 </button>
-                {(() => {
-                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                    return <div className="validation-error">
-                              <i className="fa fa-exclamation-triangle"></i>
-                              &nbsp;
-                              Duplicated name
-                          </div>;
-                  }
-                })()}
               </div>
               <div className="panel-body">Currently connections only need a title.</div>
             </div>

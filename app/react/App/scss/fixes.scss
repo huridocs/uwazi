@@ -263,7 +263,8 @@ header {
   margin: 0 !important;
 }
 
-.relationType .panel-heading {
+.relationType .panel-heading,
+.thesauri .panel-heading {
   display: flex;
 
   .form-group, input {
@@ -271,17 +272,13 @@ header {
   }
   .form-group {
     width: 100%;
-    line-height: 32px;
+    position: relative;
   }
-}
-
-.thesauri .panel-heading {
-  display: flex;
-
-  .form-group, input {
-    margin: 0;
-  }
-  input {
-    width: 100%;
+  .validation-error {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+    line-height: 34px;
+    height: 32px;
   }
 }
