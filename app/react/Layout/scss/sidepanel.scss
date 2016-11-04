@@ -152,8 +152,7 @@ $c-sidebar: $c-white;
 
 .sidepanel-header,
 .sidepanel-footer {
-  background: $c-sidebar;
-  z-index: 1;
+  z-index: 4;
 }
 
 .sidepanel-footer + .sidepanel-body > .view,
@@ -164,6 +163,7 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-header {
+  background: $c-sidebar;
   position: relative;
   min-height: $header-height;
   border-bottom: 2px solid $c-grey-light;
@@ -196,23 +196,10 @@ $c-sidebar: $c-white;
 .sidepanel-footer {
   position: absolute;
   bottom: 0;
-  left: 15px;
-  right: 15px;
-  padding: 0 0 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 0 20px;
   text-align: center;
-  background: transparentize($c-white, .9);
-  background: -webkit-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-  background:      -o-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-  background:    -moz-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-  background:         linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-
-  .entity-connections & {
-    background: transparentize($c-grey-lighten, .9);
-    background: -webkit-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-    background:      -o-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-    background:    -moz-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-    background:         linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-  }
 
   .btn {
     position: relative;
@@ -231,7 +218,8 @@ $c-sidebar: $c-white;
     line-height: 1.5em;
     left: 50%;
     transform: translateX(-50%) translateY(2px);
-
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
   }
 
   .btn:hover .btn-label {
