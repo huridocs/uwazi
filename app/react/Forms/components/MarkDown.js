@@ -19,9 +19,7 @@ export class MarkDown extends Component {
         </TabContent>
         <TabContent for="preview" className="markdownViewer">
           <div className="document">
-            <div className="page">
-              <div dangerouslySetInnerHTML={{__html: marked(this.props.value, {sanitize: true})}}></div>
-            </div>
+            <div dangerouslySetInnerHTML={{__html: marked(this.props.value, {sanitize: true})}}></div>
           </div>
         </TabContent>
       </Tabs>

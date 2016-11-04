@@ -49,9 +49,7 @@ export class PageViewer extends Component {
         <main className="document-viewer page-viewer">
           <div className="main-wrapper">
             <div className="document">
-              <div className="page">
-                {pageHtml}
-              </div>
+              {pageHtml}
             </div>
           </div>
         </main>
