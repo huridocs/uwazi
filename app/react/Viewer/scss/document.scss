@@ -9,15 +9,10 @@
 }
 
 .document {
-  div.page {
-    background: $c-white;
-    border-radius: 0 !important;
-    border-bottom: 1px solid $c-grey;
-    box-shadow: $shadow;
-    position: relative;
-    font-family: sans-serif;
-    margin-bottom: 15px;
-  }
+  background: $c-white;
+  max-width: 800px;
+  margin: auto;
+  padding: 30px;
 
   ::selection {
     background: $c-primary-light;
@@ -92,9 +87,16 @@
   }
 }
 
-.document {
-  max-width: 800px;
-  margin: auto;
+.sourceDocument,
+.targetDocument {
+  padding: 0;
+  background: transparent;
+}
+
+.page {
+  background: $c-white;
+  margin-bottom: 30px;
+  box-shadow: $shadow;
 }
 
 .document.targetDocument {
