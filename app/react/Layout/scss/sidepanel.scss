@@ -73,6 +73,10 @@ $c-sidebar: $c-white;
     display: block;
     width: 100%;
     padding: 15px;
+    
+    &.is-expanded {
+      border-bottom: 1px solid $c-grey-light;
+    }
 
     .title {
       position: relative;
@@ -88,12 +92,10 @@ $c-sidebar: $c-white;
       margin: 0;
     }
   }
-  .item-group:not(:first-of-type) .item-group-header{
-    border-top: 1px solid $c-grey-light;
-  }
 
   .item-group {
     padding: 0px;
+    border-bottom: 1px solid $c-grey-light;
   }
   .item {
     transition: all 0ms;
