@@ -12,7 +12,11 @@
   background: $c-white;
   max-width: 800px;
   margin: auto;
-  padding: 30px;
+  padding: 15px;
+  
+  @media(min-width: 1024px) {
+    padding: 30px;
+  }
 
   ::selection {
     background: $c-primary-light;
