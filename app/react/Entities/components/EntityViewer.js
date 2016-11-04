@@ -115,20 +115,24 @@ export class EntityViewer extends Component {
             entityBeingEdited={entityBeingEdited}/>
 
           <div className="sidepanel-body">
-            <ShowIf if={!entityBeingEdited}>
-              <div className="item-info">
-                <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
-                <h1 className="item-name">{entity.title}</h1>
-                <TemplateLabel template={entity.template}/>
-              </div>
-            </ShowIf>
+            <div className="document">
+              <div className="page">
+                <ShowIf if={!entityBeingEdited}>
+                  <div className="item-info">
+                    <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+                    <h1 className="item-name">{entity.title}</h1>
+                    <TemplateLabel template={entity.template}/>
+                  </div>
+                </ShowIf>
 
-            {(() => {
-              if (entityBeingEdited) {
-                return <EntityForm/>;
-              }
-              return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
-            })()}
+                {(() => {
+                  if (entityBeingEdited) {
+                    return <EntityForm/>;
+                  }
+                  return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
+                })()}
+              </div>
+            </div>
           </div>
         </aside>
         <aside className="side-panel entity-connections">

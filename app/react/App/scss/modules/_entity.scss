@@ -7,6 +7,7 @@
   right: auto !important;
   width: 66.666% !important;
   z-index: 3 !important;
+  background: $c-background;
   @media (max-width: 1023px) {
     position: relative !important;
     width: 100% !important;
