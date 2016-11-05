@@ -1,10 +1,12 @@
 .document-viewer {
   width: 100%;
-  padding: 30px;
+  padding: 15px;
   transition: all 500ms;
 
-  &.is-active {
     @media(min-width: 1024px) {
+      padding: 30px;
+      
+      &.is-active {
       width: 66.666%;
     }
   }

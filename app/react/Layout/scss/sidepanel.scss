@@ -72,13 +72,10 @@ $c-sidebar: $c-white;
   .item-group-header {
     display: block;
     width: 100%;
-    border-bottom: 1px solid $c-grey-light;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    font-size: $f-size;
-
-    &.is-collapsed {
-      margin-bottom: -15px;
+    padding: 15px;
+    
+    &.is-expanded {
+      border-bottom: 1px solid $c-grey-light;
     }
 
     .title {
@@ -91,11 +88,14 @@ $c-sidebar: $c-white;
       padding-left: 10px;
       font-weight: bold;
     }
+    .multiselectItem-action {
+      margin: 0;
+    }
   }
-}
-.side-panel:not(.entity-connections) {
+
   .item-group {
     padding: 0px;
+    border-bottom: 1px solid $c-grey-light;
   }
   .item {
     transition: all 0ms;
@@ -154,9 +154,7 @@ $c-sidebar: $c-white;
 
 .sidepanel-header,
 .sidepanel-footer {
-  background: $c-sidebar;
-  padding: 20px;
-  z-index: 1;
+  z-index: 4;
 }
 
 .sidepanel-footer + .sidepanel-body > .view,
@@ -167,9 +165,11 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-header {
+  background: $c-sidebar;
   position: relative;
   min-height: $header-height;
   border-bottom: 2px solid $c-grey-light;
+  padding: 15px;
 
   &.no-border {
     border-bottom: 0;
@@ -198,23 +198,10 @@ $c-sidebar: $c-white;
 .sidepanel-footer {
   position: absolute;
   bottom: 0;
-  left: 15px;
-  right: 15px;
-  padding: 0 0 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 0 20px;
   text-align: center;
-  background: transparentize($c-white, .9);
-  background: -webkit-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-  background:      -o-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-  background:    -moz-linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-  background:         linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
-
-  .entity-connections & {
-    background: transparentize($c-grey-lighten, .9);
-    background: -webkit-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-    background:      -o-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-    background:    -moz-linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-    background:         linear-gradient(transparent 0%, $c-grey-lighten 70%, $c-grey-lighten 100%);
-  }
 
   .btn {
     position: relative;
@@ -233,7 +220,8 @@ $c-sidebar: $c-white;
     line-height: 1.5em;
     left: 50%;
     transform: translateX(-50%) translateY(2px);
-
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
   }
 
   .btn:hover .btn-label {

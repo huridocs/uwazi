@@ -18,7 +18,7 @@ export class MarkDown extends Component {
           <textarea className="form-control" rows={rows} onChange={this.props.onChange} value={this.props.value}/>
         </TabContent>
         <TabContent for="preview" className="markdownViewer">
-          <div dangerouslySetInnerHTML={{__html: marked(this.props.value, {sanitize: true})}}></div>
+          <div className="document" dangerouslySetInnerHTML={{__html: marked(this.props.value, {sanitize: true})}}></div>
         </TabContent>
       </Tabs>
     );

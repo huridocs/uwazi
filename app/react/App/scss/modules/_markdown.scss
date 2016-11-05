@@ -36,29 +36,24 @@
   }
 }
 
-.page-viewer .markdownViewer {
-  background: $c-white;
-  box-shadow: 0 0 0 9999px $c-white;
-}
-
 .markdownEditor,
 .markdownViewer {
   h1 {
     font-weight: 600;
-    font-size: 32px;
-    margin: 60px 0 30px;
+    font-size: 28px;
+    margin: 30px 0 30px;
   }
   h2 {
     font-family: $f-regular;
-    font-size: 24px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid $c-grey;
-    margin: 60px 0 15px;
+    font-size: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid $c-grey-light;
+    margin: 30px 0 30px;
   }
   h3 {
     font-family: $f-regular;
-    font-size: 20px;
-    margin: 45px 0 15px;
+    font-size: 18px;
+    margin: 30px 0 15px;
   }
   blockquote {
     max-width: 66%;
@@ -96,7 +91,8 @@
   }
   p, li {
     font-family: $f-regular;
-    font-size: 16px;
+    font-size: 14px;
+    line-height: 1.6em;
   }
   li {
     margin-bottom: 5px;
@@ -128,15 +124,6 @@
   .tab-link {
     padding: 15px 15px 0;
     font-size: $f-size-sm;
-  }
-}
-
-.side-panel {
-  .markdownViewer,
-  .markdownEditor {
-    p {
-      font-size: $f-size;
-    }
   }
 }
 

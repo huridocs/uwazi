@@ -9,14 +9,13 @@
 }
 
 .document {
-  div.page {
-    background: $c-white;
-    border-radius: 0 !important;
-    border-bottom: 1px solid $c-grey;
-    box-shadow: $shadow;
-    position: relative;
-    font-family: sans-serif;
-    margin-bottom: 15px;
+  background: $c-white;
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+  
+  @media(min-width: 1024px) {
+    padding: 30px;
   }
 
   ::selection {
@@ -92,9 +91,16 @@
   }
 }
 
-.document {
-  max-width: 800px;
-  margin: auto;
+.sourceDocument,
+.targetDocument {
+  padding: 0;
+  background: transparent;
+}
+
+.page > div {
+  background: $c-white;
+  margin: 0 auto 30px !important;
+  box-shadow: $shadow;
 }
 
 .document.targetDocument {

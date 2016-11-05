@@ -5,8 +5,9 @@
 .entity-metadata {
   left: 0 !important;
   right: auto !important;
-  width: 50% !important;
+  width: 66.666% !important;
   z-index: 3 !important;
+  background: $c-white;
   @media (max-width: 1023px) {
     position: relative !important;
     width: 100% !important;
@@ -17,7 +18,7 @@
     display: none;
   }
   .item-info {
-    padding: 30px;
+    padding: 15px;
   }
   .item-icon {
     margin-right: 10px;
@@ -26,9 +27,6 @@
   .item-name {
     font-weight: 300;
     font-size: 18px !important;
-  }
-  .view {
-    padding: 15px;
   }
   dt {
     width: 25%;
@@ -40,34 +38,12 @@
 
 .entity-connections {
   right: 0 !important;
-  width: 50% !important;
-  background: $c-grey-lighten !important;
 
   @media (max-width: 1023px) {
     position: relative !important;
     width: 100% !important;
     max-width: 999px !important;
     top: 0 !important;
-  }
-
-  .sidepanel-header {
-    background: $c-grey-lighten;
-  }
-
-  .item-group {
-    padding: 15px;
-  }
-  @media(min-width: 1024px) {
-    .item {
-      width: 49% !important;
-      margin-right: 2%;
-    }
-    .item:nth-child(2n+1) {
-      margin-right: 0;
-    }
-  }
-  .item-metadata {
-    display: none;
   }
 }
 
