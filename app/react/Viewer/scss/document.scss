@@ -10,7 +10,7 @@
 
 .document {
   background: $c-white;
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
   padding: 15px;
   
@@ -97,9 +97,9 @@
   background: transparent;
 }
 
-.page {
+.page > div {
   background: $c-white;
-  margin-bottom: 30px;
+  margin: 0 auto 30px !important;
   box-shadow: $shadow;
 }
 
