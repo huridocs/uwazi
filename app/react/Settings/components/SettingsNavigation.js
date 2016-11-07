@@ -13,6 +13,7 @@ export class SettingsNavigation extends Component {
           <I18NLink to='settings/navlinks' activeClassName="active" className="list-group-item">{t('System', 'Menu')}</I18NLink>
           <I18NLink to='settings/pages' activeClassName="active" className="list-group-item">{t('System', 'Pages')}</I18NLink>
           <I18NLink to='settings/translations' activeClassName="active" className="list-group-item">{t('System', 'Translations')}</I18NLink>
+          <I18NLink to='settings/filters' activeClassName="active" className="list-group-item">{t('System', 'Filters')}</I18NLink>
         </div>
       </div>
       <div className="panel panel-default">
