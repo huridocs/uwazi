@@ -10,7 +10,7 @@ describe('referencesAPI', () => {
     backend
     .mock(APIURL + 'references/by_document/sourceDocument', 'GET', {body: JSON.stringify(arrayResponse)})
     .mock(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', 'GET', {body: '2'})
-    .mock(APIURL + 'references?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .mock(APIURL + 'references?_id=id&_rev=rev', 'DELETE', {body: JSON.stringify({backendResponse: 'testdelete'})})
     .mock(APIURL + 'references', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -40,10 +40,10 @@ describe('referencesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {_id: 'id'};
+      let document = {_id: 'id', _rev: 'rev', omitProperty: 'omit'};
       referencesAPI.delete(document)
       .then((response) => {
-        expect(response).toEqual({backednResponse: 'testdelete'});
+        expect(response).toEqual({backendResponse: 'testdelete'});
         done();
       })
       .catch(done.fail);

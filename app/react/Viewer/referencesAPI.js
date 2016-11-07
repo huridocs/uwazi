@@ -21,7 +21,8 @@ export default {
   },
 
   delete(reference) {
-    return api.delete('references', reference)
+    const {_id, _rev} = reference;
+    return api.delete('references', {_id, _rev})
     .then((response) => {
       return response.json;
     });
