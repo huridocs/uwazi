@@ -1,10 +1,11 @@
+// TEST!!!
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {formater} from 'app/Metadata';
 import marked from 'marked';
 import t from '../I18N/t';
 
-import {RowList, ItemFooter, ItemName} from './Lists';
+import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
@@ -12,7 +13,7 @@ import PrintDate from './PrintDate';
 export class Item extends Component {
 
   formatMetadata(populatedMetadata, creationDate, translationContext) {
-    let metadata = populatedMetadata
+    const metadata = populatedMetadata
     .filter(p => p.showInCard && (p.value && p.value.length > 0 || p.markdown))
     .map((property, index) => {
       let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
@@ -21,43 +22,67 @@ export class Item extends Component {
       }
       return (
         <dl key={index}>
-          <dt>{t(translationContext, property.label)}</dt>
+          <dt>{t(property.context || translationContext, property.label)}</dt>
           <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
         </dl>
       );
     });
 
-    let creationMetadata = <dl><dt><i>Upload date</i></dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
+    const creationMetadata = <dl><dt><i>Upload date</i></dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
 
     return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
   }
 
   render() {
     // console.log('render item');
-    const {onClick, active, buttons, templates, thesauris} = this.props;
+    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText, additionalMetadata,
+           templateClassName, buttons, templates, thesauris} = this.props;
+
     const doc = this.props.doc.toJS();
     const {title, icon, template, creationDate} = doc;
 
     const type = doc.type === 'entity' ? 'entity' : 'document';
     const className = this.props.className || '';
 
+    const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
+
+    doc.metadata = doc.metadata || {};
+
     const populatedMetadata = formater.prepareMetadata(doc, templates.toJS(), thesauris.toJS()).metadata;
+
+    if (additionalMetadata && additionalMetadata.length) {
+      additionalMetadata.reverse().forEach(metadata => {
+        const {label, value} = metadata;
+        populatedMetadata.unshift({value, label, icon: metadata.icon, showInCard: true, context: 'System'});
+      });
+    }
+
     const metadata = this.formatMetadata(populatedMetadata, creationDate, template);
 
+
     return (
-      <RowList.Item onClick={onClick || function () {}}
-                    className={`item-${type} ${className}`}
-                    active={active} >
+      <RowList.Item
+        className={`item-${type} ${className}`}
+        onClick={onClick || function () {}}
+        onMouseEnter={onMouseEnter || function () {}}
+        onMouseLeave={onMouseLeave || function () {}}
+        active={active} >
         <div className="item-info">
-          <Icon className="item-icon item-icon-center" data={icon} />
-          <ItemName>{title}</ItemName>
+          <div className="item-name">
+            {additionalIcon || ''}
+            <Icon className="item-icon item-icon-center" data={icon} />
+            <span>{title}</span>
+            {snippet}
+          </div>
         </div>
         <div className="item-metadata">
           {metadata}
         </div>
         <ItemFooter>
-          <TemplateLabel template={template}/>
-          {buttons}
+          <div className={templateClassName || ''}>
+            <TemplateLabel template={template}/>
+          </div>
+         {buttons}
         </ItemFooter>
       </RowList.Item>
     );
@@ -68,10 +93,16 @@ Item.propTypes = {
   templates: PropTypes.object,
   thesauris: PropTypes.object,
   onClick: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+  onMouseLeave: PropTypes.func,
   active: PropTypes.bool,
+  additionalIcon: PropTypes.object,
+  additionalText: PropTypes.string,
+  additionalMetadata: PropTypes.array,
   doc: PropTypes.object,
-  buttons: PropTypes.array,
-  className: PropTypes.string
+  buttons: PropTypes.object,
+  className: PropTypes.string,
+  templateClassName: PropTypes.string
 };
 
 const mapStateToProps = ({templates, thesauris}) => {

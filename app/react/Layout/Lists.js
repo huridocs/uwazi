@@ -58,7 +58,7 @@ let RowList = ({children}) => {
   return <div className="item-group">{children}</div>;
 };
 
-let RowListItem = ({children, status, onClick, active, className}) => {
+let RowListItem = ({children, status, onClick, onMouseEnter, onMouseLeave, active, className}) => {
   let activeClass = '';
   if (active === true) {
     activeClass = 'is-active';
@@ -68,7 +68,10 @@ let RowListItem = ({children, status, onClick, active, className}) => {
   }
 
   return (
-    <div className={className + ' item item-status item-' + (status || 'default') + ' ' + activeClass} onClick={onClick}>
+    <div className={className + ' item item-status item-' + (status || 'default') + ' ' + activeClass}
+         onClick={onClick}
+         onMouseEnter={onMouseEnter}
+         onMouseLeave={onMouseLeave}>
       {children}
     </div>
   );
@@ -88,6 +91,8 @@ RowListItem.propTypes = {
   children: childrenType,
   status: PropTypes.string,
   onClick: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+  onMouseLeave: PropTypes.func,
   active: PropTypes.bool,
   className: PropTypes.string
 };

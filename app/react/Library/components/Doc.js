@@ -28,13 +28,11 @@ export class Doc extends Component {
     return <Item onClick={this.select.bind(this, active)}
                  active={active}
                  doc={Immutable(this.props.doc)}
-                 buttons={[
-                   <I18NLink to={documentViewUrl} className="item-shortcut" key={0}>
-                     <span className="itemShortcut-arrow">
-                       <i className="fa fa-external-link"></i>
-                      </span>
-                   </I18NLink>
-                 ]}
+                 buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
+                            <span className="itemShortcut-arrow">
+                              <i className="fa fa-external-link"></i>
+                             </span>
+                          </I18NLink>}
            />;
   }
 }
