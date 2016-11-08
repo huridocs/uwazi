@@ -11,7 +11,7 @@ describe('FiltersForm', () => {
 
   beforeEach(() => {
     props = {
-      settings: {filters: [{_id: 1, name: 'Country'}, {_id: 2, name: 'Case'}]},
+      settings: {collection: fromJS({filters: [{_id: 1, name: 'Country'}, {_id: 2, name: 'Case'}]})},
       templates: fromJS([{_id: 3, name: 'Judge'}, {_id: 4, name: 'Court'}])
     };
   });

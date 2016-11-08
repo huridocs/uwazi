@@ -26,18 +26,14 @@ describe('LibraryFilters', () => {
     component = shallow(<LibraryFilters {...props} />);
   });
 
-  it('should render a MultiSelect to filter for all types and one for each document type', () => {
-    let multiselect = component.find(MultiSelect);
-    expect((multiselect.props().options.map(o => o.name))).toEqual(templates.toJS().map(o => o.name));
-  });
-
   describe('maped state', () => {
     it('should contain the filters store and the filters form', () => {
       let store = {
         library: {
           filters: Immutable.fromJS({properties: 'filters state', documentTypes: ['Decision']}),
           ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true}),
-          aggregations: Immutable.fromJS({types: {buckets: []}})
+          aggregations: Immutable.fromJS({types: {buckets: []}}),
+          settings: Immutable.fromJS({collection: {filters: []}})
         },
         templates: Immutable.fromJS([])
       };
@@ -47,7 +43,8 @@ describe('LibraryFilters', () => {
         searchTerm: 'Zerg Rush',
         open: true,
         templates: store.templates,
-        aggregations: store.library.aggregations
+        aggregations: store.library.aggregations,
+        settings: store.settings
       });
     });
   });

@@ -8,6 +8,7 @@ export const itemSource = {
       id: props.id,
       name: props.name,
       items: props.items,
+      container: props.container,
       index: props.index
     };
   },
@@ -27,6 +28,10 @@ export const itemTarget = {
     const hoverIndex = props.index;
 
     if (props.id === item.id) {
+      return;
+    }
+
+    if (props.container.id !== item.container.id) {
       return;
     }
 
@@ -78,7 +83,7 @@ export class DragAndDropItem extends Component {
     const {isDragging, connectDragSource, connectDropTarget} = this.props;
     let propertyClass = 'list-group-item';
     if (isDragging) {
-      // propertyClass += ' dragging';
+      propertyClass += ' dragging';
     }
 
     return connectDragSource(connectDropTarget(
