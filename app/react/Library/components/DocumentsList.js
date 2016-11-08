@@ -32,19 +32,20 @@ export class DocumentsList extends Component {
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
         <div className="main-wrapper">
         <div className="sort-by">
-
-            <p id="documents-counter" className="u-floatLeft documents-counter">
-              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
+            <p className="u-floatLeft documents-counter">
+              <b>{`${documents.totalRows}`}</b> {`${t('System', 'documents')}`}
             </p>
             <SortButtons />
-
         </div>
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
         <div className="row">
           <div className="col-sm-12 text-center documents-counter">
-              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
+              <b>{`${documents.rows.length}`}</b>
+              {` ${t('System', 'of')} `}
+              <b>{`${documents.totalRows}`}</b>
+              {` ${t('System', 'documents')}`}
           </div>
           {(() => {
             if (documents.rows.length < documents.totalRows && !this.state.loading) {

@@ -17,6 +17,7 @@ import {actions as connectionsActions} from 'app/Connections';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
+import SortButtons from 'app/Library/components/SortButtons';
 import ReferencesGroup from './ReferencesGroup';
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
@@ -180,6 +181,12 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for="references">
+                <div className="sort-by">
+                  <p className="u-floatLeft documents-counter">
+                    <b>10</b> conexiones
+                    </p>
+                    <SortButtons />
+                  </div>
                 {this.groupReferences(references).map((group) =>
                   <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
                 )}
