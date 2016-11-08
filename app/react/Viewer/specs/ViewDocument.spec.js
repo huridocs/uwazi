@@ -58,6 +58,9 @@ describe('ViewDocument', () => {
         expect(relationTypesResponse).toEqual(relationTypes.rows);
 
         expect(state.relationTypes).toEqual(relationTypes.rows);
+
+        expect(state.templates).toEqual(templates.rows);
+        expect(state.thesauris).toEqual(thesauris.rows);
         done();
       })
       .catch(done.fail);
@@ -98,6 +101,9 @@ describe('ViewDocument', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/templates/SET', value: 'templates'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/thesauris/SET', value: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/relationTypes/SET', value: 'relationTypes'});
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: 'templates'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesauris'});
     });
   });
 
