@@ -73,6 +73,7 @@ let RowListItem = ({children, status, onClick, active, className}) => {
     </div>
   );
 };
+
 RowList.Item = RowListItem;
 
 let childrenType = PropTypes.oneOfType([
