@@ -77,20 +77,24 @@ $c-sidebar: $c-white;
     display: block;
     width: 100%;
     padding: 15px;
+    cursor: pointer;
     
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
+      color: $c-primary;
+      
+      .multiselectItem-results {
+        background: $c-primary;
+        color: $c-white;
+      }
     }
 
     .title {
       position: relative;
     }
-
-    .count {
-      color: $c-grey;
-      font-size: 105%;
-      padding-left: 10px;
-      font-weight: bold;
+    .itemGroup-title {
+      font-family: $f-special;
+      font-weight: 300;
     }
     .multiselectItem-action {
       margin: 0;

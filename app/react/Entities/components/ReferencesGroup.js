@@ -25,18 +25,15 @@ export class ReferencesGroup extends Component {
     return (
       <div className="item-group">
         <div className={`item-group-header ${groupClassName}`}>
-          <div className="title">
+          <div className="title" onClick={this.toggleGroup.bind(this)}>
+            <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>&nbsp;
             <ShowIf if={connectionType === 'metadata'}>
-              <span><b>{connectionLabel}</b> in <b>{templateLabel}</b></span>
+              <span className="itemGroup-title">{connectionLabel} in {templateLabel}</span>
             </ShowIf>
             <ShowIf if={connectionType === 'connection'}>
-              <b>{connectionLabel}</b>
+              <span className="itemGroup-title">{connectionLabel}</span>
             </ShowIf>
-            <span className="count">{refs.length}</span>
-            <button className="btn btn-xs btn-default multiselectItem-action"
-                    onClick={this.toggleGroup.bind(this)}>
-              <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
-            </button>
+            <span className="multiselectItem-results">{refs.length}</span>
           </div>
         </div>
 
