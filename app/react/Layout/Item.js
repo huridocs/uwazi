@@ -2,6 +2,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {formater} from 'app/Metadata';
+import {is, fromJS as Immutable} from 'immutable';
 import marked from 'marked';
 import t from '../I18N/t';
 
@@ -9,6 +10,9 @@ import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
+
+import DocumentsAPI from 'app/Documents/DocumentsAPI';
+import EntitiesAPI from 'app/Entities/EntitiesAPI';
 
 export class Item extends Component {
 
@@ -33,8 +37,48 @@ export class Item extends Component {
     return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
   }
 
+  getMetadata(doc) {
+    if (this.props.doc.get('metadata')) {
+      this.setState({metadata: doc.get('metadata')});
+      return;
+    }
+
+    const get = doc.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
+    get(doc.get('sharedId'))
+    .then(docsData => {
+      this.setState({metadata: Immutable(docsData[0].metadata || {})});
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!is(this.props.doc, nextProps.doc) || !this.state.metadata) {
+      this.getMetadata(this.props.doc);
+    }
+  }
+
+  componentDidMount() {
+    if (!this.state.metadata) {
+      this.getMetadata(this.props.doc);
+    }
+  }
+
+  componentWillMount() {
+    if (this.props.doc.get('metadata')) {
+      this.setState({metadata: this.props.doc.get('metadata')});
+      return;
+    }
+
+    this.setState({metadata: null});
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !is(this.props.doc, nextProps.doc) ||
+           !is(this.state.metadata, nextState.metadata) ||
+           this.props.active !== nextProps.active ||
+           this.props.className !== nextProps.className;
+  }
+
   render() {
-    // console.log('render item');
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText, additionalMetadata,
            templateClassName, buttons, templates, thesauris} = this.props;
 
@@ -46,7 +90,7 @@ export class Item extends Component {
 
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
 
-    doc.metadata = doc.metadata || {};
+    doc.metadata = this.state.metadata ? this.state.metadata.toJS() : {};
 
     const populatedMetadata = formater.prepareMetadata(doc, templates.toJS(), thesauris.toJS()).metadata;
 
