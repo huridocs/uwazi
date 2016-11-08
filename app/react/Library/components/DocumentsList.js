@@ -32,9 +32,9 @@ export class DocumentsList extends Component {
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
         <div className="main-wrapper">
         <div className="sort-by">
-            <p className="u-floatLeft documents-counter">
+            <div className="u-floatLeft documents-counter">
               <b>{`${documents.totalRows}`}</b> {`${t('System', 'documents')}`}
-            </p>
+            </div>
             <SortButtons />
         </div>
         <RowList>

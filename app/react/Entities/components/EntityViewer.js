@@ -182,11 +182,11 @@ export class EntityViewer extends Component {
             <Tabs selectedTab={selectedTab}>
               <TabContent for="references">
                 <div className="sort-by">
-                  <p className="u-floatLeft documents-counter">
+                  <div className="u-floatLeft documents-counter">
                     <b>10</b> conexiones
-                    </p>
-                    <SortButtons />
                   </div>
+                  <SortButtons />
+                </div>
                 {this.groupReferences(references).map((group) =>
                   <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
                 )}
