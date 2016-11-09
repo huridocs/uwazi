@@ -62,7 +62,7 @@ export class ConnectionsList extends Component {
           return references.map((reference, index) => {
             let itemClass = '';
             let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
-            let referenceIcon = 'fa-sign-out';
+            let referenceIcon = reference.inbound ? 'fa-sign-in' : 'fa-sign-out';
 
             if (uiState.highlightedReference === reference._id) {
               itemClass = 'relationship-hover';
@@ -75,16 +75,15 @@ export class ConnectionsList extends Component {
               }
             }
 
-            if (reference.inbound) {
-              referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
-            }
-
             const doc = Immutable({
               sharedId: reference.connectedDocument,
               type: reference.connectedDocumentType,
               title: reference.connectedDocumentTitle,
               icon: reference.connectedDocumentIcon,
-              template: reference.connectedDocumentTemplate
+              template: reference.connectedDocumentTemplate,
+              metadata: reference.connectedDocumentMetadata,
+              creationDate: reference.connectedDocumentCreationDate,
+              published: reference.connectedDocumentPublished
             });
 
             return (
@@ -104,6 +103,7 @@ export class ConnectionsList extends Component {
                   {label: 'Connection type', value: this.relationType(reference.relationType, relationTypes)}
                 ]}
                 templateClassName="item-label-group"
+                evalPublished={true}
                 buttons={
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
