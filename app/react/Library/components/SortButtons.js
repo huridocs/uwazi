@@ -34,7 +34,10 @@ export class SortButtons extends Component {
     let filters = Object.assign({}, this.props.search, sort);
     this.props.merge(this.props.stateProperty, sort);
     delete filters.treatAs;
-    this.props.sortCallback(filters);
+
+    if (this.props.sortCallback) {
+      this.props.sortCallback(filters);
+    }
   }
 
   changeOrder() {

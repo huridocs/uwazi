@@ -89,6 +89,18 @@ describe('SortButtons', () => {
       expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
     });
 
+    it('should not fail if no sortCallback', () => {
+      delete props.sortCallback;
+      render();
+      let error;
+      try {
+        instance.sort('title');
+      } catch (err) {
+        error = err;
+      }
+      expect(error).toBeUndefined();
+    });
+
     describe('when changing property being sorted', () => {
       it('should use default order', () => {
         props.search = {order: 'desc', sort: 'title'};
