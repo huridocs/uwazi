@@ -87,12 +87,10 @@ describe('Doc', () => {
       let store = {
         library: {
           ui: Immutable({selectedDocument: {_id: 'docId'}})
-        },
-        templates: Immutable(['templates'])
+        }
       };
       let state = mapStateToProps(store);
       expect(state.selectedDocument).toEqual('docId');
-      expect(state.templates.toJS()).toEqual(['templates']);
     });
   });
 });

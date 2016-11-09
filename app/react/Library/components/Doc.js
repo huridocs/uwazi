@@ -45,9 +45,8 @@ Doc.propTypes = {
 
 
 export function mapStateToProps({library}) {
-  const {ui} = library;
   return {
-    selectedDocument: ui.get('selectedDocument') ? ui.get('selectedDocument').get('_id') : ''
+    selectedDocument: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') : ''
   };
 }
 
