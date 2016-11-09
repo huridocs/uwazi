@@ -111,9 +111,9 @@ export class MultiSelect extends Component {
               htmlFor={prefix + option[optionsValue]}>
                 <i className="multiselectItem-icon fa fa-square-o"></i>
                 <i className="multiselectItem-icon fa fa-check"></i>
-                <span>
+                <span className="multiselectItem-name">
                   <Icon className="item-icon" data={option.icon}/>
-                  {option[optionsLabel]}&nbsp;
+                  {option[optionsLabel]}
                 </span>
                 <ShowIf if={typeof option.results !== 'undefined'}>
                   <span className="multiselectItem-results">{option.results}

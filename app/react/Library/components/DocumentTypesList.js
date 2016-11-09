@@ -86,9 +86,7 @@ export class DocumentTypesList extends Component {
         htmlFor={item.id}>
           <i className="multiselectItem-icon fa fa-square-o"></i>
           <i className="multiselectItem-icon fa fa-check"></i>
-          <span>
-            {item.name}&nbsp;
-          </span>
+          <span className="multiselectItem-name">{item.name}</span>
           <span className="multiselectItem-results">
             {this.aggregations(item)}
           </span>
@@ -109,14 +107,17 @@ export class DocumentTypesList extends Component {
                 <label htmlFor={item.id} className="multiselectItem-label">
                   <i className="multiselectItem-icon fa fa-square-o"></i>
                   <i className="multiselectItem-icon fa fa-check"></i>
-                  <span>&nbsp;{item.name}</span>
+                  <span className="multiselectItem-name">{item.name}</span>
+                  <span className="multiselectItem-results">
+                    x
+                  </span>
                 </label>
-                <button className="btn btn-xs btn-default multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>
-                  <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                <button className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>
+                  <i className={this.state[item.id] ? 'fa fa-minus' : 'fa fa-plus'}></i>
                 </button>
               </div>
             <ShowIf if={this.state[item.id]}>
-              <ul className="multiselect is-active">
+              <ul className="multiselectChild is-active">
               {item.items.map((_item, i) => {
                 return this.renderSingleType(_item, i);
               })}
