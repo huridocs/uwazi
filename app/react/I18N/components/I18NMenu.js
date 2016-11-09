@@ -34,6 +34,10 @@ export class I18NMenu extends Component {
     let regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
     path = path.replace(regexp, '/');
 
+    if (languages.length <= 1) {
+      return false;
+    }
+
     return (
       <ul className="menuNav-I18NMenu">
         {(() => {
