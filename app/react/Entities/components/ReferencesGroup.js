@@ -1,9 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {is, fromJS as Immutable} from 'immutable';
 
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import {TemplateLabel, Icon} from 'app/Layout';
+import {Item} from 'app/Layout';
 import {I18NLink} from 'app/I18N';
 import {advancedSort} from 'app/utils/advancedSort';
 
@@ -17,9 +18,38 @@ export class ReferencesGroup extends Component {
     this.setState({expanded: false});
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !is(this.props.group, nextProps.group) ||
+           !is(this.props.sort, nextProps.sort) ||
+           this.state.expanded !== nextState.expanded;
+  }
+
   render() {
-    const {connectionType, connectionLabel, templateLabel} = this.props.group;
-    const refs = advancedSort(this.props.group.refs, {property: 'connectedDocumentTitle'});
+    const group = this.props.group.toJS();
+    const {connectionType, connectionLabel, templateLabel} = group;
+
+    const sortValues = this.props.sort.toJS();
+    const sortOptions = {
+      property: ['doc'].concat(sortValues.sort.split('.')),
+      order: sortValues.order,
+      treatAs: sortValues.treatAs
+    };
+
+    const refs = advancedSort(group.refs.map(reference => {
+      return {
+        reference,
+        doc: {
+          sharedId: reference.connectedDocument,
+          type: reference.connectedDocumentType,
+          title: reference.connectedDocumentTitle,
+          icon: reference.connectedDocumentIcon,
+          template: reference.connectedDocumentTemplate,
+          metadata: reference.connectedDocumentMetadata,
+          published: reference.connectedDocumentPublished,
+          creationDate: reference.connectedDocumentCreationDate
+        }
+      };
+    }), sortOptions);
     const groupClassName = this.state.expanded ? 'is-expanded' : 'is-collapsed';
 
     return (
@@ -37,36 +67,22 @@ export class ReferencesGroup extends Component {
           </div>
         </button>
 
-        {refs.map((reference, index) => {
+        {refs.map((data, index) => {
           if (!this.state.expanded) {
             return false;
           }
 
+          const reference = data.reference;
+          const doc = data.doc;
+
           return (
-            <div key={index} className='item'>
-              <div className="item-info">
-                <div className="item-name">
-                  <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
-                  {reference.connectedDocumentTitle}
-                  {(() => {
-                    if (reference.text) {
-                      return <div className="item-snippet">
-                        {reference.text}
-                      </div>;
-                    }
-                  })()}
-                </div>
-              </div>
-              <div className="item-actions">
-                <div className="item-label-group">
-                  <TemplateLabel template={reference.connectedDocumentTemplate}/>
-                  &nbsp;&nbsp;
-                  <ShowIf if={!reference.connectedDocumentPublished}>
-                    <span className="label label-warning">
-                      <i className="fa fa-warning"></i> Unpublished
-                    </span>
-                  </ShowIf>
-                </div>
+            <Item
+              key={index}
+              doc={Immutable(doc)}
+              additionalText={reference.text}
+              templateClassName="item-label-group"
+              evalPublished={true}
+              buttons={
                 <div className="item-shortcut-group">
                   <NeedAuthorization>
                     <ShowIf if={reference.sourceType !== 'metadata'}>
@@ -77,7 +93,7 @@ export class ReferencesGroup extends Component {
                   </NeedAuthorization>
                   &nbsp;
                   <I18NLink
-                    to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                    to={`/${doc.type}/${doc.sharedId}`}
                     onClick={e => e.stopPropagation()}
                     className="item-shortcut">
                     <span className="itemShortcut-arrow">
@@ -85,8 +101,8 @@ export class ReferencesGroup extends Component {
                     </span>
                   </I18NLink>
                 </div>
-              </div>
-            </div>
+              }
+            />
           );
         })}
       </div>
@@ -96,7 +112,12 @@ export class ReferencesGroup extends Component {
 
 ReferencesGroup.propTypes = {
   group: PropTypes.object,
-  deleteReference: PropTypes.func
+  deleteReference: PropTypes.func,
+  sort: PropTypes.object
 };
 
-export default connect()(ReferencesGroup);
+export const mapStateToProps = ({entityView}) => {
+  return {sort: Immutable(entityView.sort)};
+};
+
+export default connect(mapStateToProps)(ReferencesGroup);
