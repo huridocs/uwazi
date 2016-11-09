@@ -71,6 +71,10 @@ $c-sidebar: $c-white;
   
   .sort-by {
     padding: 15px;
+    
+    .Dropdown {
+      right: 15px;
+    }
   }
 
   .item-group-header {
