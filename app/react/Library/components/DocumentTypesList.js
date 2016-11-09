@@ -110,16 +110,18 @@ export class DocumentTypesList extends Component {
                   <i className="multiselectItem-icon fa fa-square-o"></i>
                   <i className="multiselectItem-icon fa fa-check"></i>
                   <span>&nbsp;{item.name}</span>
-                  <span className="multiselectItem-results">
-                    {this.aggregations(item)}
-                  </span>
                 </label>
+                <button className="btn btn-xs btn-default multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>
+                  <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                </button>
               </div>
-              <ul className="multiselectChild is-active">
-                {item.items.map((_item, i) => {
-                  return this.renderSingleType(_item, i);
-                })}
+            <ShowIf if={this.state[item.id]}>
+              <ul className="multiselect is-active">
+              {item.items.map((_item, i) => {
+                return this.renderSingleType(_item, i);
+              })}
               </ul>
+            </ShowIf>
           </li>;
   }
 
