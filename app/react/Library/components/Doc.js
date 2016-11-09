@@ -17,8 +17,8 @@ export class Doc extends Component {
   }
 
   render() {
-    let {type, sharedId} = this.props.doc;
-    let documentViewUrl = `/${type}/${sharedId}`;
+    const {type, sharedId} = this.props.doc;
+    const documentViewUrl = `/${type}/${sharedId}`;
 
     let active;
     if (this.props.selectedDocument) {
@@ -32,8 +32,7 @@ export class Doc extends Component {
                             <span className="itemShortcut-arrow">
                               <i className="fa fa-external-link"></i>
                              </span>
-                          </I18NLink>}
-           />;
+                          </I18NLink>}/>;
   }
 }
 

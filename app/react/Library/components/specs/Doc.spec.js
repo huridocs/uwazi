@@ -1,12 +1,10 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
+import {fromJS as Immutable} from 'immutable';
 
 import {mapStateToProps} from '../Doc';
 import {Doc} from '../Doc';
-import {RowList} from 'app/Layout/Lists';
-
-import PrintDate from 'app/Layout/PrintDate';
+import {Item} from 'app/Layout';
 
 describe('Doc', () => {
   let component;
@@ -14,9 +12,7 @@ describe('Doc', () => {
 
   beforeEach(() => {
     props = {
-      doc: {_id: 'idOne', template: 'templateId', creationDate: 1234},
-      templates: Immutable.fromJS([{_id: 'templateId', properties: []}]),
-      thesauris: Immutable.fromJS([]),
+      doc: {_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'},
       selectDocument: jasmine.createSpy('selectDocument'),
       unselectDocument: jasmine.createSpy('unselectDocument')
     };
@@ -26,58 +22,29 @@ describe('Doc', () => {
     component = shallow(<Doc {...props}/>);
   };
 
-  describe('metadata', () => {
-    it('should expose the creation date as basic metadata', () => {
+  describe('Item data', () => {
+    it('should hold the entire Doc as Immutable', () => {
       render();
-      const metadata = component.find(PrintDate).parent().parent();
-      expect(metadata.find('dt').text()).toBe('Upload date');
-      expect(metadata.find(PrintDate).props().utc).toBe(1234);
-      expect(metadata.find(PrintDate).props().toLocal).toBe(true);
+      expect(component.find(Item).props().doc).toEqual(Immutable(props.doc));
     });
 
-    describe('when template has showInCard properties', () => {
-      beforeEach(() => {
-        props.doc.metadata = {
-          p1: 'yes',
-          p2: 'no',
-          p3: 237600000
-        };
-
-        props.templates = Immutable.fromJS([{
-          _id: 'templateId',
-          properties: [
-            {name: 'p1', type: 'text', label: 'should appear 1', showInCard: true},
-            {name: 'p2', type: 'text', label: 'should not appear', showInCard: false},
-            {name: 'p3', type: 'date', label: 'should appear 2', showInCard: true}
-          ]
-        }]);
-
-        props.thesauris = Immutable.fromJS([{_id: 'dummyThesauri'}]);
-      });
-
-      it('should expose multiple formated properties', () => {
-        render();
-        const metadata = component.find('.item-metadata');
-        expect(metadata.children().length).toBe(2);
-        expect(metadata.children().first().text()).toContain('should appear 1');
-        expect(metadata.children().first().text()).toContain('yes');
-        expect(metadata.children().last().text()).toContain('should appear 2');
-        expect(metadata.children().last().text()).toContain('13');
-        expect(metadata.children().last().text()).toContain('1977');
-      });
+    it('shoul hold a link to the document', () => {
+      render();
+      const button = component.find(Item).props().buttons;
+      expect(button.props.to).toBe('/document/id');
     });
   });
 
   describe('when doc is not selected', () => {
     it('should not be active', () => {
       render();
-      expect(component.find(RowList.Item).props().active).not.toBeDefined();
+      expect(component.find(Item).props().active).not.toBeDefined();
     });
 
     describe('onClick', () => {
       it('should selectDocument', () => {
         render();
-        component.find(RowList.Item).simulate('click');
+        component.find(Item).simulate('click');
         expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
       });
     });
@@ -87,13 +54,13 @@ describe('Doc', () => {
     it('should be active false', () => {
       props.selectedDocument = 'another_document';
       render();
-      expect(component.find(RowList.Item).props().active).toBe(false);
+      expect(component.find(Item).props().active).toBe(false);
     });
     describe('onClick', () => {
       it('should selectDocument', () => {
         props.selectedDocument = 'another_document';
         render();
-        component.find(RowList.Item).simulate('click');
+        component.find(Item).simulate('click');
         expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
       });
     });
@@ -103,13 +70,13 @@ describe('Doc', () => {
     it('should be active true', () => {
       props.selectedDocument = 'idOne';
       render();
-      expect(component.find(RowList.Item).props().active).toBe(true);
+      expect(component.find(Item).props().active).toBe(true);
     });
     describe('onClick', () => {
       it('should unselectDocument', () => {
         props.selectedDocument = 'idOne';
         render();
-        component.find(RowList.Item).simulate('click');
+        component.find(Item).simulate('click');
         expect(props.unselectDocument).toHaveBeenCalled();
       });
     });
@@ -119,9 +86,9 @@ describe('Doc', () => {
     it('should contain the previewDoc', () => {
       let store = {
         library: {
-          ui: Immutable.fromJS({selectedDocument: {_id: 'docId'}})
+          ui: Immutable({selectedDocument: {_id: 'docId'}})
         },
-        templates: Immutable.fromJS(['templates'])
+        templates: Immutable(['templates'])
       };
       let state = mapStateToProps(store);
       expect(state.selectedDocument).toEqual('docId');
