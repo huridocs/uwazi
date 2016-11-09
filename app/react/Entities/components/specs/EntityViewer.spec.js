@@ -72,9 +72,9 @@ describe('EntityViewer', () => {
       const ref2 = component.find(ReferencesGroup).at(1);
       const ref3 = component.find(ReferencesGroup).at(2);
 
-      expect(ref1.props().group).toEqual(groupedReferences[0]);
-      expect(ref2.props().group).toEqual(groupedReferences[1]);
-      expect(ref3.props().group).toEqual(groupedReferences[2]);
+      expect(ref1.props().group.toJS()).toEqual(groupedReferences[0]);
+      expect(ref2.props().group.toJS()).toEqual(groupedReferences[1]);
+      expect(ref3.props().group.toJS()).toEqual(groupedReferences[2]);
     });
   });
 

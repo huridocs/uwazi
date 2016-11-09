@@ -100,7 +100,7 @@ export class EntityViewer extends Component {
   // --
 
   render() {
-    let {entity, entityBeingEdited, tab} = this.props;
+    const {entity, entityBeingEdited, tab} = this.props;
     const selectedTab = tab || 'references';
     const references = this.props.references.toJS();
     const attachments = entity.attachments ? entity.attachments : [];
@@ -182,13 +182,12 @@ export class EntityViewer extends Component {
             <Tabs selectedTab={selectedTab}>
               <TabContent for="references">
                 <div className="sort-by">
-                  <div className="u-floatLeft documents-counter">
-                    <b>10</b> conexiones
-                  </div>
-                  <SortButtons />
+                  <SortButtons stateProperty="entityView.sort" />
                 </div>
-                {this.groupReferences(references).map((group) =>
-                  <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
+                {this.groupReferences(references).map(group =>
+                  <ReferencesGroup key={group.key}
+                                   group={Immutable(group)}
+                                   deleteReference={this.deleteReference.bind(this)} />
                 )}
               </TabContent>
               <TabContent for="attachments">
