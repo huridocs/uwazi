@@ -61,6 +61,8 @@
     "nodemailer-smtp-transport": "^2.5.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
+    "pdf.js": "^0.1.0",
+    "pdfjs-dist": "^1.6.304",
     "pdftohtmljs_uwazi": "0.3.7",
     "query-string": "^4.2.3",
     "react": "15.0.2",

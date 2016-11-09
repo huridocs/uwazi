@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react';
 import Text from 'app/Viewer/utils/Text';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
-import Loader from 'app/components/Elements/Loader';
+import PDF from './PDF';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -53,21 +53,19 @@ export class Document extends Component {
 
   render() {
     const doc = this.props.doc.toJS();
-    const docHTML = this.props.docHTML.toJS();
 
     const Header = this.props.header || function () {
       return false;
     };
 
+    if (!doc._id) {
+      return false;
+    }
+
     return (
       <div>
         <div className={'_' + doc._id + ' document ' + this.props.className} >
           <Header/>
-          {(() => {
-            if (!docHTML.pages.length) {
-              return <Loader/>;
-            }
-          })()}
           <div className="pages"
             ref={(ref) => this.pagesContainer = ref}
             onMouseUp={this.handleMouseUp.bind(this)}
@@ -75,14 +73,9 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            {docHTML.pages.map((page, index) => {
-              let html = {__html: page};
-              return <div className='page' key={index} dangerouslySetInnerHTML={html} />;
-            })}
+            <PDF file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
           </div>
         </div>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.fonts}}></style>
       </div>
     );
   }
