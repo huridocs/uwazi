@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {searchDocuments} from 'app/Library/actions/libraryActions';
 
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
@@ -35,7 +36,7 @@ export class DocumentsList extends Component {
             <div className="u-floatLeft documents-counter">
               <b>{`${documents.totalRows}`}</b> {`${t('System', 'documents')}`}
             </div>
-            <SortButtons />
+            <SortButtons sortCallback={this.props.searchDocuments}/>
         </div>
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
@@ -69,7 +70,8 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   filtersPanel: PropTypes.bool,
   selectedDocument: PropTypes.object,
-  loadMoreDocuments: PropTypes.func
+  loadMoreDocuments: PropTypes.func,
+  searchDocuments: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -82,7 +84,7 @@ export function mapStateToProps(state) {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadMoreDocuments}, dispatch);
+  return bindActionCreators({loadMoreDocuments, searchDocuments}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);
