@@ -24,8 +24,8 @@ export class ReferencesGroup extends Component {
 
     return (
       <div className="item-group">
-        <div className={`item-group-header ${groupClassName}`}>
-          <div className="title" onClick={this.toggleGroup.bind(this)}>
+        <button className={`item-group-header ${groupClassName}`} onClick={this.toggleGroup.bind(this)}>
+          <div className="title">
             <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>&nbsp;
             <ShowIf if={connectionType === 'metadata'}>
               <span className="itemGroup-title">{connectionLabel} in {templateLabel}</span>
@@ -35,7 +35,7 @@ export class ReferencesGroup extends Component {
             </ShowIf>
             <span className="multiselectItem-results">{refs.length}</span>
           </div>
-        </div>
+        </button>
 
         {refs.map((reference, index) => {
           if (!this.state.expanded) {

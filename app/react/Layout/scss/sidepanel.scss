@@ -77,7 +77,11 @@ $c-sidebar: $c-white;
     display: block;
     width: 100%;
     padding: 15px;
-    cursor: pointer;
+    text-align: left;
+    border: 0;
+    background: 0;
+    box-shadow: none;
+    outline: none;
     
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
