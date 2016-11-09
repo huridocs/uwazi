@@ -16,12 +16,13 @@ describe('SortButtons', () => {
 
   beforeEach(() => {
     props = {
-      searchDocuments: jasmine.createSpy('searchDocuments'),
+      sortCallback: jasmine.createSpy('sortCallback'),
       merge: jasmine.createSpy('merge'),
       search: {order: 'desc', sort: 'title'},
       templates: immutable([
         {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]}
-      ])
+      ]),
+      stateProperty: 'search'
     };
   });
 
@@ -58,16 +59,18 @@ describe('SortButtons', () => {
         render();
         component.setState({active: true});
         component.find('li').last().simulate('click');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
 
         const templates = props.templates.toJS();
+        templates[0].properties[1].name = 'different_name';
         templates[0].properties[1].type = 'date';
         props.templates = immutable(templates);
 
         render();
+        component.setState({active: true});
 
         component.find('li').last().simulate('click');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'desc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name', order: 'desc'});
       });
     });
   });
@@ -75,14 +78,15 @@ describe('SortButtons', () => {
   describe('sort', () => {
     it('should merge with searchTerm and filtersForm and toggle between asc/desc', () => {
       render();
-      instance.sort('title');
-      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+      instance.sort('title', 'asc', 'number');
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
       props.search.order = 'asc';
+      props.search.treatAs = 'number';
       render();
-      instance.sort('title');
-      expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
-      expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'desc'});
+      instance.sort('title', 'asc', 'string');
+      expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'desc', treatAs: 'number'});
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
     });
 
     describe('when changing property being sorted', () => {
@@ -90,19 +94,28 @@ describe('SortButtons', () => {
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('title');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
-        props.searchDocuments.calls.reset();
+        props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'desc');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'creationDate', order: 'desc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'desc'});
 
-        props.searchDocuments.calls.reset();
+        props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'asc');
-        expect(props.searchDocuments).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc'});
+      });
+    });
+
+    describe('when changing order', () => {
+      it('should keep the treatAs property', () => {
+        props.search = {order: 'desc', sort: 'title', treatAs: 'number'};
+        render();
+        instance.changeOrder();
+        expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'asc', treatAs: 'number'});
       });
     });
   });

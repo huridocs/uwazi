@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions} from 'react-redux-form';
-import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {t} from 'app/I18N';
 
 export class SortButtons extends Component {
@@ -12,26 +11,30 @@ export class SortButtons extends Component {
     this.state = {active: false};
   }
 
-  handleClick(property) {
+  handleClick(property, defaultOrder, treatAs) {
     if (!this.state.active) {
       return;
     }
 
-    this.sort(property);
+    this.sort(property, defaultOrder, treatAs);
   }
 
-  sort(property, defaultOrder) {
+  sort(property, defaultOrder, defaultTreatAs) {
     let {search} = this.props;
     let order = defaultOrder;
+    let treatAs = defaultTreatAs;
+
     if (search.sort === property) {
       order = search.order === 'desc' ? 'asc' : 'desc';
+      treatAs = search.treatAs;
     }
 
-    let sort = {sort: property, order: order};
+    let sort = {sort: property, order: order, treatAs};
 
     let filters = Object.assign({}, this.props.search, sort);
-    this.props.merge('search', sort);
-    this.props.searchDocuments(filters);
+    this.props.merge(this.props.stateProperty, sort);
+    delete filters.treatAs;
+    this.props.sortCallback(filters);
   }
 
   changeOrder() {
@@ -43,13 +46,14 @@ export class SortButtons extends Component {
       template.properties.forEach(property => {
         if (property.sortable && !sorts.find(s => s.property === property.name)) {
           const sortString = 'metadata.' + property.name;
+          const treatAs = property.type === 'date' ? 'number' : 'string';
+          const defaultOrder = treatAs === 'number' ? 'desc' : 'asc';
           sorts.push({
             property: property.name,
             html:
-              <li
-                key={sorts.length + 1}
-                className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
-                onClick={this.sort.bind(this, sortString, property.type === 'date' ? 'desc' : 'asc')}>
+              <li key={sorts.length + 1}
+                  className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
+                  onClick={() => this.handleClick(sortString, defaultOrder, treatAs)}>
                 {t(template.name, property.label)}
               </li>
           });
@@ -75,10 +79,12 @@ export class SortButtons extends Component {
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <span className="Dropdown-label">{t('System', 'Sort by')}</span>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')} onClick={() => this.handleClick('title')}>
+          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}
+              onClick={() => this.handleClick('title', 'asc', 'string')}>
             A-Z
           </li>
-          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')} onClick={() => this.handleClick('creationDate')}>
+          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}
+              onClick={() => this.handleClick('creationDate', 'desc', 'number')}>
             Recent
           </li>
           {additionalSorts}
@@ -91,17 +97,25 @@ export class SortButtons extends Component {
 
 SortButtons.propTypes = {
   searchDocuments: PropTypes.func,
-  merge: PropTypes.func,
+  stateProperty: PropTypes.string,
   search: PropTypes.object,
-  templates: PropTypes.object
+  templates: PropTypes.object,
+  merge: PropTypes.func,
+  sortCallback: PropTypes.func
 };
 
-export function mapStateToProps({search, templates}) {
-  return {search, templates};
+export function mapStateToProps(state, ownProps) {
+  const {templates} = state;
+  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'search';
+  const search = stateProperty.split('.').reduce((memo, property) => {
+    return Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null;
+  }, state);
+
+  return {stateProperty, search, templates};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({merge: actions.merge, searchDocuments}, dispatch);
+  return bindActionCreators({merge: actions.merge}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);
