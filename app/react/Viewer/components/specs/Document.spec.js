@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import Text from 'app/Viewer/utils/Text';
 import {Document} from 'app/Viewer/components/Document.js';
 
-describe('Document', () => {
+fdescribe('Document', () => {
   let component;
   let instance;
 
@@ -38,20 +38,6 @@ describe('Document', () => {
     props.className = 'aClass';
     render();
     expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
-  });
-
-  it('should render every pagen inside a div ', () => {
-    render();
-    let pages = component.find('.pages').children();
-    expect(pages.first().props().dangerouslySetInnerHTML).toEqual({__html: 'page1'});
-    expect(pages.last().props().dangerouslySetInnerHTML).toEqual({__html: 'page3'});
-  });
-
-  it('should render every css inside a style ', () => {
-    render();
-    let styles = component.find('style');
-
-    expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css'})});
   });
 
   describe('onClick', () => {

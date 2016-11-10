@@ -36,7 +36,10 @@ export class Document extends Component {
   }
 
   componentDidMount() {
-    this.text = Text(this.pagesContainer);
+    if (this.pagesContainer) {
+      this.text = Text(this.pagesContainer);
+    }
+    this.pdfrdy = false;
   }
 
   onTextSelected() {
@@ -44,11 +47,20 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
+    if (!this.pdfrdy) {
+      return;
+    }
+
     this.text.renderReferences(this.props.references);
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
+  }
+
+  pdfLoaded() {
+    this.pdfrdy = true;
+    this.componentDidUpdate();
   }
 
   render() {
@@ -73,7 +85,7 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <PDF file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
+            <PDF onLoad={this.pdfLoaded.bind(this)} file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
           </div>
         </div>
       </div>
