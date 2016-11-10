@@ -2,17 +2,16 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {formater} from 'app/Metadata';
-import {is, fromJS as Immutable} from 'immutable';
+import {is} from 'immutable';
 import marked from 'marked';
+
 import t from '../I18N/t';
+import ShowIf from 'app/App/ShowIf';
 
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
-
-import DocumentsAPI from 'app/Documents/DocumentsAPI';
-import EntitiesAPI from 'app/Entities/EntitiesAPI';
 
 export class Item extends Component {
 
@@ -37,60 +36,25 @@ export class Item extends Component {
     return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
   }
 
-  getMetadata(doc) {
-    if (this.props.doc.get('metadata')) {
-      this.setState({metadata: doc.get('metadata')});
-      return;
-    }
-
-    const get = doc.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
-    get(doc.get('sharedId'))
-    .then(docsData => {
-      this.setState({metadata: Immutable(docsData[0].metadata || {})});
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!is(this.props.doc, nextProps.doc) || !this.state.metadata) {
-      this.getMetadata(this.props.doc);
-    }
-  }
-
-  componentDidMount() {
-    if (!this.state.metadata) {
-      this.getMetadata(this.props.doc);
-    }
-  }
-
-  componentWillMount() {
-    if (this.props.doc.get('metadata')) {
-      this.setState({metadata: this.props.doc.get('metadata')});
-      return;
-    }
-
-    this.setState({metadata: null});
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     return !is(this.props.doc, nextProps.doc) ||
-           !is(this.state.metadata, nextState.metadata) ||
            this.props.active !== nextProps.active ||
            this.props.className !== nextProps.className;
   }
 
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText, additionalMetadata,
-           templateClassName, buttons, templates, thesauris} = this.props;
+           templateClassName, buttons, templates, thesauris, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
-    const {title, icon, template, creationDate} = doc;
+    const {title, icon, template, creationDate, published} = doc;
 
     const type = doc.type === 'entity' ? 'entity' : 'document';
     const className = this.props.className || '';
 
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
 
-    doc.metadata = this.state.metadata ? this.state.metadata.toJS() : {};
+    doc.metadata = doc.metadata || {};
 
     const populatedMetadata = formater.prepareMetadata(doc, templates.toJS(), thesauris.toJS()).metadata;
 
@@ -121,10 +85,16 @@ export class Item extends Component {
         </div>
         <div className="item-metadata">
           {metadata}
+          <ShowIf if={evalPublished && !published}>
+            <span className="label label-warning">
+              <i className="fa fa-warning"></i> Unpublished
+            </span>
+          </ShowIf>
         </div>
         <ItemFooter>
           <div className={templateClassName || ''}>
             <TemplateLabel template={template}/>
+            &nbsp;&nbsp;
           </div>
          {buttons}
         </ItemFooter>
@@ -146,7 +116,8 @@ Item.propTypes = {
   doc: PropTypes.object,
   buttons: PropTypes.object,
   className: PropTypes.string,
-  templateClassName: PropTypes.string
+  templateClassName: PropTypes.string,
+  evalPublished: PropTypes.bool
 };
 
 const mapStateToProps = ({templates, thesauris}) => {
