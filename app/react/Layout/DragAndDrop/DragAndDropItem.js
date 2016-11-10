@@ -88,6 +88,7 @@ export class DragAndDropItem extends Component {
 
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
+        <i className="fa fa-reorder"></i>
         {this.props.children}
       </div>
     ));
