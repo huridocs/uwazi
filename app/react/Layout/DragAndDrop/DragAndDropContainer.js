@@ -56,7 +56,9 @@ export class DragAndDropContainer extends Component {
                         </DragAndDropItem>;
               })}
               <ShowIf if={!this.props.items.length}>
-                <div style={{background: 'gray', padding: '20px'}}>Drag items here.</div>
+                <div className="no-properties">
+                  <div className="no-properties-wrap">Drag items here</div>
+                </div>
               </ShowIf>
             </ul>)}
           </div>;
