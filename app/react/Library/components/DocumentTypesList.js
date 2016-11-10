@@ -69,6 +69,14 @@ export class DocumentTypesList extends Component {
     if (found) {
       return found.filtered.doc_count;
     }
+
+    if (item.items) {
+      return item.items.reduce((result, _item) => {
+        return result + this.aggregations(_item);
+      }, 0);
+    }
+
+    return 0;
   }
 
   renderSingleType(item, index) {
@@ -109,7 +117,7 @@ export class DocumentTypesList extends Component {
                   <i className="multiselectItem-icon fa fa-check"></i>
                   <span className="multiselectItem-name">{item.name}</span>
                   <span className="multiselectItem-results">
-                    x
+                    {this.aggregations(item)}
                   </span>
                 </label>
                 <button className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>

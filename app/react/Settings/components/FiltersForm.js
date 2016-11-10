@@ -14,7 +14,15 @@ export class FiltersForm extends Component {
     super(props);
     let activeFilters = props.settings.collection.toJS().filters || [];
     let inactiveFilters = props.templates.toJS().filter((tpl) => {
-      return !activeFilters.find((filt) => filt.id === tpl._id);
+      return !activeFilters.find((filt) => {
+        let matchId = filt.id === tpl._id;
+        let insideGroup = false;
+        if (filt.items) {
+          insideGroup = filt.items.find((_filt) => _filt.id === tpl._id);
+        }
+
+        return matchId || insideGroup;
+      });
     }).map((tpl) => {
       return {id: tpl._id, name: tpl.name};
     });
@@ -37,6 +45,7 @@ export class FiltersForm extends Component {
 
       return <div>
               <input type="text" value={item.name} onChange={nameChange.bind(this)} />
+              <button className="btn btn-xs btn-danger" onClick={this.removeGroup.bind(this, item)} disabled={item.items.length}>Remove</button>
               <DragAndDropContainer id={item.id} onChange={onChange.bind(this)} renderItem={this.renderItem.bind(this)} items={item.items}/>
             </div>;
     }
@@ -71,6 +80,11 @@ export class FiltersForm extends Component {
     });
 
     this.setState({activeFilters: this.state.activeFilters});
+  }
+
+  removeGroup(group) {
+    let activeFilters = this.state.activeFilters.filter((item) => item.id !== group.id);
+    this.setState({activeFilters});
   }
 
   render() {
