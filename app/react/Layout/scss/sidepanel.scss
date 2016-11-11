@@ -70,9 +70,9 @@ $c-sidebar: $c-white;
   }
   
   .sort-by {
-    padding: 15px;
-    height: 50px;
-    border-bottom: 1px dotted $c-grey-light;
+    padding: 5px 15px;
+    height: 30px;
+    margin: 0;
     
     .Dropdown {
       right: 15px;
@@ -103,38 +103,21 @@ $c-sidebar: $c-white;
     }
     
     .multiselectItem-results {
-      position: relative;
-      background: transparent;
-      font-size: $f-size;
-      color: $c-grey;
-      
-      &:before {
-        content: '(';
-      }
-      &:after {
-        content: ')';
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1px $c-grey;
+      .fa {
+        margin-left: 2px;
       }
     }
     
     &.is-expanded .multiselectItem-results {
-      color: $c-primary;
+      box-shadow: inset 0 0 0 1px $c-primary;
+      background: $c-primary;
+      color: $c-white;
     }
     
-    .fa {
-      position: absolute;
-      right: 0;
-      height: 24px;
-      line-height: 24px;
-      width: 24px;
-      text-align: center;
-      color: $c-grey;
-      border: 1px solid $c-grey-light;
-      border-radius: 50%;
-    }
-    
-    &:hover .fa {
-      border-color: $c-grey;
-      color: $c-black;
+    &:hover .multiselectItem-results {
+      box-shadow: inset 0 0 0 1px $c-grey-dark;
     }
 
     .title {

@@ -50,6 +50,10 @@
     max-width: 999px !important;
     top: 0 !important;
   }
+  
+  .sidepanel-body {
+    background: $c-grey-lighten;
+  }
 }
 
 .entity-content {

@@ -62,8 +62,10 @@ export class ReferencesGroup extends Component {
             <ShowIf if={connectionType === 'connection'}>
               <span className="itemGroup-title">{connectionLabel}</span>
             </ShowIf>
-            <span className="multiselectItem-results">{refs.length}</span>
-            <i className={`fa ${this.state.expanded ? 'fa-minus' : 'fa-plus'}`}></i>
+            <span className="multiselectItem-results">
+              <span>{refs.length}</span>
+              <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
+            </span>
           </div>
         </button>
 
