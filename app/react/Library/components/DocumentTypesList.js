@@ -101,10 +101,10 @@ export class DocumentTypesList extends Component {
           <i className="multiselectItem-icon fa fa-square-o"></i>
           <i className="multiselectItem-icon fa fa-check"></i>
           <span className="multiselectItem-name">{t(item.id, item.name)}</span>
-          <span className="multiselectItem-results">
-            {this.aggregations(item)}
-          </span>
       </label>
+      <span className="multiselectItem-results">
+        {this.aggregations(item)}
+      </span>
     </li>;
   }
 
@@ -122,13 +122,11 @@ export class DocumentTypesList extends Component {
                   <i className="multiselectItem-icon fa fa-square-o"></i>
                   <i className="multiselectItem-icon fa fa-check"></i>
                   <span className="multiselectItem-name">{t('Filters', item.name)}</span>
-                  <span className="multiselectItem-results">
-                    {this.aggregations(item)}
-                  </span>
                 </label>
-                <button className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>
-                  <i className={this.state[item.id] ? 'fa fa-minus' : 'fa fa-plus'}></i>
-                </button>
+                <span className="multiselectItem-results multiselectItem-results--action" onClick={this.toggleOptions.bind(this, item.id)}>
+                  <span>{this.aggregations(item)}</span>
+                  <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                </span>
               </div>
             <ShowIf if={this.state[item.id]}>
               <ul className="multiselectChild is-active">
