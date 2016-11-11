@@ -50,12 +50,4 @@
 .entity-content {
   z-index: 3;
   max-width: 9999px;
-  @media(min-width: 1024px) {
-    .create-reference {
-      width: 50% !important;
-    }
-    .create-reference.is-hidden {
-      right: -50% !important;
-    }
-  }
 }
