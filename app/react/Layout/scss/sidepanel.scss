@@ -71,6 +71,8 @@ $c-sidebar: $c-white;
   
   .sort-by {
     padding: 15px;
+    height: 50px;
+    border-bottom: 1px dotted $c-grey-light;
     
     .Dropdown {
       right: 15px;
@@ -80,7 +82,7 @@ $c-sidebar: $c-white;
   .item-group-header {
     display: block;
     width: 100%;
-    padding: 15px;
+    padding: 2px 15px;
     text-align: left;
     border: 0;
     background: 0;
@@ -90,19 +92,50 @@ $c-sidebar: $c-white;
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
       color: $c-primary;
+    }
+    
+    &:hover .itemGroup-title {
+      text-decoration: underline;
+    }
+    
+    .multiselectItem-results {
+      position: relative;
+      background: transparent;
+      font-size: $f-size;
+      color: $c-grey;
       
-      .multiselectItem-results {
-        background: $c-primary;
-        color: $c-white;
+      &:before {
+        content: '(';
       }
+      &:after {
+        content: ')';
+      }
+    }
+    
+    &.is-expanded .multiselectItem-results {
+      color: $c-primary;
+    }
+    
+    .fa {
+      position: absolute;
+      right: 0;
+      height: 24px;
+      line-height: 24px;
+      width: 24px;
+      text-align: center;
+      color: $c-grey;
+      border: 1px solid $c-grey-light;
+      border-radius: 50%;
+    }
+    
+    &:hover .fa {
+      border-color: $c-grey;
+      color: $c-black;
     }
 
     .title {
       position: relative;
-    }
-    .itemGroup-title {
-      font-family: $f-special;
-      font-weight: 300;
+      line-height: 24px;
     }
     .multiselectItem-action {
       margin: 0;
@@ -111,20 +144,16 @@ $c-sidebar: $c-white;
 
   .item-group {
     padding: 0px;
-    border-bottom: 1px solid $c-grey-light;
   }
   .item {
     transition: all 0ms;
     width: 100%;
-    margin: 0;
+    margin: 0 !important;
     border-top: 0;
     border-left: 0;
     border-right: 0;
     border-radius: 0;
     box-shadow: none;
-    &:last-child {
-      border-bottom: 0;
-    }
     &:before {
       display: none;
     }
