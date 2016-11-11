@@ -94,6 +94,10 @@ $c-sidebar: $c-white;
       color: $c-primary;
     }
     
+    .itemGroup-title {
+      font-weight: bold;
+    }
+    
     &:hover .itemGroup-title {
       text-decoration: underline;
     }
