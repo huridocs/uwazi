@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
 
@@ -9,8 +8,14 @@ export class DocumentTypesList extends Component {
 
   constructor(props) {
     super(props);
+    let items = this.props.settings.collection.toJS().filters || [];
+    if (!items.length) {
+      items = props.templates.toJS().map((tpl) => {
+        return {id: tpl._id, name: tpl.name};
+      });
+    }
     this.state = {
-      items: this.props.settings.collection.toJS().filters || [],
+      items,
       selectedItems: []
     };
   }
@@ -94,7 +99,7 @@ export class DocumentTypesList extends Component {
         htmlFor={item.id}>
           <i className="multiselectItem-icon fa fa-square-o"></i>
           <i className="multiselectItem-icon fa fa-check"></i>
-          <span className="multiselectItem-name">{item.name}</span>
+          <span className="multiselectItem-name">{t(item.id, item.name)}</span>
           <span className="multiselectItem-results">
             {this.aggregations(item)}
           </span>
@@ -115,7 +120,7 @@ export class DocumentTypesList extends Component {
                 <label htmlFor={item.id} className="multiselectItem-label">
                   <i className="multiselectItem-icon fa fa-square-o"></i>
                   <i className="multiselectItem-icon fa fa-check"></i>
-                  <span className="multiselectItem-name">{item.name}</span>
+                  <span className="multiselectItem-name">{t('Filters', item.name)}</span>
                   <span className="multiselectItem-results">
                     {this.aggregations(item)}
                   </span>
@@ -150,6 +155,7 @@ export class DocumentTypesList extends Component {
 
 DocumentTypesList.propTypes = {
   settings: PropTypes.object,
+  templates: PropTypes.object,
   onChange: PropTypes.func,
   aggregations: PropTypes.object
 };
@@ -158,6 +164,7 @@ DocumentTypesList.propTypes = {
 export function mapStateToProps(state) {
   return {
     settings: state.settings,
+    templates: state.templates,
     aggregations: state.library.aggregations
   };
 }
