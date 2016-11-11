@@ -88,10 +88,12 @@ $c-sidebar: $c-white;
     background: 0;
     box-shadow: none;
     outline: none;
+    transition: padding 300ms;
     
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
       color: $c-primary;
+      padding: 15px 15px 10px;
     }
     
     .itemGroup-title {
@@ -122,6 +124,7 @@ $c-sidebar: $c-white;
     
     .fa {
       position: absolute;
+      top: -2px;
       right: 0;
       height: 24px;
       line-height: 24px;
