@@ -21,11 +21,11 @@ export class SortButtons extends Component {
 
   sort(property, defaultOrder, defaultTreatAs) {
     let {search} = this.props;
-    let order = defaultOrder;
+    let order = defaultOrder || 'asc';
     let treatAs = defaultTreatAs;
 
     if (search.sort === property) {
-      order = search.order === 'desc' ? 'asc' : 'desc';
+      order = search.order;
       treatAs = search.treatAs;
     }
 
@@ -41,7 +41,9 @@ export class SortButtons extends Component {
   }
 
   changeOrder() {
-    this.sort(this.props.search.sort);
+    const {sort, order} = this.props.search;
+    this.props.search.order = order === 'desc' ? 'asc' : 'desc';
+    this.sort(sort);
   }
 
   getAdditionalSorts(templates, search) {
@@ -112,7 +114,6 @@ export function mapStateToProps(state, ownProps) {
   const search = stateProperty.split('.').reduce((memo, property) => {
     return Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null;
   }, state);
-
   return {stateProperty, search, templates};
 }
 

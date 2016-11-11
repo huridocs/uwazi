@@ -30,7 +30,7 @@ export default class Library extends RouteHandler {
 
   static requestState(params, query = {filters: {}, types: []}) {
     query.order = query.order || 'desc';
-    query.sort = query.sort || 'title';
+    query.sort = query.sort || 'creationDate';
     return Promise.all([api.search(query), templatesAPI.get(), thesaurisAPI.get()])
     .then(([documents, templates, thesauris]) => {
       const filterState = libraryHelpers.URLQueryToState(query, templates, thesauris);

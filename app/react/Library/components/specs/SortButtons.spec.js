@@ -76,17 +76,17 @@ describe('SortButtons', () => {
   });
 
   describe('sort', () => {
-    it('should merge with searchTerm and filtersForm and toggle between asc/desc', () => {
+    it('should merge with searchTerm and filtersForm and NOT toggle between asc/desc', () => {
       render();
       instance.sort('title', 'asc', 'number');
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
 
       props.search.order = 'asc';
       props.search.treatAs = 'number';
       render();
       instance.sort('title', 'asc', 'string');
-      expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'desc', treatAs: 'number'});
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
+      expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'asc', treatAs: 'number'});
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
     });
 
     it('should not fail if no sortCallback', () => {
@@ -106,7 +106,7 @@ describe('SortButtons', () => {
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('title');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
 
         props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
@@ -126,6 +126,7 @@ describe('SortButtons', () => {
       it('should keep the treatAs property', () => {
         props.search = {order: 'desc', sort: 'title', treatAs: 'number'};
         render();
+        instance.sort('title');
         instance.changeOrder();
         expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'asc', treatAs: 'number'});
       });
