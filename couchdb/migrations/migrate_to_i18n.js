@@ -177,7 +177,7 @@ let translation = {
   ]
 };
 
-// request.post(dbURL, translation)
-// .catch((error) => {
-//   console.log(error);
-// });
+request.post(dbURL, translation)
+.catch((error) => {
+  console.log(error);
+});
