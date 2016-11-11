@@ -80,7 +80,6 @@ export class SortButtons extends Component {
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
-        <span className="Dropdown-label">{t('System', 'Sort by')}</span>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
           <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}
               onClick={() => this.handleClick('title', 'asc', 'string')}>
@@ -92,7 +91,7 @@ export class SortButtons extends Component {
           </li>
           {additionalSorts}
         </ul>
-        <i onClick={this.changeOrder.bind(this)} className={'order-by-arrow fa fa-caret-' + order}></i>
+        <i onClick={this.changeOrder.bind(this)} className={'order-by-arrow fa fa-long-arrow-' + order}></i>
       </div>
     );
   }
