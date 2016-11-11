@@ -9,6 +9,8 @@
     margin: 0;
   }
   .list-group-item {
+    display: -webkit-flex;
+    display: flex;
     border-radius: 4px !important;
     border: 1px solid $c-grey-light !important;
     box-shadow: $shadow !important;
@@ -33,8 +35,14 @@
     border: 1px dashed $c-grey;
   }
   .fa-reorder {
-    margin: 0 25px 0 0;
-    color: $c-grey-light;
+    margin: 2px 25px 0 0;
+    color: $c-grey;
+  }
+  .list-group-item:hover > .fa-reorder {
+    color: $c-grey-dark;
+  }
+  .fa-reorder + div {
+    width: 100%;
   }
 }
 
