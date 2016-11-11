@@ -1,6 +1,16 @@
 .order-by-arrow {
-  color: #607d8b;
-  font-size: 22px;
+  color: $c-primary;
+  font-size: 15px;
+  width: 15px;
+  line-height: 18px;
+  cursor: pointer;
+  border-bottom: 1px dotted $c-primary;
+  margin-left: 5px;
+  text-align: center;
+  
+  &:hover {
+    color: $c-primary-dark;
+  }
 }
 
 .Dropdown.is-active {
