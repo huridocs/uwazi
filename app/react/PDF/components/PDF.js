@@ -1,35 +1,36 @@
 import React, {Component, PropTypes} from 'react';
 
-//import Loader from 'app/components/Elements/Loader';
-import {PDFJS} from '../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
-PDFJS.workerSrc = '/pdf.worker.bundle.js';
+import ShowIf from 'app/App/ShowIf';
 import PDFPage from './PDFPage.js';
 import '../../../../node_modules/pdfjs-dist/web/pdf_viewer.css';
+
+import {isClient} from 'app/utils';
+
+let PDFJS;
+if (isClient) {
+  PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
+  PDFJS.workerSrc = '/pdf.worker.bundle.js';
+}
 
 export class PDF extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {pdf: {numPages: 0}};
     this.pagesLoaded = 0;
     PDFJS.getDocument(props.file).then(pdf => {
       this.setState({pdf});
-      this.start = new Date().getTime();
     });
   }
 
   pageLoaded() {
     this.pagesLoaded += 1;
     if (this.pagesLoaded === this.state.pdf.numPages) {
-      console.log(new Date().getTime() - this.start);
       this.props.onLoad();
     }
   }
 
   render() {
-    if (!this.state) {
-      return false;
-    }
-
     return (
       <div>
         {(() => {

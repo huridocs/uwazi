@@ -1,19 +1,22 @@
 import React, {Component, PropTypes} from 'react';
-//import {isClient} from 'app/Utils';
+import {isClient} from 'app/utils';
 
-import {PDFJS} from '../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
-PDFJS.workerSrc = '/pdf.worker.bundle.js';
+let PDFJS;
+if (isClient) {
+  PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
+  PDFJS.workerSrc = '/pdf.worker.bundle.js';
+}
 
 export class PDFPage extends Component {
 
   renderPage() {
-    if (!this.rendered && this.pdfPageView) {
-      this.pdfPageView.draw()
-      .catch((e) => e);
-      this.rendered = true;
-    }
-    if (!this.rendered) {
-      this.rendered = true;
+    //if (!this.rendered && this.pdfPageView) {
+      //this.pdfPageView.draw()
+      //.catch((e) => e);
+      //this.rendered = true;
+    //}
+    //if (!this.rendered) {
+      //this.rendered = true;
       this.props.pdf.getPage(this.props.page).then(page => {
         const scale = 1;
 
@@ -31,46 +34,45 @@ export class PDFPage extends Component {
           this.props.onLoad();
         })
         .catch((e) => e);
-        //console.log(this.pdfPageView);
       });
-    }
+    //}
   }
 
-  componentWillUnmount() {
-    document.querySelector('.document-viewer').removeEventListener('scroll');
-  }
+  //componentWillUnmount() {
+    //document.querySelector('.document-viewer').removeEventListener('scroll');
+  //}
 
   componentDidMount() {
-    if (this.pageShouldRender()) {
+    //if (this.pageShouldRender()) {
       this.renderPage();
-    }
+    //}
 
-    document.querySelector('.document-viewer').addEventListener('scroll', () => {
-      if (this.pageShouldRender()) {
-        this.renderPage();
-      } else if (this.pdfPageView) {
-        this.pdfPageView.cancelRendering();
-        this.pdfPageView.destroy();
-        this.rendered = false;
-      }
-    });
+    //document.querySelector('.document-viewer').addEventListener('scroll', () => {
+      //if (this.pageShouldRender()) {
+        //this.renderPage();
+      //} else if (this.pdfPageView) {
+        //this.pdfPageView.cancelRendering();
+        //this.pdfPageView.destroy();
+        //this.rendered = false;
+      //}
+    //});
   }
 
-  pageShouldRender() {
-    const el = this.refs.pageContainer;
-    const rect = el.getBoundingClientRect();
-    const vWidth = window.innerWidth || document.documentElement.clientWidth;
-    const vHeight = window.innerHeight || document.documentElement.clientHeight;
+  //pageShouldRender() {
+    //const el = this.refs.pageContainer;
+    //const rect = el.getBoundingClientRect();
+    //const vWidth = window.innerWidth || document.documentElement.clientWidth;
+    //const vHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    if (rect.right < 0 || rect.bottom < -1054 || rect.left > vWidth || rect.top > vHeight + 1054) {
-      return false;
-    }
+    //if (rect.right < 0 || rect.bottom < -1054 || rect.left > vWidth || rect.top > vHeight + 1054) {
+      //return false;
+    //}
 
-    return true;
-  }
+    //return true;
+  //}
 
   render() {
-    return <div className="page" ref='pageContainer' style={{height: 1056}} />;
+    return <div className="page" ref='pageContainer' style={{height: 1000}} />;
   }
 }
 

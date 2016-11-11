@@ -5,7 +5,7 @@ import {PDFJS} from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
 import PDF from '../PDF';
 import PDFPage from '../PDFPage.js';
 
-fdescribe('PDF', () => {
+describe('PDF', () => {
   let component;
   let instance;
   const pdfObject = {numPages: 2};
@@ -15,14 +15,15 @@ fdescribe('PDF', () => {
   beforeEach(() => {
     spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdfObject));
     props = {
-      file: 'file_url'
+      file: 'file_url',
+      onLoad: jasmine.createSpy('onLoad')
     };
   });
 
   let render = () => {
     component = shallow(<PDF {...props}/>);
     instance = component.instance();
-    spyOn(instance, 'setState');
+    spyOn(instance, 'setState').and.callThrough();
   };
 
   describe('on instance', () => {
@@ -39,9 +40,20 @@ fdescribe('PDF', () => {
   describe('render', () => {
     it('should render a pdfPage for each page', () => {
       render();
-      instance.setState({numPages: 3});
-      console.log(component.find(PDFPage));
+      instance.setState({pdf: {numPages: 3}});
+      component.update();
       expect(component.find(PDFPage).length).toBe(3);
+    });
+  });
+
+  describe('onLoad', () => {
+    it('should be called when all pages are loaded', () => {
+      render();
+      instance.setState({pdf: {numPages: 3}});
+      instance.pageLoaded();
+      instance.pageLoaded();
+      instance.pageLoaded();
+      expect(props.onLoad).toHaveBeenCalled();
     });
   });
 });
