@@ -4,6 +4,7 @@ import Text from 'app/Viewer/utils/Text';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
+import ShowIf from 'app/App/ShowIf';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -68,10 +69,6 @@ export class Document extends Component {
       return false;
     };
 
-    if (!doc._id) {
-      return false;
-    }
-
     return (
       <div>
         <div className={'_' + doc._id + ' document ' + this.props.className} >
@@ -83,7 +80,9 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <PDF onLoad={this.pdfLoaded.bind(this)} file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
+            <ShowIf if={!!doc._id}>
+              <PDF onLoad={this.pdfLoaded.bind(this)} file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
+            </ShowIf>
           </div>
         </div>
       </div>
