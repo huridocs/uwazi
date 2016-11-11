@@ -3,7 +3,7 @@ import React, {Component, PropTypes} from 'react';
 import Text from 'app/Viewer/utils/Text';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
-import PDF from './PDF';
+import PDF from 'app/PDF';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -36,9 +36,7 @@ export class Document extends Component {
   }
 
   componentDidMount() {
-    if (this.pagesContainer) {
-      this.text = Text(this.pagesContainer);
-    }
+    this.text = Text(this.pagesContainer);
     this.pdfrdy = false;
   }
 

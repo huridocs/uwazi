@@ -13,12 +13,14 @@ export class PDF extends Component {
     this.pagesLoaded = 0;
     PDFJS.getDocument(props.file).then(pdf => {
       this.setState({pdf});
+      this.start = new Date().getTime();
     });
   }
 
   pageLoaded() {
     this.pagesLoaded += 1;
     if (this.pagesLoaded === this.state.pdf.numPages) {
+      console.log(new Date().getTime() - this.start);
       this.props.onLoad();
     }
   }

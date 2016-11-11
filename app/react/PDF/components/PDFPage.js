@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
+//import {isClient} from 'app/Utils';
 
-//import Loader from 'app/components/Elements/Loader';
 import {PDFJS} from '../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
 PDFJS.workerSrc = '/pdf.worker.bundle.js';
 
@@ -37,23 +37,23 @@ export class PDFPage extends Component {
   }
 
   componentWillUnmount() {
-    //document.querySelector('.document-viewer').removeEventListener('scroll');
+    document.querySelector('.document-viewer').removeEventListener('scroll');
   }
 
   componentDidMount() {
-    //if (this.pageShouldRender()) {
+    if (this.pageShouldRender()) {
       this.renderPage();
-    //}
+    }
 
-    //document.querySelector('.document-viewer').addEventListener('scroll', () => {
-      //if (this.pageShouldRender()) {
-        //this.renderPage();
-      //} else if (this.pdfPageView) {
-        //this.pdfPageView.cancelRendering();
-        //this.pdfPageView.destroy();
-        //this.rendered = false;
-      //}
-    //});
+    document.querySelector('.document-viewer').addEventListener('scroll', () => {
+      if (this.pageShouldRender()) {
+        this.renderPage();
+      } else if (this.pdfPageView) {
+        this.pdfPageView.cancelRendering();
+        this.pdfPageView.destroy();
+        this.rendered = false;
+      }
+    });
   }
 
   pageShouldRender() {

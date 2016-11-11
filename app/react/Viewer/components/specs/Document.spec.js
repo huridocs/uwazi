@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import Text from 'app/Viewer/utils/Text';
 import {Document} from 'app/Viewer/components/Document.js';
 
-fdescribe('Document', () => {
+describe('Document', () => {
   let component;
   let instance;
 
@@ -195,19 +195,17 @@ fdescribe('Document', () => {
 
     describe('componentDidUpdate', () => {
       it('should simulateSelection', () => {
-        instance.componentDidUpdate();
+        instance.pdfLoaded();
         expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, props.forceSimulateSelection);
       });
 
       it('should render the references', () => {
-        instance.componentDidUpdate();
-
+        instance.pdfLoaded();
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
       });
 
       it('should highlight the reference', () => {
-        instance.componentDidUpdate();
-
+        instance.pdfLoaded();
         expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
       });
     });
