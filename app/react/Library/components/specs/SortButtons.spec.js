@@ -79,7 +79,7 @@ describe('SortButtons', () => {
     it('should merge with searchTerm and filtersForm and NOT toggle between asc/desc', () => {
       render();
       instance.sort('title', 'asc', 'number');
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
       props.search.order = 'asc';
       props.search.treatAs = 'number';
@@ -106,7 +106,7 @@ describe('SortButtons', () => {
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('title');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'desc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
 
         props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};

@@ -25,7 +25,6 @@ export class SortButtons extends Component {
     let treatAs = defaultTreatAs;
 
     if (search.sort === property) {
-      order = search.order;
       treatAs = search.treatAs;
     }
 
@@ -42,8 +41,7 @@ export class SortButtons extends Component {
 
   changeOrder() {
     const {sort, order} = this.props.search;
-    this.props.search.order = order === 'desc' ? 'asc' : 'desc';
-    this.sort(sort);
+    this.sort(sort, order === 'desc' ? 'asc' : 'desc');
   }
 
   getAdditionalSorts(templates, search) {
@@ -55,12 +53,11 @@ export class SortButtons extends Component {
           const defaultOrder = treatAs === 'number' ? 'desc' : 'asc';
           sorts.push({
             property: property.name,
-            html:
-              <li key={sorts.length + 1}
-                  className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
-                  onClick={() => this.handleClick(sortString, defaultOrder, treatAs)}>
-                {t(template.name, property.label)}
-              </li>
+            html: <li key={sorts.length + 1}
+                      className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
+                      onClick={() => this.handleClick(sortString, defaultOrder, treatAs)}>
+                    {t(template.name, property.label)}
+                  </li>
           });
         }
       });
