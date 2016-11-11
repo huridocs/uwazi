@@ -36,6 +36,20 @@ export class Item extends Component {
     return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
   }
 
+  getMetadata(doc) {
+    doc.metadata = doc.metadata || {};
+    const populatedMetadata = formater.prepareMetadata(doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
+
+    if (this.props.additionalMetadata && this.props.additionalMetadata.length) {
+      this.props.additionalMetadata.reverse().forEach(metadata => {
+        const {label, value} = metadata;
+        populatedMetadata.unshift({value, label, icon: metadata.icon, showInCard: true, context: 'System'});
+      });
+    }
+
+    return this.formatMetadata(populatedMetadata, doc.creationDate, doc.template);
+  }
+
   shouldComponentUpdate(nextProps) {
     return !is(this.props.doc, nextProps.doc) ||
            this.props.active !== nextProps.active ||
@@ -43,49 +57,31 @@ export class Item extends Component {
   }
 
   render() {
-    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText, additionalMetadata,
-           templateClassName, buttons, templates, thesauris, evalPublished} = this.props;
+    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
+           templateClassName, buttons, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
-    const {title, icon, template, creationDate, published} = doc;
-
-    const type = doc.type === 'entity' ? 'entity' : 'document';
-    const className = this.props.className || '';
-
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
-
-    doc.metadata = doc.metadata || {};
-
-    const populatedMetadata = formater.prepareMetadata(doc, templates.toJS(), thesauris.toJS()).metadata;
-
-    if (additionalMetadata && additionalMetadata.length) {
-      additionalMetadata.reverse().forEach(metadata => {
-        const {label, value} = metadata;
-        populatedMetadata.unshift({value, label, icon: metadata.icon, showInCard: true, context: 'System'});
-      });
-    }
-
-    const metadata = this.formatMetadata(populatedMetadata, creationDate, template);
-
+    const metadata = this.getMetadata(doc);
 
     return (
       <RowList.Item
-        className={`item-${type} ${className}`}
+        className={`item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`}
         onClick={onClick || function () {}}
         onMouseEnter={onMouseEnter || function () {}}
         onMouseLeave={onMouseLeave || function () {}}
-        active={active} >
+        active={active}>
         <div className="item-info">
           <div className="item-name">
             {additionalIcon || ''}
-            <Icon className="item-icon item-icon-center" data={icon} />
-            <span>{title}</span>
+            <Icon className="item-icon item-icon-center" data={doc.icon} />
+            <span>{doc.title}</span>
             {snippet}
           </div>
         </div>
         <div className="item-metadata">
           {metadata}
-          <ShowIf if={evalPublished && !published}>
+          <ShowIf if={evalPublished && !doc.published}>
             <span className="label label-warning">
               <i className="fa fa-warning"></i> Unpublished
             </span>
@@ -93,7 +89,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           <div className={templateClassName || ''}>
-            <TemplateLabel template={template}/>
+            <TemplateLabel template={doc.template}/>
             &nbsp;&nbsp;
           </div>
          {buttons}
