@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {searchDocuments} from 'app/Library/actions/libraryActions';
 
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
@@ -32,19 +33,20 @@ export class DocumentsList extends Component {
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
         <div className="main-wrapper">
         <div className="sort-by">
-
-            <p id="documents-counter" className="u-floatLeft documents-counter">
-              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
-            </p>
-            <SortButtons />
-
+            <div className="u-floatLeft documents-counter">
+              <b>{`${documents.totalRows}`}</b> {`${t('System', 'documents')}`}
+            </div>
+            <SortButtons sortCallback={this.props.searchDocuments}/>
         </div>
         <RowList>
           {documents.rows.map((doc, index) => <Doc doc={doc} key={index} />)}
         </RowList>
         <div className="row">
           <div className="col-sm-12 text-center documents-counter">
-              {`${documents.rows.length} ${t('System', 'of')} ${documents.totalRows} ${t('System', 'documents')}`}
+              <b>{`${documents.rows.length}`}</b>
+              {` ${t('System', 'of')} `}
+              <b>{`${documents.totalRows}`}</b>
+              {` ${t('System', 'documents')}`}
           </div>
           {(() => {
             if (documents.rows.length < documents.totalRows && !this.state.loading) {
@@ -68,7 +70,8 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   filtersPanel: PropTypes.bool,
   selectedDocument: PropTypes.object,
-  loadMoreDocuments: PropTypes.func
+  loadMoreDocuments: PropTypes.func,
+  searchDocuments: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -81,7 +84,7 @@ export function mapStateToProps(state) {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadMoreDocuments}, dispatch);
+  return bindActionCreators({loadMoreDocuments, searchDocuments}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);

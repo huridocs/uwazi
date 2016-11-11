@@ -4,6 +4,7 @@ import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 
 import ListContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
+import {Item} from 'app/Layout';
 
 describe('ConnectionsList', () => {
   let component;
@@ -36,23 +37,23 @@ describe('ConnectionsList', () => {
   it('should merge and render references in order with the proper document titles', () => {
     render();
 
-    expect(component.find('.item').get(0).props['data-id']).toBe('ref4');
-    expect(component.find('.item').get(1).props['data-id']).toBe('ref2');
-    expect(component.find('.item').get(2).props['data-id']).toBe('ref3');
-    expect(component.find('.item').get(3).props['data-id']).toBe('ref1');
+    expect(component.find(Item).get(0).props['data-id']).toBe('ref4');
+    expect(component.find(Item).get(1).props['data-id']).toBe('ref2');
+    expect(component.find(Item).get(2).props['data-id']).toBe('ref3');
+    expect(component.find(Item).get(3).props['data-id']).toBe('ref1');
   });
 
   it('should disable all-document connections if targetDocument', () => {
     props.targetDoc = true;
     render();
 
-    expect(component.find('.item').get(0).props.className).toContain('disabled');
+    expect(component.find(Item).get(0).props.className).toContain('disabled');
   });
 
   describe('when mouseenter on a reference', () => {
     it('should should highlightReference', () => {
       render();
-      component.find('.item').last().simulate('mouseenter');
+      component.find(Item).last().simulate('mouseenter');
       expect(props.highlightReference).toHaveBeenCalledWith('ref1');
     });
   });
@@ -60,7 +61,7 @@ describe('ConnectionsList', () => {
   describe('when mouseleave a reference', () => {
     it('should unhighlightReference', () => {
       render();
-      component.find('.item').last().simulate('mouseleave');
+      component.find(Item).last().simulate('mouseleave');
       expect(props.highlightReference).toHaveBeenCalledWith(null);
     });
   });
@@ -78,9 +79,9 @@ describe('ConnectionsList', () => {
     describe('when document is source document', () => {
       it('should activate it', () => {
         render();
-        component.find('.item').last().simulate('click');
+        component.find(Item).last().simulate('click');
         expect(props.activateReference).toHaveBeenCalledWith('ref1', 'tabName');
-        expect(component.find('.item').last().node.props.className).toContain('relationship-active');
+        expect(component.find(Item).last().node.props.className).toContain('relationship-active');
       });
     });
 
@@ -88,16 +89,16 @@ describe('ConnectionsList', () => {
       it('should select it', () => {
         props.targetDoc = true;
         render();
-        component.find('.item').last().simulate('click');
+        component.find(Item).last().simulate('click');
         expect(props.selectReference).toHaveBeenCalledWith('ref1', props.references.toJS());
-        expect(component.find('.item').last().node.props.className).toContain('relationship-selected');
+        expect(component.find(Item).last().node.props.className).toContain('relationship-selected');
       });
 
       describe('when connection is to the entire document', () => {
         it('should not select it', () => {
           props.targetDoc = true;
           render();
-          component.find('.item').first().simulate('click');
+          component.find(Item).first().simulate('click');
           expect(props.selectReference).not.toHaveBeenCalled();
         });
       });

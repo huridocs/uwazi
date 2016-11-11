@@ -33,6 +33,11 @@
   }
   dd {
     width: 75%;
+    
+    .item-icon {
+      margin-right: 4px;
+      top: -2px;
+    }
   }
 }
 
@@ -44,6 +49,10 @@
     width: 100% !important;
     max-width: 999px !important;
     top: 0 !important;
+  }
+  
+  .sidepanel-body {
+    background: $c-grey-lighten;
   }
 }
 

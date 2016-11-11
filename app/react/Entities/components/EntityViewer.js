@@ -17,6 +17,7 @@ import {actions as connectionsActions} from 'app/Connections';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
+import SortButtons from 'app/Library/components/SortButtons';
 import ReferencesGroup from './ReferencesGroup';
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
@@ -99,7 +100,7 @@ export class EntityViewer extends Component {
   // --
 
   render() {
-    let {entity, entityBeingEdited, tab} = this.props;
+    const {entity, entityBeingEdited, tab} = this.props;
     const selectedTab = tab || 'references';
     const references = this.props.references.toJS();
     const attachments = entity.attachments ? entity.attachments : [];
@@ -180,8 +181,13 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for="references">
-                {this.groupReferences(references).map((group) =>
-                  <ReferencesGroup key={group.key} group={group} deleteReference={this.deleteReference.bind(this)} />
+                <div className="sort-by">
+                  <SortButtons stateProperty="entityView.sort" />
+                </div>
+                {this.groupReferences(references).map(group =>
+                  <ReferencesGroup key={group.key}
+                                   group={Immutable(group)}
+                                   deleteReference={this.deleteReference.bind(this)} />
                 )}
               </TabContent>
               <TabContent for="attachments">

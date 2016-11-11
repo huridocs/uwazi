@@ -5,6 +5,7 @@ describe('Advanced Sort', () => {
     const baseArray = ['z', 'a', 'r', 'f'];
 
     expect(advancedSort(baseArray)).toEqual(['a', 'f', 'r', 'z']);
+    expect(advancedSort(baseArray, {order: 'desc'})).toEqual(['z', 'r', 'f', 'a']);
     expect(baseArray).toEqual(['z', 'a', 'r', 'f']);
   });
 
@@ -26,6 +27,7 @@ describe('Advanced Sort', () => {
     const baseArray = ['1', '10', '3.1', '3', '200'];
 
     expect(advancedSort(baseArray, {treatAs: 'number'})).toEqual(['1', '3', '3.1', '10', '200']);
+    expect(advancedSort(baseArray, {treatAs: 'number', order: 'desc'})).toEqual(['200', '10', '3.1', '3', '1']);
     expect(baseArray).toEqual(['1', '10', '3.1', '3', '200']);
   });
 
@@ -37,11 +39,11 @@ describe('Advanced Sort', () => {
     let indexE;
 
     beforeEach(() => {
-      indexA = {a: 'a', b: 'z', c: '10'};
-      indexB = {a: 'b', b: 'Á', c: '1'};
-      indexC = {a: 'c', b: 'é', c: '3.1'};
+      indexA = {a: 'a', b: 'z', c: '10', sub: {a: 'x'}};
+      indexB = {a: 'b', b: 'Á', c: '1', sub: {a: 'c'}};
+      indexC = {a: 'c', b: 'é', c: '3.1', sub: {a: 'a'}};
       indexD = {a: 'd', b: 'R', c: '900'};
-      indexE = {a: 'e', b: 'f'};
+      indexE = {a: 'e', b: 'f', sub: {c: 'b'}};
     });
 
     it('should allow sorting by a single property (not affecting original)', () => {
@@ -53,11 +55,12 @@ describe('Advanced Sort', () => {
       expect(baseArray).toEqual([indexA, indexB, indexC, indexD, indexE]);
     });
 
-    it('should place missing-property items at the end', () => {
+    it('should place items missing the property at the end', () => {
       delete indexB.b;
       const baseArray = [indexA, indexB, indexC, indexD, indexE];
 
       expect(advancedSort(baseArray, {property: 'b'})).toEqual([indexC, indexE, indexD, indexA, indexB]);
+      expect(advancedSort(baseArray, {property: 'b', order: 'desc'})).toEqual([indexA, indexD, indexE, indexC, indexB]);
       expect(baseArray).toEqual([indexA, indexB, indexC, indexD, indexE]);
     });
 
@@ -68,6 +71,12 @@ describe('Advanced Sort', () => {
       expect(advancedSort(baseArray, options)).toEqual([indexB, indexC, indexA, indexD, indexE]);
 
       expect(baseArray).toEqual([indexA, indexB, indexC, indexD, indexE]);
+    });
+
+    it('should allow sorting by sub properties', () => {
+      const baseArray = [indexA, indexB, indexC, indexD, indexE];
+      const options = {property: ['sub', 'a']};
+      expect(advancedSort(baseArray, options)).toEqual([indexC, indexB, indexA, indexD, indexE]);
     });
   });
 

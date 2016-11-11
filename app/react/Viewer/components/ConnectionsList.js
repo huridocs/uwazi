@@ -1,14 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {fromJS as Immutable} from 'immutable';
 import {I18NLink} from 'app/I18N';
 import {NeedAuthorization} from 'app/Auth';
-import {TemplateLabel} from 'app/Layout';
 
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
-import {Icon} from 'app/Layout';
+import {Item} from 'app/Layout';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -62,7 +62,7 @@ export class ConnectionsList extends Component {
           return references.map((reference, index) => {
             let itemClass = '';
             let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
-            let referenceIcon = 'fa-sign-out';
+            let referenceIcon = reference.inbound ? 'fa-sign-in' : 'fa-sign-out';
 
             if (uiState.highlightedReference === reference._id) {
               itemClass = 'relationship-hover';
@@ -75,43 +75,36 @@ export class ConnectionsList extends Component {
               }
             }
 
-            if (reference.inbound) {
-              referenceIcon = typeof reference.range.start === 'undefined' ? 'fa-globe' : 'fa-sign-in';
-            }
+            const doc = Immutable({
+              sharedId: reference.connectedDocument,
+              type: reference.connectedDocumentType,
+              title: reference.connectedDocumentTitle,
+              icon: reference.connectedDocumentIcon,
+              template: reference.connectedDocumentTemplate,
+              metadata: reference.connectedDocumentMetadata,
+              creationDate: reference.connectedDocumentCreationDate,
+              published: reference.connectedDocumentPublished
+            });
 
             return (
-              <div key={index}
+              <Item
+                key={index}
                 onMouseEnter={this.props.highlightReference.bind(null, reference._id)}
                 onMouseLeave={this.props.highlightReference.bind(null, null)}
                 onClick={this.clickReference.bind(this, reference)}
-                className={`item ${itemClass} ${disabled ? 'disabled' : ''}`}
-                data-id={reference._id}>
-                <div className="item-info">
-                  <div className="item-name">
-                    <ShowIf if={useSourceTargetIcons}>
-                      <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
-                    </ShowIf>
-                      <Icon className="item-icon item-icon-center" data={reference.connectedDocumentIcon} />
-                    {reference.connectedDocumentTitle}
-                    {(() => {
-                      if (reference.text) {
-                        return <div className="item-snippet">
-                          {reference.text}
-                        </div>;
-                      }
-                    })()}
-                  </div>
-                </div>
-                <div className="item-metadata">
-                  <dl>
-                    <dt>Connection type</dt>
-                    <dd>{this.relationType(reference.relationType, relationTypes)}</dd>
-                  </dl>
-                </div>
-                <div className="item-actions">
-                  <div className="item-label-group">
-                    <TemplateLabel template={reference.connectedDocumentTemplate} />
-                  </div>
+                doc={doc}
+                className={`${itemClass} ${disabled ? 'disabled' : ''}`}
+                data-id={reference._id}
+                additionalIcon={<ShowIf if={useSourceTargetIcons}>
+                                  <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
+                                </ShowIf>}
+                additionalText={reference.text}
+                additionalMetadata={[
+                  {label: 'Connection type', value: this.relationType(reference.relationType, relationTypes)}
+                ]}
+                templateClassName="item-label-group"
+                evalPublished={true}
+                buttons={
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
                       <NeedAuthorization>
@@ -122,7 +115,7 @@ export class ConnectionsList extends Component {
                     </ShowIf>
                     &nbsp;
                     <ShowIf if={!this.props.targetDoc}>
-                      <I18NLink to={`/${reference.connectedDocumentType}/${reference.connectedDocument}`}
+                      <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
                             onClick={e => e.stopPropagation()}
                             className="item-shortcut">
                         <span className="itemShortcut-arrow">
@@ -131,9 +124,9 @@ export class ConnectionsList extends Component {
                       </I18NLink>
                     </ShowIf>
                   </div>
-                </div>
-              </div>
-              );
+                }
+              />
+            );
           });
         })()}
       </div>

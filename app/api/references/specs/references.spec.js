@@ -148,6 +148,8 @@ describe('references', () => {
         expect(result[0].connectedDocumentType).toBe('document');
         expect(result[0].connectedDocumentTemplate).toBe('template3_id');
         expect(result[0].connectedDocumentPublished).toBe(false);
+        expect(result[0].connectedDocumentMetadata).toEqual({data: 'data1'});
+        expect(result[0].connectedDocumentCreationDate).toEqual(123);
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
@@ -159,6 +161,8 @@ describe('references', () => {
         expect(result[1].connectedDocumentType).toBe('entity');
         expect(result[1].connectedDocumentTemplate).toBe('template1_id');
         expect(result[1].connectedDocumentPublished).toBe(true);
+        expect(result[1].connectedDocumentMetadata).toEqual({data: 'data2'});
+        expect(result[1].connectedDocumentCreationDate).toEqual(456);
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
@@ -169,8 +173,12 @@ describe('references', () => {
         expect(result[2].connectedDocumentType).toBe('document');
         expect(result[2].connectedDocumentTemplate).toBe('template1_id');
         expect(result[2].connectedDocumentPublished).toBe(false);
+        expect(result[2].connectedDocumentMetadata).toEqual({data: 'data3'});
+        expect(result[2].connectedDocumentCreationDate).toEqual(789);
 
         expect(result[3].text).toBe('');
+        expect(result[3].connectedDocumentMetadata).toEqual({});
+        expect(result[3].connectedDocumentCreationDate).toBeUndefined();
         done();
       })
       .catch(catchErrors(done));

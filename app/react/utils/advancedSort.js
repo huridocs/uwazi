@@ -39,7 +39,10 @@ const compareDottedList = (a, b, options) => {
   }, 0);
 };
 
-const compare = (a, b, options) => {
+const compare = (baseA, baseB, options) => {
+  const a = options.order === 'desc' ? baseB : baseA;
+  const b = options.order === 'desc' ? baseA : baseB;
+
   if (options.treatAs === 'number') {
     return Number(a) - Number(b);
   }
@@ -51,19 +54,41 @@ const compare = (a, b, options) => {
   return localCompare(a, b);
 };
 
+const evalIfHasProperty = (data, property) => {
+  return typeof data === 'object' && data !== null && Object.keys(data).indexOf(property) !== -1;
+};
+
 export default {
   advancedSort: (array, options = {}) => {
+    options.order = options.order || 'asc';
     const sortedArray = copyArray(array);
 
     if (options.property) {
-      sortedArray.sort((a, b) => {
-        if (!a[options.property]) {
+      sortedArray.sort((baseA, baseB) => {
+        let a;
+        let b;
+
+        if (!Array.isArray(options.property)) {
+          a = baseA[options.property];
+          b = baseB[options.property];
+        }
+
+        if (Array.isArray(options.property)) {
+          a = options.property.reduce((memo, property) => {
+            return evalIfHasProperty(memo, property) ? memo[property] : null;
+          }, baseA);
+          b = options.property.reduce((memo, property) => {
+            return evalIfHasProperty(memo, property) ? memo[property] : null;
+          }, baseB);
+        }
+
+        if (!a) {
           return 1;
         }
-        if (!b[options.property]) {
+        if (!b) {
           return -1;
         }
-        return compare(a[options.property], b[options.property], options);
+        return compare(a, b, options);
       });
     }
 
