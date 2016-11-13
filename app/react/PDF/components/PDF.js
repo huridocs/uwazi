@@ -20,6 +20,9 @@ export class PDF extends Component {
     this.pagesLoaded = 0;
     PDFJS.getDocument(props.file).then(pdf => {
       this.setState({pdf});
+      this.refs.pdfContainer.addEventListener('textlayerrendered', () => {
+        this.pageLoaded();
+      });
     });
   }
 
@@ -32,11 +35,11 @@ export class PDF extends Component {
 
   render() {
     return (
-      <div>
+      <div ref='pdfContainer'>
         {(() => {
           let pages = [];
           for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-            pages.push(<PDFPage onLoad={this.pageLoaded.bind(this)} key={page} page={page} pdf={this.state.pdf} />);
+            pages.push(<PDFPage key={page} page={page} pdf={this.state.pdf} />);
           }
           return pages;
         })()}

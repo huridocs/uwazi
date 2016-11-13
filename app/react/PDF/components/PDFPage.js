@@ -72,7 +72,7 @@ export class PDFPage extends Component {
   //}
 
   render() {
-    return <div className="page" ref='pageContainer' style={{height: 1000}} />;
+    return <div className="page" ref='pageContainer' style={{height: 1056}} />;
   }
 }
 
