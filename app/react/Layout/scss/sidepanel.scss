@@ -238,6 +238,7 @@ $c-sidebar: $c-white;
   transform: translateX(-50%);
   padding: 0 0 20px;
   text-align: center;
+  white-space: nowrap;
 
   .btn {
     position: relative;
