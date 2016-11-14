@@ -58,6 +58,10 @@ export default function (state = initialState, action = {}) {
     return state.set('panel', false);
   }
 
+  if (action.type === 'viewer/targetDoc/SET') {
+    return state.set('PDFReady', false);
+  }
+
   if (action.type === types.ADD_REFERENCE) {
     return state.set('reference', Immutable.fromJS({})).set('panel', false);
   }

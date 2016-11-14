@@ -4,6 +4,7 @@ import 'jasmine-immutablejs-matchers';
 import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as actions from 'app/Viewer/actions/uiActions';
+import {actions as basicActions} from 'app/BasicReducer';
 
 describe('Viewer uiReducer', () => {
   describe('when state is undefined', () => {
@@ -198,6 +199,15 @@ describe('Viewer uiReducer', () => {
     it('should set initialState', () => {
       let newState = uiReducer(Immutable.fromJS({targetDocument: 1, panel: true}), {type: types.RESET_DOCUMENT_VIEWER});
       let expected = Immutable.fromJS({reference: {}, PDFReady: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('LOAD_TARGET_DOCUMENT', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({PDFReady: true}), basicActions.set('viewer/targetDoc', {}));
+      let expected = Immutable.fromJS({PDFReady: false});
 
       expect(newState).toEqualImmutable(expected);
     });
