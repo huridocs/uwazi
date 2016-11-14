@@ -18,9 +18,11 @@ export class PDF extends Component {
     super(props);
     this.state = {pdf: {numPages: 0}};
     this.pagesLoaded = 0;
-    PDFJS.getDocument(props.file).then(pdf => {
-      this.setState({pdf});
-    });
+    if (isClient) {
+      PDFJS.getDocument(props.file).then(pdf => {
+        this.setState({pdf});
+      });
+    }
   }
 
   componentDidMount() {
