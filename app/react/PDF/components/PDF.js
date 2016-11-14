@@ -19,10 +19,13 @@ export class PDF extends Component {
     this.state = {pdf: {numPages: 0}};
     this.pagesLoaded = 0;
     PDFJS.getDocument(props.file).then(pdf => {
-      this.refs.pdfContainer.addEventListener('textlayerrendered', () => {
-        this.pageLoaded();
-      });
       this.setState({pdf});
+    });
+  }
+
+  componentDidMount() {
+    this.refs.pdfContainer.addEventListener('textlayerrendered', () => {
+      this.pageLoaded();
     });
   }
 
