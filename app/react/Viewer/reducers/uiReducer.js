@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = {reference: {}, PDFReady: false};
+const initialState = {reference: {}, PDFReady: false, targetPDFReady: false};
 
 let unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
@@ -16,6 +16,10 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === types.PDF_READY) {
     return state.set('PDFReady', action.status);
+  }
+
+  if (action.type === types.TARGET_PDF_READY) {
+    return state.set('targetPDFReady', action.status);
   }
 
   if (action.type === types.SHOW_TAB) {
@@ -60,6 +64,10 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === 'viewer/targetDoc/SET') {
     return state.set('PDFReady', false);
+  }
+
+  if (action.type === 'viewer/targetDoc/UNSET') {
+    return state.set('targetPDFReady', false);
   }
 
   if (action.type === types.ADD_REFERENCE) {

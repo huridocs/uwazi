@@ -10,6 +10,13 @@ export function PDFReady(status = true) {
   };
 }
 
+export function targetPDFReady(status = true) {
+  return {
+    type: types.TARGET_PDF_READY,
+    status
+  };
+}
+
 export function closePanel() {
   return {
     type: types.CLOSE_PANEL
