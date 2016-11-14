@@ -9,6 +9,7 @@ import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 import {Item} from 'app/Layout';
+import Loader from 'app/components/Elements/Loader';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -55,6 +56,10 @@ export class ConnectionsList extends Component {
       let bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
       return aStart - bStart;
     });
+
+    if (this.props.loading) {
+      return <div className="item-group"><br/><br/><Loader/></div>;
+    }
 
     return (
       <div className="item-group">
@@ -146,6 +151,7 @@ ConnectionsList.propTypes = {
   closePanel: PropTypes.func,
   deleteReference: PropTypes.func,
   targetDoc: PropTypes.bool,
+  loading: PropTypes.bool,
   referencesSection: PropTypes.string,
   useSourceTargetIcons: PropTypes.bool
 };
@@ -158,7 +164,8 @@ const mapStateToProps = ({documentViewer}) => {
   return {
     uiState: documentViewer.uiState,
     relationTypes: documentViewer.relationTypes,
-    targetDoc: !!documentViewer.targetDoc.get('_id')
+    targetDoc: !!documentViewer.targetDoc.get('_id'),
+    loading: documentViewer.targetDoc.get('_id') ? !documentViewer.uiState.get('targetPDFReady') : !documentViewer.uiState.get('PDFReady')
   };
 };
 
