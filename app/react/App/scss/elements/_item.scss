@@ -135,7 +135,8 @@ $item-padding: 15px;
   }
 }
 
-.item-type-0 .item-type__icon  { color: $c-grey; }
+.item-type-empty .item-type__icon  { color: $c-grey; }
+.item-type-0 .item-type__icon  { color: $c-type-0; }
 .item-type-1 .item-type__icon  { color: $c-type-1; }
 .item-type-2 .item-type__icon  { color: $c-type-2; }
 .item-type-3 .item-type__icon  { color: $c-type-3; }
@@ -155,7 +156,8 @@ $item-padding: 15px;
 .item-type-17 .item-type__icon { color: $c-type-17; }
 .item-type-18 .item-type__icon { color: $c-type-18; }
 
-.item-type-0 .item-type__name  { box-shadow: inset 0 0 0 1px $c-grey; color: $c-grey; }
+.item-type-empty .item-type__name  { box-shadow: inset 0 0 0 1px $c-grey; color: $c-grey; }
+.item-type-0 .item-type__name  { background-color: $c-type-0; }
 .item-type-1 .item-type__name  { background-color: $c-type-1; }
 .item-type-2 .item-type__name  { background-color: $c-type-2; }
 .item-type-3 .item-type__name  { background-color: $c-type-3; }
