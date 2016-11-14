@@ -14,6 +14,7 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
+      PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({_id: 'documentId'}),
@@ -38,20 +39,6 @@ describe('Document', () => {
     props.className = 'aClass';
     render();
     expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
-  });
-
-  it('should render every pagen inside a div ', () => {
-    render();
-    let pages = component.find('.pages').children();
-    expect(pages.first().props().dangerouslySetInnerHTML).toEqual({__html: 'page1'});
-    expect(pages.last().props().dangerouslySetInnerHTML).toEqual({__html: 'page3'});
-  });
-
-  it('should render every css inside a style ', () => {
-    render();
-    let styles = component.find('style');
-
-    expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css'})});
   });
 
   describe('onClick', () => {
@@ -194,6 +181,7 @@ describe('Document', () => {
       props.highlightedReference = 'highlightedReference';
       props.references = [{reference: 'reference'}];
       props.forceSimulateSelection = true;
+      props.pdfIsRdy = true;
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
@@ -215,13 +203,11 @@ describe('Document', () => {
 
       it('should render the references', () => {
         instance.componentDidUpdate();
-
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
       });
 
       it('should highlight the reference', () => {
         instance.componentDidUpdate();
-
         expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
       });
     });

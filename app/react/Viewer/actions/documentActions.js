@@ -71,12 +71,10 @@ export function loadTargetDocument(id) {
   return function (dispatch, getState) {
     return Promise.all([
       api.get('documents?_id=' + id),
-      api.get('documents/html?_id=' + id),
       referencesAPI.get(id)
     ])
-    .then(([docResponse, htmlResponse, references]) => {
+    .then(([docResponse, references]) => {
       dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
-      dispatch(actions.set('viewer/targetDocHTML', htmlResponse.json));
       dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };
@@ -86,7 +84,6 @@ export function cancelTargetDocument() {
   return function (dispatch) {
     dispatch({type: connectionsTypes.CANCEL_RANGED_CONNECTION});
     dispatch(actions.unset('viewer/targetDoc'));
-    dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
     dispatch(selectionActions.unsetTargetSelection());
     dispatch(uiActions.openPanel('viewMetadataPanel'));

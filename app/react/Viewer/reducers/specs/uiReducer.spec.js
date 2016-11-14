@@ -4,6 +4,7 @@ import 'jasmine-immutablejs-matchers';
 import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as actions from 'app/Viewer/actions/uiActions';
+import {actions as basicActions} from 'app/BasicReducer';
 
 describe('Viewer uiReducer', () => {
   describe('when state is undefined', () => {
@@ -11,7 +12,7 @@ describe('Viewer uiReducer', () => {
       let newState = uiReducer();
 
       expect(newState).toBeImmutable();
-      expect(newState.toJS()).toEqual({reference: {}});
+      expect(newState.toJS()).toEqual({reference: {}, PDFReady: false, targetPDFReady: false});
     });
   });
 
@@ -185,10 +186,46 @@ describe('Viewer uiReducer', () => {
     });
   });
 
+  describe('PDF_READY', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({PDFReady: false}), actions.PDFReady());
+      let expected = Immutable.fromJS({PDFReady: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('TARGET_PDF_READY', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({targetPDFReady: false}), actions.targetPDFReady());
+      let expected = Immutable.fromJS({targetPDFReady: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('RESET_DOCUMENT_VIEWER', () => {
     it('should set initialState', () => {
       let newState = uiReducer(Immutable.fromJS({targetDocument: 1, panel: true}), {type: types.RESET_DOCUMENT_VIEWER});
-      let expected = Immutable.fromJS({reference: {}});
+      let expected = Immutable.fromJS({reference: {}, PDFReady: false, targetPDFReady: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('set target doc', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({PDFReady: true}), basicActions.set('viewer/targetDoc', {}));
+      let expected = Immutable.fromJS({PDFReady: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
+  describe('unset target doc', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({targetPDFReady: true}), basicActions.unset('viewer/targetDoc', {}));
+      let expected = Immutable.fromJS({targetPDFReady: false});
 
       expect(newState).toEqualImmutable(expected);
     });

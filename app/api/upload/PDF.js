@@ -131,17 +131,12 @@ export default class PDF extends EventEmitter {
   }
 
   convert() {
-    return Promise.all([
-      this.toHTML(),
-      this.extractText()
-    ])
+    return this.extractText()
     .catch(() => {
       return Promise.reject({error: 'conversion_error'});
     })
-    .then((conversion) => {
-      let result = conversion[0];
-      result.fullText = conversion[1];
-      return result;
+    .then((fullText) => {
+      return {fullText};
     });
   }
 }

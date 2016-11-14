@@ -56,6 +56,10 @@ export class ConnectionsList extends Component {
       return aStart - bStart;
     });
 
+    if (this.props.loading) {
+      return false;
+    }
+
     return (
       <div className="item-group">
         {(() => {
@@ -146,6 +150,7 @@ ConnectionsList.propTypes = {
   closePanel: PropTypes.func,
   deleteReference: PropTypes.func,
   targetDoc: PropTypes.bool,
+  loading: PropTypes.bool,
   referencesSection: PropTypes.string,
   useSourceTargetIcons: PropTypes.bool
 };
@@ -158,7 +163,8 @@ const mapStateToProps = ({documentViewer}) => {
   return {
     uiState: documentViewer.uiState,
     relationTypes: documentViewer.relationTypes,
-    targetDoc: !!documentViewer.targetDoc.get('_id')
+    targetDoc: !!documentViewer.targetDoc.get('_id'),
+    loading: documentViewer.targetDoc.get('_id') ? !documentViewer.uiState.get('targetPDFReady') : !documentViewer.uiState.get('PDFReady')
   };
 };
 

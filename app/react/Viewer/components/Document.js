@@ -3,7 +3,10 @@ import React, {Component, PropTypes} from 'react';
 import Text from 'app/Viewer/utils/Text';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
+import PDF from 'app/PDF';
+import ShowIf from 'app/App/ShowIf';
 import Loader from 'app/components/Elements/Loader';
+import {APIURL} from '../../config.js';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -37,6 +40,7 @@ export class Document extends Component {
 
   componentDidMount() {
     this.text = Text(this.pagesContainer);
+    this.pdfrdy = false;
   }
 
   onTextSelected() {
@@ -44,6 +48,10 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
+    if (!this.props.pdfIsRdy) {
+      return;
+    }
+
     this.text.renderReferences(this.props.references);
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
@@ -51,23 +59,26 @@ export class Document extends Component {
     this.text.activate(this.props.activeReference);
   }
 
+  pdfLoaded() {
+    this.props.PDFReady();
+  }
+
   render() {
     const doc = this.props.doc.toJS();
-    const docHTML = this.props.docHTML.toJS();
 
     const Header = this.props.header || function () {
       return false;
     };
 
+    let pdfLoadingStyles = {};
+    if (!this.props.pdfIsRdy) {
+      pdfLoadingStyles = {display: 'none'};
+    }
+
     return (
       <div>
         <div className={'_' + doc._id + ' document ' + this.props.className} >
           <Header/>
-          {(() => {
-            if (!docHTML.pages.length) {
-              return <Loader/>;
-            }
-          })()}
           <div className="pages"
             ref={(ref) => this.pagesContainer = ref}
             onMouseUp={this.handleMouseUp.bind(this)}
@@ -75,14 +86,14 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            {docHTML.pages.map((page, index) => {
-              let html = {__html: page};
-              return <div className='page' key={index} dangerouslySetInnerHTML={html} />;
-            })}
+            <ShowIf if={!this.props.pdfIsRdy}>
+              <Loader />
+            </ShowIf>
+            <ShowIf if={!!doc._id}>
+              <PDF style={pdfLoadingStyles} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
+            </ShowIf>
           </div>
         </div>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.fonts}}></style>
       </div>
     );
   }
@@ -90,6 +101,8 @@ export class Document extends Component {
 
 Document.propTypes = {
   doc: PropTypes.object,
+  PDFReady: PropTypes.func,
+  pdfIsRdy: PropTypes.bool,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,

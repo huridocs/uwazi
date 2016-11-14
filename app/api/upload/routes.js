@@ -70,10 +70,7 @@ export default (app) => {
       });
 
       delete conversion.fullText;
-      let saves = docs.map((doc) => {
-        const conv = Object.assign({}, conversion, {document: doc._id});
-        return documents.saveHTML(conv);
-      });
+      let saves = [];
 
       saves.push(entities.saveMultiple(docs));
 

@@ -9,6 +9,7 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
+import {PDFReady} from 'app/Viewer/actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
@@ -17,19 +18,17 @@ export default class ViewDocument extends RouteHandler {
   static requestState({documentId, lang}) {
     return Promise.all([
       api.get('documents', {_id: documentId}),
-      api.get('documents/html', {_id: documentId}),
       referencesAPI.get(documentId),
       templatesAPI.get(),
       thesaurisAPI.get(),
       relationTypesAPI.get()
     ])
-    .then(([doc, docHTML, references, templates, thesauris, relationTypes]) => {
+    .then(([doc, references, templates, thesauris, relationTypes]) => {
       return {
         templates,
         thesauris,
         documentViewer: {
           doc: doc.json.rows[0],
-          docHTML: docHTML.json,
           references: referencesUtils.filterRelevant(references, lang),
           templates,
           thesauris,
@@ -46,13 +45,13 @@ export default class ViewDocument extends RouteHandler {
 
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/docHTML'));
     this.context.store.dispatch(actions.unset('viewer/templates'));
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
+    this.context.store.dispatch(PDFReady(false));
   }
 
   setReduxState(state) {
