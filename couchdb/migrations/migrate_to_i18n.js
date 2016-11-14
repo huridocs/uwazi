@@ -5,6 +5,7 @@ import ID from '../../app/shared/uniqueID';
 
 let limit = 50;
 let language = {key: 'en', label: 'English', default: true};
+let settingsSaved = false;
 
 let documentsDone = 0;
 
@@ -38,6 +39,7 @@ function migrate(offset = 0) {
         }
 
         if (doc.type === 'settings') {
+          settingsSaved = true;
           doc.languages = [language];
           return request.post(dbURL + '/_design/entities/_update/partialUpdate/' + _doc.id, doc)
           .catch((error) => {
@@ -119,6 +121,11 @@ function migrateMetadata(offset = 0) {
 
 migrate()
 .then(() => {
+  if (!settingsSaved) {
+    let settings = {type: 'settings', languages: [language]};
+    request.post(dbURL, settings);
+    console.log('Settings created');
+  }
   console.log('Migrating references and relations');
   documentsDone = 0;
   migrateMetadata();
