@@ -20,6 +20,8 @@ describe('AttachmentsList', () => {
     props = {
       files,
       parentId: 'parentId',
+      deletable: true,
+      replaceable: true,
       deleteAttachment: jasmine.createSpy('deleteAttachment')
     };
 
@@ -37,11 +39,13 @@ describe('AttachmentsList', () => {
     expect(component.find('.item').at(1).text()).toContain('Human name 1');
   });
 
-  it('should include an authorized delete button for each file', () => {
+  fit('should include an authorized delete button for each file', () => {
     render();
     const delete1 = component.find('.item').at(0).find('a').at(0);
     const delete2 = component.find('.item').at(1).find('a').at(0);
-    expect(delete1.parent().is(NeedAuthorization)).toBe(true);
+
+    expect(delete1.parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(delete1.parent().props().if).toBe(true);
 
     delete1.simulate('click');
     expect(context.confirm).toHaveBeenCalled();
@@ -54,10 +58,45 @@ describe('AttachmentsList', () => {
     expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(0).toJS());
   });
 
-  it('should include a download button', () => {
+  fit('should not render the delete button if deletable is false', () => {
+    props.deletable = false;
     render();
-    const download1 = component.find('.item').at(0).find('a').at(1);
-    const download2 = component.find('.item').at(1).find('a').at(1);
+
+    const delete1 = component.find('.item').at(0).find('a').at(0);
+    expect(delete1.parent().props().if).toBe(false);
+  });
+
+  fit('should include an authorized replace button for each file', () => {
+    render();
+    const replace1 = component.find('.item').at(0).find('a').at(1);
+    const replace2 = component.find('.item').at(1).find('a').at(1);
+
+    expect(replace1.parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(replace1.parent().props().if).toBe(true);
+
+    // replace1.simulate('click');
+    // expect(context.confirm).toHaveBeenCalled();
+
+    // context.confirm.calls.argsFor(0)[0].accept();
+    // expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(1).toJS());
+
+    // replace2.simulate('click');
+    // context.confirm.calls.argsFor(1)[0].accept();
+    // expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(0).toJS());
+  });
+
+  fit('should not render the replace button if replaceable is false', () => {
+    props.replaceable = false;
+    render();
+
+    const replace1 = component.find('.item').at(0).find('a').at(1);
+    expect(replace1.parent().props().if).toBe(false);
+  });
+
+  fit('should include a download button', () => {
+    render();
+    const download1 = component.find('.item').at(0).find('a').at(2);
+    const download2 = component.find('.item').at(1).find('a').at(2);
 
     expect(download1.props().href).toBe('/api/attachments/download?_id=parentId&file=filename2.ext');
     expect(download2.props().href).toBe('/api/attachments/download?_id=parentId&file=filename1.ext');

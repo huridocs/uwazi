@@ -188,7 +188,8 @@ export class ViewMetadataPanel extends Component {
                            useSourceTargetIcons={false} />
             </TabContent>
             <TabContent for="attachments">
-              <AttachmentsList files={fromJS(attachments)}
+              <AttachmentsList files={fromJS([doc.file].concat(attachments))}
+                               isDocumentAttachments={true}
                                parentId={doc._id} />
             </TabContent>
           </Tabs>

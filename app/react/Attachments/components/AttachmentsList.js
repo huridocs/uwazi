@@ -26,12 +26,30 @@ export class AttachmentsList extends Component {
     return filename.substr(filename.lastIndexOf('.') + 1);
   }
 
-  render() {
-    const {parentId} = this.props;
-    const files = advancedSort(this.props.files.toJS(), {property: 'originalname'});
+  arrangeFiles(files, isDocumentAttachments) {
+    let firstFiles = [];
+    if (isDocumentAttachments) {
+      firstFiles.push(files.shift());
+    }
 
-    const list = files.map((file, index) => {
+    const sortedFiles = advancedSort(files, {property: 'originalname'});
+    return firstFiles.concat(sortedFiles);
+  }
+
+  render() {
+    const {parentId, isDocumentAttachments} = this.props;
+    const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
+
+    const list = sortedFiles.map((file, index) => {
       const sizeString = file.size ? filesize(file.size) : '';
+
+      let deletable = true;
+      let replaceable = false;
+
+      if (isDocumentAttachments && index === 0) {
+        deletable = false;
+        replaceable = true;
+      }
 
       return (
         <div key={index}
@@ -55,9 +73,18 @@ export class AttachmentsList extends Component {
             </div>
             <div className="item-shortcut-group">
               <NeedAuthorization>
-                <a className="item-shortcut" onClick={this.deleteAttachment.bind(this, file)}>
-                  <i className="fa fa-trash"></i>
-                </a>
+                <ShowIf if={deletable}>
+                  <a className="item-shortcut" onClick={this.deleteAttachment.bind(this, file)}>
+                    <i className="fa fa-trash"></i>
+                  </a>
+                </ShowIf>
+              </NeedAuthorization>
+              <NeedAuthorization>
+                <ShowIf if={replaceable}>
+                  <a className="item-shortcut" onClick={this.deleteAttachment.bind(this, file)}>
+                    <i className="fa fa-cloud-upload"></i>
+                  </a>
+                </ShowIf>
               </NeedAuthorization>
               &nbsp;
               <a className="item-shortcut"
@@ -78,6 +105,7 @@ export class AttachmentsList extends Component {
 AttachmentsList.propTypes = {
   files: PropTypes.object,
   parentId: PropTypes.string,
+  isDocumentAttachments: PropTypes.bool,
   deleteAttachment: PropTypes.func
 };
 
