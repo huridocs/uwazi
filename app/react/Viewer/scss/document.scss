@@ -97,7 +97,11 @@
   background: transparent;
 }
 
-.doc-page > div {
+.page {
+  position: relative;
+}
+
+.page > div {
   background: $c-white;
   margin: 0 auto 30px !important;
   box-shadow: $shadow;

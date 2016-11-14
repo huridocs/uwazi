@@ -9,7 +9,6 @@ import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 import {Item} from 'app/Layout';
-import Loader from 'app/components/Elements/Loader';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -58,7 +57,7 @@ export class ConnectionsList extends Component {
     });
 
     if (this.props.loading) {
-      return <div className="item-group"><br/><br/><Loader/></div>;
+      return false;
     }
 
     return (
