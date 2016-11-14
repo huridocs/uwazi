@@ -53,19 +53,6 @@ describe('upload routes', () => {
             expect(docs.json.rows[1].value.processed).toBe(true);
             expect(docs.json.rows[1].value.fullText).toMatch(/Test file/);
             expect(docs.json.rows[1].value.language).toBe('es');
-            return Promise.all([
-              documents.getHTML(docs.json.rows[0].value.sharedId, 'es'),
-              documents.getHTML(docs.json.rows[0].value.sharedId, 'en')
-            ]);
-          })
-          .then(([conversion1, conversion2]) => {
-            expect(conversion1.fullText).not.toBeDefined();
-            expect(conversion1.pages.length).toBe(1);
-            expect(conversion1.css).toMatch(/ff0/);
-
-            expect(conversion2.fullText).not.toBeDefined();
-            expect(conversion2.pages.length).toBe(1);
-            expect(conversion2.css).toMatch(/ff0/);
             done();
           })
           .catch(catchErrors(done));

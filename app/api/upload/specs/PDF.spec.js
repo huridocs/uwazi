@@ -52,19 +52,6 @@ describe('PDF', function () {
 
       commandBeingExecuted.stdout.emit('close');
     });
-
-    it('should reject the promise on error', (done) => {
-      pdf.optimize()
-      .then(() => {
-        done.fail('promise should be rejected when there is an exit code === 1');
-      })
-      .catch((error) => {
-        expect(error).toBe(1);
-        done();
-      });
-
-      commandBeingExecuted.emit('close', 1);
-    });
   });
 
   describe('extractText', () => {
@@ -177,10 +164,7 @@ describe('PDF', function () {
     it('should optimize and extract html and text', (done) => {
       pdf.convert()
       .then((conversion) => {
-        expect(conversion.pages.length).toBe(11);
         expect(conversion.fullText).toMatch('Page 1');
-        expect(!!conversion.css.match(/ff0/)).toBe(true);
-        expect(!!conversion.fonts.match(/font-face/)).toBe(true);
         done();
       })
       .catch(done.fail);
