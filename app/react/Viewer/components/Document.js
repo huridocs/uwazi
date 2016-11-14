@@ -5,6 +5,7 @@ import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
+import Loader from 'app/components/Elements/Loader';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -46,7 +47,7 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.pdfrdy) {
+    if (!this.props.pdfIsRdy) {
       return;
     }
 
@@ -58,8 +59,7 @@ export class Document extends Component {
   }
 
   pdfLoaded() {
-    this.pdfrdy = true;
-    this.componentDidUpdate();
+    this.props.PDFReady();
   }
 
   render() {
@@ -68,6 +68,11 @@ export class Document extends Component {
     const Header = this.props.header || function () {
       return false;
     };
+
+    let pdfLoadingStyles = {};
+    if (!this.props.pdfIsRdy) {
+      pdfLoadingStyles = {display: 'none'};
+    }
 
     return (
       <div>
@@ -80,8 +85,11 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
+            <ShowIf if={!this.props.pdfIsRdy}>
+              <Loader />
+            </ShowIf>
             <ShowIf if={!!doc._id}>
-              <PDF onLoad={this.pdfLoaded.bind(this)} file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
+              <PDF style={pdfLoadingStyles} onLoad={this.pdfLoaded.bind(this)} file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
             </ShowIf>
           </div>
         </div>
@@ -92,6 +100,8 @@ export class Document extends Component {
 
 Document.propTypes = {
   doc: PropTypes.object,
+  PDFReady: PropTypes.func,
+  pdfIsRdy: PropTypes.bool,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,

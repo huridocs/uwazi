@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = {reference: {}};
+const initialState = {reference: {}, PDFReady: false};
 
 let unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
@@ -12,6 +12,10 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === types.DEACTIVATE_REFERENCE) {
     return state.remove('activeReference');
+  }
+
+  if (action.type === types.PDF_READY) {
+    return state.set('PDFReady', action.status);
   }
 
   if (action.type === types.SHOW_TAB) {

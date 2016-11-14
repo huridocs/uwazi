@@ -9,6 +9,7 @@ import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
+import {PDFReady} from 'app/Viewer/actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
@@ -53,6 +54,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
+    this.context.store.dispatch(PDFReady(false));
   }
 
   setReduxState(state) {

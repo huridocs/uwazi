@@ -11,7 +11,7 @@ describe('Viewer uiReducer', () => {
       let newState = uiReducer();
 
       expect(newState).toBeImmutable();
-      expect(newState.toJS()).toEqual({reference: {}});
+      expect(newState.toJS()).toEqual({reference: {}, PDFReady: false});
     });
   });
 
@@ -185,10 +185,19 @@ describe('Viewer uiReducer', () => {
     });
   });
 
+  describe('PDF_READY', () => {
+    it('should set initialState', () => {
+      let newState = uiReducer(Immutable.fromJS({PDFReady: false}), actions.PDFReady());
+      let expected = Immutable.fromJS({PDFReady: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('RESET_DOCUMENT_VIEWER', () => {
     it('should set initialState', () => {
       let newState = uiReducer(Immutable.fromJS({targetDocument: 1, panel: true}), {type: types.RESET_DOCUMENT_VIEWER});
-      let expected = Immutable.fromJS({reference: {}});
+      let expected = Immutable.fromJS({reference: {}, PDFReady: false});
 
       expect(newState).toEqualImmutable(expected);
     });

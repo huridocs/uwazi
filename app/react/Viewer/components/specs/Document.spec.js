@@ -14,6 +14,7 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
+      PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({_id: 'documentId'}),
@@ -180,6 +181,7 @@ describe('Document', () => {
       props.highlightedReference = 'highlightedReference';
       props.references = [{reference: 'reference'}];
       props.forceSimulateSelection = true;
+      props.pdfIsRdy = true;
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
@@ -195,17 +197,17 @@ describe('Document', () => {
 
     describe('componentDidUpdate', () => {
       it('should simulateSelection', () => {
-        instance.pdfLoaded();
+        instance.componentDidUpdate();
         expect(instance.text.simulateSelection).toHaveBeenCalledWith({selection: 'selection'}, props.forceSimulateSelection);
       });
 
       it('should render the references', () => {
-        instance.pdfLoaded();
+        instance.componentDidUpdate();
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
       });
 
       it('should highlight the reference', () => {
-        instance.pdfLoaded();
+        instance.componentDidUpdate();
         expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
       });
     });

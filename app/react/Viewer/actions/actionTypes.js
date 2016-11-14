@@ -20,6 +20,7 @@ export const LOAD_DEFAULT_VIEWER_MENU = 'LOAD_DEFAULT_VIEWER_MENU';
 
 //UI
 export const OPEN_PANEL = 'OPEN_PANEL';
+export const PDF_READY = 'PDF_READY';
 export const SHOW_TAB = 'SHOW_TAB';
 export const CLOSE_PANEL = 'CLOSE_PANEL';
 export const SELECT_TARGET_DOCUMENT = 'SELECT_TARGET_DOCUMENT';

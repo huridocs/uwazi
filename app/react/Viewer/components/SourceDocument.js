@@ -2,7 +2,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
-import {resetReferenceCreation, highlightReference, activateReference} from 'app/Viewer/actions/uiActions';
+import {PDFReady, resetReferenceCreation, highlightReference, activateReference} from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
 import {createSelector} from 'reselect';
 
@@ -13,6 +13,7 @@ const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeRefer
 
 const mapStateToProps = ({user, documentViewer}) => {
   return {
+    pdfIsRdy: documentViewer.uiState.get('PDFReady'),
     selection: selectSourceRange(documentViewer),
     doc: documentViewer.doc,
     docHTML: documentViewer.docHTML,
@@ -34,7 +35,8 @@ function mapDispatchToProps(dispatch) {
     unsetSelection,
     onClick: resetReferenceCreation,
     highlightReference,
-    activateReference
+    activateReference,
+    PDFReady
   };
   return bindActionCreators(actions, dispatch);
 }
