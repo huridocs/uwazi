@@ -6,6 +6,7 @@ import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
 import Loader from 'app/components/Elements/Loader';
+import {APIURL} from '../../config.js';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -89,7 +90,7 @@ export class Document extends Component {
               <Loader />
             </ShowIf>
             <ShowIf if={!!doc._id}>
-              <PDF style={pdfLoadingStyles} onLoad={this.pdfLoaded.bind(this)} file={`http://localhost:3000/api/documents/download?_id=${doc._id}`}/>
+              <PDF style={pdfLoadingStyles} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
             </ShowIf>
           </div>
         </div>

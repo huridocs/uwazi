@@ -16,120 +16,128 @@
   
   @media(min-width: 1024px) {
     padding: 30px;
-  }
-
-  ::selection {
-    background: $c-primary-light;
-  }
-
-  .fake-selection {
-    color: $c-success;
-    background-color: $c-success-light;
-  }
-
-  b {
-    font-weight: normal;
-    .creation-button {
-      opacity: 0;
-      display: block;
-      position: absolute;
+    div.doc-page {
       background: $c-white;
-      right: 0;
-      width: 31px;
-      height: 31px;
-      line-height: 31px;
-      text-align: center;
-      border-radius: 50%;
+      border-radius: 0 !important;
+      border-bottom: 1px solid $c-grey;
       box-shadow: $shadow;
-      border: 1px solid $c-grey;
-      color: $c-grey-dark;
-      transform: translateY(-100%) translateX(50%);
-      font-size: $f-size-sm;
-      cursor: pointer;
+      position: relative;
+      font-family: sans-serif;
+      margin-bottom: 15px;
     }
-    &.is-active {
+
+    ::selection {
       background: $c-primary-light;
-      padding: 4px 0 0;
-      span {
-        opacity: 1;
-        background: $c-success-light;
-        color: $c-success;
-        border-color: $c-success;
-      }
     }
-    &.is-relation {
-      background: #FFFFC5;
-      color: orange;
-      border-color: orange;
-      span {
-        opacity: 1;
+
+    .fake-selection {
+      color: $c-success;
+      background-color: $c-success-light;
+    }
+
+    b {
+      font-weight: normal;
+      .creation-button {
+        opacity: 0;
+        display: block;
+        position: absolute;
+        background: $c-white;
+        right: 0;
+        width: 31px;
+        height: 31px;
+        line-height: 31px;
+        text-align: center;
+        border-radius: 50%;
+        box-shadow: $shadow;
+        border: 1px solid $c-grey;
+        color: $c-grey-dark;
+        transform: translateY(-100%) translateX(50%);
+        font-size: $f-size-sm;
+        cursor: pointer;
+      }
+      &.is-active {
+        background: $c-primary-light;
+        padding: 4px 0 0;
+        span {
+          opacity: 1;
+          background: $c-success-light;
+          color: $c-success;
+          border-color: $c-success;
+        }
+      }
+      &.is-relation {
         background: #FFFFC5;
         color: orange;
         border-color: orange;
+        span {
+          opacity: 1;
+          background: #FFFFC5;
+          color: orange;
+          border-color: orange;
+        }
       }
     }
   }
-}
 
-.comments-button {
-  display: block;
-  position: absolute;
-  background: $c-white;
-  right: -35px;
-  width: 31px;
-  height: 31px;
-  line-height: 31px;
-  text-align: center;
-  border-radius: 50%;
-  box-shadow: $shadow;
-  border: 1px solid $c-grey;
-  color: $c-grey-dark;
-  transform: translateY(-100%) translateX(50%);
-  font-size: $f-size-sm;
-  .fa {
-    margin-right: 2px;
+  .comments-button {
+    display: block;
+    position: absolute;
+    background: $c-white;
+    right: -35px;
+    width: 31px;
+    height: 31px;
+    line-height: 31px;
+    text-align: center;
+    border-radius: 50%;
+    box-shadow: $shadow;
+    border: 1px solid $c-grey;
+    color: $c-grey-dark;
+    transform: translateY(-100%) translateX(50%);
+    font-size: $f-size-sm;
+    .fa {
+      margin-right: 2px;
+    }
   }
-}
 
-.sourceDocument,
-.targetDocument {
-  padding: 0;
-  background: transparent;
-}
+  .sourceDocument,
+  .targetDocument {
+    padding: 0;
+    background: transparent;
+  }
 
-.page > div {
-  background: $c-white;
-  margin: 0 auto 30px !important;
-  box-shadow: $shadow;
-}
+  .page > div {
+    background: $c-white;
+    margin: 0 auto 30px !important;
+    box-shadow: $shadow;
+  }
 
-.document.targetDocument {
-  padding-top: 54px;
-}
+  .document.targetDocument {
+    padding-top: 54px;
+  }
 
-.document.targetDocument._undefined {
-  display: none;
-}
-
-.document-viewer.show-target-document {
-  .sourceDocument {
+  .document.targetDocument._undefined {
     display: none;
   }
-  .targetDocument {
-    opacity: 1;
+
+  .document-viewer.show-target-document {
+    .sourceDocument {
+      display: none;
+    }
+    .targetDocument {
+      opacity: 1;
+    }
   }
-}
 
 
-.relation-dialog {
-  position: absolute;
-  right: -30px;
-  transform: translateX(100%) translateY(-30%);
-  background: $c-primary-lighten !important;
-  border: 1px solid $c-grey !important;
-  color: $c-black !important;
-  padding: 5px 10px;
-  opacity: 0;
-  transition: right 500ms, opacity 0ms;
-  width: 33%;
-}
+  .relation-dialog {
+    position: absolute;
+    right: -30px;
+    transform: translateX(100%) translateY(-30%);
+    background: $c-primary-lighten !important;
+    border: 1px solid $c-grey !important;
+    color: $c-black !important;
+    padding: 5px 10px;
+    opacity: 0;
+    transition: right 500ms, opacity 0ms;
+    width: 33%;
+  }
