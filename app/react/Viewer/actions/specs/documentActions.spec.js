@@ -239,7 +239,6 @@ describe('documentActions', () => {
 
         const expectedActions = [
           {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
-          {type: 'viewer/targetDocHTML/SET', value: 'html'},
           {type: 'viewer/targetDocReferences/SET', value: ['filteredReferences']}
         ];
         const store = mockStore({locale: 'es'});
@@ -259,7 +258,6 @@ describe('documentActions', () => {
         const expectedActions = [
           {type: 'CANCEL_RANGED_CONNECTION'},
           {type: 'viewer/targetDoc/UNSET'},
-          {type: 'viewer/targetDocHTML/UNSET'},
           {type: 'viewer/targetDocReferences/UNSET'},
           {type: 'UNSET_TARGET_SELECTION'},
           {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'}

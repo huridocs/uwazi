@@ -18,19 +18,17 @@ export default class ViewDocument extends RouteHandler {
   static requestState({documentId, lang}) {
     return Promise.all([
       api.get('documents', {_id: documentId}),
-      api.get('documents/html', {_id: documentId}),
       referencesAPI.get(documentId),
       templatesAPI.get(),
       thesaurisAPI.get(),
       relationTypesAPI.get()
     ])
-    .then(([doc, docHTML, references, templates, thesauris, relationTypes]) => {
+    .then(([doc, references, templates, thesauris, relationTypes]) => {
       return {
         templates,
         thesauris,
         documentViewer: {
           doc: doc.json.rows[0],
-          docHTML: docHTML.json,
           references: referencesUtils.filterRelevant(references, lang),
           templates,
           thesauris,
@@ -47,7 +45,6 @@ export default class ViewDocument extends RouteHandler {
 
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/docHTML'));
     this.context.store.dispatch(actions.unset('viewer/templates'));
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));

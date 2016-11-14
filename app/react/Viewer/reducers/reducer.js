@@ -9,9 +9,7 @@ import uiState from './uiReducer';
 
 export default combineReducers({
   doc: addAttachmentsReducer(createReducer('viewer/doc', {})),
-  docHTML: createReducer('viewer/docHTML', {pages: []}),
   targetDoc: createReducer('viewer/targetDoc', {}),
-  targetDocHTML: createReducer('viewer/targetDocHTML', {pages: []}),
   targetDocReferences: createReducer('viewer/targetDocReferences', []),
   references,
   uiState,
