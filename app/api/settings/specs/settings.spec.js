@@ -86,6 +86,30 @@ describe('settings', () => {
         });
       });
     });
+
+    describe('when there are filter groups', () => {
+      it('should create translations for them', (done) => {
+        let config = {site_name: 'My collection', filters: [{id: 1, name: 'Judge'}, {id: 2, name: 'Documents', items: [{id: 3, name: 'Cause'}]}]};
+        settings.save(config)
+        .then(() => {
+          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {}, [], {Documents: 'Documents'});
+          done();
+        }).catch(catchErrors(done));
+      });
+
+      it('should update them', (done) => {
+        let config = {site_name: 'My collection', filters: [{id: 1, name: 'Judge'}, {id: 2, name: 'Documents', items: []}, {id: 3, name: 'Files', items: []}]};
+        settings.save(config)
+        .then(() => {
+          config = {site_name: 'My collection', filters: [{id: 1, name: 'Judge'}, {id: 2, name: 'Important Documents', items: []}]};
+          return settings.save(config);
+        })
+        .then(() => {
+          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {Documents: 'Important Documents'}, ['Files'], {'Important Documents': 'Important Documents'});
+          done();
+        }).catch(catchErrors(done));
+      });
+    });
   });
 
   describe('get()', () => {

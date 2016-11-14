@@ -1,0 +1,87 @@
+.FiltersForm-list,
+.FiltersForm-constructor {
+  .panel {
+    background: $c-grey-lighten;
+    display: table;
+    width: 100%;
+  }
+  .list-group {
+    margin: 0;
+  }
+  .list-group-item {
+    display: -webkit-flex;
+    display: flex;
+    border-radius: 4px !important;
+    border: 1px solid $c-grey-light !important;
+    box-shadow: $shadow !important;
+    cursor: move;
+  }
+  .list-group-item .list-group-item {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .no-properties {
+    text-align: center;
+    font-size: 14px;
+    color: $c-grey;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 15px;
+    background: $c-grey-lighten;
+  }
+  .no-properties-wrap {
+    display: block;
+    padding: 15px 0;
+    border: 1px dashed $c-grey;
+  }
+  .fa-reorder {
+    margin: 2px 25px 0 0;
+    color: $c-grey;
+  }
+  .list-group-item:hover > .fa-reorder {
+    color: $c-grey-dark;
+  }
+  .fa-reorder + div {
+    width: 100%;
+  }
+}
+
+.FiltersForm-list {
+  .panel-heading {
+    height: 50px;
+    padding: 0 15px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    
+    .btn {
+      margin-left: 5px;
+    }
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .list-group-item {
+    margin: 4px 15px;
+    &:first-of-type {
+      margin-top: 15px;
+    }
+    &:last-of-type {
+      margin-bottom: 15px;
+    }
+    .no-properties {
+      background: $c-white;
+      padding: 0 0 10px;
+    }
+  }
+}
+
+.FiltersForm-constructor {
+  .list-group-item {
+    margin: 4px 7px;
+  }
+}

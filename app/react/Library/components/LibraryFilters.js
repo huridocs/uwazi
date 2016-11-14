@@ -6,8 +6,8 @@ import {filterDocumentTypes, resetFilters} from 'app/Library/actions/filterActio
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {hideFilters} from 'app/Library/actions/libraryActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
+import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
-import {MultiSelect} from 'app/Forms';
 import {t} from 'app/I18N';
 
 export class LibraryFilters extends Component {
@@ -21,26 +21,6 @@ export class LibraryFilters extends Component {
   }
 
   render() {
-    const aggregations = this.props.aggregations.toJS();
-    const documentTypes = this.props.filters.toJS().documentTypes;
-    let templates = this.props.templates.toJS().map((template) => {
-      template.results = 0;
-      template.total = 0;
-      let aggregationsMatch;
-      if (aggregations.types) {
-        aggregationsMatch = aggregations.types.buckets.find((aggregation) => aggregation.key === template._id);
-      }
-
-      if (aggregationsMatch) {
-        template.results = aggregationsMatch.filtered.doc_count;
-        template.total = aggregationsMatch.doc_count;
-      }
-
-      template.name = t(template._id, template.name);
-
-      return template;
-    });
-
     return (
       <SidePanel open={this.props.open}>
         <div className="sidepanel-footer">
@@ -55,14 +35,7 @@ export class LibraryFilters extends Component {
         </div>
         <div className="sidepanel-body">
           <div className="documentTypes-selector">
-            <MultiSelect
-              value={documentTypes}
-              prefix="documentTypes"
-              options={templates}
-              optionsValue="_id"
-              optionsLabel="name"
-              onChange={this.handleFilterDocType.bind(this)}
-            />
+            <DocumentTypesList onChange={this.handleFilterDocType.bind(this)}/>
           </div>
           <FiltersForm />
         </div>
@@ -72,9 +45,7 @@ export class LibraryFilters extends Component {
 }
 
 LibraryFilters.propTypes = {
-  templates: PropTypes.object,
   filters: PropTypes.object,
-  aggregations: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
   hideFilters: PropTypes.func,
@@ -84,10 +55,11 @@ LibraryFilters.propTypes = {
   documentTypes: PropTypes.array
 };
 
-export function mapStateToProps({library, templates}) {
+export function mapStateToProps({settings, library, templates}) {
   return {
     templates,
     filters: library.filters,
+    settings: settings,
     searchTerm: library.ui.get('searchTerm'),
     open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocument'),
     aggregations: library.aggregations

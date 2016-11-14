@@ -16,7 +16,8 @@ import {
   EntityTypesList,
   RelationTypesList,
   ThesaurisList,
-  TranslationsList
+  TranslationsList,
+  FiltersForm
 } from 'app/Settings';
 
 import Pages from 'app/Pages/Pages';
@@ -81,6 +82,7 @@ const routes = (
       <Route path='dictionaries/edit/:thesauriId' component={EditThesauri} />
       <Route path='translations' component={TranslationsList} />
       <Route path='translations/edit/:context' component={EditTranslations} />
+      <Route path='filters' component={FiltersForm} />
     </Route>
     <Route path='library' component={Library} />
     <Route path='uploads' component={Uploads} />
