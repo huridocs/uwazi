@@ -71,10 +71,9 @@ export function loadTargetDocument(id) {
   return function (dispatch, getState) {
     return Promise.all([
       api.get('documents?_id=' + id),
-      api.get('documents/html?_id=' + id),
       referencesAPI.get(id)
     ])
-    .then(([docResponse, htmlResponse, references]) => {
+    .then(([docResponse, references]) => {
       dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
       dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
     });
