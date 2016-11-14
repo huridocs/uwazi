@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 
-import ShowIf from 'app/App/ShowIf';
 import PDFPage from './PDFPage.js';
 import '../../../../node_modules/pdfjs-dist/web/pdf_viewer.css';
 
