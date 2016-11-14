@@ -52,33 +52,33 @@ export class UploadButton extends Component {
   }
 
   renderUploadButton() {
-    return <label htmlFor="upload-button-input" className="btn btn-primary">
-        <i className="fa fa-cloud-upload"></i>
-        <span className="btn-label">{t('System', 'Upload')}</span>
+    return (
+      <label htmlFor="upload-button-input" className="item-shortcut">
+        <i className="fa fa-upload"></i>
         <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
-      </label>;
+      </label>
+    );
   }
 
   renderFailed() {
-    return <label htmlFor="upload-button-input" className="btn btn-danger">
-        <i className="fa fa-cloud-upload"></i>
-        <span className="btn-label">{t('System', 'Upload Failed')}</span>
+    return (
+      <label htmlFor="upload-button-input" className="item-shortcut danger">
+        <i className="fa fa-exclamation-triangle"></i>
         <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
-      </label>;
+      </label>
+    );
   }
 
   renderProgress(progress) {
-    return <div className="btn btn-warning">
-        <i className="fa">{progress}%</i>
-        <span className="btn-label">{t('System', 'Uploading')}</span>
-      </div>;
+    return <div className="item-shortcut warning">
+             <i className="fa">{progress}%</i>
+           </div>;
   }
 
   renderProcessing() {
-    return <div className="btn btn-info">
-        <i className="fa fa-cog"></i>
-        <span className="btn-label">{t('System', 'Processing')}</span>
-      </div>;
+    return <div className="item-shortcut">
+             <i className="fa fa-cog fa-spin"></i>
+           </div>;
   }
 
   render() {

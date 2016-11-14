@@ -5,7 +5,6 @@ import {bindActionCreators} from 'redux';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import t from 'app/I18N/t';
-import UploadButton from './UploadButton';
 
 import * as actions from '../actions/actions';
 
@@ -39,17 +38,6 @@ export class MetadataFormButtons extends Component {
           <span className="btn-label">{t('System', 'Save')}</span>
         </button>
       </ShowIf>
-      <ShowIf if={data.type === 'document' && !entityBeingEdited}>
-        <a className="btn btn-primary" href={'/api/documents/download?_id=' + data._id} target="_blank">
-          <i className="fa fa-cloud-download"></i>
-          <span className="btn-label">{t('System', 'Download')}</span>
-        </a>
-      </ShowIf>
-      <NeedAuthorization>
-        <ShowIf if={data.type === 'document' && !entityBeingEdited}>
-          <UploadButton documentId={data._id} />
-        </ShowIf>
-      </NeedAuthorization>
       <NeedAuthorization>
         <ShowIf if={!entityBeingEdited}>
           <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>

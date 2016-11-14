@@ -13,9 +13,9 @@ export class UploadAttachment extends Component {
 
   renderUploadButton() {
     return (
-      <label htmlFor="upload-attachment-input" className="btn btn-primary">
-        <i className="fa fa-cloud-upload"></i>
-        <span className="btn-label">{t('System', 'Upload')}</span>
+      <label htmlFor="upload-attachment-input" className="btn btn-success">
+        <i className="fa fa-paperclip"></i>
+        <span className="btn-label">{t('System', 'Add')}</span>
         <input onChange={this.onChange.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
       </label>
     );
