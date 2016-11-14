@@ -76,7 +76,9 @@ describe('Advanced Sort', () => {
     it('should allow sorting by sub properties', () => {
       const baseArray = [indexA, indexB, indexC, indexD, indexE];
       const options = {property: ['sub', 'a']};
-      expect(advancedSort(baseArray, options)).toEqual([indexC, indexB, indexA, indexD, indexE]);
+      expect(advancedSort(baseArray, options).slice(0, 3)).toEqual([indexC, indexB, indexA]);
+      expect(advancedSort(baseArray, options)[3] === indexD || advancedSort(baseArray, options)[3] === indexE).toBe(true);
+      expect(advancedSort(baseArray, options)[4] === indexD || advancedSort(baseArray, options)[4] === indexE).toBe(true);
     });
   });
 
