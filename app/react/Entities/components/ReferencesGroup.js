@@ -82,7 +82,6 @@ export class ReferencesGroup extends Component {
               key={index}
               doc={Immutable(doc)}
               additionalText={reference.text}
-              templateClassName="item-label-group"
               evalPublished={true}
               buttons={
                 <div className="item-shortcut-group">

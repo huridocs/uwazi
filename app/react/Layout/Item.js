@@ -87,7 +87,7 @@ export class Item extends Component {
           </ShowIf>
         </div>
         <ItemFooter>
-          <div className={templateClassName || 'item-label-group'}>
+          <div className={`item-label-group ${templateClassName || ''}`}>
             <TemplateLabel template={doc.template}/>
             &nbsp;&nbsp;
           </div>
