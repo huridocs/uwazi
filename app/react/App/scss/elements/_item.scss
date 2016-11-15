@@ -266,19 +266,34 @@ $item-padding: 15px;
     border-color: $c-primary !important;
     background-color: $c-primary !important;
   }
+  
+  &--disabled,
+  &--disabled:hover {
+    color: $c-grey-dark !important;
+    border-color: $c-grey !important;
+    background-color: $c-white !important;
+    cursor: default;
+  }
 
-  &.warning,
-  &.warning:hover {
+  &--warning,
+  &--warning:hover {
     color: $c-white !important;
     border-color: $c-warning !important;
     background-color: $c-warning !important;
   }
 
-  &.danger,
-  &.danger:hover {
+  &--danger,
+  &--danger:hover {
     color: $c-white !important;
     border-color: $c-danger !important;
     background-color: $c-danger !important;
+  }
+  
+  &__text {
+    position: relative;
+    top: -1px;
+    margin: 0 -5px;
+    font-size: $f-size-sm;
   }
 }
 

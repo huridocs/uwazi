@@ -62,7 +62,7 @@ export class UploadButton extends Component {
 
   renderFailed() {
     return (
-      <label htmlFor="upload-button-input" className="item-shortcut danger">
+      <label htmlFor="upload-button-input" className="item-shortcut item-shortcut--danger">
         <i className="fa fa-exclamation-triangle"></i>
         <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
       </label>
@@ -70,8 +70,8 @@ export class UploadButton extends Component {
   }
 
   renderProgress(progress) {
-    return <div className="item-shortcut warning">
-             <i className="fa">{progress}%</i>
+    return <div className="item-shortcut item-shortcut--disabled">
+             <span className="item-shortcut__text">{progress}%</span>
            </div>;
   }
 

@@ -23,8 +23,8 @@ export class UploadAttachment extends Component {
 
   renderProgress(progress) {
     return (
-      <div className="btn btn-warning">
-        <i className="fa">{progress}%</i>
+      <div className="btn btn-default btn-disabled">
+        <span>{progress}%</span>
         <span className="btn-label">{t('System', 'Uploading')}</span>
       </div>
     );
