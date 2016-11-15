@@ -149,7 +149,7 @@ export class EntityViewer extends Component {
                 </li>
                 <li>
                   <TabLink to="attachments">
-                    <i className="fa fa-paperclip"></i>
+                    <i className="fa fa-download"></i>
                     <span className="connectionsNumber">{attachments.length}</span>
                   </TabLink>
                 </li>
