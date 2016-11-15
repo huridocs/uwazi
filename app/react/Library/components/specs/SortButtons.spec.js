@@ -48,7 +48,7 @@ describe('SortButtons', () => {
 
     describe('when active', () => {
       it('should set the option active', () => {
-        props.search.sort = 'metadata.sortable_name';
+        props.search.sort = 'metadata.sortable_name.raw';
         render();
         expect(component.find('li').last().hasClass('is-active')).toBe(true);
       });
@@ -59,7 +59,7 @@ describe('SortButtons', () => {
         render();
         component.setState({active: true});
         component.find('li').last().simulate('click');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name.raw', order: 'asc'});
 
         const templates = props.templates.toJS();
         templates[0].properties[1].name = 'different_name';
@@ -70,7 +70,7 @@ describe('SortButtons', () => {
         component.setState({active: true});
 
         component.find('li').last().simulate('click');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name', order: 'desc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name.raw', order: 'desc'});
       });
     });
   });
@@ -135,7 +135,7 @@ describe('SortButtons', () => {
 
   describe('when filtering title property', () => {
     it('should set active title', () => {
-      props.search = {order: 'asc', sort: 'title'};
+      props.search = {order: 'asc', sort: 'title.raw'};
       render();
       let title = component.find('li').at(0);
       expect(title.hasClass('is-active')).toBe(true);
