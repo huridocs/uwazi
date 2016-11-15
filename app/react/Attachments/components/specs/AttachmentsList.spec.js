@@ -74,15 +74,15 @@ describe('AttachmentsList', () => {
     expect(replace1.parent().parent().is(NeedAuthorization)).toBe(true);
     expect(replace1.parent().props().if).toBe(true);
 
-    // replace1.simulate('click');
-    // expect(context.confirm).toHaveBeenCalled();
+    replace1.simulate('click');
+    expect(context.confirm).toHaveBeenCalled();
 
-    // context.confirm.calls.argsFor(0)[0].accept();
-    // expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(1).toJS());
+    context.confirm.calls.argsFor(0)[0].accept();
+    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(1).toJS());
 
-    // replace2.simulate('click');
-    // context.confirm.calls.argsFor(1)[0].accept();
-    // expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(0).toJS());
+    replace2.simulate('click');
+    context.confirm.calls.argsFor(1)[0].accept();
+    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', files.get(0).toJS());
   });
 
   fit('should not render the replace button if replaceable is false', () => {

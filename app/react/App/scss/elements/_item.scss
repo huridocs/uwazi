@@ -267,6 +267,13 @@ $item-padding: 15px;
     background-color: $c-primary !important;
   }
 
+  &.success,
+  &.success:hover {
+    color: $c-white !important;
+    border-color: $c-success !important;
+    background-color: $c-success !important;
+  }
+
   &.warning,
   &.warning:hover {
     color: $c-white !important;

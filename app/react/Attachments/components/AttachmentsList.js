@@ -53,7 +53,7 @@ export class AttachmentsList extends Component {
   }
 
   render() {
-    const {parentId, isDocumentAttachments} = this.props;
+    const {parentId, parentSharedId, isDocumentAttachments} = this.props;
     const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
 
     const list = sortedFiles.map((file, index) => {
@@ -99,7 +99,7 @@ export class AttachmentsList extends Component {
               </NeedAuthorization>
               <NeedAuthorization>
                 <ShowIf if={item.replaceable}>
-                  <UploadButton documentId={parentId} />
+                  <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
                 </ShowIf>
               </NeedAuthorization>
               &nbsp;
@@ -121,6 +121,7 @@ export class AttachmentsList extends Component {
 AttachmentsList.propTypes = {
   files: PropTypes.object,
   parentId: PropTypes.string,
+  parentSharedId: PropTypes.string,
   isDocumentAttachments: PropTypes.bool,
   deleteAttachment: PropTypes.func
 };

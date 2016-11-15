@@ -190,7 +190,8 @@ export class ViewMetadataPanel extends Component {
             <TabContent for="attachments">
               <AttachmentsList files={fromJS([doc.file].concat(attachments))}
                                isDocumentAttachments={true}
-                               parentId={doc._id} />
+                               parentId={doc._id}
+                               parentSharedId={doc.sharedId} />
             </TabContent>
           </Tabs>
         </div>

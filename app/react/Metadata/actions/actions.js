@@ -1,5 +1,6 @@
 import superagent from 'superagent';
 import {actions as formActions} from 'react-redux-form';
+import {loadSourceDocument} from 'app/Viewer/actions/documentActions';
 import {APIURL} from 'app/config.js';
 import * as types from './actionTypes';
 
@@ -73,8 +74,8 @@ export function changeTemplate(form, onlyReadEntity, template) {
   };
 }
 
-export function reuploadDocument(docId, file) {
-  return function (dispatch) {
+export function reuploadDocument(docId, file, docSharedId) {
+  return function (dispatch, getState) {
     dispatch({type: types.START_REUPLOAD_DOCUMENT, doc: docId});
     superagent.post(APIURL + 'reupload')
     .set('Accept', 'application/json')
@@ -85,6 +86,9 @@ export function reuploadDocument(docId, file) {
     })
     .on('response', () => {
       dispatch({type: types.REUPLOAD_COMPLETE, doc: docId});
+      // TEST!!!
+      loadSourceDocument(docSharedId)(dispatch, getState);
+      // ----
     })
     .end();
   };

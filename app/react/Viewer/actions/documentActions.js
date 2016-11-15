@@ -66,6 +66,26 @@ export function deleteDocument(doc) {
   };
 }
 
+// TEST!!!
+export function loadSourceDocument(id) {
+  console.log('A01');
+  return function (dispatch, getState) {
+    console.log('A02');
+    return Promise.all([
+      api.get('documents?_id=' + id),
+      referencesAPI.get(id)
+    ])
+    .then(([docResponse, references]) => {
+      console.log('A03');
+      console.log(docResponse);
+      dispatch(actions.set('viewer/doc', docResponse.json.rows[0]));
+      // dispatch(actions.set('viewer/docHTML', docResponse.json.rows[0]));
+      dispatch({type: types.SET_REFERENCES, references: referencesUtils.filterRelevant(references, getState().locale)});
+      dispatch({type: types.LOAD_DEFAULT_VIEWER_MENU});
+    });
+  };
+}
+// -----
 
 export function loadTargetDocument(id) {
   return function (dispatch, getState) {
