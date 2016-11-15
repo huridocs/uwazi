@@ -1,6 +1,7 @@
 import superagent from 'superagent';
 import {actions as formActions} from 'react-redux-form';
-import {loadSourceDocument} from 'app/Viewer/actions/documentActions';
+import {requestViewerState, setViewerState} from 'app/Viewer/actions/routeActions';
+import {PDFReady} from 'app/Viewer/actions/uiActions';
 import {APIURL} from 'app/config.js';
 import * as types from './actionTypes';
 
@@ -87,7 +88,12 @@ export function reuploadDocument(docId, file, docSharedId) {
     .on('response', () => {
       dispatch({type: types.REUPLOAD_COMPLETE, doc: docId});
       // TEST!!!
-      loadSourceDocument(docSharedId)(dispatch, getState);
+      dispatch(PDFReady(false));
+      requestViewerState(docSharedId, getState().locale)
+      .then(state => {
+        setViewerState(state)(dispatch);
+      });
+      // loadSourceDocument(docSharedId)(dispatch, getState);
       // ----
     })
     .end();

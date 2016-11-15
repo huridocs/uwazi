@@ -38,13 +38,10 @@ export class PDF extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.filename && this.props.filename !== null && this.props.filename !== nextProps.filename);
-    console.log('------------------------------------');
-    if (nextProps.filename && this.props.filename !== null && this.props.filename !== nextProps.filename) {
+    if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
       this.pagesLoaded = 0;
       this.setState({pdf: {numPages: 0}}, () => {
         PDFJS.getDocument(nextProps.file).then(pdf => {
-          console.log('debería haber bajado otro!');
           this.setState({pdf});
         });
       });

@@ -40,7 +40,6 @@ export class Document extends Component {
 
   componentDidMount() {
     this.text = Text(this.pagesContainer);
-    this.pdfrdy = false;
   }
 
   onTextSelected() {
