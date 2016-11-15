@@ -64,7 +64,7 @@ export default function () {
 
     sort(property, order = 'desc') {
       let sort = {};
-      sort[`doc.${property}`] = {order, ignore_unmapped: true};
+      sort[`doc.${property}`] = {order, 'ignore_unmapped': true};
       baseQuery.sort.push(sort);
       return this;
     },

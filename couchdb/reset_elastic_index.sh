@@ -11,6 +11,10 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
         "folding": {
           "tokenizer": "keyword",
           "filter":  [ "lowercase", "asciifolding" ]
+        },
+        "tokenizer": {
+          "tokenizer": "standard",
+          "filter":  [ "lowercase", "asciifolding" ]
         }
       }
     }
@@ -51,10 +55,10 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
             "type" : "string",
             "index" : "analyzed",
             "omit_norms" : true,
-            "analyzer": "folding",
+            "analyzer": "tokenizer",
             "fielddata" : { "format" : "enabled" },
             "fields" : {
-              "raw" : {"type": "string", "index" : "not_analyzed", "doc_values" : true, "ignore_above" : 256}
+              "raw" : {"type": "string", "analyzer": "folding"}
             }
           }
         }
@@ -93,7 +97,10 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
         "long_fields" : {
           "match" : "*",
           "match_mapping_type" : "long",
-          "mapping" : { "type" : "long", "doc_values" : true }
+          "mapping" : { "type" : "long", "doc_values" : true },
+          "fields" : {
+            "raw" : {"type": "string", "analyzer": "folding"}
+          }
         }
       }, {
         "date_fields" : {

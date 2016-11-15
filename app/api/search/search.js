@@ -3,7 +3,6 @@ import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import request from 'shared/JSONRequest';
-import sanitizeResponse from '../utils/sanitizeResponse';
 
 export default {
   search(query, language) {
@@ -52,8 +51,14 @@ export default {
     });
   },
 
-  matchTitle(searchTerm) {
-    let query = queryBuilder().fullTextSearch(searchTerm, ['doc.title']).highlight(['doc.title']).limit(5).query();
+  matchTitle(searchTerm, language) {
+    let query = queryBuilder()
+    .fullTextSearch(searchTerm, ['doc.title'])
+    .highlight(['doc.title'])
+    .language(language)
+    .limit(5)
+    .query();
+
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       return response.hits.hits.map((hit) => {
