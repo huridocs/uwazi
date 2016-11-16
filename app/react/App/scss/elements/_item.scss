@@ -266,7 +266,14 @@ $item-padding: 15px;
     border-color: $c-primary !important;
     background-color: $c-primary !important;
   }
-  
+
+  &--success,
+  &--success:hover {
+    color: $c-white !important;
+    border-color: $c-success !important;
+    background-color: $c-success !important;
+  }
+
   &--disabled,
   &--disabled:hover {
     color: $c-grey-dark !important;
@@ -288,7 +295,7 @@ $item-padding: 15px;
     border-color: $c-danger !important;
     background-color: $c-danger !important;
   }
-  
+
   &__text {
     position: relative;
     top: -1px;

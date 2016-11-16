@@ -64,7 +64,7 @@ export class UploadButton extends Component {
 
   renderCompleted() {
     return (
-      <label htmlFor="upload-button-input" className="item-shortcut success">
+      <label htmlFor="upload-button-input" className="item-shortcut item-shortcut--success">
         <i className="fa fa-check"></i>
         <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
       </label>
