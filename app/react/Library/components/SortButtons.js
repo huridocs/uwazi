@@ -56,7 +56,7 @@ export class SortButtons extends Component {
             html: <li key={sorts.length + 1}
                       className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
                       onClick={() => this.handleClick(sortString, defaultOrder, treatAs)}>
-                    {t(template.name, property.label)}
+                    {t(template._id, property.label)}
                   </li>
           });
         }

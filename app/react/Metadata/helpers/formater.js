@@ -28,7 +28,7 @@ export default {
     let value = '';
     let icon;
     if (option) {
-      value = t(thesauri.name, option.label);
+      value = t(thesauri._id, option.label);
       icon = option.icon;
     }
 
