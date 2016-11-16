@@ -88,6 +88,8 @@ $c-sidebar: $c-white;
     background: 0;
     box-shadow: none;
     outline: none;
+    background: $c-grey-lighten;
+    margin-bottom: 1px;
     
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
@@ -102,14 +104,14 @@ $c-sidebar: $c-white;
       text-decoration: underline;
     }
     
+    &:hover .multiselectItem-action {
+      border-color: $c-primary;
+    }
+    
     .multiselectItem-results {
     }
     
     &.is-expanded .multiselectItem-results {
-    }
-    
-    &:hover .multiselectItem-results {
-      border-color: $c-primary;
     }
 
     .title {
