@@ -39,22 +39,24 @@ export class MetadataFormButtons extends Component {
           <span className="btn-label">{t('System', 'Save')}</span>
         </button>
       </ShowIf>
-      <ShowIf if={data.type === 'document'}>
+      <ShowIf if={data.type === 'document' && !entityBeingEdited}>
         <a className="btn btn-primary" href={'/api/documents/download?_id=' + data._id} target="_blank">
           <i className="fa fa-cloud-download"></i>
           <span className="btn-label">{t('System', 'Download')}</span>
         </a>
       </ShowIf>
       <NeedAuthorization>
-        <ShowIf if={data.type === 'document'}>
+        <ShowIf if={data.type === 'document' && !entityBeingEdited}>
           <UploadButton documentId={data._id} />
         </ShowIf>
       </NeedAuthorization>
       <NeedAuthorization>
-        <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>
-          <i className="fa fa-trash"></i>
-          <span className="btn-label">{t('System', 'Delete')}</span>
-        </button>
+        <ShowIf if={!entityBeingEdited}>
+          <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>
+            <i className="fa fa-trash"></i>
+            <span className="btn-label">{t('System', 'Delete')}</span>
+          </button>
+        </ShowIf>
       </NeedAuthorization>
     </div>;
   }
