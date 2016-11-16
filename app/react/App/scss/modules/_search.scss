@@ -267,37 +267,29 @@
   position: absolute;
   top: 0;
   right: 0;
-  font-size: $f-size-sm;
-  width: 40px;
-  line-height: 17px;
-  height: 16px;
-  text-align: center;
-  margin: 2px 0px;
-  border-radius: 3px;
-  background: $c-grey-light;
-  
-  &--action:hover {
-    box-shadow: inset 0 0 0 1px $c-primary;
-    cursor: pointer;
-  }
-  
-  .fa {
-    font-size: 15px;
-    margin-left: 3px;
-  }
+  font-size: $f-size;
+  font-weight: 300;
+  line-height: 24px;
+  height: 24px;
+  color: $c-grey-dark;
 }
 
 .multiselectItem-action {
-  position: absolute;
-  right: 0;
-  top: 0;
+  display: inline-block;
+  position: relative;
+  top: -1px;
   font-size: $f-size-sm;
-  width: 20px;
+  width: 18px;
   height: 18px;
+  line-height: 18px;
   text-align: center;
-  margin: 3px 6px;
-  border-radius: 5px;
-  background: $c-grey-light;
+  margin: 1px 0 0 6px;
+  border: 1px solid $c-grey;
+  border-radius: 3px;
+  &:hover {
+    border-color: $c-primary;
+    cursor: pointer;
+  }
 }
 
 .multiselectItem-input {

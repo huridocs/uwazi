@@ -64,7 +64,9 @@ export class ReferencesGroup extends Component {
             </ShowIf>
             <span className="multiselectItem-results">
               <span>{refs.length}</span>
-              <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
+              <span className="multiselectItem-action">
+                <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
+              </span>
             </span>
           </div>
         </button>
