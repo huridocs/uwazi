@@ -15,17 +15,16 @@ export class DocumentTypesList extends Component {
       });
     }
     this.state = {
-      items,
-      selectedItems: []
+      items
     };
   }
 
   checked(item) {
-    return this.state.selectedItems.includes(item.id);
+    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
   }
 
   changeAll(item, e) {
-    let selectedItems = this.state.selectedItems;
+    let selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
     if (e.target.checked) {
       item.items.forEach((_item) => {
         if (!this.checked(_item)) {
@@ -48,7 +47,7 @@ export class DocumentTypesList extends Component {
   }
 
   change(item) {
-    let selectedItems = this.state.selectedItems;
+    let selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
 
     if (selectedItems.includes(item.id)) {
       let index = selectedItems.indexOf(item.id);
@@ -153,6 +152,7 @@ export class DocumentTypesList extends Component {
 }
 
 DocumentTypesList.propTypes = {
+  libraryFilters: PropTypes.object,
   settings: PropTypes.object,
   templates: PropTypes.object,
   onChange: PropTypes.func,
@@ -162,6 +162,7 @@ DocumentTypesList.propTypes = {
 
 export function mapStateToProps(state) {
   return {
+    libraryFilters: state.library.filters,
     settings: state.settings,
     templates: state.templates,
     aggregations: state.library.aggregations
