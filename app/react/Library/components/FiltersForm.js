@@ -19,6 +19,13 @@ export class FiltersForm extends Component {
     }
   }
 
+  translatedOptions(property) {
+    return property.options.map((option) => {
+      option.label = t(property.content, option.label);
+      return option;
+    });
+  }
+
   render() {
     let translationContext = this.props.documentTypes.toJS()[0];
     let fields = this.props.fields.toJS();
@@ -59,7 +66,7 @@ export class FiltersForm extends Component {
                     <li className="wide">
                       <MultiSelect
                         prefix={property.name}
-                        options={property.options}
+                        options={this.translatedOptions(property)}
                         optionsValue="id" onChange={(options) => this.props.activateFilter(property.name, !!options.length)}
                       />
                     </li>
