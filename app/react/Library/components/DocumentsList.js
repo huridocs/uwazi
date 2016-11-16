@@ -20,7 +20,7 @@ export class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    this.props.loadMoreDocuments(this.props.documents.toJS().rows.length + 12);
+    this.props.loadMoreDocuments(this.props.documents.toJS().rows.length + 30);
   }
 
   componentWillReceiveProps() {
