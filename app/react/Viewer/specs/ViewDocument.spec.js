@@ -21,7 +21,13 @@ describe('ViewDocument', () => {
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    const dispatch = jasmine.createSpy('dispatch');
+    context = {store: {dispatch: dispatch.and.callFake(action => {
+      if (typeof action === 'function') {
+        return action(dispatch);
+      }
+      return action;
+    })}};
     component = shallow(<ViewDocument />, {context});
     instance = component.instance();
 
