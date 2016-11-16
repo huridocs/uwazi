@@ -271,6 +271,7 @@
   font-weight: 300;
   line-height: 24px;
   height: 24px;
+  padding-right: 24px;
   color: $c-grey-dark;
 }
 
@@ -289,6 +290,11 @@
   &:hover {
     border-color: $c-primary;
     cursor: pointer;
+  }
+  
+  .multiselectItem-results & {
+    position: absolute;
+    top: 1px;
   }
 }
 
@@ -423,25 +429,21 @@ label.multiselectItem-label {
         .multiselectItem-input:checked + label .multiselectItem-icon:last-of-type  { display: inline-block; }
 
   .multiselectItem-input:checked + label .multiselectItem-name,
-  .multiselectItem-input:checked + label .multiselectItem-icon {
-    color: $c-primary;
-  }
+  .multiselectItem-input:checked + label .multiselectItem-icon,
   .multiselectItem-input:checked + label .multiselectItem-results,
   .multiselectItem-input:checked ~ .multiselectItem-results {
-    background-color: $c-primary;
-    color: $c-white;
+    color: $c-primary;
+    font-weight: bold;
   }
 }
 
 .search__filter:not(.is-active) {
   .multiselectItem-input:checked + label .multiselectItem-name,
-  .multiselectItem-input:checked + label .multiselectItem-icon {
-    color: $c-grey;
-  }
+  .multiselectItem-input:checked + label .multiselectItem-icon,
   .multiselectItem-input:checked + label .multiselectItem-results,
   .multiselectItem-input:checked ~ .multiselectItem-results {
-    background-color: $c-grey;
-    color: $c-white;
+    color: $c-grey;
+    font-weight: bold;
   }
 }
 
