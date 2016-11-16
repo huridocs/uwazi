@@ -122,9 +122,11 @@ export class DocumentTypesList extends Component {
                   <i className="multiselectItem-icon fa fa-check"></i>
                   <span className="multiselectItem-name">{t('Filters', item.name)}</span>
                 </label>
-                <span className="multiselectItem-results multiselectItem-results--action" onClick={this.toggleOptions.bind(this, item.id)}>
+                <span className="multiselectItem-results">
                   <span>{this.aggregations(item)}</span>
-                  <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                  <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>
+                    <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                  </span>
                 </span>
               </div>
             <ShowIf if={this.state[item.id]}>
