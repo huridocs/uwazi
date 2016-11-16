@@ -127,6 +127,15 @@
   }
 }
 
+.side-panel {
+  .markdownViewer,
+  .markdownEditor {
+    p {
+      font-size: $f-size;
+    }
+  }
+}
+
 .item {
   .markdownViewer,
   .markdownEditor {
