@@ -36,7 +36,6 @@ export function setViewerState(state) {
   return function (dispatch) {
     const {documentViewer} = state;
     dispatch(actions.set('relationTypes', state.relationTypes));
-    dispatch(actions.set('viewer/docHTML', documentViewer.docHTML));
     dispatch(actions.set('viewer/doc', documentViewer.doc));
     dispatch(actions.set('viewer/templates', documentViewer.templates));
     dispatch(actions.set('templates', documentViewer.templates));
