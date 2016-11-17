@@ -1,4 +1,3 @@
-// TEST!!!
 import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
