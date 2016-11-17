@@ -16,6 +16,7 @@ describe('PDF', () => {
     spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdfObject));
     props = {
       file: 'file_url',
+      filename: 'original.pdf',
       onLoad: jasmine.createSpy('onLoad')
     };
   });
@@ -31,6 +32,27 @@ describe('PDF', () => {
       render();
       expect(PDFJS.getDocument).toHaveBeenCalledWith(props.file);
       setTimeout(() => {
+        expect(instance.setState).toHaveBeenCalledWith({pdf: pdfObject});
+        done();
+      });
+    });
+  });
+
+  describe('on componentWillReceiveProps', () => {
+    it('should not attempt to get the PDF if filname remains unchanged', () => {
+      render();
+      instance.componentWillReceiveProps({filename: 'original.pdf'});
+      expect(PDFJS.getDocument.calls.count()).toBe(1);
+    });
+
+    it('should get the new PDF if filename changed', (done) => {
+      render();
+      instance.componentWillReceiveProps({filename: 'newfile.pdf'});
+      expect(instance.pagesLoaded).toBe(0);
+      expect(instance.setState.calls.argsFor(0)[0]).toEqual({pdf: {numPages: 0}});
+      expect(PDFJS.getDocument.calls.count()).toBe(2);
+      setTimeout(() => {
+        expect(instance.setState.calls.count()).toBe(3);
         expect(instance.setState).toHaveBeenCalledWith({pdf: pdfObject});
         done();
       });
