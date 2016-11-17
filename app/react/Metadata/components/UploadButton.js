@@ -57,7 +57,11 @@ export class UploadButton extends Component {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut">
         <i className="fa fa-upload"></i>
-        <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
+        <input onChange={this.onChange.bind(this)}
+               type="file"
+               accept="application/pdf"
+               id="upload-button-input"
+               style={{display: 'none'}} />
       </label>
     );
   }
@@ -66,7 +70,11 @@ export class UploadButton extends Component {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut item-shortcut--success">
         <i className="fa fa-check"></i>
-        <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
+        <input onChange={this.onChange.bind(this)}
+               type="file"
+               accept="application/pdf"
+               id="upload-button-input"
+               style={{display: 'none'}} />
       </label>
     );
   }
@@ -75,7 +83,11 @@ export class UploadButton extends Component {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut item-shortcut--danger">
         <i className="fa fa-exclamation-triangle"></i>
-        <input onChange={this.onChange.bind(this)} type="file" id="upload-button-input" style={{display: 'none'}} />
+        <input onChange={this.onChange.bind(this)}
+               type="file"
+               accept="application/pdf"
+               id="upload-button-input"
+               style={{display: 'none'}} />
       </label>
     );
   }
@@ -109,6 +121,7 @@ export class UploadButton extends Component {
     if (progress) {
       return this.renderProgress(progress);
     }
+
     return this.renderUploadButton();
   }
 }
