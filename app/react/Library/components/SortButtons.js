@@ -48,7 +48,7 @@ export class SortButtons extends Component {
     const additionalSorts = templates.toJS().reduce((sorts, template) => {
       template.properties.forEach(property => {
         if (property.sortable && !sorts.find(s => s.property === property.name)) {
-          const sortString = 'metadata.' + property.name + '.raw';
+          const sortString = 'metadata.' + property.name;
           const treatAs = property.type === 'date' ? 'number' : 'string';
           const defaultOrder = treatAs === 'number' ? 'desc' : 'asc';
           sorts.push({
@@ -74,14 +74,14 @@ export class SortButtons extends Component {
   render() {
     let {search, templates} = this.props;
     let order = search.order === 'asc' ? 'up' : 'down';
-    let sortingTitle = search.sort === 'title.raw';
+    let sortingTitle = search.sort === 'title';
     let sortingRecent = search.sort === 'creationDate';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
           <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}
-              onClick={() => this.handleClick('title.raw', 'asc', 'string')}>
+              onClick={() => this.handleClick('title', 'asc', 'string')}>
             A-Z
           </li>
           <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}
