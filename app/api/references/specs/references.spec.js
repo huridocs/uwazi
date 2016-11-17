@@ -140,7 +140,7 @@ describe('references', () => {
 
         expect(result[0].inbound).toBe(true);
         expect(result[0].targetDocument).toBe('source2');
-        expect(result[0].range).toBe('range1');
+        expect(result[0].range).toEqual({for: 'range1', text: ''});
         expect(result[0].text).toBe('sourceRange');
         expect(result[0].connectedDocument).toBe('source1');
         expect(result[0].connectedDocumentTitle).toBe('source1 title');
@@ -153,7 +153,7 @@ describe('references', () => {
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
-        expect(result[1].range).toBe('range2');
+        expect(result[1].range).toEqual({for: 'range2', text: 'range2'});
         expect(result[1].text).toBe('targetRange');
         expect(result[1].connectedDocument).toBe('doc3');
         expect(result[1].connectedDocumentTitle).toBe('doc3 title');
@@ -166,7 +166,7 @@ describe('references', () => {
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
-        expect(result[2].range).toBe('range3');
+        expect(result[2].range).toEqual({for: 'range3', text: 'range3'});
         expect(result[2].text).toBe('');
         expect(result[2].connectedDocument).toBe('doc4');
         expect(result[2].connectedDocumentTitle).toBe('doc4 title');
@@ -270,6 +270,20 @@ describe('references', () => {
       .catch((result) => {
         expect(result.json.error).toBe('not_found');
         expect(result.json.reason).toBe('deleted');
+        done();
+      });
+    });
+  });
+
+  describe('deleteTextReferences()', () => {
+    it('should delete the entity text references (that match language)', (done) => {
+      references.deleteTextReferences('source2', 'es')
+      .then(() => {
+        return references.getByDocument('source2', 'es');
+      })
+      .then(results => {
+        expect(results.length).toBe(3);
+        expect(results.filter(r => r._id === 'c08ef2532f0bd008ac5174b45e033c03').length).toBe(0);
         done();
       });
     });

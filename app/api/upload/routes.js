@@ -3,8 +3,8 @@ import PDF from './PDF';
 import ID from 'shared/uniqueID';
 import needsAuthorization from '../auth/authMiddleware';
 import {uploadDocumentsPath} from '../config/paths';
-import documents from 'api/documents';
 import entities from 'api/entities';
+import references from 'api/references';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -97,6 +97,8 @@ export default (app) => {
   });
 
   app.post('/api/reupload', needsAuthorization, upload.any(), (req, res) => {
-    return uploadProcess(req, res, false);
+    return entities.getById(req.body.document)
+    .then(doc => references.deleteTextReferences(doc.sharedId, doc.language))
+    .then(() => uploadProcess(req, res, false));
   });
 };
