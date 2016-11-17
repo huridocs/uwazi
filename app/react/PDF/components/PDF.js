@@ -38,6 +38,10 @@ export class PDF extends Component {
 
   pageUnloaded(numPage) {
     delete this.pagesLoaded[numPage];
+    const start = this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1];
+    const end = this.count[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))];
+    //console.log('unload');
+    this.props.onLoad({start, end});
   }
 
   pageLoading(numPage) {
@@ -48,8 +52,11 @@ export class PDF extends Component {
     this.pagesLoaded[numPage] = true;
     let allPagesLoaded = (Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0);
     if (allPagesLoaded) {
-      console.log(this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1]);
-      //this.props.onLoad();
+      //console.log(this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1]);
+      const start = this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1];
+      const end = this.count[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))];
+      //console.log('load');
+      this.props.onLoad({start, end});
     }
   }
 

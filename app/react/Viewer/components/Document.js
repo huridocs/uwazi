@@ -59,8 +59,14 @@ export class Document extends Component {
     this.text.activate(this.props.activeReference);
   }
 
-  pdfLoaded() {
-    //this.props.PDFReady();
+  pdfLoaded(range) {
+    //console.log(offset);
+    console.log('RENDERING RANGE');
+    console.log(range);
+    console.log('--------------------');
+    this.text.range(range);
+    this.props.PDFReady();
+    this.componentDidUpdate();
   }
 
   render() {

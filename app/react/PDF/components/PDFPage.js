@@ -54,9 +54,11 @@ export class PDFPage extends Component {
       if (this.pageShouldRender()) {
         this.renderPage();
       } else if (this.pdfPageView) {
-        this.props.onUnload(this.props.page);
         this.pdfPageView.cancelRendering();
         this.pdfPageView.destroy();
+        if (this.rendered) {
+          this.props.onUnload(this.props.page);
+        }
         this.rendered = false;
       }
     });
