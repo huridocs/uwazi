@@ -19,7 +19,7 @@ export class UploadButton extends Component {
         this.props.reuploadDocument(this.props.documentId, file, this.props.documentSharedId);
       },
       title: 'Confirm upload',
-      message: 'Are you sure you want to upload a new document?\nAny reference created to the previous document will be lost.'
+      message: 'Are you sure you want to upload a new document?\nAll text-based references linked to the previous document will be lost.'
     });
   }
 
