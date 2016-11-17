@@ -60,7 +60,7 @@ export class Document extends Component {
   }
 
   pdfLoaded() {
-    this.props.PDFReady();
+    //this.props.PDFReady();
   }
 
   render() {
@@ -69,11 +69,6 @@ export class Document extends Component {
     const Header = this.props.header || function () {
       return false;
     };
-
-    let pdfLoadingStyles = {};
-    if (!this.props.pdfIsRdy) {
-      pdfLoadingStyles = {display: 'none'};
-    }
 
     return (
       <div>
@@ -86,11 +81,8 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!this.props.pdfIsRdy}>
-              <Loader />
-            </ShowIf>
             <ShowIf if={!!doc._id}>
-              <PDF style={pdfLoadingStyles} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
+              <PDF onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
             </ShowIf>
           </div>
         </div>

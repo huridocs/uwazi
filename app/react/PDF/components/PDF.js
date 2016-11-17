@@ -10,30 +10,46 @@ if (isClient) {
   PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
   PDFJS.workerSrc = '/pdf.worker.bundle.js';
 }
+import {countPDFChars} from 'app/PDF/utils.js';
 
 export class PDF extends Component {
 
   constructor(props) {
     super(props);
     this.state = {pdf: {numPages: 0}};
-    this.pagesLoaded = 0;
+    this.pagesLoaded = {};
     if (isClient) {
       PDFJS.getDocument(props.file).then(pdf => {
-        this.setState({pdf});
+        countPDFChars(props.file)
+        .then((count) => {
+          count[0] = 0;
+          this.count = count;
+          this.setState({pdf});
+        });
       });
     }
   }
 
   componentDidMount() {
-    this.refs.pdfContainer.addEventListener('textlayerrendered', () => {
-      this.pageLoaded();
+    this.refs.pdfContainer.addEventListener('textlayerrendered', (e) => {
+      this.pageLoaded(e.detail.pageNumber);
     });
   }
 
-  pageLoaded() {
-    this.pagesLoaded += 1;
-    if (this.pagesLoaded === this.state.pdf.numPages) {
-      this.props.onLoad();
+  pageUnloaded(numPage) {
+    delete this.pagesLoaded[numPage];
+  }
+
+  pageLoading(numPage) {
+    this.pagesLoaded[numPage] = false;
+  }
+
+  pageLoaded(numPage) {
+    this.pagesLoaded[numPage] = true;
+    let allPagesLoaded = (Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0);
+    if (allPagesLoaded) {
+      console.log(this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1]);
+      //this.props.onLoad();
     }
   }
 
@@ -43,7 +59,7 @@ export class PDF extends Component {
         {(() => {
           let pages = [];
           for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-            pages.push(<PDFPage key={page} page={page} pdf={this.state.pdf} />);
+            pages.push(<PDFPage onUnload={this.pageUnloaded.bind(this)} onLoading={this.pageLoading.bind(this)} key={page} page={page} pdf={this.state.pdf} />);
           }
           return pages;
         })()}

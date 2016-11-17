@@ -10,13 +10,15 @@ if (isClient) {
 export class PDFPage extends Component {
 
   renderPage() {
-    //if (!this.rendered && this.pdfPageView) {
-      //this.pdfPageView.draw()
-      //.catch((e) => e);
-      //this.rendered = true;
-    //}
-    //if (!this.rendered) {
-      //this.rendered = true;
+    if (!this.rendered && this.pdfPageView) {
+      this.props.onLoading(this.props.page);
+      this.pdfPageView.draw()
+      .catch((e) => e);
+      this.rendered = true;
+    }
+    if (!this.rendered) {
+      this.props.onLoading(this.props.page);
+      this.rendered = true;
       this.props.pdf.getPage(this.props.page).then(page => {
         const scale = 1;
 
@@ -25,61 +27,64 @@ export class PDFPage extends Component {
           id: this.props.page,
           scale: scale,
           defaultViewport: page.getViewport(scale),
+          enhanceTextSelection: true,
           textLayerFactory: new PDFJS.DefaultTextLayerFactory()
         });
 
         this.pdfPageView.setPdfPage(page);
         this.pdfPageView.draw()
         .then(() => {
-          this.props.onLoad();
+          //this.props.onLoad();
         })
         .catch((e) => e);
       });
-    //}
+    }
   }
 
-  //componentWillUnmount() {
-    //document.querySelector('.document-viewer').removeEventListener('scroll');
-  //}
+  componentWillUnmount() {
+    document.querySelector('.document-viewer').removeEventListener('scroll');
+  }
 
   componentDidMount() {
-    //if (this.pageShouldRender()) {
+    if (this.pageShouldRender()) {
       this.renderPage();
-    //}
+    }
 
-    //document.querySelector('.document-viewer').addEventListener('scroll', () => {
-      //if (this.pageShouldRender()) {
-        //this.renderPage();
-      //} else if (this.pdfPageView) {
-        //this.pdfPageView.cancelRendering();
-        //this.pdfPageView.destroy();
-        //this.rendered = false;
-      //}
-    //});
+    document.querySelector('.document-viewer').addEventListener('scroll', () => {
+      if (this.pageShouldRender()) {
+        this.renderPage();
+      } else if (this.pdfPageView) {
+        this.props.onUnload(this.props.page);
+        this.pdfPageView.cancelRendering();
+        this.pdfPageView.destroy();
+        this.rendered = false;
+      }
+    });
   }
 
-  //pageShouldRender() {
-    //const el = this.refs.pageContainer;
-    //const rect = el.getBoundingClientRect();
-    //const vWidth = window.innerWidth || document.documentElement.clientWidth;
-    //const vHeight = window.innerHeight || document.documentElement.clientHeight;
+  pageShouldRender() {
+    const el = this.refs.pageContainer;
+    const rect = el.getBoundingClientRect();
+    const vWidth = window.innerWidth || document.documentElement.clientWidth;
+    const vHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    //if (rect.right < 0 || rect.bottom < -1054 || rect.left > vWidth || rect.top > vHeight + 1054) {
-      //return false;
-    //}
+    if (rect.right < 0 || rect.bottom < -1054 || rect.left > vWidth || rect.top > vHeight + 1054) {
+      return false;
+    }
 
-    //return true;
-  //}
+    return true;
+  }
 
   render() {
-    return <div className="doc-page" ref='pageContainer'/>;
+    return <div className="doc-page" ref='pageContainer' style={{height: 1054}}/>;
   }
 }
 
 PDFPage.propTypes = {
   page: PropTypes.number,
   pageHeight: PropTypes.number,
-  onLoad: PropTypes.func,
+  onLoading: PropTypes.func,
+  onUnload: PropTypes.func,
   pdf: PropTypes.object
 };
 
