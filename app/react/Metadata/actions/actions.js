@@ -87,14 +87,12 @@ export function reuploadDocument(docId, file, docSharedId) {
     })
     .on('response', () => {
       dispatch({type: types.REUPLOAD_COMPLETE, doc: docId});
-      // TEST!!!
       dispatch(PDFReady(false));
+
       requestViewerState(docSharedId, getState().locale)
       .then(state => {
-        setViewerState(state)(dispatch);
+        dispatch(setViewerState(state));
       });
-      // loadSourceDocument(docSharedId)(dispatch, getState);
-      // ----
     })
     .end();
   };
