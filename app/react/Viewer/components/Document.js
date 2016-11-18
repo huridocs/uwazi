@@ -5,7 +5,6 @@ import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
-import Loader from 'app/components/Elements/Loader';
 import {APIURL} from '../../config.js';
 
 export class Document extends Component {
@@ -40,7 +39,6 @@ export class Document extends Component {
 
   componentDidMount() {
     this.text = Text(this.pagesContainer);
-    this.pdfrdy = false;
   }
 
   onTextSelected() {
@@ -48,10 +46,6 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.props.pdfIsRdy) {
-      return;
-    }
-
     this.text.renderReferences(this.props.references);
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
@@ -60,12 +54,8 @@ export class Document extends Component {
   }
 
   pdfLoaded(range) {
-    //console.log(offset);
-    console.log('RENDERING RANGE');
-    console.log(range);
-    console.log('--------------------');
+    this.text.reset();
     this.text.range(range);
-    this.props.PDFReady();
     this.componentDidUpdate();
   }
 
@@ -99,8 +89,6 @@ export class Document extends Component {
 
 Document.propTypes = {
   doc: PropTypes.object,
-  PDFReady: PropTypes.func,
-  pdfIsRdy: PropTypes.bool,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,

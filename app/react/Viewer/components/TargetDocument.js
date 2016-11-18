@@ -4,13 +4,12 @@ import {bindActionCreators} from 'redux';
 import Document from './Document';
 import TargetDocumentHeader from './TargetDocumentHeader';
 import {setTargetSelection, unsetTargetSelection} from 'app/Viewer/actions/selectionActions';
-import {targetPDFReady, highlightReference, selectReference} from 'app/Viewer/actions/uiActions';
+import {highlightReference, selectReference} from 'app/Viewer/actions/uiActions';
 
 const mapStateToProps = ({documentViewer}) => {
   let uiState = documentViewer.uiState.toJS();
 
   return {
-    pdfIsRdy: documentViewer.uiState.get('targetPDFReady'),
     doc: documentViewer.targetDoc,
     docHTML: documentViewer.targetDocHTML,
     selection: uiState.reference.targetRange,
@@ -28,8 +27,7 @@ function mapDispatchToProps(dispatch) {
     setSelection: setTargetSelection,
     unsetSelection: unsetTargetSelection,
     highlightReference,
-    activateReference: selectReference,
-    PDFReady: targetPDFReady
+    activateReference: selectReference
   },
   dispatch);
 }

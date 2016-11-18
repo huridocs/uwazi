@@ -33,16 +33,13 @@ export class PDFPage extends Component {
 
         this.pdfPageView.setPdfPage(page);
         this.pdfPageView.draw()
-        .then(() => {
-          //this.props.onLoad();
-        })
         .catch((e) => e);
       });
     }
   }
 
   componentWillUnmount() {
-    document.querySelector('.document-viewer').removeEventListener('scroll');
+    //document.querySelector('.document-viewer').removeEventListener('scroll');
   }
 
   componentDidMount() {

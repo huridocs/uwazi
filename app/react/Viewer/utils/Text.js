@@ -175,6 +175,17 @@ export default function (container) {
           delete this.renderedReferences[identifier][id];
         }
       });
+    },
+
+    reset(identifier = 'reference') {
+      if (!this.renderedReferences[identifier]) {
+        this.renderedReferences[identifier] = {};
+      }
+      Object.keys(this.renderedReferences[identifier]).forEach((id) => {
+        this.renderedReferences[identifier][id].unwrap();
+        delete this.renderedReferences[identifier][id];
+      });
     }
+      
   };
 }

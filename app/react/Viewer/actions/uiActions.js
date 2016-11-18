@@ -3,20 +3,6 @@ import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
 import {setTargetSelection} from 'app/Viewer/actions/selectionActions';
 
-export function PDFReady(status = true) {
-  return {
-    type: types.PDF_READY,
-    status
-  };
-}
-
-export function targetPDFReady(status = true) {
-  return {
-    type: types.TARGET_PDF_READY,
-    status
-  };
-}
-
 export function closePanel() {
   return {
     type: types.CLOSE_PANEL
