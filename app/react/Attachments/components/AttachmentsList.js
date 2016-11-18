@@ -9,6 +9,7 @@ import {advancedSort} from 'app/utils/advancedSort';
 import t from 'app/I18N/t';
 
 import {deleteAttachment} from '../actions/actions';
+import UploadButton from 'app/Metadata/components/UploadButton';
 
 export class AttachmentsList extends Component {
 
@@ -26,16 +27,47 @@ export class AttachmentsList extends Component {
     return filename.substr(filename.lastIndexOf('.') + 1);
   }
 
-  render() {
-    const {parentId} = this.props;
-    const files = advancedSort(this.props.files.toJS(), {property: 'originalname'});
+  arrangeFiles(files, isDocumentAttachments) {
+    let firstFiles = [];
+    if (isDocumentAttachments) {
+      firstFiles.push(files.shift());
+    }
 
-    const list = files.map((file, index) => {
+    const sortedFiles = advancedSort(files, {property: 'originalname'});
+    return firstFiles.concat(sortedFiles);
+  }
+
+  getItemOptions(isSourceDocument, parentId, filename) {
+    const options = {};
+    options.itemClassName = isSourceDocument ? 'item-source-document' : '';
+    options.typeClassName = isSourceDocument ? 'primary' : 'empty';
+    options.icon = isSourceDocument ? 'file-pdf-o' : 'paperclip';
+    options.showSourceDocumentLabel = isSourceDocument;
+    options.deletable = !isSourceDocument;
+    options.replaceable = isSourceDocument;
+    options.downloadHref = isSourceDocument ?
+                         `/api/documents/download?_id=${parentId}` :
+                         `/api/attachments/download?_id=${parentId}&file=${filename}`;
+
+    return options;
+  }
+
+  render() {
+    const {parentId, parentSharedId, isDocumentAttachments} = this.props;
+    const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
+
+    const list = sortedFiles.map((file, index) => {
+      if (!file) {
+        return;
+      }
+
       const sizeString = file.size ? filesize(file.size) : '';
+
+      const item = this.getItemOptions(isDocumentAttachments && index === 0, parentId, file.filename);
 
       return (
         <div key={index}
-             className="item highlight-hover">
+             className={`item highlight-hover ${item.itemClassName}`}>
           <div className="item-info">
             <div className="item-name">{file.originalname}</div>
           </div>
@@ -49,21 +81,32 @@ export class AttachmentsList extends Component {
           </ShowIf>
           <div className="item-actions">
             <div className="item-label-group">
-              <span className="item-type item-type-18">
-                <span className="item-type__name no-icon">{this.getExtension(file.filename)}</span>
+              <span className={`item-type item-type-${item.typeClassName}`}>
+                <i className={`fa fa-${item.icon} item-type__icon`}></i>
+                <span className="item-type__name">{this.getExtension(file.filename)}</span>
+                <ShowIf if={item.showSourceDocumentLabel}>
+                  <span className="item-type__name no-icon">SOURCE DOCUMENT</span>
+                </ShowIf>
               </span>
             </div>
             <div className="item-shortcut-group">
               <NeedAuthorization>
-                <a className="item-shortcut" onClick={this.deleteAttachment.bind(this, file)}>
-                  <i className="fa fa-trash"></i>
-                </a>
+                <ShowIf if={item.deletable}>
+                  <a className="item-shortcut" onClick={this.deleteAttachment.bind(this, file)}>
+                    <i className="fa fa-trash"></i>
+                  </a>
+                </ShowIf>
+              </NeedAuthorization>
+              <NeedAuthorization>
+                <ShowIf if={item.replaceable}>
+                  <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
+                </ShowIf>
               </NeedAuthorization>
               &nbsp;
               <a className="item-shortcut"
-                 href={`/api/attachments/download?_id=${parentId}&file=${file.filename}`}
+                 href={item.downloadHref}
                  target="_blank">
-                <i className="fa fa-cloud-download"></i>
+                <i className="fa fa-download"></i>
               </a>
             </div>
           </div>
@@ -78,6 +121,8 @@ export class AttachmentsList extends Component {
 AttachmentsList.propTypes = {
   files: PropTypes.object,
   parentId: PropTypes.string,
+  parentSharedId: PropTypes.string,
+  isDocumentAttachments: PropTypes.bool,
   deleteAttachment: PropTypes.func
 };
 

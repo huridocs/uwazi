@@ -4,6 +4,15 @@
   transition: all 100ms;
 }
 
+.btn-default.btn-disabled {
+  &, &:hover, &:focus, &:active {
+    cursor: default;
+    background: $c-white;
+    border-color: $c-grey;
+    color: $c-grey-dark;
+  }
+}
+
 .form-control {
   height: 32px;
 }

@@ -5,11 +5,12 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {APIURL} from 'app/config.js';
 import * as types from '../actionTypes';
+import * as routeActions from 'app/Viewer/actions/routeActions';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('documentFormActions', () => {
+describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
@@ -112,29 +113,38 @@ describe('documentFormActions', () => {
   });
 
   describe('reuploadDocument', () => {
-    it('should upload the file while dispatching the upload progress', () => {
-      let mockUpload = superagent.post(APIURL + 'reupload');
+    let mockUpload;
+    let store;
+    let file;
+
+    beforeEach(() => {
+      mockUpload = superagent.post(APIURL + 'reupload');
       spyOn(mockUpload, 'field').and.callThrough();
       spyOn(mockUpload, 'attach').and.callThrough();
       spyOn(superagent, 'post').and.returnValue(mockUpload);
 
-      const expectedActions = [
-        {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
-        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
-        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
-        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'}
-      ];
-      const store = mockStore({});
-
       // needed to work with firefox/chrome and phantomjs
-      let file = {name: 'filename'};
+      file = {name: 'filename'};
       let isChrome = typeof File === 'function';
       if (isChrome) {
         file = new File([], 'filename');
       }
       //
 
-      store.dispatch(actions.reuploadDocument('abc1', file));
+      store = mockStore({locale: 'es'});
+      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId'));
+    });
+
+    it('should upload the file while dispatching the upload progress', () => {
+      const expectedActions = [
+        {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
+        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
+        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
+        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'},
+        {type: 'PDF_READY', status: false}
+      ];
+
+
       expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
@@ -142,6 +152,22 @@ describe('documentFormActions', () => {
       mockUpload.emit('progress', {percent: 65});
       mockUpload.emit('response');
       expect(store.getActions()).toEqual(expectedActions);
+    });
+
+    describe('upon response', () => {
+      let state = {};
+
+      beforeEach(() => {
+        spyOn(routeActions, 'requestViewerState').and.returnValue({then: (cb) => cb(state)});
+        spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
+        mockUpload.emit('response');
+      });
+
+      it('should request and set viewer states', () => {
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es');
+        expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
+        expect(store.getActions()).toContain({type: 'setViewerState'});
+      });
     });
   });
 });

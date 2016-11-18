@@ -62,7 +62,10 @@ export class ViewMetadataPanel extends Component {
     const connections = propReferences.filter(r => {
       return typeof r.range.start === 'undefined';
     });
-    const attachments = doc.attachments ? doc.attachments : [];
+
+    const docAttachments = doc.attachments ? doc.attachments : [];
+    const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
+    const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -97,7 +100,7 @@ export class ViewMetadataPanel extends Component {
               </li>
               <li>
                 <TabLink to="attachments">
-                  <i className="fa fa-paperclip"></i>
+                  <i className="fa fa-download"></i>
                   <span className="connectionsNumber">{attachments.length}</span>
                 </TabLink>
               </li>
@@ -189,7 +192,9 @@ export class ViewMetadataPanel extends Component {
             </TabContent>
             <TabContent for="attachments">
               <AttachmentsList files={fromJS(attachments)}
-                               parentId={doc._id} />
+                               isDocumentAttachments={true}
+                               parentId={doc._id}
+                               parentSharedId={doc.sharedId} />
             </TabContent>
           </Tabs>
         </div>

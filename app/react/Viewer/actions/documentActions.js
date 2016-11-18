@@ -66,7 +66,6 @@ export function deleteDocument(doc) {
   };
 }
 
-
 export function loadTargetDocument(id) {
   return function (dispatch, getState) {
     return Promise.all([

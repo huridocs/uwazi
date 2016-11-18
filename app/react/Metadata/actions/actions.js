@@ -1,5 +1,7 @@
 import superagent from 'superagent';
 import {actions as formActions} from 'react-redux-form';
+import {requestViewerState, setViewerState} from 'app/Viewer/actions/routeActions';
+import {PDFReady} from 'app/Viewer/actions/uiActions';
 import {APIURL} from 'app/config.js';
 import * as types from './actionTypes';
 
@@ -73,8 +75,8 @@ export function changeTemplate(form, onlyReadEntity, template) {
   };
 }
 
-export function reuploadDocument(docId, file) {
-  return function (dispatch) {
+export function reuploadDocument(docId, file, docSharedId) {
+  return function (dispatch, getState) {
     dispatch({type: types.START_REUPLOAD_DOCUMENT, doc: docId});
     superagent.post(APIURL + 'reupload')
     .set('Accept', 'application/json')
@@ -85,6 +87,12 @@ export function reuploadDocument(docId, file) {
     })
     .on('response', () => {
       dispatch({type: types.REUPLOAD_COMPLETE, doc: docId});
+      dispatch(PDFReady(false));
+
+      requestViewerState(docSharedId, getState().locale)
+      .then(state => {
+        dispatch(setViewerState(state));
+      });
     })
     .end();
   };
