@@ -248,11 +248,17 @@ $item-padding: 15px;
   display: inline-block;
   box-shadow: $shadow;
   background: $c-white;
+  opacity: 0;
+  
+  .item:hover & {
+    opacity: 1;
+  }
 
   &:hover,
   &:focus,
   &:active {
     text-decoration: none;
+<<<<<<< 3f9d80428b2a42f8d05bb55663decac3cf34eb62
   }
 
   .item.is-active & {
@@ -301,6 +307,7 @@ $item-padding: 15px;
     top: -1px;
     margin: 0 -5px;
     font-size: $f-size-sm;
+    border-color: $c-primary;
   }
 }
 
