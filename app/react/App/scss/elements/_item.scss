@@ -277,11 +277,6 @@ $item-padding: 15px;
   display: inline-block;
   box-shadow: $shadow;
   background: $c-white;
-  opacity: 0;
-  
-  .item:hover & {
-    opacity: 1;
-  }
 
   &:hover,
   &:focus,
