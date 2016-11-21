@@ -8,11 +8,11 @@ import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
-describe('ViewDocument', () => {
+fdescribe('ViewDocument', () => {
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
   let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
   let relationTypes = {rows: [{name: 'Supports', _id: '1'}]};
-  let document = {_id: '1', title: 'title'};
+  let document = {_id: '1', title: 'title', pdfInfo: 'info'};
   let docHTML = {_id: '2', html: 'html'};
   let references = [{_id: '1', connectedDocument: '1'}, {_id: '2', connectedDocument: '2'}];
   let component;

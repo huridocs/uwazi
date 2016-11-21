@@ -72,12 +72,12 @@ export function getDocument(id) {
   return api.get('documents?_id=' + id)
   .then((response) => {
     let doc = response.json.rows[0];
-    if (doc.pdf) {
+    if (doc.pdfInfo) {
       return doc;
     }
     return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
     .then((pdfInfo) => {
-      doc.pdf = pdfInfo;
+      doc.pdfInfo = pdfInfo;
       return documents.api.save(doc);
     });
   });

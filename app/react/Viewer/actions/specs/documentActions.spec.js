@@ -15,7 +15,7 @@ import * as types from '../actionTypes';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('documentActions', () => {
+fdescribe('documentActions', () => {
   describe('setDocument()', () => {
     it('should return a SET_REFERENCES type action with the document', () => {
       let action = actions.setDocument('document', 'html');
@@ -147,7 +147,7 @@ describe('documentActions', () => {
       backend
       .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
       .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
-      .mock(APIURL + 'documents?_id=docWithPDFRdy', 'GET', {body: JSON.stringify({rows: [{pdf: 'processed pdf', _id: 'pdfReady'}]})})
+      .mock(APIURL + 'documents?_id=docWithPDFRdy', 'GET', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
       .mock(APIURL + 'documents?_id=docWithPDFNotRdy', 'GET', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
       .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')})
       .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])});
@@ -180,7 +180,7 @@ describe('documentActions', () => {
       it('should return the document requested', (done) => {
         actions.getDocument('docWithPDFRdy')
         .then((doc) => {
-          expect(doc.pdf).toBe('processed pdf');
+          expect(doc.pdfInfo).toBe('processed pdf');
           done();
         });
       });
@@ -188,7 +188,7 @@ describe('documentActions', () => {
       describe('when the doc does not have the pdf processed', () => {
         it('should process it and save it before it gets returned', (done) => {
           spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
-          const expected = {_id: 'pdfNotReady', pdf: 'test'};
+          const expected = {_id: 'pdfNotReady', pdfInfo: 'test'};
           spyOn(documents.api, 'save').and.returnValue(expected);
           actions.getDocument('docWithPDFNotRdy')
           .then((doc) => {
