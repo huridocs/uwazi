@@ -56,7 +56,7 @@
   }
 
   &:hover{
-    cursor: pointer;
+    //cursor: pointer;
   }
   &.is-active,
   &.is-selected {
@@ -199,19 +199,48 @@ $item-padding: 15px;
   padding: 0 $item-padding $item-padding;
 
   dl {
-    display: flex;
+    position: relative;
     margin: 0;
     padding: 3px 0;
     font-size: $f-size-sm;
+    cursor: default;
   }
   dt {
-    min-width: 90px;
-    font-style: italic;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin: 6px 0 2px;
   }
+  @media(min-width: 1024px) {
+    dt {
+      width: auto;
+      line-height: 1.2em;
+      display: none;
+      position: absolute;
+      bottom: 50%;
+      right: 100%;
+      transform: translateX(-10px) translateY(50%);
+      padding: 5px;
+      background-color: transparentize($c-black, .25);
+      color: $c-white;
+      border-radius: 3px;
+      text-align: center;
+      &:after {
+        content: '';
+        border-left: 5px solid transparentize($c-black, .25);
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        transform: translateY(-50%);
+      }  
+    }
+    
+    dl:hover dt {
+      display: block;
+    }
+  }
+  
   dd {
-    margin-left: 10px;
+    width: 100%;
   }
   .item-icon {
     top: -1px;
@@ -301,6 +330,7 @@ $item-padding: 15px;
     top: -1px;
     margin: 0 -5px;
     font-size: $f-size-sm;
+    border-color: $c-primary;
   }
 }
 
