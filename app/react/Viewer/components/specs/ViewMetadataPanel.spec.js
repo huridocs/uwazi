@@ -5,7 +5,7 @@ import {fromJS} from 'immutable';
 import {formater} from 'app/Metadata';
 
 import DocumentForm from '../../containers/DocumentForm';
-import PanelContainer, {ViewMetadataPanel} from 'app/Viewer/components/ViewMetadataPanel';
+import PanelContainer, {ViewMetadataPanel, mapStateToProps} from 'app/Viewer/components/ViewMetadataPanel';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from '../ConnectionsList';
 
@@ -141,6 +141,27 @@ describe('ViewMetadataPanel', () => {
       state.documentViewer.uiState = state.documentViewer.uiState.set('panel', 'viewMetadataPanel');
       renderContainer();
       expect(component.props().open).toBe(true);
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    let documentViewer;
+
+    beforeEach(() => {
+      documentViewer = {
+        doc: fromJS({}),
+        templates: fromJS([]),
+        thesauris: fromJS([]),
+        uiState: fromJS({}),
+        docForm: {},
+        docFormState: {},
+        tocForm: ['a', 'b'],
+        targetDoc: fromJS({})
+      };
+    });
+
+    it('should append the form count to re-render component on form change', () => {
+      expect(mapStateToProps({documentViewer}).tocFormLength).toBe(2);
     });
   });
 });
