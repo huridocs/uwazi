@@ -10,7 +10,6 @@ if (isClient) {
   PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
   PDFJS.workerSrc = '/pdf.worker.bundle.js';
 }
-import {countPDFChars} from 'app/PDF/utils.js';
 
 export class PDF extends Component {
 
@@ -20,12 +19,7 @@ export class PDF extends Component {
     this.pagesLoaded = {};
     if (isClient) {
       PDFJS.getDocument(props.file).then(pdf => {
-        countPDFChars(props.file)
-        .then((count) => {
-          count[0] = 0;
-          this.count = count;
-          this.setState({pdf});
-        });
+        this.setState({pdf});
       });
     }
   }
@@ -38,10 +32,7 @@ export class PDF extends Component {
 
   pageUnloaded(numPage) {
     delete this.pagesLoaded[numPage];
-    const start = this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1];
-    const end = this.count[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))];
-    //console.log('unload');
-    this.props.onLoad({start, end});
+    this.loaded();
   }
 
   pageLoading(numPage) {
@@ -52,12 +43,14 @@ export class PDF extends Component {
     this.pagesLoaded[numPage] = true;
     let allPagesLoaded = (Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0);
     if (allPagesLoaded) {
-      //console.log(this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1]);
-      const start = this.count[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1];
-      const end = this.count[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))];
-      //console.log('load');
-      this.props.onLoad({start, end});
+      this.loaded();
     }
+  }
+
+  loaded() {
+    const start = this.props.pdfInfo[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1] || {chars: 0};
+    const end = this.props.pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))];
+    this.props.onLoad({start: start.chars, end: end.chars});
   }
 
   render() {
@@ -77,6 +70,7 @@ export class PDF extends Component {
 
 PDF.propTypes = {
   file: PropTypes.string,
+  pdfInfo: PropTypes.object,
   style: PropTypes.object,
   onLoad: PropTypes.func
 };

@@ -4,7 +4,7 @@ import Text from 'app/Viewer/utils/Text';
 import mockRangeSelection from 'app/utils/mockRangeSelection';
 import wrapper from 'app/utils/wrapper';
 
-fdescribe('Text', () => {
+describe('Text', () => {
   let text;
 
   beforeEach(() => {

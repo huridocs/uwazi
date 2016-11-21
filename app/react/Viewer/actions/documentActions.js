@@ -3,6 +3,8 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
+import {APIURL} from 'app/config.js';
+import {PDFUtils} from '../../PDF/';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
@@ -66,6 +68,20 @@ export function deleteDocument(doc) {
   };
 }
 
+export function getDocument(id) {
+  return api.get('documents?_id=' + id)
+  .then((response) => {
+    let doc = response.json.rows[0];
+    if (doc.pdf) {
+      return doc;
+    }
+    return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
+    .then((pdfInfo) => {
+      doc.pdf = pdfInfo;
+      return documents.api.save(doc);
+    });
+  });
+}
 
 export function loadTargetDocument(id) {
   return function (dispatch, getState) {

@@ -5,14 +5,11 @@ if (isClient) {
   PDFJS.workerSrc = '/pdf.worker.bundle.js';
 }
 
-const countPageChars = (page) => {
+const extractPageInfo = (page) => {
   return new Promise((resolve) => {
     const textLayerDiv = document.createElement('div');
 
     textLayerDiv.addEventListener('textlayerrendered',() => {
-      //console.log(`RENDERED ! ${this.props.page}`);
-      //console.log(textLayerDiv.innerText.length);
-      //console.log('-----------------');
       resolve(textLayerDiv.innerText.length);
     });
 
@@ -26,13 +23,13 @@ const countPageChars = (page) => {
   });
 };
 
-const countPDFChars = (pdfFile) => {
+const extractPDFInfo = (pdfFile) => {
   return new Promise((resolve) => {
     PDFJS.getDocument(pdfFile)
     .then(pdf => {
       let pages = [];
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-        pages.push(pdf.getPage(pageNumber).then(countPageChars));
+        pages.push(pdf.getPage(pageNumber).then(extractPageInfo));
       }
 
       return Promise.all(pages)
@@ -50,4 +47,4 @@ const countPDFChars = (pdfFile) => {
   });
 };
 
-export {countPDFChars};
+export default {extractPDFInfo};

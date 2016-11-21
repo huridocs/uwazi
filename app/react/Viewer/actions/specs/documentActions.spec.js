@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 
+import {PDFUtils} from '../../../PDF/';
 import {mockID} from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
@@ -146,6 +147,8 @@ describe('documentActions', () => {
       backend
       .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
       .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
+      .mock(APIURL + 'documents?_id=docWithPDFRdy', 'GET', {body: JSON.stringify({rows: [{pdf: 'processed pdf', _id: 'pdfReady'}]})})
+      .mock(APIURL + 'documents?_id=docWithPDFNotRdy', 'GET', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
       .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')})
       .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
@@ -170,6 +173,31 @@ describe('documentActions', () => {
         })
         .then(done)
         .catch(done.fail);
+      });
+    });
+
+    fdescribe('getDocument', () => {
+      it('should return the document requested', (done) => {
+        actions.getDocument('docWithPDFRdy')
+        .then((doc) => {
+          expect(doc.pdf).toBe('processed pdf');
+          done();
+        });
+      });
+
+      describe('when the doc does not have the pdf processed', () => {
+        it('should process it and save it before it gets returned', (done) => {
+          spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
+          const expected = {_id: 'pdfNotReady', pdf: 'test'};
+          spyOn(documents.api, 'save').and.returnValue(expected);
+          actions.getDocument('docWithPDFNotRdy')
+          .then((doc) => {
+            expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}documents/download?_id=${expected._id}`);
+            expect(documents.api.save).toHaveBeenCalledWith(expected);
+            expect(expected).toBe(doc);
+            done();
+          });
+        });
       });
     });
 
