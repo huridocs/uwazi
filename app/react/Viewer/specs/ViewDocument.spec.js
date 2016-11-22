@@ -8,7 +8,7 @@ import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
-fdescribe('ViewDocument', () => {
+describe('ViewDocument', () => {
   let templates = {rows: [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}]};
   let thesauris = {rows: [{name: 'countries', _id: '1', values: []}]};
   let relationTypes = {rows: [{name: 'Supports', _id: '1'}]};

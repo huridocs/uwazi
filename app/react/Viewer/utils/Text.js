@@ -1,9 +1,9 @@
 import TextRange from 'batarange';
 import wrapper from 'app/utils/wrapper';
+import {events} from 'app/utils';
 
 export default function (container) {
   return {
-    //charOffset: 0,
     charRange: {start: null, end: null},
     container,
     renderedReferences: {},
@@ -12,10 +12,6 @@ export default function (container) {
     selected() {
       return window.getSelection().toString() !== '';
     },
-
-    //offset(charOffset) {
-      //this.charOffset = charOffset;
-    //},
 
     range(charRange) {
       this.charRange = charRange;
@@ -87,15 +83,15 @@ export default function (container) {
 
       if ((range.start >= this.charRange.start && range.start <= this.charRange.end) 
         || (range.end <= this.charRange.end && range.end >= this.charRange.start)) {
-        let offsetRange = Object.assign({}, range);
-        offsetRange.start -= this.charRange.start;
-        offsetRange.end -= this.charRange.start;
+          let offsetRange = Object.assign({}, range);
+          offsetRange.start -= this.charRange.start;
+          offsetRange.end -= this.charRange.start;
 
-        let restoredRange = TextRange.restore(offsetRange, container);
-        let elementWrapper = document.createElement('span');
-        elementWrapper.classList.add('fake-selection');
-        this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
-      }
+          let restoredRange = TextRange.restore(offsetRange, container);
+          let elementWrapper = document.createElement('span');
+          elementWrapper.classList.add('fake-selection');
+          this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+        }
     },
 
     removeSimulatedSelection() {
@@ -170,6 +166,7 @@ export default function (container) {
         elementWrapper.classList.add(identifier);
         elementWrapper.setAttribute('data-id', reference._id);
         this.renderedReferences[identifier][reference._id] = wrapper.wrap(elementWrapper, restoredRange);
+        events.emit('referenceRendered', reference);
       });
 
       Object.keys(this.renderedReferences[identifier]).forEach((id) => {

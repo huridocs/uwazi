@@ -50,7 +50,7 @@ export function setReferences(references) {
     references
   };
 }
-export function addReference(reference) {
+export function addReference(reference, docInfo) {
   return function (dispatch) {
     const tab = reference.sourceRange.text ? 'references' : 'connections';
     dispatch({
@@ -60,7 +60,7 @@ export function addReference(reference) {
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
-    dispatch(uiActions.activateReference(reference._id, tab));
+    dispatch(uiActions.activateReference(reference, docInfo, tab));
   };
 }
 

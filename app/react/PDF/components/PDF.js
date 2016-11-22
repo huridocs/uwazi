@@ -4,6 +4,7 @@ import PDFPage from './PDFPage.js';
 import '../../../../node_modules/pdfjs-dist/web/pdf_viewer.css';
 
 import {isClient} from 'app/utils';
+import {advancedSort} from 'app/utils/advancedSort';
 
 let PDFJS;
 if (isClient) {
@@ -48,12 +49,28 @@ export class PDF extends Component {
   }
 
   loaded() {
-    const start = this.props.pdfInfo[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1] || {chars: 0};
-    const end = this.props.pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))];
-    this.props.onLoad({
-      start: start.chars, 
-      end: end.chars
-    });
+    const pages = Object.keys(this.pagesLoaded).map((n) => parseInt(n, 10));
+
+    const allConsecutives = advancedSort(pages, {treatAs: 'number'}).reduce((memo, number) => {
+      if (memo === false) {
+        return memo;
+      }
+
+      if (memo === null) {
+        return number;
+      }
+
+      return number - memo > 1 ? false : number;
+    }, null);
+
+    if (allConsecutives) {
+      const start = this.props.pdfInfo[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1] || {chars: 0};
+      const end = this.props.pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))] || {chars: 0};
+      this.props.onLoad({
+        start: start.chars, 
+        end: end.chars
+      });
+    }
   }
 
   render() {

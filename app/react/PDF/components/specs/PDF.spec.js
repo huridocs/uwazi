@@ -25,7 +25,7 @@ describe('PDF', () => {
     instance = component.instance();
   };
 
-  fdescribe('on instance', () => {
+  describe('on instance', () => {
     it('should get the pdf with pdfjs', (done) => {
       render();
       spyOn(instance, 'setState');
@@ -37,7 +37,7 @@ describe('PDF', () => {
     });
   });
 
-  fdescribe('render', () => {
+  describe('render', () => {
     it('should render a pdfPage for each page', () => {
       render();
       instance.setState({pdf: {numPages: 3}});
@@ -46,7 +46,29 @@ describe('PDF', () => {
     });
   });
 
-  fdescribe('onLoad', () => {
+  describe('loaded', () => {
+    it('should call onLoad only when the pages are consecutive', () => {
+      props.pdfInfo = {
+        1: {chars: 10},
+        2: {chars: 20},
+        3: {chars: 30},
+        4: {chars: 40},
+        5: {chars: 50}
+      };
+
+      render();
+      instance.pageLoaded(1);
+      expect(props.onLoad).toHaveBeenCalled();
+      props.onLoad.calls.reset();
+      instance.pageLoaded(2);
+      expect(props.onLoad).toHaveBeenCalled();
+      props.onLoad.calls.reset();
+      instance.pageLoaded(5);
+      expect(props.onLoad).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onLoad', () => {
     it('should be called when there is no pages loading with the range of characters being rendered', () => {
       props.pdfInfo = {
         1: {chars: 10},

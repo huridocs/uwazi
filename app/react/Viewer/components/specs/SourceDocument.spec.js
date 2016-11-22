@@ -18,7 +18,6 @@ describe('SourceDocument', function () {
         highlightedReference: 'highlightedReference'
       }),
       doc: {name: 'document'},
-      docHTML: {name: 'html'},
       targetDoc: Immutable.fromJS({}),
       references: Immutable.fromJS([{reference: 'reference'}])
     }
@@ -34,7 +33,6 @@ describe('SourceDocument', function () {
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});
     expect(props.doc.name).toBe('document');
-    expect(props.docHTML.name).toBe('html');
     expect(props.references).toEqual([{reference: 'reference'}]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);

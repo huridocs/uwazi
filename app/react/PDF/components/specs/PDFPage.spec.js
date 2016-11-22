@@ -36,23 +36,12 @@ describe('PDFPage', () => {
     instance = component.instance();
   };
 
-  describe('on mount', () => {
+  xdescribe('on mount', () => {
     it('should render the page', (done) => {
       render();
       instance.componentDidMount();
       setTimeout(() => {
         expect(draw).toHaveBeenCalled();
-        done();
-      });
-    });
-  });
-
-  describe('onLoad', () => {
-    it('should be called when page is drawn', (done) => {
-      render();
-      instance.componentDidMount();
-      setTimeout(() => {
-        expect(props.onLoad).toHaveBeenCalled();
         done();
       });
     });

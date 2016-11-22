@@ -15,7 +15,6 @@ const mapStateToProps = ({user, documentViewer}) => {
   return {
     selection: selectSourceRange(documentViewer),
     doc: documentViewer.doc,
-    docHTML: documentViewer.docHTML,
     references: selectConnections(documentViewer),
     className: 'sourceDocument',
     highlightedReference: selectHighlightedRef(documentViewer),

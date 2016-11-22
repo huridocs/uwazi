@@ -59,13 +59,13 @@ describe('Viewer referencesActions', () => {
           {type: 'SHOW_TAB', tab: 'references'}
         ];
 
-        actions.addReference(reference)(store.dispatch, getState);
+        actions.addReference(reference, {})(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
       });
 
       it('should open the connections tab if sourceRange text is empty', () => {
         reference.sourceRange.text = '';
-        actions.addReference(reference)(store.dispatch, getState);
+        actions.addReference(reference, {})(store.dispatch, getState);
         expect(store.getActions()).toContain({type: 'SHOW_TAB', tab: 'connections'});
       });
     });

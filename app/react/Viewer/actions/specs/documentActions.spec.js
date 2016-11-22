@@ -15,7 +15,7 @@ import * as types from '../actionTypes';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-fdescribe('documentActions', () => {
+describe('documentActions', () => {
   describe('setDocument()', () => {
     it('should return a SET_REFERENCES type action with the document', () => {
       let action = actions.setDocument('document', 'html');
@@ -176,7 +176,7 @@ fdescribe('documentActions', () => {
       });
     });
 
-    fdescribe('getDocument', () => {
+    describe('getDocument', () => {
       it('should return the document requested', (done) => {
         actions.getDocument('docWithPDFRdy')
         .then((doc) => {
@@ -262,7 +262,7 @@ fdescribe('documentActions', () => {
         spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
       });
 
-      fit('should loadTargetDocument with id passed', (done) => {
+      it('should loadTargetDocument with id passed', (done) => {
         let targetId = 'targetId';
 
         const expectedActions = [
