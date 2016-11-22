@@ -22,7 +22,7 @@ export class Document extends Component {
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
-      return this.props.activateReference(e.target.getAttribute('data-id'), this.props.references);
+      return this.props.activateReference(this.props.references.find(r => r._id === e.target.getAttribute('data-id')), this.props.doc.get('pdfInfo').toJS(), this.props.references);
     }
     if (this.props.executeOnClickHandler) {
       this.props.onClick();
