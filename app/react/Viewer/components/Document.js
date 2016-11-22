@@ -78,7 +78,7 @@ export class Document extends Component {
             onMouseOver={this.handleOver.bind(this)}
           >
             <ShowIf if={!!doc._id}>
-              <PDF onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
+              <PDF pdfInfo={doc.pdfInfo} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
             </ShowIf>
           </div>
         </div>

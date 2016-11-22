@@ -36,9 +36,11 @@ const extractPDFInfo = (pdfFile) => {
       .then((result) => {
         let count = {};
         result.forEach((length, index) => {
-          count[index + 1] = length;
+          count[index + 1] = {
+            chars: length
+          };
           if (count[index]) {
-            count[index + 1] += count[index];
+            count[index + 1].chars += count[index].chars;
           }
         });
         resolve(count);
