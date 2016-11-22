@@ -97,9 +97,12 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
         "long_fields" : {
           "match" : "*",
           "match_mapping_type" : "long",
-          "mapping" : { "type" : "long", "doc_values" : true },
-          "fields" : {
-            "raw" : {"type": "string", "analyzer": "folding"}
+          "mapping" : {
+            "type": "long",
+            "doc_values": true,
+            "fields" : {
+              "raw" : {"type": "long", "index" : "not_analyzed"}
+            }
           }
         }
       }, {
