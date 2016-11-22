@@ -163,8 +163,7 @@ const mapStateToProps = ({documentViewer}) => {
   return {
     uiState: documentViewer.uiState,
     relationTypes: documentViewer.relationTypes,
-    targetDoc: !!documentViewer.targetDoc.get('_id'),
-    loading: documentViewer.targetDoc.get('_id') ? !documentViewer.uiState.get('targetPDFReady') : !documentViewer.uiState.get('PDFReady')
+    targetDoc: !!documentViewer.targetDoc.get('_id')
   };
 };
 
