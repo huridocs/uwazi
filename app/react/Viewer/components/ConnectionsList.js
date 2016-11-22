@@ -32,7 +32,7 @@ export class ConnectionsList extends Component {
       this.props.activateReference(reference, this.props.doc.pdfInfo, this.props.referencesSection);
     }
     if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
-      this.props.selectReference(reference._id, this.props.references.toJS());
+      this.props.selectReference(reference._id, this.props.references.toJS(), this.props.doc.pdfInfo);
     }
   }
 
