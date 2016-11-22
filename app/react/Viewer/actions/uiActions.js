@@ -53,6 +53,22 @@ export function showTab(tab) {
   };
 }
 
+export function goToActive(value = true) {
+  return {
+    type: types.GO_TO_ACTIVE,
+    value
+  };
+}
+
+export function scrollToActive(reference, docInfo, tab, doScroll) {
+  return function(dispatch) {
+    if (doScroll) {
+      dispatch(goToActive(false));
+      dispatch(activateReference(reference, docInfo, tab));
+    }
+  }
+}
+
 export function activateReference(reference, docInfo, tab) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
@@ -89,9 +105,6 @@ export function activateReference(reference, docInfo, tab) {
 }
 
 export function selectReference(reference, docInfo) {
-//export function selectReference(referenceId, references, docInfo) {
-  //let reference = references.find(item => item._id === referenceId);
-
   return function (dispatch) {
     dispatch(activateReference(reference, docInfo));
     dispatch(setTargetSelection(reference.range));

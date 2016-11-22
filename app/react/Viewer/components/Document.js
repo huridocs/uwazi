@@ -54,6 +54,16 @@ export class Document extends Component {
   }
 
   pdfLoaded(range) {
+
+    if (this.props.doScrollToActive) {
+      this.props.scrollToActive(
+        this.props.references.find(r => r._id === this.props.activeReference),
+        this.props.doc.get('pdfInfo').toJS(), 
+        this.props.references,
+        this.props.doScrollToActive
+      );
+    }
+
     this.text.reset();
     this.text.range(range);
     this.componentDidUpdate();

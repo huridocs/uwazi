@@ -79,7 +79,7 @@ export class PDFPage extends Component {
   }
 
   render() {
-    return <div id={`page-${this.props.page}`}className="doc-page" ref='pageContainer' style={{height: 1054}}/>;
+    return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={{height: 1054}}/>;
   }
 }
 

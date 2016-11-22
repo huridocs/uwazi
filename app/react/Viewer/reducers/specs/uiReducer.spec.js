@@ -5,13 +5,29 @@ import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as actions from 'app/Viewer/actions/uiActions';
 
-describe('Viewer uiReducer', () => {
+fdescribe('Viewer uiReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = uiReducer();
 
       expect(newState).toBeImmutable();
       expect(newState.toJS()).toEqual({reference: {}});
+    });
+  });
+
+  describe('setGoToActive', () => {
+    it('should set goToActive to true by default', () => {
+      let newState = uiReducer(Immutable.fromJS({}), actions.goToActive());
+      let expected = Immutable.fromJS({goToActive: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+
+    it('should set goToActive to value passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), actions.goToActive(false));
+      let expected = Immutable.fromJS({goToActive: false});
+
+      expect(newState).toEqualImmutable(expected);
     });
   });
 

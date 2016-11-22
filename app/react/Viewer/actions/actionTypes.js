@@ -19,6 +19,7 @@ export const REMOVE_REFERENCE = 'REMOVE_REFERENCE';
 export const LOAD_DEFAULT_VIEWER_MENU = 'LOAD_DEFAULT_VIEWER_MENU';
 
 //UI
+export const GO_TO_ACTIVE = 'GO_TO_ACTIVE';
 export const OPEN_PANEL = 'OPEN_PANEL';
 export const PDF_READY = 'PDF_READY';
 export const TARGET_PDF_READY = 'TARGET_PDF_READY';

@@ -2,7 +2,7 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
 
-describe('Viewer uiActions', () => {
+fdescribe('Viewer uiActions', () => {
   describe('closePanel()', () => {
     it('should return a CLOSE_PANEL with panel passed', () => {
       let action = actions.closePanel();
@@ -39,6 +39,21 @@ describe('Viewer uiActions', () => {
     it('should dispatch a DEACTIVATE_REFERENCE with id', () => {
       let action = actions.deactivateReference('id');
       expect(action).toEqual({type: types.DEACTIVATE_REFERENCE});
+    });
+  });
+
+  fdescribe('scrollToActive', () => {
+    let dispatch;
+    beforeEach(() => {
+      dispatch = jasmine.createSpy('dispatch');
+      spyOn(actions, 'activateReference').and.returnValue({type: 'activateReference'})
+    });
+
+    it('should scroll to active if goToActive is true', () => {
+      actions.scrollToActive({_id: 'id'}, {}, '', true)(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.GO_TO_ACTIVE, value: false});
+      //expect(dispatch).toHaveBeenCalledWith({type: 'activateReference'});
+      //expect(actions.activateReference).toHaveBeenCalledWith({_id: 'id'}, {}, '');
     });
   });
 
