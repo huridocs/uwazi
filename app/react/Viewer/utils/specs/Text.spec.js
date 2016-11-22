@@ -4,7 +4,7 @@ import Text from 'app/Viewer/utils/Text';
 import mockRangeSelection from 'app/utils/mockRangeSelection';
 import wrapper from 'app/utils/wrapper';
 
-describe('Text', () => {
+fdescribe('Text', () => {
   let text;
 
   beforeEach(() => {
@@ -54,6 +54,7 @@ describe('Text', () => {
         spyOn(text, 'selected').and.returnValue(false);
         spyOn(text, 'removeSimulatedSelection');
 
+        text.range({start:0, end: 90});
         text.simulateSelection({start: 1, end: 2});
 
         let elementWrapper = document.createElement('span');
@@ -65,20 +66,17 @@ describe('Text', () => {
         expect(text.removeSimulatedSelection).toHaveBeenCalled();
       });
 
-      describe('with offset', () => {
-        it('should simulate selection taking into account character offset', () => {
+      describe('when the range rendered does not match the range selected', () => {
+        it('should not render the selection', () => {
           spyOn(wrapper, 'wrap').and.returnValue('fakeSelection');
           spyOn(TextRange, 'restore').and.returnValue('restoredRange');
           spyOn(text, 'selected').and.returnValue(false);
           spyOn(text, 'removeSimulatedSelection');
 
-          text.range({start: 5});
+          text.range({start:0, end: 10});
           text.simulateSelection({start:15, end: 25});
 
-          let elementWrapper = document.createElement('span');
-          elementWrapper.classList.add('fake-selection');
-
-          expect(TextRange.restore).toHaveBeenCalledWith({start: 10, end: 20}, document);
+          expect(TextRange.restore).not.toHaveBeenCalled();
         });
       });
     });

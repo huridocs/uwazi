@@ -85,14 +85,17 @@ export default function (container) {
         return;
       }
 
-      let offsetRange = Object.assign({}, range);
-      offsetRange.start -= this.charRange.start;
-      offsetRange.end -= this.charRange.start;
+      if ((range.start >= this.charRange.start && range.start <= this.charRange.end) 
+        || (range.end <= this.charRange.end && range.end >= this.charRange.start)) {
+        let offsetRange = Object.assign({}, range);
+        offsetRange.start -= this.charRange.start;
+        offsetRange.end -= this.charRange.start;
 
-      let restoredRange = TextRange.restore(offsetRange, container);
-      let elementWrapper = document.createElement('span');
-      elementWrapper.classList.add('fake-selection');
-      this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+        let restoredRange = TextRange.restore(offsetRange, container);
+        let elementWrapper = document.createElement('span');
+        elementWrapper.classList.add('fake-selection');
+        this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+      }
     },
 
     removeSimulatedSelection() {
@@ -186,6 +189,6 @@ export default function (container) {
         delete this.renderedReferences[identifier][id];
       });
     }
-      
+
   };
 }

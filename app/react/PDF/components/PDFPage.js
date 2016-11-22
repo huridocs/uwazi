@@ -39,26 +39,30 @@ export class PDFPage extends Component {
   }
 
   componentWillUnmount() {
-    //document.querySelector('.document-viewer').removeEventListener('scroll');
+    document.querySelector('.document-viewer').removeEventListener('scroll', this.scrollCallback);
   }
 
   componentDidMount() {
+    this.scrollCallback = this.scroll.bind(this);
+
     if (this.pageShouldRender()) {
       this.renderPage();
     }
 
-    document.querySelector('.document-viewer').addEventListener('scroll', () => {
-      if (this.pageShouldRender()) {
-        this.renderPage();
-      } else if (this.pdfPageView) {
-        this.pdfPageView.cancelRendering();
-        this.pdfPageView.destroy();
-        if (this.rendered) {
-          this.props.onUnload(this.props.page);
-        }
-        this.rendered = false;
+    document.querySelector('.document-viewer').addEventListener('scroll', this.scrollCallback);
+  }
+
+  scroll() {
+    if (this.pageShouldRender()) {
+      this.renderPage();
+    } else if (this.pdfPageView) {
+      this.pdfPageView.cancelRendering();
+      this.pdfPageView.destroy();
+      if (this.rendered) {
+        this.props.onUnload(this.props.page);
       }
-    });
+      this.rendered = false;
+    }
   }
 
   pageShouldRender() {
