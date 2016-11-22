@@ -12,7 +12,7 @@ describe('Doc', () => {
 
   beforeEach(() => {
     props = {
-      doc: {_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'},
+      doc: Immutable({_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'}),
       selectDocument: jasmine.createSpy('selectDocument'),
       unselectDocument: jasmine.createSpy('unselectDocument')
     };

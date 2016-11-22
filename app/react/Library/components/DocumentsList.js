@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
+import {createSelector} from 'reselect';
 
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
@@ -10,6 +11,8 @@ import {loadMoreDocuments} from 'app/Library/actions/libraryActions';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import {t} from 'app/I18N';
+
+const selectDocuments = createSelector(s => s.library.documents, d => d.toJS());
 
 export class DocumentsList extends Component {
 
@@ -20,7 +23,7 @@ export class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    this.props.loadMoreDocuments(this.props.documents.toJS().rows.length + 30);
+    this.props.loadMoreDocuments(this.props.documents.rows.length + 30);
   }
 
   componentWillReceiveProps() {
@@ -28,13 +31,14 @@ export class DocumentsList extends Component {
   }
 
   render() {
-    let documents = this.props.documents.toJS();
+    const documents = this.props.documents;
+
     return (
       <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'is-active' : '')}>
         <div className="main-wrapper">
         <div className="sort-by">
             <div className="u-floatLeft documents-counter">
-              <b>{`${documents.totalRows}`}</b> {`${t('System', 'documents')}`}
+              <b>{documents.totalRows}</b> {t('System', 'documents')}
             </div>
             <SortButtons sortCallback={this.props.searchDocuments}/>
         </div>
@@ -43,9 +47,9 @@ export class DocumentsList extends Component {
         </RowList>
         <div className="row">
           <div className="col-sm-12 text-center documents-counter">
-              <b>{`${documents.rows.length}`}</b>
+              <b>{documents.rows.length}</b>
               {` ${t('System', 'of')} `}
-              <b>{`${documents.totalRows}`}</b>
+              <b>{documents.totalRows}</b>
               {` ${t('System', 'documents')}`}
           </div>
           {(() => {
@@ -76,7 +80,7 @@ DocumentsList.propTypes = {
 
 export function mapStateToProps(state) {
   return {
-    documents: state.library.documents,
+    documents: selectDocuments(state),
     filtersPanel: state.library.ui.get('filtersPanel'),
     selectedDocument: state.library.ui.get('selectedDocument')
   };

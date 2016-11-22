@@ -16,17 +16,16 @@ export class Doc extends Component {
     this.props.selectDocument(this.props.doc);
   }
 
+  shouldComponentUpdate(nextProps) {
+    return this.props.doc._id !== nextProps.doc._id || this.props.active !== nextProps.active;
+  }
+
   render() {
     const {type, sharedId} = this.props.doc;
     const documentViewUrl = `/${type}/${sharedId}`;
 
-    let active;
-    if (this.props.selectedDocument) {
-      active = this.props.selectedDocument === this.props.doc._id;
-    }
-
-    return <Item onClick={this.select.bind(this, active)}
-                 active={active}
+    return <Item onClick={this.select.bind(this, this.props.active)}
+                 active={this.props.active}
                  doc={Immutable(this.props.doc)}
                  buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
                             <span className="itemShortcut-arrow">
@@ -38,15 +37,15 @@ export class Doc extends Component {
 
 Doc.propTypes = {
   doc: PropTypes.object,
-  selectedDocument: PropTypes.string,
+  active: PropTypes.bool,
   selectDocument: PropTypes.func,
   unselectDocument: PropTypes.func
 };
 
 
-export function mapStateToProps({library}) {
+export function mapStateToProps({library}, ownProps) {
   return {
-    selectedDocument: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') : ''
+    active: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') === ownProps.doc._id : false
   };
 }
 
