@@ -151,13 +151,13 @@ describe('documentActions', () => {
     });
 
     describe('saveDocument', () => {
-      it('should save the document and dispatch a notification on success', (done) => {
+      it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
-        let doc = {name: 'doc'};
+        let doc = {name: 'doc', fullText: 'fullText'};
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: types.VIEWER_UPDATE_DOCUMENT, doc},
+          {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', fullText: 'fullText'}},
           {type: 'rrf/reset', model: 'documentViewer.docForm'},
           {type: 'viewer/doc/SET', value: 'response'}
         ];
@@ -165,7 +165,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.saveDocument(doc))
         .then(() => {
-          expect(documents.api.save).toHaveBeenCalledWith(doc);
+          expect(documents.api.save).toHaveBeenCalledWith({name: 'doc'});
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -176,7 +176,7 @@ describe('documentActions', () => {
     describe('saveToc', () => {
       it('should save the document with the new toc and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
-        let doc = {name: 'doc'};
+        let doc = {name: 'doc', _id: 'id', _rev: 'rev', sharedId: 'sharedId'};
         let toc = [
           {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0},
           {range: {start: 22, end: 44}, label: 'Chapter 1.1', indentation: 1}
@@ -186,7 +186,7 @@ describe('documentActions', () => {
           {type: 'rrf/reset', model: 'documentViewer.tocForm'},
           {type: 'documentViewer/tocBeingEdited/SET', value: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', toc}},
+          {type: types.VIEWER_UPDATE_DOCUMENT, doc: {_id: 'id', _rev: 'rev', sharedId: 'sharedId', toc}},
           {type: 'rrf/reset', model: 'documentViewer.docForm'},
           {type: 'viewer/doc/SET', value: 'response'}
         ];
@@ -198,7 +198,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.saveToc(toc))
         .then(() => {
-          expect(documents.api.save).toHaveBeenCalledWith({name: 'doc', toc});
+          expect(documents.api.save).toHaveBeenCalledWith({_id: 'id', _rev: 'rev', sharedId: 'sharedId', toc});
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

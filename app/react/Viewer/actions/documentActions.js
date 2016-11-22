@@ -33,8 +33,15 @@ export function loadDefaultViewerMenu() {
 }
 
 export function saveDocument(doc) {
+  const updateDoc = {};
+  Object.keys(doc).forEach(key => {
+    if (key !== 'fullText') {
+      updateDoc[key] = doc[key];
+    }
+  });
+
   return function (dispatch) {
-    return documents.api.save(doc)
+    return documents.api.save(updateDoc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
       dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
@@ -46,11 +53,10 @@ export function saveDocument(doc) {
 
 export function saveToc(toc) {
   return function (dispatch, getState) {
-    let doc = getState().documentViewer.doc.toJS();
-    doc.toc = toc;
+    const {_id, _rev, sharedId} = getState().documentViewer.doc.toJS();
     dispatch(formActions.reset('documentViewer.tocForm'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
-    return dispatch(saveDocument(doc));
+    return dispatch(saveDocument({_id, _rev, sharedId, toc}));
   };
 }
 

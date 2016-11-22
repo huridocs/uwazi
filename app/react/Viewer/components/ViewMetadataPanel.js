@@ -168,7 +168,8 @@ export class ViewMetadataPanel extends Component {
                 <TocForm
                   removeEntry={this.props.removeFromToc}
                   indent={this.props.indentTocElement}
-                  onSubmit={this.props.saveToc} model="documentViewer.tocForm"
+                  onSubmit={this.props.saveToc}
+                  model="documentViewer.tocForm"
                   state={this.props.tocFormState}
                   toc={this.props.tocForm}
                 />
@@ -224,6 +225,7 @@ ViewMetadataPanel.propTypes = {
   references: PropTypes.object,
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
+  tocFormLength: PropTypes.number,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
   removeFromToc: PropTypes.func,
@@ -248,7 +250,7 @@ const getTargetMetadata = createSelector(
   (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
 );
 
-const mapStateToProps = ({documentViewer}) => {
+export const mapStateToProps = ({documentViewer}) => {
   let doc = getSourceMetadata(documentViewer);
   let references = documentViewer.references;
 
@@ -256,6 +258,8 @@ const mapStateToProps = ({documentViewer}) => {
     doc = getTargetMetadata(documentViewer);
     references = documentViewer.targetDocReferences;
   }
+
+  const tocForm = documentViewer.tocForm || [];
 
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
@@ -266,7 +270,8 @@ const mapStateToProps = ({documentViewer}) => {
     formDirty: documentViewer.docFormState.dirty,
     tab: documentViewer.uiState.get('tab'),
     references,
-    tocForm: documentViewer.tocForm || [],
+    tocForm,
+    tocFormLength: tocForm.length,
     tocBeingEdited: documentViewer.tocBeingEdited,
     tocFormState: documentViewer.tocFormState,
     isTargetDoc: !!documentViewer.targetDoc.get('_id')
