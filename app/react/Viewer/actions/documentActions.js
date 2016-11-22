@@ -13,6 +13,7 @@ import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActio
 import referencesUtils from '../utils/referencesUtils';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
+import {isClient} from 'app/utils';
 
 export function setDocument(document, html) {
   return {
@@ -72,6 +73,9 @@ export function getDocument(id) {
   return api.get('documents?_id=' + id)
   .then((response) => {
     let doc = response.json.rows[0];
+    if (!isClient) {
+      return doc;
+    }
     if (doc.pdfInfo) {
       return doc;
     }

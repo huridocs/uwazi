@@ -13,6 +13,22 @@ const extractPageInfo = (page) => {
       resolve(textLayerDiv.innerText.length);
     });
 
+    //to get height/width ?
+    //const canvas = document.createElement('div');
+    //let scale = 1;
+    //let pdfPageView = new PDFJS.PDFPageView({
+      //container: canvas,
+      //id: page.pageIndex,
+      //scale: scale,
+      //defaultViewport: page.getViewport(scale)
+    //});
+
+    //pdfPageView.setPdfPage(page);
+    //pdfPageView.draw()
+    //.then(() => {
+      //console.log(pdfPageView);
+    //});
+
     textLayerDiv.className = 'textLayer';
     let textLayer = new PDFJS.DefaultTextLayerFactory().createTextLayerBuilder(textLayerDiv, null, page.getViewport(1), true); 
     page.getTextContent({normalizeWhitespace: true})
