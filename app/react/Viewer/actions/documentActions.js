@@ -86,11 +86,11 @@ export function getDocument(id) {
 export function loadTargetDocument(id) {
   return function (dispatch, getState) {
     return Promise.all([
-      api.get('documents?_id=' + id),
+      getDocument(id),
       referencesAPI.get(id)
     ])
-    .then(([docResponse, references]) => {
-      dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
+    .then(([targetDoc, references]) => {
+      dispatch(actions.set('viewer/targetDoc', targetDoc));
       dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };

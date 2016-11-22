@@ -146,7 +146,7 @@ fdescribe('documentActions', () => {
       backend.restore();
       backend
       .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
-      .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document'}]})})
+      .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
       .mock(APIURL + 'documents?_id=docWithPDFRdy', 'GET', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
       .mock(APIURL + 'documents?_id=docWithPDFNotRdy', 'GET', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
       .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')})
@@ -262,11 +262,11 @@ fdescribe('documentActions', () => {
         spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
       });
 
-      it('should loadTargetDocument with id passed', (done) => {
+      fit('should loadTargetDocument with id passed', (done) => {
         let targetId = 'targetId';
 
         const expectedActions = [
-          {type: 'viewer/targetDoc/SET', value: {target: 'document'}},
+          {type: 'viewer/targetDoc/SET', value: {target: 'document', pdfInfo: 'test'}},
           {type: 'viewer/targetDocReferences/SET', value: ['filteredReferences']}
         ];
         const store = mockStore({locale: 'es'});
