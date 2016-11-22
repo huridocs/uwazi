@@ -44,6 +44,7 @@ export class UploadsMenu extends Component {
 
   renderMetadataMenu(metadataBeingEdited) {
     return <div>
+      {/** /}
       <ShowIf if={!!metadataBeingEdited.template}>
         <div className="float-btn__sec publish" onClick={() => this.publish()}>
           <span>Publish</span><i className="fa fa-send"></i>
@@ -67,6 +68,7 @@ export class UploadsMenu extends Component {
       <div className="float-btn__main cta">
         <button type="submit" form="metadataForm"><span>Save</span><i className="fa fa-save"></i></button>
       </div>
+      {/**/}
     </div>;
   }
 

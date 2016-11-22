@@ -41,6 +41,20 @@ export class UploadsFormPanel extends Component {
           </ul>
           <i className='closeSidepanel fa fa-close close-modal' onClick={this.close.bind(this)}></i>
         </div>
+        <div className="sidepanel-footer">
+          <button className="edit-metadata btn btn-primary">
+            <i className="fa fa-file-text-o"></i><span className="btn-label">View</span>
+          </button>
+          <button className="edit-metadata btn btn-primary">
+            <i className="fa fa-send"></i><span className="btn-label">Publish</span>
+          </button>
+          <button className="edit-metadata btn btn-danger">
+            <i className="fa fa-trash"></i><span className="btn-label">Delete</span>
+          </button>
+          <button className="edit-metadata btn btn-success">
+            <i className="fa fa-save"></i><span className="btn-label">Save</span>
+          </button>
+        </div>
         <div className="sidepanel-body">
           <ShowIf if={this.props.metadataType === 'document'}>
             <DocumentForm/>
