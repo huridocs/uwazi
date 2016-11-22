@@ -88,8 +88,9 @@ export function activateReference(reference, docInfo, tab) {
   };
 }
 
-export function selectReference(referenceId, references, docInfo) {
-  let reference = references.find(item => item._id === referenceId);
+export function selectReference(reference, docInfo) {
+//export function selectReference(referenceId, references, docInfo) {
+  //let reference = references.find(item => item._id === referenceId);
 
   return function (dispatch) {
     dispatch(activateReference(reference, docInfo));

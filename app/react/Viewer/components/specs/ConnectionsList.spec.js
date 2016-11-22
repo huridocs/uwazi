@@ -91,7 +91,7 @@ describe('ConnectionsList', () => {
         props.targetDoc = true;
         render();
         component.find(Item).last().simulate('click');
-        expect(props.selectReference).toHaveBeenCalledWith('ref1', props.references.toJS());
+        expect(props.selectReference).toHaveBeenCalledWith(props.references.toJS()[0], '');
         expect(component.find(Item).last().node.props.className).toContain('relationship-selected');
       });
 
