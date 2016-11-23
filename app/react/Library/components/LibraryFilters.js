@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {filterDocumentTypes, resetFilters} from 'app/Library/actions/filterActions';
-import {searchDocuments} from 'app/Library/actions/libraryActions';
-import {hideFilters} from 'app/Library/actions/libraryActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
@@ -45,29 +43,19 @@ export class LibraryFilters extends Component {
 }
 
 LibraryFilters.propTypes = {
-  filters: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
-  hideFilters: PropTypes.func,
-  searchDocuments: PropTypes.func,
-  searchTerm: PropTypes.string,
-  open: PropTypes.bool,
-  documentTypes: PropTypes.array
+  open: PropTypes.bool
 };
 
-export function mapStateToProps({settings, library, templates}) {
+export function mapStateToProps({library}) {
   return {
-    templates,
-    filters: library.filters,
-    settings: settings,
-    searchTerm: library.ui.get('searchTerm'),
-    open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocument'),
-    aggregations: library.aggregations
+    open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocument')
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({filterDocumentTypes, searchDocuments, hideFilters, resetFilters}, dispatch);
+  return bindActionCreators({filterDocumentTypes, resetFilters}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);

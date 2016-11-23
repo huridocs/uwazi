@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
+import {createSelector} from 'reselect';
+import {is} from 'immutable';
 
 import {FormField, MultiSelect, DateRange, NestedMultiselect} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -10,6 +12,10 @@ import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {store} from 'app/store';
 import {t} from 'app/I18N';
+
+import {selectTemplates} from 'app/utils/coreSelectors';
+
+const selectSearch = createSelector(s => s ? s.search : {});
 
 export class FiltersForm extends Component {
 
@@ -26,16 +32,25 @@ export class FiltersForm extends Component {
     });
   }
 
+  shouldComponentUpdate(nextProps) {
+    return !is(this.props.fields, nextProps.fields) ||
+           !is(this.props.aggregations, nextProps.aggregations) ||
+           this.props.search !== nextProps.search ||
+           !is(this.props.documentTypes, nextProps.documentTypes);
+  }
+
   render() {
-    let translationContext = this.props.documentTypes.toJS()[0];
-    let fields = this.props.fields.toJS();
-    fields = libraryHelper.parseWithAggregations(fields, this.props.aggregations.toJS())
-    .filter((field) => (field.type !== 'select' && field.type !== 'multiselect') || field.options.length);
+    const {templates, documentTypes} = this.props;
+    const aggregations = this.props.aggregations.toJS();
+
+    let translationContext = documentTypes[0];
+
+    const fields = libraryHelper.parseWithAggregations(this.props.fields.toJS(), aggregations)
+    .filter((field) => field.type !== 'select' && field.type !== 'multiselect' || field.options.length);
+
     return (
       <div className="filters-box">
         {(() => {
-          let documentTypes = this.props.documentTypes.toJS();
-          let templates = this.props.templates.toJS();
           let activeTypes = templates.filter((template) => documentTypes.includes(template._id));
 
           if (documentTypes.length === 0) {
@@ -46,7 +61,7 @@ export class FiltersForm extends Component {
 
           if (activeTypes.length > 0 && fields.length === 0) {
             return <div className="empty-state no-filters">
-                    <i className="fa fa-close"></i><b>{t('System','No common filters')}</b>
+                    <i className="fa fa-close"></i><b>{t('System', 'No common filters')}</b>
                   </div>;
           }
         })()}
@@ -153,7 +168,7 @@ export class FiltersForm extends Component {
 }
 
 FiltersForm.propTypes = {
-  templates: PropTypes.object,
+  templates: PropTypes.array,
   aggregations: PropTypes.object,
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,
@@ -167,8 +182,8 @@ export function mapStateToProps(state) {
   return {
     fields: state.library.filters.get('properties'),
     aggregations: state.library.aggregations,
-    templates: state.templates,
-    search: state.search,
+    templates: selectTemplates(state),
+    search: selectSearch(state),
     documentTypes: state.library.filters.get('documentTypes')
   };
 }
