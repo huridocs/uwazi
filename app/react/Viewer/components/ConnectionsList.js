@@ -99,6 +99,7 @@ export class ConnectionsList extends Component {
                 onClick={this.clickReference.bind(this, reference)}
                 doc={doc}
                 className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''}`}
+                data-id={reference._id}
                 additionalIcon={<ShowIf if={useSourceTargetIcons}>
                                   <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
                                 </ShowIf>}

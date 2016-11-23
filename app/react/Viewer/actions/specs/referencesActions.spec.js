@@ -60,7 +60,7 @@ describe('Viewer referencesActions', () => {
           {type: 'SHOW_TAB', tab: 'references'}
         ];
 
-        actions.addReference(reference, {})(store.dispatch, getState);
+        actions.addReference(reference, {}, true)(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
       });
 
