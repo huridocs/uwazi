@@ -55,6 +55,7 @@ describe('Viewer referencesActions', () => {
           {type: 'viewer/targetDocHTML/UNSET'},
           {type: 'viewer/targetDocReferences/UNSET'},
           {type: 'ACTIVE_REFERENCE', reference: 'addedRefernce'},
+          {type: 'GO_TO_ACTIVE', value:true},
           {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'},
           {type: 'SHOW_TAB', tab: 'references'}
         ];

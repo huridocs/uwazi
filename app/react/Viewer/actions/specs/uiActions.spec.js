@@ -2,7 +2,7 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
 
-fdescribe('Viewer uiActions', () => {
+describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
     it('should return a CLOSE_PANEL with panel passed', () => {
       let action = actions.closePanel();
@@ -42,7 +42,7 @@ fdescribe('Viewer uiActions', () => {
     });
   });
 
-  fdescribe('scrollToActive', () => {
+  describe('scrollToActive', () => {
     let dispatch;
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');

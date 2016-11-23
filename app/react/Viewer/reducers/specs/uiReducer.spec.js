@@ -5,7 +5,7 @@ import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as actions from 'app/Viewer/actions/uiActions';
 
-fdescribe('Viewer uiReducer', () => {
+describe('Viewer uiReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
       let newState = uiReducer();
