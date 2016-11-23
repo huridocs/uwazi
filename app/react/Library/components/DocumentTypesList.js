@@ -20,6 +20,12 @@ export class DocumentTypesList extends Component {
   }
 
   checked(item) {
+    if (item.items) {
+      return item.items.reduce((result, _item) => {
+        return result && this.checked(_item);
+      }, true);
+    }
+
     return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
   }
 
@@ -60,10 +66,13 @@ export class DocumentTypesList extends Component {
     this.props.onChange(selectedItems);
   }
 
-  toggleOptions(key, e) {
+  toggleOptions(item, e) {
     e.preventDefault();
+    if (!this.checked(item) && item.items.find((itm) => this.checked(itm))) {
+      return;
+    }
     let state = {};
-    state[key] = !this.state[key];
+    state[item.id] = !this.state[item.id];
     this.setState(state);
   }
 
@@ -82,6 +91,11 @@ export class DocumentTypesList extends Component {
     }
 
     return 0;
+  }
+
+  showSubOptions(parent) {
+    const toggled = this.state[parent.id];
+    return !!(toggled || !!(!this.checked(parent) && parent.items.find((itm) => this.checked(itm))));
   }
 
   renderSingleType(item, index) {
@@ -116,6 +130,7 @@ export class DocumentTypesList extends Component {
                   id={item.id}
                   className="multiselectItem-input"
                   onChange={this.changeAll.bind(this, item)}
+                  checked={this.checked(item)}
                 />
                 <label htmlFor={item.id} className="multiselectItem-label">
                   <i className="multiselectItem-icon fa fa-square-o"></i>
@@ -124,12 +139,12 @@ export class DocumentTypesList extends Component {
                 </label>
                 <span className="multiselectItem-results">
                   <span>{this.aggregations(item)}</span>
-                  <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item.id)}>
+                  <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
                     <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
                   </span>
                 </span>
               </div>
-            <ShowIf if={this.state[item.id]}>
+            <ShowIf if={this.showSubOptions(item)}>
               <ul className="multiselectChild is-active">
               {item.items.map((_item, i) => {
                 return this.renderSingleType(_item, i);
