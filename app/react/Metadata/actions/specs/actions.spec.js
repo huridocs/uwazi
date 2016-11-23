@@ -140,8 +140,7 @@ describe('Metadata Actions', () => {
         {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
-        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'},
-        {type: 'PDF_READY', status: false}
+        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'}
       ];
 
 

@@ -24,12 +24,12 @@ describe('PDF', () => {
   let render = () => {
     component = shallow(<PDF {...props}/>);
     instance = component.instance();
+    spyOn(instance, 'setState').and.callThrough();
   };
 
   describe('on instance', () => {
     it('should get the pdf with pdfjs', (done) => {
       render();
-      spyOn(instance, 'setState');
       expect(PDFJS.getDocument).toHaveBeenCalledWith(props.file);
       setTimeout(() => {
         expect(instance.setState).toHaveBeenCalledWith({pdf: pdfObject});
