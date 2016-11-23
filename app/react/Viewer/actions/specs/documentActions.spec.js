@@ -2,6 +2,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
+import api from 'app/utils/api';
 
 import {PDFUtils} from '../../../PDF/';
 import {mockID} from 'shared/uniqueID.js';
@@ -189,11 +190,11 @@ describe('documentActions', () => {
         it('should process it and save it before it gets returned', (done) => {
           spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
           const expected = {_id: 'pdfNotReady', pdfInfo: 'test'};
-          spyOn(documents.api, 'save').and.returnValue(expected);
+          spyOn(api, 'post').and.returnValue(Promise.resolve({json: expected}));
           actions.getDocument('docWithPDFNotRdy')
           .then((doc) => {
             expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}documents/download?_id=${expected._id}`);
-            expect(documents.api.save).toHaveBeenCalledWith(expected);
+            expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', expected);
             expect(expected).toBe(doc);
             done();
           });
