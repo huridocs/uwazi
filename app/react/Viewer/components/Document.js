@@ -54,7 +54,6 @@ export class Document extends Component {
   }
 
   pdfLoaded(range) {
-
     if (this.props.doScrollToActive) {
       this.props.scrollToActive(
         this.props.references.find(r => r._id === this.props.activeReference),
@@ -88,7 +87,7 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!!doc._id}>
+            <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF pdfInfo={doc.pdfInfo} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
             </ShowIf>
           </div>

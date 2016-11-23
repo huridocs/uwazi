@@ -3,7 +3,6 @@ import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config.js';
-import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
@@ -20,9 +19,8 @@ describe('ViewDocument', () => {
   let context;
 
   beforeEach(() => {
-    RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
-    component = shallow(<ViewDocument />, {context});
+    component = shallow(<ViewDocument renderedFromServer={true} />, {context});
     instance = component.instance();
 
     spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);

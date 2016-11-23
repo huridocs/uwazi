@@ -15,6 +15,13 @@ import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 export default class ViewDocument extends RouteHandler {
 
+  constructor(props, context) {
+    //Force client state even if is rendered from server to force the pdf character count process
+    RouteHandler.renderedFromServer = props.renderedFromServer || false;
+    //
+    super(props, context);
+  }
+
   static requestState({documentId, lang}) {
     return Promise.all([
       getDocument(documentId),
