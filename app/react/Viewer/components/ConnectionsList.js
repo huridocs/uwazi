@@ -98,8 +98,7 @@ export class ConnectionsList extends Component {
                 onMouseLeave={this.props.highlightReference.bind(null, null)}
                 onClick={this.clickReference.bind(this, reference)}
                 doc={doc}
-                className={`${itemClass} ${disabled ? 'disabled' : ''}`}
-                data-id={reference._id}
+                className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''}`}
                 additionalIcon={<ShowIf if={useSourceTargetIcons}>
                                   <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
                                 </ShowIf>}

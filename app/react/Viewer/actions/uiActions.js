@@ -60,15 +60,6 @@ export function goToActive(value = true) {
   };
 }
 
-export function scrollToActive(reference, docInfo, tab, doScroll) {
-  return function(dispatch) {
-    if (doScroll) {
-      dispatch(goToActive(false));
-      dispatch(activateReference(reference, docInfo, tab));
-    }
-  }
-}
-
 export function activateReference(reference, docInfo, tab) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
@@ -99,10 +90,20 @@ export function activateReference(reference, docInfo, tab) {
         });
       }
 
-      scroller.to(`.metadata-sidepanel .item[data-id="${reference._id}"]`, '.metadata-sidepanel .sidepanel-body', {duration: 100});
+      scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', {duration: 100});
     });
   };
 }
+
+export function scrollToActive(reference, docInfo, tab, doScroll) {
+  return function(dispatch) {
+    if (doScroll) {
+      dispatch(goToActive(false));
+      dispatch(activateReference(reference, docInfo, tab));
+    }
+  };
+}
+
 
 export function selectReference(reference, docInfo) {
   return function (dispatch) {
