@@ -127,7 +127,7 @@ export class MultiSelect extends Component {
           <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
-              <span>Show {this.state.showAll ? 'less' : this.props.options.length - this.optionsToShow +' more'}</span>
+              <span>Show {this.state.showAll ? 'less' : this.props.options.length - this.optionsToShow + ' more'}</span>
             </button>
           </ShowIf>
         </li>

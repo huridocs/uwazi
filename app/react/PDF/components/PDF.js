@@ -42,7 +42,7 @@ export class PDF extends Component {
 
   pageLoaded(numPage) {
     this.pagesLoaded[numPage] = true;
-    let allPagesLoaded = (Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0);
+    let allPagesLoaded = Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0;
     if (allPagesLoaded) {
       this.loaded();
     }
@@ -67,7 +67,7 @@ export class PDF extends Component {
       const start = this.props.pdfInfo[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1] || {chars: 0};
       const end = this.props.pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))] || {chars: 0};
       this.props.onLoad({
-        start: start.chars, 
+        start: start.chars,
         end: end.chars
       });
     }
@@ -90,7 +90,7 @@ export class PDF extends Component {
         {(() => {
           let pages = [];
           for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-            pages.push(<PDFPage onUnload={this.pageUnloaded.bind(this)} 
+            pages.push(<PDFPage onUnload={this.pageUnloaded.bind(this)}
               onLoading={this.pageLoading.bind(this)} key={page} page={page} pdf={this.state.pdf} />);
           }
           return pages;

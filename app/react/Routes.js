@@ -59,7 +59,7 @@ function getIndexRoute(nextState, callBack) {
   callBack(null, indexRoute);
 }
 
-const routes = (
+const routes =
   <Route getIndexRoute={getIndexRoute}>
     <Route path='settings' component={Settings}>
       <Route path='account' component={AccountSettings} />
@@ -92,7 +92,7 @@ const routes = (
     <Route path='entity/:entityId' component={EntityView} />
     <Route path='page/:pageId' component={PageView} />
   </Route>
-);
+;
 
 export default (
   <Route path='/' component={App}>

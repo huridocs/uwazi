@@ -57,7 +57,7 @@ export class MetadataProperty extends Component {
               <i className="fa fa-trash"></i> Delete
             </button>
            </div>
-        </div>   
+        </div>
         <ShowIf if={editingProperty === localID}>
           <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
             {this.renderForm()}
