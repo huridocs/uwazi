@@ -10,7 +10,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('settings', () => {
   beforeEach((done) => {
-    spyOn(translations, 'updateContext');
+    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)

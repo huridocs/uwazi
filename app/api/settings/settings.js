@@ -21,7 +21,7 @@ function saveLinksTranslations(newLinks = [], currentLinks = []) {
     return result;
   }, {});
 
-  translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values);
+  return translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values);
 }
 
 function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
@@ -46,7 +46,7 @@ function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
     return result;
   }, {});
 
-  translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values);
+  return translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values);
 }
 
 export default {
@@ -71,8 +71,10 @@ export default {
 
     return this.get()
     .then((currentSettings) => {
-      saveLinksTranslations(settings.links, currentSettings.links);
-      saveFiltersTranslations(settings.filters, currentSettings.filters);
+      saveLinksTranslations(settings.links, currentSettings.links)
+      .then(() => {
+          saveFiltersTranslations(settings.filters, currentSettings.filters);
+      });
       return request.post(url, settings);
     })
     .then(response => this.get(`${dbURL}/${response.json.id}`));

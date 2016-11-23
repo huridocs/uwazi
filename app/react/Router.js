@@ -93,7 +93,7 @@ function handleRoute(res, renderProps, req) {
 
   if (routeProps.requestState) {
     if (req.cookies) {
-      api.cookie('connect.sid='+req.cookies['connect.sid']);
+      api.cookie('connect.sid=' + req.cookies['connect.sid']);
     }
     RouteHandler.renderedFromServer = true;
     let query;
