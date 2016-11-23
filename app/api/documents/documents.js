@@ -22,6 +22,18 @@ export default {
     return entities.save(doc, params);
   },
 
+  //test (this is a temporary fix to be able to save pdfInfo from client without being logged)
+  savePDFInfo(doc, params) {
+    return this.get(doc.sharedId, params.language)
+    .then((existingDoc) => {
+      if (existingDoc.pdfInfo) {
+        return existingDoc;
+      }
+      return entities.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
+    });
+  },
+  //
+
   get: (id, language) => {
     return entities.get(id, language)
     .then((doc) => {

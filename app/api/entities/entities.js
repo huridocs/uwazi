@@ -64,6 +64,7 @@ export default {
   },
 
   get(id, language) {
+    console.log(id, language);
     return request.get(`${dbURL}/_design/entities_and_docs/_view/by_language`, {key: [id, language]})
     .then((response) => {
       return sanitizeResponse(response.json);

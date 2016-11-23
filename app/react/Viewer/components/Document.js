@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
 import Text from 'app/Viewer/utils/Text';
+import Loader from 'app/components/Elements/Loader';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
@@ -91,6 +92,10 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
+            <ShowIf if={!doc._id || !doc.pdfInfo}>
+              <Loader />
+            </ShowIf>
+
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF pdfInfo={doc.pdfInfo} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
             </ShowIf>
@@ -109,8 +114,8 @@ Document.propTypes = {
   highlightReference: PropTypes.func,
   header: PropTypes.func,
   activateReference: PropTypes.func,
-  doScrollToActive: PropTypes.func,
-  scrollToActive: PropTypes.bool,
+  doScrollToActive: PropTypes.bool,
+  scrollToActive: PropTypes.func,
   highlightedReference: PropTypes.string,
   activeReference: PropTypes.string,
   selection: PropTypes.object,

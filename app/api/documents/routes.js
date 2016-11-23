@@ -13,6 +13,14 @@ export default (app) => {
     return documents.save(req.body, {user: req.user, language: req.language})
     .then(doc => res.json(doc))
     .catch(error => {
+      res.json({error: error});
+    });
+  });
+
+  app.post('/api/documents/pdfInfo', (req, res) => {
+    return documents.savePDFInfo(req.body, {language: req.language})
+    .then(doc => res.json(doc))
+    .catch(error => {
       console.log(error);
       res.json({error: error});
     });

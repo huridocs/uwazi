@@ -82,7 +82,10 @@ export function getDocument(id) {
     return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
     .then((pdfInfo) => {
       doc.pdfInfo = pdfInfo;
-      return documents.api.save(doc);
+      return api.post('documents/pdfInfo', doc)
+      .then((res) => {
+        return res.json;
+      });
     });
   });
 }
