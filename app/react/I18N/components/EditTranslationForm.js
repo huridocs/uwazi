@@ -38,6 +38,10 @@ export class EditTranslationForm extends Component {
     return this.props.translationsForm.length !== nextProps.translationsForm.length;
   }
 
+  componentWillUnmount() {
+    this.props.resetForm();
+  }
+
   render() {
     let contextId = this.props.context;
     let defaultTranslationContext = {values: []};
@@ -99,6 +103,7 @@ EditTranslationForm.propTypes = {
   translationsForm: PropTypes.array,
   settings: PropTypes.object,
   saveTranslations: PropTypes.func,
+  resetForm: PropTypes.func,
   formState: PropTypes.object
 };
 
@@ -111,7 +116,7 @@ export function mapStateToProps({translationsForm, translationsFormState, settin
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveTranslations: actions.saveTranslations}, dispatch);
+  return bindActionCreators({saveTranslations: actions.saveTranslations, resetForm: actions.resetForm}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditTranslationForm);
