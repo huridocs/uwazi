@@ -29,7 +29,7 @@ export default {
       if (existingDoc.pdfInfo) {
         return existingDoc;
       }
-      return entities.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
+      return this.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
     });
   },
   //

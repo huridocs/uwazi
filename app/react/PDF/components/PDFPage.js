@@ -84,7 +84,7 @@ export class PDFPage extends Component {
   render() {
     let style = {height: 1100};
     if (this.state && this.state.height) {
-      style.height =this.state.height;
+      style.height =this.state.height + 20;
     }
     return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={style}/>;
   }
