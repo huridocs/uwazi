@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import {fromJS as Immutable} from 'immutable';
 
 import {ItemList} from '../ItemList';
 import {RowList} from 'app/Layout/Lists';
@@ -24,9 +25,9 @@ describe('ItemList', () => {
   it('should include all the items inside a RowList element', () => {
     render();
     expect(component.find(RowList).children().length).toBe(3);
-    expect(component.find(Doc).at(0).props().doc).toEqual(props.items[0]);
-    expect(component.find(Doc).at(1).props().doc).toEqual(props.items[1]);
-    expect(component.find(Doc).at(2).props().doc).toEqual(props.items[2]);
+    expect(component.find(Doc).at(0).props().doc).toEqual(Immutable(props.items[0]));
+    expect(component.find(Doc).at(1).props().doc).toEqual(Immutable(props.items[1]));
+    expect(component.find(Doc).at(2).props().doc).toEqual(Immutable(props.items[2]));
   });
 
   it('should have a button to the Link provided', () => {

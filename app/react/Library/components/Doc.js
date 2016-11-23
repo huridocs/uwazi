@@ -5,7 +5,7 @@ import {I18NLink} from 'app/I18N';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
 
 import {Item} from 'app/Layout';
-import {fromJS as Immutable} from 'immutable';
+import {is} from 'immutable';
 
 export class Doc extends Component {
 
@@ -17,16 +17,16 @@ export class Doc extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props.doc._id !== nextProps.doc._id || this.props.active !== nextProps.active;
+    return !is(this.props.doc, nextProps.doc) || this.props.active !== nextProps.active;
   }
 
   render() {
-    const {type, sharedId} = this.props.doc;
+    const {type, sharedId} = this.props.doc.toJS();
     const documentViewUrl = `/${type}/${sharedId}`;
 
     return <Item onClick={this.select.bind(this, this.props.active)}
                  active={this.props.active}
-                 doc={Immutable(this.props.doc)}
+                 doc={this.props.doc}
                  buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
                             <span className="itemShortcut-arrow">
                               <i className="fa fa-external-link"></i>
