@@ -51,7 +51,7 @@ export function setReferences(references) {
   };
 }
 
-export function addReference(reference, docInfo) {
+export function addReference(reference, docInfo, delayActivation) {
   return function (dispatch) {
     const tab = reference.sourceRange.text ? 'references' : 'connections';
     dispatch({
@@ -61,11 +61,15 @@ export function addReference(reference, docInfo) {
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
-    //dispatch(uiActions.activateReference(reference, docInfo, tab));
-    dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
-    dispatch(uiActions.goToActive());
-    dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
-    dispatch({type: types.SHOW_TAB, tab});
+    if (delayActivation) {
+      dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
+      dispatch(uiActions.goToActive());
+      dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
+      dispatch({type: types.SHOW_TAB, tab});
+    }
+    else {
+      dispatch(uiActions.activateReference(reference, docInfo, tab));
+    }
   };
 }
 

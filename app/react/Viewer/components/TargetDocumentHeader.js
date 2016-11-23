@@ -24,8 +24,8 @@ export class TargetDocumentHeader extends Component {
           <i className="fa fa-arrow-left"></i>
           Back
         </button>
-        <button onClick={() => this.props.saveTargetRangedReference(connection.toJS(), targetRange, (connection) => {
-          this.props.addReference(connection, this.props.pdfInfo.toJS())
+        <button onClick={() => this.props.saveTargetRangedReference(connection.toJS(), targetRange, (reference) => {
+          this.props.addReference(reference, this.props.pdfInfo.toJS(), true);
           })}
                 disabled={disabled}
                 className={className}>
