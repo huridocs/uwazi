@@ -1,11 +1,14 @@
 import React, {Component, PropTypes} from 'react';
-import scroller from 'app/Viewer/utils/Scroller';
+//import scroller from 'app/Viewer/utils/Scroller';
+import {connect} from 'react-redux';
+import {scrollTo} from 'app/Viewer/actions/uiActions';
 
 export class ShowToc extends Component {
 
   scrollTo(tocElement, e) {
     e.preventDefault();
-    scroller.to(`.document-viewer span[data-id="${tocElement._id}"]`, '.document-viewer');
+    this.props.scrollTo(tocElement, this.props.pdfInfo.toJS(), 'span');
+    //scroller.to(`.document-viewer span[data-id="${tocElement._id}"]`, '.document-viewer');
   }
 
   render() {
@@ -27,7 +30,19 @@ export class ShowToc extends Component {
 }
 
 ShowToc.propTypes = {
-  toc: PropTypes.array
+  toc: PropTypes.array,
+  pdfInfo: PropTypes.object,
+  scrollTo: PropTypes.func
 };
 
-export default ShowToc;
+export const mapStateToProps = ({documentViewer}) => {
+  return {
+    pdfInfo: documentViewer.doc.get('pdfInfo')
+  };
+};
+
+function mapDispatchToProps() {
+  return {scrollTo};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShowToc);

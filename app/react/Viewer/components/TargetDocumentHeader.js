@@ -24,7 +24,9 @@ export class TargetDocumentHeader extends Component {
           <i className="fa fa-arrow-left"></i>
           Back
         </button>
-        <button onClick={() => this.props.saveTargetRangedReference(connection.toJS(), targetRange, this.props.addReference)}
+        <button onClick={() => this.props.saveTargetRangedReference(connection.toJS(), targetRange, (ref) => {
+          this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
+          })}
                 disabled={disabled}
                 className={className}>
           <i className="fa fa-save"></i>
@@ -38,6 +40,7 @@ export class TargetDocumentHeader extends Component {
 
 TargetDocumentHeader.propTypes = {
   connection: PropTypes.object,
+  pdfInfo: PropTypes.object,
   reference: PropTypes.object,
   targetDocument: PropTypes.string,
   saveTargetRangedReference: PropTypes.func,
@@ -50,7 +53,8 @@ function mapStateToProps({documentViewer, connections}) {
   return {
     connection: connections.connection,
     reference: documentViewer.uiState.toJS().reference,
-    targetDocument: documentViewer.targetDoc.get('_id')
+    targetDocument: documentViewer.targetDoc.get('_id'),
+    pdfInfo: documentViewer.doc.get('pdfInfo')
   };
 }
 

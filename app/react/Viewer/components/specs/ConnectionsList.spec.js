@@ -26,7 +26,8 @@ describe('ConnectionsList', () => {
       deactivateReference: jasmine.createSpy('deactivateReference'),
       deleteReference: jasmine.createSpy('deleteReference'),
       closePanel: jasmine.createSpy('closePanel'),
-      uiState: Immutable.fromJS({})
+      uiState: Immutable.fromJS({}),
+      doc: {pdfInfo: ''}
     };
   });
 
@@ -80,7 +81,7 @@ describe('ConnectionsList', () => {
       it('should activate it', () => {
         render();
         component.find(Item).last().simulate('click');
-        expect(props.activateReference).toHaveBeenCalledWith('ref1', 'tabName');
+        expect(props.activateReference).toHaveBeenCalledWith(props.references.toJS()[0], props.doc.pdfInfo, 'tabName');
         expect(component.find(Item).last().node.props.className).toContain('relationship-active');
       });
     });
@@ -90,7 +91,7 @@ describe('ConnectionsList', () => {
         props.targetDoc = true;
         render();
         component.find(Item).last().simulate('click');
-        expect(props.selectReference).toHaveBeenCalledWith('ref1', props.references.toJS());
+        expect(props.selectReference).toHaveBeenCalledWith(props.references.toJS()[0], '');
         expect(component.find(Item).last().node.props.className).toContain('relationship-selected');
       });
 
@@ -112,7 +113,8 @@ describe('ConnectionsList', () => {
           panel: ''
         }),
         references: Immutable.fromJS(['reference']),
-        targetDoc: Immutable.fromJS({})
+        targetDoc: Immutable.fromJS({}),
+        doc: Immutable.fromJS({})
       }
     };
 

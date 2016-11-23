@@ -32,6 +32,18 @@ describe('Text', () => {
       expect(serializedRange).toEqual({start: 1, end: 10, text: 'text'});
       expect(TextRange.serialize).toHaveBeenCalledWith(range, document);
     });
+
+    describe('with range', () => {
+      it('should return serialized selection adding offset', () => {
+        spyOn(TextRange, 'serialize').and.returnValue({start: 1, end: 10});
+        let range = mockRangeSelection('text');
+        text.range({start: 10});
+
+        let serializedRange = text.getSelection();
+        expect(serializedRange).toEqual({start: 11, end: 20, text: 'text'});
+        expect(TextRange.serialize).toHaveBeenCalledWith(range, document);
+      });
+    });
   });
 
   describe('simulateSelection', () => {
@@ -42,15 +54,30 @@ describe('Text', () => {
         spyOn(text, 'selected').and.returnValue(false);
         spyOn(text, 'removeSimulatedSelection');
 
-        text.simulateSelection('range');
+        text.range({start:0, end: 90});
+        text.simulateSelection({start: 1, end: 2});
 
         let elementWrapper = document.createElement('span');
         elementWrapper.classList.add('fake-selection');
 
-        expect(TextRange.restore).toHaveBeenCalledWith('range', document);
+        expect(TextRange.restore).toHaveBeenCalledWith({start: 1, end: 2}, document);
         expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper, 'restoredRange');
         expect(text.fakeSelection).toBe('fakeSelection');
         expect(text.removeSimulatedSelection).toHaveBeenCalled();
+      });
+
+      describe('when the range rendered does not match the range selected', () => {
+        it('should not render the selection', () => {
+          spyOn(wrapper, 'wrap').and.returnValue('fakeSelection');
+          spyOn(TextRange, 'restore').and.returnValue('restoredRange');
+          spyOn(text, 'selected').and.returnValue(false);
+          spyOn(text, 'removeSimulatedSelection');
+
+          text.range({start:0, end: 10});
+          text.simulateSelection({start:15, end: 25});
+
+          expect(TextRange.restore).not.toHaveBeenCalled();
+        });
       });
     });
 
@@ -178,6 +205,24 @@ describe('Text', () => {
 
       expect(unwrap.calls.count()).toBe(1);
       expect(text.renderedReferences.reference[1]).not.toBeDefined();
+    });
+
+    describe('with range', () => {
+      it('should only render references inside the range adding the start offset of the range being rendered', () => {
+        let references = [
+          {_id: '1', range: {start: 14, end: 45}}, 
+          {_id: '2', range: {start: 4, end: 16}},
+          {_id: '3', range: {start: 3, end: 5}},
+          {_id: '4', range: {start: 56, end: 60}}
+        ];
+
+        text.range({start: 10, end: 55});
+        text.renderReferences(references);
+        expect(TextRange.restore).toHaveBeenCalledWith({start: 4, end: 35}, document);
+        expect(TextRange.restore).toHaveBeenCalledWith({start: 0, end: 6}, document);
+        expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('1'), 'restoredRange');
+        expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('2'), 'restoredRange');
+      });
     });
   });
 

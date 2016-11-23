@@ -3,6 +3,8 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
+import {APIURL} from 'app/config.js';
+import {PDFUtils} from '../../PDF/';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
@@ -11,6 +13,7 @@ import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActio
 import referencesUtils from '../utils/referencesUtils';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
+import {isClient} from 'app/utils';
 
 export function setDocument(document, html) {
   return {
@@ -72,14 +75,35 @@ export function deleteDocument(doc) {
   };
 }
 
+export function getDocument(id) {
+  return api.get('documents?_id=' + id)
+  .then((response) => {
+    let doc = response.json.rows[0];
+    if (!isClient) {
+      return doc;
+    }
+    if (doc.pdfInfo) {
+      return doc;
+    }
+    return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
+    .then((pdfInfo) => {
+      doc.pdfInfo = pdfInfo;
+      return api.post('documents/pdfInfo', doc)
+      .then((res) => {
+        return res.json;
+      });
+    });
+  });
+}
+
 export function loadTargetDocument(id) {
   return function (dispatch, getState) {
     return Promise.all([
-      api.get('documents?_id=' + id),
+      getDocument(id),
       referencesAPI.get(id)
     ])
-    .then(([docResponse, references]) => {
-      dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
+    .then(([targetDoc, references]) => {
+      dispatch(actions.set('viewer/targetDoc', targetDoc));
       dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };

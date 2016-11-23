@@ -42,39 +42,55 @@ describe('Viewer uiActions', () => {
     });
   });
 
+  describe('scrollToActive', () => {
+    let dispatch;
+    beforeEach(() => {
+      dispatch = jasmine.createSpy('dispatch');
+      spyOn(actions, 'activateReference').and.returnValue({type: 'activateReference'});
+    });
+
+    it('should scroll to active if goToActive is true', () => {
+      actions.scrollToActive({_id: 'id'}, {}, '', true)(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({type: types.GO_TO_ACTIVE, value: false});
+      //expect(dispatch).toHaveBeenCalledWith({type: 'activateReference'});
+      //expect(actions.activateReference).toHaveBeenCalledWith({_id: 'id'}, {}, '');
+    });
+  });
+
   describe('activateReference()', () => {
     let dispatch;
     beforeEach(() => {
       spyOn(scroller, 'to');
+      spyOn(document, 'querySelector').and.returnValue(true);
       dispatch = jasmine.createSpy('dispatch');
     });
 
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
-      actions.activateReference('id')(dispatch);
+      actions.activateReference({_id: 'id'}, {})(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id'});
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
     });
 
     it('should dispatch a SHOW_TAB references by default', () => {
-      actions.activateReference('id')(dispatch);
+      actions.activateReference({_id: 'id'}, {})(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
     });
 
     it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
-      actions.activateReference('id', 'another tab')(dispatch);
+      actions.activateReference({_id: 'id'}, {}, 'another tab')(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'another tab'});
     });
 
     it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
-      actions.activateReference('id', [])(dispatch);
+      actions.activateReference({_id: 'id'}, {}, [])(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
     });
 
     it('should scroll to the elements', (done) => {
-      actions.activateReference('id')(dispatch);
+      actions.activateReference({_id: 'id'}, {})(dispatch);
       setTimeout(() => {
-        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer');
-        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item[data-id="id"]', '.metadata-sidepanel .sidepanel-body');
+        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer', {duration: 100});
+        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item-id', '.metadata-sidepanel .sidepanel-body', {duration: 100});
         done();
       });
     });
@@ -82,11 +98,12 @@ describe('Viewer uiActions', () => {
 
   describe('selectReference()', () => {
     let dispatch;
+    let references;
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      let references = [{_id: 'id1'}, {_id: 'id2', range: 'range'}];
-      actions.selectReference('id2', references)(dispatch);
+      references = [{_id: 'id1'}, {_id: 'id2', range: 'range'}];
+      actions.selectReference(references[1], {})(dispatch);
       dispatch.calls.argsFor(0)[0](dispatch);
     });
 

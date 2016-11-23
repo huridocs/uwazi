@@ -22,12 +22,13 @@ describe('CreateConnectionPanel', () => {
         sourceDocument: 'sourceId',
         targetDocument: 'targetId'
       }),
+      pdfInfo: Immutable([]),
       relationTypes: Immutable([{_id: 'rt1'}, {_id: 'rt2'}]),
       searchResults: Immutable([{_id: 'sr1'}, {_id: 'sr2'}]),
       uiState: Immutable({searching: true}),
       setRelationType: jasmine.createSpy('setRelationType'),
       setTargetDocument: () => {},
-      onCreate: () => {},
+      onCreate: jasmine.createSpy('onCreate'),
       onRangedConnect: () => {}
     };
   });
@@ -56,7 +57,8 @@ describe('CreateConnectionPanel', () => {
     render();
     const saveButton = component.find(ActionButton).at(0);
     expect(saveButton.props().action).toBe('save');
-    expect(saveButton.props().onCreate).toBe(props.onCreate);
+    saveButton.props().onCreate();
+    expect(props.onCreate).toHaveBeenCalled();
     expect(saveButton.parent().props().if).toBe(true);
     expect(component.find(ActionButton).at(1).parent().props().if).toBe(false);
   });

@@ -74,18 +74,6 @@ describe('documents', () => {
     });
   });
 
-  describe('saveHTML', () => {
-    it('should save html conversion', (done) => {
-      documents.saveHTML({pages: ['pages'], document: '8202c463d6158af8065022d9b5014ccb'})
-      .then(() => documents.getHTML('id', 'es'))
-      .then((conversion) => {
-        expect(conversion.pages[0]).toBe('pages');
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
   //describe('countByTemplate', () => {
     //it('should return how many documents using the template passed', (done) => {
       //documents.countByTemplate('template1')
@@ -122,9 +110,6 @@ describe('documents', () => {
 
   describe('delete', () => {
     beforeEach(() => {
-      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014ccb.json');
-      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc1.json');
-      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc2.json');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
     });
@@ -145,14 +130,11 @@ describe('documents', () => {
       });
     });
 
-    it('should delete the original file and conversion files', (done) => {
+    it('should delete the original file', (done) => {
       documents.delete('id')
       .then(() => {
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
-
-        expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014ccb.json')).toBe(false);
-        expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014cc1.json')).toBe(false);
         done();
       })
       .catch(done.fail);

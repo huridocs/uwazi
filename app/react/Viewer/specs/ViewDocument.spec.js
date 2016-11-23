@@ -1,7 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
@@ -13,7 +12,6 @@ describe('ViewDocument', () => {
   let context;
 
   beforeEach(() => {
-    RouteHandler.renderedFromServer = true;
     const dispatch = jasmine.createSpy('dispatch');
     context = {store: {dispatch: dispatch.and.callFake(action => {
       if (typeof action === 'function') {
@@ -21,7 +19,7 @@ describe('ViewDocument', () => {
       }
       return action;
     })}};
-    component = shallow(<ViewDocument />, {context});
+    component = shallow(<ViewDocument renderedFromServer={true} />, {context});
     instance = component.instance();
 
     spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);

@@ -9,6 +9,7 @@ import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
 import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
 import {Item} from 'app/Layout';
+import {createSelector} from 'reselect';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
@@ -28,10 +29,10 @@ export class ConnectionsList extends Component {
 
   clickReference(reference) {
     if (!this.props.targetDoc) {
-      this.props.activateReference(reference._id, this.props.referencesSection);
+      this.props.activateReference(reference, this.props.doc.pdfInfo, this.props.referencesSection);
     }
     if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
-      this.props.selectReference(reference._id, this.props.references.toJS());
+      this.props.selectReference(reference, this.props.doc.pdfInfo);
     }
   }
 
@@ -97,7 +98,7 @@ export class ConnectionsList extends Component {
                 onMouseLeave={this.props.highlightReference.bind(null, null)}
                 onClick={this.clickReference.bind(this, reference)}
                 doc={doc}
-                className={`${itemClass} ${disabled ? 'disabled' : ''}`}
+                className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''}`}
                 data-id={reference._id}
                 additionalIcon={<ShowIf if={useSourceTargetIcons}>
                                   <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
@@ -139,6 +140,7 @@ export class ConnectionsList extends Component {
 
 ConnectionsList.propTypes = {
   uiState: PropTypes.object,
+  doc: PropTypes.object,
   references: PropTypes.object,
   referencedDocuments: PropTypes.object,
   relationTypes: PropTypes.object,
@@ -158,12 +160,19 @@ ConnectionsList.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = ({documentViewer}) => {
+const selectDoc = createSelector(
+  s => s.documentViewer.targetDoc, 
+  s => s.documentViewer.doc, 
+  (targetDoc, doc) => targetDoc.get('_id') ? targetDoc.toJS() : doc.toJS()
+);
+
+const mapStateToProps = (state) => {
+  const {documentViewer} = state;
   return {
     uiState: documentViewer.uiState,
     relationTypes: documentViewer.relationTypes,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
-    loading: documentViewer.targetDoc.get('_id') ? !documentViewer.uiState.get('targetPDFReady') : !documentViewer.uiState.get('PDFReady')
+    doc: selectDoc(state)
   };
 };
 

@@ -1,16 +1,16 @@
-import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
+import {getDocument} from 'app/Viewer/actions/documentActions';
 
 import {actions} from 'app/BasicReducer';
 import {setReferences} from './referencesActions';
 
 export function requestViewerState(documentId, lang) {
   return Promise.all([
-    api.get('documents', {_id: documentId}),
+    getDocument(documentId),
     referencesAPI.get(documentId),
     templatesAPI.get(),
     thesaurisAPI.get(),
@@ -21,7 +21,7 @@ export function requestViewerState(documentId, lang) {
       templates,
       thesauris,
       documentViewer: {
-        doc: doc.json.rows[0],
+        doc,
         references: referencesUtils.filterRelevant(references, lang),
         templates,
         thesauris,

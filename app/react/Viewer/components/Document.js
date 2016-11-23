@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 
 import Text from 'app/Viewer/utils/Text';
+import Loader from 'app/components/Elements/Loader';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
-import Loader from 'app/components/Elements/Loader';
 import {APIURL} from '../../config.js';
 
 export class Document extends Component {
@@ -23,7 +23,11 @@ export class Document extends Component {
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
-      return this.props.activateReference(e.target.getAttribute('data-id'), this.props.references);
+      return this.props.activateReference(
+        this.props.references.find(r => r._id === e.target.getAttribute('data-id')),
+        this.props.doc.get('pdfInfo').toJS(),
+        this.props.references
+      );
     }
     if (this.props.executeOnClickHandler) {
       this.props.onClick();
@@ -47,10 +51,6 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.props.pdfIsRdy) {
-      return;
-    }
-
     this.text.renderReferences(this.props.references);
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
@@ -58,8 +58,20 @@ export class Document extends Component {
     this.text.activate(this.props.activeReference);
   }
 
-  pdfLoaded() {
-    this.props.PDFReady();
+  pdfLoaded(range) {
+    if (this.props.doScrollToActive) {
+      this.props.scrollToActive(
+        this.props.references.find(r => r._id === this.props.activeReference),
+        this.props.doc.get('pdfInfo').toJS(), 
+        this.props.references,
+        this.props.doScrollToActive
+      );
+    }
+
+    this.text.reset();
+    this.text.reset('toc-ref');
+    this.text.range(range);
+    this.componentDidUpdate();
   }
 
   render() {
@@ -68,11 +80,6 @@ export class Document extends Component {
     const Header = this.props.header || function () {
       return false;
     };
-
-    let pdfLoadingStyles = {};
-    if (!this.props.pdfIsRdy) {
-      pdfLoadingStyles = {display: 'none'};
-    }
 
     return (
       <div>
@@ -85,14 +92,15 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!this.props.pdfIsRdy}>
+            <ShowIf if={!doc._id || !doc.pdfInfo}>
               <Loader />
             </ShowIf>
-            <ShowIf if={!!doc._id}>
-              <PDF style={pdfLoadingStyles}
-                   onLoad={this.pdfLoaded.bind(this)}
-                   file={`${APIURL}documents/download?_id=${doc._id}`}
-                   filename={doc.file ? doc.file.filename : null}/>
+            <ShowIf if={!!doc._id && !!doc.pdfInfo}>
+              <PDF
+                pdfInfo={doc.pdfInfo}
+                onLoad={this.pdfLoaded.bind(this)}
+                file={`${APIURL}documents/download?_id=${doc._id}`}
+                filename={doc.file ? doc.file.filename : null}/>
             </ShowIf>
           </div>
         </div>
@@ -103,14 +111,14 @@ export class Document extends Component {
 
 Document.propTypes = {
   doc: PropTypes.object,
-  PDFReady: PropTypes.func,
-  pdfIsRdy: PropTypes.bool,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,
   header: PropTypes.func,
   activateReference: PropTypes.func,
+  doScrollToActive: PropTypes.bool,
+  scrollToActive: PropTypes.func,
   highlightedReference: PropTypes.string,
   activeReference: PropTypes.string,
   selection: PropTypes.object,

@@ -37,7 +37,7 @@ export default {
     elementPositionInParent +
     options.offset +
     element.scrollHeight +
-    (parent.offsetHeight - element.offsetHeight) / 2;
+    (parent.offsetHeight - element.offsetHeight) / options.dividerOffset;
 
     let start = Date.now();
     let timeout = window.setInterval(() => {
@@ -49,10 +49,12 @@ export default {
         window.clearInterval(timeout);
       }
     }, 25);
+
+    return timeout;
   },
 
   getOptions(options) {
-    let defaultOptions = {duration: 400, offset: 0, animation: 'easeIn'};
+    let defaultOptions = {duration: 400, offset: 0, animation: 'easeIn', dividerOffset: 2};
     return Object.assign(defaultOptions, options);
   },
 

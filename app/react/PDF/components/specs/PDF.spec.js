@@ -28,7 +28,7 @@ describe('PDF', () => {
   };
 
   describe('on instance', () => {
-    it('should get the pdf file and set pdf Object to state', (done) => {
+    it('should get the pdf with pdfjs', (done) => {
       render();
       expect(PDFJS.getDocument).toHaveBeenCalledWith(props.file);
       setTimeout(() => {
@@ -68,14 +68,66 @@ describe('PDF', () => {
     });
   });
 
-  describe('onLoad', () => {
-    it('should be called when all pages are loaded', () => {
+  describe('loaded', () => {
+    it('should call onLoad only when the pages are consecutive', () => {
+      props.pdfInfo = {
+        1: {chars: 10},
+        2: {chars: 20},
+        3: {chars: 30},
+        4: {chars: 40},
+        5: {chars: 50}
+      };
+
       render();
-      instance.setState({pdf: {numPages: 3}});
-      instance.pageLoaded();
-      instance.pageLoaded();
-      instance.pageLoaded();
+      instance.pageLoaded(1);
       expect(props.onLoad).toHaveBeenCalled();
+      props.onLoad.calls.reset();
+      instance.pageLoaded(2);
+      expect(props.onLoad).toHaveBeenCalled();
+      props.onLoad.calls.reset();
+      instance.pageLoaded(5);
+      expect(props.onLoad).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onLoad', () => {
+    it('should be called when there is no pages loading with the range of characters being rendered', () => {
+      props.pdfInfo = {
+        1: {chars: 10},
+        2: {chars: 20},
+        3: {chars: 30},
+        4: {chars: 40},
+        5: {chars: 50}
+      };
+      render();
+      instance.setState({pdf: {numPages: 5}});
+      instance.pageLoaded(1);
+      props.onLoad.calls.reset();
+      instance.pageLoading(2);
+      instance.pageLoaded(3);
+      expect(props.onLoad).not.toHaveBeenCalled();
+      instance.pageLoaded(2);
+      expect(props.onLoad).toHaveBeenCalledWith({start: 0, end: 30});
+    });
+
+    it('should be called when a pages is unloaded', () => {
+      props.pdfInfo = {
+        1: {chars: 10},
+        2: {chars: 20},
+        3: {chars: 30},
+        4: {chars: 40},
+        5: {chars: 50}
+      };
+      render();
+      instance.setState({pdf: {numPages: 5}});
+
+      instance.pageLoaded(1);
+      instance.pageLoaded(2);
+      instance.pageLoaded(3);
+      props.onLoad.calls.reset();
+      instance.pageUnloaded(3);
+
+      expect(props.onLoad).toHaveBeenCalledWith({start: 0, end: 20});
     });
   });
 });

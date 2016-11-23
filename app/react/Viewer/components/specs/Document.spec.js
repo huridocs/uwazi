@@ -17,7 +17,7 @@ describe('Document', () => {
       PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
-      doc: Immutable.fromJS({_id: 'documentId'}),
+      doc: Immutable.fromJS({_id: 'documentId', pdfInfo: {test: 'pdfInfo'}}),
       docHTML: Immutable.fromJS({
         pages: ['page1', 'page2', 'page3'],
         css: 'css'
@@ -68,11 +68,12 @@ describe('Document', () => {
 
       it('should activate the reference', () => {
         props.executeOnClickHandler = true;
+        props.references = [{_id: 'referenceId', test: 'test'}];
         props.activateReference = jasmine.createSpy('activateReference');
         render();
         instance.text = {selected: jasmine.createSpy('selected').and.returnValue(false)};
         component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-        expect(props.activateReference).toHaveBeenCalledWith('referenceId', props.references);
+        expect(props.activateReference).toHaveBeenCalledWith(props.references[0], props.doc.toJS().pdfInfo, props.references);
         expect(props.onClick).not.toHaveBeenCalled();
       });
 
@@ -80,10 +81,11 @@ describe('Document', () => {
         it('should not active the reference', () => {
           props.executeOnClickHandler = true;
           props.activateReference = jasmine.createSpy('activateReference');
+          props.references = [{_id: 'referenceId', test: 'test'}];
           render();
           instance.text = {selected: jasmine.createSpy('selected').and.returnValue(true)};
           component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-          expect(props.activateReference).not.toHaveBeenCalledWith('referenceId');
+          expect(props.activateReference).not.toHaveBeenCalledWith(props.references[0], props.doc.toJS().pdfInfo);
           expect(props.onClick).toHaveBeenCalled();
         });
       });

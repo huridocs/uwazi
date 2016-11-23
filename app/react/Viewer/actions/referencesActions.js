@@ -13,7 +13,8 @@ if (isClient) {
   window.uwazi = {};
   window.uwazi.moveConnection = (id, leftOffset, right) => {
     const rightOffset = right || leftOffset;
-    let reference = store.getState().documentViewer.references.find((r) => r.get('_id') === id).toJS();
+    let reference = store.getState().documentViewer.references.toJS().find((r) => r._id === id);
+    let pdfInfo = store.getState().documentViewer.doc.get('pdfInfo').toJS();
     let movedRef = {
       _rev: reference._rev,
       _id: reference._id,
@@ -38,7 +39,7 @@ if (isClient) {
         type: types.ADD_REFERENCE,
         reference: updatedReference
       });
-      store.dispatch(uiActions.activateReference(updatedReference._id, 'references'));
+      store.dispatch(uiActions.activateReference(updatedReference, pdfInfo, 'references'));
     })(store.dispatch, store.getState);
   };
 }
@@ -50,7 +51,8 @@ export function setReferences(references) {
     references
   };
 }
-export function addReference(reference) {
+
+export function addReference(reference, docInfo, delayActivation) {
   return function (dispatch) {
     const tab = reference.sourceRange.text ? 'references' : 'connections';
     dispatch({
@@ -60,7 +62,15 @@ export function addReference(reference) {
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
-    dispatch(uiActions.activateReference(reference._id, tab));
+    if (delayActivation) {
+      dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
+      dispatch(uiActions.goToActive());
+      dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
+      dispatch({type: types.SHOW_TAB, tab});
+    }
+    else {
+      dispatch(uiActions.activateReference(reference, docInfo, tab));
+    }
   };
 }
 
