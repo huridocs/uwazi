@@ -4,7 +4,6 @@ import RouteHandler from 'app/App/RouteHandler';
 import {setReferences} from 'app/Viewer/actions/referencesActions';
 import Viewer from 'app/Viewer/components/Viewer';
 import {actions} from 'app/BasicReducer';
-//import {getDocument} from 'app/Viewer/actions/documentActions';
 import {actions as formActions} from 'react-redux-form';
 
 import {requestViewerState, setViewerState} from './actions/routeActions';
