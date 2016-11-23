@@ -35,8 +35,8 @@ export class FiltersForm extends Component {
   shouldComponentUpdate(nextProps) {
     return !is(this.props.fields, nextProps.fields) ||
            !is(this.props.aggregations, nextProps.aggregations) ||
-           this.props.search !== nextProps.search ||
-           !is(this.props.documentTypes, nextProps.documentTypes);
+           !is(this.props.documentTypes, nextProps.documentTypes) ||
+           this.props.search !== nextProps.search;
   }
 
   render() {
@@ -119,7 +119,7 @@ export class FiltersForm extends Component {
                     </li>
                   </ul>
               </FormGroup>
-              );
+            );
           }
           if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange') {
             return (

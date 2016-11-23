@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {filterDocumentTypes, resetFilters} from 'app/Library/actions/filterActions';
+import {resetFilters} from 'app/Library/actions/filterActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
@@ -12,10 +12,6 @@ export class LibraryFilters extends Component {
 
   constructor(props) {
     super(props);
-  }
-
-  handleFilterDocType(documentTypes) {
-    this.props.filterDocumentTypes(documentTypes);
   }
 
   render() {
@@ -33,7 +29,7 @@ export class LibraryFilters extends Component {
         </div>
         <div className="sidepanel-body">
           <div className="documentTypes-selector">
-            <DocumentTypesList onChange={this.handleFilterDocType.bind(this)}/>
+            <DocumentTypesList />
           </div>
           <FiltersForm />
         </div>
@@ -43,7 +39,6 @@ export class LibraryFilters extends Component {
 }
 
 LibraryFilters.propTypes = {
-  filterDocumentTypes: PropTypes.func,
   resetFilters: PropTypes.func,
   open: PropTypes.bool
 };
@@ -55,7 +50,7 @@ export function mapStateToProps({library}) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({filterDocumentTypes, resetFilters}, dispatch);
+  return bindActionCreators({resetFilters}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);
