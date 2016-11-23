@@ -65,6 +65,7 @@ export class Document extends Component {
     }
 
     this.text.reset();
+    this.text.reset('toc-ref');
     this.text.range(range);
     this.componentDidUpdate();
   }
