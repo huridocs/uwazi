@@ -93,9 +93,11 @@ export class NestedMultiselect extends Component {
                               <i className="multiselectItem-icon fa fa-check"></i>
                               <span className="multiselectItem-name">{prop.label}</span>
                             </label>
-                            <button className="btn btn-xs btn-default multiselectItem-action" onClick={this.toggleOptions.bind(this, prop.key)}>
-                              <i className={this.state[prop.key] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
-                            </button>
+                            <span className="multiselectItem-results">
+                              <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, prop.key)}>
+                                <i className={this.state[prop.key] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                              </span>
+                            </span>
                           </div>
                         </FormField>
                         <ShowIf if={this.state[prop.key]}>

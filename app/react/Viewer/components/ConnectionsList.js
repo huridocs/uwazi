@@ -107,7 +107,6 @@ export class ConnectionsList extends Component {
                 additionalMetadata={[
                   {label: 'Connection type', value: this.relationType(reference.relationType, relationTypes)}
                 ]}
-                templateClassName="item-label-group"
                 evalPublished={true}
                 buttons={
                   <div className="item-shortcut-group">

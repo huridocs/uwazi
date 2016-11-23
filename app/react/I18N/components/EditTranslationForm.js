@@ -1,5 +1,3 @@
-// Entire component is UNTESTED!!!
-// Test!!
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
@@ -49,6 +47,8 @@ export class EditTranslationForm extends Component {
       defaultTranslationContext = translations[0].contexts.find((ctx) => ctx.id === contextId) || defaultTranslationContext;
     }
 
+    let contextKeys = Object.keys(defaultTranslationContext.values);
+
     let contextName = defaultTranslationContext.label;
     return (
       <div className="relationType">
@@ -67,7 +67,7 @@ export class EditTranslationForm extends Component {
                 <li className="list-group-item"><b>{contextName}</b></li>
                 {(() => {
                   if (translations.length) {
-                    return Object.keys(defaultTranslationContext.values).map((value) => {
+                    return contextKeys.sort().map((value) => {
                       return <li key={value} className="list-group-item">
                         <h5>{value}</h5>
                         {translations.map((translation, i) => {

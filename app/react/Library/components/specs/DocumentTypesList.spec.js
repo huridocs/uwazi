@@ -34,7 +34,8 @@ describe('DocumentTypesList', () => {
     props = {
       onChange: jasmine.createSpy('onChange'),
       settings: {collection: Immutable.fromJS({filters})},
-      aggregations: Immutable.fromJS(aggregations)
+      aggregations: Immutable.fromJS(aggregations),
+      libraryFilters: Immutable.fromJS({documentTypes: [2, 5]})
     };
   });
 
@@ -54,6 +55,12 @@ describe('DocumentTypesList', () => {
       let liElements = component.find('li').at(2).find('ul').find('li');
       expect(liElements.length).toBe(2);
     });
+
+    it('should render as checked the selected types', () => {
+      render();
+      let liElements = component.find('li');
+      expect(liElements.at(1).find('input').props().checked).toBe(true);
+    });
   });
 
   describe('clicking on a type', () => {
@@ -61,12 +68,7 @@ describe('DocumentTypesList', () => {
       render();
       let liElements = component.find('li');
       liElements.at(0).find('input').simulate('change');
-      expect(component.state().selectedItems).toEqual([1]);
-      expect(props.onChange).toHaveBeenCalledWith([1]);
-
-      liElements.at(1).find('input').simulate('change');
-      expect(component.state().selectedItems).toEqual([1, 2]);
-      expect(props.onChange).toHaveBeenCalledWith([1, 2]);
+      expect(props.onChange).toHaveBeenCalledWith([2, 5, 1]);
     });
 
     describe('when is a group', () => {
@@ -74,12 +76,10 @@ describe('DocumentTypesList', () => {
         render();
         let liElements = component.find('li');
         liElements.at(2).find('input').first().simulate('change', {target: {checked: true}});
-        expect(component.state().selectedItems).toEqual([4, 5]);
-        expect(props.onChange).toHaveBeenCalledWith([4, 5]);
+        expect(props.onChange).toHaveBeenCalledWith([2, 5, 4]);
 
         liElements.at(2).find('input').first().simulate('change', {target: {checked: false}});
-        expect(component.state().selectedItems).toEqual([]);
-        expect(props.onChange).toHaveBeenCalledWith([]);
+        expect(props.onChange).toHaveBeenCalledWith([2]);
       });
     });
   });

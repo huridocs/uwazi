@@ -62,7 +62,10 @@ export class ViewMetadataPanel extends Component {
     const connections = propReferences.filter(r => {
       return typeof r.range.start === 'undefined';
     });
-    const attachments = doc.attachments ? doc.attachments : [];
+
+    const docAttachments = doc.attachments ? doc.attachments : [];
+    const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
+    const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -97,7 +100,7 @@ export class ViewMetadataPanel extends Component {
               </li>
               <li>
                 <TabLink to="attachments">
-                  <i className="fa fa-paperclip"></i>
+                  <i className="fa fa-download"></i>
                   <span className="connectionsNumber">{attachments.length}</span>
                 </TabLink>
               </li>
@@ -165,7 +168,8 @@ export class ViewMetadataPanel extends Component {
                 <TocForm
                   removeEntry={this.props.removeFromToc}
                   indent={this.props.indentTocElement}
-                  onSubmit={this.props.saveToc} model="documentViewer.tocForm"
+                  onSubmit={this.props.saveToc}
+                  model="documentViewer.tocForm"
                   state={this.props.tocFormState}
                   toc={this.props.tocForm}
                 />
@@ -189,7 +193,9 @@ export class ViewMetadataPanel extends Component {
             </TabContent>
             <TabContent for="attachments">
               <AttachmentsList files={fromJS(attachments)}
-                               parentId={doc._id} />
+                               isDocumentAttachments={true}
+                               parentId={doc._id}
+                               parentSharedId={doc.sharedId} />
             </TabContent>
           </Tabs>
         </div>
@@ -219,6 +225,7 @@ ViewMetadataPanel.propTypes = {
   references: PropTypes.object,
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
+  tocFormLength: PropTypes.number,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
   removeFromToc: PropTypes.func,
@@ -243,7 +250,7 @@ const getTargetMetadata = createSelector(
   (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
 );
 
-const mapStateToProps = ({documentViewer}) => {
+export const mapStateToProps = ({documentViewer}) => {
   let doc = getSourceMetadata(documentViewer);
   let references = documentViewer.references;
 
@@ -251,6 +258,8 @@ const mapStateToProps = ({documentViewer}) => {
     doc = getTargetMetadata(documentViewer);
     references = documentViewer.targetDocReferences;
   }
+
+  const tocForm = documentViewer.tocForm || [];
 
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
@@ -261,7 +270,8 @@ const mapStateToProps = ({documentViewer}) => {
     formDirty: documentViewer.docFormState.dirty,
     tab: documentViewer.uiState.get('tab'),
     references,
-    tocForm: documentViewer.tocForm || [],
+    tocForm,
+    tocFormLength: tocForm.length,
     tocBeingEdited: documentViewer.tocBeingEdited,
     tocFormState: documentViewer.tocFormState,
     isTargetDoc: !!documentViewer.targetDoc.get('_id')

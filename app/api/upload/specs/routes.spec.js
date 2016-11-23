@@ -4,8 +4,8 @@ import fixtures from './fixtures.js';
 import {db_url as dbURL} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import documents from '../../documents/documents';
 import entities from 'api/entities';
+import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('upload routes', () => {
@@ -36,7 +36,7 @@ describe('upload routes', () => {
     .catch(done.fail);
   });
 
-  describe('POST', () => {
+  describe('POST/upload', () => {
     //temporary test for the conversion, probably this will go on another
     it('should process the document after upload', (done) => {
       routes.post('/api/upload', req)
@@ -72,7 +72,7 @@ describe('upload routes', () => {
                 expect(docs.rows[1].processed).toBe(false);
                 done();
               });
-            }, 100);
+            }, 500);
           }
         });
 
@@ -96,6 +96,23 @@ describe('upload routes', () => {
         })
         .catch(done.fail);
       });
+    });
+  });
+
+  describe('POST/reupload', () => {
+    beforeEach(() => {
+      spyOn(references, 'deleteTextReferences').and.returnValue(Promise.resolve());
+    });
+
+    it('should reupload a document', (done) => {
+      req.body.document = '8202c463d6158af8065022d9b5014ccb';
+      routes.post('/api/reupload', req)
+      .then(response => {
+        expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
+        expect(response).toEqual(file);
+        done();
+      })
+      .catch(done.fail);
     });
   });
 });

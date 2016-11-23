@@ -95,9 +95,12 @@ export class Document extends Component {
             <ShowIf if={!doc._id || !doc.pdfInfo}>
               <Loader />
             </ShowIf>
-
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
-              <PDF pdfInfo={doc.pdfInfo} onLoad={this.pdfLoaded.bind(this)} file={`${APIURL}documents/download?_id=${doc._id}`}/>
+              <PDF
+                pdfInfo={doc.pdfInfo}
+                onLoad={this.pdfLoaded.bind(this)}
+                file={`${APIURL}documents/download?_id=${doc._id}`}
+                filename={doc.file ? doc.file.filename : null}/>
             </ShowIf>
           </div>
         </div>

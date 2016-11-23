@@ -5,7 +5,7 @@ export default function () {
       include: [ 'doc.title', 'doc.icon', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata', 'doc.type', 'doc.sharedId']
     },
     from: 0,
-    size: 12,
+    size: 30,
     query: {
       bool: {
         must: [
@@ -64,7 +64,7 @@ export default function () {
 
     sort(property, order = 'desc') {
       let sort = {};
-      sort[`doc.${property}`] = {order, 'ignore_unmapped': true};
+      sort[`doc.${property}.raw`] = {order, 'ignore_unmapped': true};
       baseQuery.sort.push(sort);
       return this;
     },

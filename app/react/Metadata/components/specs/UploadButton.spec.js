@@ -14,12 +14,12 @@ describe('UploadButton', () => {
     file = new File([], 'fighting__crime--101.pdf');
   }
 
-
   beforeEach(() => {
     context = {confirm: jasmine.createSpy('confirm')};
     props = {
       progress: Immutable.fromJS({}),
       documentId: 'abc1',
+      documentSharedId: 'sharedabc1',
       reuploadDocument: jasmine.createSpy('reuploadDocument')
     };
   });
@@ -38,8 +38,8 @@ describe('UploadButton', () => {
       it('should render the progress instead of the input', () => {
         const input = component.find('input');
         expect(input.length).toBe(0);
-        const i = component.find('i');
-        expect(i.text()).toBe('50%');
+        const span = component.find('.item-shortcut__text');
+        expect(span.text()).toBe('50%');
       });
     });
 
@@ -52,8 +52,8 @@ describe('UploadButton', () => {
       it('should render a processing badge instead of the input', () => {
         const input = component.find('input');
         expect(input.length).toBe(0);
-        const div = component.find('div');
-        expect(div.text()).toBe('Processing');
+        const i = component.find('i.fa-cog');
+        expect(i.length).toBe(1);
       });
     });
 
@@ -66,8 +66,22 @@ describe('UploadButton', () => {
       it('should render a failed badge with the input to reupload', () => {
         const input = component.find('input');
         expect(input.length).toBe(1);
-        const label = component.find('label');
-        expect(label.text()).toBe('Upload Failed');
+        const i = component.find('i.fa-exclamation-triangle');
+        expect(i.length).toBe(1);
+      });
+    });
+
+    describe('on complete', () => {
+      beforeEach(() => {
+        render();
+        component.setState({processing: false, failed: false, completed: true});
+      });
+
+      it('should render a completed badge with the input to reupload', () => {
+        const input = component.find('input');
+        expect(input.length).toBe(1);
+        const i = component.find('i.fa-check');
+        expect(i.length).toBe(1);
       });
     });
   });
@@ -87,7 +101,7 @@ describe('UploadButton', () => {
       const input = component.find('input');
       input.simulate('change', {target: {files: [file]}});
       context.confirm.calls.mostRecent().args[0].accept();
-      expect(props.reuploadDocument).toHaveBeenCalledWith('abc1', file);
+      expect(props.reuploadDocument).toHaveBeenCalledWith('abc1', file, 'sharedabc1');
     });
   });
 });

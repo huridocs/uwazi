@@ -73,6 +73,17 @@ export class PDF extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
+      this.pagesLoaded = 0;
+      this.setState({pdf: {numPages: 0}}, () => {
+        PDFJS.getDocument(nextProps.file).then(pdf => {
+          this.setState({pdf});
+        });
+      });
+    }
+  }
+
   render() {
     return (
       <div ref='pdfContainer' style={this.props.style}>
@@ -92,6 +103,7 @@ export class PDF extends Component {
 PDF.propTypes = {
   file: PropTypes.string,
   pdfInfo: PropTypes.object,
+  filename: PropTypes.string,
   style: PropTypes.object,
   onLoad: PropTypes.func
 };
