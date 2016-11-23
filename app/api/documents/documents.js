@@ -122,7 +122,6 @@ export default {
     let filesToDelete = deletedDocs.map((doc) => {
       return `./uploaded_documents/${doc.file.filename}`;
     });
-    deletedDocs.forEach((doc) => filesToDelete.push(`./conversions/${doc._id}.json`));
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
 
     return deleteFiles(filesToDelete);
