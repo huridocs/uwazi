@@ -33,6 +33,9 @@ export class PDFPage extends Component {
 
         this.pdfPageView.setPdfPage(page);
         this.pdfPageView.draw()
+        .then(() => {
+          this.setState({height: this.pdfPageView.viewport.height});
+        })
         .catch((e) => e);
       });
     }
@@ -71,7 +74,7 @@ export class PDFPage extends Component {
     const vWidth = window.innerWidth || document.documentElement.clientWidth;
     const vHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    if (rect.right < 0 || rect.bottom < -1054 || rect.left > vWidth || rect.top > vHeight + 1054) {
+    if (rect.right < 0 || rect.bottom < - 500 || rect.left > vWidth || rect.top > vHeight + 500) {
       return false;
     }
 
@@ -79,7 +82,11 @@ export class PDFPage extends Component {
   }
 
   render() {
-    return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={{height: 1054}}/>;
+    let style = {height: 1100};
+    if (this.state && this.state.height) {
+      style.height =this.state.height;
+    }
+    return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={style}/>;
   }
 }
 
