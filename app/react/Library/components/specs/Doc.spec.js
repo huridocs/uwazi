@@ -12,7 +12,8 @@ describe('Doc', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'}),
+      doc: {_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'},
+      active: false,
       selectDocument: jasmine.createSpy('selectDocument'),
       unselectDocument: jasmine.createSpy('unselectDocument')
     };
@@ -28,37 +29,21 @@ describe('Doc', () => {
       expect(component.find(Item).props().doc).toEqual(Immutable(props.doc));
     });
 
-    it('shoul hold a link to the document', () => {
+    it('should hold a link to the document', () => {
       render();
       const button = component.find(Item).props().buttons;
       expect(button.props.to).toBe('/document/id');
     });
   });
 
-  describe('when doc is not selected', () => {
+  describe('when doc is not active', () => {
     it('should not be active', () => {
-      render();
-      expect(component.find(Item).props().active).not.toBeDefined();
-    });
-
-    describe('onClick', () => {
-      it('should selectDocument', () => {
-        render();
-        component.find(Item).simulate('click');
-        expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
-      });
-    });
-  });
-
-  describe('when doc is selected and its another document', () => {
-    it('should be active false', () => {
-      props.selectedDocument = 'another_document';
       render();
       expect(component.find(Item).props().active).toBe(false);
     });
+
     describe('onClick', () => {
       it('should selectDocument', () => {
-        props.selectedDocument = 'another_document';
         render();
         component.find(Item).simulate('click');
         expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
@@ -66,15 +51,16 @@ describe('Doc', () => {
     });
   });
 
-  describe('when doc is selected and its the same document', () => {
+  describe('when doc is active', () => {
     it('should be active true', () => {
-      props.selectedDocument = 'idOne';
+      props.active = true;
       render();
       expect(component.find(Item).props().active).toBe(true);
     });
+
     describe('onClick', () => {
       it('should unselectDocument', () => {
-        props.selectedDocument = 'idOne';
+        props.active = true;
         render();
         component.find(Item).simulate('click');
         expect(props.unselectDocument).toHaveBeenCalled();
@@ -83,14 +69,24 @@ describe('Doc', () => {
   });
 
   describe('maped state', () => {
-    it('should contain the previewDoc', () => {
-      let store = {
+    let store;
+
+    beforeEach(() => {
+      store = {
         library: {
           ui: Immutable({selectedDocument: {_id: 'docId'}})
         }
       };
-      let state = mapStateToProps(store);
-      expect(state.selectedDocument).toEqual('docId');
+    });
+
+    it('should set active as true if ownProps match selected ID', () => {
+      const state = mapStateToProps(store, {doc: {_id: 'docId'}});
+      expect(state.active).toBe(true);
+    });
+
+    it('should set active as false if ownProps holds unselected document', () => {
+      const state = mapStateToProps(store, {doc: {_id: 'anotherId'}});
+      expect(state.active).toBe(false);
     });
   });
 });
