@@ -15,19 +15,19 @@ export class ViewerTextSelectedMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
-        <div className="ContextMenu-item"
+        <div className="btn btn-primary"
              onClick={this.showPanel.bind(this, 'targetRanged')}>
-          <span>Connect to a paragraph</span>
+          <span className="ContextMenu-tooltip">Connect to a paragraph</span>
           <i className="fa fa-paragraph"></i>
         </div>
-        <div className="ContextMenu-item"
+        <div className="btn btn-primary"
              onClick={this.showPanel.bind(this, 'ranged')} >
-          <span>Connect to a document</span>
+          <span className="ContextMenu-tooltip">Connect to a document</span>
           <i className="fa fa-file-o"></i>
         </div>
-        <div className="ContextMenu-item"
+        <div className="btn btn-primary"
              onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}>
-          <span>Add to table of contents</span>
+          <span className="ContextMenu-tooltip">Add to table of contents</span>
           <i className="fa fa-list"></i>
         </div>
       </div>
