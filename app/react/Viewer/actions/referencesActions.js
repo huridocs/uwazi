@@ -13,7 +13,8 @@ if (isClient) {
   window.uwazi = {};
   window.uwazi.moveConnection = (id, leftOffset, right) => {
     const rightOffset = right || leftOffset;
-    let reference = store.getState().documentViewer.references.find((r) => r.get('_id') === id).toJS();
+    let reference = store.getState().documentViewer.references.toJS().find((r) => r._id === id);
+    let pdfInfo = store.getState().documentViewer.doc.get('pdfInfo').toJS();
     let movedRef = {
       _rev: reference._rev,
       _id: reference._id,
@@ -38,7 +39,7 @@ if (isClient) {
         type: types.ADD_REFERENCE,
         reference: updatedReference
       });
-      store.dispatch(uiActions.activateReference(updatedReference._id, 'references'));
+      store.dispatch(uiActions.activateReference(updatedReference, pdfInfo, 'references'));
     })(store.dispatch, store.getState);
   };
 }
