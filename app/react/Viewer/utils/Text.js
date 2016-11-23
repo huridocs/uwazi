@@ -23,7 +23,7 @@ export default function (container) {
       let serializedRange = TextRange.serialize(range, container);
       serializedRange.start += this.charRange.start;
       serializedRange.end += this.charRange.start;
-      serializedRange.text = selection.toString();
+      serializedRange.text = selection.toString().replace(/\s+/g,' ');
       return serializedRange;
     },
 
