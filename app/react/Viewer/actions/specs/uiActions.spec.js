@@ -46,7 +46,7 @@ describe('Viewer uiActions', () => {
     let dispatch;
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      spyOn(actions, 'activateReference').and.returnValue({type: 'activateReference'})
+      spyOn(actions, 'activateReference').and.returnValue({type: 'activateReference'});
     });
 
     it('should scroll to active if goToActive is true', () => {

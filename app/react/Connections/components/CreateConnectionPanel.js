@@ -47,7 +47,7 @@ export class CreateConnectionPanel extends Component {
       <div className="sidepanel-footer">
         <ShowIf if={connection.type !== 'targetRanged'}>
           <ActionButton action="save" onCreate={(reference) => {
-            this.props.onCreate(reference, this.props.pdfInfo.toJS())
+            this.props.onCreate(reference, this.props.pdfInfo.toJS());
           }}/>
         </ShowIf>
         <ShowIf if={connection.type === 'targetRanged'}>

@@ -79,7 +79,8 @@ export class PDF extends Component {
         {(() => {
           let pages = [];
           for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-            pages.push(<PDFPage onUnload={this.pageUnloaded.bind(this)} onLoading={this.pageLoading.bind(this)} key={page} page={page} pdf={this.state.pdf} />);
+            pages.push(<PDFPage onUnload={this.pageUnloaded.bind(this)} 
+              onLoading={this.pageLoading.bind(this)} key={page} page={page} pdf={this.state.pdf} />);
           }
           return pages;
         })()}

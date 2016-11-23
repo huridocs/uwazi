@@ -74,7 +74,9 @@ export function scrollTo(reference, docInfo, element = 'a') {
     let scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 0, dividerOffset: 1});
 
     events.on('referenceRendered', (renderedReference) => {
-      if (renderedReference._id === reference._id && document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')) {
+      if (renderedReference._id === reference._id &&
+          document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')
+         ) {
         window.clearInterval(scroll);
         scroller.to(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer', {duration: 100});
         events.removeAllListeners('referenceRendered');
