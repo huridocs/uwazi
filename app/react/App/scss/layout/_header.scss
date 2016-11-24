@@ -247,7 +247,7 @@ header {
   }
   .form-control {
     height: $header-height;
-    padding-left: 30px;
+    padding-left: 35px;
     border-radius: 0;
     border-top: 0;
     border-right: 0;
@@ -388,7 +388,7 @@ header {
   a, button {
     color: $c-black;
     display: block;
-    padding: 10px 30px;
+    padding: 10px 35px;
     line-height: 1.2em;
     cursor: pointer;
     background: transparent;
@@ -419,10 +419,6 @@ header {
 .search-suggestions-all {
   font-style: italic;
   border-top: 1px solid $c-grey;
-
-  button {
-    padding: 15px 30px;
-  }
 
   .fa {
     margin-right: 5px;
