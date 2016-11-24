@@ -55,10 +55,10 @@ export class Viewer extends Component {
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
 
-        <ContextMenu align='bottom'>
+        <ContextMenu align="bottom">
           <ViewerDefaultMenu/>
         </ContextMenu>
-        <ContextMenu align='center'>
+        <ContextMenu align="center">
           <ViewerTextSelectedMenu/>
         </ContextMenu>
       </div>
