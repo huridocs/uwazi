@@ -45,7 +45,7 @@ Doc.propTypes = {
 
 export function mapStateToProps({library}, ownProps) {
   return {
-    active: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') === ownProps.doc._id : false
+    active: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') === ownProps.doc.get('_id') : false
   };
 }
 

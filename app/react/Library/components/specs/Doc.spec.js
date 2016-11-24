@@ -80,12 +80,12 @@ describe('Doc', () => {
     });
 
     it('should set active as true if ownProps match selected ID', () => {
-      const state = mapStateToProps(store, {doc: {_id: 'docId'}});
+      const state = mapStateToProps(store, {doc: Immutable({_id: 'docId'})});
       expect(state.active).toBe(true);
     });
 
     it('should set active as false if ownProps holds unselected document', () => {
-      const state = mapStateToProps(store, {doc: {_id: 'anotherId'}});
+      const state = mapStateToProps(store, {doc: Immutable({_id: 'anotherId'})});
       expect(state.active).toBe(false);
     });
   });
