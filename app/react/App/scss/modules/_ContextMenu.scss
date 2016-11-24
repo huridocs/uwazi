@@ -10,6 +10,10 @@
     top: 50%;
     left: 50%;
     transform: translateX(-50%);
+    
+    .document-viewer.is-active & {
+      left: 33.333%;
+    }
   }
   
   .btn {
