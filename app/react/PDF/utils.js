@@ -9,7 +9,7 @@ const extractPageInfo = (page) => {
   return new Promise((resolve) => {
     const textLayerDiv = document.createElement('div');
 
-    textLayerDiv.addEventListener('textlayerrendered',() => {
+    textLayerDiv.addEventListener('textlayerrendered', () => {
       resolve(textLayerDiv.innerText.length);
     });
 
@@ -30,7 +30,7 @@ const extractPageInfo = (page) => {
     //});
 
     textLayerDiv.className = 'textLayer';
-    let textLayer = new PDFJS.DefaultTextLayerFactory().createTextLayerBuilder(textLayerDiv, null, page.getViewport(1), true); 
+    let textLayer = new PDFJS.DefaultTextLayerFactory().createTextLayerBuilder(textLayerDiv, null, page.getViewport(1), true);
     page.getTextContent({normalizeWhitespace: true})
     .then((textContent) => {
       textLayer.setTextContent(textContent);

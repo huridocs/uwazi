@@ -161,8 +161,8 @@ ConnectionsList.contextTypes = {
 };
 
 const selectDoc = createSelector(
-  s => s.documentViewer.targetDoc, 
-  s => s.documentViewer.doc, 
+  s => s.documentViewer.targetDoc,
+  s => s.documentViewer.doc,
   (targetDoc, doc) => targetDoc.get('_id') ? targetDoc.toJS() : doc.toJS()
 );
 

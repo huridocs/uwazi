@@ -54,7 +54,7 @@ describe('Text', () => {
         spyOn(text, 'selected').and.returnValue(false);
         spyOn(text, 'removeSimulatedSelection');
 
-        text.range({start:0, end: 90});
+        text.range({start: 0, end: 90});
         text.simulateSelection({start: 1, end: 2});
 
         let elementWrapper = document.createElement('span');
@@ -73,8 +73,8 @@ describe('Text', () => {
           spyOn(text, 'selected').and.returnValue(false);
           spyOn(text, 'removeSimulatedSelection');
 
-          text.range({start:0, end: 10});
-          text.simulateSelection({start:15, end: 25});
+          text.range({start: 0, end: 10});
+          text.simulateSelection({start: 15, end: 25});
 
           expect(TextRange.restore).not.toHaveBeenCalled();
         });
@@ -210,7 +210,7 @@ describe('Text', () => {
     describe('with range', () => {
       it('should only render references inside the range adding the start offset of the range being rendered', () => {
         let references = [
-          {_id: '1', range: {start: 14, end: 45}}, 
+          {_id: '1', range: {start: 14, end: 45}},
           {_id: '2', range: {start: 4, end: 16}},
           {_id: '3', range: {start: 3, end: 5}},
           {_id: '4', range: {start: 56, end: 60}}

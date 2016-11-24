@@ -14,15 +14,10 @@ describe('LibraryFilters', () => {
         },
         templates: Immutable.fromJS([])
       };
+
       let state = mapStateToProps(store);
-      expect(state).toEqual({
-        filters: store.library.filters,
-        searchTerm: 'Zerg Rush',
-        open: true,
-        templates: store.templates,
-        aggregations: store.library.aggregations,
-        settings: store.settings
-      });
+
+      expect(state).toEqual({open: true});
     });
   });
 });

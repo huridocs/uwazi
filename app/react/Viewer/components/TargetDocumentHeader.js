@@ -6,6 +6,13 @@ import {addReference, saveTargetRangedReference} from '../actions/referencesActi
 import {cancelTargetDocument} from '../actions/documentActions';
 
 export class TargetDocumentHeader extends Component {
+
+  save(connection, targetRange) {
+    return this.props.saveTargetRangedReference(connection.toJS(), targetRange, (ref) => {
+      this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
+    });
+  }
+
   render() {
     const {targetDocument, reference, connection} = this.props;
     const {targetRange} = reference;
@@ -24,9 +31,7 @@ export class TargetDocumentHeader extends Component {
           <i className="fa fa-arrow-left"></i>
           Back
         </button>
-        <button onClick={() => this.props.saveTargetRangedReference(connection.toJS(), targetRange, (ref) => {
-          this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
-          })}
+        <button onClick={this.save.bind(this, connection, targetRange)}
                 disabled={disabled}
                 className={className}>
           <i className="fa fa-save"></i>

@@ -2,7 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
+import {is} from 'immutable';
 import {t} from 'app/I18N';
+
+import {filterDocumentTypes} from 'app/Library/actions/filterActions';
 
 export class DocumentTypesList extends Component {
 
@@ -49,7 +52,7 @@ export class DocumentTypesList extends Component {
     }
 
     this.setState({selectedItems});
-    this.props.onChange(selectedItems);
+    this.props.filterDocumentTypes(selectedItems);
   }
 
   change(item) {
@@ -63,7 +66,7 @@ export class DocumentTypesList extends Component {
     }
 
     this.setState({selectedItems});
-    this.props.onChange(selectedItems);
+    this.props.filterDocumentTypes(selectedItems);
   }
 
   toggleOptions(item, e) {
@@ -154,6 +157,12 @@ export class DocumentTypesList extends Component {
           </li>;
   }
 
+  shouldComponentUpdate(nextProps) {
+    return !is(this.props.libraryFilters, nextProps.libraryFilters) ||
+           !is(this.props.settings, nextProps.settings) ||
+           !is(this.props.aggregations, nextProps.aggregations);
+  }
+
   render() {
     return (
       <ul className="multiselect is-active">
@@ -172,7 +181,7 @@ DocumentTypesList.propTypes = {
   libraryFilters: PropTypes.object,
   settings: PropTypes.object,
   templates: PropTypes.object,
-  onChange: PropTypes.func,
+  filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.object
 };
 
@@ -187,7 +196,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({filterDocumentTypes}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);

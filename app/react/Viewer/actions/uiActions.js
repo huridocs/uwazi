@@ -61,13 +61,12 @@ export function goToActive(value = true) {
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {
-  
   //
   let page = Object.keys(docInfo).find((pageNumber) => {
     return docInfo[pageNumber].chars >= reference.range.start;
   });
   //
- 
+
   if (document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')) {
     scroller.to(`.document-viewer a[data-id="${reference._id}"]`, '.document-viewer', {duration: 100});
   } else {
@@ -104,7 +103,7 @@ export function activateReference(reference, docInfo, tab) {
 }
 
 export function scrollToActive(reference, docInfo, tab, doScroll) {
-  return function(dispatch) {
+  return function (dispatch) {
     if (doScroll) {
       dispatch(goToActive(false));
       dispatch(activateReference(reference, docInfo, tab));

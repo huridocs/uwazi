@@ -117,8 +117,9 @@ const formatMetadata = createSelector(
   getTemplates,
   selectThesauris,
   (doc, templates, thesauris) => {
-  return formater.prepareMetadata(doc ? doc.toJS() : {}, templates.toJS(), thesauris.toJS());
-});
+    return formater.prepareMetadata(doc ? doc.toJS() : {}, templates.toJS(), thesauris.toJS());
+  }
+);
 
 const mapStateToProps = (state) => {
   return {

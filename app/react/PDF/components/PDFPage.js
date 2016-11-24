@@ -74,7 +74,7 @@ export class PDFPage extends Component {
     const vWidth = window.innerWidth || document.documentElement.clientWidth;
     const vHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    if (rect.right < 0 || rect.bottom < - 500 || rect.left > vWidth || rect.top > vHeight + 500) {
+    if (rect.right < 0 || rect.bottom < -500 || rect.left > vWidth || rect.top > vHeight + 500) {
       return false;
     }
 
@@ -84,7 +84,7 @@ export class PDFPage extends Component {
   render() {
     let style = {height: 1100};
     if (this.state && this.state.height) {
-      style.height =this.state.height + 20;
+      style.height = this.state.height + 20;
     }
     return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={style}/>;
   }

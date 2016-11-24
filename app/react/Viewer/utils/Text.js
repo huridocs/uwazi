@@ -23,7 +23,7 @@ export default function (container) {
       let serializedRange = TextRange.serialize(range, container);
       serializedRange.start += this.charRange.start;
       serializedRange.end += this.charRange.start;
-      serializedRange.text = selection.toString().replace(/\s+/g,' ');
+      serializedRange.text = selection.toString().replace(/\s+/g, ' ');
       return serializedRange;
     },
 
@@ -81,17 +81,17 @@ export default function (container) {
         return;
       }
 
-      if ((range.start >= this.charRange.start && range.start <= this.charRange.end) 
-        || (range.end <= this.charRange.end && range.end >= this.charRange.start)) {
-          let offsetRange = Object.assign({}, range);
-          offsetRange.start -= this.charRange.start;
-          offsetRange.end -= this.charRange.start;
+      if (range.start >= this.charRange.start && range.start <= this.charRange.end ||
+          range.end <= this.charRange.end && range.end >= this.charRange.start) {
+        let offsetRange = Object.assign({}, range);
+        offsetRange.start -= this.charRange.start;
+        offsetRange.end -= this.charRange.start;
 
-          let restoredRange = TextRange.restore(offsetRange, container);
-          let elementWrapper = document.createElement('span');
-          elementWrapper.classList.add('fake-selection');
-          this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
-        }
+        let restoredRange = TextRange.restore(offsetRange, container);
+        let elementWrapper = document.createElement('span');
+        elementWrapper.classList.add('fake-selection');
+        this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+      }
     },
 
     removeSimulatedSelection() {
@@ -135,8 +135,8 @@ export default function (container) {
         if (this.charRange.start === null && this.charRange.end === null) {
           return true;
         }
-        return (ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end) || 
-          (ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start);
+        return ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end ||
+               ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
       });
 
       //console.log(toRender);

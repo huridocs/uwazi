@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {fromJS as Immutable} from 'immutable';
 
 import {RowList} from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
@@ -11,7 +12,7 @@ export class ItemList extends Component {
     return (
       <div>
         <RowList>
-          {items.map((item, index) => <Doc doc={item} key={index} />)}
+          {items.map((item, index) => <Doc doc={Immutable(item)} key={index} />)}
         </RowList>
         <div className="row">
           <div className="col-sm-12 text-center">

@@ -13,7 +13,7 @@ describe('DocumentsList', () => {
 
   beforeEach(() => {
     props = {
-      documents,
+      documents: documents.toJS(),
       searchDocuments: () => {}
     };
   });
@@ -44,7 +44,7 @@ describe('DocumentsList', () => {
     render();
     let docs = component.find(Doc);
     expect(docs.length).toBe(2);
-    expect(docs.first().props().doc.title).toBe('Document one');
+    expect(docs.first().props().doc.get('title')).toBe('Document one');
   });
 
   it('should hold sortButtons with search callback', () => {
@@ -61,7 +61,7 @@ describe('DocumentsList', () => {
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({documents, filtersPanel: 'panel', selectedDocument: 'selected'});
+      expect(state).toEqual({documents: documents.toJS(), filtersPanel: 'panel', selectedDocument: 'selected'});
     });
   });
 });
