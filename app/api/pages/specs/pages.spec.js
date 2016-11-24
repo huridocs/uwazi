@@ -16,7 +16,6 @@ describe('pages', () => {
   });
 
   describe('save', () => {
-    let getDocuments = () => request.get(dbURL + '/_design/pages/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getPageInAllLanguages = (sharedId) => {
       return request.get(`${dbURL}/_design/pages/_view/sharedId?key="${sharedId}"`).then((response) => response.json.rows.map(r => r.value));
     };
