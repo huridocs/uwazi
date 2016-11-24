@@ -1,5 +1,6 @@
 import {actions as formActions} from 'react-redux-form';
 import {actions as basicActions} from 'app/BasicReducer';
+import {browserHistory} from 'react-router';
 import * as actions from '../pageActions';
 import * as Notifications from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
@@ -35,6 +36,7 @@ describe('Page actions', () => {
 
     describe('upon success', () => {
       beforeEach((done) => {
+        spyOn(browserHistory, 'push');
         actions.savePage('data')(dispatch)
         .then(() => {
           done();
@@ -53,6 +55,10 @@ describe('Page actions', () => {
       it('should notify saved successfully', () => {
         expect(Notifications.notify).toHaveBeenCalledWith('Saved successfully.', 'success');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
+      });
+
+      it('should navigate to pages edit with the sharedId', () => {
+        expect(browserHistory.push).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
       });
     });
   });

@@ -14,14 +14,16 @@ export default {
     }
 
     if (doc.sharedId) {
-      return request.post(dbURL, doc)
-      .then(() => this.get(doc.sharedId, doc.language));
+      return request.post(`${dbURL}/_design/pages/_update/partialUpdate/${doc._id}`, doc)
+      .then(() => {
+        return this.get(doc.sharedId, language);
+      });
     }
 
     return settings.get().then(({languages}) => {
-      let sharedId = ID();
+      const sharedId = ID();
       const docs = languages.map((lang) => {
-        let langDoc = Object.assign({}, doc);
+        const langDoc = Object.assign({}, doc);
         langDoc.language = lang.key;
         langDoc.sharedId = sharedId;
         return langDoc;
@@ -40,7 +42,7 @@ export default {
   },
 
   list(language) {
-    let url = `${dbURL}/_design/pages/_view/list?key="${language}"`;
+    const url = `${dbURL}/_design/pages/_view/list?key="${language}"`;
     return request.get(url)
     .then((response) => {
       return sanitizeResponse(response.json);
@@ -50,7 +52,7 @@ export default {
   delete(sharedId) {
     return request.get(`${dbURL}/_design/pages/_view/sharedId?key="${sharedId}"`)
     .then((response) => {
-      let pages = response.json.rows.map((page) => {
+      const pages = response.json.rows.map((page) => {
         return {_id: page.value._id, _rev: page.value._rev, _deleted: true};
       });
 
