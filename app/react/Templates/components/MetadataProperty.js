@@ -49,6 +49,11 @@ export class MetadataProperty extends Component {
         <div>
           <span className="property-name"><i className="fa fa-reorder"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
           <div className="pull-right">
+            <ShowIf if={formState.errors[`properties.${index}.label.duplicated`]}>
+              <span className="validation-error">
+                <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated label&nbsp;
+              </span>
+            </ShowIf>
             <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
               <i className="fa fa-pencil"></i> Edit
             </button>

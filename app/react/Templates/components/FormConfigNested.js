@@ -108,17 +108,7 @@ export class FormConfigNested extends Component {
               </div>;
             });
           })()}
-          {(() => {
-            if (duplicatedLabel) {
-              return <div className="row has-error">
-                      <div className="col-sm-4">
-                      <i className="fa fa-exclamation-triangle"></i>
-                        &nbsp;
-                        Duplicated label
-                      </div>
-                    </div>;
-            }
-          })()}
+
           <div>
             <button className="btn btn-success" onClick={this.addProperty.bind(this)}>
               <i className="fa fa-plus"></i>

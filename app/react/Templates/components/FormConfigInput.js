@@ -78,17 +78,6 @@ export class FormConfigInput extends Component {
             </div>
           </ShowIf>
         </div>
-        {(() => {
-          if (duplicatedLabel) {
-            return <div className="row validation-error">
-                    <div className="col-sm-4">
-                      <i className="fa fa-exclamation-triangle"></i>
-                      &nbsp;
-                      Duplicated label
-                    </div>
-                  </div>;
-          }
-        })()}
 
         <div className="well-metadata-creator">
           <div>
