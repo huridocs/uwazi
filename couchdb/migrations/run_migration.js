@@ -13,4 +13,4 @@ require('babel-core/register')({
 
 var db_config = require('../../app/api/config/database.js');
 db_config.db_url = db_config.development;
-require('./migrate_to_i18n.js');
+require('./recover_references.js');
