@@ -49,11 +49,11 @@ export class Item extends Component {
     return this.formatMetadata(populatedMetadata, doc.creationDate, doc.template);
   }
 
-  shouldComponentUpdate(nextProps) {
-    return !is(this.props.doc, nextProps.doc) ||
-           this.props.active !== nextProps.active ||
-           this.props.className !== nextProps.className;
-  }
+  //shouldComponentUpdate(nextProps) {
+    //return !is(this.props.doc, nextProps.doc) ||
+           //this.props.active !== nextProps.active ||
+           //this.props.className !== nextProps.className;
+  //}
 
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
