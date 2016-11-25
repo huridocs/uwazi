@@ -85,7 +85,10 @@ export class AttachmentsList extends Component {
                 <i className={`fa fa-${item.icon} item-type__icon`}></i>
                 <span className="item-type__name">{this.getExtension(file.filename)}</span>
                 <ShowIf if={item.showSourceDocumentLabel}>
-                  <span className="item-type__name no-icon">SOURCE DOCUMENT</span>
+                  <span className="label label-success">
+                    <i className="fa fa-arrow-left"></i>
+                    <span>You are reading this document</span>
+                  </span>
                 </ShowIf>
               </span>
             </div>
