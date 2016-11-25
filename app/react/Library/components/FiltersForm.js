@@ -43,7 +43,7 @@ export class FiltersForm extends Component {
     const {templates, documentTypes} = this.props;
     const aggregations = this.props.aggregations.toJS();
 
-    let translationContext = documentTypes[0];
+    let translationContext = documentTypes.get(0);
 
     const fields = libraryHelper.parseWithAggregations(this.props.fields.toJS(), aggregations)
     .filter((field) => field.type !== 'select' && field.type !== 'multiselect' || field.options.length);
