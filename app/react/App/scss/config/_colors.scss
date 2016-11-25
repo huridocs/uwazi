@@ -46,6 +46,8 @@ $c-danger:            $c-type-1;
 $c-danger-light:      lighten($c-type-1, 30%);
 $c-warning:           $c-type-14;
 $c-warning-light:     lighten($c-type-14, 30%);
+$c-bootstrap-primary:      #337ab7;
+$c-bootstrap-primary-dark: #286090;
 
 $c-shadow: 			      transparentize($c-black, .9);
 $c-shadow-dark: 			transparentize($c-black, .8);

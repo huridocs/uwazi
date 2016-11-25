@@ -16,7 +16,7 @@
     display: none;
   }
   .title {
-    padding: 15px 30px;
+    padding: 15px;
     color: $c-grey-dark;
 
     .fa {
@@ -32,7 +32,7 @@
 .search__filter {
   list-style-type: none;
   margin: 0;
-  padding: 15px 30px;
+  padding: 15px;
   color: $c-grey-dark;
 
   &:not(:last-child),
@@ -490,7 +490,7 @@ label.multiselectItem-label {
 /**/
 
 .documentTypes-selector {
-  padding: 15px 30px;
+  padding: 15px;
   border-bottom: 1px solid $c-grey-light;
 }
 

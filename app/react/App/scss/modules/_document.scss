@@ -4,8 +4,6 @@
   transition: all 500ms;
 
     @media(min-width: 1024px) {
-      padding: 30px;
-      
       &.is-active {
       width: 66.666%;
     }
