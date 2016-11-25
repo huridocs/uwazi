@@ -17,27 +17,28 @@ export class TargetDocumentHeader extends Component {
     const {targetDocument, reference, connection} = this.props;
     const {targetRange} = reference;
 
-    let disabled = true;
-    let className = 'btn btn-default';
+    let className = 'btn btn-default hidden';
 
     if (targetDocument && targetRange) {
-      disabled = false;
       className = 'btn btn-success';
     }
 
     return (
-      <div className="relationship-steps is-fixed">
-        <button onClick={this.props.cancelTargetDocument} className="btn btn-default">
-          <i className="fa fa-arrow-left"></i>
-          Back
-        </button>
-        <button onClick={this.save.bind(this, connection, targetRange)}
-                disabled={disabled}
-                className={className}>
-          <i className="fa fa-save"></i>
-          Save
-        </button>
-        <h2>Select target paragraph<small>3</small></h2>
+      <div>
+        <div className="relationship-steps is-fixed">
+          <button onClick={this.props.cancelTargetDocument} className="btn btn-default">
+            <i className="fa fa-arrow-left"></i>
+            Back
+          </button>
+          <h2>Select target paragraph<small>3</small></h2>
+        </div>
+        <div className="ContextMenu ContextMenu-center">
+          <button onClick={this.save.bind(this, connection, targetRange)}
+            className={className}>
+            <i className="fa fa-save"></i>
+            <span className="ContextMenu-tooltip">Save</span>
+          </button>
+        </div>
       </div>
     );
   }

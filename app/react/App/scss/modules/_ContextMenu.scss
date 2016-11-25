@@ -1,5 +1,6 @@
 .ContextMenu {
   position: fixed;
+  z-index: 1;
   
   &-bottom {
     bottom: 15px;
