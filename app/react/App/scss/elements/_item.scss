@@ -25,8 +25,8 @@
   border-radius: 4px;
   border: 1px solid $c-grey-light;
   box-shadow: 0 10px 20px -5px rgba(0, 0, 0, .05);
-  opacity: 1;
   zoom: 1;
+  cursor: pointer;
 
   @media (min-width: 640px) and (max-width: 1023px) {
     width: 48%;
@@ -56,11 +56,12 @@
   }
 
   &:hover{
-    //cursor: pointer;
+    cursor: pointer;
+    border-color: $c-grey;
   }
   &.is-active,
   &.is-selected {
-    border-color: $c-primary-light;
+    border-color: $c-primary;
     box-shadow: 0 10px 20px -5px transparentize($c-primary, 0.85);
     &:before {
       border-color: $c-background $c-background $c-primary $c-primary;
@@ -200,10 +201,11 @@ $item-padding: 15px;
 
   dl {
     position: relative;
+    float: left;
+    clear: both;
     margin: 0;
     padding: 3px 0;
     font-size: $f-size-sm;
-    cursor: default;
   }
   dt {
     margin: 6px 0 2px;
@@ -222,6 +224,7 @@ $item-padding: 15px;
       color: $c-white;
       border-radius: 3px;
       text-align: center;
+      font-style: normal;
       &:after {
         content: '';
         border-left: 5px solid transparentize($c-black, .25);
@@ -267,8 +270,6 @@ $item-padding: 15px;
   bottom: 5px;
   margin: 0 -5px;
   padding: 0 5px;
-  color: $c-grey-dark;
-  border: 1px solid $c-grey-light;
   border-radius: 15px;
   min-width: 30px;
   height: 30px;
@@ -276,7 +277,20 @@ $item-padding: 15px;
   text-align: center;
   display: inline-block;
   box-shadow: $shadow;
+  color: $c-white;
+  background: $c-bootstrap-primary;
+  border: 1px solid $c-bootstrap-primary;
+  color: $c-grey-dark;
   background: $c-white;
+  border: 1px solid $c-grey;
+  
+  @media(min-width: 1024px) {
+    opacity: 0;
+    .item.is-active &,
+    .item:hover & {
+      opacity: 1;
+    }
+  }
 
   &:hover,
   &:focus,
@@ -285,15 +299,18 @@ $item-padding: 15px;
   }
 
   .item.is-active & {
-    color: $c-primary;
-    border-color: $c-primary-light;
+    color: $c-primary-dark;
+    border-color: $c-primary;
   }
 
   &:hover {
     cursor: pointer;
     color: $c-white !important;
-    border-color: $c-primary !important;
-    background-color: $c-primary !important;
+    background: $c-bootstrap-primary-dark !important;
+    border-color: $c-bootstrap-primary-dark !important;
+    color: $c-white !important;
+    background: $c-bootstrap-primary !important;
+    border-color: $c-bootstrap-primary-dark !important;
   }
 
   &--success,

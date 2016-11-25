@@ -30,7 +30,7 @@ export class Item extends Component {
       );
     });
 
-    const creationMetadata = <dl><dt><i>Upload date</i></dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
+    const creationMetadata = <dl><dt>Upload date</dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
 
     return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
   }
@@ -89,7 +89,6 @@ export class Item extends Component {
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
             <TemplateLabel template={doc.template}/>
-            &nbsp;&nbsp;
           </div>
          {buttons}
         </ItemFooter>
