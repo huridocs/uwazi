@@ -60,6 +60,7 @@ export class ViewMetadataPanel extends Component {
               <li>
                 <div className="tab-link tab-link-active">
                   <i className="fa fa-info-circle"></i>
+                  <span className="tab-link-tooltip">Info</span>
                 </div>
               </li>
             </ul>

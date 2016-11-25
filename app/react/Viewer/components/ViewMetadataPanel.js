@@ -79,29 +79,34 @@ export class ViewMetadataPanel extends Component {
               <li>
                 <TabLink to="toc">
                   <i className="fa fa-indent"></i>
+                  <span className="tab-link-tooltip">Table of Content</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="metadata" default>
                   <i className="fa fa-info-circle"></i>
+                  <span className="tab-link-tooltip">Info</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="references">
                   <i className="fa fa-sitemap"></i>
                   <span className="connectionsNumber">{references.length}</span>
+                  <span className="tab-link-tooltip">References</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="connections">
                   <i className="fa fa-share-alt"></i>
                   <span className="connectionsNumber">{connections.length}</span>
+                  <span className="tab-link-tooltip">Connections</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="attachments">
                   <i className="fa fa-download"></i>
                   <span className="connectionsNumber">{attachments.length}</span>
+                  <span className="tab-link-tooltip">Attachments</span>
                 </TabLink>
               </li>
             </ul>
