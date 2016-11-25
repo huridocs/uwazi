@@ -3,9 +3,9 @@ import {connect} from 'react-redux';
 import t from '../I18N/t';
 
 export class TemplateLabel extends Component {
-  shouldComponentUpdate(nextProps) {
-    return this.props.template !== nextProps.template;
-  }
+  //shouldComponentUpdate(nextProps) {
+    //return this.props.template !== nextProps.template;
+  //}
 
   render() {
     const templates = this.props.templates.toJS();
