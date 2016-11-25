@@ -26,6 +26,7 @@
   border: 1px solid $c-grey-light;
   box-shadow: 0 10px 20px -5px rgba(0, 0, 0, .05);
   zoom: 1;
+  cursor: pointer;
 
   @media (min-width: 640px) and (max-width: 1023px) {
     width: 48%;
@@ -55,7 +56,7 @@
   }
 
   &:hover{
-    //cursor: pointer;
+    cursor: pointer;
     border-color: $c-grey;
   }
   &.is-active,
@@ -187,7 +188,6 @@ $item-padding: 15px;
   display: inline;
   font-family: $f-special;
   color: $c-black;
-  cursor: default;
 }
 
 .item-snippet {
@@ -206,7 +206,6 @@ $item-padding: 15px;
     margin: 0;
     padding: 3px 0;
     font-size: $f-size-sm;
-    cursor: default;
   }
   dt {
     margin: 6px 0 2px;

@@ -39,13 +39,4 @@ describe('TemplateLabel', () => {
     render();
     expect(component.find('span').first().props().className).toBe('item-type item-type-1');
   });
-
-  it('should set icon className based on isEntity flag', () => {
-    render();
-    expect(component.find('span i').first().props().className).toBe('item-type__icon fa fa-file-text-o');
-
-    props.template = 'templateId2';
-    render();
-    expect(component.find('span i').first().props().className).toBe('item-type__icon fa fa-bank');
-  });
 });
