@@ -135,7 +135,7 @@ export class DocumentTypesList extends Component {
                 <label htmlFor={item.id} className="multiselectItem-label">
                   <i className="multiselectItem-icon fa fa-square-o"></i>
                   <i className="multiselectItem-icon fa fa-check"></i>
-                  <span className="multiselectItem-name"><i>{t('Filters', item.name)}</i></span>
+                  <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>
                 </label>
                 <span className="multiselectItem-results">
                   <span>{this.aggregations(item)}</span>
