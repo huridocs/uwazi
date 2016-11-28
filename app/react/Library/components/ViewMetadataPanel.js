@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {bindActionCreators} from 'redux';
 import {unselectDocument, saveDocument} from '../actions/libraryActions';
+import {t} from 'app/I18N';
 
 import DocumentForm from '../containers/DocumentForm';
 import Immutable from 'immutable';
@@ -60,7 +61,7 @@ export class ViewMetadataPanel extends Component {
               <li>
                 <div className="tab-link tab-link-active">
                   <i className="fa fa-info-circle"></i>
-                  <span className="tab-link-tooltip">Info</span>
+                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </div>
               </li>
             </ul>

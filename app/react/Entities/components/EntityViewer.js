@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
+import {t} from 'app/I18N';
 
 import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
@@ -145,14 +146,14 @@ export class EntityViewer extends Component {
                   <TabLink to="references">
                     <i className="fa fa-share-alt"></i>
                     <span className="connectionsNumber">{references.length}</span>
-                    <span className="tab-link-tooltip">Connections</span>
+                    <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                   </TabLink>
                 </li>
                 <li>
                   <TabLink to="attachments">
                     <i className="fa fa-download"></i>
                     <span className="connectionsNumber">{attachments.length}</span>
-                    <span className="tab-link-tooltip">Attachments</span>
+                    <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
                   </TabLink>
                 </li>
               </ul>
