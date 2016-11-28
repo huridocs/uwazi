@@ -9,13 +9,13 @@ export class DateRange extends Component {
     return (
         <div>
           <div className="DatePicker__From">
-            <span>{t('System', 'Label fecha "From"')}&nbsp;</span>
+            <span>{t('System', 'Label date "From"', 'Form:')}&nbsp;</span>
             <DatePickerField model={this.props.fromModel} >
               <DatePicker onChange={this.props.fromChange}/>
             </DatePickerField>
           </div>
           <div className="DatePicker__To">
-            <span>&nbsp;{t('System', 'Label fecha "From"')}&nbsp;</span>
+            <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
             <DatePickerField model={this.props.toModel} >
               <DatePicker endOfDay={true} onChange={this.props.toChange}/>
             </DatePickerField>

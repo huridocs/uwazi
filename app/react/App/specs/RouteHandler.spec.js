@@ -29,7 +29,7 @@ describe('RouteHandler', () => {
     {key: 'en', label: 'English', default: true},
     {key: 'es', label: 'Español'}
   ];
-  let state = {settings: {collection: Immutable.fromJS({languages: languages})}};
+  let state = {settings: {collection: Immutable.fromJS({languages: languages})}, user: Immutable.fromJS({})};
   let context = {store: {getState: () => state, dispatch: jasmine.createSpy('dispatch')}};
 
   beforeEach(() => {

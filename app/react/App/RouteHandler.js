@@ -61,7 +61,8 @@ class RouteHandler extends Component {
   }
 
   saveNewTranslations() {
-    if (this.context.store && this.context.store.getState().user.get('_id') && missingTranslations.translations.length) {
+    if (this.context.store && this.context.store.getState &&
+        this.context.store.getState().user.get('_id') && missingTranslations.translations.length) {
       api.post('translations/addEntries', missingTranslations.translations);
       missingTranslations.reset();
     }
