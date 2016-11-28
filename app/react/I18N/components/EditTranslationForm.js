@@ -59,9 +59,6 @@ export class EditTranslationForm extends Component {
       defaultTranslationContext = translations[0].contexts.find((ctx) => ctx.id === contextId) || defaultTranslationContext;
     }
 
-    if (this.props.context === 'System') {
-      
-    }
     let contextKeys = Object.keys(defaultTranslationContext.values);
 
     let contextName = defaultTranslationContext.label;
