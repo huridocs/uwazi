@@ -80,6 +80,10 @@ $nav-height: $header-height;
     position: relative;
     top: 3px;
   }
+  
+  &:hover .tab-link-tooltip{
+    display: block;
+  }
 }
 
 .nav-tabs>li>a:focus, .nav-tabs>li>div:focus, .nav-tabs>li>a:hover, .nav-tabs>li>div:hover {

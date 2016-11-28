@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
+import {t} from 'app/I18N';
 
 import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
@@ -65,7 +66,7 @@ export class EntityViewer extends Component {
 
   getGroupData(reference, groupedReferences) {
     const referenceTemplate = this.props.templates
-                              .find(t => t._id === reference.connectedDocumentTemplate);
+                              .find(template => template._id === reference.connectedDocumentTemplate);
 
     if (reference.sourceType === 'metadata') {
       return this.conformGroupData('metadata', groupedReferences, {
@@ -145,12 +146,14 @@ export class EntityViewer extends Component {
                   <TabLink to="references">
                     <i className="fa fa-share-alt"></i>
                     <span className="connectionsNumber">{references.length}</span>
+                    <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                   </TabLink>
                 </li>
                 <li>
                   <TabLink to="attachments">
                     <i className="fa fa-download"></i>
                     <span className="connectionsNumber">{attachments.length}</span>
+                    <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
                   </TabLink>
                 </li>
               </ul>
@@ -230,8 +233,8 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const selectTemplates = createSelector(s => s.templates, t => t.toJS());
-const selectThesauris = createSelector(s => s.thesauris, t => t.toJS());
+const selectTemplates = createSelector(s => s.templates, template => template.toJS());
+const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri.toJS());
 const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
 const prepareMetadata = createSelector(
   selectEntity,

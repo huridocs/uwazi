@@ -1,0 +1,77 @@
+@mixin tooltip ($direction) {
+  display: none;
+  position: absolute;
+  width: auto;
+  padding: 5px;
+  line-height: 1.2em;
+  text-align: center;
+  font-size: $f-size-sm;
+  font-weight: normal;
+  background-color: transparentize($c-black, .25);
+  color: $c-white;
+  border-radius: 3px;
+  white-space: nowrap;
+  
+  @if $direction == 'top' {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-7px);
+  }
+  @if $direction == 'bottom' {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(7px);
+  }
+  @if $direction == 'left' {
+    top: 50%;
+    right: 100%;
+    transform: translateX(-7px) translateY(-50%);
+  }
+  @if $direction == 'right' {
+    top: 50%;
+    left: 100%;
+    transform: translateX(7px) translateY(-50%);
+  }
+  
+  &:after {
+    content: '';
+    position: absolute;
+    
+    @if $direction == 'top' {
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid transparentize($c-black, .25);
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    @if $direction == 'bottom' {
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid transparentize($c-black, .25);
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    @if $direction == 'left' {
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 5px solid transparentize($c-black, .25);
+      top: 50%;
+      left: 100%;
+      transform: translatey(-50%);
+    }
+    @if $direction == 'right' {
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 5px solid transparentize($c-black, .25);
+      top: 50%;
+      right: 100%;
+      transform: translatey(-50%);
+    }
+  }
+}
+
+.tab-link-tooltip {
+  @include tooltip('bottom');
+}
