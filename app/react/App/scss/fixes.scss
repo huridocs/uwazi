@@ -107,7 +107,6 @@ header {
   position: relative;
   float: left;
   width: 100%;
-  margin-bottom: 5px;
 
   span {
     display: inline-block;
@@ -122,6 +121,7 @@ header {
     width: 100%;
     input {
       padding-left: 50px;
+      padding-right: 0;
     }
   }
   @media(min-width: 1300px) {
@@ -141,15 +141,43 @@ header {
 
   .DatePicker__From,
   .DatePicker__To {
-    width: 80%;
-    @media(min-width: 1300px) {
-      width: 40%;
+    margin-bottom: 2px;
+    @media(min-width: 1024px) {
+      width: 49%;
+      margin-right: 1%;
+      margin-bottom: 0;
     }
   }
 
   &-item {
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     overflow: hidden;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: flex-start;
+    justify-content: flex-start;
+    position: relative;
+    @media(min-width: 1024px) {
+      margin-bottom: 5px;
+    }
+  }
+
+  &-range {
+    width: 100%;
+    padding-right: 30px;
+    
+    @media(max-width: 1023px) {
+      .react-datepicker__close-icon {
+        top: 16px !important;
+      }
+    }
+  }
+  
+  .react-datepicker__input-container {
+    width: 100%;
+  }
+  .react-datepicker__input-container .react-datepicker__close-icon {
+    display: none;
   }
 }
 
@@ -261,6 +289,10 @@ header {
 .react-datepicker__close-icon::after {
   top: 8px !important;
   margin: 0 !important;
+  background: $c-grey !important;
+}
+.react-datepicker__close-icon:hover::after {
+  background: #D9534F !important;
 }
 
 .relationType .panel-heading,
