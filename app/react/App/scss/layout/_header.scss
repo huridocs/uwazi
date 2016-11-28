@@ -20,7 +20,7 @@ header {
     font-weight: 300;
     margin: 0;
     width: calc(100% - 2 * 54px);
-    @media(min-width: 1024px) {
+    @media(min-width: 454px) {
       padding: 0 15px;
       width: auto;
       max-width: 320px;
@@ -235,12 +235,14 @@ header {
     width: calc(100% - 54px);
   }
 
-  @media(min-width: 1024px) {
-    position: relative;
+  @media(min-width: 454px) {
     max-width: 9999px;
     &.is-active {
-      width: 33.333%;
+      width: 400px;
     }
+  }
+  @media(min-width: 1024px) {
+    position: relative;
   }
   .input-group {
     width: 100%;
@@ -328,8 +330,12 @@ header {
       background-color: $c-primary;
       border-color: $c-primary;
     }
+    @media(min-width: 454px) {
+      right: 400px;
+    }
     @media(min-width: 1024px) {
       position: relative;
+      right: 0;
     }
 
     &:hover,

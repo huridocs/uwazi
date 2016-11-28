@@ -19,10 +19,10 @@ $c-sidebar: $c-white;
   &.is-hidden {
     right: -100%;
   }
-  @media(min-width: 1024px) {
-    width: 33.333%;
+  @media(min-width: 454px) {
+    width: 400px;
     &.is-hidden {
-      right: -33.333%;
+      right: -400px;
     }
   }
 
