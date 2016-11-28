@@ -17,8 +17,13 @@ export class EditTranslationForm extends Component {
     return translations.find((tr) => tr.locale === defaultLocale);
   }
 
+  getNewSystemTranslations() {
+
+  }
+
   prepareTranslations() {
     const translations = this.props.translationsForm;
+
     if (translations.length) {
       let languages = this.props.settings.collection.toJS().languages;
       languages.forEach((lang) => {
@@ -28,6 +33,9 @@ export class EditTranslationForm extends Component {
           translation.values = Object.assign({}, defaultTranslation.values);
           translations.push(translation);
         }
+
+
+
       });
     }
 
@@ -51,6 +59,9 @@ export class EditTranslationForm extends Component {
       defaultTranslationContext = translations[0].contexts.find((ctx) => ctx.id === contextId) || defaultTranslationContext;
     }
 
+    if (this.props.context === 'System') {
+      
+    }
     let contextKeys = Object.keys(defaultTranslationContext.values);
 
     let contextName = defaultTranslationContext.label;

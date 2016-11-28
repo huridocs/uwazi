@@ -23,6 +23,23 @@ export default {
     .then(response => request.get(`${dbURL}/${response.json.id}`)).then((response) => response.json);
   },
 
+  addEntries(entries) {
+    return this.get()
+    .then((result) => {
+      return Promise.all(result.rows.map((translation) => {
+        entries.forEach(({contextId, key, defaultValue}) => {
+          let context = translation.contexts.find((ctx) => ctx.id === contextId);
+          context.values[key] = defaultValue;
+        });
+        return this.save(translation);
+      }));
+    })
+    .then((results) => {
+      console.log(results);
+      return 'ok';
+    });
+  },
+
   addEntry(contextId, key, defaultValue) {
     return this.get()
     .then((result) => {
