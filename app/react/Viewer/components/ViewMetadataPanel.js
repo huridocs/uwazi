@@ -243,10 +243,10 @@ ViewMetadataPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-const selectTemplates = createSelector(s => s.templates, t => t.toJS());
-const selectThesauris = createSelector(s => s.thesauris, t => t.toJS());
+const selectTemplates = createSelector(s => s.templates, templates => templates.toJS());
+const selectThesauris = createSelector(s => s.thesauris, thesauris => thesauris.toJS());
 const getSourceDoc = createSelector(s => s.doc, d => d.toJS());
-const getTargetDoc = createSelector(s => s.targetDoc, t => t.toJS());
+const getTargetDoc = createSelector(s => s.targetDoc, targetDoc => targetDoc.toJS());
 const getSourceMetadata = createSelector(
   getSourceDoc, selectTemplates, selectThesauris,
   (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)

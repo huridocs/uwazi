@@ -66,7 +66,7 @@ export class EntityViewer extends Component {
 
   getGroupData(reference, groupedReferences) {
     const referenceTemplate = this.props.templates
-                              .find(t => t._id === reference.connectedDocumentTemplate);
+                              .find(template => template._id === reference.connectedDocumentTemplate);
 
     if (reference.sourceType === 'metadata') {
       return this.conformGroupData('metadata', groupedReferences, {
@@ -233,8 +233,8 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const selectTemplates = createSelector(s => s.templates, t => t.toJS());
-const selectThesauris = createSelector(s => s.thesauris, t => t.toJS());
+const selectTemplates = createSelector(s => s.templates, template => template.toJS());
+const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri.toJS());
 const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
 const prepareMetadata = createSelector(
   selectEntity,
