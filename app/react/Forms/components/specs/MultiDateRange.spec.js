@@ -38,7 +38,7 @@ describe('MultiDateRange', () => {
   describe('adding a date', () => {
     it('should add a value to the state', () => {
       render();
-      let addButton = component.find('.btn-primary');
+      let addButton = component.find('.btn-success');
       addButton.simulate('click', {preventDefault: () =>{}});
       expect(component.state().values).toEqual([
         {from: '1473984000', to: '1473984001'},
@@ -51,7 +51,7 @@ describe('MultiDateRange', () => {
   describe('removing a date', () => {
     it('should remove the value from the state', () => {
       render();
-      let removeButtons = component.find('.btn-danger');
+      let removeButtons = component.find('.react-datepicker__close-icon');
       removeButtons.first().simulate('click', {preventDefault: () =>{}});
       expect(component.state().values).toEqual([{from: '1474156800', to: '1474156801'}]);
       expect(props.onChange).toHaveBeenCalledWith([{from: '1474156800', to: '1474156801'}]);

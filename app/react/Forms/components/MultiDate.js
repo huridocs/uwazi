@@ -34,16 +34,18 @@ export class MultiDate extends Component {
 
   render() {
     return <div className="multidate">
-      <button className="btn btn-samll btn-primary fa fa-plus add" onClick={this.add.bind(this)}></button>
       {(() => {
         return this.state.values.map((value, index) => {
           return <div key={index} className="multidate-item">
                   <DatePicker onChange={this.onChange.bind(this, index)} value={value}/>
-                  &nbsp;
-                  <button className="btn btn-samll btn-danger fa fa-times" onClick={this.remove.bind(this, index)}></button>
+                  <button className="react-datepicker__close-icon" onClick={this.remove.bind(this, index)}></button>
                  </div>;
         });
       })()}
+      <button className="btn btn-success add" onClick={this.add.bind(this)}>
+        <i className="fa fa-plus"></i>&nbsp;
+        <span>Add date</span>
+      </button>
     </div>;
   }
 

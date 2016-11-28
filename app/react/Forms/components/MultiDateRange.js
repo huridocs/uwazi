@@ -43,11 +43,10 @@ export class MultiDateRange extends Component {
 
   render() {
     return <div className="multidate">
-      <button className="btn btn-samll btn-primary fa fa-plus add" onClick={this.add.bind(this)}></button>
       {(() => {
         return this.state.values.map((value, index) => {
           return <div key={index} className="multidate-item">
-                  <div>
+                  <div className="multidate-range">
                     <div className="DatePicker__From">
                       <span>From:&nbsp;</span>
                         <DatePicker value={value.from} onChange={this.fromChange.bind(this, index)}/>
@@ -56,12 +55,15 @@ export class MultiDateRange extends Component {
                       <span>&nbsp;To:&nbsp;</span>
                         <DatePicker value={value.to} endOfDay={true} onChange={this.toChange.bind(this, index)}/>
                     </div>
+                    <button className="react-datepicker__close-icon" onClick={this.remove.bind(this, index)}></button>
                   </div>
-                  &nbsp;
-                  <button className="btn btn-samll btn-danger fa fa-times" onClick={this.remove.bind(this, index)}></button>
                  </div>;
         });
       })()}
+      <button className="btn btn-success add" onClick={this.add.bind(this)}>
+        <i className="fa fa-plus"></i>&nbsp;
+        <span>Add date</span>
+      </button>
     </div>;
   }
 
