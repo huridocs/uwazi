@@ -3,7 +3,6 @@ import JSONUtils from 'shared/JSONUtils';
 import {actions} from 'app/BasicReducer';
 import {I18NUtils, missingTranslations} from 'app/I18N';
 import api from 'app/utils/api';
-import {store} from 'app/store';
 
 class RouteHandler extends Component {
 
@@ -62,7 +61,7 @@ class RouteHandler extends Component {
   }
 
   saveNewTranslations() {
-    if (store.getState().user.get('_id') && missingTranslations.translations.length) {
+    if (this.context.store && this.context.store.getState().user.get('_id') && missingTranslations.translations.length) {
       api.post('translations/addEntries', missingTranslations.translations);
       missingTranslations.reset();
     }
@@ -98,7 +97,6 @@ RouteHandler.renderedFromServer = true;
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
-  getUser: PropTypes.func,
   router: PropTypes.object,
   store: PropTypes.object
 };

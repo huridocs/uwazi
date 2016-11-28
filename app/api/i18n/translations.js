@@ -34,8 +34,7 @@ export default {
         return this.save(translation);
       }));
     })
-    .then((results) => {
-      console.log(results);
+    .then(() => {
       return 'ok';
     });
   },
