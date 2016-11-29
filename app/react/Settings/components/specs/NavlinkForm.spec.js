@@ -86,12 +86,12 @@ describe('NavlinkForm', () => {
   });
 
   it('should have an edit button to activate editing link mode', () => {
-    component.find('button').last().props().onClick();
+    component.find('button').first().props().onClick();
     expect(props.editLink).toHaveBeenCalledWith('newLink1');
   });
 
   it('should have a remove button to remove a link', () => {
-    component.find('button').first().props().onClick();
+    component.find('button').last().props().onClick();
     expect(props.removeLink).toHaveBeenCalledWith(1);
   });
 

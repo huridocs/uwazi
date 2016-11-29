@@ -10,7 +10,12 @@
 }
 
 .panel > .list-group .list-group-item {
-    //border-width: 1px 0 1px 3px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
     line-height: 23px;
     border-color: $c-grey-light;
     border-left-color: transparent;
@@ -42,11 +47,16 @@
     }
 
     .form-group {
-      margin: 0 0 5px;
+      width: 100%;
+      margin: 3px 0;
     }
     .form-control {
       margin: 0;
     }
+}
+
+.list-group-item-actions {
+  white-space: nowrap;
 }
 
 .panel {
@@ -95,11 +105,6 @@
       &.dragging {
         opacity: 0;
       }
-    }
-    .list-group-item-actions {
-      position: absolute;
-      top: 10px;
-      right: 10px;
     }
   }
 }

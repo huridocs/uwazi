@@ -46,28 +46,26 @@ export class MetadataProperty extends Component {
 
     return connectDragSource(connectDropTarget(
       <li className={propertyClass}>
-        <div>
-          <span className="property-name"><i className="fa fa-reorder"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
-          <div className="pull-right">
-            <ShowIf if={formState.errors[`properties.${index}.label.duplicated`]}>
-              <span className="validation-error">
-                <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated label&nbsp;
-              </span>
-            </ShowIf>
-            <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
-              <i className="fa fa-pencil"></i> Edit
-            </button>
-            <button type="button" className="btn btn-danger btn-xs property-remove"
-              onClick={() => this.props.removeProperty('RemovePropertyModal', index)} >
-              <i className="fa fa-trash"></i> Delete
-            </button>
+        <span className="property-name"><i className="fa fa-reorder"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
+        <div className="list-group-item-actions">
+          <ShowIf if={formState.errors[`properties.${index}.label.duplicated`]}>
+            <span className="validation-error">
+              <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated label&nbsp;
+            </span>
+          </ShowIf>
+          <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
+            <i className="fa fa-pencil"></i> Edit
+          </button>
+          <button type="button" className="btn btn-danger btn-xs property-remove"
+            onClick={() => this.props.removeProperty('RemovePropertyModal', index)} >
+            <i className="fa fa-trash"></i> Delete
+          </button>
+         </div>
+         <ShowIf if={editingProperty === localID}>
+           <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
+             {this.renderForm()}
            </div>
-        </div>
-        <ShowIf if={editingProperty === localID}>
-          <div className={'propery-form' + (editingProperty === localID ? ' expand' : '') }>
-            {this.renderForm()}
-          </div>
-        </ShowIf>
+         </ShowIf>
       </li>
     ));
   }

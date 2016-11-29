@@ -20,12 +20,12 @@ export class NavlinksSettings extends Component {
 
   render() {
     const {collection, links} = this.props;
-    const nameGroupClass = 'template-name form-group';
+    const nameGroupClass = 'template-name';
 
     const payload = {_id: collection.get('_id'), _rev: collection.get('_rev'), links};
 
     return (
-      <div className="relationType">
+      <div className="NavlinksSettings">
         <div className="col-xs-12">
           <Form model="settings.navlinksData"
                 onSubmit={this.props.saveLinks.bind(this, payload)}

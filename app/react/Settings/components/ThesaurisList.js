@@ -36,7 +36,7 @@ export class ThesaurisList extends Component {
         {this.props.dictionaries.toJS().map((dictionary, index) => {
           return <li key={index} className="list-group-item">
               <I18NLink to={'/settings/dictionaries/edit/' + dictionary._id}>{dictionary.name}</I18NLink>
-              <div className="pull-right">
+              <div className="list-group-item-actions">
                 <I18NLink to={'/settings/dictionaries/edit/' + dictionary._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
