@@ -5,7 +5,7 @@
 .entity-metadata {
   left: 0 !important;
   right: auto !important;
-  width: 66.666% !important;
+  width: calc(100% - 400px) !important;
   z-index: 3 !important;
   background: $c-white;
   @media (max-width: 1023px) {
