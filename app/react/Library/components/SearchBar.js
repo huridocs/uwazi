@@ -72,7 +72,7 @@ export class SearchBar extends Component {
               return <p key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <i className="fa fa-external-link">
+                  <i className="fa fa-file-text-o">
                   </i>
                 </I18NLink>
               </p>;

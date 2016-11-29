@@ -96,7 +96,7 @@ export class UploadDoc extends Component {
         <div className="item-shortcut-group">
           <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
             <span className="itemShortcut-arrow">
-              <i className="fa fa-external-link"></i>
+              <i className="fa fa-file-text-o"></i>
             </span>
           </I18NLink>
         </div>

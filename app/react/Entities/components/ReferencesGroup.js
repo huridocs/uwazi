@@ -100,7 +100,7 @@ export class ReferencesGroup extends Component {
                     onClick={e => e.stopPropagation()}
                     className="item-shortcut">
                     <span className="itemShortcut-arrow">
-                      <i className="fa fa-external-link"></i>
+                      <i className="fa fa-file-text-o"></i>
                     </span>
                   </I18NLink>
                 </div>
