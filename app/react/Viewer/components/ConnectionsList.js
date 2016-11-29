@@ -112,7 +112,7 @@ export class ConnectionsList extends Component {
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc}>
                       <NeedAuthorization>
-                        <a className="item-shortcut" onClick={this.deleteReference.bind(this, reference)}>
+                        <a className="item-shortcut item-shortcut--danger" onClick={this.deleteReference.bind(this, reference)}>
                           <i className="fa fa-trash"></i>
                         </a>
                       </NeedAuthorization>

@@ -89,7 +89,7 @@ export class ReferencesGroup extends Component {
                 <div className="item-shortcut-group">
                   <NeedAuthorization>
                     <ShowIf if={reference.sourceType !== 'metadata'}>
-                      <a className="item-shortcut" onClick={this.props.deleteReference.bind(this, reference)}>
+                      <a className="item-shortcut item-shortcut--danger" onClick={this.props.deleteReference.bind(this, reference)}>
                         <i className="fa fa-trash"></i>
                       </a>
                     </ShowIf>

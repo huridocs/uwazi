@@ -95,7 +95,7 @@ export class AttachmentsList extends Component {
             <div className="item-shortcut-group">
               <NeedAuthorization>
                 <ShowIf if={item.deletable}>
-                  <a className="item-shortcut" onClick={this.deleteAttachment.bind(this, file)}>
+                  <a className="item-shortcut item-shortcut--danger" onClick={this.deleteAttachment.bind(this, file)}>
                     <i className="fa fa-trash"></i>
                   </a>
                 </ShowIf>

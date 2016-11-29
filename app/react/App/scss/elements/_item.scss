@@ -306,9 +306,6 @@ $item-padding: 15px;
   &:hover {
     cursor: pointer;
     color: $c-white !important;
-    background: $c-bootstrap-primary-dark !important;
-    border-color: $c-bootstrap-primary-dark !important;
-    color: $c-white !important;
     background: $c-bootstrap-primary !important;
     border-color: $c-bootstrap-primary-dark !important;
   }
@@ -328,14 +325,12 @@ $item-padding: 15px;
     cursor: default;
   }
 
-  &--warning,
   &--warning:hover {
     color: $c-white !important;
     border-color: $c-warning !important;
     background-color: $c-warning !important;
   }
 
-  &--danger,
   &--danger:hover {
     color: $c-white !important;
     border-color: $c-danger !important;
