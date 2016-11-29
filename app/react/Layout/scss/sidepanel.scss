@@ -1,6 +1,7 @@
 @import "../../App/scss/config/_colors.scss";
 @import "../../App/scss/config/_materials.scss";
 @import "../../App/scss/config/_typography.scss";
+@import "../../App/scss/elements/_tooltip.scss";
 
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
@@ -19,10 +20,10 @@ $c-sidebar: $c-white;
   &.is-hidden {
     right: -100%;
   }
-  @media(min-width: 1024px) {
-    width: 33.333%;
+  @media(min-width: 454px) {
+    width: 400px;
     &.is-hidden {
-      right: -33.333%;
+      right: -400px;
     }
   }
 
@@ -165,6 +166,11 @@ $c-sidebar: $c-white;
 
     &.relationship-active {
       background: $c-secondary-light;
+    }
+  }
+  @media(min-width: 1024px) {
+    .item-metadata dt {
+      @include tooltip('top-left');
     }
   }
 }
