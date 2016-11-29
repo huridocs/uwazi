@@ -8,9 +8,7 @@ export default app => {
     templates.save(req.body)
     .then((response) => {
       res.json(response);
-
-      req.io.sockets.emit('templateUpdated', response);
-
+      req.io.sockets.emit('templateChange', response);
     })
     .catch((error) => {
       res.json({error});
