@@ -49,7 +49,7 @@ export class UploadEntity extends Component {
         </div>
         <div className="item-shortcut-group">
           <I18NLink to={`/entity/${entity.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-            <i className="fa fa-external-link"></i>
+            <i className="fa fa-file-text-o"></i>
           </I18NLink>
         </div>
       </ItemFooter>
