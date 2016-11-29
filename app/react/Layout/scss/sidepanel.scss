@@ -168,8 +168,10 @@ $c-sidebar: $c-white;
       background: $c-secondary-light;
     }
   }
-  .item-metadata dt {
-    @include tooltip('top-left');
+  @media(min-width: 1024px) {
+    .item-metadata dt {
+      @include tooltip('top-left');
+    }
   }
 }
 
