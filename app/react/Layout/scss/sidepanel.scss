@@ -1,6 +1,7 @@
 @import "../../App/scss/config/_colors.scss";
 @import "../../App/scss/config/_materials.scss";
 @import "../../App/scss/config/_typography.scss";
+@import "../../App/scss/elements/_tooltip.scss";
 
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
@@ -166,6 +167,9 @@ $c-sidebar: $c-white;
     &.relationship-active {
       background: $c-secondary-light;
     }
+  }
+  .item-metadata dt {
+    @include tooltip('top-left');
   }
 }
 

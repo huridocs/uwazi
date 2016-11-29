@@ -2,6 +2,7 @@
   display: none;
   position: absolute;
   width: auto;
+  margin: 0;
   padding: 5px;
   line-height: 1.2em;
   text-align: center;
@@ -13,24 +14,39 @@
   white-space: nowrap;
   
   @if $direction == 'top' {
+    top: auto;
+    right: auto;
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(-7px);
+    transform: translateX(-50%) translateY(-5px);
+  }
+  @if $direction == 'top-left' {
+    top: auto;
+    right: auto;
+    bottom: 100%;
+    left: auto;
+    transform: translateY(-5px);
   }
   @if $direction == 'bottom' {
     top: 100%;
+    right: auto;
+    bottom: auto;
     left: 50%;
-    transform: translateX(-50%) translateY(7px);
+    transform: translateX(-50%) translateY(5px);
   }
   @if $direction == 'left' {
     top: 50%;
     right: 100%;
-    transform: translateX(-7px) translateY(-50%);
+    bottom: auto;
+    left: auto;
+    transform: translateX(-5px) translateY(-50%);
   }
   @if $direction == 'right' {
     top: 50%;
+    right: auto;
+    bottom: auto;
     left: 100%;
-    transform: translateX(7px) translateY(-50%);
+    transform: translateX(5px) translateY(-50%);
   }
   
   &:after {
@@ -41,14 +57,31 @@
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
       border-top: 5px solid transparentize($c-black, .25);
+      border-bottom: 0;
       top: 100%;
+      right: auto;
+      bottom: auto;
       left: 50%;
       transform: translateX(-50%);
+    }
+    @if $direction == 'top-left' {
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid transparentize($c-black, .25);
+      border-bottom: 0;
+      top: 100%;
+      right: auto;
+      bottom: auto;
+      left: 5px;
+      transform: translateX(0);
     }
     @if $direction == 'bottom' {
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
       border-bottom: 5px solid transparentize($c-black, .25);
+      border-top: 0;
+      top: auto;
+      right: auto;
       bottom: 100%;
       left: 50%;
       transform: translateX(-50%);
@@ -57,7 +90,10 @@
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
       border-left: 5px solid transparentize($c-black, .25);
+      border-right: 0;
       top: 50%;
+      right: auto;
+      bottom: auto;
       left: 100%;
       transform: translatey(-50%);
     }
@@ -65,8 +101,11 @@
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
       border-right: 5px solid transparentize($c-black, .25);
+      border-left: 0;
       top: 50%;
       right: 100%;
+      bottom: auto;
+      left: auto;
       transform: translatey(-50%);
     }
   }
