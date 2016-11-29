@@ -40,7 +40,7 @@ export class EntityTypesList extends Component {
           }
           return <li key={index} className="list-group-item">
               <Link to={'/settings/entities/edit/' + template._id}>{template.name}</Link>
-              <div className="pull-right">
+              <div className="list-group-item-actions">
                 <Link to={'/settings/entities/edit/' + template._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>

@@ -36,7 +36,7 @@ export class RelationTypesList extends Component {
         {this.props.relationTypes.toJS().map((relationType, index) => {
           return <li key={index} className="list-group-item">
               <I18NLink to={'/settings/connections/edit/' + relationType._id}>{relationType.name}</I18NLink>
-              <div className="pull-right">
+              <div className="list-group-item-actions">
                 <I18NLink to={'/settings/connections/edit/' + relationType._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>

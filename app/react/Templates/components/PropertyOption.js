@@ -14,9 +14,11 @@ export class PropertyOption extends Component {
 
     return (
       connectDragSource(
-        <li className="list-group-item" >
-          <i className="fa fa-clone"></i>&nbsp;
-          <i className={iconClass}></i>&nbsp;{label}
+        <li className="list-group-item">
+          <span>
+            <i className="fa fa-clone"></i>
+            <i className={iconClass}></i>&nbsp;{label}
+          </span>
         </li>
       )
     );

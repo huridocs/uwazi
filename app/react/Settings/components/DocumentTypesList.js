@@ -39,7 +39,7 @@ export class DocumentTypesList extends Component {
           }
           return <li key={index} className="list-group-item">
               <I18NLink to={'/settings/documents/edit/' + template._id}>{template.name}</I18NLink>
-              <div className="pull-right">
+              <div className="list-group-item-actions">
                 <I18NLink to={'/settings/documents/edit/' + template._id} className="btn btn-default btn-xs">
                   <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>

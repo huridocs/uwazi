@@ -86,16 +86,17 @@ export class NavlinkForm extends Component {
             <i className="fa fa-reorder"></i>&nbsp;
             <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
           </span>
+        </div>
+        <div>
           <button type="button"
-                  className="btn btn-danger btn-xs pull-right property-remove"
-                  onClick={() => this.props.removeLink(index)}>
-            <i className="fa fa-trash"></i> Delete
-          </button>
-          &nbsp;
-          <button type="button"
-                  className="btn btn-default btn-xs pull-right property-edit"
+                  className="btn btn-default btn-xs property-edit"
                   onClick={() => this.props.editLink(link.localID)}>
             <i className="fa fa-pencil"></i> Edit
+          </button>
+          <button type="button"
+                  className="btn btn-danger btn-xs property-remove"
+                  onClick={() => this.props.removeLink(index)}>
+            <i className="fa fa-trash"></i> Delete
           </button>
         </div>
 

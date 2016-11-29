@@ -31,6 +31,8 @@
     border-radius: 4px !important;
     border: 1px solid $c-grey-light !important;
     box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05) !important;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
     .fa-clone,
     .fa-arrows-v {
       margin: 0 15px 0 0;
