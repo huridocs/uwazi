@@ -1,7 +1,7 @@
 import {Component, PropTypes} from 'react';
 import JSONUtils from 'shared/JSONUtils';
 import {actions} from 'app/BasicReducer';
-import {I18NUtils} from 'app/I18N';
+import {I18NUtils, missingTranslations} from 'app/I18N';
 import api from 'app/utils/api';
 
 class RouteHandler extends Component {
@@ -55,7 +55,16 @@ class RouteHandler extends Component {
     this.setApiLocale(locale);
     //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
+      this.saveNewTranslations();
       this.getClientState(this.props);
+    }
+  }
+
+  saveNewTranslations() {
+    if (this.context.store && this.context.store.getState &&
+        this.context.store.getState().user.get('_id') && missingTranslations.translations.length) {
+      api.post('translations/addEntries', missingTranslations.translations);
+      missingTranslations.reset();
     }
   }
 
@@ -71,6 +80,7 @@ class RouteHandler extends Component {
   }
 
   componentWillReceiveProps(props) {
+    this.saveNewTranslations();
     if (props.params !== this.props.params) {
       this.emptyState();
       this.setLocale(props);
@@ -88,7 +98,6 @@ RouteHandler.renderedFromServer = true;
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
-  getUser: PropTypes.func,
   router: PropTypes.object,
   store: PropTypes.object
 };

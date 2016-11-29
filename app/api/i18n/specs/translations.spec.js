@@ -37,6 +37,28 @@ describe('translations', () => {
     });
   });
 
+  describe('addEntries()', () => {
+    it('should add the new keys to each dictionary in the given contexts', (done) => {
+      translations.addEntries([
+        {contextId: '123', key: 'Key', defaultValue: 'default'},
+        {contextId: '123', key: 'Key1', defaultValue: 'default 1'}
+      ])
+      .then((result) => {
+        expect(result).toBe('ok');
+        return translations.get();
+      })
+      .then((result) => {
+        expect(result.rows[0].contexts[0].values.Key).toBe('default');
+        expect(result.rows[1].contexts[0].values.Key).toBe('default');
+
+        expect(result.rows[0].contexts[0].values.Key1).toBe('default 1');
+        expect(result.rows[1].contexts[0].values.Key1).toBe('default 1');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('addEntry()', () => {
     it('should add the new key to each dictionary in the given context', (done) => {
       translations.addEntry('123', 'Key', 'default')

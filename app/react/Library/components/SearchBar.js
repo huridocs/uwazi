@@ -6,6 +6,7 @@ import {Field, Form, actions as formActions} from 'react-redux-form';
 
 import {searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
+import {t} from 'app/I18N';
 
 export class SearchBar extends Component {
 
@@ -50,7 +51,7 @@ export class SearchBar extends Component {
             <Field model="search.searchTerm">
               <input
                 type="text"
-                placeholder="Search"
+                placeholder={t('System', 'Search')}
                 className="form-control"
                 onChange={this.getSuggestions.bind(this)}
                 onBlur={this.props.hideSuggestions}

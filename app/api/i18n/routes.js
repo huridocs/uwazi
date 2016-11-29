@@ -18,6 +18,14 @@ export default app => {
     });
   });
 
+  app.post('/api/translations/addEntries', needsAuthorization, (req, res) => {
+    translations.addEntries(req.body)
+    .then((response) => res.json(response))
+    .catch((e) => {
+      console.trace(e);
+    });
+  });
+
   app.post('/api/translations/addentry', needsAuthorization, (req, res) => {
     translations.addEntry(req.body.context, req.body.key, req.body.value)
     .then((response) => res.json(response))

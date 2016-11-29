@@ -17,8 +17,13 @@ export class EditTranslationForm extends Component {
     return translations.find((tr) => tr.locale === defaultLocale);
   }
 
+  getNewSystemTranslations() {
+
+  }
+
   prepareTranslations() {
     const translations = this.props.translationsForm;
+
     if (translations.length) {
       let languages = this.props.settings.collection.toJS().languages;
       languages.forEach((lang) => {
@@ -28,6 +33,9 @@ export class EditTranslationForm extends Component {
           translation.values = Object.assign({}, defaultTranslation.values);
           translations.push(translation);
         }
+
+
+
       });
     }
 
