@@ -102,3 +102,7 @@ $nav-height: $header-height;
   border: 0;
   border-bottom: 2px solid $c-primary;
 }
+
+.tab-link-tooltip {
+  @include tooltip('bottom');
+}
