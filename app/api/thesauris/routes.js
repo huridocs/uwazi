@@ -6,6 +6,7 @@ export default app => {
     thesauris.save(req.body)
     .then((response) => {
       res.json(response);
+      req.io.sockets.emit('thesauriChange', response);
     })
     .catch((error) => {
       res.json({error: error});
