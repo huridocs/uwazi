@@ -405,7 +405,7 @@ $item-padding: 15px;
     }
   }
 }
-
+/** /
 .item-danger {
   border-color: $c-danger-light;
   background-color: lighten($c-danger-light, 10%);
@@ -414,14 +414,7 @@ $item-padding: 15px;
     border-color: $c-danger;
   }
 }
-
-.item-warning {
-  border-color: $c-warning-light;
-  &:hover,
-  &.is-active {
-    border-color: $c-warning;
-  }
-}
+/**/
 
 .item-status {
 
@@ -520,6 +513,12 @@ $item-padding: 15px;
 }
 .item-warning {
   .item-shortcut--success {
+    display: none;
+  }
+}
+.item-label-group {
+  .label-warning ~ span,
+  .label-danger ~ span {
     display: none;
   }
 }
