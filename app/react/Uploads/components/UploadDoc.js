@@ -75,6 +75,7 @@ export class UploadDoc extends Component {
     return (
       <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
       <div className="item-info">
+        <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={doc.icon} />
         <ItemName>{doc.title}</ItemName>
       </div>

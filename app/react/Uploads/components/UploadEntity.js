@@ -39,6 +39,7 @@ export class UploadEntity extends Component {
     return (
       <RowList.Item status="success" active={active} onClick={this.edit.bind(this, entity, active)}>
       <div className="item-info">
+        <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={entity.icon} />
         <ItemName>{entity.title}</ItemName>
       </div>

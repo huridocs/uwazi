@@ -104,6 +104,16 @@ $item-padding: 15px;
   margin-right: 6px;
 }
 
+.item-private-icon {
+  margin-right: 6px;
+  width: 20px;
+  line-height: 20px;
+  text-align: center;
+  background-color: $c-grey-light;
+  color: $c-grey-dark;
+  border-radius: 50%;
+}
+
 .item-type {
   white-space: nowrap;
   width: calc(100% - 35px);
