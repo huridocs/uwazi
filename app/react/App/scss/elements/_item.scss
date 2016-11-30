@@ -510,3 +510,16 @@ $item-padding: 15px;
     color: $c-primary;
   }
 }
+
+/**/
+
+.item-success {
+  .label-success {
+    display: none;
+  }
+}
+.item-warning {
+  .item-shortcut--success {
+    display: none;
+  }
+}
