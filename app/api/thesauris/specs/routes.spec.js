@@ -76,20 +76,11 @@ describe('thesauris routes', () => {
   describe('POST', () => {
     it('should create a thesauri', (done) => {
       let req = {body: {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]}};
-      let postResponse;
 
       routes.post('/api/thesauris', req)
       .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let newDoc = response.json.rows.find((thesauri) => {
-          return thesauri.value.name === 'Batman wish list';
-        });
-
-        expect(newDoc.value.values).toEqual([{id: '1', label: 'Joker BFF'}]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
+        expect(response.values).toEqual([{id: '1', label: 'Joker BFF'}]);
+        expect(response._rev).toBeDefined();
         done();
       })
       .catch(done.fail);
@@ -97,21 +88,11 @@ describe('thesauris routes', () => {
 
     it('should set a default value of [] to values property if its missing', (done) => {
       let req = {body: {name: 'Scarecrow nightmares'}};
-      let postResponse;
 
       routes.post('/api/thesauris', req)
       .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let newDoc = response.json.rows.find((template) => {
-          return template.value.name === 'Scarecrow nightmares';
-        });
-
-        expect(newDoc.value.name).toBe('Scarecrow nightmares');
-        expect(newDoc.value.values).toEqual([]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
+        expect(response.name).toBe('Scarecrow nightmares');
+        expect(response.values).toEqual([]);
         done();
       })
       .catch(done.fail);

@@ -45,6 +45,7 @@ export default app => {
     thesauris.delete(req.query._id, req.query._rev)
     .then((response) => {
       res.json(response);
+      req.io.sockets.emit('thesauriDelete', response);
     })
     .catch((error) => {
       res.json({error: error.json});

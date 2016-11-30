@@ -82,7 +82,7 @@ export default {
       return _save(thesauri);
     })
     .then((response) => {
-      return response.json;
+      return this.dictionaries(response.json.id).then(t => t.rows[0]);
     })
     .catch((error) => {
       return {error: error.json};
