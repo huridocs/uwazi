@@ -118,20 +118,11 @@ describe('thesauris', () => {
   describe('save', () => {
     it('should create a thesauri', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
-      let postResponse;
 
       thesauris.save(data)
       .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let newDoc = response.json.rows.find((thesauri) => {
-          return thesauri.value.name === 'Batman wish list';
-        });
-
-        expect(newDoc.value.values).toEqual([{id: '1', label: 'Joker BFF'}]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
+        expect(response.values).toEqual([{id: '1', label: 'Joker BFF'}]);
+        expect(response._rev).toBeDefined();
         done();
       })
       .catch(done.fail);
@@ -143,7 +134,7 @@ describe('thesauris', () => {
       thesauris.save(data)
       .then((response) => {
         expect(translations.addContext)
-        .toHaveBeenCalledWith(response.id, 'Batman wish list', {
+        .toHaveBeenCalledWith(response._id, 'Batman wish list', {
           'Batman wish list': 'Batman wish list',
           'Joker BFF': 'Joker BFF'
         });
@@ -168,7 +159,7 @@ describe('thesauris', () => {
 
         expect(newDoc.value.name).toBe('Scarecrow nightmares');
         expect(newDoc.value.values).toEqual([]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
+        expect(newDoc.value._rev).toBe(postResponse._rev);
         done();
       })
       .catch(done.fail);
@@ -211,7 +202,7 @@ describe('thesauris', () => {
         .then((response) => {
           expect(translations.updateContext)
           .toHaveBeenCalledWith(
-            response.id,
+            response._id,
             'Top 1 games',
             {'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games'},
             ['Fundation'],
