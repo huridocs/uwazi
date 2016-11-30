@@ -18,7 +18,8 @@ export class DocumentTypesList extends Component {
       });
     }
     this.state = {
-      items
+      items,
+      ui: {}
     };
   }
 
@@ -74,9 +75,9 @@ export class DocumentTypesList extends Component {
     if (!this.checked(item) && item.items.find((itm) => this.checked(itm))) {
       return;
     }
-    let state = {};
-    state[item.id] = !this.state[item.id];
-    this.setState(state);
+    let ui = this.state.ui;
+    ui[item.id] = !ui[item.id];
+    this.setState({ui});
   }
 
   aggregations(item) {
@@ -97,7 +98,7 @@ export class DocumentTypesList extends Component {
   }
 
   showSubOptions(parent) {
-    const toggled = this.state[parent.id];
+    const toggled = this.state.ui[parent.id];
     return !!(toggled || !!(!this.checked(parent) && parent.items.find((itm) => this.checked(itm))));
   }
 
@@ -143,7 +144,7 @@ export class DocumentTypesList extends Component {
                 <span className="multiselectItem-results">
                   <span>{this.aggregations(item)}</span>
                   <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
-                    <i className={this.state[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                    <i className={this.state.ui[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
                   </span>
                 </span>
               </div>
@@ -157,10 +158,18 @@ export class DocumentTypesList extends Component {
           </li>;
   }
 
-  shouldComponentUpdate(nextProps) {
+  stateChanged(nextState) {
+    return Object.keys(nextState.ui).length === Object.keys(this.state.ui).length ||
+           Object.keys(nextState.ui).reduce((result, key) => {
+             return result || nextState.ui[key] === this.state.ui[key];
+           }, false);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
     return !is(this.props.libraryFilters, nextProps.libraryFilters) ||
            !is(this.props.settings, nextProps.settings) ||
-           !is(this.props.aggregations, nextProps.aggregations);
+           !is(this.props.aggregations, nextProps.aggregations) ||
+           this.stateChanged(nextState);
   }
 
   render() {
