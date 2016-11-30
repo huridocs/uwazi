@@ -1,4 +1,3 @@
-// TEST
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -9,22 +8,6 @@ import ShowIf from 'app/App/ShowIf';
 import {deleteDocument, deleteEntity, moveToLibrary, publishEntity, finishEdit} from 'app/Uploads/actions/uploadsActions';
 
 export class UploadsFormPanelButtons extends Component {
-
-  delete() {
-    this.context.confirm({
-      accept: () => {
-        this.props.finishEdit();
-        if (this.props.metadata.type === 'document') {
-          this.props.deleteDocument(this.props.metadata);
-          return;
-        }
-
-        this.props.deleteEntity(this.props.metadata);
-      },
-      title: 'Confirm delete',
-      message: `Are you sure you want to delete: ${this.props.metadata.title}?`
-    });
-  }
 
   publish() {
     this.context.confirm({
@@ -39,6 +22,22 @@ export class UploadsFormPanelButtons extends Component {
       title: 'Confirm publish',
       message: `Are you sure you want to make ${this.props.metadata.title} public?`,
       type: 'success'
+    });
+  }
+
+  delete() {
+    this.context.confirm({
+      accept: () => {
+        this.props.finishEdit();
+        if (this.props.metadata.type === 'document') {
+          this.props.deleteDocument(this.props.metadata);
+          return;
+        }
+
+        this.props.deleteEntity(this.props.metadata);
+      },
+      title: 'Confirm delete',
+      message: `Are you sure you want to delete: ${this.props.metadata.title}?`
     });
   }
 

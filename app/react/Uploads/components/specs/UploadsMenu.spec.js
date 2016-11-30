@@ -15,45 +15,23 @@ describe('UploadsMenu', () => {
 
   beforeEach(() => {
     props = {
-      active: true,
-      showModal: jasmine.createSpy('showModal'),
-      templates: Immutable.fromJS([]),
+      templates: Immutable.fromJS([{_id: 1}, {_id: 2, isEntity: true}]),
       newEntity: jasmine.createSpy('newEntity')
     };
   });
 
-  describe('submit button', () => {
-    it('should be rendered when metadata is defined', () => {
-      props.metadataBeingEdited = Immutable.fromJS({});
-      render();
-      expect(component.find('[type="submit"]').props().form).toBe('metadataForm');
-    });
+  it('should have a new entity button', () => {
+    render();
+    const button = component.find('button');
+    button.simulate('click');
+    expect(props.newEntity).toHaveBeenCalledWith([{_id: 2, isEntity: true}]);
   });
 
-  describe('delete button', () => {
-    it('should call deleteDocument', () => {
-      props.metadataBeingEdited = Immutable.fromJS({template: '1', title: 'test'});
+  describe('When metadataBeingEdited', () => {
+    it('should not show any contextual button', () => {
+      props.metadataBeingEdited = {};
       render();
-      let instance = component.instance();
-      spyOn(instance, 'deleteDocument');
-      component.find('.delete').simulate('click');
-      expect(instance.deleteDocument).toHaveBeenCalled();
-    });
-  });
-
-  describe('publish button', () => {
-    it('should not be rendered when document has no template', () => {
-      render();
-      expect(component.find('.publish').length).toBe(0);
-    });
-
-    it('should call publish method', () => {
-      props.metadataBeingEdited = Immutable.fromJS({template: '1', title: 'test'});
-      render();
-      let instance = component.instance();
-      spyOn(instance, 'publish');
-      component.find('.publish').simulate('click');
-      expect(instance.publish).toHaveBeenCalled();
+      expect(component.children().length).toBe(0);
     });
   });
 });

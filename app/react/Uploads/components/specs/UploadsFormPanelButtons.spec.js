@@ -2,24 +2,55 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
-import {UploadsMenu} from 'app/Uploads/components/UploadsMenu';
+import {I18NLink} from 'app/I18N';
 
-describe('UploadsMenu', () => {
+import {UploadsFormPanelButtons} from '../UploadsFormPanelButtons';
+
+describe('UploadsFormPanelButtons', () => {
   let component;
   let props;
-  let confirm = jasmine.createSpy('confirm');
+  let confirm;
 
   let render = () => {
-    component = shallow(<UploadsMenu {...props}/>, {context: {confirm}});
+    component = shallow(<UploadsFormPanelButtons {...props}/>, {context: {confirm}});
   };
 
   beforeEach(() => {
+    confirm = jasmine.createSpy('confirm');
     props = {
-      active: true,
-      showModal: jasmine.createSpy('showModal'),
-      templates: Immutable.fromJS([]),
-      newEntity: jasmine.createSpy('newEntity')
+      metadata: {type: 'type', sharedId: 'sharedId'},
+      moveToLibrary: jasmine.createSpy('moveToLibrary'),
+      publishEntity: jasmine.createSpy('publishEntity'),
+      finishEdit: jasmine.createSpy('finishEdit'),
+      deleteEntity: jasmine.createSpy('deleteEntity'),
+      deleteDocument: jasmine.createSpy('deleteDocument')
+      // active: true,
+      // showModal: jasmine.createSpy('showModal'),
+      // templates: Immutable.fromJS([]),
+      // newEntity: jasmine.createSpy('newEntity')
     };
+  });
+
+  describe('view button', () => {
+    it('should link to the document/entity', () => {
+      render();
+      const link = component.find(I18NLink);
+      expect(link.props().to).toBe('type/sharedId');
+    });
+
+    it('should be shown only if content is viewable', () => {
+      render();
+      expect(component.find(I18NLink).parent().props().if).toBe(false);
+
+      props.metadata.processed = true;
+      render();
+      expect(component.find(I18NLink).parent().props().if).toBe(true);
+
+      props.metadata.processed = false;
+      props.metadata.type = 'entity';
+      render();
+      expect(component.find(I18NLink).parent().props().if).toBe(true);
+    });
   });
 
   describe('submit button', () => {
@@ -30,30 +61,114 @@ describe('UploadsMenu', () => {
     });
   });
 
-  describe('delete button', () => {
-    it('should call deleteDocument', () => {
-      props.metadataBeingEdited = Immutable.fromJS({template: '1', title: 'test'});
+  describe('publish button', () => {
+    let publishButton;
+
+    function preparePublishData() {
       render();
-      let instance = component.instance();
-      spyOn(instance, 'deleteDocument');
-      component.find('.delete').simulate('click');
-      expect(instance.deleteDocument).toHaveBeenCalled();
+      publishButton = component.find('button').at(1);
+    }
+
+    it('should confirm publishing', () => {
+      preparePublishData();
+      expect(confirm).not.toHaveBeenCalled();
+      publishButton.simulate('click');
+      expect(confirm).toHaveBeenCalled();
+    });
+
+    it('should only show if metadata has a template assigned', () => {
+      preparePublishData();
+      expect(publishButton.parent().props().if).toBe(false);
+
+      props.metadata.template = 'template';
+      preparePublishData();
+      expect(publishButton.parent().props().if).toBe(true);
+    });
+
+    describe('upon Confirm', () => {
+      let accept;
+
+      function preparePublishDataConfirm() {
+        preparePublishData();
+        publishButton.simulate('click');
+        accept = confirm.calls.mostRecent().args[0].accept;
+      }
+
+      it('should publish entity and finish edit', () => {
+        preparePublishDataConfirm();
+        accept();
+        expect(props.moveToLibrary).not.toHaveBeenCalled();
+        expect(props.publishEntity).toHaveBeenCalledWith(props.metadata);
+        expect(props.finishEdit).toHaveBeenCalled();
+      });
+
+      it('should call move to library if document', () => {
+        props.metadata.type = 'document';
+        preparePublishDataConfirm();
+        accept();
+        expect(props.moveToLibrary).toHaveBeenCalledWith(props.metadata);
+      });
     });
   });
 
-  describe('publish button', () => {
-    it('should not be rendered when document has no template', () => {
+  describe('delete button', () => {
+    let deleteButton;
+
+    function prepareDeleteData() {
       render();
-      expect(component.find('.publish').length).toBe(0);
+      deleteButton = component.find('button').at(2);
+    }
+
+    it('should confirm deleting', () => {
+      prepareDeleteData();
+      expect(confirm).not.toHaveBeenCalled();
+      deleteButton.simulate('click');
+      expect(confirm).toHaveBeenCalled();
     });
 
-    it('should call publish method', () => {
-      props.metadataBeingEdited = Immutable.fromJS({template: '1', title: 'test'});
+    it('should only show if metadata has a sharedId', () => {
+      prepareDeleteData();
+      expect(deleteButton.parent().props().if).toBe(true);
+
+      props.metadata.sharedId = null;
+      prepareDeleteData();
+      expect(deleteButton.parent().props().if).toBe(false);
+    });
+
+    describe('upon Confirm', () => {
+      let accept;
+
+      function prepareDeleteDataConfirm() {
+        prepareDeleteData();
+        deleteButton.simulate('click');
+        accept = confirm.calls.mostRecent().args[0].accept;
+      }
+
+      it('should delete entity', () => {
+        prepareDeleteDataConfirm();
+        accept();
+        expect(props.finishEdit).toHaveBeenCalled();
+        expect(props.deleteEntity).toHaveBeenCalledWith(props.metadata);
+        expect(props.deleteDocument).not.toHaveBeenCalled();
+      });
+
+      it('should delete document if document', () => {
+        props.metadata.type = 'document';
+        prepareDeleteDataConfirm();
+        accept();
+        expect(props.finishEdit).toHaveBeenCalled();
+        expect(props.deleteDocument).toHaveBeenCalledWith(props.metadata);
+        expect(props.deleteEntity).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('save button', () => {
+    it('should be of type submit for metadataForm', () => {
       render();
-      let instance = component.instance();
-      spyOn(instance, 'publish');
-      component.find('.publish').simulate('click');
-      expect(instance.publish).toHaveBeenCalled();
+      const submitButton = component.find('button').at(3);
+      expect(submitButton.props().type).toBe('submit');
+      expect(submitButton.props().form).toBe('metadataForm');
     });
   });
 });
