@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import {shallow} from 'enzyme';
 
 import {UploadEntity} from 'app/Uploads/components/UploadEntity';
-import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
+import {RowList, ItemName} from 'app/Layout/Lists';
 
 describe('UploadEntity', () => {
   let component;
@@ -30,7 +30,6 @@ describe('UploadEntity', () => {
 
   it('should render success status by default', () => {
     expect(component.find(RowList.Item).props().status).toBe('success');
-    expect(component.find(ItemFooter.Label).props().status).toBe('success');
   });
 
   it('should not pass active prop if not metadataBeingEdited', () => {
