@@ -1,23 +1,23 @@
 .ContextMenu {
   position: fixed;
   z-index: 1;
-  
+
   &-bottom {
     bottom: 15px;
     right: 15px;
   }
-  
+
   &-center {
     top: 50%;
     left: 50%;
     transform: translateX(-50%);
-    
+
     .document-viewer.is-active ~ &,
     .document-viewer.is-active & {
-      left: 33.333%;
+      left: calc((100% - 400px)/2);
     }
   }
-  
+
   .btn {
     position: relative;
     border-radius: 50%;
@@ -30,7 +30,7 @@
     &:hover {
       opacity: 1;
     }
-    
+
     animation-name: ContextMenu-center;
     animation-duration: 225ms;
     @keyframes ContextMenu-center {
@@ -39,7 +39,7 @@
         100% { transform: scale(1); }
     }
   }
-  
+
   .ContextMenu-tooltip {
     width: auto;
     line-height: 1.2em;
