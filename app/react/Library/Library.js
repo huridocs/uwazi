@@ -7,8 +7,6 @@ import DocumentsList from './components/DocumentsList';
 import LibraryFilters from './components/LibraryFilters';
 import {enterLibrary, setDocuments} from './actions/libraryActions';
 import libraryHelpers from './helpers/libraryFilters';
-import templatesAPI from 'app/Templates/TemplatesAPI';
-import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import SearchBar from './components/SearchBar';
 import SearchButton from './components/SearchButton';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
