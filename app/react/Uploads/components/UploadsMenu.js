@@ -8,10 +8,10 @@ export class UploadsMenu extends Component {
   renderNormalMenu() {
     return (
       <div>
-        <div className="float-btn__main cta">
-          <button onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
-            <span>New Entity</span><i className="fa fa-plus"></i>
-          </button>
+        <div className="btn btn-success"
+             onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
+          <span className="ContextMenu-tooltip">New Entity</span>
+          <i className="fa fa-plus"></i>
         </div>
       </div>
     );

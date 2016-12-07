@@ -22,7 +22,7 @@ describe('UploadsMenu', () => {
 
   it('should have a new entity button', () => {
     render();
-    const button = component.find('button');
+    const button = component.find('div.btn');
     button.simulate('click');
     expect(props.newEntity).toHaveBeenCalledWith([{_id: 2, isEntity: true}]);
   });
