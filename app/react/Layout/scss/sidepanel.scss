@@ -6,7 +6,7 @@
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
 .side-panel {
-  z-index: 2;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   position: fixed;
