@@ -1,9 +1,9 @@
 #!/bin/bash
 
 echo "Removing ${1:-uwazi_development} index"
-curl -X DELETE http://185.26.125.86:9200/${1:-cejil}/
+curl -X DELETE http://localhost:9200/${1:-cejil}/
 echo -e "\n\nCreating ${1:-uwazi_development} index"
-curl -X PUT http://185.26.125.86:9200/${1:-cejil}/ -d '
+curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
 {
   "settings": {
     "analysis": {
