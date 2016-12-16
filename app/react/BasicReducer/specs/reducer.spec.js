@@ -24,6 +24,22 @@ describe('BasicReducer', () => {
       expect(newState1.toJS()).toEqual([{_id: 1, title: 'test'}, {_id: 2, title: 'updated'}]);
       expect(newState2.toJS()).toEqual([{_id: 2, title: 'test2'}]);
     });
+
+    describe('when value does not exist', () => {
+      it('should push it to the collection', () => {
+        let reducer1 = createReducer('1', []);
+        let reducer2 = createReducer('2', []);
+
+        const state1 = reducer1({}, actions.set('1', [{_id: 1, title: 'test'}, {_id: 2, title: 'test2'}]));
+        const state2 = reducer2({}, actions.set('2', [{_id: 2, title: 'test2'}]));
+
+        const newState1 = reducer1(state1, actions.update('1', {_id: 3, title: 'created'}));
+        const newState2 = reducer1(state2, actions.update('2', {_id: 3, title: 'not created'}));
+
+        expect(newState1.toJS()).toEqual([{_id: 1, title: 'test'}, {_id: 2, title: 'test2'}, {_id: 3, title: 'created'}]);
+        expect(newState2.toJS()).toEqual([{_id: 2, title: 'test2'}]);
+      });
+    });
   });
 
   describe('Set', () => {

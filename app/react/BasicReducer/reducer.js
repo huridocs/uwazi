@@ -23,7 +23,11 @@ export default function createReducer(namespace, defaultValue) {
         return object.get('_id') !== action.value._id;
       });
     case `${namespace}/${UPDATE}`:
-      return currentState.set(currentState.findIndex(o => o.get('_id') === action.value._id), Immutable(action.value));
+      const index = currentState.findIndex(o => o.get('_id') === action.value._id);
+      if (index === -1) {
+        return currentState.push(Immutable(action.value));
+      }
+      return currentState.set(index, Immutable(action.value));
 
     default:
       return Immutable(currentState);

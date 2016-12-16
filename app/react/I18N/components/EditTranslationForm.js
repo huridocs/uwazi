@@ -33,9 +33,6 @@ export class EditTranslationForm extends Component {
           translation.values = Object.assign({}, defaultTranslation.values);
           translations.push(translation);
         }
-
-
-
       });
     }
 

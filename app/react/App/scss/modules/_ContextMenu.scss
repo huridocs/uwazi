@@ -1,0 +1,72 @@
+.ContextMenu {
+  position: fixed;
+  z-index: 1;
+
+  &-bottom {
+    bottom: 15px;
+    right: 15px;
+  }
+
+  &-center {
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .document-viewer.is-active ~ &,
+    .document-viewer.is-active & {
+      left: calc((100% - 400px)/2);
+    }
+  }
+
+  .btn {
+    position: relative;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    padding: 0;
+    margin: 0 3px;
+    opacity: 0.9;
+    &:hover {
+      opacity: 1;
+    }
+
+    animation-name: ContextMenu-center;
+    animation-duration: 225ms;
+    @keyframes ContextMenu-center {
+        0%   { transform: scale(0.5); opacity: 0; }
+        25%  { transform: scale(1.1); opacity: 0.9; }
+        100% { transform: scale(1); }
+    }
+  }
+
+  .ContextMenu-tooltip {
+    width: auto;
+    line-height: 1.2em;
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    padding: 5px;
+    background-color: transparentize($c-black, .25);
+    color: $c-white;
+    border-radius: 3px;
+    text-align: center;
+    white-space: nowrap;
+    font-size: $f-size-sm;
+    &:after {
+      content: '';
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid transparentize($c-black, .25);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  .btn:hover .ContextMenu-tooltip {
+    display: block;
+  }
+}

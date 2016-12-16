@@ -69,12 +69,12 @@ $c-sidebar: $c-white;
   .form-group {
     margin: 0;
   }
-  
+
   .sort-by {
     padding: 5px 15px;
     height: 30px;
     margin: 0;
-    
+
     .Dropdown {
       right: 15px;
     }
@@ -91,27 +91,27 @@ $c-sidebar: $c-white;
     outline: none;
     background: $c-grey-lighten;
     margin-bottom: 1px;
-    
+
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
       color: $c-primary;
     }
-    
+
     .itemGroup-title {
       font-weight: bold;
     }
-    
+
     &:hover .itemGroup-title {
       text-decoration: underline;
     }
-    
+
     &:hover .multiselectItem-action {
       border-color: $c-primary;
     }
-    
+
     .multiselectItem-results {
     }
-    
+
     &.is-expanded .multiselectItem-results {
     }
 
@@ -242,6 +242,7 @@ $c-sidebar: $c-white;
     padding: 0;
     margin: 0 6px;
   }
+
   .btn-label {
     color: $c-grey-dark;
     position: absolute;

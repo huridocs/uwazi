@@ -20,7 +20,7 @@
   }
 
   ::selection {
-    background: $c-primary-light;
+    background: saturate(#4888BE, 20%);
   }
 
   .fake-selection {

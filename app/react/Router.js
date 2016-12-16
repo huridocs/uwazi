@@ -113,10 +113,14 @@ function handleRoute(res, renderProps, req) {
         routeProps.requestState(renderProps.params, query),
         api.get('user'),
         api.get('settings'),
-        api.get('translations')
+        api.get('translations'),
+        api.get('templates'),
+        api.get('thesauris')
       ])
-      .then(([initialData, user, settings, translations]) => {
+      .then(([initialData, user, settings, translations, templates, thesauris]) => {
         initialData.user = user.json;
+        initialData.templates = templates.json.rows;
+        initialData.thesauris = thesauris.json.rows;
         initialData.locale = locale;
         initialData.translations = translations.json.rows;
         initialData.settings = {collection: settings.json};

@@ -23,20 +23,6 @@ describe('ContextMenu', () => {
     component = shallow(<ContextMenu {...withProps}><SubMenu/><SubMenu2Container/></ContextMenu>);
   };
 
-  describe('when props.open is false', () => {
-    it('should render a div without open className', () => {
-      render();
-      expect(component.find('div').hasClass('active')).toBe(false);
-    });
-  });
-
-  describe('when prop.open', () => {
-    it('should render open className', () => {
-      render({open: true});
-      expect(component.find('div').hasClass('active')).toBe(true);
-    });
-  });
-
   describe('on mouseEnter', () => {
     it('should openMenu()', () => {
       let props = {openMenu: jasmine.createSpy('openMenu')};

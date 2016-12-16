@@ -92,6 +92,26 @@ describe('Document', () => {
     });
   });
 
+  describe('componentWillReceiveProps', () => {
+    it('should unset selection if different doc', () => {
+      render();
+      expect(props.unsetSelection.calls.count()).toBe(1);
+      instance.componentWillReceiveProps({doc: Immutable.fromJS({_id: 'documentId'})});
+      expect(props.unsetSelection.calls.count()).toBe(1);
+      instance.componentWillReceiveProps({doc: Immutable.fromJS({_id: 'anotherId'})});
+      expect(props.unsetSelection.calls.count()).toBe(2);
+    });
+  });
+
+  describe('componentWillMount', () => {
+    it('should unset selection', () => {
+      render();
+      expect(props.unsetSelection.calls.count()).toBe(1);
+      instance.componentWillMount();
+      expect(props.unsetSelection.calls.count()).toBe(2);
+    });
+  });
+
   describe('componentDidMount', () => {
     it('should instantiate a Text object with pageContainer', () => {
       render();
