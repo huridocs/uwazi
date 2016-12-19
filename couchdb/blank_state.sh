@@ -13,6 +13,6 @@ sleep 1
 echo -e "\nreseting views on ${1:-uwazi_development} database"
 ./restore_views.sh
 
-echo "Restoring conversions...."
-rm ../conversions/*.json
-cp ./conversions/*.json ${2:-..}/conversions/
+echo "Restoring pdfs..."
+rm ../uploaded_documents/*.pdf
+cp ./uploaded_documents/*.pdf ${2:-..}/uploaded_documents/

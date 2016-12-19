@@ -45,6 +45,7 @@ export class UploadsSection extends Component {
         <UploadsFormPanel />
         <UploadFailedModal />
         <ReadyToPublishModal />
+
         <ContextMenu>
           <UploadsMenu />
         </ContextMenu>

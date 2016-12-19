@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {formater} from 'app/Metadata';
-import {is} from 'immutable';
 import marked from 'marked';
 
 import t from '../I18N/t';
@@ -72,6 +71,9 @@ export class Item extends Component {
         active={active}>
         <div className="item-info">
           <div className="item-name">
+            <ShowIf if={evalPublished && !doc.published}>
+              <i className="item-private-icon fa fa-lock"></i>
+            </ShowIf>
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc.title}</span>
@@ -80,11 +82,6 @@ export class Item extends Component {
         </div>
         <div className="item-metadata">
           {metadata}
-          <ShowIf if={evalPublished && !doc.published}>
-            <span className="label label-warning">
-              <i className="fa fa-warning"></i> Unpublished
-            </span>
-          </ShowIf>
         </div>
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>

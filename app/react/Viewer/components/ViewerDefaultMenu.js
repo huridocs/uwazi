@@ -10,7 +10,7 @@ export class ViewerDefaultMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <ShowIf if={!this.props.panelIsOpen}>
-          <div className="float-btn__main" onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')}>
+          <div className="btn btn-primary" onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')}>
             <i className="fa fa-bar-chart"></i>
           </div>
         </ShowIf>

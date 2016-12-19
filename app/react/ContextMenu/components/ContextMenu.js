@@ -8,13 +8,19 @@ export class ContextMenu extends Component {
   render() {
     let children = React.Children.map(this.props.children, child => child) || [];
     let SubMenu = children.filter(child => {
-      return child.type.name === this.props.type || child.type.WrappedComponent && child.type.WrappedComponent.name === this.props.type;
+      const forceShow = this.props.overrideShow && this.props.show;
+      const matchesType = child.type.name === this.props.type;
+      const matchesWrap = child.type.WrappedComponent && child.type.WrappedComponent.name === this.props.type;
+      return forceShow || matchesType || matchesWrap;
     });
+
+    const position = 'ContextMenu-' + (this.props.align || 'bottom');
+
     SubMenu = React.Children.map(SubMenu, (child) => React.cloneElement(child, {active: this.props.open}));
 
     return (
       <div
-        className={'float-btn btn-fixed ' + (this.props.open ? 'active' : '')}
+        className={'ContextMenu ' + position}
         onMouseEnter={this.props.openMenu}
         onMouseLeave={this.props.closeMenu}
         onClick={this.props.closeMenu}
@@ -33,6 +39,9 @@ let childrenType = PropTypes.oneOfType([
 ContextMenu.propTypes = {
   open: PropTypes.bool,
   type: PropTypes.string,
+  overrideShow: PropTypes.bool,
+  show: PropTypes.bool,
+  align: PropTypes.string,
   openMenu: PropTypes.func,
   closeMenu: PropTypes.func,
   children: childrenType

@@ -50,6 +50,16 @@ export class Document extends Component {
     this.props.setSelection(this.text.getSelection());
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
+      this.props.unsetSelection();
+    }
+  }
+
+  componentWillMount() {
+    this.props.unsetSelection();
+  }
+
   componentDidUpdate() {
     this.text.renderReferences(this.props.references);
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');

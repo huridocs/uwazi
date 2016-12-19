@@ -2,8 +2,6 @@ import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
 import entitiesAPI from './EntitiesAPI';
-import templatesAPI from 'app/Templates/TemplatesAPI';
-import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import {actions} from 'app/BasicReducer';
 import EntityViewer from './components/EntityViewer';
 import referencesAPI from 'app/Viewer/referencesAPI';

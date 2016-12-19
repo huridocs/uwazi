@@ -75,10 +75,11 @@ export class UploadDoc extends Component {
     return (
       <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
       <div className="item-info">
+        <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={doc.icon} />
         <ItemName>{doc.title}</ItemName>
       </div>
-      <ItemFooter onClick={this.showModal.bind(this, modal)}>
+      <ItemFooter>
         <div className="item-label-group">
           <TemplateLabel template={doc.template}/>
           {(() => {
@@ -94,6 +95,12 @@ export class UploadDoc extends Component {
           })()}
         </div>
         <div className="item-shortcut-group">
+          <a className="item-shortcut item-shortcut--success" onClick={this.showModal.bind(this, modal)}>
+            <span className="itemShortcut-arrow">
+              <i className="fa fa-send"></i>
+            </span>
+          </a>
+          &nbsp;
           <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
             <span className="itemShortcut-arrow">
               <i className="fa fa-file-text-o"></i>

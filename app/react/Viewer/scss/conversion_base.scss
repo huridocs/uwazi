@@ -103,10 +103,6 @@
   -webkit-transform-origin:0 100%;
 }
 
-::selection,::-moz-selection {
-  background:rgba(127,255,255,0.4);
-}
-
 @media screen{
   #sidebar.opened+#page-container {
     left:250px;
