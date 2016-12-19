@@ -15,7 +15,7 @@ export function resetTemplate() {
 export function addProperty(property = {}, index = 0) {
   property.localID = ID();
   return function (dispatch, getState) {
-    if (property.type === 'select') {
+    if (property.type === 'select' || property.type === 'multiselect') {
       property.content = getState().thesauris.toJS()[0]._id;
     }
 

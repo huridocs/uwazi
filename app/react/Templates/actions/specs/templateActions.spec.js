@@ -44,11 +44,18 @@ describe('templateActions', () => {
       ]);
     });
 
-    describe('when property its a select', () => {
+    describe('when property is a select or multiselect', () => {
       it('should should add as first thesauri as default value', () => {
         actions.addProperty({name: 'property3', type: 'select'}, 0)(dispatch, getState);
         expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
           {name: 'property3', type: 'select', localID: 'unique_id', content: 'first_thesauri_id'},
+          {name: 'property1'},
+          {name: 'property2'}
+        ]);
+
+        actions.addProperty({name: 'property4', type: 'multiselect'}, 0)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+          {name: 'property4', type: 'multiselect', localID: 'unique_id', content: 'first_thesauri_id'},
           {name: 'property1'},
           {name: 'property2'}
         ]);
