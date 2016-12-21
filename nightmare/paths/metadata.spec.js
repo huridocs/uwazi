@@ -7,7 +7,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
 
-describe('metadata path', () => {
+fdescribe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
@@ -18,7 +18,7 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.settingsHeader)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/settings/account');
+        expect(url).toBe(config.url + '/pt/settings/account');
         done();
       })
       .catch(catchErrors(done));
@@ -42,7 +42,7 @@ describe('metadata path', () => {
     it('should create a new dictionary with two values', (done) => {
       nightmare
       .wait(selectors.settingsView.dictionaryNameForm)
-      .type(selectors.settingsView.dictionaryNameForm, 'test dictionary')
+      .type(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
       .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
       .wait(selectors.settingsView.firstDictionaryValForm)
       .type(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
@@ -65,11 +65,11 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
-      .clearInput(selectors.settingsView.dictionaryNameForm)
+      //.wait(500)
       .type(selectors.settingsView.dictionaryNameForm, 'edited')
-      .clearInput(selectors.settingsView.firstDictionaryValForm)
+      .waitToClick(selectors.settingsView.saveDictionaryButton)
       .type(selectors.settingsView.firstDictionaryValForm, 'edited')
-      .clearInput(selectors.settingsView.secondDictionaryValForm)
+      .waitToClick(selectors.settingsView.saveDictionaryButton)
       .type(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .wait('.alert.alert-success')
@@ -79,7 +79,7 @@ describe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    }, 13000);
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
@@ -110,7 +110,7 @@ describe('metadata path', () => {
       //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
       nightmare
       .wait(selectors.settingsView.documentTemplateNameForm)
-      .type(selectors.settingsView.documentTemplateNameForm, 'test document')
+      .type(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -126,7 +126,8 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
+      .editItemFromList('new')
+      //.wait(500)
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
@@ -184,6 +185,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList('test')
+      //.wait(500)
       .clearInput(selectors.settingsView.connectionNameForm)
       .type(selectors.settingsView.connectionNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveConnectionButton)

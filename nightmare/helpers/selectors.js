@@ -4,7 +4,7 @@ export default {
     liElementsOfSection: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li',
     firstEditButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > ul > li:nth-child(1) > div > a > i',
     collectionNameForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.panel-body > form > div > input',
-    settingsHeader: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.panel-heading',
+    settingsHeader: '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
     logoutButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div:nth-child(3) > div.panel-body > a',
     accountButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
     collectionButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(2)',

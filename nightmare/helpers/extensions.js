@@ -26,7 +26,7 @@ Nightmare.action('login', function (name, password, done) {
 
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
-  .realClick(selector)
+  .click(selector)
   .then(done);
 });
 
@@ -59,5 +59,6 @@ Nightmare.action('deleteItemFromList', function (targetText, done) {
 
 Nightmare.action('editItemFromList', function (targetText, done) {
   this.manageItemFromList(targetText, '.fa-pencil')
+  .wait('.admin-content form')
   .then(done);
 });
