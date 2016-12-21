@@ -51,22 +51,41 @@ export class SortButtons extends Component {
           const sortString = 'metadata.' + property.name;
           const treatAs = property.type === 'date' ? 'number' : 'string';
           const defaultOrder = treatAs === 'number' ? 'desc' : 'asc';
-          sorts.push({
-            property: property.name,
-            html: <li key={sorts.length + 1}
-                      className={'Dropdown-option ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
-                      onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                    {t(template._id, property.label)}: Recent
-                  </li>
-          });
-          sorts.push({
-            property: property.name,
-            html: <li key={sorts.length + 1}
-                      className={'Dropdown-option ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
-                      onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                    {t(template._id, property.label)}: Last
-                  </li>
-          });
+          if (treatAs === 'string') {
+            sorts.push({
+              property: property.name,
+              html: <li key={sorts.length + 1}
+                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                        onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
+                      {t(template._id, property.label)}: A-Z
+                    </li>
+            });
+            sorts.push({
+              property: property.name,
+              html: <li key={sorts.length + 1}
+                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
+                        onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
+                      {t(template._id, property.label)}: Z-A
+                    </li>
+            });
+          } else if (treatAs === 'number') {
+            sorts.push({
+              property: property.name,
+              html: <li key={sorts.length + 1}
+                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
+                        onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
+                      {t(template._id, property.label)}: Recent
+                    </li>
+            });
+            sorts.push({
+              property: property.name,
+              html: <li key={sorts.length + 1}
+                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                        onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
+                      {t(template._id, property.label)}: Last
+                    </li>
+            });
+          }
         }
       });
       return sorts;
