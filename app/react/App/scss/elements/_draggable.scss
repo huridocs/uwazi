@@ -1,7 +1,7 @@
 @mixin draggable {
   .list-group-item {
     .fa-reorder {
-      margin: 0 25px 0 0;
+      margin: 0 15px 0 0;
       color: $c-grey;
     }
     &:hover .fa-reorder {

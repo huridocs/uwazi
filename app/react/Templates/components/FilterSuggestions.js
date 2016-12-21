@@ -36,26 +36,20 @@ export class FilterSuggestions extends Component {
     let icon = this.getTypeIcon(propertyMatch.property.type);
     let type = propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1);
 
-    return <div key={index} className={activeClass} title={title}>
-            <span>
-              <i className="fa fa-file-o"></i> {propertyMatch.template}
-            </span>
-            <i className="fa fa-angle-right"></i>
-            <span className={typeConflict ? 'conflict' : ''}>
-              <i className={icon}></i> {type}
-            </span>
+    return <tr key={index} className={activeClass} title={title}>
+            <td><i className="fa fa-file-o"></i> {propertyMatch.template}</td>
+            <td className={typeConflict ? 'conflict' : ''}><i className={icon}></i> {type}</td>
             {(() => {
               if (hasThesauri && propertyMatch.property.content) {
                 let thesauri = this.getThesauriName(propertyMatch.property.content);
-                return <span>
-                        <i className="fa fa-angle-right"></i>
+                return <td>
                         <span className={contentConflict ? 'conflict' : ''}>
-                          <i className="fa fa-book"></i>Thesauri: {thesauri}
+                          <i className="fa fa-book"></i> {thesauri}
                         </span>
-                       </span>;
+                      </td>;
               }
             })()}
-          </div>;
+          </tr>;
   }
 
   getThesauriName(thesauriId) {
@@ -83,29 +77,32 @@ export class FilterSuggestions extends Component {
     let icon = this.getTypeIcon(type);
 
 
-    return <div className="filter-suggestions">
-    <div className={activeClass} title={title}>
-            <span>
-              <i className="fa fa-file-o"></i> {this.props.data.name}
-            </span>
-            <i className="fa fa-angle-right"></i>
-            <span>
-              <i className={icon}></i> {type[0].toUpperCase() + type.slice(1)}
-            </span>
-            {(() => {
-              if (hasThesauri) {
-                let thesauri = this.getThesauriName(content);
-                return <span>
-                        <i className="fa fa-angle-right"></i>
-                        <span>
-                          <i className="fa fa-book"></i>Thesauri: {thesauri}
-                        </span>
-                       </span>;
-              }
-            })()}
-          </div>
-            {this.filterSuggestions(label, type, content, hasThesauri)}
-           </div>;
+    return <table className="table">
+            <thead>
+              <tr>
+                <th>Document or entity</th>
+                <th>Property</th>
+                  {(() => {
+                    if (hasThesauri) {
+                      return <th>Thesauri</th>;
+                    }
+                  })()}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className={activeClass} title={title}>
+                <td><i className="fa fa-file-o"></i> {this.props.data.name}</td>
+                <td><i className={icon}></i> {type[0].toUpperCase() + type.slice(1)}</td>
+                {(() => {
+                  if (hasThesauri) {
+                    let thesauri = this.getThesauriName(content);
+                    return <td><i className="fa fa-book"></i> {thesauri}</td>;
+                  }
+                })()}
+              </tr>
+              {this.filterSuggestions(label, type, content, hasThesauri)}
+            </tbody>
+          </table>;
   }
 }
 
