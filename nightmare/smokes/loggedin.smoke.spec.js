@@ -3,7 +3,7 @@ import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
-describe('Smoke test,', () => {
+fdescribe('Smoke test,', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('while logged in,', () => {
@@ -13,7 +13,7 @@ describe('Smoke test,', () => {
         .login('admin', 'admin')
         .url()
         .then((url) => {
-          expect(url).toBe(config.url + '/');
+          expect(url).toBe('http://localhost:3000/');
           done();
         })
         .catch(catchErrors(done));
@@ -122,22 +122,9 @@ describe('Smoke test,', () => {
 
       it('click on a document then a side panel with the metadata form should appear', (done) => {
         nightmare
-        .waitToClick(selectors.libraryView.libraryFirstDocument)
+        .waitToClick(selectors.uploadsView.firstDocument)
         .wait('.side-panel.is-active')
         .exists('.side-panel.is-active')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('the bottom right menu should become active on roll over', (done) => {
-        nightmare
-        .wait(selectors.uploadsView.uploadsBottomRightSaveButton)
-        .mouseover(selectors.uploadsView.uploadsBottomRightSaveButton)
-        .wait('.float-btn.active')
-        .exists('.float-btn.active')
         .then((result) => {
           expect(result).toBe(true);
           done();

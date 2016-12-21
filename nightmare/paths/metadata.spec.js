@@ -18,7 +18,7 @@ fdescribe('metadata path', () => {
       .wait(selectors.settingsView.settingsHeader)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/pt/settings/account');
+        expect(url).toBe(config.url + '/settings/account');
         done();
       })
       .catch(catchErrors(done));

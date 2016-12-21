@@ -34,7 +34,7 @@ export default {
     deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger'
   },
   libraryView: {
-    libraryFirstDocument: '.item-group .item',
+    libraryFirstDocument: '#app > div.content > div > div > main > div > div.item-group > div',
     librarySecondDocument: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2) > div.item-info > div',
     searchInLibrary: '#app > div.content > header > div > a',
@@ -62,7 +62,8 @@ export default {
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
-    uploadsBottomRightSaveButton: '.float-btn'
+    //uploadsBottomRightSaveButton: '#app > div.content > div > div > aside > div.sidepanel-footer > button.edit-metadata.btn.btn-success',
+    firstDocument: '#app > div.content > div > div > main > div.item-group > div'
   },
   navigation: {
     loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',

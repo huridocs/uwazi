@@ -14,6 +14,7 @@ Nightmare.action('clearInput', function (selector, done) {
 
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
+  //.waitToClick('#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a')
   .wait(selectors.navigation.loginNavButton)
   .click(selectors.navigation.loginNavButton)
   .wait('#username')
