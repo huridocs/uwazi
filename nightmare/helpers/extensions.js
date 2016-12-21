@@ -14,6 +14,7 @@ Nightmare.action('clearInput', function (selector, done) {
 
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
+  //.waitToClick('#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a')
   .wait(selectors.navigation.loginNavButton)
   .click(selectors.navigation.loginNavButton)
   .wait('#username')
@@ -26,7 +27,7 @@ Nightmare.action('login', function (name, password, done) {
 
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
-  .realClick(selector)
+  .click(selector)
   .then(done);
 });
 
@@ -59,5 +60,27 @@ Nightmare.action('deleteItemFromList', function (targetText, done) {
 
 Nightmare.action('editItemFromList', function (targetText, done) {
   this.manageItemFromList(targetText, '.fa-pencil')
+  .wait('.admin-content form')
+  .then(done);
+});
+
+Nightmare.action('scrollElement', function (selector, height, done) {
+  this.wait(selector)
+  .evaluate((elementToScroll, scrollHeight) => {
+    document.querySelector(elementToScroll).scrollTop = scrollHeight;
+  }, selector, height)
+  .then(done);
+});
+
+Nightmare.action('selectText', function (selector, done) {
+  this.wait(selector)
+  .evaluate((elementToSelect) => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector(elementToSelect));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, selector)
+  .mouseup(selector)
   .then(done);
 });
