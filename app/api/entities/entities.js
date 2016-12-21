@@ -156,7 +156,7 @@ export default {
     })
     .then(() => {
       return Promise.all(docs.map((doc) => {
-        search.delete(doc);
+        return search.delete(doc);
       }));
     })
     .then(() => {
