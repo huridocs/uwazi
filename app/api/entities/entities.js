@@ -43,12 +43,13 @@ export default {
             return d;
           });
 
-          let saveDocs = docs
-          .map(d => {
+          return Promise.all(docs.map(d => {
             return request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)
-            .then(() => search.index(d));
-          });
-          return Promise.all(saveDocs);
+            .then(() => this.getById(d._id))
+            .then((_d) => {
+              return search.index(_d);
+            });
+          }));
         });
       }
 

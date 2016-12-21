@@ -5,7 +5,6 @@ import {db_url as dbURL} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
-import search from 'api/search/search';
 import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -16,8 +15,6 @@ describe('upload routes', () => {
   let iosocket;
 
   beforeEach((done) => {
-    spyOn(search, 'index').and.returnValue(Promise.resolve);
-    spyOn(search, 'delete').and.returnValue(Promise.resolve);
     iosocket = jasmine.createSpyObj('socket', ['emit']);
     let io = {getSocket: () => {
       return iosocket;

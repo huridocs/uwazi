@@ -15,8 +15,8 @@ describe('Attachments Routes', () => {
   let originalAttachmentsPath;
 
   beforeEach((done) => {
-    spyOn(search, 'index').and.returnValue(Promise.resolve);
-    spyOn(search, 'delete').and.returnValue(Promise.resolve);
+    spyOn(search, 'index').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachmentsPath;
     paths.attachmentsPath = __dirname + '/uploads/';
 

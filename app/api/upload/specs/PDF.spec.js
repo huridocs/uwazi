@@ -39,11 +39,11 @@ describe('PDF', function () {
         done.fail('promise should be rejected when there is an exit code === 1');
       })
       .catch((error) => {
-        expect(error).toBe(1);
+        expect(error.toString().indexOf('no such file or directory') > -1).toBe(true);
         done();
       });
 
-      commandBeingExecuted.emit('close', 1);
+      commandBeingExecuted.stdout.emit('close', 'error');
     });
   });
 

@@ -85,7 +85,8 @@ export default {
     delete entity._id;
     delete entity._rev;
     const body = entity;
-    return elastic.index({index: elasticIndex, type: 'entity', id, body}).catch(console.log);
+    return elastic.index({index: elasticIndex, type: 'entity', id, body})
+    .catch(console.log);
   },
 
   delete(entity) {
