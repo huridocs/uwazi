@@ -54,9 +54,17 @@ export class SortButtons extends Component {
           sorts.push({
             property: property.name,
             html: <li key={sorts.length + 1}
-                      className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
-                      onClick={() => this.handleClick(sortString, defaultOrder, treatAs)}>
-                    {t(template._id, property.label)}
+                      className={'Dropdown-option ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
+                      onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
+                    {t(template._id, property.label)}: Recent
+                  </li>
+          });
+          sorts.push({
+            property: property.name,
+            html: <li key={sorts.length + 1}
+                      className={'Dropdown-option ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                      onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
+                    {t(template._id, property.label)}: Last
                   </li>
           });
         }
@@ -80,17 +88,24 @@ export class SortButtons extends Component {
     return (
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}
+          <li className={'Dropdown-option' + (sortingTitle && search.order === 'asc' ? ' is-active' : '')}
               onClick={() => this.handleClick('title', 'asc', 'string')}>
-            A-Z
+            Title: A-Z
           </li>
-          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}
+          <li className={'Dropdown-option' + (sortingTitle && search.order === 'desc' ? ' is-active' : '')}
+              onClick={() => this.handleClick('title', 'desc', 'string')}>
+            Title: Z-A
+          </li>
+          <li className={'Dropdown-option' + (sortingRecent && search.order === 'desc' ? ' is-active' : '')}
               onClick={() => this.handleClick('creationDate', 'desc', 'number')}>
-            Recent
+            Date added: Recent
+          </li>
+          <li className={'Dropdown-option' + (sortingRecent && search.order === 'asc' ? ' is-active' : '')}
+              onClick={() => this.handleClick('creationDate', 'asc', 'number')}>
+            Date added: Last
           </li>
           {additionalSorts}
         </ul>
-        <i onClick={this.changeOrder.bind(this)} className={'order-by-arrow fa fa-long-arrow-' + order}></i>
       </div>
     );
   }
