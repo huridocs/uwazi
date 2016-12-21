@@ -5,12 +5,14 @@ import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
+import search from 'api/search/search';
 import references from 'api/references';
 
 describe('entities', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
-
+    spyOn(search, 'index').and.returnValue(Promise.resolve);
+    spyOn(search, 'delete').and.returnValue(Promise.resolve);
     database.reset_testing_database()
     .then(() => database.import(fixtures))
     .then(done)
@@ -57,6 +59,18 @@ describe('entities', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.language).toEqual('en');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should index the newly created documents', (done) => {
+      let doc = {title: 'the dark knight'};
+      let user = {_id: 'user Id'};
+
+      entities.save(doc, {user, language: 'en'})
+      .then(() => {
+        expect(search.index).toHaveBeenCalled();
         done();
       })
       .catch(catchErrors(done));
@@ -317,6 +331,19 @@ describe('entities', () => {
       .catch((error) => {
         expect(error.json.error).toBe('not_found');
         expect(error.json.reason).toBe('deleted');
+        done();
+      });
+    });
+
+    it('should delete the document from the search', (done) => {
+      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+      .then((response) => {
+        return entities.delete(response.json.sharedId);
+      })
+      .then(() => {
+        const argumnets = search.delete.calls.allArgs();
+        expect(search.delete).toHaveBeenCalled();
+        expect(argumnets[0][0]._id).toBe('8202c463d6158af8065022d9b5014a18');
         done();
       });
     });

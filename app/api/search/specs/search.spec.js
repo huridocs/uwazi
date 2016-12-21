@@ -108,15 +108,60 @@ describe('search', () => {
         {title: 'doc1', _id: 'id1'},
         {title: 'doc2', _id: 'id2'}
       ])
-      .withHighlights([{'doc.title': ['doc1 highlighted']}, {'doc.title': ['doc2 highlighted']}])
+      .withHighlights([{'title': ['doc1 highlighted']}, {'title': ['doc2 highlighted']}])
       .toObject();
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
 
       search.matchTitle('term', 'es')
       .then((results) => {
-        let query = queryBuilder().fullTextSearch('term', ['doc.title']).highlight(['doc.title']).language('es').limit(5).query();
+        let query = queryBuilder().fullTextSearch('term', ['title']).highlight(['title']).language('es').limit(5).query();
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('index', () => {
+    it('should index the document', (done) => {
+      spyOn(elastic, 'index').and.returnValue(Promise.resolve());
+
+      const entity = {
+        _id: 'asd1',
+        _rev: '1-a3fs',
+        type: 'document',
+        title: 'Batman indexes'
+      };
+
+      search.index(entity)
+      .then(() => {
+        expect(elastic.index)
+        .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1', body: {
+            type: 'document',
+            title: 'Batman indexes'
+        }});
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete the index', (done) => {
+      spyOn(elastic, 'delete').and.returnValue(Promise.resolve());
+
+      const entity = {
+        _id: 'asd1',
+        _rev: '1-a3fs',
+        type: 'document',
+        title: 'Batman indexes'
+      };
+
+      search.delete(entity)
+      .then(() => {
+        expect(elastic.delete)
+        .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1'});
         done();
       })
       .catch(done.fail);

@@ -4,6 +4,7 @@ import database from '../../utils/database';
 import fixtures from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import search from 'api/search/search';
 import paths, {attachmentsPath} from '../../config/paths';
 import request from '../../../shared/JSONRequest';
 
@@ -14,6 +15,8 @@ describe('Attachments Routes', () => {
   let originalAttachmentsPath;
 
   beforeEach((done) => {
+    spyOn(search, 'index').and.returnValue(Promise.resolve);
+    spyOn(search, 'delete').and.returnValue(Promise.resolve);
     originalAttachmentsPath = paths.attachmentsPath;
     paths.attachmentsPath = __dirname + '/uploads/';
 

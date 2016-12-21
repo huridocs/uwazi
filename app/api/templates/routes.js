@@ -22,7 +22,6 @@ export default app => {
     }
 
     let url = dbURL + '/_design/templates/_view/all' + id;
-
     request.get(url)
     .then((response) => {
       response.json.rows = response.json.rows.map((row) => row.value);

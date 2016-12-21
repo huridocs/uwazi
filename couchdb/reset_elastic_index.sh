@@ -1,9 +1,9 @@
 #!/bin/bash
 
 echo "Removing ${1:-uwazi_development} index"
-curl -X DELETE http://localhost:9200/${1:-cejil}/
+curl -X DELETE http://localhost:9200/${1:-uwazi_development}/
 echo -e "\n\nCreating ${1:-uwazi_development} index"
-curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
+curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
 {
   "settings": {
     "analysis": {
@@ -33,7 +33,7 @@ curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
         }
       }, {
         "fullText_fields" : {
-          "path_match" : "doc.fullText",
+          "path_match" : "fullText",
           "match_mapping_type" : "string",
           "mapping" : {
             "type" : "string",
@@ -42,7 +42,7 @@ curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
             "analyzer": "standard",
             "fielddata" : { "format" : "enabled" },
             "fields" : {
-              "raw" : {"type": "string", "index" : "not_analyzed", "doc_values" : true, "ignore_above" : 256}
+              "raw" : {"type": "string", "index" : "no"}
             }
           }
         }

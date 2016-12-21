@@ -2,14 +2,14 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'doc.title', 'doc.icon', 'doc.processed', 'doc.creationDate', 'doc.template', 'doc.metadata', 'doc.type', 'doc.sharedId']
+      include: [ 'title', 'icon', 'processed', 'creationDate', 'template', 'metadata', 'type', 'sharedId']
     },
     from: 0,
     size: 30,
     query: {
       bool: {
         must: [
-          {match: {'doc.published': true}}
+          {match: {'published': true}}
         ]
       }
     },
@@ -22,7 +22,7 @@ export default function () {
     aggregations: {
       types: {
         terms: {
-          field: 'doc.template.raw',
+          field: 'template.raw',
           size: 0
         },
         aggregations: {
@@ -43,7 +43,7 @@ export default function () {
       return baseQuery;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['doc.fullText', 'doc.title']) {
+    fullTextSearch(term, fieldsToSearch = ['fullText', 'title']) {
       if (term) {
         baseQuery.query.bool.must.push({
           multi_match: {
@@ -57,41 +57,41 @@ export default function () {
     },
 
     language(language) {
-      let match = {match: {'doc.language': language}};
+      let match = {match: {'language': language}};
       baseQuery.query.bool.must.push(match);
       return this;
     },
 
     sort(property, order = 'desc') {
       let sort = {};
-      sort[`doc.${property}.raw`] = {order, 'ignore_unmapped': true};
+      sort[`${property}.raw`] = {order, 'ignore_unmapped': true};
       baseQuery.sort.push(sort);
       return this;
     },
 
     textFilter(filters, property) {
       let match = {match: {}};
-      match.match[`doc.metadata.${property}`] = filters[property].value;
+      match.match[`metadata.${property}`] = filters[property].value;
       return match;
     },
 
     rangeFilter(filters, property) {
       let match = {range: {}};
-      match.range[`doc.metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+      match.range[`metadata.${property}`] = {gte: filters[property].value.from, lte: filters[property].value.to};
       return match;
     },
 
     multiselectFilter(filters, property) {
       let values = filters[property].value;
       let match = {terms: {}};
-      match.terms[`doc.metadata.${property}.raw`] = values;
+      match.terms[`metadata.${property}.raw`] = values;
       return match;
     },
 
     nestedrangeFilter(filters, property) {
       let match = {
         nested: {
-          path: `doc.metadata.${property}`,
+          path: `metadata.${property}`,
           filter: {
             bool: {
               should: []
@@ -100,9 +100,9 @@ export default function () {
         }
       };
       let fromMatch = {range: {}};
-      fromMatch.range[`doc.metadata.${property}.from`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+      fromMatch.range[`metadata.${property}.from`] = {gte: filters[property].value.from, lte: filters[property].value.to};
       let toMatch = {range: {}};
-      toMatch.range[`doc.metadata.${property}.to`] = {gte: filters[property].value.from, lte: filters[property].value.to};
+      toMatch.range[`metadata.${property}.to`] = {gte: filters[property].value.from, lte: filters[property].value.to};
 
       match.nested.filter.bool.should.push(fromMatch);
       match.nested.filter.bool.should.push(toMatch);
@@ -112,7 +112,7 @@ export default function () {
     strictNestedFilter(filters, property) {
       let match = {
         nested: {
-          path: `doc.metadata.${property}`,
+          path: `metadata.${property}`,
           filter: {
             bool: {
               must: []
@@ -130,13 +130,13 @@ export default function () {
 
       keys.forEach((key) => {
         if (properties[key].any) {
-          match.nested.filter.bool.must.push({exists: {field: `doc.metadata.${property}.${key}`}});
+          match.nested.filter.bool.must.push({exists: {field: `metadata.${property}.${key}`}});
           return;
         }
 
         properties[key].values.forEach((val) => {
           let term = {term: {}};
-          term.term[`doc.metadata.${property}.${key}.raw`] = {value: val};
+          term.term[`metadata.${property}.${key}.raw`] = {value: val};
           match.nested.filter.bool.must.push(term);
         });
       });
@@ -161,7 +161,7 @@ export default function () {
       match.bool.must = keys.map((key) => {
         let nestedmatch = {
           nested: {
-            path: `doc.metadata.${property}`,
+            path: `metadata.${property}`,
             filter: {
               bool: {
                 must: [
@@ -172,12 +172,12 @@ export default function () {
         };
 
         if (properties[key].any) {
-          nestedmatch.nested.filter.bool.must[0] = {exists: {field: `doc.metadata.${property}.${key}`}};
+          nestedmatch.nested.filter.bool.must[0] = {exists: {field: `metadata.${property}.${key}`}};
           return nestedmatch;
         }
 
         let terms = {terms: {}};
-        terms.terms[`doc.metadata.${property}.${key}.raw`] = properties[key].values;
+        terms.terms[`metadata.${property}.${key}.raw`] = properties[key].values;
         nestedmatch.nested.filter.bool.must[0] = terms;
         return nestedmatch;
       });
@@ -239,7 +239,7 @@ export default function () {
     nestedAggregation(property, readOnlyFilters) {
       let nestedAggregation = baseQuery.aggregations[property.name] = {
         nested: {
-          path: `doc.metadata.${property.name}`
+          path: `metadata.${property.name}`
         },
         aggregations: {}
       };
@@ -251,7 +251,7 @@ export default function () {
           return result.concat(propFilters);
         }, []);
 
-        let path = `doc.metadata.${property.name}.${prop.key}.raw`;
+        let path = `metadata.${property.name}.${prop.key}.raw`;
         let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must) {
             match.bool.must = match.bool.must.filter((nestedMatcher) => {
@@ -302,7 +302,7 @@ export default function () {
 
     aggregations(properties) {
       properties.forEach((property) => {
-        let path = `doc.metadata.${property.name}.raw`;
+        let path = `metadata.${property.name}.raw`;
         let filters = baseQuery.filter.bool.must.filter((match) => {
           return !match.terms ||
                  match.terms && !match.terms[path];
@@ -319,7 +319,7 @@ export default function () {
 
     filterByTemplate(templates = []) {
       if (templates.length) {
-        let match = {terms: {'doc.template.raw': templates}};
+        let match = {terms: {'template.raw': templates}};
         baseQuery.filter.bool.must.push(match);
       }
       return this;

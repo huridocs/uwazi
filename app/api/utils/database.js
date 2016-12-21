@@ -24,14 +24,25 @@ function insert(docs) {
 
 let database = {
   reset_testing_database () {
-    return fetch(dbURL, {method: 'DELETE'})
-    .then(() => fetch(dbURL, {method: 'PUT'}));
+    return fetch(`${dbURL}/_all_docs`, {method: 'GET'})
+    .then((res) => {
+      return res.json();
+    })
+    .then((docs) => {
+      return Promise.all(docs.rows.map((doc) => {
+        const isDesignDocument = doc.id.indexOf('_design') > -1;
+        if (isDesignDocument) {
+          return Promise.resolve();
+        }
+
+        return fetch(`${dbURL}/${doc.id}?rev=${doc.value.rev}`, {method: 'DELETE'})
+        .then((res) => res.json());
+      }));
+    });
   },
 
   import(fixture) {
-    return getViews()
-    .then((views) => insert(views))
-    .then(() => insert(JSON.stringify(fixture)))
+    return insert(JSON.stringify(fixture))
     .then((response) => response.json())
     .then((response) => {
       if (response[0] && response[0].error) {
