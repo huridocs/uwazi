@@ -19,7 +19,6 @@
   line-height: 1.75em;
   border-bottom: 1px dotted transparent;
   cursor: pointer;
-  order: 1;
 
   &.is-active {
     display: block;
@@ -27,7 +26,6 @@
     color: $c-primary;
     border-color: $c-primary;
     text-decoration: none;
-    order: 0;
     &:hover {
       color: $c-primary-dark;
     }
