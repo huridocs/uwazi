@@ -29,7 +29,7 @@ export class Item extends Component {
       );
     });
 
-    const creationMetadata = <dl><dt>Upload date</dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
+    const creationMetadata = <dl><dt>Date added</dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
 
     return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
   }
