@@ -43,21 +43,20 @@ export default {
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a'
   },
   documentView: {
+    viewer: '#app > div.content > div > div > main',
     documentPage: '.page',
-    documentPageFirstParagraph: '.t:nth-child(4)',
-    bottomRightMenu: '.fa-plus',
-    bottomRightMenuIsActive: '.float-btn.active',
-    bottomRightMenuAddParagraph: '.fa-paragraph',
+    documentPageFirstParagraph: '#pageContainer1 > div.textLayer > div:nth-child(1)',
+    createParagraphLinkButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(1)',
     createReferenceSidePanelIsActive: '#app > div.content > div > div > aside.side-panel.create-reference.is-active',
-    createReferenceSidePanelSelect: 'select.form-control',
-    createReferenceSidePanelSelectFirstValue: 'a901de64992c1acddbbc2a930808377a',
+    createReferenceSidePanelSelect: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > select',
+    createReferenceSidePanelSelectFirstValue: '3653d89a99f6ef61fdd6b8a00d022a96',
     createReferenceSidePanelInput: '.input-group input[type="text"]',
-    createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div:nth-child(1)',
+    createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div',
     createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button',
     targetDocument: '.document-viewer.show-target-document',
-    saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div.relationship-steps.is-fixed > button.btn.btn-success',
-    activeConnection: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.item.relationship-active',
-    unlinkIcon: '#app > div.content > div > div > aside:nth-child(4) > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(1) > div.item-actions > div > a:nth-child(1)'
+    saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div:nth-child(1) > div.ContextMenu.ContextMenu-center > button',
+    activeConnection: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div',
+    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--danger'
 
   },
   uploadsView: {

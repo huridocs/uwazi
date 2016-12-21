@@ -3,7 +3,7 @@ import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
-fdescribe('Smoke test,', () => {
+describe('Smoke test,', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('while logged in,', () => {

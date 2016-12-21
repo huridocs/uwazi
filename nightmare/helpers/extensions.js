@@ -63,3 +63,24 @@ Nightmare.action('editItemFromList', function (targetText, done) {
   .wait('.admin-content form')
   .then(done);
 });
+
+Nightmare.action('scrollElement', function (selector, height, done) {
+  this.wait(selector)
+  .evaluate((elementToScroll, scrollHeight) => {
+    document.querySelector(elementToScroll).scrollTop = scrollHeight;
+  }, selector, height)
+  .then(done);
+});
+
+Nightmare.action('selectText', function (selector, done) {
+  this.wait(selector)
+  .evaluate((elementToSelect) => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector(elementToSelect));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, selector)
+  .mouseup(selector)
+  .then(done);
+});
