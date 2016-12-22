@@ -10,7 +10,7 @@ import * as uiActions from './uiActions';
 export function immidiateSearch(dispatch, searchTerm, connectionType) {
   dispatch(uiActions.searching());
 
-  let query = {searchTerm, fields: ['doc.title']};
+  let query = {searchTerm, fields: ['title']};
 
   return api.get('search', query)
   .then((response) => {

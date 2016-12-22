@@ -120,8 +120,8 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
       }, {
         "nested_fields" : {
           "match_mapping_type": "object",
-          "path_match" : "doc.metadata.*",
-          "path_unmatch" : "doc.metadata.*.*",
+          "path_match" : "metadata.*",
+          "path_unmatch" : "metadata.*.*",
           "mapping" : {"type" : "nested"}
         }
       }],
