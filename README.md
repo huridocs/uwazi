@@ -10,11 +10,11 @@
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
       ```
-- **Elasticsearch / Logstash** (latest version, 2.1.1)
+- **Elasticsearch / Logstash** (2.4 / 2.4)
     - OSX
       - `brew update`
-      - `brew install elasticsearch`
-      - `brew install logstash`
+      - `brew install elasticsearch@2.4`
+      - `brew install homebrew/versions/logstash24`
 
     - Ubuntu
       ```
@@ -54,48 +54,6 @@
       $ sudo apt-get update
       $ sudo apt-get install couchdb -y
       ```
-
-- **pdf2htmlEX**
-    - OSX
-
-      ```
-      $ brew install pdf2htmlex
-      ```
-    - Ubuntu
-
-      ```
-      $ sudo add-apt-repository ppa:coolwanglu/pdf2htmlex
-      $ sudo add-apt-repository ppa:fontforge/fontforge
-      $ sudo apt-get update
-      $ sudo apt-get install pdf2htmlex
-      $ sudo apt-get -f install
-      ```
-
-    - Inside Docker
-
-      If you are running into issues trying to run pdf2htmlEX due to library dependencies or other problems, you may try to run pdf2htmlEX as a docker container.  For this, uninstall any pdf2htmlEX installation you have on your system.
-
-      Install Docker engine: https://docs.docker.com/installation/
-
-      Then, create a new pdf2htmlEX executable under /usr/local/bin:
-
-      ```
-      $ sudo touch /usr/local/bin/pdf2htmlEX
-      $ sudo chmod +x /usr/local/bin/pdf2htmlEX
-      $ sudo vim /usr/local/bin/pdf2htmlEX
-      ```
-
-      Make this the content of the file:
-
-      ```
-      #!/bin/bash
-      args="$@"
-      args=${args/\/home/home}
-      args=${args/\/tmp/tmp}
-      docker run -t --rm -u $(id -u):$(id -g) -v /:/pdf bwits/pdf2htmlex pdf2htmlEX $args
-      ```
-
-      * NOTE: this is a very rudimentary script, any feedback on how to improve this would be greatly appreciated.
 
 #Development
 
