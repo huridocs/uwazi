@@ -65,6 +65,10 @@ export default {
     return _fetch(url, data, 'POST', headers);
   },
 
+  put: (url, data, headers) => {
+    return _fetch(url, data, 'PUT', headers);
+  },
+
   get: (url, data, headers) => {
     return _fetch(url, data, 'GET', headers);
   },

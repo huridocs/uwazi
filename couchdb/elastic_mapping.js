@@ -1,10 +1,4 @@
-#!/bin/bash
-
-echo "Removing ${1:-uwazi_development} index"
-curl -X DELETE http://localhost:9200/${1:-uwazi_development}/
-echo -e "\n\nCreating ${1:-uwazi_development} index"
-curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
-{
+export default {
   "settings": {
     "analysis": {
       "analyzer": {
@@ -141,5 +135,4 @@ curl -X PUT http://localhost:9200/${1:-uwazi_development}/ -d '
       }
     }
   }
-}
-'
+};

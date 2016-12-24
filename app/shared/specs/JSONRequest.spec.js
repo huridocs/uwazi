@@ -6,6 +6,7 @@ describe('JSONRequest', () => {
     backend.restore();
     backend
     .mock('http://localhost:3000/api/test', 'POST', JSON.stringify({response: 'post'}))
+    .mock('http://localhost:3000/api/test', 'PUT', JSON.stringify({response: 'put'}))
     .mock('http://localhost:3000/api/test', 'GET', JSON.stringify({response: 'get'}))
     .mock('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', 'GET', JSON.stringify({response: 'get with params'}))
     .mock('http://localhost:3000/api/test', 'DELETE', JSON.stringify({response: 'delete'}))
@@ -42,6 +43,47 @@ describe('JSONRequest', () => {
     describe('when passing headers', () => {
       it('should send them', (done) => {
         request.post('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
+        .then(() => {
+          let headers = backend.calls().matched[0][1].headers;
+          expect(headers.Cookie).toBe('cookie');
+
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+  });
+
+  describe('put()', () => {
+    it('should PUT to the url and return the response json and the status', (done) => {
+      request.put('http://localhost:3000/api/test')
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.json).toEqual({response: 'put'});
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    describe('when response is greater than 399', () => {
+      it('should throw an error', (done) => {
+        backend.reMock('http://localhost:3000/api/test', 'PUT', {status: 400, body: JSON.stringify({error: 'error!'})});
+
+        request.put('http://localhost:3000/api/test')
+        .then(() => {
+          done.fail('should have thrown an error');
+        })
+        .catch((response) => {
+          expect(response.json.error).toBe('error!');
+          expect(response.status).toBe(400);
+          done();
+        });
+      });
+    });
+
+    describe('when passing headers', () => {
+      it('should send them', (done) => {
+        request.put('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
         .then(() => {
           let headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
