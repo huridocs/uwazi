@@ -15,6 +15,7 @@ describe('documents', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.returnValue(Promise.resolve());
     mockID();
     database.reset_testing_database()
     .then(() => database.import(fixtures))
