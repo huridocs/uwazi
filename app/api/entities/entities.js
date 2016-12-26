@@ -2,6 +2,7 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
 import date from 'api/utils/date.js';
+import search from 'api/search/search';
 import sanitizeResponse from '../utils/sanitizeResponse';
 import references from '../references/references.js';
 import settings from '../settings';
@@ -42,7 +43,13 @@ export default {
             return d;
           });
 
-          return Promise.all(docs.map(d => request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)));
+          return Promise.all(docs.map(d => {
+            return request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)
+            .then(() => this.getById(d._id))
+            .then((_d) => {
+              return search.index(_d);
+            });
+          }));
         });
       }
 
@@ -53,7 +60,8 @@ export default {
         return langDoc;
       });
 
-      return request.post(`${dbURL}/_bulk_docs`, {docs});
+      return request.post(`${dbURL}/_bulk_docs`, {docs})
+      .then(() => Promise.all(docs.map((d) => search.index(d))));
     })
     .then(() => this.get(sharedId, language))
     .then(response => {
@@ -78,7 +86,11 @@ export default {
   },
 
   saveMultiple(docs) {
-    return request.post(`${dbURL}/_bulk_docs`, {docs});
+    return request.post(`${dbURL}/_bulk_docs`, {docs})
+    .then((response) => {
+      Promise.all(docs.map((d) => search.index(d)));
+      return response;
+    });
   },
 
   getAllLanguages(id) {
@@ -141,6 +153,11 @@ export default {
       docsToDelete = docsToDelete.concat(response.json.rows);
       docsToDelete.map((doc) => doc._deleted = true);
       return request.post(`${dbURL}/_bulk_docs`, {docs: docsToDelete});
+    })
+    .then(() => {
+      return Promise.all(docs.map((doc) => {
+        return search.delete(doc);
+      }));
     })
     .then(() => {
       return docs;

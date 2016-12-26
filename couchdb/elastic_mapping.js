@@ -1,10 +1,4 @@
-#!/bin/bash
-
-echo "Removing ${1:-uwazi_development} index"
-curl -X DELETE http://localhost:9200/${1:-cejil}/
-echo -e "\n\nCreating ${1:-uwazi_development} index"
-curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
-{
+export default {
   "settings": {
     "analysis": {
       "analyzer": {
@@ -33,7 +27,7 @@ curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
         }
       }, {
         "fullText_fields" : {
-          "path_match" : "doc.fullText",
+          "path_match" : "fullText",
           "match_mapping_type" : "string",
           "mapping" : {
             "type" : "string",
@@ -42,7 +36,7 @@ curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
             "analyzer": "standard",
             "fielddata" : { "format" : "enabled" },
             "fields" : {
-              "raw" : {"type": "string", "index" : "not_analyzed", "doc_values" : true, "ignore_above" : 256}
+              "raw" : {"type": "string", "index" : "no"}
             }
           }
         }
@@ -120,8 +114,8 @@ curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
       }, {
         "nested_fields" : {
           "match_mapping_type": "object",
-          "path_match" : "doc.metadata.*",
-          "path_unmatch" : "doc.metadata.*.*",
+          "path_match" : "metadata.*",
+          "path_unmatch" : "metadata.*.*",
           "mapping" : {"type" : "nested"}
         }
       }],
@@ -141,5 +135,4 @@ curl -X PUT http://localhost:9200/${1:-cejil}/ -d '
       }
     }
   }
-}
-'
+};

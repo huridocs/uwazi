@@ -30,13 +30,11 @@ export default class PDF extends EventEmitter {
     extraction.stdout.pipe(logFile);
 
     return new Promise((resolve, reject) => {
-      extraction.on('close', (code) => {
-        if (code === 1) {
-          reject(code);
-        }
-      });
       extraction.stdout.on('close', () => {
         fs.readFile(tmpPath + basename(this.filepath) + '.txt', 'utf-8', (err, content) => {
+          if (err) {
+            reject(err);
+          }
           resolve(content);
         });
       });

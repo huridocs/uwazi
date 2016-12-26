@@ -5,7 +5,7 @@ describe('documentQueryBuilder', () => {
 
   describe('default query', () => {
     it('should do a match all on published documents', () => {
-      expect(queryBuilder().query().query.bool.must[0]).toEqual({match: {'doc.published': true}});
+      expect(queryBuilder().query().query.bool.must[0]).toEqual({match: {'published': true}});
     });
   });
 
@@ -24,10 +24,10 @@ describe('documentQueryBuilder', () => {
   describe('language', () => {
     it('should set language', () => {
       let baseQuery = queryBuilder().language('es').query();
-      expect(baseQuery.query.bool.must[1]).toEqual({match: {'doc.language': 'es'}});
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'es'}});
 
       baseQuery = queryBuilder().language('en').query();
-      expect(baseQuery.query.bool.must[1]).toEqual({match: {'doc.language': 'en'}});
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'en'}});
     });
   });
 
@@ -37,25 +37,25 @@ describe('documentQueryBuilder', () => {
         property1: {value: 'value1', type: 'text'},
         property2: {value: 'value2', type: 'text'}
       }).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({match: {'doc.metadata.property1': 'value1'}});
-      expect(baseQuery.filter.bool.must[1]).toEqual({match: {'doc.metadata.property2': 'value2'}});
+      expect(baseQuery.filter.bool.must[0]).toEqual({match: {'metadata.property1': 'value1'}});
+      expect(baseQuery.filter.bool.must[1]).toEqual({match: {'metadata.property2': 'value2'}});
     });
 
     it('should filter range filters', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: {from: 10, to: 20}, type: 'range'}}).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({range: {'doc.metadata.property1': {gte: 10, lte: 20}}});
+      expect(baseQuery.filter.bool.must[0]).toEqual({range: {'metadata.property1': {gte: 10, lte: 20}}});
     });
 
     it('should filter multiselect filters', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: [23, 4, 16], type: 'multiselect'}}).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({terms: {'doc.metadata.property1.raw': [23, 4, 16]}});
+      expect(baseQuery.filter.bool.must[0]).toEqual({terms: {'metadata.property1.raw': [23, 4, 16]}});
     });
   });
 
   describe('filterByTemplate', () => {
     it('should add a match to get only documents that match with the templates', () => {
       let baseQuery = queryBuilder().filterByTemplate(['template1', 'template2']).query();
-      let expectedMatcher = {terms: {'doc.template.raw': ['template1', 'template2']}};
+      let expectedMatcher = {terms: {'template.raw': ['template1', 'template2']}};
       expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
     });
   });
@@ -66,7 +66,7 @@ describe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().query();
       let typesAggregation = {
         terms: {
-          field: 'doc.template.raw',
+          field: 'template.raw',
           size: 0
         },
         aggregations: {
@@ -86,7 +86,7 @@ describe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().aggregations([{name: 'property1'}, {name: 'property2'}]).query();
       let property1Aggregation = {
         terms: {
-          field: 'doc.metadata.property1.raw',
+          field: 'metadata.property1.raw',
           size: 0
         },
         aggregations: {
@@ -112,7 +112,7 @@ describe('documentQueryBuilder', () => {
           multi_match: {
             query: 'term',
             type: 'phrase_prefix',
-            fields: ['doc.fullText', 'doc.title']
+            fields: ['fullText', 'title']
           }
         }
       );
@@ -121,11 +121,11 @@ describe('documentQueryBuilder', () => {
     describe('sort', () => {
       it('should add a sort property desc by default', () => {
         let baseQuery = queryBuilder().sort('title').query();
-        expect(baseQuery.sort[0]).toEqual({'doc.title.raw': {order: 'desc', ignore_unmapped: true}});
+        expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'desc', ignore_unmapped: true}});
       });
       it('should sort by order passed', () => {
         let baseQuery = queryBuilder().sort('title', 'asc').query();
-        expect(baseQuery.sort[0]).toEqual({'doc.title.raw': {order: 'asc', ignore_unmapped: true}});
+        expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'asc', ignore_unmapped: true}});
       });
     });
 

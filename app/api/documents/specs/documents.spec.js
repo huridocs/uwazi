@@ -9,10 +9,13 @@ import fs from 'fs';
 import {mockID} from 'shared/uniqueID';
 import references from 'api/references';
 import entities from 'api/entities';
+import search from 'api/search/search';
 
 describe('documents', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
+    spyOn(search, 'index').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.returnValue(Promise.resolve());
     mockID();
     database.reset_testing_database()
     .then(() => database.import(fixtures))

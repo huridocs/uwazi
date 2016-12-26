@@ -40,21 +40,6 @@ describe('templates routes', () => {
         .catch(catchErrors(done));
       });
     });
-
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        let req = {query: {_id: 'non_existent_id'}};
-
-        database.reset_testing_database()
-        .then(() => routes.get('/api/templates', req))
-        .then((response) => {
-          let error = response.error;
-          expect(error.error).toBe('not_found');
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-    });
   });
 
   describe('DELETE', () => {
