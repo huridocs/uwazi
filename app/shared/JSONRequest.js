@@ -32,7 +32,7 @@ let _fetch = (url, data, method, _headers) => {
     params = toUrlParams(data);
   }
 
-  if (method === 'POST') {
+  if (method === 'POST' || method === 'PUT') {
     body = JSON.stringify(data);
   }
 
