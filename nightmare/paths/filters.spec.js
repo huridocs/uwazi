@@ -25,6 +25,21 @@ fdescribe('filters path', () => {
     });
   });
 
+  describe('Filters tests', () => {
+    it('should click Filters button and then click on Create Group button', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.filtersButton)
+      .waitToClick(selectors.settingsView.createFilterGroupButton)
+      .wait(selectors.settingsView.newFilterGroupForm)
+      .exists(selectors.settingsView.newFilterGroupForm)
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
