@@ -38,6 +38,43 @@ fdescribe('filters path', () => {
       })
       .catch(catchErrors(done));
     });
+
+    it('should create a group called Test Group', (done) => {
+      nightmare
+      .clearInput(selectors.settingsView.newFilterGroupForm)
+      .type(selectors.settingsView.newFilterGroupForm, 'Test Group')
+      .waitToClick(selectors.settingsView.filtrableTypesSaveButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should delete the filters group', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.deleteFilterGroup)
+      .exists(selectors.settingsView.deleteFilterGroup)
+      .then((result) => {
+        expect(result).toBe(false);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should save the changes after deleting the filters group', (done) => {
+      nightmare
+      .waitToClick(selectors.settingsView.filtrableTypesSaveButton)
+      .wait('.alert.alert-success')
+      .exists('.alert.alert-success')
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
   });
 
   describe('closing browser', () => {

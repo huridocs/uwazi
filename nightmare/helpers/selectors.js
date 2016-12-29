@@ -15,6 +15,8 @@ export default {
     filtersButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(6)',
     createFilterGroupButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div.panel-heading > div > button.pull-right.btn.btn-sm.btn-default',
     newFilterGroupForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div:nth-child(2) > ul > div > div > div.input-group > input',
+    filtrableTypesSaveButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div.panel-heading > div > button.pull-right.btn.btn-sm.btn-success',
+    deleteFilterGroup: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div:nth-child(2) > ul > div > div > div.input-group > span > button',
     dictionariesBackButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading > a',
     documentsBackButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > a',
     connectionsBackButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div.panel-heading.relationType > a',
