@@ -66,7 +66,7 @@ describe('settings', () => {
         let config = {site_name: 'My collection', links: [{title: 'Page one'}]};
         settings.save(config)
         .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], {'Page one': 'Page one'});
+          expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], {'Page one': 'Page one'}, 'Uwazi UI');
           done();
         }).catch(catchErrors(done));
       });
@@ -80,7 +80,8 @@ describe('settings', () => {
             return settings.save(config);
           })
           .then(() => {
-            expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {'Page one': 'Page 1'}, ['Page two'], {'Page 1': 'Page 1', 'Page three': 'Page three'});
+            expect(translations.updateContext)
+            .toHaveBeenCalledWith('Menu', 'Menu', {'Page one': 'Page 1'}, ['Page two'], {'Page 1': 'Page 1', 'Page three': 'Page three'}, 'Uwazi UI');
             done();
           }).catch(catchErrors(done));
         });
@@ -92,7 +93,7 @@ describe('settings', () => {
         let config = {site_name: 'My collection', filters: [{id: 1, name: 'Judge'}, {id: 2, name: 'Documents', items: [{id: 3, name: 'Cause'}]}]};
         settings.save(config)
         .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {}, [], {Documents: 'Documents'});
+          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {}, [], {Documents: 'Documents'}, 'Uwazi UI');
           done();
         }).catch(catchErrors(done));
       });
@@ -105,7 +106,8 @@ describe('settings', () => {
           return settings.save(config);
         })
         .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {Documents: 'Important Documents'}, ['Files'], {'Important Documents': 'Important Documents'});
+          expect(translations.updateContext)
+          .toHaveBeenCalledWith('Filters', 'Filters', {Documents: 'Important Documents'}, ['Files'], {'Important Documents': 'Important Documents'}, 'Uwazi UI');
           done();
         }).catch(catchErrors(done));
       });

@@ -134,10 +134,15 @@ describe('thesauris', () => {
       thesauris.save(data)
       .then((response) => {
         expect(translations.addContext)
-        .toHaveBeenCalledWith(response._id, 'Batman wish list', {
-          'Batman wish list': 'Batman wish list',
-          'Joker BFF': 'Joker BFF'
-        });
+        .toHaveBeenCalledWith(
+          response._id,
+          'Batman wish list',
+          {
+            'Batman wish list': 'Batman wish list',
+            'Joker BFF': 'Joker BFF'
+          },
+          'Dictionary'
+        );
         done();
       })
       .catch(done.fail);
@@ -206,7 +211,8 @@ describe('thesauris', () => {
             'Top 1 games',
             {'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games'},
             ['Fundation'],
-            {'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game'}
+            {'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game'},
+            'Dictionary'
           );
           done();
         })

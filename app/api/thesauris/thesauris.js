@@ -35,7 +35,7 @@ function _save(thesauri) {
 
   return request.post(dbUrl, thesauri)
   .then((response) => {
-    translations.addContext(response.json.id, thesauri.name, context);
+    translations.addContext(response.json.id, thesauri.name, context, 'Dictionary');
     return response;
   });
 }
@@ -56,7 +56,7 @@ let updateTranslation = (current, thesauri) => {
 
   context[thesauri.name] = thesauri.name;
 
-  translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+  translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context, 'Dictionary');
 };
 
 function _update(thesauri) {

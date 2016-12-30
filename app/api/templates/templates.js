@@ -27,7 +27,8 @@ let addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  translations.addContext(template._id, template.name, values);
+  let type = template.isEntity ? 'Entity' : 'Document';
+  translations.addContext(template._id, template.name, values, type);
 };
 
 let updateTranslation = (currentTemplate, template) => {
@@ -46,7 +47,8 @@ let updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
+  let type = template.isEntity ? 'Entity' : 'Document';
+  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, type);
 };
 
 let save = (template) => {

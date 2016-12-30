@@ -82,7 +82,7 @@ describe('templates', () => {
           'label 2': 'label 2'
         };
 
-        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues);
+        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Document');
         done();
       });
     });
@@ -181,6 +181,7 @@ describe('templates', () => {
           template = _template;
           spyOn(translations, 'addContext');
           template.name = 'new title';
+          template.isEntity = true;
           template.properties[0].label = 'new label 1';
           template.properties.pop();
           template.properties.push({label: 'label 3'});
@@ -196,7 +197,8 @@ describe('templates', () => {
               'created template': 'new title'
             },
             ['label 2'],
-            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
+            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'},
+            'Entity'
           );
           done();
         })

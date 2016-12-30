@@ -53,11 +53,11 @@ export default {
     });
   },
 
-  addContext(id, contextName, values) {
+  addContext(id, contextName, values, type) {
     return this.get()
     .then((result) => {
       return Promise.all(result.rows.map((translation) => {
-        translation.contexts.push({id, label: contextName, values});
+        translation.contexts.push({id, label: contextName, values, type});
         return this.save(translation);
       }));
     })
@@ -79,14 +79,14 @@ export default {
     });
   },
 
-  updateContext(id, newContextName, keyNamesChanges, deletedProperties, values) {
+  updateContext(id, newContextName, keyNamesChanges, deletedProperties, values, type) {
     return Promise.all([this.get(), settings.get()])
     .then(([translations, siteSettings]) => {
       let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;
       return Promise.all(translations.rows.map((translation) => {
         let context = translation.contexts.find((tr) => tr.id === id);
         if (!context) {
-          translation.contexts.push({id, label: newContextName, values});
+          translation.contexts.push({id, label: newContextName, values, type});
           return this.save(translation);
         }
 
@@ -112,6 +112,7 @@ export default {
         });
 
         context.label = newContextName;
+        context.type = type;
 
         return this.save(translation);
       }));
