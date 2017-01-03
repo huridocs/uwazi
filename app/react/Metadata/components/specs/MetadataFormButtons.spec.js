@@ -1,6 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS as immutable} from 'immutable';
+import {I18NLink} from 'app/I18N';
 
 import {MetadataFormButtons} from '../MetadataFormButtons';
 
@@ -16,10 +17,11 @@ describe('MetadataFormButtons', () => {
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       resetForm: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
-      data: immutable({test: 'test'}),
+      data: immutable({test: 'test', sharedId: 'shId', type: 'type'}),
       templates: immutable([{test: 'test'}]),
       formName: 'FormName',
-      formStatePath: 'form'
+      formStatePath: 'form',
+      includeViewButton: true
     };
   });
 
@@ -27,13 +29,33 @@ describe('MetadataFormButtons', () => {
     component = shallow(<MetadataFormButtons {...props} />, {context});
   };
 
+  describe('view', () => {
+    beforeEach(() => {
+      render();
+    });
+
+    it('should include a visible view button with the correct link', () => {
+      const link = component.find(I18NLink);
+      expect(link.props().to).toBe('type/shId');
+      expect(link.parent().props().if).toBe(true);
+    });
+
+    it('should not show the button if prop not true', () => {
+      props.includeViewButton = false;
+      render();
+      const link = component.find(I18NLink);
+
+      expect(link.parent().props().if).toBe(false);
+    });
+  });
+
   describe('edit', () => {
     beforeEach(() => {
       render();
     });
 
     it('should load the entity on the reduxForm', () => {
-      component.find('.edit-metadata').simulate('click');
+      component.find('.edit-metadata').at(1).simulate('click');
       expect(props.loadInReduxForm).toHaveBeenCalledWith(props.formStatePath, props.data.toJS(), props.templates.toJS());
     });
   });

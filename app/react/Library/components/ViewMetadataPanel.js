@@ -73,6 +73,7 @@ export class ViewMetadataPanel extends Component {
           data={rawDoc}
           formStatePath='library.metadata'
           entityBeingEdited={docBeingEdited}
+          includeViewButton={true}
         />
 
         <div className="sidepanel-body">
