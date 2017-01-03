@@ -27,7 +27,7 @@ describe('Connections actions', () => {
     describe('immidiateSearch', () => {
       it('should search for connections', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['doc.title']});
+        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title']});
         expect(store.getActions()).toContain({type: 'SEARCHING_CONNECTIONS'});
       });
 
@@ -59,7 +59,7 @@ describe('Connections actions', () => {
 
         jasmine.clock().tick(400);
 
-        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['doc.title']});
+        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title']});
         jasmine.clock().uninstall();
       });
     });
@@ -68,7 +68,7 @@ describe('Connections actions', () => {
   describe('startNewConnection', () => {
     it('should perform an immediate empty search', () => {
       actions.startNewConnection('type', 'sourceId')(store.dispatch);
-      expect(api.get).toHaveBeenCalledWith('search', {searchTerm: '', fields: ['doc.title']});
+      expect(api.get).toHaveBeenCalledWith('search', {searchTerm: '', fields: ['title']});
     });
 
     it('should restore default search term and open the panel', (done) => {
