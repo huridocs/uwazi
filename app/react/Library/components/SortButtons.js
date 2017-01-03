@@ -55,34 +55,30 @@ export class SortButtons extends Component {
             sorts.push({
               property: property.name,
               html: <li key={sorts.length + 1}
-                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
-                        onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                      {t(template._id, property.label)}: A-Z
-                    </li>
-            });
-            sorts.push({
-              property: property.name,
-              html: <li key={sorts.length + 1}
-                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
-                        onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                      {t(template._id, property.label)}: Z-A
+                        className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}>
+                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                         onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
+                         {t(template._id, property.label)}: A-Z
+                      </a>
+                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                         onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
+                         {t(template._id, property.label)}: Z-A
+                      </a>
                     </li>
             });
           } else if (treatAs === 'number') {
             sorts.push({
               property: property.name,
               html: <li key={sorts.length + 1}
-                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
-                        onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                      {t(template._id, property.label)}: Recent
-                    </li>
-            });
-            sorts.push({
-              property: property.name,
-              html: <li key={sorts.length + 1}
-                        className={'Dropdown-option ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
-                        onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                      {t(template._id, property.label)}: Last
+                        className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}>
+                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
+                         onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
+                         {t(template._id, property.label)}: Recent
+                      </a>
+                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                         onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
+                         {t(template._id, property.label)}: Last
+                      </a>
                     </li>
             });
           }
@@ -107,21 +103,25 @@ export class SortButtons extends Component {
     return (
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-          <li className={'Dropdown-option' + (sortingTitle && search.order === 'asc' ? ' is-active' : '')}
-              onClick={() => this.handleClick('title', 'asc', 'string')}>
-            Title: A-Z
+          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}>
+            <a className={'Dropdown-option__item' + (sortingTitle && search.order === 'asc' ? ' is-active' : '')}
+               onClick={() => this.handleClick('title', 'asc', 'string')}>
+               Title: A-Z
+            </a>
+            <a className={'Dropdown-option__item' + (sortingTitle && search.order === 'desc' ? ' is-active' : '')}
+               onClick={() => this.handleClick('title', 'desc', 'string')}>
+               Title: Z-A
+            </a>
           </li>
-          <li className={'Dropdown-option' + (sortingTitle && search.order === 'desc' ? ' is-active' : '')}
-              onClick={() => this.handleClick('title', 'desc', 'string')}>
-            Title: Z-A
-          </li>
-          <li className={'Dropdown-option' + (sortingRecent && search.order === 'desc' ? ' is-active' : '')}
-              onClick={() => this.handleClick('creationDate', 'desc', 'number')}>
-            Date added: Recent
-          </li>
-          <li className={'Dropdown-option' + (sortingRecent && search.order === 'asc' ? ' is-active' : '')}
-              onClick={() => this.handleClick('creationDate', 'asc', 'number')}>
-            Date added: Last
+          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}>
+            <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'desc' ? ' is-active' : '')}
+               onClick={() => this.handleClick('creationDate', 'desc', 'string')}>
+               Date added: Recent
+            </a>
+            <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'asc' ? ' is-active' : '')}
+               onClick={() => this.handleClick('creationDate', 'asc', 'string')}>
+               Date added: Last
+            </a>
           </li>
           {additionalSorts}
         </ul>

@@ -14,21 +14,22 @@
   padding: 0;
   list-style-type: none;
 }
-.Dropdown-option {
+.Dropdown-option,
+.Dropdown-option__item {
   display: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: 100%;
   line-height: 1.75em;
-  border-bottom: 1px dotted transparent;
   cursor: pointer;
+  order: 1;
+  font-weight: normal;
 
   &.is-active {
-    display: block;
+    order: 0;
+    display: flex;
     font-weight: bold;
-    color: $c-primary;
-    border-color: $c-primary;
     text-decoration: none;
-    &:hover {
-      color: $c-primary-dark;
-    }
   }
 }
 
@@ -40,10 +41,8 @@
   background: $c-white;
   box-shadow: $box-shadow;
   
-  .Dropdown-option {
-    display: block;
-    &:hover {
-      border-color: $c-primary;
-    }
+  .Dropdown-option,
+  .Dropdown-option__item {
+    display: flex;
   }
 }

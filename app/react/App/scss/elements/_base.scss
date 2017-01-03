@@ -6,6 +6,14 @@ body {
 	overflow: hidden;
 }
 
+a {
+  color: $c-primary;
+}
+
+a:hover, a:focus {
+  color: $c-primary-dark;
+}
+
 label {
 	font-weight: normal;
 }
