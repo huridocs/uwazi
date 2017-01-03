@@ -77,7 +77,7 @@ export class SortButtons extends Component {
                       </a>
                       <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
                          onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                         {t(template._id, property.label)}: Last
+                         {t(template._id, property.label)}: Latest
                       </a>
                     </li>
             });
@@ -120,7 +120,7 @@ export class SortButtons extends Component {
             </a>
             <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'asc' ? ' is-active' : '')}
                onClick={() => this.handleClick('creationDate', 'asc', 'string')}>
-               Date added: Last
+               Date added: Latest
             </a>
           </li>
           {additionalSorts}
