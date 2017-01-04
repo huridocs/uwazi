@@ -1,8 +1,10 @@
 .library-filters {
-  top: 0 !important;
+  top: 0;
   @media(min-width: 1024px) {
-    top: $header-height !important;
-    right: 0 !important;  
+    top: $header-height;
+    &.is-hidden {
+      right: 0;
+    }
   }
 }
 
