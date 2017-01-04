@@ -118,6 +118,33 @@ export default {
     });
   },
 
+  processSystemKeys(keys) {
+    return this.get()
+    .then((result) => {
+      let languages = result.rows;
+      const existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
+      const newKeys = keys.map(k => k.key);
+      let keysToAdd = {};
+      let keysToRemove = Object.keys(existingKeys).filter((i) => newKeys.indexOf(i) < 0);
+      keys.forEach((key) => {
+        key.label = key.label || key.key;
+        if (!existingKeys[key.key]) {
+          keysToAdd[key.key] = key.label;
+        }
+      });
+
+      languages.forEach((language) => {
+        let system = language.contexts.find(c => c.label === 'System');
+        system.values = Object.assign(system.values, keysToAdd);
+        keysToRemove.forEach((toRemove) => {
+          delete system.values[toRemove];
+        });
+      });
+
+      return request.post(`${dbURL}/_bulk_docs`, {docs: languages});
+    });
+  },
+
   updateContext(id, newContextName, keyNamesChanges, deletedProperties, values) {
     return Promise.all([this.get(), settings.get()])
     .then(([translations, siteSettings]) => {
