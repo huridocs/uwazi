@@ -140,8 +140,7 @@
   background: $c-white;
   z-index: 40;
   color: $c-black;
-  border: 1px solid $c-grey-light;
-  border-top: 0;
+  border-bottom: 1px solid $c-grey-light;
   line-height: 1em;
   &.is-active {
     display: block;
@@ -450,7 +449,7 @@
 
 .multiselectItem-name {
   color: $c-grey-dark;
-  
+
   .multiselectItem-label:hover & {
     text-decoration: underline;
   }
@@ -484,7 +483,7 @@
     border-color: $c-primary;
     cursor: pointer;
   }
-  
+
   .multiselectItem-results & {
     position: absolute;
     top: 1px;
