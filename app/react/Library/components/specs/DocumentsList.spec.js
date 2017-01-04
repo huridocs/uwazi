@@ -22,22 +22,9 @@ describe('DocumentsList', () => {
     component = shallow(<DocumentsList {...props} />);
   };
 
-  it('should be active when filtersPanel is open', () => {
+  it('should have with-panel class', () => {
     render();
-    expect(component.find('main').hasClass('is-active')).toBe(false);
-
-    props.filtersPanel = true;
-    render();
-    expect(component.find('main').hasClass('is-active')).toBe(true);
-  });
-
-  it('should be active when a document is selected', () => {
-    render();
-    expect(component.find('main').hasClass('is-active')).toBe(false);
-
-    props.selectedDocument = {_id: 'selected'};
-    render();
-    expect(component.find('main').hasClass('is-active')).toBe(true);
+    expect(component.find('main').hasClass('with-panel')).toBe(true);
   });
 
   it('should render a Doc element for each document', () => {
