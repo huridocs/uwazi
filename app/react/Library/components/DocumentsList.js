@@ -35,7 +35,7 @@ export class DocumentsList extends Component {
     const documents = this.props.documents;
 
     return (
-      <main className={'document-viewer ' + (this.props.filtersPanel || this.props.selectedDocument ? 'with-panel' : '')}>
+      <main className="document-viewer with-panel">
         <div className="main-wrapper">
           <div className="sort-by">
               <div className="u-floatLeft documents-counter">

@@ -305,12 +305,7 @@ header {
     border-left: 1px solid $c-primary-dark;
   }
   @media(min-width: 1024px) {
-    width: $header-height*2;
-    &:hover,
-    &:focus,
-    &:active {
-      color: $c-grey-dark;
-    }
+    display: none;
   }
 
   &:active {

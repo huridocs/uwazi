@@ -1,3 +1,9 @@
+@media(min-width: 1024px) {
+  .library-filters {
+    right: 0 !important;  
+  }
+}
+
 .filters-box {
   .empty-state {
     color: $c-grey-dark;
