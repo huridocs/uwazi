@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import {resetFilters} from 'app/Library/actions/filterActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
+import SearchBar from 'app/Library/components/SearchBar';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
 import {t} from 'app/I18N';
@@ -28,6 +29,7 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
+          <SearchBar />
           <div className="documentTypes-selector">
             <DocumentTypesList />
           </div>

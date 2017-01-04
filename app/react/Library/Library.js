@@ -7,7 +7,6 @@ import DocumentsList from './components/DocumentsList';
 import LibraryFilters from './components/LibraryFilters';
 import {enterLibrary, setDocuments} from './actions/libraryActions';
 import libraryHelpers from './helpers/libraryFilters';
-import SearchBar from './components/SearchBar';
 import SearchButton from './components/SearchButton';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
@@ -21,7 +20,6 @@ export default class Library extends RouteHandler {
   static renderTools() {
     return (
       <div className="searchBox">
-        <SearchBar/>
         <SearchButton/>
       </div>
     );
