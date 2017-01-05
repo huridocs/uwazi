@@ -145,6 +145,7 @@ $item-padding: 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: inline-block;
+  cursor: default;
 
   &.no-icon {
     margin-left: 0;
