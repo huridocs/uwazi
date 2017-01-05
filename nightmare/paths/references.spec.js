@@ -30,8 +30,6 @@ describe('references path', () => {
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
       .then((itemName) => {
         return nightmare
-        .waitToClick(selectors.libraryView.searchInLibrary)
-        .wait(300)
         .type(selectors.libraryView.searchInput, itemName)
         .waitToClick(selectors.libraryView.firstSearchSuggestion)
         .wait(selectors.documentView.documentPage)
