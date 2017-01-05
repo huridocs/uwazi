@@ -33,7 +33,7 @@ export class FormConfigNested extends Component {
     const {index, data, formState} = this.props;
     const property = data.properties[index];
 
-    let labelClass = 'input-group';
+    let labelClass = '';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
@@ -43,67 +43,60 @@ export class FormConfigNested extends Component {
 
     return (
       <div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div className={labelClass}>
-              <span className="input-group-addon">
-              Label
-              </span>
-              <Field model={`template.data.properties[${index}].label`}>
-                <input className="form-control"/>
-              </Field>
-            </div>
-          </div>
+        <div className={labelClass}>
+          <label>Label</label>
+          <Field model={`template.data.properties[${index}].label`}>
+            <input className="form-control"/>
+          </Field>
         </div>
-        <div className="row">
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <Field model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + this.props.index} type="checkbox"/>
-                </Field>
-              </span>
-              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <Field model={`template.data.properties[${index}].showInCard`}>
-                  <input id={'showInCard' + this.props.index} type="checkbox"/>
-                </Field>
-              </span>
-              <label htmlFor={'showInCard' + this.props.index}
-                     className="form-control"
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-          </div>
+
+        <div>
+          <span>
+            <Field model={`template.data.properties[${index}].required`}>
+              <input id={'required' + this.props.index} type="checkbox"/>
+            </Field>&nbsp;
+          </span>
+          <label className="property-label" htmlFor={'required' + this.props.index}>
+            Required property
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+            </i>
+          </label>
         </div>
-        <div className="well-metadata-creator">
+        
+        <div>
+          <Field model={`template.data.properties[${index}].showInCard`}>
+            <input id={'showInCard' + this.props.index} type="checkbox"/>
+          </Field>&nbsp;
+          <label className="property-label" htmlFor={'showInCard' + this.props.index}>
+            Show in cards
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">
+                This property will appear in the library cards as part of the basic info.
+              </div>
+            </i>
+          </label>
+        </div>
+        
+        <div className="nestedProperties well-metadata-creator">
           <p>Properties</p>
           {(() => {
             return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
-              return <div key={nestedIndex} className="row">
-                <div className="col-sm-12">
-                  <div className="input-group">
-                    <span className="input-group-addon">Key</span>
-                    <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
-                      <input className="form-control"/>
-                    </Field>
-                    <span className="input-group-addon">Label</span>
-                    <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
-                      <input className="form-control"/>
-                    </Field>
-                    <span className="input-group-btn">
-                      <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </span>
-                  </div>
+              return <div key={nestedIndex}>
+                <div className="input-group">
+                  <span className="input-group-addon">Key</span>
+                  <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
+                    <input className="form-control"/>
+                  </Field>
+                  <span className="input-group-addon">Label</span>
+                  <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
+                    <input className="form-control"/>
+                  </Field>
+                  <span className="input-group-btn">
+                    <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>
+                      <i className="fa fa-trash"></i>
+                    </button>
+                  </span>
                 </div>
               </div>;
             });
@@ -124,11 +117,12 @@ export class FormConfigNested extends Component {
                 <input id={'filter' + this.props.index} type="checkbox"/>
               </Field>
               &nbsp;
-              <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
-              When properties match in equal name and field type with other document types, they will be combined for filtering.">
+              <label className="property-label" htmlFor={'filter' + this.props.index}>
                 Use as filter
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
+                <i className="property-help fa fa-question-circle">
+                  <div className="property-description">This property will be used for filtering the library results.
+                  When properties match in equal name and field type with other document types, they will be combined for filtering.</div>
+                </i>
               </label>
             </div>
             <div>
