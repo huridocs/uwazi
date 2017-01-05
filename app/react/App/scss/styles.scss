@@ -4,6 +4,7 @@
 @import "config/breakpoints";
 
 @import "elements/base";
+@import "elements/tooltip";
 @import "elements/controls";
 @import "elements/alerts";
 @import "elements/item";
@@ -11,7 +12,6 @@
 @import "elements/breadcrumbs";
 @import "elements/draggable";
 @import "elements/dropdown";
-@import "elements/tooltip";
 
 @import "layout/header";
 @import "layout/content";
