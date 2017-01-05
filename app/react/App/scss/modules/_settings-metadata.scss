@@ -98,7 +98,16 @@
   }
 }
 
+.property-label {
+  position: relative;
+  cursor: pointer;
+}
 .property-description {
-  margin-left: 15px;
-  opacity: .5;
+  @include tooltip('top-left');
+  width: 200px;
+  white-space: normal;
+  
+  .property-label:hover &{
+    display: block;
+  }
 }
