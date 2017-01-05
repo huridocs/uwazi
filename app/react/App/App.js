@@ -49,14 +49,10 @@ class App extends Component {
   }
 
   render() {
-    let searchBoxClass = 'search-box';
-    let menuToggleClass = 'navbar-toggle ';
     let MenuButtonClass = 'menu-button fa fa-bars';
     let navClass = 'menuNav';
 
     if (this.state.showmenu) {
-      searchBoxClass += ' in';
-      menuToggleClass += 'active';
       MenuButtonClass = 'menu-button fa fa-close';
       navClass += ' is-active';
     }
