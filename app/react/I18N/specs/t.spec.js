@@ -65,19 +65,4 @@ describe('t', () => {
       expect(t('System', 'not translated', 'not translated'));
     });
   });
-
-  describe('missingTranslations', () => {
-    describe('add', () => {
-      it('should add a translation if not exists for the System context', () => {
-        missingTranslations.reset();
-        t('System', 'non existent key');
-        t('System', 'non existent key 2', 'new text');
-        t('other context', 'key', 'value');
-
-        expect(missingTranslations.translations.length).toBe(2);
-        expect(missingTranslations.translations[0]).toEqual({contextId: 'System', key: 'non existent key', defaultValue: 'non existent key'});
-        expect(missingTranslations.translations[1]).toEqual({contextId: 'System', key: 'non existent key 2', defaultValue: 'new text'});
-      });
-    });
-  });
 });
