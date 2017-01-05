@@ -14,6 +14,7 @@ require('babel-core/register')({
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
 var reporters = require('jasmine-reporters');
+var exec = require('child_process').exec;
 
 var dbConfig = require('./app/api/config/database.js');
 dbConfig.db_url = dbConfig.development;
@@ -32,4 +33,17 @@ jasmine.addReporter(new reporters.TerminalReporter({
   showStack: true
 }));
 
-jasmine.execute();
+exec('cd nightmare/fixtures;./restore.sh', (error, stdout, stderr) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  exec('node ./couchdb/reset_development_elastic_index.js', (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    jasmine.execute();
+  });
+});
