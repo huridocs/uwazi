@@ -27,10 +27,23 @@ describe('SortButtons', () => {
   });
 
   describe('Sort options', () => {
-    it('should use templates sortable properties as options', () => {
+    it('should use templates sortable properties as options (with asc and desc for each)', () => {
       render();
       expect(component.find('li').length).toBe(3);
-      expect(component.find('li').last().text()).toBe('sortableProperty');
+
+      expect(component.find('li').last().children().at(0).text()).toBe('sortableProperty (A-Z)');
+      expect(component.find('li').last().children().at(1).text()).toBe('sortableProperty (Z-A)');
+    });
+
+    it('should use use "recent" label for date type properties', () => {
+      props.templates = immutable([
+        {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'date'}]}
+      ]);
+      render();
+      expect(component.find('li').length).toBe(3);
+
+      expect(component.find('li').last().children().at(0).text()).toBe('sortableProperty (Recently)');
+      expect(component.find('li').last().children().at(1).text()).toBe('sortableProperty (Least recently)');
     });
 
     describe('when multiple options have the same name', () => {
@@ -42,7 +55,9 @@ describe('SortButtons', () => {
         render();
 
         expect(component.find('li').length).toBe(3);
-        expect(component.find('li').last().text()).toBe('sortableProperty');
+
+        expect(component.find('li').last().children().at(0).text()).toBe('sortableProperty (A-Z)');
+        expect(component.find('li').last().children().at(1).text()).toBe('sortableProperty (Z-A)');
       });
     });
 
@@ -58,7 +73,7 @@ describe('SortButtons', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
         component.setState({active: true});
-        component.find('li').last().simulate('click');
+        component.find('li').last().children().at(0).simulate('click');
         expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
 
         const templates = props.templates.toJS();
@@ -69,7 +84,7 @@ describe('SortButtons', () => {
         render();
         component.setState({active: true});
 
-        component.find('li').last().simulate('click');
+        component.find('li').last().children().at(0).simulate('click');
         expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name', order: 'desc'});
       });
     });

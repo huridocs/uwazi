@@ -30,7 +30,8 @@ describe('Item', () => {
       additionalIcon: <div>additionalIcon</div>,
       buttons: <div>Buttons</div>,
       templates: Immutable([]),
-      thesauris: Immutable([])
+      thesauris: Immutable([]),
+      search: {sort: 'property_name'}
     };
   });
 
@@ -74,14 +75,14 @@ describe('Item', () => {
     beforeEach(() => {
       props.doc = props.doc.set('metadata', {
         sex: 'female',
-        age: 25
+        age: '25'
       });
       props.thesauris = Immutable([{_id: 't1'}]);
     });
 
     it('should render upload date if no property is configured in the template to show in card', () => {
       render();
-      expect(component.find('.item-metadata').text()).toContain('Upload date');
+      expect(component.find('.item-metadata').text()).toContain('Date added');
       expect(component.find('.item-metadata').find(PrintDate).props().utc).toBe(123);
     });
 
@@ -97,6 +98,25 @@ describe('Item', () => {
       render();
       expect(component.find('.item-metadata').text()).toContain('sexLabel');
       expect(component.find('.item-metadata').text()).toContain('female');
+      expect(component.find('.item-metadata').text()).not.toContain('ageLabel');
+    });
+
+    it('should render metadata if selected in search.sort', () => {
+      props.templates = Immutable([{
+        _id: 'templateId',
+        properties: [
+          {name: 'sex', label: 'sexLabel', showInCard: true},
+          {name: 'age', label: 'ageLabel'}
+        ]
+      }]);
+
+      props.search = {sort: 'metadata.age'};
+
+      render();
+
+      expect(component.find('.item-metadata').text()).toContain('sexLabel');
+      expect(component.find('.item-metadata').text()).toContain('female');
+      expect(component.find('.item-metadata').text()).toContain('ageLabel');
     });
 
     it('should render additional metadata if passed', () => {

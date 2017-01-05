@@ -15,7 +15,7 @@ export class Item extends Component {
 
   formatMetadata(populatedMetadata, creationDate, translationContext) {
     const metadata = populatedMetadata
-    .filter(p => p.showInCard && (p.value && p.value.length > 0 || p.markdown))
+    .filter(p => (p.showInCard || 'metadata.' + p.name === this.props.search.sort) && (p.value && p.value.length > 0 || p.markdown))
     .map((property, index) => {
       let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
       if (property.markdown) {
@@ -47,12 +47,6 @@ export class Item extends Component {
 
     return this.formatMetadata(populatedMetadata, doc.creationDate, doc.template);
   }
-
-  //shouldComponentUpdate(nextProps) {
-    //return !is(this.props.doc, nextProps.doc) ||
-           //this.props.active !== nextProps.active ||
-           //this.props.className !== nextProps.className;
-  //}
 
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
@@ -97,6 +91,7 @@ export class Item extends Component {
 Item.propTypes = {
   templates: PropTypes.object,
   thesauris: PropTypes.object,
+  search: PropTypes.object,
   onClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
@@ -111,8 +106,9 @@ Item.propTypes = {
   evalPublished: PropTypes.bool
 };
 
-const mapStateToProps = ({templates, thesauris}) => {
-  return {templates, thesauris};
+const mapStateToProps = ({templates, thesauris, search}) => {
+  const {sort} = search;
+  return {templates, thesauris, search: {sort}};
 };
 
 export default connect(mapStateToProps)(Item);

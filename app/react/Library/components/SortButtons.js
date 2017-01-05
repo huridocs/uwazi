@@ -50,7 +50,7 @@ export class SortButtons extends Component {
         if (property.sortable && !sorts.find(s => s.property === property.name)) {
           const sortString = 'metadata.' + property.name;
           const treatAs = property.type === 'date' ? 'number' : 'string';
-          const defaultOrder = treatAs === 'number' ? 'desc' : 'asc';
+
           if (treatAs === 'string') {
             sorts.push({
               property: property.name,
@@ -58,26 +58,28 @@ export class SortButtons extends Component {
                         className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}>
                       <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
                          onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                         {t(template._id, property.label)}: A-Z
+                         {t(template._id, property.label)} (A-Z)
                       </a>
-                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
+                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
                          onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                         {t(template._id, property.label)}: Z-A
+                         {t(template._id, property.label)} (Z-A)
                       </a>
                     </li>
             });
-          } else if (treatAs === 'number') {
+          }
+
+          if (treatAs === 'number') {
             sorts.push({
               property: property.name,
               html: <li key={sorts.length + 1}
                         className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}>
                       <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
                          onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                         {t(template._id, property.label)}: Recent
+                         {t(template._id, property.label)} ({t('System', 'Recently')})
                       </a>
                       <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
                          onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                         {t(template._id, property.label)}: Latest
+                         {t(template._id, property.label)} ({t('System', 'Least recently')})
                       </a>
                     </li>
             });
@@ -106,21 +108,21 @@ export class SortButtons extends Component {
           <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}>
             <a className={'Dropdown-option__item' + (sortingTitle && search.order === 'asc' ? ' is-active' : '')}
                onClick={() => this.handleClick('title', 'asc', 'string')}>
-               Title: A-Z
+               {t('System', 'Title')} (A-Z)
             </a>
             <a className={'Dropdown-option__item' + (sortingTitle && search.order === 'desc' ? ' is-active' : '')}
                onClick={() => this.handleClick('title', 'desc', 'string')}>
-               Title: Z-A
+               {t('System', 'Title')} (Z-A)
             </a>
           </li>
           <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}>
             <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'desc' ? ' is-active' : '')}
                onClick={() => this.handleClick('creationDate', 'desc', 'string')}>
-               Date added: Recent
+               {t('System', 'Date added')} (Recently)
             </a>
             <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'asc' ? ' is-active' : '')}
                onClick={() => this.handleClick('creationDate', 'asc', 'string')}>
-               Date added: Latest
+               {t('System', 'Date added')} (Least recently)
             </a>
           </li>
           {additionalSorts}
