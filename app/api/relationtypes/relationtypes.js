@@ -25,7 +25,7 @@ function _save(relationtype) {
   values[relationtype.name] = relationtype.name;
   return request.post(dbUrl, relationtype)
   .then((response) => {
-    translations.addContext(response.json.id, relationtype.name, values, 'Connection');
+    translations.addContext(response.json.id, relationtype.name, values);
     return response;
   });
 }
@@ -35,7 +35,7 @@ function updateTranslation(id, oldName, newName) {
   updatedNames[oldName] = newName;
   let values = {};
   values[newName] = newName;
-  translations.updateContext(id, newName, updatedNames, [], values, 'Connection');
+  translations.updateContext(id, newName, updatedNames, [], values);
 }
 
 function _update(relationtype) {

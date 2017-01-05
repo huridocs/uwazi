@@ -5,7 +5,7 @@ import {I18NLink} from 'app/I18N';
 
 import {TranslationsList} from '../TranslationsList';
 
-fdescribe('TranslationsList', () => {
+describe('TranslationsList', () => {
   let component;
   let props;
   let context;
@@ -15,9 +15,9 @@ fdescribe('TranslationsList', () => {
       translations: Immutable.fromJS([{
         locale: 'es',
         contexts: [
-          {id: '1', label: 'X-Men', type: 'UI'},
-          {id: '2', label: 'Avengers', type: 'UI'},
-          {id: '3', label: 'Batman', type: 'UI'}
+          {id: '1', label: 'X-Men'},
+          {id: '2', label: 'Avengers'},
+          {id: '3', label: 'Batman'}
         ]
       }]),
       settings: Immutable.fromJS({languages: [{key: 'es', default: true}]})

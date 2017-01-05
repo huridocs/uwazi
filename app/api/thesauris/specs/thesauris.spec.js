@@ -140,8 +140,7 @@ describe('thesauris', () => {
           {
             'Batman wish list': 'Batman wish list',
             'Joker BFF': 'Joker BFF'
-          },
-          'Dictionary'
+          }
         );
         done();
       })
@@ -211,8 +210,7 @@ describe('thesauris', () => {
             'Top 1 games',
             {'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games'},
             ['Fundation'],
-            {'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game'},
-            'Dictionary'
+            {'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game'}
           );
           done();
         })

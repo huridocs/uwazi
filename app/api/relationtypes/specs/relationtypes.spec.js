@@ -55,7 +55,7 @@ describe('relationtypes', () => {
         spyOn(translations, 'addContext');
         relationtypes.save({name: 'Indiferent'})
         .then((response) => {
-          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'}, 'Connection');
+          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'});
           done();
         }).catch(catchErrors(done));
       });
@@ -87,7 +87,7 @@ describe('relationtypes', () => {
           return relationtypes.save(relationtype);
         })
         .then((response) => {
-          expect(translations.updateContext).toHaveBeenCalledWith(response._id, 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'}, 'Connection');
+          expect(translations.updateContext).toHaveBeenCalledWith(response._id, 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
           done();
         }).catch(catchErrors(done));
       });

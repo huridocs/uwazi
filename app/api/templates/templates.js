@@ -1,7 +1,6 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
-import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
 
@@ -27,8 +26,7 @@ let addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  let type = template.isEntity ? 'Entity' : 'Document';
-  translations.addContext(template._id, template.name, values, type);
+  translations.addContext(template._id, template.name, values);
 };
 
 let updateTranslation = (currentTemplate, template) => {
@@ -47,8 +45,7 @@ let updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  let type = template.isEntity ? 'Entity' : 'Document';
-  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, type);
+  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 let save = (template) => {

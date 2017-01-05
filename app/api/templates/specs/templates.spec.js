@@ -82,7 +82,7 @@ describe('templates', () => {
           'label 2': 'label 2'
         };
 
-        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Document');
+        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues);
         done();
       });
     });
@@ -197,8 +197,7 @@ describe('templates', () => {
               'created template': 'new title'
             },
             ['label 2'],
-            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'},
-            'Entity'
+            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
           );
           done();
         })

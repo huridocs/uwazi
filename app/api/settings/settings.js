@@ -21,7 +21,7 @@ function saveLinksTranslations(newLinks = [], currentLinks = []) {
     return result;
   }, {});
 
-  return translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values, 'Uwazi UI');
+  return translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values);
 }
 
 function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
@@ -46,7 +46,7 @@ function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
     return result;
   }, {});
 
-  return translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values, 'Uwazi UI');
+  return translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values);
 }
 
 export default {
