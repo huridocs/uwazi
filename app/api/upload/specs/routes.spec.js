@@ -7,6 +7,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
 import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import search from 'api/search/search';
 
 describe('upload routes', () => {
   let routes;
@@ -15,6 +16,7 @@ describe('upload routes', () => {
   let iosocket;
 
   beforeEach((done) => {
+    spyOn(search, 'index').and.returnValue(Promise.resolve());
     iosocket = jasmine.createSpyObj('socket', ['emit']);
     let io = {getSocket: () => {
       return iosocket;

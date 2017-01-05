@@ -12,6 +12,12 @@ require('babel-core/register')({
   ]
 }); //babel polyfill ES6
 
+var verbose = false;
+
+if (process.argv[2] === '--v') {
+  verbose = true;
+}
+
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
 var SpecReporter = require('jasmine-spec-reporter');
@@ -38,7 +44,7 @@ jasmine.loadConfig({
 
 jasmine.addReporter(new SpecReporter({
   displayStacktrace: 'summary',
-  displaySuccessfulSpec: false,
+  displaySuccessfulSpec: verbose,
   displayFailedSpec: false,
   displaySpecDuration: true
 }));
