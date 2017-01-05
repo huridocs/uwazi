@@ -38,8 +38,8 @@ export default {
     librarySecondDocument: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2) > div.item-info > div',
     searchInLibrary: '#app > div.content > header > div > a',
-    searchInput: '#app > div.content > header > div > div > form > div.input-group > input',
-    firstSearchSuggestion: '#app > div.content > header > div > div > form > div.search-suggestions > p:nth-child(1) > a',
+    searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > input',
+    firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a'
   },
   documentView: {
