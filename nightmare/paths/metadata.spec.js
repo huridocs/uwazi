@@ -64,7 +64,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
       //.wait(500)
       .type(selectors.settingsView.dictionaryNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
@@ -85,7 +85,7 @@ describe('metadata path', () => {
       nightmare
       .wait(3200)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
@@ -126,7 +126,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('new')
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'new')
       //.wait(500)
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
@@ -144,7 +144,7 @@ describe('metadata path', () => {
       nightmare
       .wait(3200)
       .waitToClick(selectors.settingsView.documentsBackButton)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
@@ -184,7 +184,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
       //.wait(500)
       .clearInput(selectors.settingsView.connectionNameForm)
       .type(selectors.settingsView.connectionNameForm, 'edited')
@@ -203,7 +203,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
@@ -243,7 +243,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('e2e')
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'e2e')
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
@@ -261,7 +261,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));

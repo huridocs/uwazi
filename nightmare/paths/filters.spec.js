@@ -7,7 +7,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 realMouse(Nightmare);
 
-fdescribe('filters path', () => {
+describe('filters path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
   describe('login', () => {
@@ -55,18 +55,8 @@ fdescribe('filters path', () => {
 
     it('should delete the filters group', (done) => {
       nightmare
-      .waitToClick(selectors.settingsView.deleteFilterGroup)
-      .exists(selectors.settingsView.deleteFilterGroup)
-      .then((result) => {
-        expect(result).toBe(false);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    it('should save the changes after deleting the filters group', (done) => {
-      nightmare
-      .waitToClick(selectors.settingsView.filtrableTypesSaveButton)
+      .deleteItemFromList(selectors.settingsView.listOfFilterGroups, 'Test Group')
+      .waitToClick(selectors.settingsView.saveFilterGroupButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
       .then((result) => {
