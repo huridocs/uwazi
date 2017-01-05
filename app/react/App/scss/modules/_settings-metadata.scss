@@ -99,15 +99,19 @@
 }
 
 .property-label {
-  position: relative;
   cursor: pointer;
 }
+.property-help {
+  margin-left: 5px;
+  position: relative;
+  color: $c-grey-dark;
+}
 .property-description {
-  @include tooltip('top-left');
+  @include tooltip('top');
   width: 200px;
   white-space: normal;
   
-  .property-label:hover &{
+  .property-help:hover &{
     display: block;
   }
 }

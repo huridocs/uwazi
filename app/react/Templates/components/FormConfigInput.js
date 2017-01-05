@@ -33,8 +33,10 @@ export class FormConfigInput extends Component {
             <input id={'required' + index} type="checkbox"/>
           </Field>&nbsp;
           <label className="property-label" htmlFor={'required' + index}>
-            Required property <i className="fa fa-info-circle"></i>
-            <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+            Required property
+            <i className="property-help fa fa-info-circle">
+              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+            </i>
           </label>
         </div>
 
@@ -43,8 +45,10 @@ export class FormConfigInput extends Component {
             <input id={'showInCard' + this.props.index} type="checkbox"/>
           </Field>&nbsp;
           <label className="property-label" htmlFor={'showInCard' + this.props.index}>
-            Show in cards <i className="fa fa-info-circle"></i>
-            <div className="property-description">Show this property in the cards as part of the basic info.</div>
+            Show in cards
+            <i className="property-help fa fa-info-circle">
+              <div className="property-description">Show this property in the cards as part of the basic info.</div>
+            </i>
           </label>
         </div>
 
@@ -56,12 +60,14 @@ export class FormConfigInput extends Component {
               </Field>
               &nbsp;
               <label className="property-label" htmlFor={'filter' + this.props.index}>
-                Use as filter <i className="fa fa-info-circle"></i>
-                <div className="property-description">
-                  Use this property to filter the library results.
-                  When properties match in equal name and field type with other document types, they will be combined for filtering.
-                  Also library items will be able to be sorted by this property.
-                </div>
+                Use as filter
+                <i className="property-help fa fa-info-circle">
+                  <div className="property-description">
+                    Use this property to filter the library results.
+                    When properties match in equal name and field type with other document types, they will be combined for filtering.
+                    Also library items will be able to be sorted by this property.
+                  </div>
+                </i>
               </label>
               <FilterSuggestions {...ptoperty} />
             </div>
@@ -72,11 +78,13 @@ export class FormConfigInput extends Component {
             </FormField>
             &nbsp;
             <label className="property-label" htmlFor={'filter' + this.props.index}>
-              Set as default sorting <i className="fa fa-info-circle"></i>
-              <div className="property-description">
-                This property will try to be used as default sorting.
-                If there's more than one property available to sort documents, those documents will be sorted
-                by this property by default.</div>
+              Set as default sorting
+              <i className="property-help fa fa-info-circle">
+                <div className="property-description">
+                  This property will try to be used as default sorting.
+                  If there's more than one property available to sort documents, those documents will be sorted
+                  by this property by default.</div>
+              </i>
             </label>
           </div>
 
