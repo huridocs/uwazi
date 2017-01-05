@@ -76,10 +76,10 @@ export class FormConfigInput extends Component {
           </Field>
           &nbsp;
           <label className="property-label" htmlFor={'filter' + this.props.index}>
-            Set as default sorting
+            Set as priority sorting
             <i className="property-help fa fa-question-circle">
               <div className="property-description">
-                This property will try to be used as default sorting.
+                This property will try to be used as priority sorting.
                 If there's more than one property available to sort documents, those documents will be sorted
                 by this property by default.</div>
             </i>
