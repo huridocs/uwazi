@@ -28,23 +28,17 @@
   @include draggable;
 }
 
-.well-metadata-creator {
-  padding-top: 15px;
-  
-  &:not(:last-of-type) {
-    border-bottom: 1px solid $c-grey-light;
-    padding-bottom: 20px;
+.property-atributes {
+  opacity: 0.3;
+  &.is-active {
+    opacity: 1;
   }
-
-  label {
-    color: $c-black;
+  .fa {
+    margin-right: 5px;
   }
-
-  small {
-    display: block;
-    opacity: 0.6;
-    line-height: 1.3em;
-    padding-left: 15px;
+  .fa-warning {
+    display: none;
+    color: $c-warning;
   }
   
   .row {

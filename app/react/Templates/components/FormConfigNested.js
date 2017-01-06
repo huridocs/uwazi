@@ -77,7 +77,7 @@ export class FormConfigNested extends Component {
             </i>
           </label>
         </div>
-        
+
         <div className="nestedProperties well-metadata-creator">
           <p>Properties</p>
           {(() => {

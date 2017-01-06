@@ -94,6 +94,7 @@
         &.expand {
           height: auto;
           padding: 15px 30px;
+          cursor: default;
         }
 
         & > div > .well:not(:last-child),

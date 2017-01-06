@@ -27,26 +27,28 @@ export class FilterSuggestions extends Component {
     let activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
     let title = 'This property has the same configuration and will be used together.';
     if (contentConflict) {
-      title = 'This property has different Thesauri and wont\'t be used together';
+      title = 'This property has different Thesauri and wont\'t be used together.';
     }
 
     if (typeConflict) {
-      title = 'This property has different Type and wont\'t be used together';
+      title = 'This property has different Type and wont\'t be used together.';
     }
     let icon = this.getTypeIcon(propertyMatch.property.type);
     let type = propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1);
 
     return <tr key={index} className={activeClass} title={title}>
             <td><i className="fa fa-file-o"></i> {propertyMatch.template}</td>
-            <td className={typeConflict ? 'conflict' : ''}><i className={icon}></i> {type}</td>
+            <td className={typeConflict ? 'conflict' : ''}>
+              <i className="fa fa-warning"></i>
+              <i className={icon}></i> {type}
+            </td>
             {(() => {
               if (hasThesauri && propertyMatch.property.content) {
                 let thesauri = this.getThesauriName(propertyMatch.property.content);
-                return <td>
-                        <span className={contentConflict ? 'conflict' : ''}>
-                          <i className="fa fa-book"></i> {thesauri}
-                        </span>
-                      </td>;
+                return <td className={contentConflict ? 'conflict' : ''}>
+                         <i className="fa fa-warning"></i>
+                         <i className="fa fa-book"></i> {thesauri}
+                       </td>;
               }
             })()}
           </tr>;
@@ -81,7 +83,7 @@ export class FilterSuggestions extends Component {
             <thead>
               <tr>
                 <th>Document or entity</th>
-                <th>Property</th>
+                <th>Type</th>
                   {(() => {
                     if (hasThesauri) {
                       return <th>Thesauri</th>;
