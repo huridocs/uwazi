@@ -105,9 +105,10 @@ export default {
   },
 
   deleteContext(id) {
-    return this.get()
+    return request.get(`${dbURL}/_design/translations/_view/all`)
     .then((result) => {
-      return Promise.all(result.rows.map((translation) => {
+      return Promise.all(result.json.rows.map((row) => {
+        let translation = row.value;
         translation.contexts = translation.contexts.filter((tr) => tr.id !== id);
         return this.save(translation);
       }));

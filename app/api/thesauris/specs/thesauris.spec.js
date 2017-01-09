@@ -92,7 +92,7 @@ describe('thesauris', () => {
     it('should delete the translation', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
-        spyOn(translations, 'deleteContext');
+        spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
         return thesauris.delete(thesauri.json._id, thesauri.json._rev);
       })
       .then((response) => {

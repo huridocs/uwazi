@@ -10,7 +10,7 @@ realMouse(Nightmare);
 describe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
-  describe('login', () => {
+  fdescribe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
@@ -92,7 +92,7 @@ describe('metadata path', () => {
     }, 10000);
   });
 
-  describe('Documents tests', () => {
+  fdescribe('Documents tests', () => {
     it('should click Documents button and then click on add new document button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.documentsButton)
@@ -151,7 +151,7 @@ describe('metadata path', () => {
     }, 10000);
   });
 
-  describe('Connections tests', () => {
+  fdescribe('Connections tests', () => {
     it('should click Connections button and then click on add new connection button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.connectionsButton)

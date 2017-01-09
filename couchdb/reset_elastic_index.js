@@ -29,7 +29,7 @@ function migrate(offset) {
         let doc = response.json;
         process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
         if (doc.type === 'document' || doc.type === 'entity') {
-          return migrateDoc(doc);
+          return migrateDoc(doc).catch(console.log);
         }
       });
     }, {concurrency: 1})

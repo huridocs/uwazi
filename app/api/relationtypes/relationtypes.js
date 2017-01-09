@@ -25,8 +25,8 @@ function _save(relationtype) {
   values[relationtype.name] = relationtype.name;
   return request.post(dbUrl, relationtype)
   .then((response) => {
-    translations.addContext(response.json.id, relationtype.name, values);
-    return response;
+    return translations.addContext(response.json.id, relationtype.name, values)
+    .then(() => response);
   });
 }
 
