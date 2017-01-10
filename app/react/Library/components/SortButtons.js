@@ -39,6 +39,27 @@ export class SortButtons extends Component {
     }
   }
 
+  createSortItem(key, sortString, context, label, options) {
+    const {isActive, search, treatAs} = options;
+
+    const firstOrder = treatAs !== 'number' ? 'asc' : 'desc';
+    const secondOrder = treatAs !== 'number' ? 'desc' : 'asc';
+
+    return (
+      <li key={key}
+          className={'Dropdown-option ' + (isActive ? 'is-active' : '')}>
+        <a className={'Dropdown-option__item ' + (isActive && search.order === firstOrder ? 'is-active' : '')}
+           onClick={() => this.handleClick(sortString, firstOrder, treatAs)}>
+           {t(context, label)} ({treatAs !== 'number' ? 'A-Z' : t('System', 'Recently')})
+        </a>
+        <a className={'Dropdown-option__item ' + (isActive && search.order === secondOrder ? 'is-active' : '')}
+           onClick={() => this.handleClick(sortString, secondOrder, treatAs)}>
+           {t(context, label)} ({treatAs !== 'number' ? 'Z-A' : t('System', 'Least recently')})
+        </a>
+      </li>
+    );
+  }
+
   changeOrder() {
     const {sort, order} = this.props.search;
     this.sort(sort, order === 'desc' ? 'asc' : 'desc');
@@ -50,40 +71,12 @@ export class SortButtons extends Component {
         if (property.sortable && !sorts.find(s => s.property === property.name)) {
           const sortString = 'metadata.' + property.name;
           const treatAs = property.type === 'date' ? 'number' : 'string';
+          const sortOptions = {isActive: search.sort === sortString, search, treatAs};
 
-          if (treatAs === 'string') {
-            sorts.push({
-              property: property.name,
-              html: <li key={sorts.length + 1}
-                        className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}>
-                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
-                         onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                         {t(template._id, property.label)} (A-Z)
-                      </a>
-                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
-                         onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                         {t(template._id, property.label)} (Z-A)
-                      </a>
-                    </li>
-            });
-          }
-
-          if (treatAs === 'number') {
-            sorts.push({
-              property: property.name,
-              html: <li key={sorts.length + 1}
-                        className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}>
-                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'desc' ? 'is-active' : '')}
-                         onClick={() => this.handleClick(sortString, 'desc', treatAs)}>
-                         {t(template._id, property.label)} ({t('System', 'Recently')})
-                      </a>
-                      <a className={'Dropdown-option__item ' + (search.sort === sortString && search.order === 'asc' ? 'is-active' : '')}
-                         onClick={() => this.handleClick(sortString, 'asc', treatAs)}>
-                         {t(template._id, property.label)} ({t('System', 'Least recently')})
-                      </a>
-                    </li>
-            });
-          }
+          sorts.push({
+            property: property.name,
+            html: this.createSortItem(sorts.length + 2, sortString, template._id, property.label, sortOptions)
+          });
         }
       });
       return sorts;
@@ -97,34 +90,14 @@ export class SortButtons extends Component {
   }
 
   render() {
-    let {search, templates} = this.props;
-    let order = search.order === 'asc' ? 'up' : 'down';
-    let sortingTitle = search.sort === 'title';
-    let sortingRecent = search.sort === 'creationDate';
+    const {search, templates} = this.props;
+    const order = search.order === 'asc' ? 'up' : 'down';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}>
-            <a className={'Dropdown-option__item' + (sortingTitle && search.order === 'asc' ? ' is-active' : '')}
-               onClick={() => this.handleClick('title', 'asc', 'string')}>
-               {t('System', 'Title')} (A-Z)
-            </a>
-            <a className={'Dropdown-option__item' + (sortingTitle && search.order === 'desc' ? ' is-active' : '')}
-               onClick={() => this.handleClick('title', 'desc', 'string')}>
-               {t('System', 'Title')} (Z-A)
-            </a>
-          </li>
-          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}>
-            <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'desc' ? ' is-active' : '')}
-               onClick={() => this.handleClick('creationDate', 'desc', 'string')}>
-               {t('System', 'Date added')} (Recently)
-            </a>
-            <a className={'Dropdown-option__item' + (sortingRecent && search.order === 'asc' ? ' is-active' : '')}
-               onClick={() => this.handleClick('creationDate', 'asc', 'string')}>
-               {t('System', 'Date added')} (Least recently)
-            </a>
-          </li>
+          {this.createSortItem(0, 'title', 'System', 'Title', {isActive: search.sort === 'title', search, treatAs: 'string'})}
+          {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
           {additionalSorts}
         </ul>
       </div>
