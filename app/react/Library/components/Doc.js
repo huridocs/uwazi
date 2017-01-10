@@ -17,7 +17,9 @@ export class Doc extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return !is(this.props.doc, nextProps.doc) || this.props.active !== nextProps.active;
+    return !is(this.props.doc, nextProps.doc) ||
+           this.props.active !== nextProps.active ||
+           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
   }
 
   render() {
