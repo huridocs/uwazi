@@ -11,6 +11,7 @@ export default class Modal extends Component {
         style={style}
         className={`modal-dialog modal-${type}`}
         isOpen={this.props.isOpen}
+        contentLabel=""
       >
         <div className="modal-content">
           {this.props.children}
