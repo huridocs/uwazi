@@ -22,10 +22,10 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
 
 export function filterDocumentTypes(documentTypes) {
   return function (dispatch, getState) {
-    let state = getState();
+    const state = getState();
 
-    let templates = state.templates.toJS();
-    let thesauris = state.thesauris.toJS();
+    const templates = state.templates.toJS();
+    const thesauris = state.thesauris.toJS();
 
     let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
 
@@ -42,7 +42,19 @@ export function filterDocumentTypes(documentTypes) {
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
     updateModelFilters(dispatch, getState, libraryFilters);
 
-    let search = Object.assign({aggregations, types: documentTypes}, state.search);
+    const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
+    const validSearchSort = usefulTemplates.reduce((validSort, template) => {
+      return template.properties.reduce((valid, property) => {
+        return Boolean(valid || property.sortable && 'metadata.' + property.name === state.search.sort);
+      }, validSort);
+    }, state.search.sort === 'title' || state.search.sort === 'creationDate');
+
+    if (!validSearchSort) {
+      state.search.sort = 'title';
+      state.search.order = 'asc';
+    }
+
+    const search = Object.assign({aggregations, types: documentTypes}, state.search);
     dispatch(libraryActions.searchDocuments(search));
   };
 }

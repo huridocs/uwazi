@@ -53,6 +53,36 @@ describe('filterActions', () => {
       expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: 'RR Martin', country: ''});
       expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
     });
+
+    it('should perform a search with the filters and current sorting', () => {
+      store.search.sort = 'metadata.date';
+      store.search.order = 'desc';
+      store.templates = Immutable.fromJS([
+        {_id: 'a', properties: [{sortable: true, name: 'date'}]},
+        {_id: 'b'}
+      ]);
+
+      spyOn(libraryActions, 'searchDocuments');
+      actions.filterDocumentTypes(['a'])(dispatch, getState);
+
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('metadata.date');
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe('desc');
+    });
+
+    it('should perform a search with the filters and default sorting if sorting property is not supported', () => {
+      store.search.sort = 'metadata.date';
+      store.search.order = 'desc';
+      store.templates = Immutable.fromJS([
+        {_id: 'a', properties: [{sortable: true, name: 'date'}]},
+        {_id: 'b', properties: []}
+      ]);
+
+      spyOn(libraryActions, 'searchDocuments');
+      actions.filterDocumentTypes(['b'])(dispatch, getState);
+
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('title');
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe('asc');
+    });
   });
 
   describe('resetFilters', () => {
