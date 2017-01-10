@@ -10,7 +10,7 @@ realMouse(Nightmare);
 describe('metadata path', () => {
   let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
 
-  fdescribe('login', () => {
+  describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
@@ -22,7 +22,7 @@ describe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('Dictionaries tests', () => {
@@ -92,7 +92,7 @@ describe('metadata path', () => {
     }, 10000);
   });
 
-  fdescribe('Documents tests', () => {
+  describe('Documents tests', () => {
     it('should click Documents button and then click on add new document button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.documentsButton)
@@ -151,7 +151,7 @@ describe('metadata path', () => {
     }, 10000);
   });
 
-  fdescribe('Connections tests', () => {
+  describe('Connections tests', () => {
     it('should click Connections button and then click on add new connection button', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.connectionsButton)
@@ -184,6 +184,7 @@ describe('metadata path', () => {
       .wait(3200)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
+      .wait(500)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
       //.wait(500)
       .clearInput(selectors.settingsView.connectionNameForm)

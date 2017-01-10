@@ -22,7 +22,7 @@ describe('filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('Filters tests', () => {

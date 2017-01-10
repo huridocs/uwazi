@@ -68,7 +68,7 @@ export default {
     if (template._id) {
       return request.get(`${dbURL}/${template._id}`)
       .then((response) => {
-        updateTranslation(response.json, template);
+        return updateTranslation(response.json, template);
       })
       .then(() => save(template))
       .then(response => this.getById(response.id));
@@ -91,7 +91,9 @@ export default {
       if (count > 0) {
         return Promise.reject({key: 'documents_using_template', value: count});
       }
-      translations.deleteContext(template._id);
+      return translations.deleteContext(template._id);
+    })
+    .then(() => {
       return request.delete(url);
     })
     .then((response) => {
