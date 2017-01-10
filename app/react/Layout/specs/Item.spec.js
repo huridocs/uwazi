@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS as Immutable} from 'immutable';
-import {Item} from '../Item';
+import {Item, mapStateToProps} from '../Item';
 
 import {RowList, ItemFooter} from '../Lists';
 import TemplateLabel from '../TemplateLabel';
@@ -140,6 +140,25 @@ describe('Item', () => {
       expect(component.find('.item-metadata').html()).toContain('value1');
       expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
       expect(component.find('.item-metadata').html()).toContain('<dd>value2</dd>');
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    let templates;
+    let thesauris;
+
+    beforeEach(() => {
+      templates = 'templates';
+      thesauris = 'thesauris';
+    });
+
+    it('should include templates, thesauris and default sort', () => {
+      expect(mapStateToProps({templates, thesauris}, {})).toEqual({templates, thesauris, search: {sort: 'title'}});
+    });
+
+    it('should allow overriding the default sort', () => {
+      const ownProps = {searchParams: {sort: 'newSort'}};
+      expect(mapStateToProps({templates, thesauris}, ownProps)).toEqual({templates, thesauris, search: {sort: 'newSort'}});
     });
   });
 });

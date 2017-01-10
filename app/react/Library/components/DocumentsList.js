@@ -45,7 +45,7 @@ export class DocumentsList extends Component {
               <SortButtons sortCallback={this.props.searchDocuments}/>
           </div>
           <RowList>
-            {documents.rows.map((doc, index) => <Doc doc={Immutable(doc)} key={index} />)}
+            {documents.rows.map((doc, index) => <Doc doc={Immutable(doc)} key={index} searchParams={this.props.search} />)}
           </RowList>
           <div className="row">
             <div className="col-sm-12 text-center documents-counter">
@@ -78,6 +78,7 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   filtersPanel: PropTypes.bool,
   selectedDocument: PropTypes.object,
+  search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func
 };
@@ -86,7 +87,8 @@ export function mapStateToProps(state) {
   return {
     documents: selectDocuments(state),
     filtersPanel: state.library.ui.get('filtersPanel'),
-    selectedDocument: state.library.ui.get('selectedDocument')
+    selectedDocument: state.library.ui.get('selectedDocument'),
+    search: state.search
   };
 }
 

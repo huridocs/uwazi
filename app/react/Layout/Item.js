@@ -141,9 +141,9 @@ Item.propTypes = {
   evalPublished: PropTypes.bool
 };
 
-const mapStateToProps = ({templates, thesauris, search}, ownProps) => {
-  const {sort} = ownProps.searchParams || search;
-  return {templates, thesauris, search: {sort}};
+export const mapStateToProps = ({templates, thesauris}, ownProps) => {
+  const search = ownProps.searchParams || {sort: 'title'};
+  return {templates, thesauris, search};
 };
 
 export default connect(mapStateToProps)(Item);
