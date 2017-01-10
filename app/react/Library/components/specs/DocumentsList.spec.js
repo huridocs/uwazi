@@ -15,6 +15,7 @@ describe('DocumentsList', () => {
     props = {
       documents: documents.toJS(),
       search: {sort: 'sort'},
+      filters: Immutable.fromJS({documentTypes: []}),
       searchDocuments: () => {}
     };
   });
@@ -36,23 +37,29 @@ describe('DocumentsList', () => {
     expect(docs.first().props().searchParams).toEqual({sort: 'sort'});
   });
 
-  it('should hold sortButtons with search callback', () => {
+  it('should hold sortButtons with search callback and selectedTemplates', () => {
     render();
     expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
+    expect(component.find(SortButtons).props().selectedTemplates).toBe(props.filters.get('documentTypes'));
   });
 
   describe('maped state', () => {
-    it('should contain the documents and search options', () => {
+    it('should contain the documents, library filters and search options', () => {
+      const filters = Immutable.fromJS({documentTypes: []});
+
       let store = {
         library: {
           documents: documents,
+          filters,
           ui: Immutable.fromJS({filtersPanel: 'panel', selectedDocument: 'selected'})
         },
         search: {sort: 'sortProperty'}
       };
+
       let state = mapStateToProps(store);
       expect(state).toEqual({
         documents: documents.toJS(),
+        filters,
         filtersPanel: 'panel',
         selectedDocument: 'selected',
         search: {sort: 'sortProperty'}

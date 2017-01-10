@@ -42,7 +42,8 @@ export class DocumentsList extends Component {
               <div className="u-floatLeft documents-counter">
                 <b>{documents.totalRows}</b> {t('System', 'documents')}
               </div>
-              <SortButtons sortCallback={this.props.searchDocuments}/>
+              <SortButtons sortCallback={this.props.searchDocuments}
+                           selectedTemplates={this.props.filters.get('documentTypes')} />
           </div>
           <RowList>
             {documents.rows.map((doc, index) => <Doc doc={Immutable(doc)} key={index} searchParams={this.props.search} />)}
@@ -76,6 +77,7 @@ export class DocumentsList extends Component {
 
 DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
+  filters: PropTypes.object,
   filtersPanel: PropTypes.bool,
   selectedDocument: PropTypes.object,
   search: PropTypes.object,
@@ -86,6 +88,7 @@ DocumentsList.propTypes = {
 export function mapStateToProps(state) {
   return {
     documents: selectDocuments(state),
+    filters: state.library.filters,
     filtersPanel: state.library.ui.get('filtersPanel'),
     selectedDocument: state.library.ui.get('selectedDocument'),
     search: state.search

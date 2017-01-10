@@ -115,11 +115,17 @@ SortButtons.propTypes = {
 };
 
 export function mapStateToProps(state, ownProps) {
-  const {templates} = state;
+  let {templates} = state;
   const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'search';
+
+  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
+    templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
+  }
+
   const search = stateProperty.split('.').reduce((memo, property) => {
     return Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null;
   }, state);
+
   return {stateProperty, search, templates};
 }
 

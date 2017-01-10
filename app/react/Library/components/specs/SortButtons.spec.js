@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS as immutable} from 'immutable';
 
-import {SortButtons} from 'app/Library/components/SortButtons';
+import {SortButtons, mapStateToProps} from 'app/Library/components/SortButtons';
 
 describe('SortButtons', () => {
   let component;
@@ -165,6 +165,17 @@ describe('SortButtons', () => {
       let recent = component.find('li').at(1);
       expect(title.hasClass('is-active')).toBe(false);
       expect(recent.hasClass('is-active')).toBe(true);
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    it('should send all templates from state', () => {
+      expect(mapStateToProps({templates: immutable(['item'])}, {}).templates.get(0)).toBe('item');
+    });
+
+    it('should only send selectedTemplates if array passed in ownProps', () => {
+      const templates = immutable([{_id: 'a'}, {_id: 'b'}]);
+      expect(mapStateToProps({templates}, {selectedTemplates: immutable(['b'])}).templates.getIn([0, '_id'])).toBe('b');
     });
   });
 });
