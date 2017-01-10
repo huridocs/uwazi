@@ -75,12 +75,13 @@ describe('Item', () => {
     beforeEach(() => {
       props.doc = props.doc.set('metadata', {
         sex: 'female',
-        age: '25'
+        age: 25
       });
       props.thesauris = Immutable([{_id: 't1'}]);
     });
 
     it('should render upload date if no property is configured in the template to show in card', () => {
+      props.search = {sort: 'title'};
       render();
       expect(component.find('.item-metadata').text()).toContain('Date added');
       expect(component.find('.item-metadata').find(PrintDate).props().utc).toBe(123);

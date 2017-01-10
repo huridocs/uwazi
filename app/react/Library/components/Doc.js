@@ -27,6 +27,7 @@ export class Doc extends Component {
     return <Item onClick={this.select.bind(this, this.props.active)}
                  active={this.props.active}
                  doc={this.props.doc}
+                 searchParams={this.props.searchParams}
                  buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
                             <span className="itemShortcut-arrow">
                               <i className="fa fa-file-text-o"></i>
@@ -37,6 +38,7 @@ export class Doc extends Component {
 
 Doc.propTypes = {
   doc: PropTypes.object,
+  searchParams: PropTypes.object,
   active: PropTypes.bool,
   selectDocument: PropTypes.func,
   unselectDocument: PropTypes.func

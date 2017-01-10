@@ -15,7 +15,8 @@ describe('Doc', () => {
       doc: Immutable({_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'}),
       active: false,
       selectDocument: jasmine.createSpy('selectDocument'),
-      unselectDocument: jasmine.createSpy('unselectDocument')
+      unselectDocument: jasmine.createSpy('unselectDocument'),
+      searchParams: {sort: 'sortProperty'}
     };
   });
 
@@ -33,6 +34,11 @@ describe('Doc', () => {
       render();
       const button = component.find(Item).props().buttons;
       expect(button.props.to).toBe('/document/id');
+    });
+
+    it('should pass the searchParams to the item', () => {
+      render();
+      expect(component.find(Item).props().searchParams.sort).toBe('sortProperty');
     });
   });
 

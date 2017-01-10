@@ -14,24 +14,59 @@ import PrintDate from './PrintDate';
 export class Item extends Component {
 
   formatMetadata(populatedMetadata, creationDate, translationContext) {
+    let sortPropertyInMetadata = false;
+
     const metadata = populatedMetadata
-    .filter(p => (p.showInCard || 'metadata.' + p.name === this.props.search.sort) && (p.value && p.value.length > 0 || p.markdown))
+    .filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
     .map((property, index) => {
-      let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
-      if (property.markdown) {
-        value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
+      if ('metadata.' + property.name === this.props.search.sort) {
+        sortPropertyInMetadata = true;
       }
-      return (
-        <dl key={index}>
-          <dt>{t(property.context || translationContext, property.label)}</dt>
-          <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
-        </dl>
-      );
+
+      if (property.value && property.value !== '' || property.markdown) {
+        let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
+        if (property.markdown) {
+          value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
+        }
+        return (
+          <dl key={index}>
+            <dt>{t(property.context || translationContext, property.label)}</dt>
+            <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
+          </dl>
+        );
+      }
+
+      if (!property.value && 'metadata.' + property.name === this.props.search.sort) {
+        return (
+          <dl key={index}>
+            <dd className="item-metadata-empty">{t('System', 'No')} {property.label}</dd>
+          </dl>
+        );
+      }
+
+      return null;
     });
 
-    const creationMetadata = <dl><dt>Date added</dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
+    const isTitleOrCreationDate = this.props.search.sort === 'title' || this.props.search.sort === 'creationDate';
 
-    return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
+    if (!isTitleOrCreationDate && !sortPropertyInMetadata) {
+      metadata.push(
+        <dl key={metadata.length}>
+          <dd className="item-metadata-empty">Item does not have the sorting property</dd>
+        </dl>
+      );
+    }
+
+    if (!metadata.length && !populatedMetadata.filter(p => p.showInCard).length || this.props.search.sort === 'creationDate') {
+      metadata.push(
+        <dl key={metadata.length}>
+          <dt>Date added</dt>
+          <dd><PrintDate utc={creationDate} toLocal={true} /></dd>
+        </dl>
+      );
+    }
+
+    return metadata;
   }
 
   getMetadata(doc) {
@@ -106,8 +141,8 @@ Item.propTypes = {
   evalPublished: PropTypes.bool
 };
 
-const mapStateToProps = ({templates, thesauris, search}) => {
-  const {sort} = search;
+const mapStateToProps = ({templates, thesauris, search}, ownProps) => {
+  const {sort} = ownProps.searchParams || search;
   return {templates, thesauris, search: {sort}};
 };
 
