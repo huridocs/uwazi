@@ -11,6 +11,7 @@ import Notifications from 'app/Notifications';
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
+import {t} from 'app/I18N';
 
 class App extends Component {
 
