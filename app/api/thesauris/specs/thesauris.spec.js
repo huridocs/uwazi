@@ -4,6 +4,7 @@ import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import translations from 'api/i18n/translations';
+import templates from 'api/templates/templates';
 
 describe('thesauris', () => {
   beforeEach((done) => {
@@ -71,6 +72,12 @@ describe('thesauris', () => {
   });
 
   describe('delete()', () => {
+    let templatesCountSpy;
+    beforeEach(() => {
+      templatesCountSpy = spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(0));
+      spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+    });
+
     it('should delete a thesauri', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
@@ -92,7 +99,6 @@ describe('thesauris', () => {
     it('should delete the translation', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
-        spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
         return thesauris.delete(thesauri.json._id, thesauri.json._rev);
       })
       .then((response) => {
@@ -103,14 +109,18 @@ describe('thesauris', () => {
       .catch(done.fail);
     });
 
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        thesauris.delete('c08ef2532f0bd008ac5174b45e033c93', 'bad_rev')
-        .then((response) => {
-          expect(response.error.error).toBe('bad_request');
-          done();
+    describe('when the dictionary is in use', () => {
+      it('should return an error in the response', (done) => {
+        templatesCountSpy.and.returnValue(Promise.resolve(1));
+        request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
+        .then(thesauri => {
+          return thesauris.delete(thesauri.json._id, thesauri.json._rev);
         })
-        .catch(done.fail);
+        .then(done.fail)
+        .catch((response) => {
+          expect(response.key).toBe('templates_using_dictionary');
+          done();
+        });
       });
     });
   });
