@@ -81,8 +81,8 @@ export default {
     return references.countByRelationType(relationtype._id)
     .then((referencesUsingIt) => {
       if (referencesUsingIt === 0) {
-        translations.deleteContext(relationtype._id);
-        return request.delete(`${dbUrl}/${relationtype._id}`, {rev: relationtype._rev})
+        return translations.deleteContext(relationtype._id)
+        .then(() => request.delete(`${dbUrl}/${relationtype._id}`, {rev: relationtype._rev}))
         .then(() => true);
       }
 

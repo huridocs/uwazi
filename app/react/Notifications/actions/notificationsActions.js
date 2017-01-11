@@ -15,6 +15,6 @@ export function notify(message, type) {
 
     setTimeout(() => {
       dispatch(removeNotification(id));
-    }, 3000);
+    }, 2500);
   };
 }
