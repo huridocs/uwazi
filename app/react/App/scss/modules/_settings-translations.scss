@@ -4,3 +4,16 @@
     flex-wrap: wrap;
   }
 }
+
+.TranslationsList {
+  .item-type {
+    display: inline-block;
+    width: 90px;
+  }
+  .item-type__name {
+    max-width: 100%;
+    height: 17px;
+    line-height: 15px;
+    margin: 0;
+  }
+}

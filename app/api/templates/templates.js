@@ -1,7 +1,6 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
-import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
 
@@ -69,7 +68,7 @@ export default {
     if (template._id) {
       return request.get(`${dbURL}/${template._id}`)
       .then((response) => {
-        updateTranslation(response.json, template);
+        return updateTranslation(response.json, template);
       })
       .then(() => save(template))
       .then(response => this.getById(response.id));
@@ -92,7 +91,9 @@ export default {
       if (count > 0) {
         return Promise.reject({key: 'documents_using_template', value: count});
       }
-      translations.deleteContext(template._id);
+      return translations.deleteContext(template._id);
+    })
+    .then(() => {
       return request.delete(url);
     })
     .then((response) => {

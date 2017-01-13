@@ -144,8 +144,8 @@ export default {
   },
 
   delete(thesauriId, rev) {
-    translations.deleteContext(thesauriId);
-    return request.delete(`${dbUrl}/${thesauriId}`, {rev})
+    return translations.deleteContext(thesauriId)
+    .then(() => request.delete(`${dbUrl}/${thesauriId}`, {rev}))
     .then((response) => {
       return response.json;
     })

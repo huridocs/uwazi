@@ -80,7 +80,8 @@ describe('settings', () => {
             return settings.save(config);
           })
           .then(() => {
-            expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {'Page one': 'Page 1'}, ['Page two'], {'Page 1': 'Page 1', 'Page three': 'Page three'});
+            expect(translations.updateContext)
+            .toHaveBeenCalledWith('Menu', 'Menu', {'Page one': 'Page 1'}, ['Page two'], {'Page 1': 'Page 1', 'Page three': 'Page three'});
             done();
           }).catch(catchErrors(done));
         });
@@ -105,7 +106,8 @@ describe('settings', () => {
           return settings.save(config);
         })
         .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {Documents: 'Important Documents'}, ['Files'], {'Important Documents': 'Important Documents'});
+          expect(translations.updateContext)
+          .toHaveBeenCalledWith('Filters', 'Filters', {Documents: 'Important Documents'}, ['Files'], {'Important Documents': 'Important Documents'});
           done();
         }).catch(catchErrors(done));
       });

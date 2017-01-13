@@ -1,4 +1,3 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import database from 'api/utils/database.js';
 
 import translations from '../translations.js';
@@ -20,6 +19,21 @@ describe('translations', () => {
       .then((result) => {
         expect(result.rows.length).toBe(2);
         expect(result.rows[0].locale).toBe('en');
+        expect(result.rows[0].contexts[0].id).toBe('System');
+        expect(result.rows[0].contexts[0].type).toBe('Uwazi UI');
+
+        expect(result.rows[0].contexts[1].id).toBe('Filters');
+        expect(result.rows[0].contexts[1].type).toBe('Uwazi UI');
+
+        expect(result.rows[0].contexts[2].id).toBe('Menu');
+        expect(result.rows[0].contexts[2].type).toBe('Uwazi UI');
+
+        expect(result.rows[0].contexts[3].id).toBe('entity_template_id');
+        expect(result.rows[0].contexts[3].type).toBe('Entity');
+
+        expect(result.rows[0].contexts[4].id).toBe('document_template_id');
+        expect(result.rows[0].contexts[4].type).toBe('Document');
+
         expect(result.rows[1].locale).toBe('es');
         done();
       }).catch(catchErrors(done));
@@ -40,8 +54,8 @@ describe('translations', () => {
   describe('addEntries()', () => {
     it('should add the new keys to each dictionary in the given contexts', (done) => {
       translations.addEntries([
-        {contextId: '123', key: 'Key', defaultValue: 'default'},
-        {contextId: '123', key: 'Key1', defaultValue: 'default 1'}
+        {contextId: 'System', key: 'Key', defaultValue: 'default'},
+        {contextId: 'System', key: 'Key1', defaultValue: 'default 1'}
       ])
       .then((result) => {
         expect(result).toBe('ok');
@@ -61,7 +75,7 @@ describe('translations', () => {
 
   describe('addEntry()', () => {
     it('should add the new key to each dictionary in the given context', (done) => {
-      translations.addEntry('123', 'Key', 'default')
+      translations.addEntry('System', 'Key', 'default')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
@@ -78,13 +92,13 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with his values', (done) => {
       let values = {Name: 'Name', Surname: 'Surname'};
-      translations.addContext('456', 'Judge', values)
+      translations.addContext('System', 'Judge', values)
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts[1].values).toEqual(values);
+        expect(result.rows[0].contexts[5].values).toEqual(values);
         expect(result.rows[1].contexts[1].values).toEqual(values);
         done();
       })
@@ -94,13 +108,13 @@ describe('translations', () => {
 
   describe('deleteContext()', () => {
     it('should add a context with his values', (done) => {
-      translations.deleteContext('123')
+      translations.deleteContext('System')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts.length).toBe(0);
+        expect(result.rows[0].contexts.length).toBe(4);
         expect(result.rows[1].contexts.length).toBe(0);
         done();
       })
@@ -114,7 +128,7 @@ describe('translations', () => {
       let deletedProperties = ['Age'];
       let context = {Pass: 'Pass', Acc: 'Acc', Email: 'Email', Name: 'Name', Interface: 'Interface'};
 
-      translations.updateContext('123', 'Interface', keyNameChanges, deletedProperties, context)
+      translations.updateContext('System', 'Interface', keyNameChanges, deletedProperties, context)
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();

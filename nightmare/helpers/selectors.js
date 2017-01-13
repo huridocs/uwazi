@@ -37,7 +37,11 @@ export default {
     connectionNameForm: '#relationTypeName',
     entityNameForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input',
     documentTemplateNameForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > main > div > form > div > div > input',
-    deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger'
+    deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    translationsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(5)',
+    translationInputEn: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(4) > div:nth-child(2) > div > input',
+    translationInputEs: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > ul > li:nth-child(4) > div:nth-child(3) > div > input',
+    translationsSaveButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div > button'
   },
   libraryView: {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div.item-group > div',
@@ -46,7 +50,8 @@ export default {
     searchInLibrary: '#app > div.content > header > div > a',
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
-    firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a'
+    firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a',
+    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(2) > label > span'
   },
   documentView: {
     viewer: '#app > div.content > div > div > main',
@@ -74,6 +79,8 @@ export default {
     loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
     uploadsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
     libraryNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
-    settingsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a'
+    settingsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a',
+    spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(1) > a',
+    english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a'
   }
 };

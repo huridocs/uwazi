@@ -22,7 +22,7 @@ export default {
       }
 
       if (property.type === 'date' && value) {
-        value = moment.utc(value, 'X').format('MMM DD, YYYY');
+        value = moment(value, 'X').format('MMM DD, YYYY');
       }
 
       return {label: property.label, value};

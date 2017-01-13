@@ -92,7 +92,7 @@ describe('thesauris', () => {
     it('should delete the translation', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
-        spyOn(translations, 'deleteContext');
+        spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
         return thesauris.delete(thesauri.json._id, thesauri.json._rev);
       })
       .then((response) => {
@@ -134,10 +134,14 @@ describe('thesauris', () => {
       thesauris.save(data)
       .then((response) => {
         expect(translations.addContext)
-        .toHaveBeenCalledWith(response._id, 'Batman wish list', {
-          'Batman wish list': 'Batman wish list',
-          'Joker BFF': 'Joker BFF'
-        });
+        .toHaveBeenCalledWith(
+          response._id,
+          'Batman wish list',
+          {
+            'Batman wish list': 'Batman wish list',
+            'Joker BFF': 'Joker BFF'
+          }
+        );
         done();
       })
       .catch(done.fail);

@@ -14,7 +14,6 @@ Nightmare.action('clearInput', function (selector, done) {
 
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
-  //.waitToClick('#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a')
   .wait(selectors.navigation.loginNavButton)
   .click(selectors.navigation.loginNavButton)
   .wait('#username')
@@ -74,6 +73,13 @@ Nightmare.action('scrollElement', function (selector, height, done) {
     document.querySelector(elementToScroll).scrollTop = scrollHeight;
   }, selector, height)
   .then(done);
+});
+
+Nightmare.action('getInnerText', function (selector, done) {
+  this.wait(selector)
+  .evaluate_now((elementToSelect) => {
+    return document.querySelector(elementToSelect).innerText;
+  }, done, selector);
 });
 
 Nightmare.action('selectText', function (selector, done) {

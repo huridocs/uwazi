@@ -181,6 +181,7 @@ describe('templates', () => {
           template = _template;
           spyOn(translations, 'addContext');
           template.name = 'new title';
+          template.isEntity = true;
           template.properties[0].label = 'new label 1';
           template.properties.pop();
           template.properties.push({label: 'label 3'});

@@ -6,14 +6,34 @@ export default {
       locale: 'en',
       contexts: [
         {
-          id: '123',
+          id: 'System',
           label: 'System',
-          'values': {
+          values: {
             'Password': 'Password',
             'Account': 'Account',
             'Email': 'E-Mail',
             'Age': 'Age'
           }
+        },
+        {
+          id: 'Filters',
+          label: 'Filters',
+          values: {}
+        },
+        {
+          id: 'Menu',
+          label: 'Menu',
+          values: {}
+        },
+        {
+          id: 'entity_template_id',
+          label: 'Judge',
+          values: {}
+        },
+        {
+          id: 'document_template_id',
+          label: 'Court order',
+          values: {}
         }
       ]
     },
@@ -23,13 +43,13 @@ export default {
       locale: 'es',
       contexts: [
         {
-          id: '123',
+          id: 'System',
           label: 'System',
-          'values': {
-            'Password': 'Contraseña',
-            'Account': 'Cuenta',
-            'Email': 'Correo electronico',
-            'Age': 'Edad'
+          values: {
+            Password: 'Contraseña',
+            Account: 'Cuenta',
+            Email: 'Correo electronico',
+            Age: 'Edad'
           }
         }
       ]
@@ -37,17 +57,27 @@ export default {
     {
       _id: '4',
       type: 'settings',
-      "languages": [
-       {
-           "key": "es",
-           "label": "Español"
-       },
-       {
-           "key": "en",
-           "label": "English",
-           "default": true
-       }
-   ]
+      languages: [
+        {
+          key: 'es',
+          label: 'Español'
+        },
+        {
+          key: 'en',
+          label: 'English',
+          default: true
+        }
+      ]
+    },
+    {
+      _id: 'entity_template_id',
+      type: 'template',
+      isEntity: true
+    },
+    {
+      _id: 'document_template_id',
+      type: 'template',
+      isEntity: false
     }
   ]
 };
