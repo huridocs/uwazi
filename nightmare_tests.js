@@ -33,20 +33,16 @@ jasmine.addReporter(new reporters.TerminalReporter({
   showStack: true
 }));
 
-console.log('Applying fixtures');
-exec('cd nightmare/fixtures;./restore.sh', (error, stdout, stderr) => {
+exec('cd nightmare/fixtures;./restore.sh', (error) => {
   if (error) {
     console.log(error);
     return;
   }
-  console.log('Done');
-  console.log('Indexing...');
-  exec('cd couchdb;node reset_development_elastic_index.js', (err, stdout, stderr) => {
+  exec('cd couchdb;node reset_development_elastic_index.js', (err) => {
     if (err) {
       console.log(err);
       return;
     }
-    console.log(`stdout: ${stdout}`);
     jasmine.execute();
-  });
-});
+  }).stdout.pipe(process.stdout);
+}).stdout.pipe(process.stdout);
