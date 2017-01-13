@@ -5,7 +5,7 @@ import selectors from '../helpers/selectors.js';
 
 const nightmare = createNightmare();
 
-fdescribe('Smoke test,', () => {
+describe('Smoke test,', () => {
   describe('while logged in,', () => {
     describe('login success,', () => {
       it('should redirect to library view', (done) => {
@@ -21,7 +21,7 @@ fdescribe('Smoke test,', () => {
     });
   });
 
-  fdescribe('while logged in,', () => {
+  describe('while logged in,', () => {
     describe('library view', () => {
       it('should check if documents loaded correctly', (done) => {
         nightmare
@@ -107,7 +107,7 @@ fdescribe('Smoke test,', () => {
       });
     });
 
-    fdescribe('uploads view', () => {
+    describe('uploads view', () => {
       it('click on uploads nav button', (done) => {
         nightmare
         .waitToClick(selectors.navigation.uploadsNavButton)
@@ -146,7 +146,7 @@ fdescribe('Smoke test,', () => {
       });
     });
 
-    fdescribe('settings view', () => {
+    describe('settings view', () => {
       it('should check if user settings view loads', (done) => {
         nightmare
         .waitToClick(selectors.navigation.settingsNavButton)

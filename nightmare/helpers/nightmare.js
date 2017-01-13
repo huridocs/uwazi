@@ -14,6 +14,9 @@ export default function createNightmare() {
     if (type === 'error') {
       fail(message);
     }
+    if (type === 'log') {
+      console.log(message);
+    }
   });
 
   return nightmare;

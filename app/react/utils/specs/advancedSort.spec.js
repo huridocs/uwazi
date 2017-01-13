@@ -1,6 +1,6 @@
 import {advancedSort} from '../advancedSort';
 
-describe('Advanced Sort', () => {
+fdescribe('Advanced Sort', () => {
   it('should sort regular characters (not affecting original)', () => {
     const baseArray = ['z', 'a', 'r', 'f'];
 
