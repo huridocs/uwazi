@@ -3,6 +3,7 @@ import {db_url as dbUrl} from '../config/database.js';
 import sanitizeResponse from 'api/utils/sanitizeResponse.js';
 import entities from 'api/entities/entities';
 import translations from 'api/i18n/translations';
+import templates from 'api/templates/templates';
 import {generateIds, getUpdatedNames, getDeletedProperties} from 'api/templates/utils';
 
 let autoincrementValuesId = (thesauri) => {
@@ -144,13 +145,14 @@ export default {
   },
 
   delete(thesauriId, rev) {
-    return translations.deleteContext(thesauriId)
-    .then(() => request.delete(`${dbUrl}/${thesauriId}`, {rev}))
-    .then((response) => {
-      return response.json;
+    return templates.countByThesauri(thesauriId)
+    .then((count) => {
+      if (count) {
+        return Promise.reject({key: 'templates_using_dictionary', value: count});
+      }
+      return translations.deleteContext(thesauriId);
     })
-    .catch((error) => {
-      return {error: error.json};
-    });
+    .then(() => request.delete(`${dbUrl}/${thesauriId}`, {rev}))
+    .then((response) => response.json);
   }
 };
