@@ -39,7 +39,6 @@ describe('relationtypes', () => {
   });
 
   describe('save()', () => {
-
     beforeEach(() => {
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
     });
