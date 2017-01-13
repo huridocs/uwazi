@@ -1,3 +1,5 @@
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
 function sameProperty(prop1, prop2) {
   return prop1.name === prop2.name && prop1.type === prop2.type && prop1.content === prop2.content;
 }
@@ -55,7 +57,8 @@ export function populateOptions(filters, thesauris) {
 
 export function URLQueryToState(query, templates, thesauris) {
   let properties = libraryFilters(templates, query.types);
-  let {searchTerm, filters = {}, order = 'desc', sort = 'title'} = query;
+  let {searchTerm, filters = {}, sort = prioritySortingCriteria().sort, order = prioritySortingCriteria().order} = query;
+
   properties = populateOptions(properties, thesauris).map((property) => {
     if (filters[property.name]) {
       property.active = true;

@@ -15,6 +15,8 @@ import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
 
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
 export default class Library extends RouteHandler {
 
   static renderTools() {
@@ -26,8 +28,11 @@ export default class Library extends RouteHandler {
   }
 
   static requestState(params, query = {filters: {}, types: []}) {
-    query.order = query.order || 'desc';
-    query.sort = query.sort || 'creationDate';
+    const defaultSearch = prioritySortingCriteria();
+
+    query.order = query.order || defaultSearch.order;
+    query.sort = query.sort || defaultSearch.sort;
+
     return api.search(query)
     .then((documents) => {
       const state = store.getState();

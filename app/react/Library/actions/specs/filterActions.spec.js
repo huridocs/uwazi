@@ -5,6 +5,7 @@ import {actions as formActions} from 'react-redux-form';
 import Immutable from 'immutable';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('filterActions', () => {
   let templates = ['templates'];
@@ -80,8 +81,8 @@ describe('filterActions', () => {
       spyOn(libraryActions, 'searchDocuments');
       actions.filterDocumentTypes(['b'])(dispatch, getState);
 
-      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('title');
-      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe('asc');
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe(prioritySortingCriteria().sort);
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe(prioritySortingCriteria().order);
     });
   });
 

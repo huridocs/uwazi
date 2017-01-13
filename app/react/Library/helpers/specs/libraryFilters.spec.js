@@ -1,4 +1,5 @@
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('library helper', () => {
   let templates = [
@@ -22,7 +23,7 @@ describe('library helper', () => {
   let thesauris = [{_id: 'abc1', values: [{id: 1, value: 'value1'}, {id: 2, value: 'value2'}]}];
 
   describe('URLQueryToState', () => {
-    it('should return default values whn not set', () => {
+    it('should return default values when not set', () => {
       const query = {
         searchTerm: 'searchTerm',
         types: []
@@ -30,8 +31,8 @@ describe('library helper', () => {
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
       expect(state.search.filters).toEqual({});
-      expect(state.search.order).toEqual('desc');
-      expect(state.search.sort).toEqual('title');
+      expect(state.search.order).toEqual(prioritySortingCriteria().order);
+      expect(state.search.sort).toEqual(prioritySortingCriteria().sort);
     });
 
     it('should return the query transformed to the application state', () => {

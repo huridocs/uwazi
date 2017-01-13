@@ -3,6 +3,8 @@ import libraryHelper from 'app/Library/helpers/libraryFilters';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
 
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
 function updateModelFilters(dispatch, getState, libraryFilters) {
   let previousModelFilters = getState().search.filters;
   let modelFilters = libraryFilters.reduce((model, property) => {
@@ -50,8 +52,8 @@ export function filterDocumentTypes(documentTypes) {
     }, state.search.sort === 'title' || state.search.sort === 'creationDate');
 
     if (!validSearchSort) {
-      state.search.sort = 'title';
-      state.search.order = 'asc';
+      state.search.sort = prioritySortingCriteria().sort;
+      state.search.order = prioritySortingCriteria().order;
     }
 
     const search = Object.assign({aggregations, types: documentTypes}, state.search);
