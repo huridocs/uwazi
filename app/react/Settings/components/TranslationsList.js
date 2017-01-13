@@ -12,7 +12,10 @@ export class TranslationsList extends Component {
     let {settings, translations} = this.props;
     let defaultLanguage = settings.get('languages').find((lang) => lang.get('default')).get('key');
     let defaultTranslation = translations.find((translation) => translation.get('locale') === defaultLanguage);
-    let contexts = advancedSort(defaultTranslation.get('contexts').toJS(), {property: 'label'});
+    let contexts = advancedSort(defaultTranslation.get('contexts').toJS().map((c) => {
+      c.sort = c.type + c.label;
+      return c;
+    }), {property: 'sort'});
     return <div className="TranslationsList panel panel-default">
       <div className="panel-heading">{t('System', 'Translations')}</div>
       <ul className="list-group relation-types">
