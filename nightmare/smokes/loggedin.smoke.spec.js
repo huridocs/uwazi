@@ -1,11 +1,11 @@
-import Nightmare from 'nightmare';
+import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
-describe('Smoke test,', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
+const nightmare = createNightmare();
 
+fdescribe('Smoke test,', () => {
   describe('while logged in,', () => {
     describe('login success,', () => {
       it('should redirect to library view', (done) => {
@@ -17,11 +17,11 @@ describe('Smoke test,', () => {
           done();
         })
         .catch(catchErrors(done));
-      });
+      }, 10000);
     });
   });
 
-  describe('while logged in,', () => {
+  fdescribe('while logged in,', () => {
     describe('library view', () => {
       it('should check if documents loaded correctly', (done) => {
         nightmare
@@ -107,7 +107,7 @@ describe('Smoke test,', () => {
       });
     });
 
-    describe('uploads view', () => {
+    fdescribe('uploads view', () => {
       it('click on uploads nav button', (done) => {
         nightmare
         .waitToClick(selectors.navigation.uploadsNavButton)
@@ -146,7 +146,7 @@ describe('Smoke test,', () => {
       });
     });
 
-    describe('settings view', () => {
+    fdescribe('settings view', () => {
       it('should check if user settings view loads', (done) => {
         nightmare
         .waitToClick(selectors.navigation.settingsNavButton)
