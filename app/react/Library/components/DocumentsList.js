@@ -57,7 +57,9 @@ export class DocumentsList extends Component {
             {(() => {
               if (documents.rows.length < documents.totalRows && !this.state.loading) {
                 return <div className="col-sm-12 text-center">
-                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">{loadMoreAmmount + ' ' + t('System', 'x more')}</button>
+                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">
+                  {loadMoreAmmount + ' ' + t('System', 'x more')}
+                </button>
                 </div>;
               }
               if (this.state.loading) {
