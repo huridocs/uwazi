@@ -67,5 +67,6 @@ export default [
 {key: 'Password', label: 'Password'},
 {key: 'Settings updated.', label: 'Settings updated.'},
 {key: 'User', label: 'User'},
-{key: 'Add', label: 'Add'}
+{key: 'Add', label: 'Add'},
+{key: 'Translations saved', label: 'Translations saved'}
 ];
