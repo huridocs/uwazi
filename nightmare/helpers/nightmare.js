@@ -10,7 +10,7 @@ export default function createNightmare() {
     fail(error);
   });
 
-  nightmare.on('console', function(type, message) {
+  nightmare.on('console', function(type, message, response) {
     if (type === 'error') {
       fail(message);
     }

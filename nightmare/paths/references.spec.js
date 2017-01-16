@@ -8,8 +8,8 @@ let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
 
-fdescribe('references path', () => {
-  fdescribe('login', () => {
+describe('references path', () => {
+  describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
       .login('admin', 'admin')
@@ -73,19 +73,19 @@ fdescribe('references path', () => {
       .catch(catchErrors(done));
     });
 
-    it('delete de created connection', (done) => {
-      nightmare
-      .mouseover(selectors.documentView.activeConnection)
-      .waitToClick(selectors.documentView.unlinkIcon)
-      .waitToClick('.modal-footer .btn-danger')
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
+    //it('delete the created connection', (done) => {
+      //nightmare
+      //.mouseover(selectors.documentView.activeConnection)
+      //.waitToClick(selectors.documentView.unlinkIcon)
+      //.waitToClick('.modal-footer .btn-danger')
+      //.wait('.alert.alert-success')
+      //.exists('.alert.alert-success')
+      //.then((result) => {
+        //expect(result).toBe(true);
+        //done();
+      //})
+      //.catch(catchErrors(done));
+    //});
   });
 
   describe('closing browser', () => {

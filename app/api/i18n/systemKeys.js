@@ -56,6 +56,16 @@ export default [
 {key: 'References', label: 'References'},
 {key: 'Attachments', label: 'Attachments'},
 {key: 'Size', label: 'Size'},
-{key: 'Connection type', label: 'Connection type'},
+{key: 'RelationType saved', label: 'RelationType saved'},
+{key: 'Confirm delete document type message', label: 'Are you sure you want to delete this document type?'},
+{key: 'Confirm delete document type title', label: 'Connection type'},
+{key: 'Connection type', label: 'Confirm delete document type:'},
+{key: 'Thesauri saved', label: 'Thesauri saved'},
+{key: 'Login', label: 'Login'},
+{key: 'Login button', label: 'Login'},
+{key: 'Login failed', label: 'Login failed'},
+{key: 'Password', label: 'Password'},
+{key: 'Settings updated.', label: 'Settings updated.'},
+{key: 'User', label: 'User'},
 {key: 'Add', label: 'Add'}
 ];
