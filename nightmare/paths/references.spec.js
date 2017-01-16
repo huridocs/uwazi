@@ -1,17 +1,14 @@
-import Nightmare from 'nightmare';
-import realMouse from 'nightmare-real-mouse';
+import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-realMouse(Nightmare);
+const nightmare = createNightmare();
 
 let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
 
 describe('references path', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
-
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
@@ -76,7 +73,7 @@ describe('references path', () => {
       .catch(catchErrors(done));
     });
 
-    it('delete de created connection', (done) => {
+    it('delete the created connection', (done) => {
       nightmare
       .mouseover(selectors.documentView.activeConnection)
       .waitToClick(selectors.documentView.unlinkIcon)

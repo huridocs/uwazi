@@ -1,11 +1,11 @@
-import Nightmare from 'nightmare';
+import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
-describe('Smoke test,', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
+const nightmare = createNightmare();
 
+describe('Smoke test,', () => {
   describe('while logged in,', () => {
     describe('login success,', () => {
       it('should redirect to library view', (done) => {
@@ -17,7 +17,7 @@ describe('Smoke test,', () => {
           done();
         })
         .catch(catchErrors(done));
-      });
+      }, 10000);
     });
   });
 

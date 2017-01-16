@@ -42,6 +42,9 @@ export class PDFPage extends Component {
   }
 
   componentWillUnmount() {
+    if (this.pdfPageView) {
+      this.pdfPageView.destroy();
+    }
     document.querySelector('.document-viewer').removeEventListener('scroll', this.scrollCallback);
   }
 

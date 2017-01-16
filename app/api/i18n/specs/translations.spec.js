@@ -13,6 +13,57 @@ describe('translations', () => {
     .catch(done.fail);
   });
 
+  describe('process System context', () => {
+    it('should add keys that do not exist into all languages', (done) => {
+      const keys = [{key: 'Password'}, {key: 'Account'}, {key: 'Email'}, {key: 'Age'}, {key: 'new key'}, {key: 'new key 2', label: 'label2'}];
+      translations.processSystemKeys(keys)
+      .then(translations.get)
+      .then((result) => {
+        const ESTrnaslations = result.rows.find(t => t.locale === 'es').contexts.find(c => c.label === 'System').values;
+        const ENTrnaslations = result.rows.find(t => t.locale === 'en').contexts.find(c => c.label === 'System').values;
+
+        expect(ENTrnaslations.Password).toBe('Password');
+        expect(ENTrnaslations.Account).toBe('Account');
+        expect(ENTrnaslations.Email).toBe('E-Mail');
+        expect(ENTrnaslations.Age).toBe('Age');
+        expect(ENTrnaslations['new key']).toBe('new key');
+        expect(ENTrnaslations['new key 2']).toBe('label2');
+
+        expect(ESTrnaslations.Password).toBe('Contraseña');
+        expect(ESTrnaslations.Account).toBe('Cuenta');
+        expect(ESTrnaslations.Email).toBe('Correo electronico');
+        expect(ESTrnaslations.Age).toBe('Edad');
+        expect(ESTrnaslations['new key']).toBe('new key');
+        expect(ESTrnaslations['new key 2']).toBe('label2');
+        done();
+      });
+    });
+
+    it('should delete the keys that are missing', (done) => {
+      const keys = [{key: 'Email'}, {key: 'Age'}, {key: 'new key'}];
+      translations.processSystemKeys(keys)
+      .then(translations.get)
+      .then((result) => {
+        const ESTrnaslations = result.rows.find(t => t.locale === 'es').contexts.find(c => c.label === 'System').values;
+        const ENTrnaslations = result.rows.find(t => t.locale === 'en').contexts.find(c => c.label === 'System').values;
+
+        expect(ENTrnaslations.Password).not.toBeDefined();
+        expect(ENTrnaslations.Account).not.toBeDefined();
+        expect(ENTrnaslations.Email).toBe('E-Mail');
+        expect(ENTrnaslations.Age).toBe('Age');
+        expect(ENTrnaslations['new key']).toBe('new key');
+
+        expect(ESTrnaslations.Password).not.toBeDefined();
+        expect(ESTrnaslations.Account).not.toBeDefined();
+        expect(ESTrnaslations.Email).toBe('Correo electronico');
+        expect(ESTrnaslations.Age).toBe('Edad');
+        expect(ESTrnaslations['new key']).toBe('new key');
+        done();
+      })
+      .catch(catchErrors(done))
+    });
+  });
+
   describe('get()', () => {
     it('should return the translations', (done) => {
       translations.get()
