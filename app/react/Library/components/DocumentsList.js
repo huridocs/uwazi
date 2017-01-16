@@ -14,6 +14,7 @@ import Footer from 'app/App/Footer';
 import {t} from 'app/I18N';
 
 const selectDocuments = createSelector(s => s.library.documents, d => d.toJS());
+const loadMoreAmmount = 30;
 
 export class DocumentsList extends Component {
 
@@ -24,7 +25,7 @@ export class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    this.props.loadMoreDocuments(this.props.documents.rows.length + 30);
+    this.props.loadMoreDocuments(this.props.documents.rows.length + loadMoreAmmount);
   }
 
   componentWillReceiveProps() {
@@ -56,7 +57,9 @@ export class DocumentsList extends Component {
             {(() => {
               if (documents.rows.length < documents.totalRows && !this.state.loading) {
                 return <div className="col-sm-12 text-center">
-                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">{t('System', 'Load more')}</button>
+                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">
+                  {loadMoreAmmount + ' ' + t('System', 'x more')}
+                </button>
                 </div>;
               }
               if (this.state.loading) {
