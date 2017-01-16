@@ -36,14 +36,14 @@ export class Login extends RouteHandler {
     return this.props.login(credentials)
     .then(() => {
       browserHistory.push('/');
+    })
+    .catch(() => {
+      this.setState({error: true});
     });
-    //.catch(() => {
-      //this.setState({error: true});
-    //});
   }
 
   setRecoverPassword() {
-    //this.setState({recoverPassword: true, error: false});
+    this.setState({recoverPassword: true, error: false});
   }
 
   render() {

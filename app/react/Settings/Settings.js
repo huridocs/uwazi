@@ -7,7 +7,7 @@ import UsersAPI from 'app/Users/UsersAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
-import {t, I18NApi} from 'app/I18N';
+import {I18NApi} from 'app/I18N';
 
 export class Settings extends RouteHandler {
 

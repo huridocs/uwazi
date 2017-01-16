@@ -1,7 +1,6 @@
 import {store} from 'app/store';
 import Immutable from 'immutable';
 import t from '../t';
-import {missingTranslations} from '../t';
 import I18NApi from '../I18NApi';
 
 describe('t', () => {
