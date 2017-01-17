@@ -4,21 +4,21 @@ import t from 'app/I18N/t';
 export default {
 
   date(property, timestamp, showInCard) {
-    let value = moment.utc(timestamp, 'X').format('MMM DD, YYYY');
+    let value = moment.utc(timestamp, 'X').format('ll');
     return {label: property.label, value, showInCard};
   },
 
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
-      return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('MMM DD YYYY')};
+      return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
     });
     return {label: property.label, value, showInCard};
   },
 
   multidaterange(property, dateranges, showInCard) {
     let value = dateranges.map((range) => {
-      let from = moment.utc(range.from, 'X').format('MMM DD YYYY');
-      let to = moment.utc(range.to, 'X').format('MMM DD YYYY');
+      let from = moment.utc(range.from, 'X').format('ll');
+      let to = moment.utc(range.to, 'X').format('ll');
       return {value: `${from} - ${to}`};
     });
     return {label: property.label, value, showInCard};
