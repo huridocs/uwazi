@@ -3,7 +3,6 @@ import moment from 'moment';
 
 export default function PrintDate({utc, toLocal}) {
   let date;
-
   if (!toLocal) {
     date = moment.utc(utc).format('ll');
   }

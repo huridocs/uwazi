@@ -3,6 +3,7 @@ import JSONUtils from 'shared/JSONUtils';
 import {actions} from 'app/BasicReducer';
 import {I18NUtils} from 'app/I18N';
 import api from 'app/utils/api';
+import moment from 'moment';
 
 class RouteHandler extends Component {
 
@@ -52,6 +53,7 @@ class RouteHandler extends Component {
 
     //test ?
     let locale = this.getLocale(props);
+    moment.locale(locale);
     this.setApiLocale(locale);
     //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
