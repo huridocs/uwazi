@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 
-import DatePicker, {DatePickerField} from './DatePicker';
+import DatePicker from './DatePicker';
 import {t} from 'app/I18N';
 
 export class DateRange extends Component {
@@ -10,15 +10,11 @@ export class DateRange extends Component {
         <div>
           <div className="DatePicker__From">
             <span>{t('System', 'Label date "From"', 'Form:')}&nbsp;</span>
-            <DatePickerField model={this.props.fromModel} >
-              <DatePicker onChange={this.props.fromChange}/>
-            </DatePickerField>
+              <DatePicker model={this.props.fromModel} onChange={this.props.fromChange}/>
           </div>
           <div className="DatePicker__To">
             <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
-            <DatePickerField model={this.props.toModel} >
-              <DatePicker endOfDay={true} onChange={this.props.toChange}/>
-            </DatePickerField>
+              <DatePicker model={this.props.toModel} endOfDay={true} onChange={this.props.toChange}/>
           </div>
         </div>
     );

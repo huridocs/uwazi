@@ -5,7 +5,7 @@ import {Field, Form} from 'react-redux-form';
 import {createSelector} from 'reselect';
 import {is} from 'immutable';
 
-import {FormField, MultiSelect, DateRange, NestedMultiselect} from 'app/Forms';
+import {MultiSelect, DateRange, NestedMultiselect} from 'app/Forms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -19,9 +19,10 @@ const selectSearch = createSelector(s => s ? s.search : {});
 
 export class FiltersForm extends Component {
 
-  onChange(e) {
-    if (e.target.type === 'checkbox') {
-      this.props.searchDocuments(store.getState().search);
+  onChange(values) {
+    if (this.autoSearch) {
+      this.autoSearch = false;
+      this.props.searchDocuments(values);
     }
   }
 
@@ -71,7 +72,6 @@ export class FiltersForm extends Component {
           if (property.type === 'select' || property.type === 'multiselect') {
             return (
               <FormGroup key={index}>
-                <FormField model={`search.filters.${property.name}`}>
                   <ul className={propertyClass}>
                     <li>
                       {t(translationContext, property.label)}
@@ -80,13 +80,16 @@ export class FiltersForm extends Component {
                     </li>
                     <li className="wide">
                       <MultiSelect
+                        model={`.filters.${property.name}`}
                         prefix={property.name}
                         options={this.translatedOptions(property)}
-                        optionsValue="id" onChange={(options) => this.props.activateFilter(property.name, !!options.length)}
+                        optionsValue="id" onChange={(options) => {
+                          this.autoSearch = true;
+                          this.props.activateFilter(property.name, !!options.length);
+                        }}
                       />
                     </li>
                   </ul>
-                </FormField>
               </FormGroup>
               );
           }
@@ -98,9 +101,9 @@ export class FiltersForm extends Component {
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
                       <div className="nested-strict">
-                        <FormField model={`search.filters.${property.name}.strict`}>
+                        <Field model={`.filters.${property.name}.strict`}>
                           <input id={property.name + 'strict'} type='checkbox'onChange={() => this.props.activateFilter(property.name, true)}/>
-                        </FormField>
+                        </Field>
                         <label htmlFor={property.name + 'strict'}>
                             <span>&nbsp;Strict mode</span>
                         </label>
@@ -112,6 +115,7 @@ export class FiltersForm extends Component {
                         aggregations={this.props.aggregations}
                         property={property}
                         onChange={(options) => {
+                          this.autoSearch = true;
                           let active = Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false);
                           this.props.activateFilter(property.name, active);
                         }}
@@ -132,8 +136,8 @@ export class FiltersForm extends Component {
                   </li>
                   <li className="wide">
                     <DateRange
-                      fromModel={`search.filters.${property.name}.from`}
-                      toModel={`search.filters.${property.name}.to`}
+                      fromModel={`.filters.${property.name}.from`}
+                      toModel={`.filters.${property.name}.to`}
                       fromChange={() => this.props.activateFilter(property.name, true)}
                       toChange={() => this.props.activateFilter(property.name, true)}
                     />
@@ -144,7 +148,7 @@ export class FiltersForm extends Component {
           }
           return (
             <FormGroup key={index}>
-              <Field model={`search.filters.${property.name}`} >
+              <Field model={`.filters.${property.name}`} >
                 <ul className={propertyClass}>
                   <li>
                     <label>

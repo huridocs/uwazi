@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
+import {Control} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
 import {Icon} from 'app/Layout/Icon';
 import {t} from 'app/I18N';
@@ -153,10 +153,4 @@ MultiSelect.propTypes = {
   noSort: PropTypes.bool
 };
 
-export default MultiSelect;
-
-const MultiSelectField = createFieldClass({
-  MultiSelect: controls.select
-});
-
-export {MultiSelectField};
+export default (props) => <Control.select component={MultiSelect} {...props}/>;

@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
+import {Control, controls} from 'react-redux-form';
 import DatePickerComponent from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
@@ -57,10 +57,4 @@ DatePicker.propTypes = {
   endOfDay: PropTypes.bool
 };
 
-export default DatePicker;
-
-const DatePickerField = createFieldClass({
-  DatePicker: controls.text
-});
-
-export {DatePickerField};
+export default (props) => <Control component={DatePicker} {...props}/>;

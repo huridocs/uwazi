@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
+import {Control} from 'react-redux-form';
 import {FormField, MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
@@ -128,10 +128,4 @@ NestedMultiselect.propTypes = {
   aggregations: PropTypes.object
 };
 
-export default NestedMultiselect;
-
-const NestedMultiselectField = createFieldClass({
-  NestedMultiselect: controls.textarea
-});
-
-export {NestedMultiselectField};
+export default (props) => <Control.select component={NestedMultiselect} {...props}/>;

@@ -52,5 +52,6 @@ export default combineReducers({
   login,
   settings,
   metadata,
-  search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
+  search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}}),
+  searchForm: formReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });
