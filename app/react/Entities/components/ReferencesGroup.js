@@ -5,7 +5,7 @@ import {is, fromJS as Immutable} from 'immutable';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import {Item} from 'app/Layout';
-import {I18NLink} from 'app/I18N';
+import {t, I18NLink} from 'app/I18N';
 import {advancedSort} from 'app/utils/advancedSort';
 
 export class ReferencesGroup extends Component {
@@ -57,10 +57,10 @@ export class ReferencesGroup extends Component {
         <button className={`item-group-header ${groupClassName}`} onClick={this.toggleGroup.bind(this)}>
           <div className="title">
             <ShowIf if={connectionType === 'metadata'}>
-              <span className="itemGroup-title">{connectionLabel} in {templateLabel}</span>
+              <span className="itemGroup-title">{t(group.context, connectionLabel)} in {t(group.templateContext, templateLabel)}</span>
             </ShowIf>
             <ShowIf if={connectionType === 'connection'}>
-              <span className="itemGroup-title">{connectionLabel}</span>
+              <span className="itemGroup-title">{t(group.context, connectionLabel)}</span>
             </ShowIf>
             <span className="multiselectItem-results">
               <span>{refs.length}</span>
