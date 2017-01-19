@@ -28,7 +28,7 @@ export default class Library extends RouteHandler {
   }
 
   static requestState(params, query = {filters: {}, types: []}) {
-    const defaultSearch = prioritySortingCriteria();
+    const defaultSearch = prioritySortingCriteria.get();
 
     query.order = query.order || defaultSearch.order;
     query.sort = query.sort || defaultSearch.sort;

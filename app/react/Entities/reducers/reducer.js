@@ -12,6 +12,6 @@ export default combineReducers({
   entityForm: modelReducer('entityView.entityForm'),
   entityFormState: formReducer('entityView.entityForm'),
   references: createReducer('entityView/references', []),
-  sort: modelReducer('entityView.sort', prioritySortingCriteria()),
+  sort: modelReducer('entityView.sort', prioritySortingCriteria.get()),
   uiState
 });

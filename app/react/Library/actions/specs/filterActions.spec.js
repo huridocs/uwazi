@@ -42,6 +42,10 @@ describe('filterActions', () => {
   });
 
   describe('filterDocumentTypes', () => {
+    beforeEach(() => {
+      spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'metadata.date', order: 'desc'});
+    });
+
     it('should dispatch an action SET_LIBRARY_FILTERS with the given types', () => {
       actions.filterDocumentTypes(['a'])(dispatch, getState);
       expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, ['a']);
@@ -55,7 +59,7 @@ describe('filterActions', () => {
       expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
     });
 
-    it('should perform a search with the filters and current sorting', () => {
+    it('should perform a search with the filters and prioritySortingCriteria', () => {
       store.search.sort = 'metadata.date';
       store.search.order = 'desc';
       store.templates = Immutable.fromJS([
@@ -66,23 +70,14 @@ describe('filterActions', () => {
       spyOn(libraryActions, 'searchDocuments');
       actions.filterDocumentTypes(['a'])(dispatch, getState);
 
+      expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
+        currentCriteria: {sort: 'metadata.date', order: 'desc'},
+        filteredTemplates: ['a'],
+        templates: store.templates
+      });
+
       expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('metadata.date');
       expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe('desc');
-    });
-
-    it('should perform a search with the filters and default sorting if sorting property is not supported', () => {
-      store.search.sort = 'metadata.date';
-      store.search.order = 'desc';
-      store.templates = Immutable.fromJS([
-        {_id: 'a', properties: [{filter: true, type: 'text', name: 'date'}]},
-        {_id: 'b', properties: []}
-      ]);
-
-      spyOn(libraryActions, 'searchDocuments');
-      actions.filterDocumentTypes(['b'])(dispatch, getState);
-
-      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe(prioritySortingCriteria().sort);
-      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe(prioritySortingCriteria().order);
     });
   });
 

@@ -47,8 +47,8 @@ describe('Library', () => {
     it('should request the documents passing search object on the store', (done) => {
       const query = {filters: {}, types: []};
       const expectedSearch = {
-        sort: prioritySortingCriteria().sort,
-        order: prioritySortingCriteria().order,
+        sort: prioritySortingCriteria.get().sort,
+        order: prioritySortingCriteria.get().order,
         filters: query.filters,
         types: query.types
       };

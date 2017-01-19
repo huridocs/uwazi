@@ -45,17 +45,14 @@ export function filterDocumentTypes(documentTypes) {
     updateModelFilters(dispatch, getState, libraryFilters);
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
-    const validSearchSort = usefulTemplates.reduce((validSort, template) => {
-      return template.properties.reduce((valid, property) => {
-        const sortable = property.filter && (property.type === 'text' || property.type === 'date');
-        return Boolean(valid || sortable && 'metadata.' + property.name === state.search.sort);
-      }, validSort);
-    }, state.search.sort === 'title' || state.search.sort === 'creationDate');
+    const {sort, order} = prioritySortingCriteria.get({
+      currentCriteria: {sort: state.search.sort, order: state.search.order},
+      filteredTemplates: usefulTemplates.map(t => t._id),
+      templates: state.templates
+    });
 
-    if (!validSearchSort) {
-      state.search.sort = prioritySortingCriteria().sort;
-      state.search.order = prioritySortingCriteria().order;
-    }
+    state.search.sort = sort;
+    state.search.order = order;
 
     const search = Object.assign({aggregations, types: documentTypes}, state.search);
     dispatch(libraryActions.searchDocuments(search));

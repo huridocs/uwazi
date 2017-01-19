@@ -24,7 +24,7 @@ import locale from 'app/I18N/reducer';
 import {modelReducer, formReducer} from 'react-redux-form';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
-const defaultSearch = prioritySortingCriteria();
+const defaultSearch = prioritySortingCriteria.get();
 defaultSearch.searchTerm = '';
 defaultSearch.filters = {};
 
