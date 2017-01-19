@@ -47,7 +47,8 @@ export function filterDocumentTypes(documentTypes) {
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
     const validSearchSort = usefulTemplates.reduce((validSort, template) => {
       return template.properties.reduce((valid, property) => {
-        return Boolean(valid || property.sortable && 'metadata.' + property.name === state.search.sort);
+        const sortable = property.filter && (property.type === 'text' || property.type === 'date');
+        return Boolean(valid || sortable && 'metadata.' + property.name === state.search.sort);
       }, validSort);
     }, state.search.sort === 'title' || state.search.sort === 'creationDate');
 

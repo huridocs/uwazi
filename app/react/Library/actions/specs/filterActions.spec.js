@@ -59,7 +59,7 @@ describe('filterActions', () => {
       store.search.sort = 'metadata.date';
       store.search.order = 'desc';
       store.templates = Immutable.fromJS([
-        {_id: 'a', properties: [{sortable: true, name: 'date'}]},
+        {_id: 'a', properties: [{filter: true, type: 'date', name: 'date'}]},
         {_id: 'b'}
       ]);
 
@@ -74,7 +74,7 @@ describe('filterActions', () => {
       store.search.sort = 'metadata.date';
       store.search.order = 'desc';
       store.templates = Immutable.fromJS([
-        {_id: 'a', properties: [{sortable: true, name: 'date'}]},
+        {_id: 'a', properties: [{filter: true, type: 'text', name: 'date'}]},
         {_id: 'b', properties: []}
       ]);
 
