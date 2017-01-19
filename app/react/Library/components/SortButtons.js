@@ -68,7 +68,9 @@ export class SortButtons extends Component {
   getAdditionalSorts(templates, search) {
     const additionalSorts = templates.toJS().reduce((sorts, template) => {
       template.properties.forEach(property => {
-        if (property.sortable && !sorts.find(s => s.property === property.name)) {
+        const sortable = property.filter && (property.type === 'text' || property.type === 'date');
+
+        if (sortable && !sorts.find(s => s.property === property.name)) {
           const sortString = 'metadata.' + property.name;
           const treatAs = property.type === 'date' ? 'number' : 'string';
           const sortOptions = {isActive: search.sort === sortString, search, treatAs};

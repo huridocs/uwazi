@@ -20,7 +20,7 @@ describe('SortButtons', () => {
       merge: jasmine.createSpy('merge'),
       search: {order: 'desc', sort: 'title'},
       templates: immutable([
-        {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]}
+        {properties: [{}, {filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]}
       ]),
       stateProperty: 'search'
     };
@@ -37,7 +37,7 @@ describe('SortButtons', () => {
 
     it('should use use "recent" label for date type properties', () => {
       props.templates = immutable([
-        {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'date'}]}
+        {properties: [{}, {filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'date'}]}
       ]);
       render();
       expect(component.find('li').length).toBe(3);
@@ -49,8 +49,8 @@ describe('SortButtons', () => {
     describe('when multiple options have the same name', () => {
       it('should not duplicate the entry', () => {
         props.templates = immutable([
-          {properties: [{}, {sortable: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]},
-          {properties: [{sortable: true, name: 'sortable_name', label: 'anotherLabel', type: 'text'}]}
+          {properties: [{}, {filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]},
+          {properties: [{filter: true, name: 'sortable_name', label: 'anotherLabel', type: 'text'}]}
         ]);
         render();
 
