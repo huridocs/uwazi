@@ -12,7 +12,7 @@ describe('FormConfigInput', () => {
     props = {
       type: 'text',
       index: 0,
-      data: {properties: [{lable: ''}]},
+      data: {properties: [{label: ''}]},
       formState: {
         'properties.0.label': {valid: true, dirty: false, errors: {}},
         $form: {
@@ -31,20 +31,20 @@ describe('FormConfigInput', () => {
     expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
     expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
     expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].showInCard');
-    expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].sortable');
-    expect(formFields.nodes[4].props.model).toBe('template.data.properties[0].filter');
+    expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].filter');
+    expect(formFields.nodes[4].props.model).toBe('template.data.properties[0].prioritySorting');
   });
 
-  it('should not allow sortable on types others than text or date', () => {
+  it('should not allow prioritySorting on types others than text or date', () => {
     props.type = 'text';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).parent().parent().parent().parent().nodes[2].props.if).toBe(true);
+    expect(component.find(Field).at(4).parent().parent().props().if).toBe(true);
     props.type = 'date';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).parent().parent().parent().parent().nodes[2].props.if).toBe(true);
+    expect(component.find(Field).at(4).parent().parent().props().if).toBe(true);
     props.type = 'markdown';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).parent().parent().parent().parent().nodes[2].props.if).toBe(false);
+    expect(component.find(Field).at(4).parent().parent().props().if).toBe(false);
   });
 
   describe('validation', () => {

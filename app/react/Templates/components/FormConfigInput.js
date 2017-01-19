@@ -9,7 +9,7 @@ export class FormConfigInput extends Component {
 
   render() {
     const {index, data, formState, type} = this.props;
-    const ptoperty = data.properties[index];
+    const property = data.properties[index];
     let labelClass = '';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
@@ -67,24 +67,27 @@ export class FormConfigInput extends Component {
               </div>
             </i>
           </label>
-          <FilterSuggestions {...ptoperty} />
+          <FilterSuggestions {...property} />
         </div>
 
-        <div>
-          <Field model={`template.data.properties[${index}].filter`}>
-            <input id={'filter' + this.props.index} type="checkbox"/>
-          </Field>
-          &nbsp;
-          <label className="property-label" htmlFor={'filter' + this.props.index}>
-            Set as priority sorting
-            <i className="property-help fa fa-question-circle">
-              <div className="property-description">
-                This property will try to be used as priority sorting.
-                If there's more than one property available to sort documents, those documents will be sorted
-                by this property by default.</div>
-            </i>
-          </label>
-        </div>
+        <ShowIf if={type === 'text' || type === 'date'}>
+          <div>
+            <Field model={`template.data.properties[${index}].prioritySorting`}>
+              <input id={'prioritySorting' + this.props.index} type="checkbox" disabled={!property.filter} />
+            </Field>
+            &nbsp;
+            <label className="property-label" htmlFor={'prioritySorting' + this.props.index}>
+              Priority sorting
+              <i className="property-help fa fa-question-circle">
+                <div className="property-description">
+                  This property will have priority when defining default sorting options.
+                  if there is more than one property with priority sorting, the property with most relevance
+                  (according to the checked options) will be used. (Only available if property's filter is selected)
+                </div>
+              </i>
+            </label>
+          </div>
+        </ShowIf>
       </div>
     );
   }
