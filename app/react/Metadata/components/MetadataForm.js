@@ -123,7 +123,7 @@ export class MetadataForm extends Component {
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>
-                <li className="wide">{getField(property.type, `.${property.name}`)}</li>
+                <li className="wide">{getField(property.type, `.metadata.${property.name}`)}</li>
               </ul>
             </FormGroup>
             );

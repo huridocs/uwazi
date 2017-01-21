@@ -84,11 +84,11 @@ describe('MetadataForm', () => {
 
   it('should render dynamic fields based on the template selected', () => {
     render();
-    let inputField = component.findWhere((node) => node.props().model === '.field1');
+    let inputField = component.findWhere((node) => node.props().model === '.metadata.field1');
     let input = inputField.find('input');
     expect(input).toBeDefined();
 
-    let selectField = component.findWhere((node) => node.props().model === '.field2');
+    let selectField = component.findWhere((node) => node.props().model === '.metadata.field2');
     let select = selectField.find(Select);
     expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
     expect(select.props().optionsValue).toEqual('id');
