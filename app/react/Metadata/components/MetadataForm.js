@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Form, Field} from 'react-redux-form';
 
 import validator from '../helpers/validator';
+import {Select as SimpleSelect} from 'app/Forms';
 import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/ReactReduxForms';
 import t from 'app/I18N/t';
 
@@ -66,17 +67,15 @@ export class MetadataForm extends Component {
           <ul className="search__filter">
             <li><label>{t('System', 'Type')} <span className="required">*</span></label></li>
             <li className="wide">
-              <select
+              <SimpleSelect
                 className="form-control"
                 value={template._id}
+                options={templateOptions}
                 onChange={(e) => {
                   this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl._id === e.target.value));
                 }}
               >
-              {templateOptions.map((opt) => {
-                return <option key={opt.value} value={opt.value}>{opt.label}</option>;
-              })}
-              </select>
+              </SimpleSelect>
             </li>
           </ul>
         </FormGroup>
@@ -124,7 +123,7 @@ export class MetadataForm extends Component {
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>
-                <li className="wide">{getField(property.type, `.metadata.${property.name}`)}</li>
+                <li className="wide">{getField(property.type, `.${property.name}`)}</li>
               </ul>
             </FormGroup>
             );

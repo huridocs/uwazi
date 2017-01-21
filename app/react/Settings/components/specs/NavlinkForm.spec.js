@@ -4,7 +4,7 @@ import {fromJS} from 'immutable';
 
 import {NavlinkForm, LinkSource, LinkTarget, mapStateToProps} from '../NavlinkForm';
 
-import {FormField} from 'app/Forms';
+import {Field} from 'react-redux-form';
 
 describe('Drag and Drop functions', () => {
   describe('LinkSource', () => {
@@ -61,7 +61,7 @@ describe('NavlinkForm', () => {
       id: 'newLink1',
       index: 1,
       uiState: fromJS({editingLink: 0}),
-      formState: {errors: {}},
+      formState: {$form: {errors: {}}},
       editLink: jasmine.createSpy('editLink'),
       removeLink: jasmine.createSpy('removeLink'),
       sortLink: jasmine.createSpy('sortLink'),
@@ -96,18 +96,18 @@ describe('NavlinkForm', () => {
   });
 
   it('should have a title and URL fields', () => {
-    expect(component.find(FormField).first().props().model).toBe('settings.navlinksData.links[1].title');
-    expect(component.find(FormField).first().parent().props().className).toBe('input-group');
-    expect(component.find(FormField).last().props().model).toBe('settings.navlinksData.links[1].url');
+    expect(component.find(Field).first().props().model).toBe('settings.navlinksData.links[1].title');
+    expect(component.find(Field).first().parent().props().className).toBe('input-group');
+    expect(component.find(Field).last().props().model).toBe('settings.navlinksData.links[1].url');
   });
 
   describe('validation error states', () => {
     it('should add error to root li and has-error to title input', () => {
-      props.formState.errors['links.1.title.required'] = true;
+      props.formState.$form.errors['links.1.title.required'] = true;
       component = shallow(<NavlinkForm {...props} />);
 
       expect(component.find('li').props().className).toBe('list-group-item error');
-      expect(component.find(FormField).first().parent().props().className).toBe('input-group has-error');
+      expect(component.find(Field).first().parent().props().className).toBe('input-group has-error');
     });
   });
 

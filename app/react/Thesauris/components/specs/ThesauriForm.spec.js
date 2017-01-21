@@ -12,6 +12,7 @@ describe('ThesauriForm', () => {
       thesauri: {name: 'thesauri name', values: []},
       state: {fields: []},
       resetForm: jasmine.createSpy('resetForm'),
+      setInitial: jasmine.createSpy('setInitial'),
       thesauris: Immutable.fromJS([{name: 'Countries'}])
     };
 
@@ -19,9 +20,10 @@ describe('ThesauriForm', () => {
   });
 
   describe('when unmount', () => {
-    it('shoould call resetThesauri', () => {
+    it('shoould reset the form', () => {
       component.unmount();
       expect(props.resetForm).toHaveBeenCalled();
+      expect(props.setInitial).toHaveBeenCalled();
     });
   });
 

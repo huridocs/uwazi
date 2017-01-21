@@ -120,7 +120,7 @@ describe('templateActions', () => {
           {type: types.SAVING_TEMPLATE},
           {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
           {type: 'templates/UPDATE', value: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
-          {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}},
+          {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}, silent: false, multi: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Saved successfully.', type: 'success', id: 'unique_id'}}
         ];
         const store = mockStore({});

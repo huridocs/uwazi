@@ -1,7 +1,6 @@
 import Select from './components/Select';
 import DatePicker from './components/DatePicker';
 import DateRange from './components/DateRange';
-// import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
 import MarkDown from './components/MarkDown';
@@ -14,7 +13,6 @@ import IconSelector from './components/IconSelector';
 
 export {
   Select,
-  // FormField,
   FormGroup,
   DatePicker,
   DateRange,

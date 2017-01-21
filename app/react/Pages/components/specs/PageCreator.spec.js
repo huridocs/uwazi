@@ -2,8 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {PageCreator} from '../PageCreator';
-import {Form} from 'react-redux-form';
-import {FormField} from 'app/Forms';
+import {Form, Field} from 'react-redux-form';
 
 describe('PageCreator', () => {
   let component;
@@ -12,7 +11,7 @@ describe('PageCreator', () => {
   beforeEach(() => {
     props = {
       page: {data: {title: 'Page title', metadata: {}}},
-      formState: {fields: {title: {}}, errors: {}},
+      formState: {title: {}, $form: {errors: {}}},
       savePage: jasmine.createSpy('savePage'),
       resetPage: jasmine.createSpy('deletePage')
     };
@@ -36,16 +35,16 @@ describe('PageCreator', () => {
 
     it('should have a title field associated to the page title', () => {
       render();
-      expect(component.find(FormField).first().props().model).toBe('page.data.title');
-      expect(component.find(FormField).first().parent().props().className).toBe('template-name form-group');
+      expect(component.find(Field).first().props().model).toBe('.title');
+      expect(component.find(Field).first().parent().props().className).toBe('template-name form-group');
     });
 
     describe('when Title is invalid', () => {
       it('should add the has-error class to the title input', () => {
-        props.formState.fields.title.valid = false;
-        props.formState.fields.title.dirty = true;
+        props.formState.title.valid = false;
+        props.formState.title.touched = true;
         render();
-        expect(component.find(FormField).first().parent().props().className).toBe('template-name form-group has-error');
+        expect(component.find(Field).first().parent().props().className).toBe('template-name form-group has-error');
       });
     });
   });

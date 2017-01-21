@@ -50,7 +50,7 @@ describe('documentActions', () => {
 
       const expectedActions = [
         {type: 'documentViewer/tocBeingEdited/SET', value: true},
-        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false},
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
         {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
         {type: types.SHOW_TAB, tab: 'toc'}
       ];
@@ -75,7 +75,7 @@ describe('documentActions', () => {
         let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0};
         const expectedActions = [
           {type: 'documentViewer/tocBeingEdited/SET', value: true},
-          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false},
+          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
           {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
           {type: types.SHOW_TAB, tab: 'toc'}
         ];
@@ -98,7 +98,7 @@ describe('documentActions', () => {
       let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0, _id: 2};
 
       const expectedActions = [
-        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1], silent: true, multi: false}
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1], silent: true, multi: false, load: true}
       ];
 
       const store = mockStore({
@@ -121,7 +121,7 @@ describe('documentActions', () => {
       let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0, _id: 2};
 
       const expectedActions = [
-        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false}
+        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true}
       ];
 
       let formState = [chapter1, chapter2];

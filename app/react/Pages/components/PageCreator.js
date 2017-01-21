@@ -21,7 +21,7 @@ export class PageCreator extends Component {
     let pageUrl = 'http://' + window.location.host + '/page/' + page.data.sharedId;
 
     let nameGroupClass = 'template-name form-group';
-    if (formState.title && !formState.title.valid && (formState.submitFailed || formState.title.dirty)) {
+    if (formState.title && !formState.title.valid && (formState.submitFailed || formState.title.touched)) {
       nameGroupClass += ' has-error';
     }
 

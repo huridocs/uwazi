@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import DatePicker from './DatePicker';
 import {t} from 'app/I18N';
 
-export class DateRange extends Component {
+export default class DateRange extends Component {
 
   render() {
     return (
@@ -27,5 +27,3 @@ DateRange.propTypes = {
   onChange: PropTypes.func,
   toChange: PropTypes.func
 };
-
-export default DateRange;

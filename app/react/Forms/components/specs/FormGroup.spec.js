@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {FormGroup, mapStateToProps} from '../FormGroup';
-import FormField from '../FormField';
+import {Field} from 'react-redux-form';
 
 describe('FormGroup', () => {
   let component;
@@ -13,20 +13,8 @@ describe('FormGroup', () => {
   });
 
   let render = () => {
-    component = shallow(<FormGroup {...props}><label>label</label><FormField><input /></FormField></FormGroup>);
+    component = shallow(<FormGroup {...props}><label>label</label><Field><input /></Field></FormGroup>);
   };
-
-  it('should render the label in the first li', () => {
-    render();
-    let label = component.find('li').first().find('label');
-    expect(label.length).toBe(1);
-  });
-
-  it('should render the FormField in the second li', () => {
-    render();
-    let field = component.find('li').last().find(FormField);
-    expect(field.length).toBe(1);
-  });
 
   it('should render errors when hasErrors', () => {
     props.hasError = true;
