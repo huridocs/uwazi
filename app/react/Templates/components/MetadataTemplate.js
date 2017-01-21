@@ -3,21 +3,21 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {DropTarget} from 'react-dnd';
 import {Form} from 'react-redux-form';
-import {FormField} from 'app/Forms';
 import {I18NLink} from 'app/I18N';
-import {actions as formActions} from 'react-redux-form';
+import {actions as formActions, Field} from 'react-redux-form';
 
 import {inserted, addProperty} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import validator from './ValidateTemplate';
+import ShowIf from 'app/App/ShowIf';
 
 export class MetadataTemplate extends Component {
 
   render() {
     const {connectDropTarget, formState} = this.props;
     let nameGroupClass = 'template-name form-group';
-    if (formState.fields.name && !formState.fields.name.valid && (formState.submitFailed || formState.fields.name.dirty)) {
+    if (formState.name && !formState.name.valid && (formState.$form.submitFailed || formState.name.dirty)) {
       nameGroupClass += ' has-error';
     }
 
@@ -33,20 +33,14 @@ export class MetadataTemplate extends Component {
                 <I18NLink to={this.props.backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
                 <div className={nameGroupClass}>
-                  <FormField model="template.data.name">
+                  <Field model=".name">
                     <input placeholder="Template name" className="form-control"/>
-                  </FormField>
-                  {(() => {
-                    if (this.props.formState.fields.name &&
-                        this.props.formState.fields.name.dirty &&
-                        this.props.formState.fields.name.errors.duplicated) {
-                      return <div className="validation-error">
-                                <i className="fa fa-exclamation-triangle"></i>
-                                &nbsp;
-                                Duplicated name
-                            </div>;
-                    }
-                  })()}
+                  </Field>
+                  <ShowIf if={formState.name && formState.name.touched && formState.name.errors.duplicated}>
+                    <div className="validation-error">
+                      <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated name
+                    </div>
+                  </ShowIf>
                 </div>
                 &nbsp;
                 <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
@@ -59,11 +53,9 @@ export class MetadataTemplate extends Component {
                   {this.props.template.properties.map((config, index) => {
                     return <MetadataProperty {...config} key={config.localID} index={index}/>;
                   })}
-                  {(() => {
-                    return <div className="no-properties">
-                            <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
-                           </div>;
-                  })()}
+                  <div className="no-properties">
+                    <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
+                  </div>
                 </ul>
               )}
 

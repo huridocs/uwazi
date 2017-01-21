@@ -36,7 +36,7 @@ export default combineReducers({
   dictionaries: createReducer('dictionaries', []),
   relationTypes: createReducer('relationTypes', []),
   relationType: modelReducer('relationType', {name: ''}),
-  relationTypeForm: formReducer('relationType'),
+  relationTypeForm: formReducer('relationType', {name: ''}),
   templates: createReducer('templates', []),
   translations: createReducer('translations', []),
   translationsForm: modelReducer('translationsForm', []),

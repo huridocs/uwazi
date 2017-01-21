@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
+import {actions as formActions} from 'react-redux-form';
 import {bindActionCreators} from 'redux';
-import {Field, Form, actions as formActions} from 'react-redux-form';
+import {Field, Form} from 'react-redux-form';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
 
@@ -11,15 +12,17 @@ export class RelationTypeForm extends Component {
 
   componentWillUnmount() {
     this.props.resetForm('relationType');
+    this.props.setInitial('relationType');
   }
 
   validation(relationTypes, id) {
     return {
       name: {
-        required: (val) => val.trim() !== '',
+        required: (val) => val && val.trim() !== '',
         duplicated: (val) => {
+          let name = val || '';
           return !relationTypes.find((relationType) => {
-            return relationType._id !== id && relationType.name.trim().toLowerCase() === val.trim().toLowerCase();
+            return relationType._id !== id && relationType.name.trim().toLowerCase() === name.trim().toLowerCase();
           });
         }
       }
@@ -38,8 +41,8 @@ export class RelationTypeForm extends Component {
               <div className="panel-heading relationType">
                 <I18NLink to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
-                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-                  <Field model="relationType.name">
+                <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
+                  <Field model=".name">
                       <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
                       {(() => {
                         if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
@@ -71,6 +74,7 @@ RelationTypeForm.propTypes = {
   saveRelationType: PropTypes.func,
   resetRelationType: PropTypes.func,
   resetForm: PropTypes.func,
+  setInitial: PropTypes.func,
   state: PropTypes.object
 };
 
@@ -83,7 +87,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveRelationType, resetRelationType, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({saveRelationType, resetRelationType, resetForm: formActions.reset, setInitial: formActions.setInitial}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationTypeForm);

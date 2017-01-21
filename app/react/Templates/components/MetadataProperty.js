@@ -38,7 +38,7 @@ export class MetadataProperty extends Component {
       propertyClass += ' dragging';
     }
 
-    if (formState.errors[`properties.${index}.label.required`] || formState.errors[`properties.${index}.label.duplicated`]) {
+    if (formState.$form.errors[`properties.${index}.label.required`] || formState.$form.errors[`properties.${index}.label.duplicated`]) {
       propertyClass += ' error';
     }
 
@@ -48,7 +48,7 @@ export class MetadataProperty extends Component {
       <li className={propertyClass}>
         <span className="property-name"><i className="fa fa-reorder"></i>&nbsp;<i className={iconClass}></i>&nbsp;{label}</span>
         <div className="list-group-item-actions">
-          <ShowIf if={formState.errors[`properties.${index}.label.duplicated`]}>
+          <ShowIf if={formState.$form.errors[`properties.${index}.label.duplicated`]}>
             <span className="validation-error">
               <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated label&nbsp;
             </span>

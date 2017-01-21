@@ -5,12 +5,11 @@ import {Field, Form} from 'react-redux-form';
 import {createSelector} from 'reselect';
 import {is} from 'immutable';
 
-import {MultiSelect, DateRange, NestedMultiselect} from 'app/Forms';
+import {MultiSelect, DateRange, NestedMultiselect} from 'app/ReactReduxForms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
-import {store} from 'app/store';
 import {t} from 'app/I18N';
 
 import {selectTemplates} from 'app/utils/coreSelectors';
@@ -136,10 +135,15 @@ export class FiltersForm extends Component {
                   </li>
                   <li className="wide">
                     <DateRange
-                      fromModel={`.filters.${property.name}.from`}
-                      toModel={`.filters.${property.name}.to`}
-                      fromChange={() => this.props.activateFilter(property.name, true)}
-                      toChange={() => this.props.activateFilter(property.name, true)}
+                      model={`.filters.${property.name}`}
+                      fromChange={() => {
+                        this.autoSearch = true;
+                        this.props.activateFilter(property.name, true);
+                      }}
+                      toChange={() => {
+                        this.autoSearch = true;
+                        this.props.activateFilter(property.name, true);
+                      }}
                     />
                   </li>
                 </ul>

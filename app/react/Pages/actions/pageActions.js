@@ -9,6 +9,7 @@ import api from 'app/Pages/PagesAPI';
 export function resetPage() {
   return function (dispatch) {
     dispatch(formActions.reset('page.data'));
+    dispatch(formActions.setInitial('page.data'));
   };
 }
 

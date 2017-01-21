@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {FormField} from 'app/Forms';
+import {Field} from 'react-redux-form';
 import {connect} from 'react-redux';
 
 import ShowIf from 'app/App/ShowIf';
@@ -12,8 +12,8 @@ export class FormConfigInput extends Component {
     const ptoperty = data.properties[index];
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
-    let requiredLabel = formState.errors[labelKey + '.required'];
-    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    let requiredLabel = formState.$form.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -26,9 +26,9 @@ export class FormConfigInput extends Component {
               <span className="input-group-addon">
                 Label
               </span>
-              <FormField model={`template.data.properties[${index}].label`}>
+              <Field model={`template.data.properties[${index}].label`}>
                 <input className="form-control" />
-              </FormField>
+              </Field>
             </div>
           </div>
         </div>
@@ -36,9 +36,9 @@ export class FormConfigInput extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].required`}>
+                <Field model={`template.data.properties[${index}].required`}>
                   <input id={'required' + index} type="checkbox"/>
-                </FormField>
+                </Field>
               </span>
               <label htmlFor={'required' + index} className="form-control">Required</label>
             </div>
@@ -46,9 +46,9 @@ export class FormConfigInput extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].showInCard`}>
+                <Field model={`template.data.properties[${index}].showInCard`}>
                   <input id={'showInCard' + this.props.index} type="checkbox"/>
-                </FormField>
+                </Field>
               </span>
               <label htmlFor={'showInCard' + this.props.index}
                      className="form-control"
@@ -63,9 +63,9 @@ export class FormConfigInput extends Component {
             <div className="col-sm-4">
               <div className="input-group">
                 <span className="input-group-addon">
-                  <FormField model={`template.data.properties[${index}].sortable`}>
+                  <Field model={`template.data.properties[${index}].sortable`}>
                     <input id={'sortable' + this.props.index} type="checkbox"/>
-                  </FormField>
+                  </Field>
                 </span>
                 <label htmlFor={'sortable' + this.props.index}
                   title="Library items will be able to be sorted by this property."
@@ -82,9 +82,9 @@ export class FormConfigInput extends Component {
         <div className="well-metadata-creator">
           <div>
             <div>
-              <FormField model={`template.data.properties[${index}].filter`}>
+              <Field model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
-              </FormField>
+              </Field>
               &nbsp;
               <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
               When properties match in equal name and field type with other document types, they will be combined for filtering.">

@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react';
-import {Form} from 'react-redux-form';
+import {Form, Field} from 'react-redux-form';
 
 import validator from '../helpers/validator';
-import {FormGroup, FormField, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/Forms';
+import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/ReactReduxForms';
 import t from 'app/I18N/t';
 
 export class MetadataForm extends Component {
@@ -51,66 +51,81 @@ export class MetadataForm extends Component {
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
 
-        <FormGroup {...state.fields.title}>
-          <label>{t('System', 'Title')} <span className="required">*</span></label>
-          <FormField model={`${model}.title`}>
-            <textarea className="form-control"/>
-          </FormField>
+        <FormGroup {...state.title}>
+          <ul className="search__filter">
+            <li><label>{t('System', 'Title')} <span className="required">*</span></label></li>
+            <li className="wide">
+              <Field model={'.title'}>
+                <textarea className="form-control"/>
+              </Field>
+            </li>
+          </ul>
         </FormGroup>
 
         <FormGroup>
-          <label>{t('System', 'Type')} <span className="required">*</span></label>
-          <FormField>
-            <Select options={templateOptions}
-              value={template._id}
-              onChange={(e) => {
-                this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl._id === e.target.value));
-              }}
-            />
-          </FormField>
+          <ul className="search__filter">
+            <li><label>{t('System', 'Type')} <span className="required">*</span></label></li>
+            <li className="wide">
+              <select
+                className="form-control"
+                value={template._id}
+                onChange={(e) => {
+                  this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl._id === e.target.value));
+                }}
+              >
+              {templateOptions.map((opt) => {
+                return <option key={opt.value} value={opt.value}>{opt.label}</option>;
+              })}
+              </select>
+            </li>
+          </ul>
         </FormGroup>
 
         <FormGroup>
-          <label>{t('System', 'Icon')} / {t('System', 'Flag')}</label>
-          <FormField model={`${model}.icon`}>
-            <IconSelector/>
-          </FormField>
+          <ul className="search__filter">
+            <li><label>{t('System', 'Icon')} / {t('System', 'Flag')}</label></li>
+            <li className="wide">
+              <IconSelector model={'.icon'}/>
+            </li>
+          </ul>
         </FormGroup>
 
-        {template.properties.map((property, index) => {
-          const getField = (propertyType) => {
+        {template.properties.map((property) => {
+          const getField = (propertyType, _model) => {
             let thesauri;
             switch (propertyType) {
             case 'select':
               thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-              return <Select optionsValue='id' options={this.translateOptions(thesauri)}/>;
+              return <Select model={_model} optionsValue='id' options={this.translateOptions(thesauri)}/>;
             case 'multiselect':
               thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-              return <MultiSelect optionsValue='id' options={this.translateOptions(thesauri)} />;
+              return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
             case 'date':
-              return <DatePicker/>;
+              return <DatePicker model={_model}/>;
             case 'markdown':
-              return <MarkDown/>;
+              return <MarkDown model={_model}/>;
             case 'nested':
-              return <Nested/>;
+              return <Nested model={_model}/>;
             case 'multidate':
-              return <MultiDate/>;
+              return <MultiDate model={_model}/>;
             case 'multidaterange':
-              return <MultiDateRange/>;
+              return <MultiDateRange model={_model}/>;
             default:
-              return <input className="form-control"/>;
+              return <Field model={_model}><input className="form-control"/></Field>;
             }
           };
 
           return (
-            <FormGroup key={index} {...state.fields[`metadata.${property.name}`]} submitFailed={state.submitFailed}>
-              <label>
-                {t(template._id, property.label)}
-                {property.required ? <span className="required">*</span> : ''}
-              </label>
-              <FormField model={`${model}.metadata.${property.name}`} >
-                {getField(property.type)}
-              </FormField>
+            <FormGroup key={property.name} {...state.metadata[`${property.name}`]} submitFailed={state.submitFailed}>
+              <ul className="search__filter is-active">
+                <li>
+                  <label>
+                    {t(template._id, property.label)}
+                    {property.required ? <span className="required">*</span> : ''}
+                  </label>
+                </li>
+                <li className="wide">{getField(property.type, `.metadata.${property.name}`)}</li>
+              </ul>
             </FormGroup>
             );
         })}

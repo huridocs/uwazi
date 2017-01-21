@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-
 import DatePicker from './DatePicker';
 import {t} from 'app/I18N';
 
@@ -10,11 +9,11 @@ export class DateRange extends Component {
         <div>
           <div className="DatePicker__From">
             <span>{t('System', 'Label date "From"', 'Form:')}&nbsp;</span>
-              <DatePicker model={this.props.fromModel} onChange={this.props.fromChange}/>
+              <DatePicker model={`${this.props.model}.from`} onChange={this.props.fromChange}/>
           </div>
           <div className="DatePicker__To">
             <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
-              <DatePicker model={this.props.toModel} endOfDay={true} onChange={this.props.toChange}/>
+              <DatePicker model={`${this.props.model}.to`} endOfDay={true} onChange={this.props.toChange}/>
           </div>
         </div>
     );
@@ -23,9 +22,9 @@ export class DateRange extends Component {
 }
 
 DateRange.propTypes = {
-  fromModel: PropTypes.string,
-  toModel: PropTypes.string,
+  model: PropTypes.string,
   fromChange: PropTypes.func,
+  onChange: PropTypes.func,
   toChange: PropTypes.func
 };
 

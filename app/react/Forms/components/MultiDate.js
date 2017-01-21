@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {Control} from 'react-redux-form';
 import DatePicker from './DatePicker';
 
-export class MultiDate extends Component {
+export default class MultiDate extends Component {
 
   constructor(props) {
     super(props);
@@ -55,5 +54,3 @@ MultiDate.propTypes = {
   value: PropTypes.array,
   onChange: PropTypes.func
 };
-
-export default (props) => <Control.select component={DatePicker} {...props}/>;
