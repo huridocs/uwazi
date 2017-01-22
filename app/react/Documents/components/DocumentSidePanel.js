@@ -3,16 +3,17 @@ import SidePanel from 'app/Layout/SidePanel';
 import {ShowMetadata} from 'app/Metadata';
 import {t} from 'app/I18N';
 
+import AttachmentsList from 'app/Attachments/components/AttachmentsList';
 //import DocumentForm from '../containers/DocumentForm';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
-//import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 //import {TocForm, ShowToc} from './Documents';
 import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
+import Immutable from 'immutable';
 
 import {fromJS} from 'immutable';
 
@@ -54,9 +55,9 @@ export class DocumentSidePanel extends Component {
       return typeof r.range.start === 'undefined';
     });
 
-    //const docAttachments = doc.attachments ? doc.attachments : [];
-    //const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
-    //const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
+    const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
+    const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
+    const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -96,7 +97,7 @@ export class DocumentSidePanel extends Component {
               <li>
                 <TabLink to="attachments">
                   <i className="fa fa-download"></i>
-                  <span className="connectionsNumber">{/*attachments.length*/}</span>
+                  <span className="connectionsNumber">{attachments.length}</span>
                   <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
                 </TabLink>
               </li>
@@ -184,7 +185,10 @@ export class DocumentSidePanel extends Component {
                 useSourceTargetIcons={false} />
             </TabContent>
             <TabContent for="attachments">
-              attachments
+              <AttachmentsList files={fromJS(attachments)}
+                isDocumentAttachments={true}
+                parentId={doc.get('_id')}
+                parentSharedId={doc.get('sharedId')} />
             </TabContent>
           </Tabs>
         </div>
