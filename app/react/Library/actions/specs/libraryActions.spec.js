@@ -250,7 +250,7 @@ fdescribe('libraryActions', () => {
         store.dispatch(actions.selectDocument(doc))
         .then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          //expect(referencesAPI.get).toHaveBeenCalledWith('sharedId');
+          expect(referencesAPI.get).toHaveBeenCalledWith('sharedId');
         })
         .then(done)
         .catch(done.fail);
