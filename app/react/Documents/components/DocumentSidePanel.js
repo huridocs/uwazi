@@ -50,9 +50,9 @@ export class DocumentSidePanel extends Component {
     const references = propReferences.filter(r => {
       return typeof r.range.start !== 'undefined';
     });
-    //const connections = propReferences.filter(r => {
-      //return typeof r.range.start === 'undefined';
-    //});
+    const connections = propReferences.filter(r => {
+      return typeof r.range.start === 'undefined';
+    });
 
     //const docAttachments = doc.attachments ? doc.attachments : [];
     //const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
@@ -89,7 +89,7 @@ export class DocumentSidePanel extends Component {
               <li>
                 <TabLink to="connections">
                   <i className="fa fa-share-alt"></i>
-                  <span className="connectionsNumber">{/*connections.length*/''}</span>
+                  <span className="connectionsNumber">{connections.length}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
@@ -179,7 +179,9 @@ export class DocumentSidePanel extends Component {
               <Connections references={fromJS(references)} />
             </TabContent>
             <TabContent for="connections">
-              connections
+              <Connections references={fromJS(connections)}
+                referencesSection="connections"
+                useSourceTargetIcons={false} />
             </TabContent>
             <TabContent for="attachments">
               attachments
