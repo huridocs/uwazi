@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {unselectDocument, saveDocument} from '../actions/libraryActions';
+import {getDocumentReferences, unselectDocument, saveDocument} from '../actions/libraryActions';
 
 import Immutable from 'immutable';
 import {actions as formActions} from 'react-redux-form';
@@ -10,9 +10,10 @@ import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {createSelector} from 'reselect';
+import DocumentForm from '../containers/DocumentForm';
 
-import {DocumentSidePanel} from 'app/Documents';
 import {actions as actionCreators} from 'app/BasicReducer';
+import {DocumentSidePanel} from 'app/Documents';
 
 const selectedDocument = state => state.library.ui.get('selectedDocument') || Immutable.fromJS({});
 const getTemplates = state => state.templates;
@@ -29,21 +30,24 @@ const formatMetadata = createSelector(
 const mapStateToProps = (state) => {
   const library = state.library;
   return {
-    doc: {},
-    tab: library.sidepanel.tab,
     open: library.ui.get('selectedDocument') ? true : false,
+    doc: library.ui.get('selectedDocument') || Immutable.fromJS({}),
+    metadata: formatMetadata(state),
+    references: library.sidepanel.references,
+    tab: library.sidepanel.tab,
     docBeingEdited: !!library.sidepanel.metadata._id,
     formDirty: library.sidepanel.metadataForm.dirty,
-    rawDoc: library.ui.get('selectedDocument') || Immutable.fromJS({}),
+    //rawDoc: library.ui.get('selectedDocument') || Immutable.fromJS({}),
     templates: getTemplates(state),
-    metadata: formatMetadata(state),
-    formPath: 'library.sidepanel.metadata'
+    formPath: 'library.sidepanel.metadata',
+    DocumentForm
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
+    getDocumentReferences,
     unselectDocument,
     resetForm: formActions.reset,
     saveDocument,

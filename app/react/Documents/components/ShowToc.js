@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 //import scroller from 'app/Viewer/utils/Scroller';
 import {connect} from 'react-redux';
 import {scrollTo} from 'app/Viewer/actions/uiActions';
+import Immutable from 'immutable';
 
 export class ShowToc extends Component {
 
@@ -12,14 +13,14 @@ export class ShowToc extends Component {
   }
 
   render() {
-    const {toc} = this.props;
+    const toc = this.props.toc || Immutable.fromJS([]);
     return (
       <div className="toc">
         <ul className="toc-view">
           {toc.map((tocElement, index) => {
             return (
-              <li className={`toc-indent-${tocElement.indentation}`} key={index}>
-                <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.label}</a>
+              <li className={`toc-indent-${tocElement.get('indentation')}`} key={index}>
+                <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.get('label')}</a>
               </li>
               );
           })}
@@ -30,7 +31,7 @@ export class ShowToc extends Component {
 }
 
 ShowToc.propTypes = {
-  toc: PropTypes.array,
+  toc: PropTypes.object,
   pdfInfo: PropTypes.object,
   scrollTo: PropTypes.func
 };

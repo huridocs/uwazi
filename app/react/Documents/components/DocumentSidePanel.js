@@ -5,21 +5,22 @@ import {t} from 'app/I18N';
 
 //import DocumentForm from '../containers/DocumentForm';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-//import Connections from './ConnectionsList';
+import Connections from 'app/Viewer/components/ConnectionsList';
 //import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {TocForm, ShowToc} from 'app/Documents';
+//import {TocForm, ShowToc} from './Documents';
+import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
 
-//import {fromJS} from 'immutable';
+import {fromJS} from 'immutable';
 
 export class DocumentSidePanel extends Component {
   deleteDocument() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.rawDoc.toJS())
+        this.props.deleteDocument(this.props.doc.toJS())
         .then(() => {
           browserHistory.push('/');
         });
@@ -43,12 +44,12 @@ export class DocumentSidePanel extends Component {
   }
 
   render() {
-    const {doc, docBeingEdited} = this.props;
+    const {doc, docBeingEdited, DocumentForm} = this.props;
 
-    //const propReferences = this.props.references.toJS();
-    //const references = propReferences.filter(r => {
-      //return typeof r.range.start !== 'undefined';
-    //});
+    const propReferences = this.props.references.toJS();
+    const references = propReferences.filter(r => {
+      return typeof r.range.start !== 'undefined';
+    });
     //const connections = propReferences.filter(r => {
       //return typeof r.range.start === 'undefined';
     //});
@@ -81,14 +82,14 @@ export class DocumentSidePanel extends Component {
               <li>
                 <TabLink to="references">
                   <i className="fa fa-sitemap"></i>
-                  <span className="connectionsNumber">{/*references.length*/'references length'}</span>
+                  <span className="connectionsNumber">{references.length}</span>
                   <span className="tab-link-tooltip">{t('System', 'References')}</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="connections">
                   <i className="fa fa-share-alt"></i>
-                  <span className="connectionsNumber">{/*connections.length*/'connections length'}</span>
+                  <span className="connectionsNumber">{/*connections.length*/''}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
@@ -105,7 +106,7 @@ export class DocumentSidePanel extends Component {
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <MetadataFormButtons
             delete={this.deleteDocument.bind(this)}
-            data={this.props.rawDoc}
+            data={this.props.doc}
             formStatePath={this.props.formPath}
             entityBeingEdited={docBeingEdited}
           />
@@ -157,7 +158,7 @@ export class DocumentSidePanel extends Component {
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
-                <span>show toc</span>
+                <ShowToc toc={doc.get('toc')} />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
                 <span>FORM</span>
@@ -165,16 +166,17 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="metadata">
               {(() => {
-                if (docBeingEdited) {
-                  return <span>FORM</span>;
-                  //return <DocumentForm onSubmit={this.submit.bind(this)} />;
+                if (docBeingEdited && this.props.metadata.type === 'document') {
+                  return <DocumentForm onSubmit={this.submit.bind(this)} />;
                 }
-                //return 'Metadata';
+                //if (docBeingEdited && this.props.metadata.type === 'entity') {
+                  //return <EntityForm/>;
+                //}
                 return <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />;
               })()}
             </TabContent>
             <TabContent for="references">
-              references
+              <Connections references={fromJS(references)} />
             </TabContent>
             <TabContent for="connections">
               connections
@@ -194,7 +196,6 @@ DocumentSidePanel.propTypes = {
   formDirty: PropTypes.bool,
   formPath: PropTypes.string,
   templates: PropTypes.object,
-  rawDoc: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   tocBeingEdited: PropTypes.bool,

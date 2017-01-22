@@ -13,11 +13,12 @@ import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import referencesAPI from 'app/Viewer/referencesAPI';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('libraryActions', () => {
+fdescribe('libraryActions', () => {
   let documentCollection = [{name: 'Secret list of things'}];
   let aggregations = [{prop: {buckets: []}}];
   let templates = [{name: 'Decision'}, {name: 'Ruling'}];
@@ -110,6 +111,7 @@ describe('libraryActions', () => {
             {body: JSON.stringify({rows: documentCollection, aggregations})});
       dispatch = jasmine.createSpy('dispatch');
     });
+
 
     describe('searchDocuments', () => {
       let store;
@@ -228,6 +230,27 @@ describe('libraryActions', () => {
         .then(() => {
           expect(documents.api.delete).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('selectDocument', () => {
+      it('should select document and request for additional information needed', (done) => {
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('references'));
+        const doc = Immutable.fromJS({sharedId: 'sharedId', title: 'title'});
+
+        const expectedActions = [
+          {type: types.SELECT_DOCUMENT, doc: doc.toJS()},
+          {type: 'library.sidepanel.references/SET', value: 'references'}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.selectDocument(doc))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+          //expect(referencesAPI.get).toHaveBeenCalledWith('sharedId');
         })
         .then(done)
         .catch(done.fail);

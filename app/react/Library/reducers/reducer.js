@@ -14,8 +14,9 @@ export default combineReducers({
   filters: libraryFilters,
   //
   sidepanel: combineReducers({
-    metadata: modelReducer('library.metadata', {}),
-    metadataForm: formReducer('library.metadata', {}),
+    metadata: modelReducer('library.sidepanel.metadata', {}),
+    metadataForm: formReducer('library.sidepanel.metadata', {}),
+    references: createReducer('library.sidepanel.references', []),
     tab: createReducer('library.tab', '')
   })
 });

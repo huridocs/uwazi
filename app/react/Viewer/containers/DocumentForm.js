@@ -3,9 +3,9 @@ import {MetadataForm} from 'app/Metadata';
 
 function mapStateToProps({documentViewer}) {
   return {
-    model: 'documentViewer.docForm',
-    metadata: documentViewer.docForm,
-    state: documentViewer.docFormState,
+    model: 'documentViewer.sidepanel.metadata',
+    metadata: documentViewer.sidepanel.metadata,
+    state: documentViewer.sidepanel.metadataForm,
     templates: documentViewer.templates,
     thesauris: documentViewer.thesauris
   };
