@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {formater} from 'app/Metadata';
+import formater from '../Metadata/helpers/formater';
 import marked from 'marked';
 
 import t from '../I18N/t';

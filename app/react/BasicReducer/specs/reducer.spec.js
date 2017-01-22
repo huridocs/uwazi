@@ -1,7 +1,7 @@
 import createReducer, * as actions from 'app/BasicReducer/reducer';
 import {fromJS as Immutable} from 'immutable';
 
-describe('BasicReducer', () => {
+fdescribe('BasicReducer', () => {
   describe('createReducer', () => {
     it('should return a reducer function with default value passed', () => {
       let reducer = createReducer('namespace', {});
