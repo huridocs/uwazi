@@ -56,25 +56,30 @@ $nav-height: $header-height;
   margin-top: -1px;
   text-align: center;
   border-bottom: 1px solid $c-grey;
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
   background-color: transparent;
 }
 
 .nav-tabs>li {
   display: inline-block;
   float: none;
-  min-width: $nav-height;
+  width: 100%;
+  max-width: $nav-height;
 }
 
 .nav-tabs>li>a, .nav-tabs>li>div {
   cursor:pointer;
   line-height: $nav-height;
-  padding: 0 15px;
+  padding: 0;
   background-color: transparent;
   color: $c-grey-dark;
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
+  white-space: nowrap;
   .fa {
     font-size: 16px;
     position: relative;
