@@ -28,6 +28,11 @@ export class ConnectionsList extends Component {
   }
 
   clickReference(reference) {
+    //
+    if (this.props.notInViewer) {
+      return;
+    }
+    //
     if (!this.props.targetDoc) {
       this.props.activateReference(reference, this.props.doc.pdfInfo, this.props.referencesSection);
     }

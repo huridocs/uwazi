@@ -185,10 +185,11 @@ export class DocumentSidePanel extends Component {
               })()}
             </TabContent>
             <TabContent for="references">
-              <Connections references={fromJS(references)} />
+              <Connections references={fromJS(references)} notInViewer={this.props.notInViewer || false}/>
             </TabContent>
             <TabContent for="connections">
               <Connections references={fromJS(connections)}
+                notInViewer={this.props.notInViewer || false}
                 referencesSection="connections"
                 useSourceTargetIcons={false} />
             </TabContent>
