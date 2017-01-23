@@ -29,7 +29,13 @@ describe('RouteHandler', () => {
     {key: 'en', label: 'English', default: true},
     {key: 'es', label: 'Español'}
   ];
-  let state = {settings: {collection: Immutable.fromJS({languages: languages})}, user: Immutable.fromJS({})};
+  let state = {
+    settings: {collection: Immutable.fromJS({languages: languages})},
+    user: Immutable.fromJS({}),
+    templates: 'templates',
+    thesauris: 'thesauris'
+  };
+
   let context = {store: {getState: () => state, dispatch: jasmine.createSpy('dispatch')}};
 
   beforeEach(() => {
@@ -58,9 +64,9 @@ describe('RouteHandler', () => {
   });
 
   describe('on instance', () => {
-    it('should request for initialState and setReduxState', (done) => {
+    it('should request for initialState and setReduxState, with globalResources', (done) => {
       setTimeout(() => {
-        expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query);
+        expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query, {templates: 'templates', thesauris: 'thesauris'});
         expect(instance.setReduxStateCalledWith).toEqual({initialData: '123'});
         done();
       });
