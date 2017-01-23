@@ -85,6 +85,7 @@ export class ReferencesGroup extends Component {
               doc={Immutable(doc)}
               additionalText={reference.text}
               evalPublished={true}
+              searchParams={this.props.sort.toJS()}
               buttons={
                 <div className="item-shortcut-group">
                   <NeedAuthorization>

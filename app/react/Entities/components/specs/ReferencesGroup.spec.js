@@ -126,6 +126,13 @@ describe('ReferencesGroup', () => {
       expect(linkRef1.props().to).toBe('/entity/id1');
       expect(linkRef2.props().to).toBe('/document/id2');
     });
+
+    it('should pass the searchParams to the item for proper rendering', () => {
+      render();
+      component.find('button').simulate('click');
+      const item1 = component.find(Item).at(0);
+      expect(item1.props().searchParams).toEqual(props.sort.toJS());
+    });
   });
 
   describe('Sorting criteria', () => {
