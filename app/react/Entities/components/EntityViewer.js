@@ -53,11 +53,11 @@ export class EntityViewer extends Component {
   }
 
   conformGroupData(connectionType, groupedReferences, options) {
-    let {key, connectionLabel, templateLabel} = options;
+    let {key, connectionLabel, templateLabel, context, templateContext} = options;
     let groupData = groupedReferences.find(ref => ref.key === key);
 
     if (!groupData) {
-      groupData = {key, connectionType, connectionLabel, templateLabel, refs: []};
+      groupData = {key, connectionType, connectionLabel, templateLabel, refs: [], context, templateContext};
       groupedReferences.push(groupData);
     }
 
@@ -68,20 +68,24 @@ export class EntityViewer extends Component {
     const referenceTemplate = this.props.templates
                               .find(template => template._id === reference.connectedDocumentTemplate);
 
+
     if (reference.sourceType === 'metadata') {
       return this.conformGroupData('metadata', groupedReferences, {
         key: reference.sourceProperty + '-' + reference.connectedDocumentTemplate,
+        context: reference.connectedDocumentTemplate,
         connectionLabel: referenceTemplate
                          .properties
                          .find(p => p.name === reference.sourceProperty)
                          .label,
-        templateLabel: referenceTemplate.name
+        templateLabel: referenceTemplate.name,
+        templateContext: referenceTemplate._id
       });
     }
 
     if (reference.sourceType !== 'metadata') {
       return this.conformGroupData('connection', groupedReferences, {
         key: reference.relationType,
+        context: reference.relationType,
         connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name
       });
     }
