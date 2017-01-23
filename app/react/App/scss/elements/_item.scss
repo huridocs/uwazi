@@ -442,15 +442,15 @@ $item-padding: 15px;
 }
 
 .label-success {
-  color: #8BC74C;
+  color: $c-success;
 }
 
 .label-warning {
-  color: orange;
+  color: $c-warning;
 }
 
 .label-danger {
-  color: #ED353D;
+  color: $c-danger;
 }
 
 .label-default {

@@ -27,48 +27,6 @@
 .metadata {
   @include draggable;
 }
-/*
-.metadata {
-  padding: 30px;
-	overflow-y: scroll;
-  padding: 15px 0;
-  margin: 0 -15px;
-
-	h1 {
-		margin-top: 0;
-		border-bottom: 1px solid $c-grey-light;
-		padding-bottom: 15px;
-		margin-bottom: 15px;
-		small {
-			font-size: $f-size-sm;
-			margin-left: 5px;
-		}
-	}
-	input {
-		padding: 5px 10px;
-	}
-
-  .list-group-item {
-    .btn {
-      margin-left: 5px;
-    }
-    .fa-reorder {
-      margin: 0 25px 0 0;
-      color: $c-grey;
-    }
-    &:hover .fa-reorder {
-      color: $c-grey-dark;
-    }
-    .expand {
-      width: 100%;
-    }
-    &.validation {
-      border-bottom: 1px solid #ED353D !important;
-      color: #ED353D;
-    }
-  }
-}
-*/
 
 .well-metadata-creator {
   padding-top: 15px;
@@ -113,7 +71,7 @@
       margin-left: 0;
     }
     span.conflict {
-      color: #86714A;
+      color: $c-secondary-light;
     }
     .fa {
       margin-right: 5px;

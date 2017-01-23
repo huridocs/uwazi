@@ -40,30 +40,30 @@
 	color: $c-grey-dark;
 	border: 1px solid transparent;
 	border-bottom: 1px solid $c-grey;
-	background: white;
+	background: $c-white;
 	.alert-title {
 		margin-right: 5px;
 	}
 }
 .alert-success {
-	border-left: 3px solid #8BC74C;
+	border-left: 3px solid $c-success;
 	.fa:first-child,
 	.alert-title {
-		color: #8BC74C;
+		color: $c-success;
 	}
 }
 .alert-warning {
-	border-left: 3px solid orange;
+	border-left: 3px solid $c-warning;
 	.fa:first-child,
 	.alert-title {
-		color: orange;
+		color: $c-warning;
 	}
 }
 .alert-danger {
-	border-left: 3px solid #ED353D;
+	border-left: 3px solid $c-danger;
 	.fa:first-child,
 	.alert-title {
-		color: #ED353D;
+		color: $c-danger;
 	}
 }
 
@@ -92,13 +92,13 @@
 }
 
 .modal-success {
-	border-left: 5px solid #8BC74C;
+	border-left: 5px solid $c-success;
 }
 .modal-warning {
-	border-left: 5px solid orange;
+	border-left: 5px solid $c-warning;
 }
 .modal-danger {
-	border-left: 5px solid #ED353D;
+	border-left: 5px solid $c-danger;
 }
 
 
