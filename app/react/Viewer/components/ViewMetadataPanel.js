@@ -20,7 +20,7 @@ import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {browserHistory} from 'react-router';
-import {TocForm, ShowToc} from 'app/Documents';
+import {TocForm as tocFormComponent} from 'app/Documents';
 import {MetadataFormButtons} from 'app/Metadata';
 import {createSelector} from 'reselect';
 
@@ -63,6 +63,7 @@ export const mapStateToProps = ({documentViewer}) => {
     formDirty: documentViewer.sidepanel.metadataForm.dirty,
     tab: documentViewer.uiState.get('tab'),
     references,
+    tocFormComponent,
     tocForm,
     tocFormLength: tocForm.length,
     tocBeingEdited: documentViewer.tocBeingEdited,

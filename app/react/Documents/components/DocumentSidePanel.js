@@ -4,16 +4,15 @@ import {ShowMetadata} from 'app/Metadata';
 import {t} from 'app/I18N';
 
 import AttachmentsList from 'app/Attachments/components/AttachmentsList';
+import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 //import DocumentForm from '../containers/DocumentForm';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-//import {TocForm, ShowToc} from './Documents';
 import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
-import Immutable from 'immutable';
 
 import {fromJS} from 'immutable';
 
@@ -46,6 +45,8 @@ export class DocumentSidePanel extends Component {
 
   render() {
     const {doc, docBeingEdited, DocumentForm} = this.props;
+
+    const TocForm = this.props.tocFormComponent || (() => false);
 
     const propReferences = this.props.references.toJS();
     const references = propReferences.filter(r => {
@@ -127,7 +128,7 @@ export class DocumentSidePanel extends Component {
         <NeedAuthorization>
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
-              <button onClick={() => this.props.editToc(this.props.doc.toc || [])} className="edit-toc btn btn-success">
+              <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
                 <i className="fa fa-pencil"></i>
                 <span className="btn-label">Edit</span>
               </button>
@@ -150,7 +151,7 @@ export class DocumentSidePanel extends Component {
         <NeedAuthorization>
           <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc}>
             <div className="sidepanel-footer">
-              Upload Attachment
+              <UploadAttachment entityId={doc.get('_id')}/>
             </div>
           </ShowIf>
         </NeedAuthorization>
@@ -162,7 +163,14 @@ export class DocumentSidePanel extends Component {
                 <ShowToc toc={doc.get('toc')} />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
-                <span>FORM</span>
+                <TocForm
+                  removeEntry={this.props.removeFromToc}
+                  indent={this.props.indentTocElement}
+                  onSubmit={this.props.saveToc}
+                  model="documentViewer.tocForm"
+                  state={this.props.tocFormState}
+                  toc={this.props.tocForm}
+                />
               </ShowIf>
             </TabContent>
             <TabContent for="metadata">
