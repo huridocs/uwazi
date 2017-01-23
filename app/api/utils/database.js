@@ -2,17 +2,6 @@ import fetch from 'isomorphic-fetch';
 import {db_url as dbURL} from '../config/database.js';
 import fs from 'fs';
 
-function getViews() {
-  return new Promise((resolve, reject) => {
-    fs.readFile(__dirname + '/../../../couchdb/views.js', 'utf-8', (err, content) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(content);
-    });
-  });
-}
-
 function insert(docs) {
   return fetch(`${dbURL}/_bulk_docs`, {
     method: 'POST',
@@ -38,6 +27,17 @@ let database = {
         return fetch(`${dbURL}/${doc.id}?rev=${doc.value.rev}`, {method: 'DELETE'})
         .then((res) => res.json());
       }));
+    });
+  },
+
+  setViews() {
+    return new Promise((resolve, reject) => {
+      fs.readFile(__dirname + '/../../../couchdb/views.js', 'utf-8', (err, content) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(insert(content));
+      });
     });
   },
 

@@ -144,12 +144,12 @@ export function removeFromToc(tocElement) {
 export function indentTocElement(tocElement, indentation) {
   return function (dispatch, getState) {
     let state = getState();
-    let toc = state.documentViewer.tocForm.concat();
-
-    toc.forEach((entry) => {
-      if (entry === tocElement) {
+    let toc = state.documentViewer.tocForm.map((_entry) => {
+      let entry = Object.assign({}, _entry);
+      if (entry._id === tocElement._id) {
         entry.indentation = indentation;
       }
+      return entry;
     });
 
     dispatch(formActions.load('documentViewer.tocForm', toc));
@@ -159,9 +159,9 @@ export function indentTocElement(tocElement, indentation) {
 export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
     let state = getState();
-    let toc = state.documentViewer.tocForm;
+    let toc = state.documentViewer.tocForm.concat();
     if (!toc.length) {
-      toc = state.documentViewer.doc.toJS().toc || [];
+      toc = state.documentViewer.doc.get('toc') || [];
     }
 
     let tocElement = {

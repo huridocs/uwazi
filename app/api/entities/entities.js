@@ -68,7 +68,11 @@ export default {
       //test language
       return Promise.all([response, references.saveEntityBasedReferences(response.rows[0], language)]);
     })
-    .then(([response]) => response.rows[0]);
+    .then(([response]) => {
+      let entity = response.rows[0];
+      delete entity.fullText;
+      return entity;
+    });
   },
 
   get(id, language) {

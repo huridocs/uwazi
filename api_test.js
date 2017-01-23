@@ -1,3 +1,4 @@
+var exec = require('child_process').exec;
 require('babel-core/register')({
   "retainLines": "true",
   "presets": ["es2015", "react"],
@@ -49,4 +50,6 @@ jasmine.addReporter(new SpecReporter({
   displaySpecDuration: true
 }));
 
-jasmine.execute();
+exec('./couchdb/restore_views.sh uwazi_testing', function () {
+  jasmine.execute();
+}).stdout.pipe(process.stdout);

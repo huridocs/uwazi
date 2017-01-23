@@ -8,7 +8,7 @@ import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import references from 'api/references';
 
-describe('entities', () => {
+fdescribe('entities', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
@@ -49,7 +49,7 @@ describe('entities', () => {
     });
 
     it('should return the newly created document for the passed language', (done) => {
-      let doc = {title: 'the dark knight'};
+      let doc = {title: 'the dark knight', fullText: 'the full text!'};
       let user = {_id: 'user Id'};
 
       entities.save(doc, {user, language: 'en'})
@@ -59,6 +59,7 @@ describe('entities', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.language).toEqual('en');
+        expect(createdDocument.fullText).not.toBeDefined();
         done();
       })
       .catch(catchErrors(done));
