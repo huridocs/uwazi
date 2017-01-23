@@ -126,7 +126,7 @@ export class DocumentSidePanel extends Component {
         </NeedAuthorization>
 
         <NeedAuthorization>
-          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited}>
+          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !!this.props.tocForm}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
                 <i className="fa fa-pencil"></i>

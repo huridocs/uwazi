@@ -31,7 +31,7 @@ export class TocForm extends Component {
 }
 
 TocForm.propTypes = {
-  toc: PropTypes.object,
+  toc: PropTypes.array,
   model: PropTypes.string.isRequired,
   state: PropTypes.object,
   removeEntry: PropTypes.func,
