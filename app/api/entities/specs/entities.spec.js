@@ -8,7 +8,7 @@ import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import references from 'api/references';
 
-fdescribe('entities', () => {
+describe('entities', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());

@@ -18,7 +18,7 @@ export default {
         return tocEntry;
       });
     }
-
+    
     return entities.save(doc, params);
   },
 

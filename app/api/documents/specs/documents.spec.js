@@ -43,7 +43,6 @@ describe('documents', () => {
 
   describe('save', () => {
     let getDocuments = () => request.get(dbURL + '/_design/documents/_view/all').then((response) => response.json.rows.map(r => r.value));
-    //let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
     it('should call entities.save', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
@@ -65,8 +64,10 @@ describe('documents', () => {
       let doc = {title: 'Batman begins', toc: [{}, {_id: '1'}]};
       let user = {_id: 'user Id'};
 
-      documents.save(doc, user)
-      .then(getDocuments)
+      documents.save(doc, {user, language: 'es'})
+      .then(() => {
+        return getDocuments();
+      })
       .then((docs) => {
         let createdDocument = docs.find((d) => d.title === 'Batman begins');
         expect(createdDocument.toc[0]._id).toBe('unique_id');
@@ -76,26 +77,6 @@ describe('documents', () => {
       .catch(catchErrors(done));
     });
   });
-
-  //describe('countByTemplate', () => {
-    //it('should return how many documents using the template passed', (done) => {
-      //documents.countByTemplate('template1')
-      //.then((count) => {
-        //expect(count).toBe(2);
-        //done();
-      //})
-      //.catch(done.fail);
-    //});
-
-    //it('should return 0 when no count found', (done) => {
-      //documents.countByTemplate('newTemplate')
-      //.then((count) => {
-        //expect(count).toBe(0);
-        //done();
-      //})
-      //.catch(done.fail);
-    //});
-  //});
 
   describe('getUploadsByUser', () => {
     it('should request all unpublished documents for the user', (done) => {

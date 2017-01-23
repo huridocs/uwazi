@@ -146,7 +146,7 @@ export function indentTocElement(tocElement, indentation) {
     let state = getState();
     let toc = state.documentViewer.tocForm.map((_entry) => {
       let entry = Object.assign({}, _entry);
-      if (entry._id === tocElement._id) {
+      if (_entry === tocElement) {
         entry.indentation = indentation;
       }
       return entry;
@@ -161,9 +161,8 @@ export function addToToc(textSelectedObject) {
     let state = getState();
     let toc = state.documentViewer.tocForm.concat();
     if (!toc.length) {
-      toc = state.documentViewer.doc.get('toc') || [];
+      toc = state.documentViewer.doc.toJS().toc || [];
     }
-
     let tocElement = {
       range: {
         start: textSelectedObject.sourceRange.start,
