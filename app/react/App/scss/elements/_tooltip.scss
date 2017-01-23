@@ -10,7 +10,7 @@
   font-weight: normal;
   background-color: transparentize($c-black, .25);
   color: $c-white;
-  border-radius: 3px;
+  border-radius: $border-radius;
   white-space: nowrap;
   
   @if $direction == 'top' {

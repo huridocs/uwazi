@@ -85,7 +85,7 @@ footer {
     padding: 15px;
     background-color: transparentize($c-black, .25);
     color: $c-white;
-    border-radius: 3px;
+    border-radius: $border-radius;
     text-align: center;
     &:after {
       content: '';

@@ -366,7 +366,7 @@
   width: 20px;
   height: 12px;
   margin-left: 6px;
-  border-radius: 6px;
+  border-radius: $border-radius;
   cursor: pointer;
   &:after {
     background: $c-white;
@@ -478,7 +478,7 @@
   text-align: center;
   margin: 1px 0 0 6px;
   border: 1px solid $c-grey;
-  border-radius: 3px;
+  border-radius: $border-radius;
   &:hover {
     border-color: $c-primary;
     cursor: pointer;
@@ -658,7 +658,7 @@ label.multiselectItem-label {
     font-size: $f-size-sm;
     background: $c-grey-lighten;
     color: $c-primary;
-    border-radius: 2px;
+    border-radius: $border-radius;
     line-height: 1.7em;
 
     &:after {
