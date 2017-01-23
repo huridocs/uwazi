@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import DateRange from '../DateRange';
-import DatePicker, {DatePickerField} from '../DatePicker';
+import DatePicker from '../DatePicker';
 
 describe('DateRange', () => {
   let component;
@@ -10,8 +10,7 @@ describe('DateRange', () => {
 
   beforeEach(() => {
     props = {
-      fromModel: 'model.from',
-      toModel: 'model.to',
+      model: 'model',
       fromChange: jasmine.createSpy('fromChange'),
       toChange: jasmine.createSpy('toChange')
     };
@@ -23,8 +22,8 @@ describe('DateRange', () => {
 
   it('should render two DatePickerField components passing the correct models', () => {
     render();
-    expect(component.find(DatePickerField).first().props().model).toBe('model.from');
-    expect(component.find(DatePickerField).last().props().model).toBe('model.to');
+    expect(component.find(DatePicker).at(0).props().model).toBe('model.from');
+    expect(component.find(DatePicker).at(1).props().model).toBe('model.to');
   });
 
   describe('when a date is selected', () => {

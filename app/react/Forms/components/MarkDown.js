@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import marked from 'marked';
 
-export class MarkDown extends Component {
+export default class MarkDown extends Component {
 
   render() {
     const rows = this.props.rows || 6;
@@ -31,11 +30,3 @@ MarkDown.propTypes = {
   value: PropTypes.string,
   rows: PropTypes.number
 };
-
-export default MarkDown;
-
-const MarkDownField = createFieldClass({
-  MarkDown: controls.textarea
-});
-
-export {MarkDownField};

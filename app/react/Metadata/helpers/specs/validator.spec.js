@@ -15,6 +15,8 @@ describe('metadata validator', () => {
       expect(required('')).toBe(false);
       expect(required('  ')).toBe(false);
       expect(required('value')).toBe(true);
+      expect(required(423)).toBe(true);
+      expect(required(0)).toBe(true);
     });
 
     it('should return false on an empty array', () => {

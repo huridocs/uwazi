@@ -6,11 +6,10 @@ import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 import Immutable from 'immutable';
 import {shallow} from 'enzyme';
-import {modelReducer, formReducer} from 'react-redux-form';
+import {modelReducer, formReducer, Field} from 'react-redux-form';
 import {combineReducers} from 'redux';
 
 import {MetadataTemplate, dropTarget} from 'app/Templates/components/MetadataTemplate';
-import {FormField} from 'app/Forms';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import {dragSource} from 'app/Templates/components/PropertyOption';
 
@@ -78,7 +77,7 @@ describe('MetadataTemplate', () => {
 
     it('should render the template name field', () => {
       let component = shallow(<MetadataTemplate {...props} />);
-      expect(component.find(FormField).node.props.model).toBe('template.data.name');
+      expect(component.find(Field).node.props.model).toBe('.name');
     });
 
     describe('when fields is empty', () => {

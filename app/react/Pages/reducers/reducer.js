@@ -7,7 +7,7 @@ import ui from './uiReducer.js';
 export default combineReducers({
   pageView: createReducer('page/pageView', {}),
   itemLists: createReducer('page/itemLists', []),
-  data: modelReducer('page.data', {title: '', metadata: {}}),
+  data: modelReducer('page.data', {title: '', metadata: {content: ''}}),
   formState: formReducer('page.data'),
   uiState: ui
 });

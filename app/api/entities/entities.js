@@ -59,16 +59,18 @@ export default {
         langDoc.sharedId = sharedId;
         return langDoc;
       });
-
       return request.post(`${dbURL}/_bulk_docs`, {docs})
       .then(() => Promise.all(docs.map((d) => search.index(d))));
     })
     .then(() => this.get(sharedId, language))
     .then(response => {
-      //test language
       return Promise.all([response, references.saveEntityBasedReferences(response.rows[0], language)]);
     })
-    .then(([response]) => response.rows[0]);
+    .then(([response]) => {
+      let entity = response.rows[0];
+      delete entity.fullText;
+      return entity;
+    });
   },
 
   get(id, language) {

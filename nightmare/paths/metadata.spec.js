@@ -124,7 +124,6 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'new')
-      //.wait(500)
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)

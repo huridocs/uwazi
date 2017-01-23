@@ -9,6 +9,7 @@ import {actions} from 'app/BasicReducer';
 export function resetTemplate() {
   return function (dispatch) {
     dispatch(formActions.reset('template.data'));
+    dispatch(formActions.setInitial('template.data'));
   };
 }
 

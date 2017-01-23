@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
 import {MarkDown} from 'app/Forms';
 
-export class Nested extends Component {
+export default class Nested extends Component {
 
   constructor(props) {
     super(props);
@@ -57,11 +56,3 @@ Nested.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.array
 };
-
-export default Nested;
-
-const NestedField = createFieldClass({
-  Nested: controls.textarea
-});
-
-export {NestedField};

@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Form} from 'react-redux-form';
-
-import {FormField} from 'app/Forms';
+import {Form, Field} from 'react-redux-form';
 
 export class TocForm extends Component {
   render() {
@@ -17,9 +15,9 @@ export class TocForm extends Component {
                 <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation + 1)} className="toc-indent-more btn btn-xs btn-default">
                   <i className="fa fa-arrow-right"></i>
                 </a>
-                <FormField model={`${this.props.model}[${index}].label`} >
+                <Field model={`${this.props.model}[${index}].label`} >
                   <input className="form-control"/>
-                </FormField>
+                </Field>
                 <a onClick={this.props.removeEntry.bind(this, tocElement)} className="btn btn-xs btn-danger">
                   <i className="fa fa-trash"></i>
                 </a>

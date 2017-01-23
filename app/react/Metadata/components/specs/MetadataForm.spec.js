@@ -3,8 +3,10 @@ import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
 import {MetadataForm} from '../MetadataForm';
-import {Form} from 'react-redux-form';
-import {FormField, Select, MultiSelect, DatePicker, IconSelector} from 'app/Forms';
+import {Form, Field} from 'react-redux-form';
+import {Select as SimpleSelect} from 'app/Forms';
+import {Select, IconSelector, MultiSelect, DatePicker} from 'app/ReactReduxForms';
+
 
 describe('MetadataForm', () => {
   let component;
@@ -29,7 +31,7 @@ describe('MetadataForm', () => {
       thesauris: Immutable.fromJS([{_id: 2, name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
-      state: {fields: {title: {titleProp: 'prop'}, 'metadata.field1': {field1Prop: 'prop'}}},
+      state: {title: {titleProp: 'prop'}, metadata: {field1: {field1Prop: 'prop'}}},
       model: 'metadata'
     };
   });
@@ -46,26 +48,26 @@ describe('MetadataForm', () => {
 
   it('should render title field as a textarea', () => {
     render();
-    let title = component.find('textarea').closest(FormField);
-    expect(title.props().model).toEqual('metadata.title');
+    let title = component.find('textarea').closest(Field);
+    expect(title.props().model).toEqual('.title');
   });
 
   it('should render template as a select, only with document templates', () => {
     render();
-    let template = component.find(Select).first();
-    expect(template.props().options).toEqual([{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}]);
+    let templateSelector = component.find(SimpleSelect).first();
+    expect(templateSelector.props().options).toEqual([{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}]);
   });
 
   it('should render an icon selector linked to the icon property', () => {
     render();
-    let template = component.find(IconSelector).parent();
-    expect(template.props().model).toBe('metadata.icon');
+    let iconSelector = component.find(IconSelector);
+    expect(iconSelector.props().model).toBe('.icon');
   });
 
   describe('on template change', () => {
     it('should call changeTemplate with the document and the template', () => {
       render();
-      let template = component.find(Select).first();
+      let template = component.find(SimpleSelect).first();
       template.simulate('change', {target: {value: '2'}});
       expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.metadata, props.templates.toJS()[1]);
     });
@@ -82,11 +84,11 @@ describe('MetadataForm', () => {
 
   it('should render dynamic fields based on the template selected', () => {
     render();
-    let inputField = component.findWhere((node) => node.props().model === 'metadata.metadata.field1');
+    let inputField = component.findWhere((node) => node.props().model === '.metadata.field1');
     let input = inputField.find('input');
     expect(input).toBeDefined();
 
-    let selectField = component.findWhere((node) => node.props().model === 'metadata.metadata.field2');
+    let selectField = component.findWhere((node) => node.props().model === '.metadata.field2');
     let select = selectField.find(Select);
     expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
     expect(select.props().optionsValue).toEqual('id');

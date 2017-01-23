@@ -36,7 +36,7 @@ export default combineReducers({
   dictionaries: createReducer('dictionaries', []),
   relationTypes: createReducer('relationTypes', []),
   relationType: modelReducer('relationType', {name: ''}),
-  relationTypeForm: formReducer('relationType'),
+  relationTypeForm: formReducer('relationType', {name: ''}),
   templates: createReducer('templates', []),
   translations: createReducer('translations', []),
   translationsForm: modelReducer('translationsForm', []),
@@ -52,5 +52,6 @@ export default combineReducers({
   login,
   settings,
   metadata,
-  search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
+  search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}}),
+  searchForm: formReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
 });

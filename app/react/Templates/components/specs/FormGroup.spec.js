@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import FormGroup from '../FormGroup';
-import FormField from 'app/Forms/components/FormField';
+import {Field} from 'react-redux-form';
 
 describe('FormGroup', () => {
   let component;
@@ -13,14 +13,14 @@ describe('FormGroup', () => {
   });
 
   let render = () => {
-    component = shallow(<FormGroup {...props}><label>label</label><FormField><input /></FormField></FormGroup>);
+    component = shallow(<FormGroup {...props}><label>label</label><Field><input /></Field></FormGroup>);
   };
 
   it('should render the children', () => {
     render();
     let label = component.find('label');
     expect(label.length).toBe(1);
-    let field = component.find(FormField);
+    let field = component.find(Field);
     expect(field.length).toBe(1);
   });
 

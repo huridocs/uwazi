@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
-import {FormField, MultiSelect} from 'app/Forms';
+import {Control, Field} from 'react-redux-form';
+import {MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
 import advancedSortUtil from 'app/utils/advancedSort';
@@ -79,7 +79,7 @@ export class NestedMultiselect extends Component {
                   return false;
                 }
                 return <li key={index}>
-                        <FormField model={`search.filters.${property.name}.properties.${prop.key}.any`}>
+                        <Field model={`.filters.${property.name}.properties.${prop.key}.any`}>
                           <div className="multiselectItem">
                             <input
                               type='checkbox'
@@ -99,10 +99,10 @@ export class NestedMultiselect extends Component {
                               </span>
                             </span>
                           </div>
-                        </FormField>
+                        </Field>
                         <ShowIf if={this.state[prop.key]}>
-                          <FormField model={`search.filters.${property.name}.properties.${prop.key}.values`}>
                             <MultiSelect
+                              model={`.filters.${property.name}.properties.${prop.key}.values`}
                               prefix={property.name + prop.key}
                               options={this.getOptions(prop.key)}
                               onChange={this.onChange.bind(this, prop.key)}
@@ -111,7 +111,6 @@ export class NestedMultiselect extends Component {
                               noSort={true}
                               filter={this.state.filter}
                             />
-                          </FormField>
                         </ShowIf>
                       </li>;
               });
@@ -128,10 +127,4 @@ NestedMultiselect.propTypes = {
   aggregations: PropTypes.object
 };
 
-export default NestedMultiselect;
-
-const NestedMultiselectField = createFieldClass({
-  NestedMultiselect: controls.textarea
-});
-
-export {NestedMultiselectField};
+export default (props) => <Control.select component={NestedMultiselect} {...props}/>;

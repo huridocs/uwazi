@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
 import DatePicker from './DatePicker';
 
-export class MultiDate extends Component {
+export default class MultiDate extends Component {
 
   constructor(props) {
     super(props);
@@ -55,11 +54,3 @@ MultiDate.propTypes = {
   value: PropTypes.array,
   onChange: PropTypes.func
 };
-
-export default MultiDate;
-
-const MultiDateField = createFieldClass({
-  MultiDate: controls.select
-});
-
-export {MultiDateField};

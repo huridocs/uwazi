@@ -2,8 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {I18NLink} from 'app/I18N';
 import {connect} from 'react-redux';
-import {Form} from 'react-redux-form';
-import {FormField, MarkDown} from 'app/Forms';
+import {Form, Field} from 'react-redux-form';
+import {MarkDown} from 'app/ReactReduxForms';
 import ShowIf from 'app/App/ShowIf';
 
 import {resetPage, savePage} from 'app/Pages/actions/pageActions';
@@ -21,7 +21,7 @@ export class PageCreator extends Component {
     let pageUrl = 'http://' + window.location.host + '/page/' + page.data.sharedId;
 
     let nameGroupClass = 'template-name form-group';
-    if (formState.fields.title && !formState.fields.title.valid && (formState.submitFailed || formState.fields.title.dirty)) {
+    if (formState.title && !formState.title.valid && (formState.submitFailed || formState.title.touched)) {
       nameGroupClass += ' has-error';
     }
 
@@ -35,9 +35,9 @@ export class PageCreator extends Component {
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>&nbsp;
               <div className={nameGroupClass}>
-                <FormField model="page.data.title">
+                <Field model=".title">
                   <input placeholder="Page name" className="form-control"/>
-                </FormField>
+                </Field>
               </div>
               &nbsp;
               <button type="submit"
@@ -53,9 +53,7 @@ export class PageCreator extends Component {
                   <a target="_blank" href={pageUrl} className="pull-right">(view page)</a>
                 </div>
               </ShowIf>
-              <FormField model="page.data.metadata.content">
-                <MarkDown rows={18} />
-              </FormField>
+              <MarkDown model=".metadata.content" rows={18} />
             </div>
           </Form>
         </div>

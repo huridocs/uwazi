@@ -12,11 +12,11 @@ export class AccountSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {email: props.user.email, password: '', repeatPassword: ''};
+    this.state = {email: props.user.email || '', password: '', repeatPassword: ''};
   }
 
   componentWillReceiveProps(props) {
-    this.setState({email: props.user.email});
+    this.setState({email: props.user.email || ''});
   }
 
   emailChange(e) {
@@ -38,7 +38,7 @@ export class AccountSettings extends Component {
     let userData = Object.assign({}, this.props.user, {email: this.state.email});
     UsersAPI.save(userData)
     .then((result) => {
-      this.props.notify(t('Email updated'), 'success');
+      this.props.notify(t('System', 'Email updated'), 'success');
       this.props.setUser(Object.assign(userData, {_rev: result.rev}));
     });
   }
@@ -54,7 +54,7 @@ export class AccountSettings extends Component {
 
     UsersAPI.save(Object.assign({}, this.props.user, {password: this.state.password}))
     .then((result) => {
-      this.props.notify(t('Password updated'), 'success');
+      this.props.notify(t('System', 'Password updated'), 'success');
       this.props.setUser(Object.assign(this.props.user, {_rev: result.rev}));
     });
     this.setState({password: '', repeatPassword: ''});

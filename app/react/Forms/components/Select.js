@@ -1,8 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
 import {advancedSort} from 'app/utils/advancedSort';
 
-export class Select extends Component {
+export default class Select extends Component {
 
   render() {
     let {options, optionsValue, optionsLabel} = this.props;
@@ -50,11 +49,3 @@ Select.propTypes = {
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string
 };
-
-export default Select;
-
-const SelectField = createFieldClass({
-  Select: controls.select
-});
-
-export {SelectField};

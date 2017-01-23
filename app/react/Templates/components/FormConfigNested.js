@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {FormField} from 'app/Forms';
+import {Field} from 'react-redux-form';
 import {connect} from 'react-redux';
 
 export class FormConfigNested extends Component {
@@ -35,8 +35,8 @@ export class FormConfigNested extends Component {
 
     let labelClass = 'input-group';
     let labelKey = `properties.${index}.label`;
-    let requiredLabel = formState.errors[labelKey + '.required'];
-    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    let requiredLabel = formState.$form.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -49,9 +49,9 @@ export class FormConfigNested extends Component {
               <span className="input-group-addon">
               Label
               </span>
-              <FormField model={`template.data.properties[${index}].label`}>
+              <Field model={`template.data.properties[${index}].label`}>
                 <input className="form-control"/>
-              </FormField>
+              </Field>
             </div>
           </div>
         </div>
@@ -59,9 +59,9 @@ export class FormConfigNested extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].required`}>
+                <Field model={`template.data.properties[${index}].required`}>
                   <input id={'required' + this.props.index} type="checkbox"/>
-                </FormField>
+                </Field>
               </span>
               <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
             </div>
@@ -69,9 +69,9 @@ export class FormConfigNested extends Component {
           <div className="col-sm-4">
             <div className="input-group">
               <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].showInCard`}>
+                <Field model={`template.data.properties[${index}].showInCard`}>
                   <input id={'showInCard' + this.props.index} type="checkbox"/>
-                </FormField>
+                </Field>
               </span>
               <label htmlFor={'showInCard' + this.props.index}
                      className="form-control"
@@ -91,13 +91,13 @@ export class FormConfigNested extends Component {
                 <div className="col-sm-12">
                   <div className="input-group">
                     <span className="input-group-addon">Key</span>
-                    <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
+                    <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
                       <input className="form-control"/>
-                    </FormField>
+                    </Field>
                     <span className="input-group-addon">Label</span>
-                    <FormField model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
+                    <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
                       <input className="form-control"/>
-                    </FormField>
+                    </Field>
                     <span className="input-group-btn">
                       <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>
                         <i className="fa fa-trash"></i>
@@ -120,9 +120,9 @@ export class FormConfigNested extends Component {
         <div className="well-metadata-creator">
           <div>
             <div>
-              <FormField model={`template.data.properties[${index}].filter`}>
+              <Field model={`template.data.properties[${index}].filter`}>
                 <input id={'filter' + this.props.index} type="checkbox"/>
-              </FormField>
+              </Field>
               &nbsp;
               <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
               When properties match in equal name and field type with other document types, they will be combined for filtering.">

@@ -1,24 +1,19 @@
 import React, {Component, PropTypes} from 'react';
-
-import DatePicker, {DatePickerField} from './DatePicker';
+import DatePicker from './DatePicker';
 import {t} from 'app/I18N';
 
-export class DateRange extends Component {
+export default class DateRange extends Component {
 
   render() {
     return (
         <div>
           <div className="DatePicker__From">
             <span>{t('System', 'Label date "From"', 'Form:')}&nbsp;</span>
-            <DatePickerField model={this.props.fromModel} >
-              <DatePicker onChange={this.props.fromChange}/>
-            </DatePickerField>
+              <DatePicker model={`${this.props.model}.from`} onChange={this.props.fromChange}/>
           </div>
           <div className="DatePicker__To">
             <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
-            <DatePickerField model={this.props.toModel} >
-              <DatePicker endOfDay={true} onChange={this.props.toChange}/>
-            </DatePickerField>
+              <DatePicker model={`${this.props.model}.to`} endOfDay={true} onChange={this.props.toChange}/>
           </div>
         </div>
     );
@@ -27,10 +22,8 @@ export class DateRange extends Component {
 }
 
 DateRange.propTypes = {
-  fromModel: PropTypes.string,
-  toModel: PropTypes.string,
+  model: PropTypes.string,
   fromChange: PropTypes.func,
+  onChange: PropTypes.func,
   toChange: PropTypes.func
 };
-
-export default DateRange;
