@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 import {FormConfigSelect} from 'app/Templates/components/FormConfigSelect';
 import {Field} from 'react-redux-form';
-import {Select} from 'app/Forms';
+import {Select} from 'app/ReactReduxForms';
 
 describe('FormConfigSelect', () => {
   let component;
@@ -37,7 +37,7 @@ describe('FormConfigSelect', () => {
     expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].showInCard');
     expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].filter');
 
-    expect(component.find(Select).node.props.model).toBe('template.data.properties[0].content');
+    expect(component.find(Select).props().model).toBe('template.data.properties[0].content');
   });
 
   it('should render the select with the dictionaries and entities', () => {

@@ -111,6 +111,7 @@ export class FiltersForm extends Component {
                     </li>
                     <li className="wide">
                       <NestedMultiselect
+                        model={`.filters.${property.name}`}
                         aggregations={this.props.aggregations}
                         property={property}
                         onChange={(options) => {

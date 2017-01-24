@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import {Control, Field} from 'react-redux-form';
+import {Field} from 'react-redux-form';
 import {MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
 import advancedSortUtil from 'app/utils/advancedSort';
 
-export class NestedMultiselect extends Component {
+export default class NestedMultiselect extends Component {
 
   constructor(props) {
     super(props);
@@ -126,5 +126,3 @@ NestedMultiselect.propTypes = {
   property: PropTypes.object,
   aggregations: PropTypes.object
 };
-
-export default (props) => <Control.select component={NestedMultiselect} {...props}/>;

@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {Select} from 'app/Forms';
+import {Select} from 'app/ReactReduxForms';
 import {connect} from 'react-redux';
 import {Field} from 'react-redux-form';
 
@@ -49,9 +49,10 @@ export class FormConfigSelect extends Component {
 
         <div>
           <label>Thesauri</label>
-          <SelectField model={`template.data.properties[${index}].content`}>
-            <Select options={optionGroups} optionsLabel="name" optionsValue="_id"/>
-          </SelectField>
+          <Select model={`template.data.properties[${index}].content`}
+                  options={optionGroups}
+                  optionsLabel="name"
+                  optionsValue="_id" />
         </div>
 
         <div>

@@ -51,10 +51,8 @@ export function filterDocumentTypes(documentTypes) {
       templates: state.templates
     });
 
-    state.search.sort = sort;
-    state.search.order = order;
+    const search = Object.assign({aggregations, types: documentTypes}, state.search, {sort, order});
 
-    const search = Object.assign({aggregations, types: documentTypes}, state.search);
     dispatch(libraryActions.searchDocuments(search));
   };
 }
