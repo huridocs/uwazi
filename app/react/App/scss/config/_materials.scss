@@ -1,4 +1,4 @@
-$box-shadow: 0px 5px 10px -5px $c-grey;
+$box-shadow: 0px 5px 10px -5px transparentize($c-grey-dark, .9);
 $box-shadow-danger: 0px 5px 10px -5px $c-danger;
 
 $header-height: 54px;
