@@ -37,9 +37,9 @@
   align-items: flex-start;
   padding: 15px 20px;
   margin-top: -15px;
-  border-radius: 4px;
+  border-radius: $border-radius;
   background: $c-white;
-  box-shadow: 0px 2px 15px -5px $c-grey-dark;
+  box-shadow: $box-shadow;
   
   .Dropdown-option {
     display: block;

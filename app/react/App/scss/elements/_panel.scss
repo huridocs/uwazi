@@ -74,11 +74,11 @@
 
       &.error {
         display: block;
-        border: 1px solid #ED353D !important;
-        box-shadow: 0 4px 10px -5px rgba(255, 0, 0, 0.3) !important;
+        border: 1px solid $c-danger !important;
+        box-shadow: $box-shadow-danger !important;
 
         .property-name, .property-name .fa {
-          color: #ED353D;
+          color: $c-danger;
         }
 
         .validation-error {

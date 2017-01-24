@@ -41,7 +41,7 @@
       line-height: 31px;
       text-align: center;
       border-radius: 50%;
-      box-shadow: $shadow;
+      box-shadow: $box-shadow;
       border: 1px solid $c-grey;
       color: $c-grey-dark;
       transform: translateY(-100%) translateX(50%);
@@ -82,7 +82,7 @@
   line-height: 31px;
   text-align: center;
   border-radius: 50%;
-  box-shadow: $shadow;
+  box-shadow: $box-shadow;
   border: 1px solid $c-grey;
   color: $c-grey-dark;
   transform: translateY(-100%) translateX(50%);
@@ -102,7 +102,7 @@
   position: relative;
   background: $c-white;
   margin: 0 auto 30px !important;
-  box-shadow: $shadow;
+  box-shadow: $box-shadow;
 }
 
 .document.targetDocument {

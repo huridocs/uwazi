@@ -265,19 +265,19 @@
   }
 
   .fa-caret-left {
-    color: #8BC74C;
+    color: $c-success;
   }
   .fa-caret-left + span {
     margin-left: 5px;
-    color: #8BC74C;
+    color: $c-success;
   }
 
   .fa-close {
-    color: #ED353D;
+    color: $c-danger;
   }
   .fa-close + span {
     margin-left: 5px;
-    color: #ED353D;
+    color: $c-danger;
     cursor: pointer;
   }
 }
@@ -366,7 +366,7 @@
   width: 20px;
   height: 12px;
   margin-left: 6px;
-  border-radius: 6px;
+  border-radius: $border-radius;
   cursor: pointer;
   &:after {
     background: $c-white;
@@ -478,7 +478,7 @@
   text-align: center;
   margin: 1px 0 0 6px;
   border: 1px solid $c-grey;
-  border-radius: 3px;
+  border-radius: $border-radius;
   &:hover {
     border-color: $c-primary;
     cursor: pointer;
@@ -658,7 +658,7 @@ label.multiselectItem-label {
     font-size: $f-size-sm;
     background: $c-grey-lighten;
     color: $c-primary;
-    border-radius: 2px;
+    border-radius: $border-radius;
     line-height: 1.7em;
 
     &:after {
@@ -716,7 +716,7 @@ label.multiselectItem-label {
     line-height: 34px;
     width: 50px;
     position: absolute;
-    color: #cccccc;
+    color: $c-grey-dark;
     padding-left: 10px;
   }
   .react-datepicker__input-container {
@@ -796,7 +796,7 @@ label.multiselectItem-label {
 }
 
 .react-datepicker__header {
-  background: #fff !important;
+  background: $c-white !important;
   border-bottom: none !important;
   height: 20% !important;
   padding-top: 0px !important;
@@ -873,7 +873,7 @@ label.multiselectItem-label {
 }
 
 .react-datepicker__tether-element-attached-top .react-datepicker__triangle {
-  border-bottom-color: #FFF !important;
+  border-bottom-color: $c-white !important;
 }
 
 .react-datepicker__close-icon {
@@ -888,5 +888,5 @@ label.multiselectItem-label {
   background: $c-grey !important;
 }
 .react-datepicker__close-icon:hover::after {
-  background: #D9534F !important;
+  background: $c-danger !important;
 }
