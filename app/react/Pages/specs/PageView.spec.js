@@ -59,7 +59,7 @@ describe('PageView', () => {
         expect(api.search.calls.count()).toBe(3);
         expect(JSON.stringify(api.search.calls.argsFor(0)[0])).toBe('{"a":"1","b":"2","limit":"6"}');
         expect(JSON.stringify(api.search.calls.argsFor(1)[0])).toEqual('{"filters":{},"types":[],"limit":"6"}');
-        expect(JSON.stringify(api.search.calls.argsFor(2)[0])).toEqual('{"x":"1","y":"2","limit":"6"}');
+        expect(JSON.stringify(api.search.calls.argsFor(2)[0])).toEqual('{"limit":"6","x":"1","y":"2"}');
 
         expect(response.page.itemLists.length).toBe(3);
 
