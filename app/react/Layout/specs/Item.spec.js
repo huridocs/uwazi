@@ -118,6 +118,7 @@ describe('Item', () => {
       expect(component.find('.item-metadata').text()).toContain('sexLabel');
       expect(component.find('.item-metadata').text()).toContain('female');
       expect(component.find('.item-metadata').text()).toContain('ageLabel');
+      expect(component.find('.item-current-sort').text()).toContain('25');
     });
 
     it('should render additional metadata if passed', () => {
@@ -139,7 +140,7 @@ describe('Item', () => {
       expect(component.find('.item-metadata').html()).toContain('customIcon');
       expect(component.find('.item-metadata').html()).toContain('value1');
       expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
-      expect(component.find('.item-metadata').html()).toContain('<dd>value2</dd>');
+      expect(component.find('.item-metadata').html()).toContain('<dd class="">value2</dd>');
     });
   });
 
