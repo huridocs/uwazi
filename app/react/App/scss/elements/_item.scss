@@ -222,6 +222,10 @@ $item-padding: 15px;
       color: $c-grey;
       font-style: italic;
     }
+
+    &.item-current-sort {
+      color: $c-primary;
+    }
   }
   .item-icon {
     top: -1px;

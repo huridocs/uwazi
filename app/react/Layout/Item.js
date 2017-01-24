@@ -19,8 +19,11 @@ export class Item extends Component {
     const metadata = populatedMetadata
     .filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
     .map((property, index) => {
+      let isSortingProperty = false;
+
       if ('metadata.' + property.name === this.props.search.sort) {
         sortPropertyInMetadata = true;
+        isSortingProperty = true;
       }
 
       if (property.value && property.value !== '' || property.markdown) {
@@ -31,7 +34,9 @@ export class Item extends Component {
         return (
           <dl key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
-            <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
+            <dd className={isSortingProperty ? 'item-current-sort' : ''}>
+              <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+            </dd>
           </dl>
         );
       }
@@ -61,7 +66,7 @@ export class Item extends Component {
       metadata.push(
         <dl key={metadata.length}>
           <dt>Date added</dt>
-          <dd><PrintDate utc={creationDate} toLocal={true} /></dd>
+          <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}><PrintDate utc={creationDate} toLocal={true} /></dd>
         </dl>
       );
     }
