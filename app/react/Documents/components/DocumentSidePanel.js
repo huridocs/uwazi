@@ -59,6 +59,7 @@ export class DocumentSidePanel extends Component {
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
     const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
     const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
+    const readOnly = this.props.readOnly;
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -126,7 +127,7 @@ export class DocumentSidePanel extends Component {
         </NeedAuthorization>
 
         <NeedAuthorization>
-          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !!this.props.tocForm}>
+          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
                 <i className="fa fa-pencil"></i>
@@ -160,7 +161,7 @@ export class DocumentSidePanel extends Component {
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc toc={doc.get('toc')} />
+                <ShowToc toc={doc.get('toc')} readOnly={readOnly} />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
                 <TocForm

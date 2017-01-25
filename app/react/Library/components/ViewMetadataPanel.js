@@ -40,7 +40,7 @@ const mapStateToProps = (state) => {
     //rawDoc: library.ui.get('selectedDocument') || Immutable.fromJS({}),
     templates: getTemplates(state),
     formPath: 'library.sidepanel.metadata',
-    notInViewer: true,
+    readOnly: true,
     DocumentForm
   };
 };

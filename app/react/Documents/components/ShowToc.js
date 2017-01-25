@@ -3,13 +3,13 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {scrollTo} from 'app/Viewer/actions/uiActions';
 import Immutable from 'immutable';
+import ShowIf from 'app/App/ShowIf';
 
 export class ShowToc extends Component {
 
   scrollTo(tocElement, e) {
     e.preventDefault();
-    this.props.scrollTo(tocElement, this.props.pdfInfo.toJS(), 'span');
-    //scroller.to(`.document-viewer span[data-id="${tocElement._id}"]`, '.document-viewer');
+    this.props.scrollTo(tocElement.toJS(), this.props.pdfInfo.toJS(), 'span');
   }
 
   render() {
@@ -20,7 +20,12 @@ export class ShowToc extends Component {
           {toc.map((tocElement, index) => {
             return (
               <li className={`toc-indent-${tocElement.get('indentation')}`} key={index}>
-                <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.get('label')}</a>
+                <ShowIf if={!this.props.readOnly}>
+                  <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.get('label')}</a>
+                </ShowIf>
+                <ShowIf if={this.props.readOnly}>
+                  <span className="toc-view-link">{tocElement.get('label')}</span>
+                </ShowIf>
               </li>
               );
           })}
