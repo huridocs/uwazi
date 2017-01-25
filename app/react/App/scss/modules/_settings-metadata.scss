@@ -104,13 +104,16 @@
   @include tooltip('top');
   width: 200px;
   white-space: normal;
-  
+
   .property-help:hover &{
     display: block;
   }
 }
 
-.nestedProperties {
+.nested-properties {
+  margin-top: 15px;
+  margin-bottom: 15px;
+
   .input-group {
     margin-bottom: 5px;
   }

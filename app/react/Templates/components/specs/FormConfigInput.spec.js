@@ -38,13 +38,13 @@ describe('FormConfigInput', () => {
   it('should not allow prioritySorting on types others than text or date', () => {
     props.type = 'text';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).at(4).parent().parent().props().if).toBe(true);
+    expect(component.find(Field).at(4).parent().props().if).toBe(true);
     props.type = 'date';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).at(4).parent().parent().props().if).toBe(true);
+    expect(component.find(Field).at(4).parent().props().if).toBe(true);
     props.type = 'markdown';
     component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).at(4).parent().parent().props().if).toBe(false);
+    expect(component.find(Field).at(4).parent().props().if).toBe(false);
   });
 
   describe('validation', () => {

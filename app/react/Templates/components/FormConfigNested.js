@@ -50,24 +50,20 @@ export class FormConfigNested extends Component {
           </Field>
         </div>
 
-        <div>
-          <span>
-            <Field model={`template.data.properties[${index}].required`}>
-              <input id={'required' + this.props.index} type="checkbox"/>
-            </Field>&nbsp;
-          </span>
+        <Field model={`template.data.properties[${index}].required`}>
+          <input id={'required' + this.props.index} type="checkbox"/>
+          &nbsp;
           <label className="property-label" htmlFor={'required' + this.props.index}>
             Required property
             <i className="property-help fa fa-question-circle">
               <div className="property-description">You won't be able to publish a document if this property is empty.</div>
             </i>
           </label>
-        </div>
-        
-        <div>
-          <Field model={`template.data.properties[${index}].showInCard`}>
-            <input id={'showInCard' + this.props.index} type="checkbox"/>
-          </Field>&nbsp;
+        </Field>
+
+        <Field model={`template.data.properties[${index}].showInCard`}>
+          <input id={'showInCard' + this.props.index} type="checkbox"/>
+          &nbsp;
           <label className="property-label" htmlFor={'showInCard' + this.props.index}>
             Show in cards
             <i className="property-help fa fa-question-circle">
@@ -76,9 +72,9 @@ export class FormConfigNested extends Component {
               </div>
             </i>
           </label>
-        </div>
+        </Field>
 
-        <div className="nestedProperties well-metadata-creator">
+        <div className="nested-properties well-metadata-creator">
           <p>Properties</p>
           {(() => {
             return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
@@ -112,10 +108,8 @@ export class FormConfigNested extends Component {
 
         <div className="well-metadata-creator">
           <div>
-            <div>
-              <Field model={`template.data.properties[${index}].filter`}>
-                <input id={'filter' + this.props.index} type="checkbox"/>
-              </Field>
+            <Field model={`template.data.properties[${index}].filter`}>
+              <input id={'filter' + this.props.index} type="checkbox"/>
               &nbsp;
               <label className="property-label" htmlFor={'filter' + this.props.index}>
                 Use as filter
@@ -124,10 +118,8 @@ export class FormConfigNested extends Component {
                   When properties match in equal name and field type with other document types, they will be combined for filtering.</div>
                 </i>
               </label>
-            </div>
-            <div>
-              <FilterSuggestions {...property} />
-            </div>
+            </Field>
+            <FilterSuggestions {...property} />
           </div>
         </div>
 
