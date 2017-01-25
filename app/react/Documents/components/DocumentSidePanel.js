@@ -49,12 +49,11 @@ export class DocumentSidePanel extends Component {
     const TocForm = this.props.tocFormComponent || (() => false);
     const EntityForm = this.props.EntityForm || (() => false);
 
-    const propReferences = this.props.references.toJS();
-    const references = propReferences.filter(r => {
-      return typeof r.range.start !== 'undefined';
+    const references = this.props.references.filter(r => {
+      return typeof r.get('range').get('start') !== 'undefined';
     });
-    const connections = propReferences.filter(r => {
-      return typeof r.range.start === 'undefined';
+    const connections = this.props.references.filter(r => {
+      return typeof r.get('range').get('start') === 'undefined';
     });
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
@@ -62,6 +61,8 @@ export class DocumentSidePanel extends Component {
     const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
     const readOnly = this.props.readOnly;
     const startNewConnection = readOnly ? (() => {}) : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'))
+
+    const docType = this.props.doc.get('type');
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -72,29 +73,39 @@ export class DocumentSidePanel extends Component {
               this.props.showTab(tab);
             }}>
             <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="toc">
-                  <i className="fa fa-indent"></i>
-                  <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
-                </TabLink>
-              </li>
+              {(() => {
+                if (docType !== 'entity') {
+                  return <li>
+                    <TabLink to="toc">
+                      <i className="fa fa-indent"></i>
+                      <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
+                    </TabLink>
+                  </li>;
+                }
+                return <span/>;
+              })()}
               <li>
                 <TabLink to="metadata" default>
                   <i className="fa fa-info-circle"></i>
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
-              <li>
-                <TabLink to="references">
-                  <i className="fa fa-sitemap"></i>
-                  <span className="connectionsNumber">{references.length}</span>
-                  <span className="tab-link-tooltip">{t('System', 'References')}</span>
-                </TabLink>
-              </li>
+              {(() => {
+                if (docType !== 'entity') {
+                  return <li>
+                    <TabLink to="references">
+                      <i className="fa fa-sitemap"></i>
+                      <span className="connectionsNumber">{references.size}</span>
+                      <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                    </TabLink>
+                  </li>;
+                }
+                return <span/>;
+              })()}
               <li>
                 <TabLink to="connections">
                   <i className="fa fa-share-alt"></i>
-                  <span className="connectionsNumber">{connections.length}</span>
+                  <span className="connectionsNumber">{connections.size}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
@@ -120,10 +131,10 @@ export class DocumentSidePanel extends Component {
         <NeedAuthorization>
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
-            <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-              <i className="fa fa-save"></i>
-              <span className="btn-label">Save</span>
-            </button>
+              <button type="submit" form="tocForm" className="edit-toc btn btn-success">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">Save</span>
+              </button>
             </div>
           </ShowIf>
         </NeedAuthorization>
@@ -143,10 +154,10 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={startNewConnection}
-                    className="create-connection btn btn-success">
-              <i className="fa fa-plus"></i>
-              <span className="btn-label">New</span>
-            </button>
+                className="create-connection btn btn-success">
+                <i className="fa fa-plus"></i>
+                <span className="btn-label">New</span>
+              </button>
             </div>
           </ShowIf>
         </NeedAuthorization>
@@ -178,21 +189,21 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="metadata">
               {(() => {
-                if (docBeingEdited && this.props.metadata.type === 'document') {
+                if (docBeingEdited && this.props.doc.get('type') === 'document') {
                   return <DocumentForm onSubmit={this.submit.bind(this)} />;
                 }
-                if (docBeingEdited && this.props.metadata.type === 'entity') {
+                if (docBeingEdited && this.props.doc.get('type') === 'entity') {
                   return <EntityForm/>;
                 }
-                
+
                 return <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />;
               })()}
             </TabContent>
             <TabContent for="references">
-              <Connections references={fromJS(references)} readOnly={readOnly}/>
+              <Connections references={references} readOnly={readOnly}/>
             </TabContent>
             <TabContent for="connections">
-              <Connections references={fromJS(connections)}
+              <Connections references={connections}
                 readOnly={readOnly}
                 referencesSection="connections"
                 useSourceTargetIcons={false} />

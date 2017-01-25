@@ -18,7 +18,7 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-fdescribe('libraryActions', () => {
+describe('libraryActions', () => {
   let documentCollection = [{name: 'Secret list of things'}];
   let aggregations = [{prop: {buckets: []}}];
   let templates = [{name: 'Decision'}, {name: 'Ruling'}];
@@ -189,7 +189,7 @@ fdescribe('libraryActions', () => {
       });
     });
 
-    fdescribe('saveDocument', () => {
+    describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         mockID();
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
@@ -238,12 +238,12 @@ fdescribe('libraryActions', () => {
 
     describe('selectDocument', () => {
       it('should select document and request for additional information needed', (done) => {
-        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('references'));
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve([{ref:'ref'}]));
         const doc = Immutable.fromJS({sharedId: 'sharedId', title: 'title'});
 
         const expectedActions = [
           {type: types.SELECT_DOCUMENT, doc: doc.toJS()},
-          {type: 'library.sidepanel.references/SET', value: 'references'}
+          {type: 'library.sidepanel.references/SET', value: [{ref: 'ref'}]}
         ];
         const store = mockStore({});
 

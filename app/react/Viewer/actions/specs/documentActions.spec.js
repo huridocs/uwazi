@@ -150,7 +150,7 @@ describe('documentActions', () => {
       .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
 
-    fdescribe('saveDocument', () => {
+    describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
         let doc = {name: 'doc', fullText: 'fullText'};
@@ -208,11 +208,11 @@ describe('documentActions', () => {
         ];
 
         const expectedActions = [
-          {type: 'rrf/reset', model: 'documentViewer.tocForm'},
+          {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
           {type: 'documentViewer/tocBeingEdited/SET', value: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {_id: 'id', _rev: 'rev', sharedId: 'sharedId', toc}},
-          {type: 'rrf/reset', model: 'documentViewer.docForm'},
+          {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
           {type: 'viewer/doc/SET', value: 'response'}
         ];
         const store = mockStore({

@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import ListContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
 import {Item} from 'app/Layout';
 
-fdescribe('ConnectionsList', () => {
+describe('ConnectionsList', () => {
   let component;
   let props;
 
