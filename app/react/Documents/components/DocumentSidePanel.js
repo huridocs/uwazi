@@ -61,6 +61,7 @@ export class DocumentSidePanel extends Component {
     const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
     const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
     const readOnly = this.props.readOnly;
+    const startNewConnection = readOnly ? (() => {}) : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'))
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -139,9 +140,9 @@ export class DocumentSidePanel extends Component {
         </NeedAuthorization>
 
         <NeedAuthorization>
-          <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc}>
+          <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
-              <button onClick={/*this.props.startNewConnection.bind(null, 'basic', doc.sharedId)*/() => ''}
+              <button onClick={startNewConnection}
                     className="create-connection btn btn-success">
               <i className="fa fa-plus"></i>
               <span className="btn-label">New</span>

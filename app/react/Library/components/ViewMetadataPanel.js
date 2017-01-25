@@ -38,7 +38,6 @@ const mapStateToProps = (state) => {
     tab: library.sidepanel.tab,
     docBeingEdited: !!library.sidepanel.metadata._id,
     formDirty: library.sidepanel.metadataForm.dirty,
-    //rawDoc: library.ui.get('selectedDocument') || Immutable.fromJS({}),
     templates: getTemplates(state),
     formPath: 'library.sidepanel.metadata',
     readOnly: true,
