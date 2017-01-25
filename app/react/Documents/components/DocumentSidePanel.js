@@ -152,7 +152,7 @@ export class DocumentSidePanel extends Component {
         </NeedAuthorization>
 
         <NeedAuthorization>
-          <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc}>
+          <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
               <UploadAttachment entityId={doc.get('_id')}/>
             </div>
@@ -199,6 +199,7 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="attachments">
               <AttachmentsList files={fromJS(attachments)}
+                readOnly={readOnly}
                 isDocumentAttachments={true}
                 parentId={doc.get('_id')}
                 parentSharedId={doc.get('sharedId')} />
