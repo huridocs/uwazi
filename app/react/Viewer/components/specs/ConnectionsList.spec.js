@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import ListContainer, {ConnectionsList} from 'app/Viewer/components/ConnectionsList';
 import {Item} from 'app/Layout';
 
-describe('ConnectionsList', () => {
+fdescribe('ConnectionsList', () => {
   let component;
   let props;
 
@@ -52,7 +52,7 @@ describe('ConnectionsList', () => {
   });
 
   describe('when mouseenter on a reference', () => {
-    it('should should highlightReference', () => {
+    it('should highlightReference', () => {
       render();
       component.find(Item).last().simulate('mouseenter');
       expect(props.highlightReference).toHaveBeenCalledWith('ref1');
@@ -83,6 +83,15 @@ describe('ConnectionsList', () => {
         component.find(Item).last().simulate('click');
         expect(props.activateReference).toHaveBeenCalledWith(props.references.toJS()[0], props.doc.pdfInfo, 'tabName');
         expect(component.find(Item).last().node.props.className).toContain('relationship-active');
+      });
+      describe('when readOnly', () => {
+        it('should not activate it', () => {
+          props.readOnly = true;
+          render();
+          component.find(Item).last().simulate('click');
+          expect(props.activateReference).not.toHaveBeenCalled();
+          expect(component.find(Item).last().node.props.className).not.toContain('relationship-active');
+        });
       });
     });
 

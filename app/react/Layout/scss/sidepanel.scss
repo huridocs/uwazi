@@ -272,3 +272,10 @@ $c-sidebar: $c-white;
     color: $c-grey !important;
   }
 }
+
+.item.readOnly {
+  cursor: default;
+  &:hover{
+    cursor: default;
+  }
+}

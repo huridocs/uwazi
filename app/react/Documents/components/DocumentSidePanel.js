@@ -47,6 +47,7 @@ export class DocumentSidePanel extends Component {
     const {doc, docBeingEdited, DocumentForm} = this.props;
 
     const TocForm = this.props.tocFormComponent || (() => false);
+    const EntityForm = this.props.EntityForm || (() => false);
 
     const propReferences = this.props.references.toJS();
     const references = propReferences.filter(r => {
@@ -179,18 +180,19 @@ export class DocumentSidePanel extends Component {
                 if (docBeingEdited && this.props.metadata.type === 'document') {
                   return <DocumentForm onSubmit={this.submit.bind(this)} />;
                 }
-                //if (docBeingEdited && this.props.metadata.type === 'entity') {
-                  //return <EntityForm/>;
-                //}
+                if (docBeingEdited && this.props.metadata.type === 'entity') {
+                  return <EntityForm/>;
+                }
+                
                 return <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />;
               })()}
             </TabContent>
             <TabContent for="references">
-              <Connections references={fromJS(references)} notInViewer={this.props.notInViewer || false}/>
+              <Connections references={fromJS(references)} readOnly={readOnly}/>
             </TabContent>
             <TabContent for="connections">
               <Connections references={fromJS(connections)}
-                notInViewer={this.props.notInViewer || false}
+                readOnly={readOnly}
                 referencesSection="connections"
                 useSourceTargetIcons={false} />
             </TabContent>

@@ -48,7 +48,7 @@ export function saveDocument(doc) {
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
       dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
-      dispatch(formActions.reset('documentViewer.docForm'));
+      dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', updatedDoc));
     });
   };

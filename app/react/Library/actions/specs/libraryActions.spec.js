@@ -189,7 +189,7 @@ fdescribe('libraryActions', () => {
       });
     });
 
-    describe('saveDocument', () => {
+    fdescribe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         mockID();
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
@@ -197,7 +197,7 @@ fdescribe('libraryActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: 'rrf/reset', model: 'library.metadata'},
+          {type: 'rrf/reset', model: 'library.sidepanel.metadata'},
           {type: types.UPDATE_DOCUMENT, doc: 'response'},
           {type: types.SELECT_DOCUMENT, doc: 'response'}
         ];

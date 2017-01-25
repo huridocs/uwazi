@@ -11,6 +11,7 @@ import {deleteDocument} from 'app/Viewer/actions/documentActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {createSelector} from 'reselect';
 import DocumentForm from '../containers/DocumentForm';
+import EntityForm from '../containers/EntityForm';
 
 import {actions as actionCreators} from 'app/BasicReducer';
 import {DocumentSidePanel} from 'app/Documents';
@@ -41,7 +42,8 @@ const mapStateToProps = (state) => {
     templates: getTemplates(state),
     formPath: 'library.sidepanel.metadata',
     readOnly: true,
-    DocumentForm
+    DocumentForm,
+    EntityForm
   };
 };
 

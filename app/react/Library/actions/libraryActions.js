@@ -120,7 +120,7 @@ export function saveDocument(doc) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch(formActions.reset('library.metadata'));
+      dispatch(formActions.reset('library.sidepanel.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
@@ -132,7 +132,7 @@ export function saveEntity(entity) {
     return entities.api.save(entity)
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
-      dispatch(formActions.reset('library.metadata'));
+      dispatch(formActions.reset('library.sidepanel.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
