@@ -16,6 +16,7 @@ import api from 'app/utils/api';
 import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import Perf from 'react-addons-perf';
+import {fromJS as Immutable} from 'immutable';
 
 if (isClient) {
   window.perf = Perf;
@@ -110,21 +111,35 @@ function handleRoute(res, renderProps, req) {
     })
     .then(() => {
       return Promise.all([
-        routeProps.requestState(renderProps.params, query),
         api.get('user'),
         api.get('settings'),
         api.get('translations'),
         api.get('templates'),
         api.get('thesauris')
       ])
-      .then(([initialData, user, settings, translations, templates, thesauris]) => {
-        initialData.user = user.json;
-        initialData.templates = templates.json.rows;
-        initialData.thesauris = thesauris.json.rows;
+      .then(([user, settings, translations, templates, thesauris]) => {
+        const globalResources = {
+          user: user.json,
+          settings: {collection: settings.json},
+          translations: translations.json.rows,
+          templates: templates.json.rows,
+          thesauris: thesauris.json.rows
+        };
+
+        globalResources.settings.collection.links = globalResources.settings.collection.links || [];
+
+        return Promise.all([routeProps.requestState(renderProps.params, query, {
+          templates: Immutable(globalResources.templates),
+          thesauris: Immutable(globalResources.thesauris)
+        }), globalResources]);
+      })
+      .then(([initialData, globalResources]) => {
+        initialData.user = globalResources.user;
+        initialData.settings = globalResources.settings;
+        initialData.translations = globalResources.translations;
+        initialData.templates = globalResources.templates;
+        initialData.thesauris = globalResources.thesauris;
         initialData.locale = locale;
-        initialData.translations = translations.json.rows;
-        initialData.settings = {collection: settings.json};
-        initialData.settings.collection.links = initialData.settings.collection.links || [];
         renderPage(initialData, true);
       })
       .catch((error) => {

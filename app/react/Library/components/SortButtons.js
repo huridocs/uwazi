@@ -39,6 +39,27 @@ export class SortButtons extends Component {
     }
   }
 
+  createSortItem(key, sortString, context, label, options) {
+    const {isActive, search, treatAs} = options;
+
+    const firstOrder = treatAs !== 'number' ? 'asc' : 'desc';
+    const secondOrder = treatAs !== 'number' ? 'desc' : 'asc';
+
+    return (
+      <li key={key}
+          className={'Dropdown-option ' + (isActive ? 'is-active' : '')}>
+        <a className={'Dropdown-option__item ' + (isActive && search.order === firstOrder ? 'is-active' : '')}
+           onClick={() => this.handleClick(sortString, firstOrder, treatAs)}>
+           {t(context, label)} ({treatAs !== 'number' ? 'A-Z' : t('System', 'Recently')})
+        </a>
+        <a className={'Dropdown-option__item ' + (isActive && search.order === secondOrder ? 'is-active' : '')}
+           onClick={() => this.handleClick(sortString, secondOrder, treatAs)}>
+           {t(context, label)} ({treatAs !== 'number' ? 'Z-A' : t('System', 'Least recently')})
+        </a>
+      </li>
+    );
+  }
+
   changeOrder() {
     const {sort, order} = this.props.search;
     this.sort(sort, order === 'desc' ? 'asc' : 'desc');
@@ -47,17 +68,16 @@ export class SortButtons extends Component {
   getAdditionalSorts(templates, search) {
     const additionalSorts = templates.toJS().reduce((sorts, template) => {
       template.properties.forEach(property => {
-        if (property.sortable && !sorts.find(s => s.property === property.name)) {
+        const sortable = property.filter && (property.type === 'text' || property.type === 'date');
+
+        if (sortable && !sorts.find(s => s.property === property.name)) {
           const sortString = 'metadata.' + property.name;
           const treatAs = property.type === 'date' ? 'number' : 'string';
-          const defaultOrder = treatAs === 'number' ? 'desc' : 'asc';
+          const sortOptions = {isActive: search.sort === sortString, search, treatAs};
+
           sorts.push({
             property: property.name,
-            html: <li key={sorts.length + 1}
-                      className={'Dropdown-option ' + (search.sort === sortString ? 'is-active' : '')}
-                      onClick={() => this.handleClick(sortString, defaultOrder, treatAs)}>
-                    {t(template._id, property.label)}
-                  </li>
+            html: this.createSortItem(sorts.length + 2, sortString, template._id, property.label, sortOptions)
           });
         }
       });
@@ -72,25 +92,16 @@ export class SortButtons extends Component {
   }
 
   render() {
-    let {search, templates} = this.props;
-    let order = search.order === 'asc' ? 'up' : 'down';
-    let sortingTitle = search.sort === 'title';
-    let sortingRecent = search.sort === 'creationDate';
+    const {search, templates} = this.props;
+    const order = search.order === 'asc' ? 'up' : 'down';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
       <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
         <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-          <li className={'Dropdown-option' + (sortingTitle ? ' is-active' : '')}
-              onClick={() => this.handleClick('title', 'asc', 'string')}>
-            A-Z
-          </li>
-          <li className={'Dropdown-option' + (sortingRecent ? ' is-active' : '')}
-              onClick={() => this.handleClick('creationDate', 'desc', 'number')}>
-            Recent
-          </li>
+          {this.createSortItem(0, 'title', 'System', 'Title', {isActive: search.sort === 'title', search, treatAs: 'string'})}
+          {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
           {additionalSorts}
         </ul>
-        <i onClick={this.changeOrder.bind(this)} className={'order-by-arrow fa fa-long-arrow-' + order}></i>
       </div>
     );
   }
@@ -106,11 +117,17 @@ SortButtons.propTypes = {
 };
 
 export function mapStateToProps(state, ownProps) {
-  const {templates} = state;
+  let {templates} = state;
   const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'search';
+
+  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
+    templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
+  }
+
   const search = stateProperty.split('.').reduce((memo, property) => {
     return Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null;
   }, state);
+
   return {stateProperty, search, templates};
 }
 

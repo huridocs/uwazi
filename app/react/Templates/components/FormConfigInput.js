@@ -9,8 +9,8 @@ export class FormConfigInput extends Component {
 
   render() {
     const {index, data, formState, type} = this.props;
-    const ptoperty = data.properties[index];
-    let labelClass = 'input-group';
+    const property = data.properties[index];
+    let labelClass = '';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
@@ -20,86 +20,70 @@ export class FormConfigInput extends Component {
 
     return (
       <div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div className={labelClass}>
-              <span className="input-group-addon">
-                Label
-              </span>
-              <Field model={`template.data.properties[${index}].label`}>
-                <input className="form-control" />
-              </Field>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <Field model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + index} type="checkbox"/>
-                </Field>
-              </span>
-              <label htmlFor={'required' + index} className="form-control">Required</label>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <Field model={`template.data.properties[${index}].showInCard`}>
-                  <input id={'showInCard' + this.props.index} type="checkbox"/>
-                </Field>
-              </span>
-              <label htmlFor={'showInCard' + this.props.index}
-                     className="form-control"
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-          </div>
-          <ShowIf if={type === 'text' || type === 'date'}>
-            <div className="col-sm-4">
-              <div className="input-group">
-                <span className="input-group-addon">
-                  <Field model={`template.data.properties[${index}].sortable`}>
-                    <input id={'sortable' + this.props.index} type="checkbox"/>
-                  </Field>
-                </span>
-                <label htmlFor={'sortable' + this.props.index}
-                  title="Library items will be able to be sorted by this property."
-                  className="form-control">
-                  Sortable
-                  &nbsp;
-                  <i className="fa fa-question-circle"></i>
-                </label>
-              </div>
-            </div>
-          </ShowIf>
+
+        <div className={labelClass}>
+          <label>Name</label>
+          <Field model={`template.data.properties[${index}].label`}>
+            <input className="form-control" />
+          </Field>
         </div>
 
-        <div className="well-metadata-creator">
-          <div>
-            <div>
-              <Field model={`template.data.properties[${index}].filter`}>
-                <input id={'filter' + this.props.index} type="checkbox"/>
-              </Field>
-              &nbsp;
-              <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
-              When properties match in equal name and field type with other document types, they will be combined for filtering.">
-                Use as filter
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div>
-              <FilterSuggestions {...ptoperty} />
-            </div>
-          </div>
+        <Field model={`template.data.properties[${index}].required`}>
+          <input id={'required' + index} type="checkbox"/>
+          &nbsp;
+          <label className="property-label" htmlFor={'required' + index}>
+            Required property
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+            </i>
+          </label>
+        </Field>
 
+        <Field model={`template.data.properties[${index}].showInCard`}>
+          <input id={'showInCard' + this.props.index} type="checkbox"/>
+          &nbsp;
+          <label className="property-label" htmlFor={'showInCard' + this.props.index}>
+            Show in cards
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">Show this property in the cards as part of the basic info.</div>
+            </i>
+          </label>
+        </Field>
+
+        <div>
+          <Field model={`template.data.properties[${index}].filter`}>
+            <input id={'filter' + this.props.index} type="checkbox"/>
+            &nbsp;
+            <label className="property-label" htmlFor={'filter' + this.props.index}>
+              Use as filter
+              <i className="property-help fa fa-question-circle">
+                <div className="property-description">
+                  Use this property to filter the library results.
+                  When properties match in equal name and field type with other document types, they will be combined for filtering.
+                  Also library items will be able to be sorted by this property.
+                </div>
+              </i>
+            </label>
+          </Field>
+          <FilterSuggestions {...property} />
         </div>
 
+        <ShowIf if={type === 'text' || type === 'date'}>
+          <Field model={`template.data.properties[${index}].prioritySorting`}>
+            <input id={'prioritySorting' + this.props.index} type="checkbox" disabled={!property.filter} />
+            &nbsp;
+            <label className="property-label" htmlFor={'prioritySorting' + this.props.index}>
+              Priority sorting
+              <i className="property-help fa fa-question-circle">
+                <div className="property-description">
+                  This property will have priority when defining default sorting options.
+                  if there is more than one property with priority sorting, the property with most relevance
+                  (according to the checked options) will be used. (Only available if property's filter is selected)
+                </div>
+              </i>
+            </label>
+          </Field>
+        </ShowIf>
       </div>
     );
   }

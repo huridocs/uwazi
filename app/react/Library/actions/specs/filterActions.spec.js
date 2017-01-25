@@ -5,6 +5,7 @@ import {actions as formActions} from 'react-redux-form';
 import Immutable from 'immutable';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('filterActions', () => {
   let templates = ['templates'];
@@ -41,6 +42,10 @@ describe('filterActions', () => {
   });
 
   describe('filterDocumentTypes', () => {
+    beforeEach(() => {
+      spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'metadata.date', order: 'desc'});
+    });
+
     it('should dispatch an action SET_LIBRARY_FILTERS with the given types', () => {
       actions.filterDocumentTypes(['a'])(dispatch, getState);
       expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, ['a']);
@@ -52,6 +57,27 @@ describe('filterActions', () => {
       actions.filterDocumentTypes(['a'])(dispatch, getState);
       expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: 'RR Martin', country: ''});
       expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
+    });
+
+    it('should perform a search with the filters and prioritySortingCriteria', () => {
+      store.search.sort = 'metadata.date';
+      store.search.order = 'desc';
+      store.templates = Immutable.fromJS([
+        {_id: 'a', properties: [{filter: true, type: 'date', name: 'date'}]},
+        {_id: 'b'}
+      ]);
+
+      spyOn(libraryActions, 'searchDocuments');
+      actions.filterDocumentTypes(['a'])(dispatch, getState);
+
+      expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
+        currentCriteria: {sort: 'metadata.date', order: 'desc'},
+        filteredTemplates: ['a'],
+        templates: store.templates
+      });
+
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('metadata.date');
+      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe('desc');
     });
   });
 

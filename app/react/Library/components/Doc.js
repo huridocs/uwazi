@@ -17,7 +17,9 @@ export class Doc extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return !is(this.props.doc, nextProps.doc) || this.props.active !== nextProps.active;
+    return !is(this.props.doc, nextProps.doc) ||
+           this.props.active !== nextProps.active ||
+           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
   }
 
   render() {
@@ -27,6 +29,7 @@ export class Doc extends Component {
     return <Item onClick={this.select.bind(this, this.props.active)}
                  active={this.props.active}
                  doc={this.props.doc}
+                 searchParams={this.props.searchParams}
                  buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
                             <span className="itemShortcut-arrow">
                               <i className="fa fa-file-text-o"></i>
@@ -37,6 +40,7 @@ export class Doc extends Component {
 
 Doc.propTypes = {
   doc: PropTypes.object,
+  searchParams: PropTypes.object,
   active: PropTypes.bool,
   selectDocument: PropTypes.func,
   unselectDocument: PropTypes.func

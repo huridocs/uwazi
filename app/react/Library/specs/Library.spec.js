@@ -10,6 +10,8 @@ import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
 import createStore from 'app/store';
 
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
 describe('Library', () => {
   let aggregations = {buckets: []};
   let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2, aggregations};
@@ -44,9 +46,16 @@ describe('Library', () => {
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {
       const query = {filters: {}, types: []};
+      const expectedSearch = {
+        sort: prioritySortingCriteria.get().sort,
+        order: prioritySortingCriteria.get().order,
+        filters: query.filters,
+        types: query.types
+      };
+
       Library.requestState({}, query)
       .then((state) => {
-        expect(searchAPI.search).toHaveBeenCalledWith(query);
+        expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
         expect(state.library.documents).toEqual(documents);
         expect(state.library.aggregations).toEqual(aggregations);
         expect(state.library.filters.documentTypes).toEqual([]);

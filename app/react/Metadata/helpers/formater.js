@@ -5,14 +5,14 @@ export default {
 
   date(property, timestamp, showInCard) {
     let value = moment.utc(timestamp, 'X').format('ll');
-    return {label: property.label, value, showInCard};
+    return {label: property.label, name: property.name, value, showInCard};
   },
 
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
       return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
     });
-    return {label: property.label, value, showInCard};
+    return {label: property.label, name: property.name, value, showInCard};
   },
 
   multidaterange(property, dateranges, showInCard) {
@@ -21,7 +21,7 @@ export default {
       let to = moment.utc(range.to, 'X').format('ll');
       return {value: `${from} - ${to}`};
     });
-    return {label: property.label, value, showInCard};
+    return {label: property.label, name: property.name, value, showInCard};
   },
 
   getSelectOptions(option, thesauri) {
@@ -49,7 +49,7 @@ export default {
 
     const {value, url, icon} = this.getSelectOptions(option, thesauri);
 
-    return {label: property.label, value, icon, url, showInCard};
+    return {label: property.label, name: property.name, value, icon, url, showInCard};
   },
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
@@ -63,7 +63,7 @@ export default {
       return this.getSelectOptions(option, thesauri);
     });
 
-    return {label: property.label, value: values, showInCard};
+    return {label: property.label, name: property.name, value: values, showInCard};
   },
 
   nested(property, rows, showInCard) {
@@ -82,7 +82,7 @@ export default {
   },
 
   markdown(property, value, showInCard) {
-    return {label: property.label, markdown: value, showInCard};
+    return {label: property.label, name: property.name, markdown: value, showInCard};
   },
 
   prepareMetadata(doc, templates, thesauris) {
@@ -124,7 +124,7 @@ export default {
         return this.nested(property, value, showInCard);
       }
 
-      return {label: property.label, value, showInCard};
+      return {label: property.label, name: property.name, value, showInCard};
     });
 
     return Object.assign({}, doc, {metadata: metadata, documentType: template.name});

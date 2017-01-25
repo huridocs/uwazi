@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import {Control, Field} from 'react-redux-form';
+import {Field, Control} from 'react-redux-form';
 import {MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
 import advancedSortUtil from 'app/utils/advancedSort';
 
-export class NestedMultiselect extends Component {
+export default class NestedMultiselect extends Component {
 
   constructor(props) {
     super(props);
@@ -19,16 +19,18 @@ export class NestedMultiselect extends Component {
     }
   }
 
-  onChange(key, values) {
-    this.state.values[key] = values;
-    this.setState(this.state);
-    this.props.onChange(this.state.values);
+  onChange(key, optionsSelected) {
+    let values = Object.assign({}, this.state.values);
+    values[key] = optionsSelected;
+    this.setState({values});
+    this.props.onChange(values);
   }
 
   selectAnyChange(key, e) {
-    this.state.values[key + 'any'] = e.target.checked;
-    this.setState(this.state);
-    this.props.onChange(this.state.values);
+    let values = Object.assign({}, this.state.values);
+    values[key + 'any'] = e.target.checked;
+    this.setState({values});
+    this.props.onChange(values);
   }
 
   toggleOptions(key, e) {
@@ -101,16 +103,17 @@ export class NestedMultiselect extends Component {
                           </div>
                         </Field>
                         <ShowIf if={this.state[prop.key]}>
-                            <MultiSelect
-                              model={`.filters.${property.name}.properties.${prop.key}.values`}
-                              prefix={property.name + prop.key}
-                              options={this.getOptions(prop.key)}
-                              onChange={this.onChange.bind(this, prop.key)}
-                              showAll={true}
-                              hideSearch={true}
-                              noSort={true}
-                              filter={this.state.filter}
-                            />
+                          <Control.select
+                            model={`.filters.${property.name}.properties.${prop.key}.values`}
+                            prefix={property.name + prop.key}
+                            options={this.getOptions(prop.key)}
+                            onChange={this.onChange.bind(this, prop.key)}
+                            showAll={true}
+                            hideSearch={true}
+                            noSort={true}
+                            filter={this.state.filter}
+                            component={MultiSelect}
+                          />
                         </ShowIf>
                       </li>;
               });
@@ -122,9 +125,7 @@ export class NestedMultiselect extends Component {
 
 NestedMultiselect.propTypes = {
   onChange: PropTypes.func,
-  value: PropTypes.array,
+  value: PropTypes.object,
   property: PropTypes.object,
   aggregations: PropTypes.object
 };
-
-export default (props) => <Control.select component={NestedMultiselect} {...props}/>;

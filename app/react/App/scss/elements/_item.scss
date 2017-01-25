@@ -210,14 +210,22 @@ $item-padding: 15px;
     dt {
       @include tooltip('top-left');
     }
-    
+
     dl:hover dt {
       display: block;
     }
   }
-  
+
   dd {
     width: 100%;
+    &.item-metadata-empty {
+      color: $c-grey;
+      font-style: italic;
+    }
+
+    &.item-current-sort {
+      color: $c-primary;
+    }
   }
   .item-icon {
     top: -1px;
@@ -257,7 +265,7 @@ $item-padding: 15px;
   color: $c-grey-dark;
   background: $c-white;
   border: 1px solid $c-grey;
-  
+
   @media(min-width: 1024px) {
     opacity: 0;
     .item.is-active &,

@@ -30,6 +30,17 @@ describe('ItemList', () => {
     expect(component.find(Doc).at(2).props().doc).toEqual(Immutable(props.items[2]));
   });
 
+  it('should pass the list search params as searchParams to the Doc', () => {
+    props.link = '/es/?sort=sortProperty';
+    render();
+    expect(component.find(Doc).at(0).props().searchParams).toEqual({sort: 'sortProperty'});
+  });
+
+  it('should default to sort: titel if no searchParams on link', () => {
+    render();
+    expect(component.find(Doc).at(0).props().searchParams).toEqual({sort: 'title'});
+  });
+
   it('should have a button to the Link provided', () => {
     render();
     expect(component.find(I18NLink).props().to).toBe(props.link);

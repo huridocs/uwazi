@@ -6,8 +6,10 @@
   padding: 5px;
   line-height: 1.2em;
   text-align: center;
+  font-family: $f-regular;
   font-size: $f-size-sm;
   font-weight: normal;
+  -webkit-font-smoothing: initial;
   background-color: transparentize($c-black, .25);
   color: $c-white;
   border-radius: $border-radius;

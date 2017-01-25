@@ -8,7 +8,7 @@ let DateRange = (props) => <Control.select component={forms.DateRange} {...props
 let MultiSelect = (props) => <Control.select component={forms.MultiSelect} {...props}/>;
 let MarkDown = (props) => <Control.text component={forms.MarkDown} {...props}/>;
 let Nested = (props) => <Control.select component={forms.Nested} {...props}/>;
-let NestedMultiselect = (props) => <Control.select component={forms.NestedMultiselect} {...props}/>;
+let NestedMultiselect = forms.NestedMultiselect;
 let MultiDate = (props) => <Control.select component={forms.MultiDate} {...props}/>;
 let MultiDateRange = (props) => <Control.select component={forms.MultiDateRange} {...props}/>;
 let DropdownList = (props) => <Control.select component={forms.DropdownList} {...props}/>;

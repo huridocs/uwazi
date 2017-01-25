@@ -28,23 +28,17 @@
   @include draggable;
 }
 
-.well-metadata-creator {
-  padding-top: 15px;
-  
-  &:not(:last-of-type) {
-    border-bottom: 1px solid $c-grey-light;
-    padding-bottom: 20px;
+.property-atributes {
+  opacity: 0.3;
+  &.is-active {
+    opacity: 1;
   }
-
-  label {
-    color: $c-black;
+  .fa {
+    margin-right: 5px;
   }
-
-  small {
-    display: block;
-    opacity: 0.6;
-    line-height: 1.3em;
-    padding-left: 15px;
+  .fa-warning {
+    display: none;
+    color: $c-warning;
   }
   
   .row {
@@ -95,5 +89,38 @@
     right: 35px;
     left: auto !important;
     transform: translateX(50%);
+  }
+}
+
+.property-label {
+  cursor: pointer;
+}
+.property-help {
+  margin-left: 5px;
+  position: relative;
+  color: $c-grey-dark;
+}
+.property-description {
+  @include tooltip('top');
+  width: 200px;
+  white-space: normal;
+
+  .property-help:hover &{
+    display: block;
+  }
+}
+
+.nested-properties {
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  .input-group {
+    margin-bottom: 5px;
+  }
+  .input-group-addon {
+    line-height: 16px;
+  }
+  .form-control {
+    margin-bottom: 0 !important;
   }
 }
