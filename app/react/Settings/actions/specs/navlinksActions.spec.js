@@ -4,6 +4,7 @@ import * as actions from '../navlinksActions';
 import * as Notifications from 'app/Notifications';
 import api from 'app/Settings/SettingsAPI';
 import {mockID} from 'shared/uniqueID';
+import * as uiActions from 'app/Settings/actions/uiActions';
 
 describe('Settings/Navlinks actions', () => {
   let dispatch;
@@ -13,6 +14,7 @@ describe('Settings/Navlinks actions', () => {
     dispatch = jasmine.createSpy('dispatch');
     spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', _rev: 'newRev'}));
     spyOn(formActions, 'load').and.returnValue('ITEMS LOADED');
+    spyOn(uiActions, 'editLink').and.returnValue('ITEM EDITED');
     spyOn(formActions, 'push').and.returnValue('ITEM PUSHED');
     spyOn(formActions, 'move').and.returnValue('ITEMS REORDERED');
     spyOn(formActions, 'remove').and.returnValue('ITEM REMOVED');
@@ -30,8 +32,9 @@ describe('Settings/Navlinks actions', () => {
   describe('addLink', () => {
     it('should push a new item with default naming', () => {
       const expected = {title: 'Item 2', localID: 'unique_id'};
-      expect(actions.addLink([{_id: 'existing link'}])).toBe('ITEM PUSHED');
+      actions.addLink([{_id: 'existing link'}])(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('settings.navlinksData.links', expected);
+      expect(uiActions.editLink).toHaveBeenCalledWith('unique_id');
     });
   });
 
