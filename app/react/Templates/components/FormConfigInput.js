@@ -3,6 +3,8 @@ import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {Field} from 'react-redux-form';
 import {connect} from 'react-redux';
 
+import PrioritySortingLabel from './PrioritySortingLabel';
+
 import ShowIf from 'app/App/ShowIf';
 
 export class FormConfigInput extends Component {
@@ -72,16 +74,7 @@ export class FormConfigInput extends Component {
           <Field model={`template.data.properties[${index}].prioritySorting`}>
             <input id={'prioritySorting' + this.props.index} type="checkbox" disabled={!property.filter} />
             &nbsp;
-            <label className="property-label" htmlFor={'prioritySorting' + this.props.index}>
-              Priority sorting
-              <i className="property-help fa fa-question-circle">
-                <div className="property-description">
-                  This property will have priority when defining default sorting options.
-                  if there is more than one property with priority sorting, the property with most relevance
-                  (according to the checked options) will be used. (Only available if property's filter is selected)
-                </div>
-              </i>
-            </label>
+            <PrioritySortingLabel htmlFor={'prioritySorting' + this.props.index} />
           </Field>
         </ShowIf>
       </div>
