@@ -3,6 +3,7 @@ import {actions} from 'app/BasicReducer';
 import * as types from 'app/Settings/actions/actionTypes';
 import api from 'app/Settings/SettingsAPI';
 import {notify} from 'app/Notifications';
+import {editLink} from 'app/Settings/actions/uiActions';
 
 import ID from 'shared/uniqueID';
 
@@ -12,7 +13,10 @@ export function loadLinks(links) {
 
 export function addLink(links) {
   const link = {title: `Item ${links.length + 1}`, localID: ID()};
-  return formActions.push('settings.navlinksData.links', link);
+  return function (dispatch) {
+    dispatch(formActions.push('settings.navlinksData.links', link));
+    dispatch(editLink(link.localID));
+  };
 }
 
 export function sortLink(originIndex, targetIndex) {
