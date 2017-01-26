@@ -1,31 +1,20 @@
-import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import SidePanel from 'app/Layout/SidePanel';
-import {formater, ShowMetadata} from 'app/Metadata';
+import {formater} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
 import {saveDocument, saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
 import {actions as connectionsActions} from 'app/Connections';
 import {uiActions as connectionsUiActions} from 'app/Connections';
-import {closePanel, showTab} from '../actions/uiActions';
+import {closePanel} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 import {actions as actionCreators} from 'app/BasicReducer';
-import {t} from 'app/I18N';
 
 import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
-import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import Connections from './ConnectionsList';
-import {AttachmentsList, UploadAttachment} from 'app/Attachments';
-import ShowIf from 'app/App/ShowIf';
-import {NeedAuthorization} from 'app/Auth';
 import {actions} from 'app/Metadata';
 import {deleteDocument} from 'app/Viewer/actions/documentActions';
-import {browserHistory} from 'react-router';
 import {TocForm as tocFormComponent} from 'app/Documents';
-import {MetadataFormButtons} from 'app/Metadata';
 import {createSelector} from 'reselect';
 
-import {fromJS} from 'immutable';
 import {DocumentSidePanel} from 'app/Documents';
 
 const selectTemplates = createSelector(s => s.templates, templates => templates.toJS());

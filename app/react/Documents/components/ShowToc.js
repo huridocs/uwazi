@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-//import scroller from 'app/Viewer/utils/Scroller';
 import {connect} from 'react-redux';
 import {scrollTo} from 'app/Viewer/actions/uiActions';
 import Immutable from 'immutable';
@@ -37,6 +36,7 @@ export class ShowToc extends Component {
 
 ShowToc.propTypes = {
   toc: PropTypes.object,
+  readOnly: PropTypes.bool,
   pdfInfo: PropTypes.object,
   scrollTo: PropTypes.func
 };

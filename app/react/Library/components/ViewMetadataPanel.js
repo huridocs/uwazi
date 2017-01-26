@@ -53,10 +53,10 @@ function mapDispatchToProps(dispatch) {
     getDocumentReferences,
     closePanel: unselectDocument,
     resetForm: () => {
-      return (dispatch) => {
-        dispatch(formActions.setInitial('library.sidepanel.metadata'));
-        dispatch(formActions.reset('library.sidepanel.metadata'));
-      }
+      return (_dispatch) => {
+        _dispatch(formActions.setInitial('library.sidepanel.metadata'));
+        _dispatch(formActions.reset('library.sidepanel.metadata'));
+      };
     },
     saveDocument,
     deleteDocument,

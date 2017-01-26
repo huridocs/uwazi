@@ -5,7 +5,6 @@ import {t} from 'app/I18N';
 
 import AttachmentsList from 'app/Attachments/components/AttachmentsList';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
-//import DocumentForm from '../containers/DocumentForm';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
@@ -35,7 +34,6 @@ export class DocumentSidePanel extends Component {
       return this.props.showModal('ConfirmCloseForm', this.props.doc);
     }
     this.props.resetForm(this.props.formPath);
-    //this.props.showTab();
     this.props.closePanel();
   }
 
@@ -60,7 +58,7 @@ export class DocumentSidePanel extends Component {
     const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
     const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
     const readOnly = this.props.readOnly;
-    const startNewConnection = readOnly ? (() => {}) : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'))
+    const startNewConnection = readOnly ? () => {} : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'));
 
     const docType = this.props.doc.get('type');
 
@@ -224,6 +222,10 @@ export class DocumentSidePanel extends Component {
 
 DocumentSidePanel.propTypes = {
   doc: PropTypes.object,
+  metadata: PropTypes.object,
+  EntityForm: PropTypes.object,
+  tocFormComponent: PropTypes.object,
+  DocumentForm: PropTypes.object,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string,
   templates: PropTypes.object,
@@ -248,7 +250,8 @@ DocumentSidePanel.propTypes = {
   editToc: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
-  isTargetDoc: PropTypes.bool
+  isTargetDoc: PropTypes.bool,
+  readOnly: PropTypes.bool
 };
 
 DocumentSidePanel.contextTypes = {

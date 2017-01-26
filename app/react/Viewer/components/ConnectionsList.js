@@ -143,6 +143,7 @@ export class ConnectionsList extends Component {
 
 ConnectionsList.propTypes = {
   uiState: PropTypes.object,
+  readOnly: PropTypes.bool,
   doc: PropTypes.object,
   references: PropTypes.object,
   referencedDocuments: PropTypes.object,

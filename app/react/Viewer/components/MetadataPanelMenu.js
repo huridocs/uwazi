@@ -26,7 +26,7 @@ export class MetadataPanelMenu extends Component {
                   <i className="fa fa-save"></i>
                 </button>
               </MenuButtons.Main>
-              );
+            );
           }
           return (
             <NeedAuthorization>
@@ -35,7 +35,7 @@ export class MetadataPanelMenu extends Component {
                 <i className="fa fa-pencil"></i>
               </MenuButtons.Main>
             </NeedAuthorization>
-            );
+          );
         })()}
       </div>
     );

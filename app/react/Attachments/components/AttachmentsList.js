@@ -130,6 +130,7 @@ AttachmentsList.propTypes = {
   parentId: PropTypes.string,
   parentSharedId: PropTypes.string,
   isDocumentAttachments: PropTypes.bool,
+  readOnly: PropTypes.bool,
   deleteAttachment: PropTypes.func
 };
 
