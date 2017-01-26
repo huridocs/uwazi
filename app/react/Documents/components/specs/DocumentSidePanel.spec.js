@@ -70,7 +70,6 @@ describe('DocumentSidePanel', () => {
       it('should close panel and reset form', () => {
         props.closePanel = jasmine.createSpy('closePanel');
         props.resetForm = jasmine.createSpy('resetForm');
-        props.showTab = jasmine.createSpy('showConnections');
         props.formDirty = false;
         props.docBeingEdited = true;
         props.formPath = 'formPath';
@@ -80,7 +79,6 @@ describe('DocumentSidePanel', () => {
 
         expect(props.closePanel).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith('formPath');
-        expect(props.showTab).toHaveBeenCalled();
       });
     });
   });

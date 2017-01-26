@@ -28,6 +28,7 @@ const formatMetadata = createSelector(
   }
 );
 
+
 const mapStateToProps = (state) => {
   const library = state.library;
   return {
@@ -37,7 +38,7 @@ const mapStateToProps = (state) => {
     references: library.sidepanel.references,
     tab: library.sidepanel.tab,
     docBeingEdited: !!library.sidepanel.metadata._id,
-    formDirty: library.sidepanel.metadataForm.dirty,
+    formDirty: !library.sidepanel.metadataForm.$form.pristine,
     templates: getTemplates(state),
     formPath: 'library.sidepanel.metadata',
     readOnly: true,
@@ -50,13 +51,18 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     getDocumentReferences,
-    unselectDocument,
-    resetForm: formActions.reset,
+    closePanel: unselectDocument,
+    resetForm: () => {
+      return (dispatch) => {
+        dispatch(formActions.setInitial('library.sidepanel.metadata'));
+        dispatch(formActions.reset('library.sidepanel.metadata'));
+      }
+    },
     saveDocument,
     deleteDocument,
     deleteEntity,
     showModal: modals.actions.showModal,
-    showTab: (tab) => actionCreators.set('library.tab', tab)
+    showTab: (tab) => actionCreators.set('library.sidepanel.tab', tab)
   }, dispatch);
 }
 

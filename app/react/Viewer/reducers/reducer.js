@@ -13,8 +13,6 @@ export default combineReducers({
   targetDocReferences: createReducer('viewer/targetDocReferences', []),
   references,
   uiState,
-  //docForm: modelReducer('documentViewer.docForm'),
-  //docFormState: formReducer('documentViewer.docForm'),
   templates: createReducer('viewer/templates', []),
   thesauris: createReducer('viewer/thesauris', []),
   relationTypes: createReducer('viewer/relationTypes', []),
@@ -24,6 +22,6 @@ export default combineReducers({
   sidepanel: combineReducers({
     metadata: modelReducer('documentViewer.sidepanel.metadata'),
     metadataForm: formReducer('documentViewer.sidepanel.metadata'),
-    tab: createReducer('library.tab', '')
+    tab: createReducer('viewer.sidepanel.tab', '')
   })
 });

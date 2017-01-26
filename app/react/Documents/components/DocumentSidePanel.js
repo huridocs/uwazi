@@ -35,7 +35,7 @@ export class DocumentSidePanel extends Component {
       return this.props.showModal('ConfirmCloseForm', this.props.doc);
     }
     this.props.resetForm(this.props.formPath);
-    this.props.showTab();
+    //this.props.showTab();
     this.props.closePanel();
   }
 

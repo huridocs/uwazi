@@ -8,6 +8,7 @@ import {actions as connectionsActions} from 'app/Connections';
 import {uiActions as connectionsUiActions} from 'app/Connections';
 import {closePanel, showTab} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
+import {actions as actionCreators} from 'app/BasicReducer';
 import {t} from 'app/I18N';
 
 import DocumentForm from '../containers/DocumentForm';
@@ -60,8 +61,8 @@ export const mapStateToProps = ({documentViewer}) => {
     templates: documentViewer.templates,
     rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.sidepanel.metadata._id,
-    formDirty: documentViewer.sidepanel.metadataForm.dirty,
-    tab: documentViewer.uiState.get('tab'),
+    formDirty: !documentViewer.sidepanel.metadataForm.$form.pristine,
+    tab: documentViewer.sidepanel.tab,
     references,
     tocFormComponent,
     tocForm,
@@ -81,14 +82,14 @@ function mapDispatchToProps(dispatch) {
     startNewConnection: connectionsActions.startNewConnection,
     closeConnectionsPanel: connectionsUiActions.closePanel,
     resetForm: formActions.reset,
-    showTab,
     saveDocument,
     closePanel,
     deleteDocument,
     saveToc,
     editToc,
     removeFromToc,
-    indentTocElement
+    indentTocElement,
+    showTab: (tab) => actionCreators.set('viewer.sidepanel.tab', tab)
   }, dispatch);
 }
 
