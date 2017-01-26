@@ -92,7 +92,7 @@ export default [
 {key: 'Uploads', label: 'Uploads'},
 {key: 'Password updated', label: 'Password updated'},
 {key: 'View', label: 'View'},
-{key: 'Uploading', label: 'Uploading'}
+{key: 'Uploading', label: 'Uploading'},
 {key: 'x less', label: ' less'},
 {key: 'x more', label: ' more'}
 ];

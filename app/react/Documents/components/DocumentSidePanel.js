@@ -223,9 +223,9 @@ export class DocumentSidePanel extends Component {
 DocumentSidePanel.propTypes = {
   doc: PropTypes.object,
   metadata: PropTypes.object,
-  EntityForm: PropTypes.object,
-  tocFormComponent: PropTypes.object,
-  DocumentForm: PropTypes.object,
+  EntityForm: PropTypes.func,
+  tocFormComponent: PropTypes.func,
+  DocumentForm: PropTypes.func,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string,
   templates: PropTypes.object,
