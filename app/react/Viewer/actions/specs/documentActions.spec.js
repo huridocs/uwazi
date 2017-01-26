@@ -52,7 +52,7 @@ describe('documentActions', () => {
         {type: 'documentViewer/tocBeingEdited/SET', value: true},
         {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
         {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
-        {type: 'documentViewer.sidepanel.tab/SET', value: 'toc'}
+        {type: 'viewer.sidepanel.tab/SET', value: 'toc'}
       ];
 
       const store = mockStore({
@@ -77,7 +77,7 @@ describe('documentActions', () => {
           {type: 'documentViewer/tocBeingEdited/SET', value: true},
           {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
           {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
-          {type: 'documentViewer.sidepanel.tab/SET', value: 'toc'}
+          {type: 'viewer.sidepanel.tab/SET', value: 'toc'}
         ];
         const store = mockStore({
           documentViewer: {

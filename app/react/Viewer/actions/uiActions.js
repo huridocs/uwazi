@@ -87,7 +87,7 @@ export function activateReference(reference, docInfo, tab = 'toc') {
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
     dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
-    dispatch(actions.set('documentViewer.sidepanel.tab', tabName));
+    dispatch(actions.set('viewer.sidepanel.tab', tabName));
 
     setTimeout(() => {
       scrollTo(reference, docInfo);
