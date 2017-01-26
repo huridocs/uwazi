@@ -18,10 +18,6 @@ export default function (state = initialState, action = {}) {
     return state.remove('activeReference');
   }
 
-  if (action.type === types.SHOW_TAB) {
-    return state.set('tab', action.tab);
-  }
-
   if (action.type === types.ACTIVE_REFERENCE) {
     return state.set('activeReference', action.reference);
   }

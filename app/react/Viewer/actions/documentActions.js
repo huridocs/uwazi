@@ -124,7 +124,7 @@ export function editToc(toc) {
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
     dispatch(uiActions.openPanel('viewMetadataPanel'));
-    dispatch(uiActions.showTab('toc'));
+    dispatch(actions.set('documentViewer.sidepanel.tab', 'toc'));
   };
 }
 

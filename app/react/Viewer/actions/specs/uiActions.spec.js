@@ -73,17 +73,17 @@ describe('Viewer uiActions', () => {
 
     it('should dispatch a SHOW_TAB references by default', () => {
       actions.activateReference({_id: 'id'}, {})(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
+      expect(dispatch).toHaveBeenCalledWith({type: 'documentViewer.sidepanel.tab/SET', value: 'toc'});
     });
 
     it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
       actions.activateReference({_id: 'id'}, {}, 'another tab')(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'another tab'});
+      expect(dispatch).toHaveBeenCalledWith({type: 'documentViewer.sidepanel.tab/SET', value: 'another tab'});
     });
 
     it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
       actions.activateReference({_id: 'id'}, {}, [])(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: types.SHOW_TAB, tab: 'references'});
+      expect(dispatch).toHaveBeenCalledWith({type: 'documentViewer.sidepanel.tab/SET', value: 'references'});
     });
 
     it('should scroll to the elements', (done) => {

@@ -86,7 +86,7 @@ const mapStateToProps = ({documentViewer}) => {
     doc: documentViewer.doc,
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
-    showConnections: uiState.tab === 'references',
+    showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
   };
 };
