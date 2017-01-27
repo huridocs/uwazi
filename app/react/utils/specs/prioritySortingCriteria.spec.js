@@ -102,6 +102,34 @@ describe('prioritySortingCriteria', () => {
       expect(prioritySortingCriteria(options)).toEqual({sort: 'metadata.property2', order: 'desc', treatAs: 'number'});
     });
 
+    it('should weight the priority sorting criteria and include the common properties into the mix', () => {
+      const options = {
+        currentCriteria: {sort: 'metadata.missingProperty', order: 'asc', treatAs: 'string'},
+        filteredTemplates: [],
+        templates: Immutable([
+          {
+            _id: 't1',
+            commonProperties: [{name: ''}, {name: 'title', type: 'text', prioritySorting: true}],
+            properties: [{name: 'property0', filter: false, type: 'text'}]
+          },
+          {_id: 't2', properties: [{name: 'property1', prioritySorting: true, filter: true, type: 'date'}]},
+          {
+            _id: 't3',
+            commonProperties: [{name: ''}, {name: 'title', type: 'text', prioritySorting: true}],
+            properties: [{name: 'property2', prioritySorting: true, filter: true, type: 'date'}]
+          },
+          {_id: 't4', properties: [{name: 'property1', filter: true, type: 'date'}]},
+          {
+            _id: 't5',
+            commonProperties: [{name: ''}, {name: 'title', type: 'text', prioritySorting: true}],
+            properties: [{name: 'property2', prioritySorting: true, filter: true, type: 'date'}]
+          }
+        ])
+      };
+
+      expect(prioritySortingCriteria(options)).toEqual({sort: 'title', order: 'asc', treatAs: 'string'});
+    });
+
     it('should weight the new sorting criteria and choose the first if there is a tie', () => {
       const options = {
         currentCriteria: {sort: 'metadata.missingProperty', order: 'asc', treatAs: 'string'},

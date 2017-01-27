@@ -7,12 +7,15 @@ import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import {actions} from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
+import templateCommonProperties from './utils/templateCommonProperties';
 
 let prepareTemplate = (template) => {
   template.properties = template.properties.map((property) => {
     property.localID = ID();
     return property;
   });
+
+  template.commonProperties = template.commonProperties || templateCommonProperties.get();
 
   return template;
 };

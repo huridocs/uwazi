@@ -14,7 +14,7 @@
   color: $c-white;
   border-radius: $border-radius;
   white-space: nowrap;
-  
+
   @if $direction == 'top' {
     top: auto;
     right: auto;
@@ -50,11 +50,11 @@
     left: 100%;
     transform: translateX(5px) translateY(-50%);
   }
-  
+
   &:after {
     content: '';
     position: absolute;
-    
+
     @if $direction == 'top' {
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
