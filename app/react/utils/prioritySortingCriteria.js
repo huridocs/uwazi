@@ -1,12 +1,20 @@
-function appendNewOcurrency(results, property) {
-  if (!Object.keys(results.sortableOcurrences).includes(property.get('name'))) {
-    results.sortableOcurrences[property.get('name')] = {type: property.get('type'), ocurrs: 0};
+function appendNewOcurrency(results, property, appendMetadata = true) {
+  const propertyName = appendMetadata ? 'metadata.' + property.get('name') : property.get('name');
+
+  if (!Object.keys(results.sortableOcurrences).includes(propertyName)) {
+    results.sortableOcurrences[propertyName] = {type: property.get('type'), ocurrs: 0};
   }
-  results.sortableOcurrences[property.get('name')].ocurrs += 1;
+  results.sortableOcurrences[propertyName].ocurrs += 1;
 }
 
 function evalSortResults(validTemplates, options, sortResults) {
   validTemplates.reduce((results, template) => {
+    template.get('commonProperties').forEach(property => {
+      if (property.get('prioritySorting')) {
+        appendNewOcurrency(results, property, false);
+      }
+    });
+
     results.criteriaValid = template.get('properties').reduce((valid, property) => {
       const sortable = property.get('filter') && (property.get('type') === 'text' || property.get('type') === 'date');
       if (sortable && property.get('prioritySorting')) {
@@ -26,10 +34,15 @@ export default {
     }
 
     if (options.currentCriteria && options.templates) {
-      let validTemplates = options.templates;
+      let validTemplates = options.templates.map(t => {
+        if (!t.get('commonProperties')) {
+          return t.set('commonProperties', []);
+        }
+        return t;
+      });
 
       if (options.filteredTemplates && options.filteredTemplates.length) {
-        validTemplates = options.templates.filter(t => options.filteredTemplates.includes(t.get('_id')));
+        validTemplates = validTemplates.filter(t => options.filteredTemplates.includes(t.get('_id')));
       }
 
       const sortResults = {
@@ -52,7 +65,7 @@ export default {
         const priority = ocurrences.reduce((prev, current) => prev.ocurrs >= current.ocurrs ? prev : current);
 
         return {
-          sort: 'metadata.' + priority.name,
+          sort: priority.name,
           order: priority.type !== 'date' ? 'asc' : 'desc',
           treatAs: priority.type !== 'date' ? 'string' : 'number'
         };
