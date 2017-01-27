@@ -62,11 +62,15 @@ export class DocumentSidePanel extends Component {
 
     const docType = this.props.doc.get('type');
 
+    let tab = this.props.tab || 'metadata';
+    if (docType === 'entity' && (tab === 'references' || tab === 'toc')) {
+      tab = 'metadata';
+    }
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
-          <Tabs selectedTab={this.props.tab || 'metadata'}
+          <Tabs selectedTab={tab}
             handleSelect={(tab) => {
               this.props.showTab(tab);
             }}>

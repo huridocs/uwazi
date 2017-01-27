@@ -5,6 +5,7 @@ import {fromJS} from 'immutable';
 import DocumentSidePanel from '../DocumentSidePanel';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
+import {Tabs} from 'react-tabs-redux';
 import Immutable from 'immutable';
 
 describe('DocumentSidePanel', () => {
@@ -53,6 +54,35 @@ describe('DocumentSidePanel', () => {
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);
+    });
+  });
+
+  describe('Tabs', () => {
+    it('should set metadata as default tab', () => {
+      props.tab = '';
+      render();
+      expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
+    });
+
+    it('should set tab in props as selected', () => {
+      props.tab = 'selected-tab';
+      render();
+      expect(component.find(Tabs).at(0).props().selectedTab).toBe('selected-tab');
+    });
+
+    describe('when doc passed is an entity', () => {
+      it('should set metadata as selected if tab is toc', () => {
+        props.doc = Immutable.fromJS({metadata: [], attachmenas: [], type: 'entity'});
+        props.tab = 'toc';
+        render();
+        expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
+      });
+      it('should set metadata as selected if tab is references', () => {
+        props.doc = Immutable.fromJS({metadata: [], attachmenas: [], type: 'entity'});
+        props.tab = 'references';
+        render();
+        expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
+      });
     });
   });
 
