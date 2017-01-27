@@ -71,8 +71,8 @@ export class DocumentSidePanel extends Component {
         <div className="sidepanel-header">
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
           <Tabs selectedTab={tab}
-            handleSelect={(tab) => {
-              this.props.showTab(tab);
+            handleSelect={(selectedTab) => {
+              this.props.showTab(selectedTab);
             }}>
             <ul className="nav nav-tabs">
               {(() => {
