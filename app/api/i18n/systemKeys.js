@@ -90,9 +90,9 @@ export default [
 {key: 'Type', label: 'Type'},
 {key: 'Update', label: 'Update'},
 {key: 'Uploads', label: 'Uploads'},
-{key: 'Password updated', label: 'Password updated'},
 {key: 'View', label: 'View'},
 {key: 'Uploading', label: 'Uploading'},
+{key: 'User', label: 'User'},
 {key: 'x less', label: ' less'},
 {key: 'x more', label: ' more'}
 ];

@@ -19,8 +19,8 @@ import {DocumentSidePanel} from 'app/Documents';
 
 const selectTemplates = createSelector(s => s.templates, templates => templates.toJS());
 const selectThesauris = createSelector(s => s.thesauris, thesauris => thesauris.toJS());
-const getSourceDoc = createSelector(s => s.doc, d => d.toJS());
-const getTargetDoc = createSelector(s => s.targetDoc, targetDoc => targetDoc.toJS());
+const getSourceDoc = createSelector(s => s.documentViewer.doc, d => d.toJS());
+const getTargetDoc = createSelector(s => s.documentViewer.targetDoc, targetDoc => targetDoc.toJS());
 const getSourceMetadata = createSelector(
   getSourceDoc, selectTemplates, selectThesauris,
   (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
@@ -30,13 +30,15 @@ const getTargetMetadata = createSelector(
   (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
 );
 
-export const mapStateToProps = ({documentViewer}) => {
-  let metadata = getSourceMetadata(documentViewer);
+export const mapStateToProps = (state) => {
+  let documentViewer = state.documentViewer;
+  let templates = state.templates;
+  let metadata = getSourceMetadata(state);
   let doc = documentViewer.doc;
   let references = documentViewer.references;
 
   if (documentViewer.targetDoc.get('_id')) {
-    metadata = getTargetMetadata(documentViewer);
+    metadata = getTargetMetadata(state);
     doc = documentViewer.targetDoc;
     references = documentViewer.targetDocReferences;
   }
@@ -47,7 +49,7 @@ export const mapStateToProps = ({documentViewer}) => {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
     doc,
     metadata,
-    templates: documentViewer.templates,
+    templates,
     rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.sidepanel.metadata._id,
     formDirty: !documentViewer.sidepanel.metadataForm.$form.pristine,

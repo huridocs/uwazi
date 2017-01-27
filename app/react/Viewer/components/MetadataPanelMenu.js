@@ -51,10 +51,10 @@ MetadataPanelMenu.propTypes = {
   targetDoc: PropTypes.bool
 };
 
-const mapStateToProps = ({documentViewer}) => {
+const mapStateToProps = ({documentViewer, templates}) => {
   return {
     doc: documentViewer.doc,
-    templates: documentViewer.templates,
+    templates: templates,
     docForm: documentViewer.docForm,
     formState: documentViewer.docFormState,
     targetDoc: !!documentViewer.targetDoc.get('_id')
