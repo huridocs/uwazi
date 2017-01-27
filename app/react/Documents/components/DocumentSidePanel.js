@@ -198,7 +198,11 @@ export class DocumentSidePanel extends Component {
               })()}
             </TabContent>
             <TabContent for="references">
-              <Connections references={references} readOnly={readOnly}/>
+              <Connections
+                referencesSection="references"
+                references={references}
+                readOnly={readOnly}
+              />
             </TabContent>
             <TabContent for="connections">
               <Connections references={connections}
