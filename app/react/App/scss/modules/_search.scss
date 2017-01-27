@@ -25,9 +25,41 @@
     box-shadow: none;
     z-index: 4;
 
+    &::-webkit-input-placeholder {
+      color: $c-black;
+    }
+    &::-moz-placeholder { /* Firefox 19+ */
+      color: $c-black;
+    }
+    &:-ms-input-placeholder { /* IE 10+ */
+      color: $c-black;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+      color: $c-black;
+    }
+
     &:focus {
       box-shadow: none;
+      &::-webkit-input-placeholder {
+        color: transparent;
+      }
+      &::-moz-placeholder { /* Firefox 19+ */
+        color: transparent;
+      }
+      &:-ms-input-placeholder { /* IE 10+ */
+        color: transparent;
+      }
+      &:-moz-placeholder { /* Firefox 18- */
+        color: transparent;
+      }
     }
+  }
+  .input-group .fa-search {
+    position: absolute;
+    line-height: $header-height;
+    top: 0;
+    left: 15px;
+    z-index: 5;
   }
   .input-group-btn {
     width: 0;
