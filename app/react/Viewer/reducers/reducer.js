@@ -13,8 +13,6 @@ export default combineReducers({
   targetDocReferences: createReducer('viewer/targetDocReferences', []),
   references,
   uiState,
-  //templates: createReducer('viewer/templates', []),
-  //thesauris: createReducer('viewer/thesauris', []),
   relationTypes: createReducer('viewer/relationTypes', []),
   tocForm: modelReducer('documentViewer.tocForm', []),
   tocFormState: formReducer('documentViewer.tocForm'),
