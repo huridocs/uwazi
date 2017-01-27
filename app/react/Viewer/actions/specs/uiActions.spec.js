@@ -69,11 +69,12 @@ describe('Viewer uiActions', () => {
       actions.activateReference({_id: 'id'}, {})(dispatch);
       expect(dispatch).toHaveBeenCalledWith({type: types.ACTIVE_REFERENCE, reference: 'id'});
       expect(dispatch).toHaveBeenCalledWith({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
+      expect(dispatch).toHaveBeenCalledWith({type: 'viewer.sidepanel.tab/SET', value: 'references'});
     });
 
     it('should dispatch a SHOW_TAB references by default', () => {
       actions.activateReference({_id: 'id'}, {})(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: 'viewer.sidepanel.tab/SET', value: 'toc'});
+      expect(dispatch).toHaveBeenCalledWith({type: 'viewer.sidepanel.tab/SET', value: 'references'});
     });
 
     it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {

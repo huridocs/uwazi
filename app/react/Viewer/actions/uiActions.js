@@ -79,10 +79,9 @@ export function scrollTo(reference, docInfo, element = 'a') {
   scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', {duration: 100});
 }
 
-export function activateReference(reference, docInfo, tab = 'toc') {
+export function activateReference(reference, docInfo, tab) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
-
 
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
