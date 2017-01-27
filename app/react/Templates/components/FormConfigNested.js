@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import {addNestedProperty, removeNestedProperty} from 'app/Templates/actions/templateActions';
 import {Field} from 'react-redux-form';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 export class FormConfigNested extends Component {
@@ -17,16 +19,12 @@ export class FormConfigNested extends Component {
 
   addProperty(e) {
     e.preventDefault();
-    let nestedProperties = this.state.nestedProperties.slice();
-    nestedProperties.push({key: '', label: ''});
-    this.setState({nestedProperties});
+    this.props.addNestedProperty(this.props.index);
   }
 
-  removeProperty(index, e) {
+  removeProperty(nestedIndex, e) {
     e.preventDefault();
-    let nestedProperties = this.state.nestedProperties.slice();
-    nestedProperties.splice(index, 1);
-    this.setState({nestedProperties});
+    this.props.removeNestedProperty(this.props.index, nestedIndex);
   }
 
   render() {
@@ -77,7 +75,7 @@ export class FormConfigNested extends Component {
         <div className="nested-properties well-metadata-creator">
           <p>Properties</p>
           {(() => {
-            return this.state.nestedProperties.map((nestedProp, nestedIndex) => {
+            return this.props.data.properties[index].nestedProperties.map((nestedProp, nestedIndex) => {
               return <div key={nestedIndex}>
                 <div className="input-group">
                   <span className="input-group-addon">Key</span>
@@ -133,7 +131,9 @@ FormConfigNested.propTypes = {
   data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
-  formKey: PropTypes.string
+  formKey: PropTypes.string,
+  addNestedProperty: PropTypes.func,
+  removeNestedProperty: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -143,4 +143,8 @@ export function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(FormConfigNested);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({addNestedProperty, removeNestedProperty}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormConfigNested);

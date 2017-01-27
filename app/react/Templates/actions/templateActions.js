@@ -21,12 +21,24 @@ export function addProperty(property = {}, index = 0) {
     }
 
     if (property.type === 'nested') {
-      property.nestedProperties = [];
+      property.nestedProperties = [{key: '', label: ''}];
     }
 
     let properties = getState().template.data.properties.slice(0);
     properties.splice(index, 0, property);
     dispatch(formActions.change('template.data.properties', properties));
+  };
+}
+
+export function addNestedProperty(propertyIndex) {
+  return function (dispatch) {
+    dispatch(formActions.push(`template.data.properties[${propertyIndex}].nestedProperties`, {key: '', label: ''}));
+  };
+}
+
+export function removeNestedProperty(propertyIndex, nestedIndex) {
+  return function (dispatch) {
+    dispatch(formActions.remove(`template.data.properties[${propertyIndex}].nestedProperties`, nestedIndex));
   };
 }
 

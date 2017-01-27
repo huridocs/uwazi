@@ -11,7 +11,12 @@ describe('FormConfigNested', () => {
   beforeEach(() => {
     props = {
       index: 0,
-      data: {properties: [{}]},
+      data: {properties: [{nestedProperties: [
+        {key: 'nestedPropOne', label: 'nested prop one'},
+        {key: 'nestedPropTwo', label: 'nested prop two'}
+      ]}]},
+      addNestedProperty: jasmine.createSpy('addNestedProperty'),
+      removeNestedProperty: jasmine.createSpy('removeNestedProperty'),
       formState: {
         'properties.0.label': {valid: true, dirty: false, errors: {}},
         $form: {
@@ -32,22 +37,24 @@ describe('FormConfigNested', () => {
     expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].showInCard');
     expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].nestedProperties[0].key');
     expect(formFields.nodes[4].props.model).toBe('template.data.properties[0].nestedProperties[0].label');
-    expect(formFields.nodes[5].props.model).toBe('template.data.properties[0].filter');
+    expect(formFields.nodes[5].props.model).toBe('template.data.properties[0].nestedProperties[1].key');
+    expect(formFields.nodes[6].props.model).toBe('template.data.properties[0].nestedProperties[1].label');
+    expect(formFields.nodes[7].props.model).toBe('template.data.properties[0].filter');
   });
 
   describe('addProperty', () => {
     it('should add a new property', () => {
       component = shallow(<FormConfigNested {...props}/>);
-      component.instance().addProperty({preventDefault: () => {}});
-      expect(component.state().nestedProperties.length).toBe(2);
+      component.find('.btn-success').simulate('click', {preventDefault: () =>{}});
+      expect(props.addNestedProperty).toHaveBeenCalledWith(props.index);
     });
   });
 
   describe('removeProperty', () => {
-    it('should remove a property', () => {
+    it('should call action removeNestedProperty', () => {
       component = shallow(<FormConfigNested {...props}/>);
-      component.instance().removeProperty(0, {preventDefault: () => {}});
-      expect(component.state().nestedProperties.length).toBe(0);
+      component.find('.nested-properties .btn-danger').at(0).simulate('click', {preventDefault: () =>{}});
+      expect(props.removeNestedProperty).toHaveBeenCalledWith(props.index, 0);
     });
   });
 
