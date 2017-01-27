@@ -1,14 +1,19 @@
 import {connect} from 'react-redux';
-import {MetadataForm} from 'app/Metadata';
+import {bindActionCreators} from 'redux';
+import {actions, MetadataForm} from 'app/Metadata';
 
-function mapStateToProps({documentViewer}) {
+function mapStateToProps({documentViewer, templates, thesauris}) {
   return {
     model: 'documentViewer.sidepanel.metadata',
     metadata: documentViewer.sidepanel.metadata,
     state: documentViewer.sidepanel.metadataForm,
-    templates: documentViewer.templates,
-    thesauris: documentViewer.thesauris
+    templates,
+    thesauris
   };
 }
 
-export default connect(mapStateToProps)(MetadataForm);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({changeTemplate: actions.changeTemplate}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
