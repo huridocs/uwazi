@@ -1,4 +1,6 @@
 import React, {Component, PropTypes} from 'react';
+import {remove as removeAccents} from 'diacritics';
+
 import ShowIf from 'app/App/ShowIf';
 import {Icon} from 'app/Layout/Icon';
 import {t} from 'app/I18N';
@@ -58,7 +60,10 @@ export default class MultiSelect extends Component {
     let options = this.props.options.slice();
 
     if (this.state.filter) {
-      options = options.filter((opt) => opt[optionsLabel].toLowerCase().indexOf(this.state.filter.toLowerCase()) >= 0);
+      options = options.filter((opt) => {
+        return removeAccents(opt[optionsLabel].toLowerCase())
+        .indexOf(removeAccents(this.state.filter.toLowerCase())) >= 0;
+      });
     }
 
     let tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
