@@ -79,7 +79,7 @@ export class DocumentSidePanel extends Component {
                 if (docType !== 'entity') {
                   return <li>
                     <TabLink to="toc">
-                      <i className="fa fa-indent"></i>
+                      <i className="fa fa-font"></i>
                       <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
                     </TabLink>
                   </li>;
@@ -106,7 +106,7 @@ export class DocumentSidePanel extends Component {
               })()}
               <li>
                 <TabLink to="connections">
-                  <i className="fa fa-share-alt"></i>
+                  <i className="fa fa-exchange"></i>
                   <span className="connectionsNumber">{connections.size}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>

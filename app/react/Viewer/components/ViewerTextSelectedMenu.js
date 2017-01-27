@@ -28,7 +28,7 @@ export class ViewerTextSelectedMenu extends Component {
         <div className="btn btn-primary"
              onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}>
           <span className="ContextMenu-tooltip">Add to table of contents</span>
-          <i className="fa fa-list"></i>
+          <i className="fa fa-font"></i>
         </div>
       </div>
     );

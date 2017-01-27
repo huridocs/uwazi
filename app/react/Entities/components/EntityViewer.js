@@ -150,7 +150,7 @@ export class EntityViewer extends Component {
               <ul className="nav nav-tabs">
                 <li>
                   <TabLink to="references">
-                    <i className="fa fa-share-alt"></i>
+                    <i className="fa fa-exchange"></i>
                     <span className="connectionsNumber">{references.length}</span>
                     <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                   </TabLink>
