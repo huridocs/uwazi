@@ -2,21 +2,32 @@ import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
+import {actions} from 'app/BasicReducer';
 import documents from 'app/Documents';
 import entities from 'app/Entities';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
 }
 
 export function selectDocument(doc) {
-  return {
-    type: types.SELECT_DOCUMENT,
-    doc
+  let document = doc;
+  if (doc.toJS) {
+    document = doc.toJS();
+  }
+  return (dispatch) => {
+    dispatch({type: types.SELECT_DOCUMENT, doc: document});
+    return referencesAPI.get(document.sharedId)
+    .then((references) => {
+      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, document.language)));
+    });
   };
 }
+
 export function unselectDocument() {
   return {type: types.UNSELECT_DOCUMENT};
 }
@@ -109,7 +120,7 @@ export function saveDocument(doc) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch(formActions.reset('library.metadata'));
+      dispatch(formActions.reset('library.sidepanel.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
@@ -121,7 +132,7 @@ export function saveEntity(entity) {
     return entities.api.save(entity)
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
-      dispatch(formActions.reset('library.metadata'));
+      dispatch(formActions.reset('library.sidepanel.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
@@ -166,6 +177,15 @@ export function getSuggestions(searchTerm) {
     .then((suggestions) => {
       dispatch(setSuggestions(suggestions));
       dispatch(showSuggestions());
+    });
+  };
+}
+
+export function getDocumentReferences(documentId) {
+  return (dispatch) => {
+    return referencesAPI.get(documentId)
+    .then((references) => {
+      dispatch(actions.set('library.sidepanel.references', references));
     });
   };
 }

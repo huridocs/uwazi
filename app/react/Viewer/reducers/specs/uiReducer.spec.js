@@ -49,15 +49,6 @@ describe('Viewer uiReducer', () => {
     });
   });
 
-  describe('showTab()', () => {
-    it('should set tab connections', () => {
-      let newState = uiReducer(Immutable.fromJS({}), actions.showTab('connections'));
-      let expected = Immutable.fromJS({tab: 'connections'});
-
-      expect(newState).toEqualImmutable(expected);
-    });
-  });
-
   describe('viewer/targetDocHTML/SET', () => {
     it('should set panel to false', () => {
       let newState = uiReducer(Immutable.fromJS({panel: 'apanel'}), {type: 'viewer/targetDocHTML/SET'});

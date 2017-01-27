@@ -52,7 +52,7 @@ describe('documentActions', () => {
         {type: 'documentViewer/tocBeingEdited/SET', value: true},
         {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
         {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
-        {type: types.SHOW_TAB, tab: 'toc'}
+        {type: 'viewer.sidepanel.tab/SET', value: 'toc'}
       ];
 
       const store = mockStore({
@@ -77,7 +77,7 @@ describe('documentActions', () => {
           {type: 'documentViewer/tocBeingEdited/SET', value: true},
           {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
           {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
-          {type: types.SHOW_TAB, tab: 'toc'}
+          {type: 'viewer.sidepanel.tab/SET', value: 'toc'}
         ];
         const store = mockStore({
           documentViewer: {
@@ -158,7 +158,7 @@ describe('documentActions', () => {
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', fullText: 'fullText'}},
-          {type: 'rrf/reset', model: 'documentViewer.docForm'},
+          {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
           {type: 'viewer/doc/SET', value: 'response'}
         ];
         const store = mockStore({});
@@ -208,11 +208,11 @@ describe('documentActions', () => {
         ];
 
         const expectedActions = [
-          {type: 'rrf/reset', model: 'documentViewer.tocForm'},
+          {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
           {type: 'documentViewer/tocBeingEdited/SET', value: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {_id: 'id', _rev: 'rev', sharedId: 'sharedId', toc}},
-          {type: 'rrf/reset', model: 'documentViewer.docForm'},
+          {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
           {type: 'viewer/doc/SET', value: 'response'}
         ];
         const store = mockStore({

@@ -46,13 +46,6 @@ export function deactivateReference() {
   };
 }
 
-export function showTab(tab) {
-  return {
-    type: types.SHOW_TAB,
-    tab
-  };
-}
-
 export function goToActive(value = true) {
   return {
     type: types.GO_TO_ACTIVE,
@@ -90,11 +83,10 @@ export function activateReference(reference, docInfo, tab) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
-
   return function (dispatch) {
     dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
     dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
-    dispatch(showTab(tabName));
+    dispatch(actions.set('viewer.sidepanel.tab', tabName));
 
     setTimeout(() => {
       scrollTo(reference, docInfo);

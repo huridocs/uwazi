@@ -13,6 +13,7 @@ import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import referencesAPI from 'app/Viewer/referencesAPI';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -111,6 +112,7 @@ describe('libraryActions', () => {
       dispatch = jasmine.createSpy('dispatch');
     });
 
+
     describe('searchDocuments', () => {
       let store;
       let getState;
@@ -195,7 +197,7 @@ describe('libraryActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: 'rrf/reset', model: 'library.metadata'},
+          {type: 'rrf/reset', model: 'library.sidepanel.metadata'},
           {type: types.UPDATE_DOCUMENT, doc: 'response'},
           {type: types.SELECT_DOCUMENT, doc: 'response'}
         ];
@@ -228,6 +230,27 @@ describe('libraryActions', () => {
         .then(() => {
           expect(documents.api.delete).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('selectDocument', () => {
+      it('should select document and request for additional information needed', (done) => {
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve([{ref:'ref'}]));
+        const doc = Immutable.fromJS({sharedId: 'sharedId', title: 'title'});
+
+        const expectedActions = [
+          {type: types.SELECT_DOCUMENT, doc: doc.toJS()},
+          {type: 'library.sidepanel.references/SET', value: [{ref: 'ref'}]}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.selectDocument(doc))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+          expect(referencesAPI.get).toHaveBeenCalledWith('sharedId');
         })
         .then(done)
         .catch(done.fail);

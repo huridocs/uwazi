@@ -17,7 +17,7 @@ describe('uiReducer', () => {
 
   describe('selectDocument', () => {
     it('should set selected document', () => {
-      let newState = uiReducer(initialState, actions.selectDocument({_id: 'document'}));
+      let newState = uiReducer(initialState, {type: types.SELECT_DOCUMENT, doc: {_id: 'document'}});
       expect(newState.get('selectedDocument').get('_id')).toBe('document');
     });
   });

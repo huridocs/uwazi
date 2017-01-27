@@ -32,7 +32,7 @@ describe('ConfirmCloseForm', () => {
       render();
       component.find('.confirm-button').simulate('click');
       expect(props.hideModal).toHaveBeenCalledWith('ConfirmCloseForm');
-      expect(props.resetForm).toHaveBeenCalledWith('documentViewer.docForm');
+      expect(props.resetForm).toHaveBeenCalledWith('documentViewer.sidepanel.metadata');
       expect(props.closePanel).toHaveBeenCalled();
     });
   });

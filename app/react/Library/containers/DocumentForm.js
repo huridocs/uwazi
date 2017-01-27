@@ -6,9 +6,9 @@ import {actions, MetadataForm} from 'app/Metadata';
 
 function mapStateToProps(state) {
   return {
-    model: 'library.metadata',
-    metadata: state.library.metadata,
-    state: state.library.metadataForm,
+    model: 'library.sidepanel.metadata',
+    metadata: state.library.sidepanel.metadata,
+    state: state.library.sidepanel.metadataForm,
     templates: state.templates,
     thesauris: state.thesauris
   };

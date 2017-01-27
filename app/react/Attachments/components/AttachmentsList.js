@@ -86,22 +86,26 @@ export class AttachmentsList extends Component {
                 <span className="item-type__name">{this.getExtension(file.filename)}</span>
                 <ShowIf if={item.showSourceDocumentLabel}>
                   <span className="label label-success">
-                    <i className="fa fa-arrow-left"></i>
-                    <span>You are reading this document</span>
+                    <ShowIf if={!this.props.readOnly}>
+                      <span>
+                        <i className="fa fa-arrow-left"></i>
+                        <span>You are reading this document</span>
+                      </span>
+                    </ShowIf>
                   </span>
                 </ShowIf>
               </span>
             </div>
             <div className="item-shortcut-group">
               <NeedAuthorization>
-                <ShowIf if={item.deletable}>
+                <ShowIf if={item.deletable && !this.props.readOnly}>
                   <a className="item-shortcut item-shortcut--danger" onClick={this.deleteAttachment.bind(this, file)}>
                     <i className="fa fa-trash"></i>
                   </a>
                 </ShowIf>
               </NeedAuthorization>
               <NeedAuthorization>
-                <ShowIf if={item.replaceable}>
+                <ShowIf if={item.replaceable && !this.props.readOnly}>
                   <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
                 </ShowIf>
               </NeedAuthorization>
@@ -126,6 +130,7 @@ AttachmentsList.propTypes = {
   parentId: PropTypes.string,
   parentSharedId: PropTypes.string,
   isDocumentAttachments: PropTypes.bool,
+  readOnly: PropTypes.bool,
   deleteAttachment: PropTypes.func
 };
 

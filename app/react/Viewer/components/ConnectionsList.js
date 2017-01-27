@@ -28,6 +28,9 @@ export class ConnectionsList extends Component {
   }
 
   clickReference(reference) {
+    if (this.props.readOnly) {
+      return;
+    }
     if (!this.props.targetDoc) {
       this.props.activateReference(reference, this.props.doc.pdfInfo, this.props.referencesSection);
     }
@@ -69,11 +72,11 @@ export class ConnectionsList extends Component {
             let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
             let referenceIcon = reference.inbound ? 'fa-sign-in' : 'fa-sign-out';
 
-            if (uiState.highlightedReference === reference._id) {
+            if (uiState.highlightedReference === reference._id && !this.props.readOnly) {
               itemClass = 'relationship-hover';
             }
 
-            if (uiState.activeReference === reference._id) {
+            if (uiState.activeReference === reference._id && !this.props.readOnly) {
               itemClass = 'relationship-active';
               if (this.props.targetDoc && this.props.uiState.toJS().reference.targetRange) {
                 itemClass = 'relationship-selected';
@@ -98,7 +101,7 @@ export class ConnectionsList extends Component {
                 onMouseLeave={this.props.highlightReference.bind(null, null)}
                 onClick={this.clickReference.bind(this, reference)}
                 doc={doc}
-                className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''}`}
+                className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''}`}
                 data-id={reference._id}
                 additionalIcon={<ShowIf if={useSourceTargetIcons}>
                                   <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
@@ -110,7 +113,7 @@ export class ConnectionsList extends Component {
                 evalPublished={true}
                 buttons={
                   <div className="item-shortcut-group">
-                    <ShowIf if={!this.props.targetDoc}>
+                    <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
                       <NeedAuthorization>
                         <a className="item-shortcut item-shortcut--danger" onClick={this.deleteReference.bind(this, reference)}>
                           <i className="fa fa-trash"></i>
@@ -140,6 +143,7 @@ export class ConnectionsList extends Component {
 
 ConnectionsList.propTypes = {
   uiState: PropTypes.object,
+  readOnly: PropTypes.bool,
   doc: PropTypes.object,
   references: PropTypes.object,
   referencedDocuments: PropTypes.object,

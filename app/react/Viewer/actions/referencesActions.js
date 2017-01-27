@@ -66,7 +66,7 @@ export function addReference(reference, docInfo, delayActivation) {
       dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
       dispatch(uiActions.goToActive());
       dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
-      dispatch({type: types.SHOW_TAB, tab});
+      dispatch(actions.set('viewer.sidepanel.tab', tab));
     } else {
       dispatch(uiActions.activateReference(reference, docInfo, tab));
     }

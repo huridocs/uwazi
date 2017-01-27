@@ -48,7 +48,7 @@ export function saveDocument(doc) {
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
       dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
-      dispatch(formActions.reset('documentViewer.docForm'));
+      dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', updatedDoc));
     });
   };
@@ -57,7 +57,7 @@ export function saveDocument(doc) {
 export function saveToc(toc) {
   return function (dispatch, getState) {
     const {_id, _rev, sharedId} = getState().documentViewer.doc.toJS();
-    dispatch(formActions.reset('documentViewer.tocForm'));
+    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
     return dispatch(saveDocument({_id, _rev, sharedId, toc}));
   };
@@ -124,7 +124,7 @@ export function editToc(toc) {
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
     dispatch(uiActions.openPanel('viewMetadataPanel'));
-    dispatch(uiActions.showTab('toc'));
+    dispatch(actions.set('viewer.sidepanel.tab', 'toc'));
   };
 }
 
