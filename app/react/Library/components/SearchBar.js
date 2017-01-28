@@ -49,6 +49,7 @@ export class SearchBar extends Component {
         <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
           <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
             <Field model="search.searchTerm">
+              <i className="fa fa-search"></i>
               <input
                 type="text"
                 placeholder={t('System', 'Search')}
@@ -57,10 +58,8 @@ export class SearchBar extends Component {
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
+              <i className="fa fa-close" onClick={this.resetSearch.bind(this)}></i>
             </Field>
-            <span className="input-group-btn" onClick={this.resetSearch.bind(this)}>
-              <div className="btn btn-primary btn-close"><i className="fa fa-close"></i></div>
-            </span>
           </div>
           <div
             onMouseOver={this.mouseEnter.bind(this)}
@@ -69,7 +68,7 @@ export class SearchBar extends Component {
             >
             {suggestions.toJS().map((suggestion, index) => {
               let documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
-              return <p key={index}>
+              return <p className="search-suggestions-item" key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
                   <i className="fa fa-file-text-o">
@@ -77,11 +76,10 @@ export class SearchBar extends Component {
                 </I18NLink>
               </p>;
             })}
-            <p className="search-suggestions-all">
-            <button type="submit" onClick={this.closeSuggestions.bind(this)}>
-              <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
+            <button className="search-suggestions-all"
+                    type="submit" onClick={this.closeSuggestions.bind(this)}>
+              View all results for <b>{search.searchTerm}</b>
             </button>
-            </p>
           </div>
         </Form>
       </div>
