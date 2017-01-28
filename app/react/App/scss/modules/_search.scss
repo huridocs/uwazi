@@ -179,46 +179,50 @@
   line-height: 1em;
   &.is-active {
     display: block;
+    box-shadow: $box-shadow;
   }
+}
 
-  p {
-    position: relative;
-    margin: 0;
-  }
-
-  a, button {
-    color: $c-black;
+.search-suggestions-item {
+  position: relative;
+  margin: 0;
+  border-top: 1px solid $c-grey-light;
+  
+  a {
     display: block;
-    padding: 10px 35px;
-    line-height: 1.2em;
-    cursor: pointer;
-    background: transparent;
-    border: none;
+    padding: 0 35px;
+    line-height: $header-height;
+    color: $c-black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     &:hover {
       background: $c-grey-lighten;
       text-decoration: none;
     }
   }
-  .fa-file-text-o {
+  
+  .fa {
     position: absolute;
-    top: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     right: 15px;
   }
-
-}
-.search-suggestions-title {
-  border-bottom: 1px solid $c-grey-light;
-  font-size: $f-size-xs;
-  color: $c-grey-dark;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  padding-bottom: 5px;
-  margin-top: 15px;
 }
 
 .search-suggestions-all {
-  font-style: italic;
-  border-top: 1px solid $c-grey;
+  display: block;
+  width: 100%;
+  line-height: $header-height;
+  padding: 0;
+  background: $c-grey-lighten;
+  border: 0;
+  border-top: 1px solid $c-grey-light;
+  box-shadow: none !important;
+  outline: none !important;
+  &:hover {
+    background: $c-grey-light;
+  }
 
   .fa {
     margin-right: 5px;

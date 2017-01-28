@@ -68,7 +68,7 @@ export class SearchBar extends Component {
             >
             {suggestions.toJS().map((suggestion, index) => {
               let documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
-              return <p key={index}>
+              return <p className="search-suggestions-item" key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
                   <i className="fa fa-file-text-o">
@@ -76,11 +76,10 @@ export class SearchBar extends Component {
                 </I18NLink>
               </p>;
             })}
-            <p className="search-suggestions-all">
-            <button type="submit" onClick={this.closeSuggestions.bind(this)}>
-              <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
+            <button className="search-suggestions-all"
+                    type="submit" onClick={this.closeSuggestions.bind(this)}>
+              View all results for <b>{search.searchTerm}</b>
             </button>
-            </p>
           </div>
         </Form>
       </div>
