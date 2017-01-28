@@ -52,7 +52,7 @@ export class SearchBar extends Component {
               <i className="fa fa-search"></i>
               <input
                 type="text"
-                placeholder={t('System', 'Search on library')}
+                placeholder={t('System', 'Search')}
                 className="form-control"
                 onChange={this.getSuggestions.bind(this)}
                 onBlur={this.props.hideSuggestions}
