@@ -192,19 +192,20 @@
   }
   
   a {
-    display: block;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
     padding-left: 35px;
     margin-right: 40px;
-    line-height: $header-height;
+    height: $header-height;
+    line-height: 1.3em;
     color: $c-black;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     text-decoration: none;
   }
   b {
     background: $c-secondary-light;
-    box-shadow: 0 0 0 2px rgba(255, 204, 102, 0.3);
+    box-shadow: -2px 0 0 0 rgba(255, 204, 102, 0.3), 2px 0 0 0 rgba(255, 204, 102, 0.3);
   }
   
   .fa {
