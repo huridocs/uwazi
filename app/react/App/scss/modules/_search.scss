@@ -54,32 +54,35 @@
       }
     }
   }
-  .input-group .fa-search {
+  .input-group .fa-search,
+  .input-group .fa-close {
     position: absolute;
     line-height: $header-height;
-    top: 0;
-    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 5;
   }
-  .input-group-btn {
-    width: 0;
-    z-index: 3;
+  .input-group .fa-search {
+    left: 15px;
   }
-  .btn-close {
+  .input-group .fa-close {
     display: none;
+    right: 15px;
     width: 16px;
     height: 16px;
     line-height: 16px;
-    border: 0;
-    padding: 0;
-    position: absolute;
-    right: 18px;
-    top: 18px;
     text-align: center;
-    font-size: 9px;
-    border-radius: 50% !important;
+    padding: 1px;
+    font-size: 11px;
+    color: $c-white;
+    background: $c-bootstrap-primary;
+    border-radius: 50%;
+    cursor: pointer;
+    &:hover {
+      background: $c-bootstrap-primary-dark;
+    }
   }
-  .input-group.is-active .btn-close {
+  .input-group.is-active .fa-close {
     display: block;
   }
 }
