@@ -179,18 +179,15 @@ $c-sidebar: $c-white;
   flex: 1;
   overflow-y: scroll;
   overflow-x: hidden;
+  
+  & > *:last-child { // firefox hack (related issue #378)
+    padding-bottom: $header-height * 2;
+  }
 }
 
 .sidepanel-header,
 .sidepanel-footer {
   z-index: 4;
-}
-
-.sidepanel-footer + .sidepanel-body > .view,
-.sidepanel-footer + .sidepanel-body > form,
-.sidepanel-footer + .sidepanel-body > .tab-content,
-.sidepanel-footer + .sidepanel-body > div:last-child {
-  padding-bottom: 100px;
 }
 
 .sidepanel-header {
@@ -237,9 +234,10 @@ $c-sidebar: $c-white;
   .btn {
     position: relative;
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
     padding: 0;
     margin: 0 6px;
   }
