@@ -59,7 +59,8 @@ export function filterDocumentTypes(documentTypes) {
 
 export function resetFilters() {
   return function (dispatch, getState) {
-    dispatch(formActions.change('search.filters', {}));
+    dispatch(formActions.reset('search'));
+    dispatch(formActions.setInitial('search'));
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: []});
     libraryActions.searchDocuments(getState().search)(dispatch, getState);
   };
