@@ -57,8 +57,6 @@
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "multer": "^1.1.0",
-    "nightmare": "2.9.0",
-    "nightmare-real-mouse": "^1.0.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^2.4.2",
     "nodemailer-smtp-transport": "^2.5.0",
@@ -97,6 +95,8 @@
     "world-countries": "^1.8.0"
   },
   "devDependencies": {
+    "nightmare": "2.9.0",
+    "nightmare-real-mouse": "^1.0.0",
     "couchdb-dump": "^2.2.1",
     "babel-istanbul-loader": "^0.1.0",
     "babel-loader": "^6.2.1",
