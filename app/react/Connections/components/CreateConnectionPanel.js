@@ -19,6 +19,7 @@ export class CreateConnectionPanel extends Component {
     const connection = this.props.connection.toJS();
     const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
     const open = Boolean(this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument);
+    const pdfInfo = this.props.pdfInfo ? this.props.pdfInfo.toJS() : null;
 
     return (
       <SidePanel open={open} className="create-reference">
@@ -47,7 +48,7 @@ export class CreateConnectionPanel extends Component {
       <div className="sidepanel-footer">
         <ShowIf if={connection.type !== 'targetRanged'}>
           <ActionButton action="save" onCreate={(reference) => {
-            this.props.onCreate(reference, this.props.pdfInfo.toJS());
+            this.props.onCreate(reference, pdfInfo);
           }}/>
         </ShowIf>
         <ShowIf if={connection.type === 'targetRanged'}>
