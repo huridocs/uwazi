@@ -6,7 +6,10 @@ import elastic_mapping from './elastic_mapping';
 import db_config from '../app/api/config/database';
 import indexConfig from '../app/api/config/elasticIndexes';
 
-let limit = 50;
+const limit = 50;
+const start = Date.now();
+let end;
+
 let docsIndexed = 0;
 function migrateDoc(doc) {
   docsIndexed += 1;
@@ -20,6 +23,7 @@ function migrate(offset) {
   return request.get(db_config.db_url + '/_all_docs?limit=' + limit + '&skip=' + offset)
   .then(function(docsResponse) {
     if (offset >= docsResponse.json.total_rows) {
+      end = Date.now();
       return;
     }
 
@@ -32,7 +36,7 @@ function migrate(offset) {
           return migrateDoc(doc).catch(console.log);
         }
       });
-    }, {concurrency: 1})
+    }, {concurrency: 10})
     .then(function() {
       pos += 1;
       if(pos > 3) {pos = 0;}
@@ -57,5 +61,5 @@ request.delete(indexUrl)
 })
 .then(() => {
   process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
-  process.stdout.write(`Done\n`);
+  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
 });

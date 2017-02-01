@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route} from 'react-router';
+import {Route, IndexRoute} from 'react-router';
 
 import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
@@ -65,23 +65,35 @@ const routes =
       <Route path='account' component={AccountSettings} />
       <Route path='collection' component={CollectionSettings} />
       <Route path='navlinks' component={NavlinksSettings} />
-      <Route path='pages' component={Pages} />
-      <Route path='pages/new' component={NewPage} />
-      <Route path='pages/edit/:pageId' component={EditPage} />
-      <Route path='documents' component={DocumentTypesList} />
-      <Route path='documents/new' component={NewTemplate} />
-      <Route path='documents/edit/:templateId' component={EditTemplate} />
-      <Route path='entities' component={EntityTypesList} />
-      <Route path='entities/new' component={NewEntity} />
-      <Route path='entities/edit/:templateId' component={EditEntity} />
-      <Route path='connections' component={RelationTypesList} />
-      <Route path='connections/new' component={NewRelationType} />
-      <Route path='connections/edit/:relationTypeId' component={EditRelationType} />
-      <Route path='dictionaries' component={ThesaurisList} />
-      <Route path='dictionaries/new' component={NewThesauri} />
-      <Route path='dictionaries/edit/:thesauriId' component={EditThesauri} />
-      <Route path='translations' component={TranslationsList} />
-      <Route path='translations/edit/:context' component={EditTranslations} />
+      <Route path='pages'>
+        <IndexRoute component={Pages} />
+        <Route path='new' component={NewPage} />
+        <Route path='edit/:pageId' component={EditPage} />
+      </Route>
+      <Route path='documents'>
+        <IndexRoute component={DocumentTypesList} />
+        <Route path='new' component={NewTemplate} />
+        <Route path='edit/:templateId' component={EditTemplate} />
+      </Route>
+      <Route path='entities'>
+        <IndexRoute component={EntityTypesList} />
+        <Route path='new' component={NewEntity} />
+        <Route path='edit/:templateId' component={EditEntity} />
+      </Route>
+      <Route path='connections'>
+        <IndexRoute component={RelationTypesList} />
+        <Route path='new' component={NewRelationType} />
+        <Route path='edit/:relationTypeId' component={EditRelationType} />
+      </Route>
+      <Route path='dictionaries'>
+        <IndexRoute component={ThesaurisList} />
+        <Route path='new' component={NewThesauri} />
+        <Route path='edit/:thesauriId' component={EditThesauri} />
+      </Route>
+      <Route path='translations'>
+        <IndexRoute component={TranslationsList} />
+        <Route path='edit/:context' component={EditTranslations} />
+      </Route>
       <Route path='filters' component={FiltersForm} />
     </Route>
     <Route path='library' component={Library} />
