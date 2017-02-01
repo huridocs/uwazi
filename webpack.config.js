@@ -9,11 +9,11 @@ module.exports = {
   context: __dirname,
   devtool: '#source-map',
   //entry: [
-    //path.join(__dirname, 'app/react/index.js')
+  //path.join(__dirname, 'app/react/index.js')
   //],
   entry: {
-   main: path.join(__dirname, 'app/react/index.js'),
-   'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
+    main: path.join(__dirname, 'app/react/index.js'),
+    'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
   },
   output: {
     path: path.join(__dirname, '/dist/'),
@@ -31,7 +31,10 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'),
+        loader: ExtractTextPlugin.extract({
+          fallbackLoader: 'style-loader',
+          loader: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
+        }),
         include: [
           path.join(__dirname, 'app'),
           path.join(__dirname, 'node_modules/react-widgets/lib/scss/')
@@ -39,7 +42,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract("style-loader", "css?sourceMap"),
+        loader: ExtractTextPlugin.extract({
+          fallbackLoader: 'style-loader',
+          loader: 'css-loader?sourceMap'
+        }),
         include: [
           path.join(__dirname, 'app'),
           path.join(__dirname, 'node_modules/react-datepicker/dist/'),
@@ -50,7 +56,7 @@ module.exports = {
       },
       {
         test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
-        loaders: ['url-loader', 'img'],
+        loaders: ['url-loader', 'img-loader'],
         include: [
           path.join(__dirname, 'public'), 
           path.join(__dirname, 'app'),
@@ -73,6 +79,6 @@ module.exports = {
     ]
   },
   plugins: [
-      new ExtractTextPlugin("style.css")
+    new ExtractTextPlugin("style.css")
   ]
 };
