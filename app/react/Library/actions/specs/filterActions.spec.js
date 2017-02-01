@@ -38,6 +38,8 @@ describe('filterActions', () => {
     spyOn(libraryHelper, 'populateOptions').and.returnValue(libraryFilters);
     dispatch = jasmine.createSpy('dispatch');
     spyOn(formActions, 'change').and.returnValue('FILTERS_UPDATED');
+    spyOn(formActions, 'reset').and.returnValue('FILTERS_RESET');
+    spyOn(formActions, 'setInitial').and.returnValue('FILTERS_SET_INITIAL');
     getState = jasmine.createSpy('getState').and.returnValue(store);
   });
 
@@ -84,8 +86,10 @@ describe('filterActions', () => {
   describe('resetFilters', () => {
     it('should set all filters to an empty string', () => {
       actions.resetFilters()(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('search.filters', {});
-      expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
+      expect(formActions.reset).toHaveBeenCalledWith('search');
+      expect(formActions.setInitial).toHaveBeenCalledWith('search');
+      expect(dispatch).toHaveBeenCalledWith('FILTERS_RESET');
+      expect(dispatch).toHaveBeenCalledWith('FILTERS_SET_INITIAL');
     });
 
     it('should deactivate all the properties and documentTypes', () => {
