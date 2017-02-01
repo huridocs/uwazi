@@ -11,7 +11,13 @@ export class CollectionSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {siteName: props.settings.site_name, homePage: props.settings.home_page};
+    this.state = {siteName: props.settings.site_name || '', homePage: props.settings.home_page || '', customLandingpage: !!props.settings.home_page};
+  }
+
+  changeLandingPage(e) {
+    const customLandingpage = e.target.value === 'custom';
+    const homePage = customLandingpage ? this.state.homePage : '';
+    this.setState({customLandingpage, homePage});
   }
 
   changeName(e) {
@@ -45,8 +51,31 @@ export class CollectionSettings extends Component {
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
             <div className="form-group">
-              <label htmlFor="collection_name">{t('System', 'Home page')}</label>
-              <input onChange={this.changeHomePage.bind(this)} value={this.state.homePage} type="text" className="form-control"/>
+              <label htmlFor="collection_name">{t('System', 'Landing page')}</label>
+              <div className="radio">
+                <label>
+                  <input onChange={this.changeLandingPage.bind(this)} name="landingPage" type="radio" value="library" checked={!this.state.customLandingpage}/>
+                  {t('System', 'Library')}
+                </label>
+              </div>
+              <div className="radio">
+                <label>
+                  <input onChange={this.changeLandingPage.bind(this)} name="landingPage" type="radio" value="custom" checked={this.state.customLandingpage}/>
+                  {t('System', 'Custom page')}
+                </label>
+              </div>
+              <input disabled={!this.state.customLandingpage} onChange={this.changeHomePage.bind(this)} value={this.state.homePage} type="text" className="form-control"/>
+              <div className="alert alert-info full-width">
+                <i className="fa fa-home"></i>
+                <p>The landing page is the first thing users will see when visiting your Uwazi instance. You can use any URL from your Uwazi instance as a landing page, examples:</p>
+                <ul>
+                  <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
+                  <li>Library results: /library/?searchTerm=test</li>
+                  <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
+                  <li>A document: /document/4y9i99fadjp833di</li>
+                </ul>
+                <p>Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.</p>
+              </div>
             </div>
             <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
           </form>
