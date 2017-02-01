@@ -114,6 +114,9 @@ fieldset[disabled] .form-control {
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control,
-.input-group-addon[disabled] {
-  opacity: .3;
+.input-group-addon[disabled],
+input[type="radio"][disabled] ~ label,
+input[type="checkbox"][disabled] ~ label {
+    opacity: 0.3;
+    cursor: not-allowed;
 }

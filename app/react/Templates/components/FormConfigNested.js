@@ -31,7 +31,7 @@ export class FormConfigNested extends Component {
     const {index, data, formState} = this.props;
     const property = data.properties[index];
 
-    let labelClass = '';
+    let labelClass = 'form-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];

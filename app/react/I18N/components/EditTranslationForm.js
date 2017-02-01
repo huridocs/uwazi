@@ -86,7 +86,7 @@ export class EditTranslationForm extends Component {
                           <div className="input-group">
                           <span className="input-group-addon">{translation.locale}</span>
                             <Field model={`translationsForm[${i}].contexts[${index}].values[${value}]`}>
-                              <input className="form-control no-margin-bottom" type="text" />
+                              <input className="form-control" type="text" />
                             </Field>
                           </div>
                           </FormGroup>;
