@@ -16,11 +16,14 @@
 }
 
 .toc-edit {
+  display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   padding: 5px 0;
 
-  input {
+  div {
+    width: 100%;
     margin: 0 5px;
   }
 }
