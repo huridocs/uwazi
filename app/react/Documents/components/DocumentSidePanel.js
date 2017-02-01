@@ -127,6 +127,7 @@ export class DocumentSidePanel extends Component {
             data={this.props.doc}
             formStatePath={this.props.formPath}
             entityBeingEdited={docBeingEdited}
+            includeViewButton={!docBeingEdited && readOnly}
           />
         </ShowIf>
 
