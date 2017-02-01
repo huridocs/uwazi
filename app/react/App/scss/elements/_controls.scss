@@ -1,5 +1,6 @@
 .btn,
-.form-control {
+.form-control,
+.input-group-addon {
   font-size: $f-size;
   transition: all 100ms;
 }
@@ -18,13 +19,6 @@
 }
 
 .form-group {
-  label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: $c-grey-dark;
-  }
-
   .required {
     display: none;
     margin: 5px 0;
@@ -34,6 +28,14 @@
   &.has-error .required {
     display: block;
   }
+}
+
+.form-group-label {
+  font-size: $f-size-sm;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: $c-grey-dark;
+  margin-bottom: 5px;
 }
 
 .input-group {
@@ -101,4 +103,17 @@
     color: $c-grey-dark;
     text-decoration: none;
   }
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  background: $c-white;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control,
+.input-group-addon[disabled] {
+  opacity: .3;
 }

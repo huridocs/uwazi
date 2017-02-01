@@ -47,11 +47,11 @@ export class CollectionSettings extends Component {
         <div className="panel-body">
           <form onSubmit={this.updateSettings.bind(this)}>
             <div className="form-group">
-              <label htmlFor="collection_name">{t('System', 'Name')}</label>
+              <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
             <div className="form-group">
-              <label htmlFor="collection_name">{t('System', 'Landing page')}</label>
+              <label className="form-group-label" htmlFor="collection_name">{t('System', 'Landing page')}</label>
               <div className="radio">
                 <label>
                   <input onChange={this.changeLandingPage.bind(this)} name="landingPage" type="radio" value="library" checked={!this.state.customLandingpage}/>
@@ -64,18 +64,23 @@ export class CollectionSettings extends Component {
                   {t('System', 'Custom page')}
                 </label>
               </div>
-              <input disabled={!this.state.customLandingpage} onChange={this.changeHomePage.bind(this)} value={this.state.homePage} type="text" className="form-control"/>
-              <div className="alert alert-info full-width">
-                <i className="fa fa-home"></i>
-                <p>The landing page is the first thing users will see when visiting your Uwazi instance. You can use any URL from your Uwazi instance as a landing page, examples:</p>
-                <ul>
-                  <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
-                  <li>Library results: /library/?searchTerm=test</li>
-                  <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
-                  <li>A document: /document/4y9i99fadjp833di</li>
-                </ul>
-                <p>Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.</p>
+              <div className="input-group">
+                <span disabled={!this.state.customLandingpage} className="input-group-addon">
+                  http://instancename.uwazi.io
+                </span>
+                <input disabled={!this.state.customLandingpage} onChange={this.changeHomePage.bind(this)} value={this.state.homePage} type="text" className="form-control"/>
               </div>
+            </div>
+            <div className="alert alert-info full-width">
+              <i className="fa fa-home"></i>
+              <p>The landing page is the first thing users will see when visiting your Uwazi instance. You can use any URL from your Uwazi instance as a landing page, examples:</p>
+              <ul>
+                <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
+                <li>Library results: /library/?searchTerm=test</li>
+                <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
+                <li>A document: /document/4y9i99fadjp833di</li>
+              </ul>
+              <p>Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.</p>
             </div>
             <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
           </form>

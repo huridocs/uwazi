@@ -56,12 +56,12 @@ export class Login extends RouteHandler {
           <Form onSubmit={this.submit.bind(this)} model="login.form">
             <div className={'form-group login-email' + (this.state.error ? ' has-error' : '')}>
               <Field model="login.form.username">
-                <label htmlFor="username">{this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}</label>
+                <label className="form-group-label" htmlFor="username">{this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}</label>
                 <input type="text" name="username" id="username" className="form-control"/>
               </Field>
             </div>
             <div className={'form-group login-password ' + (this.state.error ? 'has-error' : '') + (this.state.recoverPassword ? ' is-hidden' : '')}>
-              <label htmlFor="password">{t('System', 'Password')}</label>
+              <label className="form-group-label" htmlFor="password">{t('System', 'Password')}</label>
               <div className="input-group">
                 <Field model="login.form.password">
                   <input type="password" name="password" id="password" className="form-control"/>

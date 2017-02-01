@@ -68,7 +68,7 @@ export class AccountSettings extends Component {
           <div className="panel-body">
             <form onSubmit={this.updateEmail.bind(this)}>
               <div className="form-group">
-                <label htmlFor="collection_name">{t('System', 'Email')}</label>
+                <label className="form-group-label" htmlFor="collection_name">{t('System', 'Email')}</label>
                 <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
               </div>
               <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
@@ -80,7 +80,7 @@ export class AccountSettings extends Component {
           <div className="panel-body">
             <form onSubmit={this.updatePassword.bind(this)}>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                <label htmlFor="password">{t('System', 'New password')}</label>
+                <label className="form-group-label" htmlFor="password">{t('System', 'New password')}</label>
                 <input
                   type="password"
                   onChange={this.passwordChange.bind(this)}
@@ -89,7 +89,7 @@ export class AccountSettings extends Component {
                   className="form-control"/>
               </div>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
-                <label htmlFor="repeatPassword">{t('System', 'Confirm new password')}</label>
+                <label className="form-group-label" htmlFor="repeatPassword">{t('System', 'Confirm new password')}</label>
                 <input
                   type="password"
                   onChange={this.repeatPasswordChange.bind(this)}
