@@ -93,12 +93,12 @@
     "world-countries": "^1.8.0",
     "wrap-range-text": "^1.0.1",
     "compression": "^1.6.0",
+    "couchdb-dump": "^2.2.1",
     "babel-loader": "^6.2.1"
   },
   "devDependencies": {
     "nightmare": "2.9.0",
     "nightmare-real-mouse": "^1.0.0",
-    "couchdb-dump": "^2.2.1",
     "babel-istanbul-loader": "^0.1.0",
     "babel-plugin-react-transform": "^2.0.0",
     "css-loader": "^0.23.0",
