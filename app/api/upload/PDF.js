@@ -2,7 +2,6 @@ import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
 import fs from 'fs';
-import readMultipleFiles from 'read-multiple-files';
 
 let basename = (filepath) => {
   return path.basename(filepath, path.extname(filepath));
