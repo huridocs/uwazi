@@ -60,7 +60,13 @@ $nav-height: $header-height;
   display: flex;
   -webkit-flex-wrap: nowrap;
   flex-wrap: nowrap;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
   background-color: transparent;
+}
+
+.nav-tabs>span { // related to DocumentSidePanel.js (row 85 & row 105)
+  display: none;
 }
 
 .nav-tabs>li {
