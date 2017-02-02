@@ -2,15 +2,13 @@ import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
 import fs from 'fs';
-import readMultipleFiles from 'read-multiple-files';
 
-let basename = (filepath) => {
-  return path.basename(filepath, path.extname(filepath));
-};
-
-let generateOutputPath = (filepath) => {
-  let directory = path.dirname(filepath);
-  return `${directory}/${basename(filepath)}.optimized${path.extname(filepath)}`;
+let basename = (filepath = '') => {
+  let finalPath = filepath;
+  if (typeof filepath !== 'string') {
+    finalPath = '';
+  }
+  return path.basename(finalPath, path.extname(finalPath));
 };
 
 export default class PDF extends EventEmitter {
