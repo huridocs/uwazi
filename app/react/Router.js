@@ -152,18 +152,13 @@ function handleRoute(res, renderProps, req) {
 }
 
 function ServerRouter(req, res) {
-  let authRoutes = ['/uploads',
-                    '/my_account',
-                    '/metadata',
-                    '/relationTypes/new',
-                    '/relationTypes/edit',
-                    'templates/new',
-                    'templates/edit',
-                    '/thesauris/new',
-                    '/thesauris/edit',
-                    '/settings'
-                  ];
-  if (!req.user && authRoutes.includes(req.url)) {
+  let authRoutes = [
+    '/uploads',
+    '/settings'
+  ];
+  if (!req.user && authRoutes.reduce((found, authRoute) => {
+    return found || req.url.indexOf(authRoute) !== -1;
+  }, false)) {
     res.redirect(302, '/login');
   }
 
