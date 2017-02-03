@@ -33,7 +33,7 @@ describe('thesaurisActions', () => {
         let thesauri = {_id: 'thesauriId'};
         actions.deleteThesauri(thesauri)(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: 'thesauris/REMOVE', value: thesauri});
+          expect(dispatch).toHaveBeenCalledWith({type: 'dictionaries/REMOVE', value: thesauri});
           done();
         });
       });
