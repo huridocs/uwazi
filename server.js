@@ -2,7 +2,7 @@ require('es6-promise').polyfill(); // Required in some browsers
 
 //babel polyfill ES6
 require('babel-core/register')({
-  presets: ['es2015'],
+  presets: ['es2015', 'react'],
   plugins: [
     'transform-class-properties',
     'add-module-exports',
