@@ -41,6 +41,7 @@ export class CollectionSettings extends Component {
   }
 
   render() {
+    const hostname = window ? window.location.origin : '';
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection settings')}</div>
@@ -66,7 +67,7 @@ export class CollectionSettings extends Component {
               </div>
               <div className="input-group">
                 <span disabled={!this.state.customLandingpage} className="input-group-addon">
-                  http://instancename.uwazi.io
+                  {hostname}
                 </span>
                 <input disabled={!this.state.customLandingpage} onChange={this.changeHomePage.bind(this)} value={this.state.homePage} type="text" className="form-control"/>
               </div>
