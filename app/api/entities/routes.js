@@ -8,8 +8,10 @@ export default (app) => {
     return entities.save(req.body, {user: req.user, language: req.language})
     .then(doc => {
       res.json(doc);
-      return templates.getById(doc.template)
-      .then(template => thesauris.templateToThesauri(template, req.language));
+      return templates.getById(doc.template);
+    })
+    .then(template => {
+      return thesauris.templateToThesauri(template, req.language);
     })
     .then((templateTransformed) => {
       req.io.sockets.emit('thesauriChange', templateTransformed);

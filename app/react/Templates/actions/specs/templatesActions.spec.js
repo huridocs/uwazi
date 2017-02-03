@@ -10,11 +10,13 @@ describe('templatesActions', () => {
       let documentsUsingTemplate = 2;
       backend.restore();
       backend
-      .mock(APIURL + 'templates?_id=templateId&_rev=rev', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})})
-      .mock(APIURL + 'documents/count_by_template?templateId=templateWithDocuments', 'GET', {body: JSON.stringify(documentsUsingTemplate)})
-      .mock(APIURL + 'documents/count_by_template?templateId=templateWithoutDocuments', 'GET', {body: JSON.stringify(0)});
+      .delete(APIURL + 'templates?_id=templateId&_rev=rev', {body: JSON.stringify({testBackendResult: 'ok'})})
+      .get(APIURL + 'documents/count_by_template?templateId=templateWithDocuments', {body: JSON.stringify(documentsUsingTemplate)})
+      .get(APIURL + 'documents/count_by_template?templateId=templateWithoutDocuments', {body: JSON.stringify(0)});
       dispatch = jasmine.createSpy('dispatch');
     });
+
+    afterEach(() => backend.restore());
 
     describe('checkTemplateCanBeDeleted', () => {
       it('should reject a promise if the template has documents', (done) => {

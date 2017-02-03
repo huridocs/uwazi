@@ -126,6 +126,11 @@ describe('thesauris', () => {
   });
 
   describe('save', () => {
+
+    beforeEach(() => {
+      spyOn(translations, 'updateContext');
+    });
+
     it('should create a thesauri', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
 
@@ -210,7 +215,6 @@ describe('thesauris', () => {
               {id: '1', label: 'Marios game'}
             ]
           };
-          spyOn(translations, 'updateContext');
           return thesauris.save(data);
         })
         .then((response) => {

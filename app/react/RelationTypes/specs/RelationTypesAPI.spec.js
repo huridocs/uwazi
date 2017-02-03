@@ -9,11 +9,13 @@ describe('RelationTypesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'relationtypes?_id=relationId', 'GET', {body: JSON.stringify({rows: [singleResponse]})})
-    .mock(APIURL + 'relationtypes?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
-    .mock(APIURL + 'relationtypes', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(APIURL + 'relationtypes', {body: JSON.stringify({rows: arrayResponse})})
+    .get(APIURL + 'relationtypes?_id=relationId', {body: JSON.stringify({rows: [singleResponse]})})
+    .delete(APIURL + 'relationtypes?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .post(APIURL + 'relationtypes', {body: JSON.stringify({backednResponse: 'test'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request relationTypes', (done) => {

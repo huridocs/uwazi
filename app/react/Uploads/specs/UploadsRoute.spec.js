@@ -22,8 +22,10 @@ describe('UploadsRoute', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'search/unpublished', 'GET', {body: JSON.stringify({rows: documents})});
+    .get(APIURL + 'search/unpublished', {body: JSON.stringify({rows: documents})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('static requestState()', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {

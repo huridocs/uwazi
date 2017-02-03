@@ -11,16 +11,18 @@ describe('EntitiesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'entities', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'entities/search', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'entities/uploads', 'GET', {body: JSON.stringify({rows: 'uploads'})})
-    .mock(APIURL + 'entities/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
-    .mock(APIURL + 'entities/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'entities/search?searchTerm=Batman&joker=true', 'GET', {body: JSON.stringify(filteredSearchResult)})
-    .mock(APIURL + 'entities?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
-    .mock(APIURL + 'entities?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
-    .mock(APIURL + 'entities', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(APIURL + 'entities', {body: JSON.stringify({rows: arrayResponse})})
+    .get(APIURL + 'entities/search', {body: JSON.stringify(searchResponse)})
+    .get(APIURL + 'entities/uploads', {body: JSON.stringify({rows: 'uploads'})})
+    .get(APIURL + 'entities/count_by_template?templateId=templateId', {body: JSON.stringify(1)})
+    .get(APIURL + 'entities/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
+    .get(APIURL + 'entities/search?searchTerm=Batman&joker=true', {body: JSON.stringify(filteredSearchResult)})
+    .get(APIURL + 'entities?_id=documentId', {body: JSON.stringify({rows: singleResponse})})
+    .delete(APIURL + 'entities?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .post(APIURL + 'entities', {body: JSON.stringify({backednResponse: 'test'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('uploads', () => {
     it('should request uploads', (done) => {

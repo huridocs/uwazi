@@ -20,9 +20,11 @@ describe('NewTemplate', () => {
     instance = component.instance();
     backend.restore();
     backend
-    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})})
-    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})});
+    .get(APIURL + 'thesauris', {body: JSON.stringify({rows: thesauris})})
+    .get(APIURL + 'templates', {body: JSON.stringify({rows: templates})});
   });
+
+  afterEach(() => backend.restore());
 
   it('should render a TemplateCreator', () => {
     expect(component.find(TemplateCreator).length).toBe(1);

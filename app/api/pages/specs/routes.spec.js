@@ -17,17 +17,20 @@ describe('Pages Routes', () => {
   });
 
   describe('POST', () => {
-    it('should need authorization', () => {
-      expect(routes.post('/api/pages')).toNeedAuthorization();
-    });
-
-    it('should create a new document with use user', (done) => {
-      let req = {
+    let req;
+    beforeEach(() => {
+      req = {
         body: {title: 'Batman begins'},
         user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
         language: 'lang'
       };
+    });
 
+    it('should need authorization', () => {
+      expect(routes.post('/api/pages', req)).toNeedAuthorization();
+    });
+
+    it('should create a new document with use user', (done) => {
       spyOn(pages, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/pages', req)
       .then((document) => {

@@ -5,6 +5,7 @@ import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import thesauris from '../thesauris';
+import translations from 'api/i18n/translations';
 
 describe('thesauris routes', () => {
   let routes;
@@ -85,6 +86,7 @@ describe('thesauris routes', () => {
 
     describe('when passing _id and _rev', () => {
       it('edit an existing one', (done) => {
+        spyOn(translations, 'updateContext');
         request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94')
         .then((response) => {
           let template = response.json;
@@ -106,7 +108,7 @@ describe('thesauris routes', () => {
     describe('when there is a db error', () => {
       it('return the error in the response', (done) => {
         let req = {body: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''}};
-
+        spyOn(translations, 'updateContext');
         routes.post('/api/thesauris', req)
         .then((response) => {
           let error = response.error;

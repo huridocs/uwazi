@@ -121,8 +121,10 @@ describe('templateActions', () => {
       spyOn(notifications, 'notify');
       backend.restore();
       backend
-      .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok', _id: 'id', _rev: 'rev'})});
+      .post(APIURL + 'templates', {body: JSON.stringify({testBackendResult: 'ok', _id: 'id', _rev: 'rev'})});
     });
+
+    afterEach(() => backend.restore());
 
     describe('saveTemplate', () => {
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {

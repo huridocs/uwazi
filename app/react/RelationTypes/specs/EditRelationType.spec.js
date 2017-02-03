@@ -21,8 +21,10 @@ describe('EditRelationType', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'relationtypes?_id=relationTypeId', 'GET', {body: JSON.stringify({rows: [relationType]})});
+    .get(APIURL + 'relationtypes?_id=relationTypeId', {body: JSON.stringify({rows: [relationType]})});
   });
+
+  afterEach(() => backend.restore());
 
   it('should render a RelationTypeForm', () => {
     expect(component.find(RelationTypeForm).length).toBe(1);

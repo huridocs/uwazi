@@ -142,13 +142,15 @@ describe('documentActions', () => {
       mockID();
       backend.restore();
       backend
-      .mock(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', 'GET', {body: JSON.stringify('documents')})
-      .mock(APIURL + 'documents?_id=targetId', 'GET', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
-      .mock(APIURL + 'documents?_id=docWithPDFRdy', 'GET', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
-      .mock(APIURL + 'documents?_id=docWithPDFNotRdy', 'GET', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
-      .mock(APIURL + 'documents/html?_id=targetId', 'GET', {body: JSON.stringify('html')})
-      .mock(APIURL + 'references/by_document/targetId', 'GET', {body: JSON.stringify([{connectedDocument: '1'}])});
+      .get(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', {body: JSON.stringify('documents')})
+      .get(APIURL + 'documents?_id=targetId', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
+      .get(APIURL + 'documents?_id=docWithPDFRdy', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
+      .get(APIURL + 'documents?_id=docWithPDFNotRdy', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
+      .get(APIURL + 'documents/html?_id=targetId', {body: JSON.stringify('html')})
+      .get(APIURL + 'references/by_document/targetId', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
+
+    afterEach(() => backend.restore());
 
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
