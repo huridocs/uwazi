@@ -20,10 +20,9 @@ export class ThesauriForm extends Component {
     return {
       name: {
         duplicated: (val) => {
-          let _match = thesauris.find((thesauri) => {
+          return !thesauris.find((thesauri) => {
             return thesauri._id !== id && thesauri.name.trim().toLowerCase() === val.trim().toLowerCase();
           });
-          return !_match
         }
       }
     };
