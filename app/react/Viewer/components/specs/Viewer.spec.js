@@ -54,10 +54,28 @@ describe('Viewer', () => {
   });
 
   it('should render Document and ContextMenu', () => {
+    props.panelIsOpen = true;
+    props.showTextSelectMenu = false;
+
     render();
+
+    expect(component.find(ContextMenu).length).toBe(2);
     expect(component.find(SourceDocument).length).toBe(1);
     expect(component.find(TargetDocument).length).toBe(1);
-    expect(component.find(ContextMenu).length).toBe(1);
+
+    expect(component.find(ContextMenu).at(0).props().overrideShow).toBe(true);
+    expect(component.find(ContextMenu).at(1).props().overrideShow).toBe(true);
+
+    expect(component.find(ContextMenu).at(0).props().show).toBe(false);
+    expect(component.find(ContextMenu).at(1).props().show).toBe(false);
+
+    props.panelIsOpen = false;
+    props.showTextSelectMenu = true;
+
+    render();
+
+    expect(component.find(ContextMenu).at(0).props().show).toBe(true);
+    expect(component.find(ContextMenu).at(1).props().show).toBe(true);
   });
 
   describe('createConnectionPanel', () => {

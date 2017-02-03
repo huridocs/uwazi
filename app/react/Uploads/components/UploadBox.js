@@ -39,8 +39,8 @@ export class UploadBox extends Component {
             <a className="upload-box_link">
               <span className="upload-box_or">or</span>
               <b className="upload-box_cta">Click here for browsing your local files</b>
-              <span className="upload-box_formats">Supported formats: PDF</span>
             </a>
+            <span className="upload-box_formats">Supported formats: PDF</span>
           </div>
         </div>
       </Dropzone>

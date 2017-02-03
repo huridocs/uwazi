@@ -3,6 +3,7 @@ import {bindActionCreators} from 'redux';
 import {Field, Form, actions as formActions} from 'react-redux-form';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
+import ShowIf from 'app/App/ShowIf';
 import 'app/Thesauris/scss/thesauris.scss';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -12,6 +13,7 @@ export class ThesauriForm extends Component {
 
   componentWillUnmount() {
     this.props.resetForm('thesauri.data');
+    this.props.setInitial('thesauri.data');
   }
 
   validation(thesauris, id) {
@@ -34,7 +36,7 @@ export class ThesauriForm extends Component {
     }
 
     return (
-      <div className="row thesauri">
+      <div className="thesauri">
           <Form
             model="thesauri.data"
             onSubmit={this.props.saveThesauri}
@@ -44,24 +46,20 @@ export class ThesauriForm extends Component {
               <div className="panel-heading">
                 <I18NLink to="/settings/dictionaries" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
-                <Field model="thesauri.data.name">
-                  <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
-                </Field>
+                <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
+                  <Field model=".name">
+                    <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
+                    <ShowIf if={this.props.state.$form.touched && this.props.state.name && this.props.state.name.errors.duplicated}>
+                      <div className="validation-error">
+                        <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated name
+                      </div>
+                    </ShowIf>
+                  </Field>
+                </FormGroup>
                 &nbsp;
                 <button className="btn btn-success save-template">
                   <i className="fa fa-save"/> Save
                 </button>
-                <FormGroup {...this.props.state.fields.name} submitFailed={this.props.state.submitFailed}>
-                {(() => {
-                  if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                    return <div className="validation-error">
-                              <i className="fa fa-exclamation-triangle"></i>
-                              &nbsp;
-                              Duplicated name
-                          </div>;
-                  }
-                })()}
-                </FormGroup>
               </div>
               <ul className="thesauri-values list-group">
                 <li className="list-group-item"><b>Items:</b></li>
@@ -90,6 +88,7 @@ export class ThesauriForm extends Component {
 
 ThesauriForm.propTypes = {
   resetForm: PropTypes.func,
+  setInitial: PropTypes.func,
   saveThesauri: PropTypes.func,
   addValue: PropTypes.func,
   removeValue: PropTypes.func,
@@ -108,7 +107,14 @@ export function mapStateToProps(state) {
 }
 
 function bindActions(dispatch) {
-  return bindActionCreators({saveThesauri, addValue, removeValue, resetForm: formActions.reset, validate: formActions.validate}, dispatch);
+  return bindActionCreators({
+    saveThesauri,
+    addValue,
+    removeValue,
+    resetForm: formActions.reset,
+    setInitial: formActions.setInitial,
+    validate: formActions.validate
+  }, dispatch);
 }
 
 let form = connect(mapStateToProps, bindActions)(ThesauriForm);

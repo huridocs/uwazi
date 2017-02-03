@@ -1,9 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 
 import Text from 'app/Viewer/utils/Text';
+import Loader from 'app/components/Elements/Loader';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
-import Loader from 'app/components/Elements/Loader';
+import PDF from 'app/PDF';
+import ShowIf from 'app/App/ShowIf';
+import {APIURL} from '../../config.js';
 
 export class Document extends Component {
   handleMouseUp() {
@@ -20,7 +23,11 @@ export class Document extends Component {
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
-      return this.props.activateReference(e.target.getAttribute('data-id'), this.props.references);
+      return this.props.activateReference(
+        this.props.references.find(r => r._id === e.target.getAttribute('data-id')),
+        this.props.doc.get('pdfInfo').toJS(),
+        this.props.references
+      );
     }
     if (this.props.executeOnClickHandler) {
       this.props.onClick();
@@ -43,6 +50,16 @@ export class Document extends Component {
     this.props.setSelection(this.text.getSelection());
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
+      this.props.unsetSelection();
+    }
+  }
+
+  componentWillMount() {
+    this.props.unsetSelection();
+  }
+
   componentDidUpdate() {
     this.text.renderReferences(this.props.references);
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
@@ -51,9 +68,24 @@ export class Document extends Component {
     this.text.activate(this.props.activeReference);
   }
 
+  pdfLoaded(range) {
+    if (this.props.doScrollToActive) {
+      this.props.scrollToActive(
+        this.props.references.find(r => r._id === this.props.activeReference),
+        this.props.doc.get('pdfInfo').toJS(),
+        this.props.references,
+        this.props.doScrollToActive
+      );
+    }
+
+    this.text.reset();
+    this.text.reset('toc-ref');
+    this.text.range(range);
+    this.componentDidUpdate();
+  }
+
   render() {
     const doc = this.props.doc.toJS();
-    const docHTML = this.props.docHTML.toJS();
 
     const Header = this.props.header || function () {
       return false;
@@ -63,11 +95,6 @@ export class Document extends Component {
       <div>
         <div className={'_' + doc._id + ' document ' + this.props.className} >
           <Header/>
-          {(() => {
-            if (!docHTML.pages.length) {
-              return <Loader/>;
-            }
-          })()}
           <div className="pages"
             ref={(ref) => this.pagesContainer = ref}
             onMouseUp={this.handleMouseUp.bind(this)}
@@ -75,14 +102,18 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            {docHTML.pages.map((page, index) => {
-              let html = {__html: page};
-              return <div className='page' key={index} dangerouslySetInnerHTML={html} />;
-            })}
+            <ShowIf if={!doc._id || !doc.pdfInfo}>
+              <Loader />
+            </ShowIf>
+            <ShowIf if={!!doc._id && !!doc.pdfInfo}>
+              <PDF
+                pdfInfo={doc.pdfInfo}
+                onLoad={this.pdfLoaded.bind(this)}
+                file={`${APIURL}documents/download?_id=${doc._id}`}
+                filename={doc.file ? doc.file.filename : null}/>
+            </ShowIf>
           </div>
         </div>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.css}}></style>
-        <style type="text/css" dangerouslySetInnerHTML={{__html: docHTML.fonts}}></style>
       </div>
     );
   }
@@ -96,6 +127,8 @@ Document.propTypes = {
   highlightReference: PropTypes.func,
   header: PropTypes.func,
   activateReference: PropTypes.func,
+  doScrollToActive: PropTypes.bool,
+  scrollToActive: PropTypes.func,
   highlightedReference: PropTypes.string,
   activeReference: PropTypes.string,
   selection: PropTypes.object,

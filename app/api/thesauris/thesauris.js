@@ -3,6 +3,7 @@ import {db_url as dbUrl} from '../config/database.js';
 import sanitizeResponse from 'api/utils/sanitizeResponse.js';
 import entities from 'api/entities/entities';
 import translations from 'api/i18n/translations';
+import templates from 'api/templates/templates';
 import {generateIds, getUpdatedNames, getDeletedProperties} from 'api/templates/utils';
 
 let autoincrementValuesId = (thesauri) => {
@@ -33,8 +34,11 @@ function _save(thesauri) {
   }, {});
   context[thesauri.name] = thesauri.name;
 
-  translations.addContext(thesauri.name, context);
-  return request.post(dbUrl, thesauri);
+  return request.post(dbUrl, thesauri)
+  .then((response) => {
+    translations.addContext(response.json.id, thesauri.name, context);
+    return response;
+  });
 }
 
 let updateTranslation = (current, thesauri) => {
@@ -53,7 +57,7 @@ let updateTranslation = (current, thesauri) => {
 
   context[thesauri.name] = thesauri.name;
 
-  translations.updateContext(current.name, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+  translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 function _update(thesauri) {
@@ -79,7 +83,7 @@ export default {
       return _save(thesauri);
     })
     .then((response) => {
-      return response.json;
+      return this.dictionaries(response.json.id).then(t => t.rows[0]);
     })
     .catch((error) => {
       return {error: error.json};
@@ -141,16 +145,14 @@ export default {
   },
 
   delete(thesauriId, rev) {
-    return request.get(`${dbUrl}/${thesauriId}`)
-    .then((response) => {
-      translations.deleteContext(response.json.name);
-      return request.delete(`${dbUrl}/${thesauriId}`, {rev});
+    return templates.countByThesauri(thesauriId)
+    .then((count) => {
+      if (count) {
+        return Promise.reject({key: 'templates_using_dictionary', value: count});
+      }
+      return translations.deleteContext(thesauriId);
     })
-    .then((response) => {
-      return response.json;
-    })
-    .catch((error) => {
-      return {error: error.json};
-    });
+    .then(() => request.delete(`${dbUrl}/${thesauriId}`, {rev}))
+    .then((response) => response.json);
   }
 };

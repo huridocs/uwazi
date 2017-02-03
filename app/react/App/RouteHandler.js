@@ -3,6 +3,7 @@ import JSONUtils from 'shared/JSONUtils';
 import {actions} from 'app/BasicReducer';
 import {I18NUtils} from 'app/I18N';
 import api from 'app/utils/api';
+import moment from 'moment';
 
 class RouteHandler extends Component {
 
@@ -52,6 +53,7 @@ class RouteHandler extends Component {
 
     //test ?
     let locale = this.getLocale(props);
+    moment.locale(locale);
     this.setApiLocale(locale);
     //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
@@ -64,7 +66,18 @@ class RouteHandler extends Component {
     if (props.location) {
       query = JSONUtils.parseNested(props.location.query);
     }
-    this.constructor.requestState(props.params, query)
+
+    let globalResources = {};
+
+    if (this.context.store && this.context.store.getState) {
+      const state = this.context.store.getState();
+      globalResources = {
+        templates: state.templates,
+        thesauris: state.thesauris
+      };
+    }
+
+    this.constructor.requestState(props.params, query, globalResources)
     .then((response) => {
       this.setReduxState(response);
     });
@@ -88,7 +101,6 @@ RouteHandler.renderedFromServer = true;
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
-  getUser: PropTypes.func,
   router: PropTypes.object,
   store: PropTypes.object
 };

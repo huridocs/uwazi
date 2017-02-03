@@ -1,29 +1,23 @@
-import Nightmare from 'nightmare';
-import realMouse from 'nightmare-real-mouse';
-import config from '../helpers/config.js';
+import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-realMouse(Nightmare);
+const nightmare = createNightmare();
 
 let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
 
 describe('references path', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
-
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
       .login('admin', 'admin')
-      .url()
-      .then((url) => {
-        expect(url).toBe(config.url + '/');
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('search for document', () => {
@@ -33,7 +27,6 @@ describe('references path', () => {
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
       .then((itemName) => {
         return nightmare
-        .waitToClick(selectors.libraryView.searchInLibrary)
         .type(selectors.libraryView.searchInput, itemName)
         .waitToClick(selectors.libraryView.firstSearchSuggestion)
         .wait(selectors.documentView.documentPage)
@@ -48,19 +41,14 @@ describe('references path', () => {
 
     it('select a word from the document, fill the form and click the next button', (done) => {
       nightmare
-      .realClick(selectors.documentView.documentPageFirstParagraph)
-      .realClick(selectors.documentView.documentPageFirstParagraph)
-      .wait(selectors.documentView.bottomRightMenu)
-      .mouseover(selectors.documentView.bottomRightMenu)
-      .wait(selectors.documentView.bottomRightMenuIsActive)
-      .realClick(selectors.documentView.bottomRightMenuAddParagraph)
+      .selectText(selectors.documentView.documentPageFirstParagraph)
+      .waitToClick(selectors.documentView.createParagraphLinkButton)
       .wait(selectors.documentView.createReferenceSidePanelIsActive)
       .select(selectors.documentView.createReferenceSidePanelSelect, selectors.documentView.createReferenceSidePanelSelectFirstValue)
-      .type(selectors.documentView.createReferenceSidePanelInput, '334 06 Egyptian Initiative')
-      .wait(1000)
+      .type(selectors.documentView.createReferenceSidePanelInput, 'home')
+      .wait(600)
       .waitToClick(selectors.documentView.createReferenceSidePanelFirstSearchSuggestion)
-      .wait(selectors.documentView.createReferenceSidePanelNextButton)
-      .click(selectors.documentView.createReferenceSidePanelNextButton)
+      .waitToClick(selectors.documentView.createReferenceSidePanelNextButton)
       .wait(selectors.documentView.targetDocument)
       .exists(selectors.documentView.targetDocument)
       .then((result) => {
@@ -72,8 +60,9 @@ describe('references path', () => {
 
     it('should select a word from the second document then click the save button', (done) => {
       nightmare
-      .waitToClick(selectors.documentView.documentPageFirstParagraph)
-      .realClick(selectors.documentView.documentPageFirstParagraph)
+      .wait('#pageContainer1 > div.textLayer > div:nth-child(1)')
+      .scrollElement(selectors.documentView.viewer, 500)
+      .selectText('#pageContainer1 > div.textLayer > div:nth-child(1)')
       .waitToClick(selectors.documentView.saveConnectionButton)
       .wait(selectors.documentView.activeConnection)
       .exists(selectors.documentView.activeConnection)
@@ -84,10 +73,10 @@ describe('references path', () => {
       .catch(catchErrors(done));
     });
 
-    it('delete de created connection', (done) => {
+    it('delete the created connection', (done) => {
       nightmare
-      .wait(selectors.documentView.unlinkIcon)
-      .click(selectors.documentView.unlinkIcon)
+      .mouseover(selectors.documentView.activeConnection)
+      .waitToClick(selectors.documentView.unlinkIcon)
       .waitToClick('.modal-footer .btn-danger')
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')

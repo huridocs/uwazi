@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {I18NLink, t} from 'app/I18N';
+import {createSelector} from 'reselect';
 
 class Footer extends Component {
 
@@ -55,10 +56,13 @@ Footer.propTypes = {
   siteName: PropTypes.string
 };
 
+
+const selectUser = createSelector(s => s.user, u => u.toJS());
+
 export function mapStateToProps(state) {
   return {
-    user: state.user.toJS(),
-    siteName: state.settings.collection.toJS().site_name
+    user: selectUser(state),
+    siteName: state.settings.collection.get('site_name')
   };
 }
 

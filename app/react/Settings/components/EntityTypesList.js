@@ -42,13 +42,13 @@ export class EntityTypesList extends Component {
               <Link to={'/settings/entities/edit/' + template._id}>{template.name}</Link>
               <div className="list-group-item-actions">
                 <Link to={'/settings/entities/edit/' + template._id} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>
+                  <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </Link>
-                <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash"></i>
+                <a onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
+                  <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </button>
+                </a>
               </div>
             </li>;
         })}

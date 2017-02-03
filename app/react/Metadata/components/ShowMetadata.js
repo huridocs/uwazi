@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {I18NLink, t} from 'app/I18N';
+import {I18NLink} from 'app/I18N';
+import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'marked';
 import {Icon} from 'app/Layout/Icon';
@@ -17,6 +18,11 @@ export class ShowMetadata extends Component {
                {property.value}
              </I18NLink>;
     }
+
+    if (typeof property.value === 'object' && !property.value.length) {
+      return;
+    }
+
     if (typeof property.value === 'object') {
       return <ul>
                {property.value.map((value, indx) => {
@@ -32,7 +38,9 @@ export class ShowMetadata extends Component {
       return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
     }
 
-    return property.value;
+    if (property.value) {
+      return property.value;
+    }
   }
 
   render() {
@@ -50,14 +58,6 @@ export class ShowMetadata extends Component {
       header = <div className="item-info">{title}{type}</div>;
     }
 
-    const templates = this.props.templates.toJS();
-    let context = templates.reduce((result, template) => {
-      if (template._id === entity.template) {
-        return template.name;
-      }
-      return result;
-    }, '');
-
     return (
       <div className="view">
         {header}
@@ -70,9 +70,12 @@ export class ShowMetadata extends Component {
 
         {entity.metadata.map((property, index) => {
           const value = this.getValue(property);
+          if (!value) {
+            return false;
+          }
           return (
             <dl key={index}>
-              <dt>{t(context, property.label)}</dt>
+              <dt>{t(entity.template, property.label)}</dt>
               <dd>{value}</dd>
             </dl>
           );

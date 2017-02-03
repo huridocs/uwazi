@@ -41,13 +41,13 @@ export class DocumentTypesList extends Component {
               <I18NLink to={'/settings/documents/edit/' + template._id}>{template.name}</I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/documents/edit/' + template._id} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>
+                  <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash"></i>
+                <a onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
+                  <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </button>
+                </a>
               </div>
             </li>;
         })}

@@ -1,22 +1,30 @@
 import React, {Component, PropTypes} from 'react';
-import scroller from 'app/Viewer/utils/Scroller';
+import {connect} from 'react-redux';
+import {scrollTo} from 'app/Viewer/actions/uiActions';
+import Immutable from 'immutable';
+import ShowIf from 'app/App/ShowIf';
 
 export class ShowToc extends Component {
 
   scrollTo(tocElement, e) {
     e.preventDefault();
-    scroller.to(`.document-viewer span[data-id="${tocElement._id}"]`, '.document-viewer');
+    this.props.scrollTo(tocElement.toJS(), this.props.pdfInfo.toJS(), 'span');
   }
 
   render() {
-    const {toc} = this.props;
+    const toc = this.props.toc || Immutable.fromJS([]);
     return (
       <div className="toc">
         <ul className="toc-view">
           {toc.map((tocElement, index) => {
             return (
-              <li className={`toc-indent-${tocElement.indentation}`} key={index}>
-                <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.label}</a>
+              <li className={`toc-indent-${tocElement.get('indentation')}`} key={index}>
+                <ShowIf if={!this.props.readOnly}>
+                  <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.get('label')}</a>
+                </ShowIf>
+                <ShowIf if={this.props.readOnly}>
+                  <span className="toc-view-link">{tocElement.get('label')}</span>
+                </ShowIf>
               </li>
               );
           })}
@@ -27,7 +35,20 @@ export class ShowToc extends Component {
 }
 
 ShowToc.propTypes = {
-  toc: PropTypes.array
+  toc: PropTypes.object,
+  readOnly: PropTypes.bool,
+  pdfInfo: PropTypes.object,
+  scrollTo: PropTypes.func
 };
 
-export default ShowToc;
+export const mapStateToProps = ({documentViewer}) => {
+  return {
+    pdfInfo: documentViewer.doc.get('pdfInfo')
+  };
+};
+
+function mapDispatchToProps() {
+  return {scrollTo};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShowToc);

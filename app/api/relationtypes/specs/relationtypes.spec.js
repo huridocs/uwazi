@@ -39,6 +39,10 @@ describe('relationtypes', () => {
   });
 
   describe('save()', () => {
+    beforeEach(() => {
+      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+    });
+
     describe('when the relation type did not exist', () => {
       it('should create a new one and return it', (done) => {
         relationtypes.save({name: 'Indiferent'})
@@ -52,10 +56,9 @@ describe('relationtypes', () => {
       });
 
       it('should create a new translation for it', (done) => {
-        spyOn(translations, 'addContext');
         relationtypes.save({name: 'Indiferent'})
-        .then(() => {
-          expect(translations.addContext).toHaveBeenCalledWith('Indiferent', {Indiferent: 'Indiferent'});
+        .then((response) => {
+          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'});
           done();
         }).catch(catchErrors(done));
       });
@@ -86,8 +89,8 @@ describe('relationtypes', () => {
           relationtype.name = 'Pro';
           return relationtypes.save(relationtype);
         })
-        .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Against', 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
+        .then((response) => {
+          expect(translations.updateContext).toHaveBeenCalledWith(response._id, 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
           done();
         }).catch(catchErrors(done));
       });
@@ -105,6 +108,11 @@ describe('relationtypes', () => {
     });
 
     describe('delete()', () => {
+
+      beforeEach(() => {
+        spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+      });
+
       it('should remove it from the database and return true', (done) => {
         request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
         .then((result) => {
@@ -126,11 +134,10 @@ describe('relationtypes', () => {
         request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
         .then((result) => {
           let relationtype = result.json;
-          spyOn(translations, 'deleteContext');
           return relationtypes.delete(relationtype);
         })
         .then(() => {
-          expect(translations.deleteContext).toHaveBeenCalledWith('Against');
+          expect(translations.deleteContext).toHaveBeenCalledWith('8202c463d6158af8065022d9b5014a18');
           done();
         });
       });

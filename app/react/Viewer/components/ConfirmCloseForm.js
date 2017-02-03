@@ -12,7 +12,7 @@ export class ConfirmCloseForm extends Component {
   confirm() {
     this.props.hideModal('ConfirmCloseForm');
     this.props.closePanel();
-    this.props.resetForm('documentViewer.docForm');
+    this.props.resetForm('documentViewer.sidepanel.metadata');
   }
 
   render() {

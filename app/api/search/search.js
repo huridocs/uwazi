@@ -3,7 +3,6 @@ import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import request from 'shared/JSONRequest';
-import sanitizeResponse from '../utils/sanitizeResponse';
 
 export default {
   search(query, language) {
@@ -32,7 +31,7 @@ export default {
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})
     .then((response) => {
       let rows = response.hits.hits.map((hit) => {
-        let result = hit._source.doc;
+        let result = hit._source;
         result._id = hit._id;
         return result;
       });
@@ -52,14 +51,20 @@ export default {
     });
   },
 
-  matchTitle(searchTerm) {
-    let query = queryBuilder().fullTextSearch(searchTerm, ['doc.title']).highlight(['doc.title']).limit(5).query();
+  matchTitle(searchTerm, language) {
+    let query = queryBuilder()
+    .fullTextSearch(searchTerm, ['title'])
+    .highlight(['title'])
+    .language(language)
+    .limit(5)
+    .query();
+
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       return response.hits.hits.map((hit) => {
-        let result = hit._source.doc;
+        let result = hit._source;
         result._id = hit._id;
-        result.title = hit.highlight['doc.title'][0];
+        result.title = hit.highlight.title[0];
         return result;
       });
     });
@@ -73,5 +78,19 @@ export default {
       }
       return response.json.rows[0].value;
     });
+  },
+
+  index(entity) {
+    const id = entity._id;
+    delete entity._id;
+    delete entity._rev;
+    const body = entity;
+    return elastic.index({index: elasticIndex, type: 'entity', id, body})
+    .catch(console.log);
+  },
+
+  delete(entity) {
+    const id = entity._id;
+    return elastic.delete({index: elasticIndex, type: 'entity', id});
   }
 };

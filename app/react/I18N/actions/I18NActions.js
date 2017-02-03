@@ -20,3 +20,9 @@ export function editTranslations(translations) {
     dispatch(formActions.load('translationsForm', translations));
   };
 }
+
+export function resetForm() {
+  return function (dispatch) {
+    dispatch(formActions.reset('translationsForm'));
+  };
+}

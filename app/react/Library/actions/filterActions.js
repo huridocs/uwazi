@@ -3,6 +3,8 @@ import libraryHelper from 'app/Library/helpers/libraryFilters';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
 
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
 function updateModelFilters(dispatch, getState, libraryFilters) {
   let previousModelFilters = getState().search.filters;
   let modelFilters = libraryFilters.reduce((model, property) => {
@@ -22,10 +24,10 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
 
 export function filterDocumentTypes(documentTypes) {
   return function (dispatch, getState) {
-    let state = getState();
+    const state = getState();
 
-    let templates = state.templates.toJS();
-    let thesauris = state.thesauris.toJS();
+    const templates = state.templates.toJS();
+    const thesauris = state.thesauris.toJS();
 
     let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
 
@@ -42,14 +44,23 @@ export function filterDocumentTypes(documentTypes) {
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
     updateModelFilters(dispatch, getState, libraryFilters);
 
-    let search = Object.assign({aggregations, types: documentTypes}, state.search);
+    const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
+    const {sort, order} = prioritySortingCriteria.get({
+      currentCriteria: {sort: state.search.sort, order: state.search.order},
+      filteredTemplates: usefulTemplates.map(t => t._id),
+      templates: state.templates
+    });
+
+    const search = Object.assign({aggregations, types: documentTypes}, state.search, {sort, order});
+
     dispatch(libraryActions.searchDocuments(search));
   };
 }
 
 export function resetFilters() {
   return function (dispatch, getState) {
-    dispatch(formActions.change('search.filters', {}));
+    dispatch(formActions.reset('search'));
+    dispatch(formActions.setInitial('search'));
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: []});
     libraryActions.searchDocuments(getState().search)(dispatch, getState);
   };

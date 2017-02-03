@@ -9,10 +9,13 @@ import fs from 'fs';
 import {mockID} from 'shared/uniqueID';
 import references from 'api/references';
 import entities from 'api/entities';
+import search from 'api/search/search';
 
 describe('documents', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
+    spyOn(search, 'index').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.returnValue(Promise.resolve());
     mockID();
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -29,6 +32,7 @@ describe('documents', () => {
         ])
         .then(([docEs, docEn]) => {
           expect(docEs.rows[0].title).toBe('Penguin almost done');
+          expect(docEs.rows[0].fullText).not.toBeDefined();
           expect(docEn.rows[0].title).toBe('Penguin almost done english');
           done();
         })
@@ -39,7 +43,6 @@ describe('documents', () => {
 
   describe('save', () => {
     let getDocuments = () => request.get(dbURL + '/_design/documents/_view/all').then((response) => response.json.rows.map(r => r.value));
-    //let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
     it('should call entities.save', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
@@ -61,8 +64,10 @@ describe('documents', () => {
       let doc = {title: 'Batman begins', toc: [{}, {_id: '1'}]};
       let user = {_id: 'user Id'};
 
-      documents.save(doc, user)
-      .then(getDocuments)
+      documents.save(doc, {user, language: 'es'})
+      .then(() => {
+        return getDocuments();
+      })
       .then((docs) => {
         let createdDocument = docs.find((d) => d.title === 'Batman begins');
         expect(createdDocument.toc[0]._id).toBe('unique_id');
@@ -72,38 +77,6 @@ describe('documents', () => {
       .catch(catchErrors(done));
     });
   });
-
-  describe('saveHTML', () => {
-    it('should save html conversion', (done) => {
-      documents.saveHTML({pages: ['pages'], document: '8202c463d6158af8065022d9b5014ccb'})
-      .then(() => documents.getHTML('id', 'es'))
-      .then((conversion) => {
-        expect(conversion.pages[0]).toBe('pages');
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
-  //describe('countByTemplate', () => {
-    //it('should return how many documents using the template passed', (done) => {
-      //documents.countByTemplate('template1')
-      //.then((count) => {
-        //expect(count).toBe(2);
-        //done();
-      //})
-      //.catch(done.fail);
-    //});
-
-    //it('should return 0 when no count found', (done) => {
-      //documents.countByTemplate('newTemplate')
-      //.then((count) => {
-        //expect(count).toBe(0);
-        //done();
-      //})
-      //.catch(done.fail);
-    //});
-  //});
 
   describe('getUploadsByUser', () => {
     it('should request all unpublished documents for the user', (done) => {
@@ -121,9 +94,6 @@ describe('documents', () => {
 
   describe('delete', () => {
     beforeEach(() => {
-      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014ccb.json');
-      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc1.json');
-      fs.writeFileSync('./conversions/8202c463d6158af8065022d9b5014cc2.json');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
     });
@@ -144,14 +114,11 @@ describe('documents', () => {
       });
     });
 
-    it('should delete the original file and conversion files', (done) => {
+    it('should delete the original file', (done) => {
       documents.delete('id')
       .then(() => {
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
-
-        expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014ccb.json')).toBe(false);
-        expect(fs.existsSync('./conversions/8202c463d6158af8065022d9b5014cc1.json')).toBe(false);
         done();
       })
       .catch(done.fail);

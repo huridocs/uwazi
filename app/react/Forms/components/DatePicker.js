@@ -1,10 +1,9 @@
 import React, {Component, PropTypes} from 'react';
-import {createFieldClass, controls} from 'react-redux-form';
 import DatePickerComponent from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 
-export class DatePicker extends Component {
+export default class DatePicker extends Component {
 
   constructor(props) {
     super(props);
@@ -23,7 +22,7 @@ export class DatePicker extends Component {
       value.utc().endOf('day');
     }
 
-    this.props.onChange(value.utc().format('X'));
+    this.props.onChange(parseInt(value.utc().format('X'), 10));
   }
 
   componentWillReceiveProps(newProps) {
@@ -53,14 +52,6 @@ export class DatePicker extends Component {
 
 DatePicker.propTypes = {
   onChange: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.any,
   endOfDay: PropTypes.bool
 };
-
-export default DatePicker;
-
-const DatePickerField = createFieldClass({
-  DatePicker: controls.text
-});
-
-export {DatePickerField};

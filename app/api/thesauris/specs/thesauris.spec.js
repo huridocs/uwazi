@@ -4,6 +4,7 @@ import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import translations from 'api/i18n/translations';
+import templates from 'api/templates/templates';
 
 describe('thesauris', () => {
   beforeEach((done) => {
@@ -71,6 +72,12 @@ describe('thesauris', () => {
   });
 
   describe('delete()', () => {
+    let templatesCountSpy;
+    beforeEach(() => {
+      templatesCountSpy = spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(0));
+      spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+    });
+
     it('should delete a thesauri', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
@@ -92,25 +99,28 @@ describe('thesauris', () => {
     it('should delete the translation', (done) => {
       request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
       .then(thesauri => {
-        spyOn(translations, 'deleteContext');
         return thesauris.delete(thesauri.json._id, thesauri.json._rev);
       })
       .then((response) => {
         expect(response.ok).toBe(true);
-        expect(translations.deleteContext).toHaveBeenCalledWith('secret recipes');
+        expect(translations.deleteContext).toHaveBeenCalledWith('c08ef2532f0bd008ac5174b45e033c93');
         done();
       })
       .catch(done.fail);
     });
 
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        thesauris.delete('c08ef2532f0bd008ac5174b45e033c93', 'bad_rev')
-        .then((response) => {
-          expect(response.error.error).toBe('bad_request');
-          done();
+    describe('when the dictionary is in use', () => {
+      it('should return an error in the response', (done) => {
+        templatesCountSpy.and.returnValue(Promise.resolve(1));
+        request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
+        .then(thesauri => {
+          return thesauris.delete(thesauri.json._id, thesauri.json._rev);
         })
-        .catch(done.fail);
+        .then(done.fail)
+        .catch((response) => {
+          expect(response.key).toBe('templates_using_dictionary');
+          done();
+        });
       });
     });
   });
@@ -118,20 +128,11 @@ describe('thesauris', () => {
   describe('save', () => {
     it('should create a thesauri', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
-      let postResponse;
 
       thesauris.save(data)
       .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
-      })
-      .then((response) => {
-        let newDoc = response.json.rows.find((thesauri) => {
-          return thesauri.value.name === 'Batman wish list';
-        });
-
-        expect(newDoc.value.values).toEqual([{id: '1', label: 'Joker BFF'}]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
+        expect(response.values).toEqual([{id: '1', label: 'Joker BFF'}]);
+        expect(response._rev).toBeDefined();
         done();
       })
       .catch(done.fail);
@@ -141,12 +142,16 @@ describe('thesauris', () => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
       spyOn(translations, 'addContext');
       thesauris.save(data)
-      .then(() => {
+      .then((response) => {
         expect(translations.addContext)
-        .toHaveBeenCalledWith('Batman wish list', {
-          'Batman wish list': 'Batman wish list',
-          'Joker BFF': 'Joker BFF'
-        });
+        .toHaveBeenCalledWith(
+          response._id,
+          'Batman wish list',
+          {
+            'Batman wish list': 'Batman wish list',
+            'Joker BFF': 'Joker BFF'
+          }
+        );
         done();
       })
       .catch(done.fail);
@@ -168,7 +173,7 @@ describe('thesauris', () => {
 
         expect(newDoc.value.name).toBe('Scarecrow nightmares');
         expect(newDoc.value.values).toEqual([]);
-        expect(newDoc.value._rev).toBe(postResponse.rev);
+        expect(newDoc.value._rev).toBe(postResponse._rev);
         done();
       })
       .catch(done.fail);
@@ -208,10 +213,10 @@ describe('thesauris', () => {
           spyOn(translations, 'updateContext');
           return thesauris.save(data);
         })
-        .then(() => {
+        .then((response) => {
           expect(translations.updateContext)
           .toHaveBeenCalledWith(
-            'Top 2 scify books',
+            response._id,
             'Top 1 games',
             {'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games'},
             ['Fundation'],

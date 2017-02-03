@@ -6,6 +6,7 @@ import {actions as metadataActions} from 'app/Metadata';
 import {NeedAuthorization} from 'app/Auth';
 import {deleteDocument, deleteEntity} from 'app/Library/actions/libraryActions';
 import ShowIf from 'app/App/ShowIf';
+import {t} from 'app/I18N';
 
 
 import {showFilters, searchDocuments} from 'app/Library/actions/libraryActions';
@@ -57,19 +58,25 @@ export class LibraryMenu extends Component {
           <ShowIf if={this.props.selectedDocument.get('type') === 'document'}>
             <div className="float-btn__sec">
               <a href={'/api/documents/download?_id=' + this.props.selectedDocument.toJS()._id} target="_blank" >
-                <span>Download</span><i className="fa fa-cloud-download"></i>
+                <span>{t('System', 'Download!')}</span><i className="fa fa-cloud-download"></i>
               </a>
             </div>
           </ShowIf>
+          <ShowIf if={this.props.selectedDocument.get('type') === 'document'}>
+            <div className="float-btn__sec">
+              <button>
+                <span>{t('System', 'Upload')}</span><i className="fa fa-cloud-upload"></i>
+              </button>
+            </div>
+          </ShowIf>
           <div onClick={this.deleteDocument.bind(this)} className="float-btn__sec">
-            <span>Delete</span><i className="fa fa-trash"></i>
+            <span>{t('System', 'Delete')}</span><i className="fa fa-trash"></i>
           </div>
           <MenuButtons.Main
             onClick={() => this.props.loadInReduxForm('library.metadata', this.props.selectedDocument.toJS(), this.props.templates.toJS())}
           >
             <i className="fa fa-pencil"></i>
           </MenuButtons.Main>
-          {/*<div className="float-btn__main"><i className="fa fa-ellipsis-v"></i></div>*/}
         </div>
       </NeedAuthorization>
     );

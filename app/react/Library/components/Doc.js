@@ -2,13 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
-import PrintDate from 'app/Layout/PrintDate';
 import {selectDocument, unselectDocument} from '../actions/libraryActions';
-import {TemplateLabel, Icon} from 'app/Layout';
-import {formater} from 'app/Metadata';
-import marked from 'marked';
 
-import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
+import {Item} from 'app/Layout';
+import {is} from 'immutable';
 
 export class Doc extends Component {
 
@@ -19,78 +16,40 @@ export class Doc extends Component {
     this.props.selectDocument(this.props.doc);
   }
 
-  formatMetadata(populatedMetadata, creationDate) {
-    let metadata = populatedMetadata
-    .filter(p => p.showInCard && (p.value && p.value.length > 0 || p.markdown))
-    .map((property, index) => {
-      let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
-      if (property.markdown) {
-        value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
-      }
-      return (
-        <dl key={index}>
-          <dt>{property.label}</dt>
-          <dd><Icon className="item-icon item-icon-center" data={property.icon} />{value}</dd>
-        </dl>
-      );
-    });
-
-    let creationMetadata = <dl><dt><i>Upload date</i></dt><dd><PrintDate utc={creationDate} toLocal={true} /></dd></dl>;
-
-    return metadata.length || populatedMetadata.filter(p => p.showInCard).length ? metadata : creationMetadata;
+  shouldComponentUpdate(nextProps) {
+    return !is(this.props.doc, nextProps.doc) ||
+           this.props.active !== nextProps.active ||
+           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
   }
 
   render() {
-    let {title, creationDate, template, icon, sharedId} = this.props.doc;
-    let documentViewUrl = `/${this.props.doc.type}/${sharedId}`;
+    const {type, sharedId} = this.props.doc.toJS();
+    const documentViewUrl = `/${type}/${sharedId}`;
 
-    let active;
-    if (this.props.selectedDocument) {
-      active = this.props.selectedDocument === this.props.doc._id;
-    }
-
-    const className = this.props.doc.type === 'entity' ? 'item-entity' : 'item-document';
-
-    const populatedMetadata = formater.prepareMetadata(this.props.doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
-    const metadata = this.formatMetadata(populatedMetadata, creationDate);
-
-    return (
-      <RowList.Item active={active} onClick={this.select.bind(this, active)} className={className}>
-        <div className="item-info">
-          <Icon className="item-icon item-icon-center" data={icon} />
-          <ItemName>{title}</ItemName>
-        </div>
-        <div className="item-metadata">
-          {metadata}
-        </div>
-        <ItemFooter>
-          <TemplateLabel template={template}/>
-          <I18NLink to={documentViewUrl} className="item-shortcut">
-            <span className="itemShortcut-arrow">
-              <i className="fa fa-external-link"></i>
-            </span>
-          </I18NLink>
-        </ItemFooter>
-      </RowList.Item>
-    );
+    return <Item onClick={this.select.bind(this, this.props.active)}
+                 active={this.props.active}
+                 doc={this.props.doc}
+                 searchParams={this.props.searchParams}
+                 buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
+                            <span className="itemShortcut-arrow">
+                              <i className="fa fa-file-text-o"></i>
+                             </span>
+                          </I18NLink>}/>;
   }
 }
 
 Doc.propTypes = {
   doc: PropTypes.object,
-  selectedDocument: PropTypes.string,
+  searchParams: PropTypes.object,
+  active: PropTypes.bool,
   selectDocument: PropTypes.func,
-  unselectDocument: PropTypes.func,
-  templates: PropTypes.object,
-  thesauris: PropTypes.object
+  unselectDocument: PropTypes.func
 };
 
 
-export function mapStateToProps(state) {
+export function mapStateToProps({library}, ownProps) {
   return {
-    selectedDocument: state.library.ui.get('selectedDocument') ? state.library.ui.get('selectedDocument').get('_id') : '',
-    templates: state.templates,
-    thesauris: state.thesauris
+    active: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') === ownProps.doc.get('_id') : false
   };
 }
 

@@ -15,6 +15,22 @@ describe('Viewer uiReducer', () => {
     });
   });
 
+  describe('setGoToActive', () => {
+    it('should set goToActive to true by default', () => {
+      let newState = uiReducer(Immutable.fromJS({}), actions.goToActive());
+      let expected = Immutable.fromJS({goToActive: true});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+
+    it('should set goToActive to value passed', () => {
+      let newState = uiReducer(Immutable.fromJS({}), actions.goToActive(false));
+      let expected = Immutable.fromJS({goToActive: false});
+
+      expect(newState).toEqualImmutable(expected);
+    });
+  });
+
   describe('CLOSE_PANEL', () => {
     it('should set panel = false', () => {
       let newState = uiReducer(Immutable.fromJS({panel: 'somePanel'}), {type: types.CLOSE_PANEL});
@@ -28,15 +44,6 @@ describe('Viewer uiReducer', () => {
     it('should set panel = to the panel passed', () => {
       let newState = uiReducer(Immutable.fromJS({}), {type: types.OPEN_PANEL, panel: 'a panel'});
       let expected = Immutable.fromJS({panel: 'a panel'});
-
-      expect(newState).toEqualImmutable(expected);
-    });
-  });
-
-  describe('showTab()', () => {
-    it('should set tab connections', () => {
-      let newState = uiReducer(Immutable.fromJS({}), actions.showTab('connections'));
-      let expected = Immutable.fromJS({tab: 'connections'});
 
       expect(newState).toEqualImmutable(expected);
     });

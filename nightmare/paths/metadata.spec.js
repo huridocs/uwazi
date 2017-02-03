@@ -1,15 +1,12 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
-import Nightmare from 'nightmare';
-import realMouse from 'nightmare-real-mouse';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import createNightmare from '../helpers/nightmare';
 
-realMouse(Nightmare);
+const nightmare = createNightmare();
 
 describe('metadata path', () => {
-  let nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
-
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
@@ -22,7 +19,7 @@ describe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('Dictionaries tests', () => {
@@ -42,7 +39,7 @@ describe('metadata path', () => {
     it('should create a new dictionary with two values', (done) => {
       nightmare
       .wait(selectors.settingsView.dictionaryNameForm)
-      .type(selectors.settingsView.dictionaryNameForm, 'test dictionary')
+      .type(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
       .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
       .wait(selectors.settingsView.firstDictionaryValForm)
       .type(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
@@ -61,15 +58,15 @@ describe('metadata path', () => {
 
     it('should go back to dictionaries then edit the created dictionary', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
-      .clearInput(selectors.settingsView.dictionaryNameForm)
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
+      //.wait(500)
       .type(selectors.settingsView.dictionaryNameForm, 'edited')
-      .clearInput(selectors.settingsView.firstDictionaryValForm)
+      .waitToClick(selectors.settingsView.saveDictionaryButton)
       .type(selectors.settingsView.firstDictionaryValForm, 'edited')
-      .clearInput(selectors.settingsView.secondDictionaryValForm)
+      .waitToClick(selectors.settingsView.saveDictionaryButton)
       .type(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .wait('.alert.alert-success')
@@ -79,13 +76,13 @@ describe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    }, 13000);
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
@@ -110,7 +107,7 @@ describe('metadata path', () => {
       //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
       nightmare
       .wait(selectors.settingsView.documentTemplateNameForm)
-      .type(selectors.settingsView.documentTemplateNameForm, 'test document')
+      .type(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
       .wait('.alert.alert-success')
       .exists('.alert.alert-success')
@@ -123,10 +120,10 @@ describe('metadata path', () => {
 
     it('should go back to Documents then edit the created document', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'new')
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
@@ -141,9 +138,9 @@ describe('metadata path', () => {
 
     it('should go back to Documents then delete the created document template', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.documentsBackButton)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
@@ -180,10 +177,12 @@ describe('metadata path', () => {
 
     it('should go back to Connections then edit the created connection', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('test')
+      .wait(500)
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
+      //.wait(500)
       .clearInput(selectors.settingsView.connectionNameForm)
       .type(selectors.settingsView.connectionNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveConnectionButton)
@@ -198,10 +197,10 @@ describe('metadata path', () => {
 
     it('should go back to connections then delete the created connection', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
@@ -238,10 +237,10 @@ describe('metadata path', () => {
 
     it('should go back to Entities then edit the created entity', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList('e2e')
+      .editItemFromList(selectors.settingsView.liElementsOfSection, 'e2e')
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
@@ -256,10 +255,10 @@ describe('metadata path', () => {
 
     it('should go back to Entities then delete the created entity', (done) => {
       nightmare
-      .wait(3200)
+      .wait(2600)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .deleteItemFromList('edited')
+      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));

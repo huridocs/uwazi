@@ -47,7 +47,7 @@ describe('FilterSuggestions', () => {
 
   it('should always render the current property as a guide', () => {
     renderComponent('Year', 'date');
-    let suggestion = component.find('.filter-suggestions').childAt(0);
+    const suggestion = component.find('tbody > tr').at(0);
     expect(suggestion.text().trim())
     .toBe('Current template Date');
   });
@@ -55,7 +55,7 @@ describe('FilterSuggestions', () => {
   describe('when matches type and label as other template property', () => {
     it('should show a message', () => {
       renderComponent('author', 'text');
-      let suggestion = component.find('.filter-suggestions').childAt(1);
+      let suggestion = component.find('tbody > tr').at(1);
       expect(suggestion.text().trim())
       .toBe('Template 2 Text');
     });
@@ -75,7 +75,7 @@ describe('FilterSuggestions', () => {
       renderComponent('authors', 'select', 'abc2');
       let suggestion = component.find('.conflict');
       expect(suggestion.text().trim())
-      .toBe('Thesauri: Best SCI FI Authors');
+      .toBe('Best SCI FI Authors');
     });
   });
 });

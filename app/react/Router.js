@@ -15,8 +15,11 @@ import store from './store';
 import api from 'app/utils/api';
 import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
+import Perf from 'react-addons-perf';
+import {fromJS as Immutable} from 'immutable';
 
 if (isClient) {
+  window.perf = Perf;
   ReactDOM.render(
     <Provider store={store()}>
       <CustomProvider>
@@ -91,7 +94,7 @@ function handleRoute(res, renderProps, req) {
 
   if (routeProps.requestState) {
     if (req.cookies) {
-      api.cookie('connect.sid='+req.cookies['connect.sid']);
+      api.cookie('connect.sid=' + req.cookies['connect.sid']);
     }
     RouteHandler.renderedFromServer = true;
     let query;
@@ -108,17 +111,35 @@ function handleRoute(res, renderProps, req) {
     })
     .then(() => {
       return Promise.all([
-        routeProps.requestState(renderProps.params, query),
         api.get('user'),
         api.get('settings'),
-        api.get('translations')
+        api.get('translations'),
+        api.get('templates'),
+        api.get('thesauris')
       ])
-      .then(([initialData, user, settings, translations]) => {
-        initialData.user = user.json;
+      .then(([user, settings, translations, templates, thesauris]) => {
+        const globalResources = {
+          user: user.json,
+          settings: {collection: settings.json},
+          translations: translations.json.rows,
+          templates: templates.json.rows,
+          thesauris: thesauris.json.rows
+        };
+
+        globalResources.settings.collection.links = globalResources.settings.collection.links || [];
+
+        return Promise.all([routeProps.requestState(renderProps.params, query, {
+          templates: Immutable(globalResources.templates),
+          thesauris: Immutable(globalResources.thesauris)
+        }), globalResources]);
+      })
+      .then(([initialData, globalResources]) => {
+        initialData.user = globalResources.user;
+        initialData.settings = globalResources.settings;
+        initialData.translations = globalResources.translations;
+        initialData.templates = globalResources.templates;
+        initialData.thesauris = globalResources.thesauris;
         initialData.locale = locale;
-        initialData.translations = translations.json.rows;
-        initialData.settings = {collection: settings.json};
-        initialData.settings.collection.links = initialData.settings.collection.links || [];
         renderPage(initialData, true);
       })
       .catch((error) => {
@@ -131,31 +152,34 @@ function handleRoute(res, renderProps, req) {
 }
 
 function ServerRouter(req, res) {
-  let authRoutes = ['/uploads',
-                    '/my_account',
-                    '/metadata',
-                    '/relationTypes/new',
-                    '/relationTypes/edit',
-                    'templates/new',
-                    'templates/edit',
-                    '/thesauris/new',
-                    '/thesauris/edit',
-                    '/settings'
-                  ];
-  if (!req.user && authRoutes.includes(req.url)) {
+  let authRoutes = [
+    '/uploads',
+    '/settings'
+  ];
+  if (!req.user && authRoutes.reduce((found, authRoute) => {
+    return found || req.url.indexOf(authRoute) !== -1;
+  }, false)) {
     res.redirect(302, '/login');
   }
 
-  match({routes: Routes, location: req.url}, (error, redirectLocation, renderProps) => {
-    if (error) {
-      handleError(error);
-    } else if (redirectLocation) {
-      handleRedirect(res, redirectLocation);
-    } else if (renderProps) {
-      handleRoute(res, renderProps, req);
-    } else {
-      handle404(res);
+  api.get('settings')
+  .then((response) => {
+    let location = req.url;
+    if (location === '/' && response.json.home_page) {
+      location = response.json.home_page;
     }
+
+    match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
+      if (error) {
+        handleError(error);
+      } else if (redirectLocation) {
+        handleRedirect(res, redirectLocation);
+      } else if (renderProps) {
+        handleRoute(res, renderProps, req);
+      } else {
+        handle404(res);
+      }
+    });
   });
 }
 

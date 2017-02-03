@@ -18,11 +18,29 @@ export default {
         return tocEntry;
       });
     }
-
+    
     return entities.save(doc, params);
   },
 
-  get: entities.get,
+  //test (this is a temporary fix to be able to save pdfInfo from client without being logged)
+  savePDFInfo(doc, params) {
+    return this.get(doc.sharedId, params.language)
+    .then((existingDoc) => {
+      if (existingDoc.pdfInfo) {
+        return existingDoc;
+      }
+      return this.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
+    });
+  },
+  //
+
+  get: (id, language) => {
+    return entities.get(id, language)
+    .then((doc) => {
+      delete doc.rows[0].fullText;
+      return doc;
+    });
+  },
 
   getUploadsByUser(user) {
     let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"&descending=true`;
@@ -104,7 +122,6 @@ export default {
     let filesToDelete = deletedDocs.map((doc) => {
       return `./uploaded_documents/${doc.file.filename}`;
     });
-    deletedDocs.forEach((doc) => filesToDelete.push(`./conversions/${doc._id}.json`));
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
 
     return deleteFiles(filesToDelete);

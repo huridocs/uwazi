@@ -2,21 +2,32 @@ import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
+import {actions} from 'app/BasicReducer';
 import documents from 'app/Documents';
 import entities from 'app/Entities';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
 }
 
 export function selectDocument(doc) {
-  return {
-    type: types.SELECT_DOCUMENT,
-    doc
+  let document = doc;
+  if (doc.toJS) {
+    document = doc.toJS();
+  }
+  return (dispatch) => {
+    dispatch({type: types.SELECT_DOCUMENT, doc: document});
+    return referencesAPI.get(document.sharedId)
+    .then((references) => {
+      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, document.language)));
+    });
   };
 }
+
 export function unselectDocument() {
   return {type: types.UNSELECT_DOCUMENT};
 }
@@ -59,43 +70,48 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
+export function processFilters(readOnlySearch, filters, limit) {
+  const search = Object.assign({}, readOnlySearch);
+  search.aggregations = filters.properties
+  .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+  .map((property) => {
+    if (property.type === 'nested') {
+      return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
+    }
+    return {name: property.name, nested: false};
+  });
+
+  search.filters = {};
+  filters.properties.forEach((property) => {
+    if (!property.active) {
+      return;
+    }
+    let type = 'text';
+    if (property.type === 'date' || property.type === 'multidate') {
+      type = 'range';
+    }
+    if (property.type === 'select' || property.type === 'multiselect') {
+      type = 'multiselect';
+    }
+    if (property.type === 'nested') {
+      type = 'nested';
+    }
+    if (property.type === 'multidaterange') {
+      type = 'nestedrange';
+    }
+    search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
+  });
+  search.types = filters.documentTypes;
+  search.limit = limit;
+  return search;
+}
+
 export function searchDocuments(readOnlySearch, limit) {
   return function (dispatch, getState) {
     const filters = getState().library.filters.toJS();
-    const search = Object.assign({}, readOnlySearch);
-    search.aggregations = filters.properties
-    .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
-    .map((property) => {
-      if (property.type === 'nested') {
-        return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
-      }
-      return {name: property.name, nested: false};
-    });
-
-    search.filters = {};
-    filters.properties.forEach((property) => {
-      if (!property.active) {
-        return;
-      }
-      let type = 'text';
-      if (property.type === 'date' || property.type === 'multidate') {
-        type = 'range';
-      }
-      if (property.type === 'select' || property.type === 'multiselect') {
-        type = 'multiselect';
-      }
-      if (property.type === 'nested') {
-        type = 'nested';
-      }
-      if (property.type === 'multidaterange') {
-        type = 'nestedrange';
-      }
-      search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
-    });
-    search.types = filters.documentTypes;
-    search.limit = limit;
+    const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
-    browserHistory.push(`/${toUrlParams(search)}`);
+    browserHistory.push(`/library/${toUrlParams(search)}`);
   };
 }
 
@@ -104,7 +120,7 @@ export function saveDocument(doc) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch(formActions.reset('library.metadata'));
+      dispatch(formActions.reset('library.sidepanel.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
@@ -116,7 +132,7 @@ export function saveEntity(entity) {
     return entities.api.save(entity)
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
-      dispatch(formActions.reset('library.metadata'));
+      dispatch(formActions.reset('library.sidepanel.metadata'));
       dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
       dispatch(selectDocument(updatedDoc));
     });
@@ -161,6 +177,15 @@ export function getSuggestions(searchTerm) {
     .then((suggestions) => {
       dispatch(setSuggestions(suggestions));
       dispatch(showSuggestions());
+    });
+  };
+}
+
+export function getDocumentReferences(documentId) {
+  return (dispatch) => {
+    return referencesAPI.get(documentId)
+    .then((references) => {
+      dispatch(actions.set('library.sidepanel.references', references));
     });
   };
 }

@@ -8,7 +8,6 @@ export default function () {
       _id: 'id1',
       _score: 0.05050901,
       _source: {
-        doc: {}
       },
       highlight: {}
     });
@@ -41,7 +40,7 @@ export default function () {
         newHit._id = doc._id;
         delete doc._id;
 
-        newHit._source.doc = doc;
+        newHit._source = doc;
         result.hits.hits.push(newHit);
       });
       return this;

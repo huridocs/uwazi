@@ -1,14 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
-import {searchDocuments} from 'app/Library/actions/libraryActions';
-import {bindActionCreators} from 'redux';
+import {toUrlParams} from '../../shared/JSONRequest';
 import {I18NLink, I18NMenu, t} from 'app/I18N';
+import {processFilters} from 'app/Library/actions/libraryActions';
 
 class Menu extends Component {
 
-  goToLibrary() {
-    this.props.searchDocuments(this.props.search);
+  libraryUrl() {
+    const params = processFilters(this.props.search, this.props.filters.toJS());
+    return '/library/' + toUrlParams(params);
   }
 
   render() {
@@ -29,10 +30,10 @@ class Menu extends Component {
         <li className="menuActions">
           <ul className="menuNav-list">
             <li className="menuNav-item">
-              <I18NMenu location={this.props.location}/>
+              <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+                  <i className="fa fa-th"></i>
+              </I18NLink>
             </li>
-            <li className="menuNav-item"><a onClick={this.goToLibrary.bind(this)}
-                                            className="menuNav-btn btn btn-default"><i className="fa fa-th"></i></a></li>
             <NeedAuthorization>
               <li className="menuNav-item">
                 <I18NLink to='/uploads' className="menuNav-btn btn btn-default">
@@ -59,6 +60,7 @@ class Menu extends Component {
               }
             })()}
           </ul>
+          <I18NMenu location={this.props.location}/>
         </li>
       </ul>
     );
@@ -69,18 +71,19 @@ Menu.propTypes = {
   user: PropTypes.object,
   location: PropTypes.object,
   search: PropTypes.object,
+  filters: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
   searchDocuments: PropTypes.func,
   links: PropTypes.object
 };
 
-export function mapStateToProps({user, search, settings}) {
-  return {user, search, links: settings.collection.get('links')};
+export function mapStateToProps({user, search, settings, library}) {
+  return {
+    user,
+    search,
+    filters: library.filters,
+    links: settings.collection.get('links')};
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Menu);
+export default connect(mapStateToProps)(Menu);

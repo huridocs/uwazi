@@ -21,7 +21,32 @@ function saveLinksTranslations(newLinks = [], currentLinks = []) {
     return result;
   }, {});
 
-  translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values);
+  return translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values);
+}
+
+function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
+  let newFilters = _newFilters.filter((item) => item.items);
+  let currentFilters = _currentFilters.filter((item) => item.items);
+
+  let updatedNames = {};
+  let deletedFilters = [];
+
+  currentFilters.forEach((filter) => {
+    let matchFilter = newFilters.find((l) => l.id === filter.id);
+    if (matchFilter && matchFilter.name !== filter.name) {
+      updatedNames[filter.name] = matchFilter.name;
+    }
+    if (!matchFilter) {
+      deletedFilters.push(filter.name);
+    }
+  });
+
+  let values = newFilters.reduce((result, filter) => {
+    result[filter.name] = filter.name;
+    return result;
+  }, {});
+
+  return translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values);
 }
 
 export default {
@@ -46,7 +71,10 @@ export default {
 
     return this.get()
     .then((currentSettings) => {
-      saveLinksTranslations(settings.links, currentSettings.links);
+      saveLinksTranslations(settings.links, currentSettings.links)
+      .then(() => {
+          saveFiltersTranslations(settings.filters, currentSettings.filters);
+      });
       return request.post(url, settings);
     })
     .then(response => this.get(`${dbURL}/${response.json.id}`));

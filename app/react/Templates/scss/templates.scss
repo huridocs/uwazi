@@ -10,7 +10,7 @@
     letter-spacing: 0.1em;
 
     padding: 15px;
-    background: $c-white;
+    background: $c-grey-lighten;
     .fa {
       margin-right: 5px;
     }
@@ -24,8 +24,15 @@
 
 .metadataTemplate-list,
 .metadataTemplate-constructor {
+  background: $c-grey-lighten;
+  display: table;
+  width: 100%;
   .list-group-item {
-    border: 1px solid transparent;
+    border-radius: 4px !important;
+    border: 1px solid $c-grey-light !important;
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05) !important;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
     .fa-clone,
     .fa-arrows-v {
       margin: 0 15px 0 0;
@@ -39,5 +46,23 @@
     .fa-arrows-v {
       color: #777;
     }
+  }
+}
+
+.metadataTemplate-list {
+  .list-group-item {
+    margin: 4px 15px;
+    &:first-of-type {
+      margin-top: 15px;
+    }
+    &:last-of-type {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.metadataTemplate-constructor {
+  .list-group-item {
+    margin: 4px 7px;
   }
 }

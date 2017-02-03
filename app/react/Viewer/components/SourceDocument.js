@@ -2,19 +2,24 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
-import {resetReferenceCreation, highlightReference, activateReference} from 'app/Viewer/actions/uiActions';
+import {resetReferenceCreation, highlightReference, activateReference, scrollToActive} from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
+import {createSelector} from 'reselect';
+
+const selectConnections = createSelector(s => s.references, r => r.toJS());
+const selectSourceRange = createSelector(s => s.uiState, u => u.toJS().reference.sourceRange);
+const selectHighlightedRef = createSelector(s => s.uiState, u => u.toJS().highlightedReference);
+const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeReference);
 
 const mapStateToProps = ({user, documentViewer}) => {
-  let uiState = documentViewer.uiState.toJS();
   return {
-    selection: uiState.reference.sourceRange,
+    selection: selectSourceRange(documentViewer),
+    doScrollToActive: documentViewer.uiState.get('goToActive'),
     doc: documentViewer.doc,
-    docHTML: documentViewer.docHTML,
-    references: documentViewer.references.toJS(),
+    references: selectConnections(documentViewer),
     className: 'sourceDocument',
-    highlightedReference: uiState.highlightedReference,
-    activeReference: uiState.activeReference,
+    highlightedReference: selectHighlightedRef(documentViewer),
+    activeReference: selectActiveRef(documentViewer),
     executeOnClickHandler: !!documentViewer.targetDoc.get('_id'),
     disableTextSelection: !user.get('_id'),
     panelIsOpen: !!documentViewer.uiState.get('panel'),
@@ -29,7 +34,8 @@ function mapDispatchToProps(dispatch) {
     unsetSelection,
     onClick: resetReferenceCreation,
     highlightReference,
-    activateReference
+    activateReference,
+    scrollToActive
   };
   return bindActionCreators(actions, dispatch);
 }

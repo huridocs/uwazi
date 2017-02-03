@@ -20,6 +20,8 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentTitle = connectedDocument.title;
   connection.connectedDocumentIcon = connectedDocument.icon;
   connection.connectedDocumentPublished = Boolean(connectedDocument.published);
+  connection.connectedDocumentMetadata = connectedDocument.metadata || {};
+  connection.connectedDocumentCreationDate = connectedDocument.creationDate;
   return connection;
 };
 
@@ -158,6 +160,17 @@ export default {
     return request.delete(`${dbURL}/${reference._id}`, {rev: reference._rev})
     .then((result) => {
       return result.json;
+    });
+  },
+
+  deleteTextReferences(sharedId, language) {
+    return this.getByDocument(sharedId, language)
+    .then(connections => {
+      const toDelete = connections
+      .filter(c => c.language === language && c.range.text.length)
+      .map(reference => this.delete(reference));
+
+      return Promise.all(toDelete);
     });
   }
 };

@@ -1,16 +1,17 @@
 @import "../../App/scss/config/_colors.scss";
 @import "../../App/scss/config/_materials.scss";
 @import "../../App/scss/config/_typography.scss";
+@import "../../App/scss/elements/_tooltip.scss";
 
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
 .side-panel {
-  z-index: 2;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   position: fixed;
   right: 0;
-  top: 54px;
+  top: $header-height;
   bottom: 0;
   border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;
@@ -19,10 +20,10 @@ $c-sidebar: $c-white;
   &.is-hidden {
     right: -100%;
   }
-  @media(min-width: 1024px) {
-    width: 33.333%;
+  @media(min-width: 454px) {
+    width: 400px;
     &.is-hidden {
-      right: -33.333%;
+      right: -400px;
     }
   }
 
@@ -44,7 +45,7 @@ $c-sidebar: $c-white;
       margin: 0;
     }
   }
-  .item-type {
+  .item-info .item-type {
     display: block;
     margin-top: 15px;
   }
@@ -53,9 +54,9 @@ $c-sidebar: $c-white;
     position: absolute;
     top: 0;
     right: 0;
-    width: 54px;
-    height: 54px;
-    line-height: 54px;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
     text-align: center;
     font-size: $f-size-lg;
     color: $c-grey;
@@ -69,38 +70,69 @@ $c-sidebar: $c-white;
     margin: 0;
   }
 
+  .sort-by {
+    padding: 5px 15px;
+    height: 30px;
+    margin: 0;
+
+    .Dropdown {
+      right: 15px;
+    }
+  }
+
   .item-group-header {
     display: block;
     width: 100%;
-    border-bottom: 1px solid $c-grey-light;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    font-size: $f-size;
+    padding: 6px 15px;
+    text-align: left;
+    border: 0;
+    background: 0;
+    box-shadow: none;
+    outline: none;
+    background: $c-grey-lighten;
+    margin-bottom: 1px;
 
-    .count {
-      color: $c-grey;
-      font-size: 105%;
-      padding-left: 10px;
+    &.is-expanded {
+      border-bottom: 1px solid $c-grey-light;
+      color: $c-primary;
+    }
+
+    .itemGroup-title {
       font-weight: bold;
     }
+
+    &:hover .itemGroup-title {
+      text-decoration: underline;
+    }
+
+    &:hover .multiselectItem-action {
+      border-color: $c-primary;
+    }
+
+    .multiselectItem-results {
+    }
+
+    &.is-expanded .multiselectItem-results {
+    }
+
+    .title {
+      position: relative;
+      line-height: 24px;
+    }
   }
-}
-.side-panel:not(.entity-connections) {
+
   .item-group {
     padding: 0px;
   }
   .item {
     transition: all 0ms;
     width: 100%;
-    margin: 0;
+    margin: 0 !important;
     border-top: 0;
     border-left: 0;
     border-right: 0;
     border-radius: 0;
     box-shadow: none;
-    &:last-child {
-      border-bottom: 0;
-    }
     &:before {
       display: none;
     }
@@ -127,12 +159,18 @@ $c-sidebar: $c-white;
       }
     }
 
-    &.relationship-hover {
+    &.relationship-hover,
+    &.highlight-hover:hover {
       background: $c-secondary-lighten;
     }
 
     &.relationship-active {
       background: $c-secondary-light;
+    }
+  }
+  @media(min-width: 1024px) {
+    .item-metadata dt {
+      @include tooltip('top-left');
     }
   }
 }
@@ -141,23 +179,24 @@ $c-sidebar: $c-white;
   flex: 1;
   overflow-y: scroll;
   overflow-x: hidden;
+  
+  & > *:last-child { // firefox hack (related issue #378)
+    padding-bottom: $header-height * 2;
+  }
 }
 
 .sidepanel-header,
 .sidepanel-footer {
-  background: $c-sidebar;
-  padding: 20px;
-  z-index: 1;
-}
-
-.sidepanel-footer + .sidepanel-body {
-  padding-bottom: 75px;
+  z-index: 4;
 }
 
 .sidepanel-header {
+  background: $c-sidebar;
   position: relative;
   min-height: $header-height;
-  border-bottom: 2px solid $c-grey-light;
+  line-height: $header-height;
+  border-bottom: 1px solid $c-grey-light;
+  padding: 0 15px;
 
   &.no-border {
     border-bottom: 0;
@@ -186,21 +225,23 @@ $c-sidebar: $c-white;
 .sidepanel-footer {
   position: absolute;
   bottom: 0;
-  left: 15px;
-  right: 15px;
-  padding: 0 0 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 0 20px;
   text-align: center;
-  background: linear-gradient(transparent 0%, $c-white 70%, $c-white 100%);
+  white-space: nowrap;
 
   .btn {
     position: relative;
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
     padding: 0;
     margin: 0 6px;
   }
+
   .btn-label {
     color: $c-grey-dark;
     position: absolute;
@@ -209,7 +250,8 @@ $c-sidebar: $c-white;
     line-height: 1.5em;
     left: 50%;
     transform: translateX(-50%) translateY(2px);
-
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
   }
 
   .btn:hover .btn-label {
@@ -226,5 +268,12 @@ $c-sidebar: $c-white;
   }
   .btn:disabled .btn-label {
     color: $c-grey !important;
+  }
+}
+
+.item.readOnly {
+  cursor: default;
+  &:hover{
+    cursor: default;
   }
 }

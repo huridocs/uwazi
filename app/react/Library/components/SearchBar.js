@@ -6,6 +6,7 @@ import {Field, Form, actions as formActions} from 'react-redux-form';
 
 import {searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
+import {t} from 'app/I18N';
 
 export class SearchBar extends Component {
 
@@ -48,18 +49,17 @@ export class SearchBar extends Component {
         <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
           <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
             <Field model="search.searchTerm">
+              <i className="fa fa-search"></i>
               <input
                 type="text"
-                placeholder="Search"
+                placeholder={t('System', 'Search')}
                 className="form-control"
                 onChange={this.getSuggestions.bind(this)}
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
+              <i className="fa fa-close" onClick={this.resetSearch.bind(this)}></i>
             </Field>
-            <span className="input-group-btn" onClick={this.resetSearch.bind(this)}>
-              <div className="btn btn-primary btn-close"><i className="fa fa-close"></i></div>
-            </span>
           </div>
           <div
             onMouseOver={this.mouseEnter.bind(this)}
@@ -67,20 +67,19 @@ export class SearchBar extends Component {
             className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' is-active' : '')}
             >
             {suggestions.toJS().map((suggestion, index) => {
-              let documentViewUrl = '/document/' + suggestion._id;
-              return <p key={index}>
+              let documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
+              return <p className="search-suggestions-item" key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <i className="fa fa-external-link">
+                  <i className="fa fa-file-text-o">
                   </i>
                 </I18NLink>
               </p>;
             })}
-            <p className="search-suggestions-all">
-            <button type="submit" onClick={this.closeSuggestions.bind(this)}>
-              <i className="fa fa-search"></i>See all documents for "{search.searchTerm}"
+            <button className="search-suggestions-all"
+                    type="submit" onClick={this.closeSuggestions.bind(this)}>
+              View all results for <b>{search.searchTerm}</b>
             </button>
-            </p>
           </div>
         </Form>
       </div>

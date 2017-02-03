@@ -31,13 +31,13 @@ export class PagesList extends Component {
               <I18NLink to={'/settings/pages/edit/' + page.get('sharedId')}>{page.get('title')}</I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/pages/edit/' + page.get('sharedId')} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>
+                  <i className="fa fa-pencil"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <button onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash"></i>
+                <a onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
+                  <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </button>
+                </a>
               </div>
             </li>
           )}

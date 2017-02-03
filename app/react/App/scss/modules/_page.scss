@@ -1,10 +1,9 @@
 .page-viewer {
-  .document {
-    max-width: 960px;
-  }
-  .page {
-    border: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
+  padding-top: 0;
+  padding-bottom: 0;
+  background: $c-white;
+  
+  .main-wrapper {
+    padding-bottom: 0;
   }
 }

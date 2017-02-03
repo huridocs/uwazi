@@ -26,38 +26,71 @@ Nightmare.action('login', function (name, password, done) {
 
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
-  .realClick(selector)
+  .click(selector)
   .then(done);
 });
 
-Nightmare.action('manageItemFromList', function (targetText, action, done) {
+Nightmare.action('manageItemFromList', function (liElement, targetText, action, done) {
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;
     let list = document.querySelectorAll(listSelector);
     list.forEach((item) => {
-      if (item.innerText.match(textToMatch)) {
+      let text = item.innerText;
+      text += Array.from(item.querySelectorAll('input')).map(input => input.value).join('');
+      if (text.match(textToMatch)) {
         itemFound = true;
       }
     });
     return itemFound;
-  }, selectors.settingsView.liElementsOfSection, targetText)
+  }, liElement, targetText)
   .evaluate((listSelector, textToMatch, actionToTake) => {
     let list = document.querySelectorAll(listSelector);
     list.forEach((item) => {
-      if (item.innerText.match(textToMatch)) {
+      let text = item.innerText;
+      text += Array.from(item.querySelectorAll('input')).map(input => input.value).join('');
+      if (text.match(textToMatch)) {
         item.querySelector(actionToTake).click();
       }
     });
-  }, selectors.settingsView.liElementsOfSection, targetText, action)
+  }, liElement, targetText, action)
   .then(done);
 });
 
-Nightmare.action('deleteItemFromList', function (targetText, done) {
-  this.manageItemFromList(targetText, '.fa-trash')
+Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
+  this.manageItemFromList(liElement, targetText, '.btn-danger')
   .then(done);
 });
 
-Nightmare.action('editItemFromList', function (targetText, done) {
-  this.manageItemFromList(targetText, '.fa-pencil')
+Nightmare.action('editItemFromList', function (liElement, targetText, done) {
+  this.manageItemFromList(liElement, targetText, '.fa-pencil')
+  .wait('.admin-content form')
+  .then(done);
+});
+
+Nightmare.action('scrollElement', function (selector, height, done) {
+  this.wait(selector)
+  .evaluate((elementToScroll, scrollHeight) => {
+    document.querySelector(elementToScroll).scrollTop = scrollHeight;
+  }, selector, height)
+  .then(done);
+});
+
+Nightmare.action('getInnerText', function (selector, done) {
+  this.wait(selector)
+  .evaluate_now((elementToSelect) => {
+    return document.querySelector(elementToSelect).innerText;
+  }, done, selector);
+});
+
+Nightmare.action('selectText', function (selector, done) {
+  this.wait(selector)
+  .evaluate((elementToSelect) => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector(elementToSelect));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, selector)
+  .mouseup(selector)
   .then(done);
 });

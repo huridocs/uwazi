@@ -6,7 +6,16 @@ body {
 	overflow: hidden;
 }
 
+a {
+  color: $c-primary;
+}
+
+a:hover, a:focus {
+  color: $c-primary-dark;
+}
+
 label {
+  margin: 0;
 	font-weight: normal;
 }
 
@@ -14,4 +23,8 @@ dt {
   font-weight: normal;
 	font-style: italic;
   color: $c-grey-dark;
+}
+
+input[type="radio"], input[type="checkbox"] {
+  cursor: pointer;
 }

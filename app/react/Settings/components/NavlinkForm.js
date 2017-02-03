@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {DragSource, DropTarget} from 'react-dnd';
 
-import {FormField} from 'app/Forms';
+import {Field} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
 
 import {removeLink} from 'app/Settings/actions/navlinksActions';
@@ -72,8 +72,8 @@ export class NavlinkForm extends Component {
 
     let className = 'list-group-item' + (isDragging ? ' dragging' : '');
     let titleClass = 'input-group';
-
-    if (formState.errors[`links.${index}.title.required`]) {
+    
+    if (formState.$form.errors[`links.${index}.title.required`]) {
       className += ' error';
       titleClass += ' has-error';
     }
@@ -86,16 +86,17 @@ export class NavlinkForm extends Component {
             <i className="fa fa-reorder"></i>&nbsp;
             <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
           </span>
+        </div>
+        <div>
           <button type="button"
-                  className="btn btn-danger btn-xs pull-right property-remove"
-                  onClick={() => this.props.removeLink(index)}>
-            <i className="fa fa-trash"></i> Delete
-          </button>
-          &nbsp;
-          <button type="button"
-                  className="btn btn-default btn-xs pull-right property-edit"
+                  className="btn btn-default btn-xs property-edit"
                   onClick={() => this.props.editLink(link.localID)}>
             <i className="fa fa-pencil"></i> Edit
+          </button>
+          <button type="button"
+                  className="btn btn-danger btn-xs property-remove"
+                  onClick={() => this.props.removeLink(index)}>
+            <i className="fa fa-trash"></i> Delete
           </button>
         </div>
 
@@ -108,9 +109,9 @@ export class NavlinkForm extends Component {
                     <span className="input-group-addon">
                       Title
                     </span>
-                    <FormField model={`settings.navlinksData.links[${index}].title`}>
+                    <Field model={`settings.navlinksData.links[${index}].title`}>
                       <input className="form-control" />
-                    </FormField>
+                    </Field>
                   </div>
                 </div>
                 <div className="col-sm-8">
@@ -118,9 +119,9 @@ export class NavlinkForm extends Component {
                     <span className="input-group-addon">
                       URL
                     </span>
-                    <FormField model={`settings.navlinksData.links[${index}].url`}>
+                    <Field model={`settings.navlinksData.links[${index}].url`}>
                       <input className="form-control" />
-                    </FormField>
+                    </Field>
                   </div>
                 </div>
               </div>

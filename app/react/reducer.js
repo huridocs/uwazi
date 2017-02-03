@@ -10,6 +10,7 @@ import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import connections from 'app/Connections';
+import {reducer as attachments} from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
@@ -17,9 +18,15 @@ import uploads from 'app/Uploads/reducers/reducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducer';
+import {reducer as metadata} from 'app/Metadata';
 import locale from 'app/I18N/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
+const defaultSearch = prioritySortingCriteria.get();
+defaultSearch.searchTerm = '';
+defaultSearch.filters = {};
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -33,7 +40,7 @@ export default combineReducers({
   dictionaries: createReducer('dictionaries', []),
   relationTypes: createReducer('relationTypes', []),
   relationType: modelReducer('relationType', {name: ''}),
-  relationTypeForm: formReducer('relationType'),
+  relationTypeForm: formReducer('relationType', {name: ''}),
   templates: createReducer('templates', []),
   translations: createReducer('translations', []),
   translationsForm: modelReducer('translationsForm', []),
@@ -42,10 +49,13 @@ export default combineReducers({
   documentViewer,
   contextMenu,
   connections: connections.reducer,
+  attachments,
   modals,
   uploads,
   user,
   login,
   settings,
-  search: modelReducer('search', {sort: 'creationDate', order: 'desc', searchTerm: '', filters: {}})
+  metadata,
+  search: modelReducer('search', defaultSearch),
+  searchForm: formReducer('search', defaultSearch)
 });

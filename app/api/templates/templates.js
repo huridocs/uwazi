@@ -1,7 +1,6 @@
 import {db_url as dbURL} from '../config/database.js';
 import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
-import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
 
@@ -27,7 +26,7 @@ let addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  translations.addContext(template.name, values);
+  translations.addContext(template._id, template.name, values);
 };
 
 let updateTranslation = (currentTemplate, template) => {
@@ -46,7 +45,7 @@ let updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  translations.updateContext(currentTemplate.name, template.name, updatedLabels, deletedPropertiesByLabel, context);
+  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 let save = (template) => {
@@ -69,34 +68,17 @@ export default {
     if (template._id) {
       return request.get(`${dbURL}/${template._id}`)
       .then((response) => {
-        let currentProperties = response.json.properties;
-        let newProperties = template.properties;
-        let updatedNames = getUpdatedNames(currentProperties, newProperties);
-        let deletedProperties = getDeletedProperties(currentProperties, newProperties);
-        updateTranslation(response.json, template);
-        return this.updateMetadataProperties(template._id, updatedNames, deletedProperties);
+        return updateTranslation(response.json, template);
       })
-      .then(() => save(template));
+      .then(() => save(template))
+      .then(response => this.getById(response.id));
     }
 
-    addTemplateTranslation(template);
-    return save(template);
-  },
-
-  updateMetadataProperties(templateId, nameMatches, deleteProperties) {
-    return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
+    return save(template)
     .then((response) => {
-      let documents = response.json.rows.map((r) => r.value);
-      documents = updateMetadataNames(documents, nameMatches);
-      documents = deleteMetadataProperties(documents, deleteProperties);
-
-      let updates = [];
-      documents.forEach((document) => {
-        let url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
-        updates.push(request.post(url, document));
-      });
-
-      return Promise.all(updates);
+      template._id = response.id;
+      addTemplateTranslation(template);
+      return this.getById(response.id);
     });
   },
 
@@ -109,7 +91,9 @@ export default {
       if (count > 0) {
         return Promise.reject({key: 'documents_using_template', value: count});
       }
-      translations.deleteContext(template.name);
+      return translations.deleteContext(template._id);
+    })
+    .then(() => {
       return request.delete(url);
     })
     .then((response) => {

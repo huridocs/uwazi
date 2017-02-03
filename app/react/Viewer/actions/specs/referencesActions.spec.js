@@ -55,23 +55,25 @@ describe('Viewer referencesActions', () => {
           {type: 'viewer/targetDocHTML/UNSET'},
           {type: 'viewer/targetDocReferences/UNSET'},
           {type: 'ACTIVE_REFERENCE', reference: 'addedRefernce'},
+          {type: 'GO_TO_ACTIVE', value: true},
           {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'},
-          {type: 'SHOW_TAB', tab: 'references'}
+          {type: 'viewer.sidepanel.tab/SET', value: 'references'}
         ];
 
-        actions.addReference(reference)(store.dispatch, getState);
+        actions.addReference(reference, {}, true)(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
       });
 
       it('should open the connections tab if sourceRange text is empty', () => {
         reference.sourceRange.text = '';
-        actions.addReference(reference)(store.dispatch, getState);
-        expect(store.getActions()).toContain({type: 'SHOW_TAB', tab: 'connections'});
+        actions.addReference(reference, {})(store.dispatch, getState);
+        expect(store.getActions()).toContain({type: 'viewer.sidepanel.tab/SET', value: 'connections'});
       });
     });
 
     describe('saveTargetRangedReference', () => {
       let store;
+      const getState = {};
       let saveConnectionDispatch;
       let connection;
       let targetRange;
@@ -87,10 +89,10 @@ describe('Viewer referencesActions', () => {
       });
 
       it('should unset the targetDocReferences', () => {
-        const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch);
+        const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch, getState);
         expect(store.getActions()).toContain({type: 'viewer/targetDocReferences/UNSET'});
         expect(connectionsActions.saveConnection).toHaveBeenCalledWith({sourceDocument: 'sourceId', targetRange: {text: 'target text'}}, onCreate);
-        expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch);
+        expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch, getState);
         expect(returnValue).toBe('returnValue');
       });
 

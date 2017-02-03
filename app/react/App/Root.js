@@ -45,7 +45,7 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script src={isDeveloping ? '/bundle.js' : '/bundle.js'}></script>
+          <script src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
         </body>
       </html>
     );

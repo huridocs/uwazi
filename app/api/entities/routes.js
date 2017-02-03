@@ -1,12 +1,19 @@
-import request from '../../shared/JSONRequest.js';
-import {db_url as dbUrl} from '../config/database.js';
 import entities from './entities';
+import templates from '../templates/templates';
+import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
   app.post('/api/entities', needsAuthorization, (req, res) => {
     return entities.save(req.body, {user: req.user, language: req.language})
-    .then(doc => res.json(doc));
+    .then(doc => {
+      res.json(doc);
+      return templates.getById(doc.template)
+      .then(template => thesauris.templateToThesauri(template, req.language));
+    })
+    .then((templateTransformed) => {
+      req.io.sockets.emit('thesauriChange', templateTransformed);
+    });
   });
 
   app.get('/api/entities/count_by_template', (req, res) => {

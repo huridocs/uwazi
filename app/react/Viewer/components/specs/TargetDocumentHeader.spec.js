@@ -35,7 +35,7 @@ describe('TargetDocumentHeader', () => {
     it('should save the reference', () => {
       render();
       component.find('button').last().simulate('click');
-      expect(props.saveTargetRangedReference).toHaveBeenCalledWith({_id: 'connection'}, {text: 'text'}, props.addReference);
+      expect(props.saveTargetRangedReference).toHaveBeenCalledWith({_id: 'connection'}, {text: 'text'}, jasmine.any(Function));
     });
   });
 });

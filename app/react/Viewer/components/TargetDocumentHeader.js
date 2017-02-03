@@ -6,31 +6,39 @@ import {addReference, saveTargetRangedReference} from '../actions/referencesActi
 import {cancelTargetDocument} from '../actions/documentActions';
 
 export class TargetDocumentHeader extends Component {
+
+  save(connection, targetRange) {
+    return this.props.saveTargetRangedReference(connection.toJS(), targetRange, (ref) => {
+      this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
+    });
+  }
+
   render() {
     const {targetDocument, reference, connection} = this.props;
     const {targetRange} = reference;
 
-    let disabled = true;
-    let className = 'btn btn-default';
+    let className = 'btn btn-default hidden';
 
     if (targetDocument && targetRange) {
-      disabled = false;
       className = 'btn btn-success';
     }
 
     return (
-      <div className="relationship-steps is-fixed">
-        <button onClick={this.props.cancelTargetDocument} className="btn btn-default">
-          <i className="fa fa-arrow-left"></i>
-          Back
-        </button>
-        <button onClick={() => this.props.saveTargetRangedReference(connection.toJS(), targetRange, this.props.addReference)}
-                disabled={disabled}
-                className={className}>
-          <i className="fa fa-save"></i>
-          Save
-        </button>
-        <h2>Select target paragraph<small>3</small></h2>
+      <div>
+        <div className="relationship-steps is-fixed">
+          <button onClick={this.props.cancelTargetDocument} className="btn btn-default">
+            <i className="fa fa-arrow-left"></i>
+            Back
+          </button>
+          <h2>Select target paragraph<small>3</small></h2>
+        </div>
+        <div className="ContextMenu ContextMenu-center">
+          <button onClick={this.save.bind(this, connection, targetRange)}
+            className={className}>
+            <i className="fa fa-save"></i>
+            <span className="ContextMenu-tooltip">Save</span>
+          </button>
+        </div>
       </div>
     );
   }
@@ -38,6 +46,7 @@ export class TargetDocumentHeader extends Component {
 
 TargetDocumentHeader.propTypes = {
   connection: PropTypes.object,
+  pdfInfo: PropTypes.object,
   reference: PropTypes.object,
   targetDocument: PropTypes.string,
   saveTargetRangedReference: PropTypes.func,
@@ -50,7 +59,8 @@ function mapStateToProps({documentViewer, connections}) {
   return {
     connection: connections.connection,
     reference: documentViewer.uiState.toJS().reference,
-    targetDocument: documentViewer.targetDoc.get('_id')
+    targetDocument: documentViewer.targetDoc.get('_id'),
+    pdfInfo: documentViewer.doc.get('pdfInfo')
   };
 }
 

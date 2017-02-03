@@ -1,5 +1,7 @@
+const INDEX_NAME = process.env.INDEX_NAME;
+
 export default {
-  production: 'uwazi',
-  development: 'uwazi_development',
-  demo: 'uwazi_demo'
+  production: INDEX_NAME ? INDEX_NAME  :'uwazi',
+  development: INDEX_NAME ? INDEX_NAME  :'uwazi_development',
+  demo: INDEX_NAME ? INDEX_NAME  :'uwazi_demo'
 };

@@ -29,6 +29,7 @@ describe('templateActions', () => {
     dispatch = jasmine.createSpy('dispatch');
     getState = jasmine.createSpy('getState').and.returnValue(formModel);
     spyOn(formActions, 'change');
+    spyOn(formActions, 'push');
     spyOn(formActions, 'move');
     spyOn(formActions, 'remove');
     spyOn(formActions, 'reset');
@@ -44,7 +45,7 @@ describe('templateActions', () => {
       ]);
     });
 
-    describe('when property its a select', () => {
+    describe('when property is a select or multiselect', () => {
       it('should should add as first thesauri as default value', () => {
         actions.addProperty({name: 'property3', type: 'select'}, 0)(dispatch, getState);
         expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
@@ -52,7 +53,28 @@ describe('templateActions', () => {
           {name: 'property1'},
           {name: 'property2'}
         ]);
+
+        actions.addProperty({name: 'property4', type: 'multiselect'}, 0)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+          {name: 'property4', type: 'multiselect', localID: 'unique_id', content: 'first_thesauri_id'},
+          {name: 'property1'},
+          {name: 'property2'}
+        ]);
       });
+    });
+  });
+
+  describe('addNestedProperty()', () => {
+    it('should update the property in the index provided', () => {
+      actions.addNestedProperty(0)(dispatch, getState);
+      expect(formActions.push).toHaveBeenCalledWith('template.data.properties[0].nestedProperties', {key: '', label: ''});
+    });
+  });
+
+  describe('removeNestedProperty()', () => {
+    it('should update the property in the index provided', () => {
+      actions.removeNestedProperty(0, 2)(dispatch, getState);
+      expect(formActions.remove).toHaveBeenCalledWith('template.data.properties[0].nestedProperties', 2);
     });
   });
 
@@ -99,7 +121,7 @@ describe('templateActions', () => {
       spyOn(notifications, 'notify');
       backend.restore();
       backend
-      .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok', id: 'id', rev: 'rev'})});
+      .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({testBackendResult: 'ok', _id: 'id', _rev: 'rev'})});
     });
 
     describe('saveTemplate', () => {
@@ -111,8 +133,9 @@ describe('templateActions', () => {
 
         const expectedActions = [
           {type: types.SAVING_TEMPLATE},
-          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', id: 'id', rev: 'rev'}},
-          {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}},
+          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
+          {type: 'templates/UPDATE', value: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
+          {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}, silent: false, multi: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Saved successfully.', type: 'success', id: 'unique_id'}}
         ];
         const store = mockStore({});

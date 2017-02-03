@@ -1,25 +1,17 @@
 import React, {Component, PropTypes} from 'react';
-import FormField from './FormField';
+import {connect} from 'react-redux';
 
 export class FormGroup extends Component {
 
   render() {
     let className = 'form-group';
-    if ((this.props.touched === true || this.props.submitFailed) && this.props.valid === false) {
+    if (this.props.hasError) {
       className += ' has-error';
     }
 
-    let children = React.Children.map(this.props.children, child => child);
-
-    let field = children.filter(child => child.type === FormField);
-    let label = children.filter(child => child.type !== FormField);
-
     return (
       <div className={className}>
-        <ul className="search__filter">
-          <li>{label}</li>
-          <li className="wide">{field}</li>
-        </ul>
+        {this.props.children}
       </div>
     );
   }
@@ -32,10 +24,12 @@ let childrenType = PropTypes.oneOfType([
 ]);
 
 FormGroup.propTypes = {
-  touched: PropTypes.bool,
-  valid: PropTypes.bool,
-  submitFailed: PropTypes.bool,
+  hasError: PropTypes.bool,
   children: childrenType
 };
 
-export default FormGroup;
+export const mapStateToProps = ({}, props) => {
+  return {hasError: (props.touched || props.submitFailed) && props.valid === false};
+};
+
+export default connect(mapStateToProps)(FormGroup);

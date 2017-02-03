@@ -3,15 +3,15 @@ import {connect} from 'react-redux';
 import t from '../I18N/t';
 
 export class TemplateLabel extends Component {
+  //shouldComponentUpdate(nextProps) {
+    //return this.props.template !== nextProps.template;
+  //}
+
   render() {
     const templates = this.props.templates.toJS();
     let typeIndex;
-    let icon = 'fa-file-text-o';
     let name = templates.reduce((result, template, index) => {
       if (template._id === this.props.template) {
-        if (template.isEntity) {
-          icon = 'fa-bank';
-        }
         typeIndex = 'item-type item-type-' + index;
         return template.name;
       }
@@ -20,8 +20,7 @@ export class TemplateLabel extends Component {
 
     return (
       <span className={typeIndex}>
-        <i className={`item-type__icon fa ${icon}`}></i>
-        <span className="item-type__name">{t(name, name)}</span>
+        <span className="item-type__name no-icon">{t(this.props.template, name)}</span>
       </span>
     );
   }

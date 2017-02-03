@@ -14,9 +14,10 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
+      PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
-      doc: Immutable.fromJS({_id: 'documentId'}),
+      doc: Immutable.fromJS({_id: 'documentId', pdfInfo: {test: 'pdfInfo'}}),
       docHTML: Immutable.fromJS({
         pages: ['page1', 'page2', 'page3'],
         css: 'css'
@@ -38,20 +39,6 @@ describe('Document', () => {
     props.className = 'aClass';
     render();
     expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
-  });
-
-  it('should render every pagen inside a div ', () => {
-    render();
-    let pages = component.find('.pages').children();
-    expect(pages.first().props().dangerouslySetInnerHTML).toEqual({__html: 'page1'});
-    expect(pages.last().props().dangerouslySetInnerHTML).toEqual({__html: 'page3'});
-  });
-
-  it('should render every css inside a style ', () => {
-    render();
-    let styles = component.find('style');
-
-    expect(styles.first().props()).toEqual({type: 'text/css', dangerouslySetInnerHTML: Object({__html: 'css'})});
   });
 
   describe('onClick', () => {
@@ -81,11 +68,12 @@ describe('Document', () => {
 
       it('should activate the reference', () => {
         props.executeOnClickHandler = true;
+        props.references = [{_id: 'referenceId', test: 'test'}];
         props.activateReference = jasmine.createSpy('activateReference');
         render();
         instance.text = {selected: jasmine.createSpy('selected').and.returnValue(false)};
         component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-        expect(props.activateReference).toHaveBeenCalledWith('referenceId', props.references);
+        expect(props.activateReference).toHaveBeenCalledWith(props.references[0], props.doc.toJS().pdfInfo, props.references);
         expect(props.onClick).not.toHaveBeenCalled();
       });
 
@@ -93,13 +81,34 @@ describe('Document', () => {
         it('should not active the reference', () => {
           props.executeOnClickHandler = true;
           props.activateReference = jasmine.createSpy('activateReference');
+          props.references = [{_id: 'referenceId', test: 'test'}];
           render();
           instance.text = {selected: jasmine.createSpy('selected').and.returnValue(true)};
           component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-          expect(props.activateReference).not.toHaveBeenCalledWith('referenceId');
+          expect(props.activateReference).not.toHaveBeenCalledWith(props.references[0], props.doc.toJS().pdfInfo);
           expect(props.onClick).toHaveBeenCalled();
         });
       });
+    });
+  });
+
+  describe('componentWillReceiveProps', () => {
+    it('should unset selection if different doc', () => {
+      render();
+      expect(props.unsetSelection.calls.count()).toBe(1);
+      instance.componentWillReceiveProps({doc: Immutable.fromJS({_id: 'documentId'})});
+      expect(props.unsetSelection.calls.count()).toBe(1);
+      instance.componentWillReceiveProps({doc: Immutable.fromJS({_id: 'anotherId'})});
+      expect(props.unsetSelection.calls.count()).toBe(2);
+    });
+  });
+
+  describe('componentWillMount', () => {
+    it('should unset selection', () => {
+      render();
+      expect(props.unsetSelection.calls.count()).toBe(1);
+      instance.componentWillMount();
+      expect(props.unsetSelection.calls.count()).toBe(2);
     });
   });
 
@@ -194,6 +203,7 @@ describe('Document', () => {
       props.highlightedReference = 'highlightedReference';
       props.references = [{reference: 'reference'}];
       props.forceSimulateSelection = true;
+      props.pdfIsRdy = true;
       render();
       instance.text = Text(instance.pagesContainer);
       spyOn(instance.text, 'getSelection').and.returnValue('serializedRange');
@@ -215,13 +225,11 @@ describe('Document', () => {
 
       it('should render the references', () => {
         instance.componentDidUpdate();
-
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{reference: 'reference'}]);
       });
 
       it('should highlight the reference', () => {
         instance.componentDidUpdate();
-
         expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
       });
     });

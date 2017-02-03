@@ -4,9 +4,10 @@ import fixtures from './fixtures.js';
 import {db_url as dbURL} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import documents from '../../documents/documents';
 import entities from 'api/entities';
+import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import search from 'api/search/search';
 
 describe('upload routes', () => {
   let routes;
@@ -15,6 +16,7 @@ describe('upload routes', () => {
   let iosocket;
 
   beforeEach((done) => {
+    spyOn(search, 'index').and.returnValue(Promise.resolve());
     iosocket = jasmine.createSpyObj('socket', ['emit']);
     let io = {getSocket: () => {
       return iosocket;
@@ -36,7 +38,7 @@ describe('upload routes', () => {
     .catch(done.fail);
   });
 
-  describe('POST', () => {
+  describe('POST/upload', () => {
     //temporary test for the conversion, probably this will go on another
     it('should process the document after upload', (done) => {
       routes.post('/api/upload', req)
@@ -44,6 +46,7 @@ describe('upload routes', () => {
         setTimeout(() => {
           return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="id"`)
           .then((docs) => {
+            expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
             expect(docs.json.rows[0].value.processed).toBe(true);
             expect(docs.json.rows[0].value.fullText).toMatch(/Test file/);
@@ -52,19 +55,6 @@ describe('upload routes', () => {
             expect(docs.json.rows[1].value.processed).toBe(true);
             expect(docs.json.rows[1].value.fullText).toMatch(/Test file/);
             expect(docs.json.rows[1].value.language).toBe('es');
-            return Promise.all([
-              documents.getHTML(docs.json.rows[0].value.sharedId, 'es'),
-              documents.getHTML(docs.json.rows[0].value.sharedId, 'en')
-            ]);
-          })
-          .then(([conversion1, conversion2]) => {
-            expect(conversion1.fullText).not.toBeDefined();
-            expect(conversion1.pages.length).toBe(1);
-            expect(conversion1.css).toMatch(/ff0/);
-
-            expect(conversion2.fullText).not.toBeDefined();
-            expect(conversion2.pages.length).toBe(1);
-            expect(conversion2.css).toMatch(/ff0/);
             done();
           })
           .catch(catchErrors(done));
@@ -76,15 +66,16 @@ describe('upload routes', () => {
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
         iosocket.emit.and.callFake((eventName) => {
-          expect(eventName).toBe('conversionFailed');
-          setTimeout(() => {
-            entities.getAllLanguages('id')
-            .then(docs => {
-              expect(docs.rows[0].processed).toBe(false);
-              expect(docs.rows[1].processed).toBe(false);
-              done();
-            });
-          }, 100);
+          if (eventName === 'conversionFailed') {
+            setTimeout(() => {
+              entities.getAllLanguages('id')
+              .then(docs => {
+                expect(docs.rows[0].processed).toBe(false);
+                expect(docs.rows[1].processed).toBe(false);
+                done();
+              });
+            }, 500);
+          }
         });
 
         req.files = ['invalid_file'];
@@ -107,6 +98,23 @@ describe('upload routes', () => {
         })
         .catch(done.fail);
       });
+    });
+  });
+
+  describe('POST/reupload', () => {
+    beforeEach(() => {
+      spyOn(references, 'deleteTextReferences').and.returnValue(Promise.resolve());
+    });
+
+    it('should reupload a document', (done) => {
+      req.body.document = '8202c463d6158af8065022d9b5014ccb';
+      routes.post('/api/reupload', req)
+      .then(response => {
+        expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
+        expect(response).toEqual(file);
+        done();
+      })
+      .catch(done.fail);
     });
   });
 });

@@ -1,7 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {FormField} from 'app/Forms';
+import {Field} from 'react-redux-form';
 import {connect} from 'react-redux';
+
+import PrioritySortingLabel from './PrioritySortingLabel';
 
 import ShowIf from 'app/App/ShowIf';
 
@@ -9,110 +11,72 @@ export class FormConfigInput extends Component {
 
   render() {
     const {index, data, formState, type} = this.props;
-    const ptoperty = data.properties[index];
-    let labelClass = 'input-group';
+    const property = data.properties[index];
+    let labelClass = '';
     let labelKey = `properties.${index}.label`;
-    let requiredLabel = formState.errors[labelKey + '.required'];
-    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    let requiredLabel = formState.$form.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
 
     return (
       <div>
-        <div className="row">
-          <div className="col-sm-6">
-            <div className={labelClass}>
-              <span className="input-group-addon">
-                Label
-              </span>
-              <FormField model={`template.data.properties[${index}].label`}>
-                <input className="form-control" />
-              </FormField>
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + index} type="checkbox"/>
-                </FormField>
-              </span>
-              <label htmlFor={'required' + index} className="form-control">Required</label>
-            </div>
-          </div>
-        </div>
-        {(() => {
-          if (duplicatedLabel) {
-            return <div className="row validation-error">
-                    <div className="col-sm-4">
-                      <i className="fa fa-exclamation-triangle"></i>
-                      &nbsp;
-                      Duplicated label
-                    </div>
-                  </div>;
-          }
-        })()}
 
-        <div className="well well-metadata-creator">
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].filter`}>
-                <input id={'filter' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
-              When properties match in equal name and field type with other document types, they will be combined for filtering.">
-                Use as filter
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className="col-sm-8 border-bottom">
-              <FilterSuggestions {...ptoperty} />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].showInCard`}>
-                <input id={'showInCard' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'showInCard' + this.props.index}
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className={'col-sm-8 help' + (type === 'text' || type === 'date' ? ' border-bottom' : '')}>
-              Show this property in the library card's basic info.
-            </div>
-          </div>
-
-          <ShowIf if={type === 'text' || type === 'date'}>
-            <div className="row">
-              <div className="col-sm-4">
-                <FormField model={`template.data.properties[${index}].sortable`}>
-                  <input id={'sortable' + this.props.index} type="checkbox"/>
-                </FormField>
-                &nbsp;
-                <label htmlFor={'sortable' + this.props.index}
-                       title="Library items will be able to be sorted by this property.">
-                  Sortable
-                  &nbsp;
-                  <i className="fa fa-question-circle"></i>
-                </label>
-              </div>
-              <div className="col-sm-8 help">
-                Use this property to sort library items.
-              </div>
-            </div>
-          </ShowIf>
-
+        <div className={labelClass}>
+          <label>Name</label>
+          <Field model={`template.data.properties[${index}].label`}>
+            <input className="form-control" />
+          </Field>
         </div>
 
+        <Field model={`template.data.properties[${index}].required`}>
+          <input id={'required' + index} type="checkbox"/>
+          &nbsp;
+          <label className="property-label" htmlFor={'required' + index}>
+            Required property
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+            </i>
+          </label>
+        </Field>
+
+        <Field model={`template.data.properties[${index}].showInCard`}>
+          <input id={'showInCard' + this.props.index} type="checkbox"/>
+          &nbsp;
+          <label className="property-label" htmlFor={'showInCard' + this.props.index}>
+            Show in cards
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">Show this property in the cards as part of the basic info.</div>
+            </i>
+          </label>
+        </Field>
+
+        <div>
+          <Field model={`template.data.properties[${index}].filter`}>
+            <input id={'filter' + this.props.index} type="checkbox"/>
+            &nbsp;
+            <label className="property-label" htmlFor={'filter' + this.props.index}>
+              Use as filter
+              <i className="property-help fa fa-question-circle">
+                <div className="property-description">
+                  Use this property to filter the library results.
+                  When properties match in equal name and field type with other document types, they will be combined for filtering.
+                  Also library items will be able to be sorted by this property.
+                </div>
+              </i>
+            </label>
+          </Field>
+          <FilterSuggestions {...property} />
+        </div>
+
+        <ShowIf if={type === 'text' || type === 'date'}>
+          <Field model={`template.data.properties[${index}].prioritySorting`}>
+            <input id={'prioritySorting' + this.props.index} type="checkbox" disabled={!property.filter} />
+            &nbsp;
+            <PrioritySortingLabel htmlFor={'prioritySorting' + this.props.index} />
+          </Field>
+        </ShowIf>
       </div>
     );
   }

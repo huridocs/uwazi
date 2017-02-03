@@ -1,8 +1,28 @@
 import uuid from 'node-uuid';
 
 export function generateNames(properties) {
+  let newCounts = properties.reduce((memo, property) => {
+    if (property.name) {
+      const baseName = property.name.split('--')[0];
+      const nameCount = property.name.split('--')[1] || 0;
+      if (!memo[baseName]) {
+        memo[baseName] = Number(nameCount) || 1;
+      }
+      else {
+        memo[baseName] = Math.max(memo[baseName]+1, Number(nameCount)+1);
+      }
+    }
+    return memo;
+  }, {});
+
   return properties.map((property) => {
+    if (property.name) {
+      return property;
+    }
     property.name = property.label.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    if (newCounts[property.name]) {
+      property.name = property.name + '--' + newCounts[property.name];
+    }
     return property;
   });
 }

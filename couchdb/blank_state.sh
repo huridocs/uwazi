@@ -11,8 +11,8 @@ echo -e "\ncreating blank state on ${1:-uwazi_development} database"
 ../node_modules/couchdb-dump/bin/cdbload -d ${1:-uwazi_development} < uwazi_blank_state.json
 sleep 1
 echo -e "\nreseting views on ${1:-uwazi_development} database"
-./restore_views.sh
+./restore_views.sh ${1:-uwazi_development}
 
-echo "Restoring conversions...."
-rm ../conversions/*.json
-cp ./conversions/*.json ${2:-..}/conversions/
+echo "Restoring pdfs..."
+rm ../uploaded_documents/*.pdf
+cp ./uploaded_documents/*.pdf ${2:-..}/uploaded_documents/

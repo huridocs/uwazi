@@ -1,12 +1,15 @@
+// Entire component is UNTESTED!
+// TEST
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import {finishEdit} from 'app/Uploads/actions/uploadsActions';
 import SidePanel from 'app/Layout/SidePanel';
+import ShowIf from 'app/App/ShowIf';
 import DocumentForm from '../containers/DocumentForm';
 import EntityForm from '../containers/EntityForm';
-import ShowIf from 'app/App/ShowIf';
+import UploadsFormPanelButtons from './UploadsFormPanelButtons';
 
 export class UploadsFormPanel extends Component {
   submit(doc) {
@@ -14,7 +17,7 @@ export class UploadsFormPanel extends Component {
   }
 
   close() {
-    if (this.props.formState.dirty) {
+    if (this.props.dirty) {
       return this.context.confirm({
         accept: () => {
           this.props.finishEdit();
@@ -31,9 +34,15 @@ export class UploadsFormPanel extends Component {
     return (
       <SidePanel {...sidePanelprops}>
         <div className="sidepanel-header">
-          <h1>Metadata</h1>
+          <ul className="nav nav-tabs">
+            <li><div className="tab-link tab-link-active">
+              <i className="fa fa-info-circle"></i>
+              <span className="tab-link-tooltip">Info</span>
+            </div></li>
+          </ul>
           <i className='closeSidepanel fa fa-close close-modal' onClick={this.close.bind(this)}></i>
         </div>
+        <UploadsFormPanelButtons />
         <div className="sidepanel-body">
           <ShowIf if={this.props.metadataType === 'document'}>
             <DocumentForm/>
@@ -51,9 +60,8 @@ UploadsFormPanel.propTypes = {
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
   finishEdit: PropTypes.func,
-  title: PropTypes.string,
   metadataType: PropTypes.string,
-  formState: PropTypes.object
+  dirty: PropTypes.bool
 };
 
 UploadsFormPanel.contextTypes = {
@@ -70,8 +78,7 @@ const mapStateToProps = ({uploads}) => {
   return {
     open: typeof uiState.get('metadataBeingEdited') === 'object',
     metadataType,
-    title: uploads.metadata.title,
-    formState: uploads.metadataForm
+    dirty: uploads.metadataForm.dirty
   };
 };
 

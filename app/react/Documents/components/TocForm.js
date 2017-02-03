@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Form} from 'react-redux-form';
-
-import {FormField} from 'app/Forms';
+import {Form, Field} from 'react-redux-form';
 
 export class TocForm extends Component {
   render() {
@@ -11,16 +9,16 @@ export class TocForm extends Component {
           return (
             <div className={`toc-indent-${tocElement.indentation}`} key={index}>
               <div className="toc-edit">
-                <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation - 1)} className="toc-indent-less btn btn-xs btn-default">
+                <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation - 1)} className="toc-indent-less btn btn-default">
                   <i className="fa fa-arrow-left"></i>
                 </a>
-                <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation + 1)} className="toc-indent-more btn btn-xs btn-default">
+                <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation + 1)} className="toc-indent-more btn btn-default">
                   <i className="fa fa-arrow-right"></i>
                 </a>
-                <FormField model={`${this.props.model}[${index}].label`} >
+                <Field model={`${this.props.model}[${index}].label`} >
                   <input className="form-control"/>
-                </FormField>
-                <a onClick={this.props.removeEntry.bind(this, tocElement)} className="btn btn-xs btn-danger">
+                </Field>
+                <a onClick={this.props.removeEntry.bind(this, tocElement)} className="btn btn-danger">
                   <i className="fa fa-trash"></i>
                 </a>
               </div>

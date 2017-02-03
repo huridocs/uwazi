@@ -140,7 +140,7 @@ describe('references', () => {
 
         expect(result[0].inbound).toBe(true);
         expect(result[0].targetDocument).toBe('source2');
-        expect(result[0].range).toBe('range1');
+        expect(result[0].range).toEqual({for: 'range1', text: ''});
         expect(result[0].text).toBe('sourceRange');
         expect(result[0].connectedDocument).toBe('source1');
         expect(result[0].connectedDocumentTitle).toBe('source1 title');
@@ -148,10 +148,12 @@ describe('references', () => {
         expect(result[0].connectedDocumentType).toBe('document');
         expect(result[0].connectedDocumentTemplate).toBe('template3_id');
         expect(result[0].connectedDocumentPublished).toBe(false);
+        expect(result[0].connectedDocumentMetadata).toEqual({data: 'data1'});
+        expect(result[0].connectedDocumentCreationDate).toEqual(123);
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
-        expect(result[1].range).toBe('range2');
+        expect(result[1].range).toEqual({for: 'range2', text: 'range2'});
         expect(result[1].text).toBe('targetRange');
         expect(result[1].connectedDocument).toBe('doc3');
         expect(result[1].connectedDocumentTitle).toBe('doc3 title');
@@ -159,18 +161,24 @@ describe('references', () => {
         expect(result[1].connectedDocumentType).toBe('entity');
         expect(result[1].connectedDocumentTemplate).toBe('template1_id');
         expect(result[1].connectedDocumentPublished).toBe(true);
+        expect(result[1].connectedDocumentMetadata).toEqual({data: 'data2'});
+        expect(result[1].connectedDocumentCreationDate).toEqual(456);
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
-        expect(result[2].range).toBe('range3');
+        expect(result[2].range).toEqual({for: 'range3', text: 'range3'});
         expect(result[2].text).toBe('');
         expect(result[2].connectedDocument).toBe('doc4');
         expect(result[2].connectedDocumentTitle).toBe('doc4 title');
         expect(result[2].connectedDocumentType).toBe('document');
         expect(result[2].connectedDocumentTemplate).toBe('template1_id');
         expect(result[2].connectedDocumentPublished).toBe(false);
+        expect(result[2].connectedDocumentMetadata).toEqual({data: 'data3'});
+        expect(result[2].connectedDocumentCreationDate).toEqual(789);
 
         expect(result[3].text).toBe('');
+        expect(result[3].connectedDocumentMetadata).toEqual({});
+        expect(result[3].connectedDocumentCreationDate).toBeUndefined();
         done();
       })
       .catch(catchErrors(done));
@@ -262,6 +270,20 @@ describe('references', () => {
       .catch((result) => {
         expect(result.json.error).toBe('not_found');
         expect(result.json.reason).toBe('deleted');
+        done();
+      });
+    });
+  });
+
+  describe('deleteTextReferences()', () => {
+    it('should delete the entity text references (that match language)', (done) => {
+      references.deleteTextReferences('source2', 'es')
+      .then(() => {
+        return references.getByDocument('source2', 'es');
+      })
+      .then(results => {
+        expect(results.length).toBe(3);
+        expect(results.filter(r => r._id === 'c08ef2532f0bd008ac5174b45e033c03').length).toBe(0);
         done();
       });
     });

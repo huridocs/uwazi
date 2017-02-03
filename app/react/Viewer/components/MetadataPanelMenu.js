@@ -26,7 +26,7 @@ export class MetadataPanelMenu extends Component {
                   <i className="fa fa-save"></i>
                 </button>
               </MenuButtons.Main>
-              );
+            );
           }
           return (
             <NeedAuthorization>
@@ -35,7 +35,7 @@ export class MetadataPanelMenu extends Component {
                 <i className="fa fa-pencil"></i>
               </MenuButtons.Main>
             </NeedAuthorization>
-            );
+          );
         })()}
       </div>
     );
@@ -51,10 +51,10 @@ MetadataPanelMenu.propTypes = {
   targetDoc: PropTypes.bool
 };
 
-const mapStateToProps = ({documentViewer}) => {
+const mapStateToProps = ({documentViewer, templates}) => {
   return {
     doc: documentViewer.doc,
-    templates: documentViewer.templates,
+    templates: templates,
     docForm: documentViewer.docForm,
     formState: documentViewer.docFormState,
     targetDoc: !!documentViewer.targetDoc.get('_id')

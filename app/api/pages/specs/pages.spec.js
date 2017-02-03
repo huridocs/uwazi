@@ -16,7 +16,6 @@ describe('pages', () => {
   });
 
   describe('save', () => {
-    let getDocuments = () => request.get(dbURL + '/_design/pages/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getPageInAllLanguages = (sharedId) => {
       return request.get(`${dbURL}/_design/pages/_view/sharedId?key="${sharedId}"`).then((response) => response.json.rows.map(r => r.value));
     };
@@ -58,17 +57,19 @@ describe('pages', () => {
     });
 
     describe('when updating', () => {
-      it('should not assign again user and creation date', (done) => {
+      it('should not assign again user and creation date and partial update data', (done) => {
         spyOn(date, 'currentUTC').and.returnValue('another_date');
         getDocument()
         .then((doc) => {
-          return pages.save(doc, 'another_user');
+          const {_id, _rev, sharedId} = doc;
+          return pages.save({_id, _rev, sharedId, title: 'Edited title'}, 'another_user');
         })
-        .then(getDocuments)
-        .then((docs) => {
-          let modifiedDoc = docs.find((d) => d.title === 'Penguin almost done');
+        .then(() => request.get(dbURL + '/8202c463d6158af8065022d9b50ddccb'))
+        .then((doc) => {
+          let modifiedDoc = doc.json;
+          expect(modifiedDoc.title).toBe('Edited title');
           expect(modifiedDoc.user).not.toBe('another_user');
-          expect(modifiedDoc.creationDate).not.toBe('another_date');
+          expect(modifiedDoc.creationDate).toBe('1');
           done();
         })
         .catch(catchErrors(done));

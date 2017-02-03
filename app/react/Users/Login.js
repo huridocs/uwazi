@@ -24,6 +24,10 @@ export class Login extends RouteHandler {
     return this.login(credentials);
   }
 
+  static requestState() {
+    return Promise.resolve({});
+  }
+
   recoverPassword(email) {
     return this.props.recoverPassword(email);
   }

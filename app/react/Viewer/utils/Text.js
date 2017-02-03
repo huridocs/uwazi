@@ -1,8 +1,10 @@
 import TextRange from 'batarange';
 import wrapper from 'app/utils/wrapper';
+import {events} from 'app/utils';
 
 export default function (container) {
   return {
+    charRange: {start: null, end: null},
     container,
     renderedReferences: {},
     highlightedReference: null,
@@ -11,11 +13,17 @@ export default function (container) {
       return window.getSelection().toString() !== '';
     },
 
+    range(charRange) {
+      this.charRange = charRange;
+    },
+
     getSelection() {
       let selection = window.getSelection();
       let range = selection.getRangeAt(0);
       let serializedRange = TextRange.serialize(range, container);
-      serializedRange.text = selection.toString();
+      serializedRange.start += this.charRange.start;
+      serializedRange.end += this.charRange.start;
+      serializedRange.text = selection.toString().replace(/\s+/g, ' ');
       return serializedRange;
     },
 
@@ -73,10 +81,17 @@ export default function (container) {
         return;
       }
 
-      let restoredRange = TextRange.restore(range, container);
-      let elementWrapper = document.createElement('span');
-      elementWrapper.classList.add('fake-selection');
-      this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+      if (range.start >= this.charRange.start && range.start <= this.charRange.end ||
+          range.end <= this.charRange.end && range.end >= this.charRange.start) {
+        let offsetRange = Object.assign({}, range);
+        offsetRange.start -= this.charRange.start;
+        offsetRange.end -= this.charRange.start;
+
+        let restoredRange = TextRange.restore(offsetRange, container);
+        let elementWrapper = document.createElement('span');
+        elementWrapper.classList.add('fake-selection');
+        this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+      }
     },
 
     removeSimulatedSelection() {
@@ -115,7 +130,18 @@ export default function (container) {
       if (!this.renderedReferences[identifier]) {
         this.renderedReferences[identifier] = {};
       }
-      references.forEach((reference) => {
+
+      let toRender = references.filter((ref) => {
+        if (this.charRange.start === null && this.charRange.end === null) {
+          return true;
+        }
+        return ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end ||
+               ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
+      });
+
+      //console.log(toRender);
+
+      toRender.forEach((reference) => {
         if (!container.innerHTML) {
           throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
         }
@@ -123,11 +149,24 @@ export default function (container) {
         if (this.renderedReferences[identifier][reference._id] || !reference[rangeProperty]) {
           return;
         }
-        let restoredRange = TextRange.restore(reference[rangeProperty], container);
+        let ref = reference[rangeProperty];
+        if (this.charRange.start) {
+          // test the ref modifications are immutable !!!
+          ref = Object.assign({}, reference[rangeProperty]);
+          //
+          ref.start -= this.charRange.start;
+          ref.end -= this.charRange.start;
+        }
+        if (ref.start < 0) {
+          ref.start = 0;
+        }
+        let restoredRange = TextRange.restore(ref, container);
+
         let elementWrapper = document.createElement(elementWrapperType);
         elementWrapper.classList.add(identifier);
         elementWrapper.setAttribute('data-id', reference._id);
         this.renderedReferences[identifier][reference._id] = wrapper.wrap(elementWrapper, restoredRange);
+        events.emit('referenceRendered', reference);
       });
 
       Object.keys(this.renderedReferences[identifier]).forEach((id) => {
@@ -136,6 +175,17 @@ export default function (container) {
           delete this.renderedReferences[identifier][id];
         }
       });
+    },
+
+    reset(identifier = 'reference') {
+      if (!this.renderedReferences[identifier]) {
+        this.renderedReferences[identifier] = {};
+      }
+      Object.keys(this.renderedReferences[identifier]).forEach((id) => {
+        this.renderedReferences[identifier][id].unwrap();
+        delete this.renderedReferences[identifier][id];
+      });
     }
+
   };
 }

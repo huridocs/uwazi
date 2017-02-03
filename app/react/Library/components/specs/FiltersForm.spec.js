@@ -1,6 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
+import {fromJS as Immutable} from 'immutable';
 import {Form} from 'react-redux-form';
 
 import {FiltersForm, mapStateToProps} from 'app/Library/components/FiltersForm';
@@ -12,10 +12,10 @@ describe('FiltersForm', () => {
   beforeEach(() => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      fields: Immutable.fromJS([{author: {initialValue: 'Philip K. Dick'}}]),
-      documentTypes: Immutable.fromJS({}),
-      templates: Immutable.fromJS([]),
-      aggregations: Immutable.fromJS({}),
+      fields: Immutable([{author: {initialValue: 'Philip K. Dick'}}]),
+      documentTypes: Immutable({}),
+      templates: [],
+      aggregations: Immutable({}),
       search: {searchTerm: 'Batman'}
     };
     component = shallow(<FiltersForm {...props}/>);
@@ -32,12 +32,13 @@ describe('FiltersForm', () => {
     it('should contain the fields', () => {
       let store = {
         library: {
-          ui: Immutable.fromJS({searchTerm: 'do a barrel roll'}),
-          filters: Immutable.fromJS({properties: [{name: 'author'}], documentTypes: {a: true}})
+          ui: Immutable({searchTerm: 'do a barrel roll'}),
+          filters: Immutable({properties: [{name: 'author'}], documentTypes: {a: true}})
         },
         form: {
           filters: 'filtersForm'
-        }
+        },
+        templates: Immutable([])
       };
       let state = mapStateToProps(store);
       expect(state.fields.toJS()).toEqual([{name: 'author'}]);

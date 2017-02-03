@@ -1,34 +1,34 @@
 import moment from 'moment';
-import {t} from 'app/I18N';
+import t from 'app/I18N/t';
 
 export default {
 
   date(property, timestamp, showInCard) {
-    let value = moment.utc(timestamp, 'X').format('MMM DD, YYYY');
-    return {label: property.label, value, showInCard};
+    let value = moment.utc(timestamp, 'X').format('ll');
+    return {label: property.label, name: property.name, value, showInCard};
   },
 
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
-      return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('MMM DD YYYY')};
+      return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
     });
-    return {label: property.label, value, showInCard};
+    return {label: property.label, name: property.name, value, showInCard};
   },
 
   multidaterange(property, dateranges, showInCard) {
     let value = dateranges.map((range) => {
-      let from = moment.utc(range.from, 'X').format('MMM DD YYYY');
-      let to = moment.utc(range.to, 'X').format('MMM DD YYYY');
+      let from = moment.utc(range.from, 'X').format('ll');
+      let to = moment.utc(range.to, 'X').format('ll');
       return {value: `${from} - ${to}`};
     });
-    return {label: property.label, value, showInCard};
+    return {label: property.label, name: property.name, value, showInCard};
   },
 
   getSelectOptions(option, thesauri) {
     let value = '';
     let icon;
     if (option) {
-      value = t(thesauri.name, option.label);
+      value = t(thesauri._id, option.label);
       icon = option.icon;
     }
 
@@ -49,7 +49,7 @@ export default {
 
     const {value, url, icon} = this.getSelectOptions(option, thesauri);
 
-    return {label: property.label, value, icon, url, showInCard};
+    return {label: property.label, name: property.name, value, icon, url, showInCard};
   },
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
@@ -63,7 +63,7 @@ export default {
       return this.getSelectOptions(option, thesauri);
     });
 
-    return {label: property.label, value: values, showInCard};
+    return {label: property.label, name: property.name, value: values, showInCard};
   },
 
   nested(property, rows, showInCard) {
@@ -72,17 +72,17 @@ export default {
     }
 
     let keys = Object.keys(rows[0]);
-    let result = keys.join(' | ') + '\n';
-    result += keys.map(() => '-').join(' | ') + '\n';
+    let result = '| ' + keys.join(' | ') + '|\n';
+    result += '| ' + keys.map(() => '-').join(' | ') + '|\n';
     result += rows.map((row) => {
-      return keys.map((key) => row[key].join(', ')).join(' | ');
-    }).join('\n');
+      return '| ' + keys.map((key) => (row[key] || []).join(',')).join(' | ');
+    }).join('|\n') + '|';
 
     return this.markdown(property, result, showInCard);
   },
 
   markdown(property, value, showInCard) {
-    return {label: property.label, markdown: value, showInCard};
+    return {label: property.label, name: property.name, markdown: value, showInCard};
   },
 
   prepareMetadata(doc, templates, thesauris) {
@@ -124,7 +124,7 @@ export default {
         return this.nested(property, value, showInCard);
       }
 
-      return {label: property.label, value, showInCard};
+      return {label: property.label, name: property.name, value, showInCard};
     });
 
     return Object.assign({}, doc, {metadata: metadata, documentType: template.name});

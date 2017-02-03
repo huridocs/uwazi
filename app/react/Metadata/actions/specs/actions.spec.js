@@ -1,7 +1,16 @@
 import * as actions from '../actions';
 import {actions as formActions} from 'react-redux-form';
+import superagent from 'superagent';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import {APIURL} from 'app/config.js';
+import * as types from '../actionTypes';
+import * as routeActions from 'app/Viewer/actions/routeActions';
 
-describe('documentFormActions', () => {
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
+
+describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
@@ -79,20 +88,85 @@ describe('documentFormActions', () => {
   });
 
   describe('changeTemplate', () => {
-    it('should change the document template and remove/add metadata properties', () => {
-      spyOn(formActions, 'setInitial').and.returnValue('forminitial');
-      spyOn(formActions, 'change').and.returnValue('formMerge');
+    it('should change the document template and reset metadata properties (preserving types)', () => {
+      spyOn(formActions, 'reset').and.returnValue('formReset');
+      spyOn(formActions, 'load').and.returnValue('formLoad');
       let dispatch = jasmine.createSpy('dispatch');
-      let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
-      let template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp'}]};
 
+      let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
+      let template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp', type: 'nested'}]};
+
+      jasmine.clock().install();
 
       actions.changeTemplate('formNamespace', doc, template)(dispatch);
 
-      let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: 'test', newProp: ''}};
-      expect(dispatch).toHaveBeenCalledWith('formMerge');
-      expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
-      expect(formActions.change).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: '', newProp: []}};
+      expect(dispatch).toHaveBeenCalledWith('formReset');
+      expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
+
+      jasmine.clock().tick(0);
+
+      expect(dispatch).toHaveBeenCalledWith('formLoad');
+      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      jasmine.clock().uninstall();
+    });
+  });
+
+  describe('reuploadDocument', () => {
+    let mockUpload;
+    let store;
+    let file;
+
+    beforeEach(() => {
+      mockUpload = superagent.post(APIURL + 'reupload');
+      spyOn(mockUpload, 'field').and.callThrough();
+      spyOn(mockUpload, 'attach').and.callThrough();
+      spyOn(superagent, 'post').and.returnValue(mockUpload);
+
+      // needed to work with firefox/chrome and phantomjs
+      file = {name: 'filename'};
+      let isChrome = typeof File === 'function';
+      if (isChrome) {
+        file = new File([], 'filename');
+      }
+      //
+
+      store = mockStore({locale: 'es'});
+      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId'));
+    });
+
+    it('should upload the file while dispatching the upload progress', () => {
+      const expectedActions = [
+        {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
+        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
+        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
+        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'}
+      ];
+
+
+      expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+      expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+
+      mockUpload.emit('progress', {percent: 55.1});
+      mockUpload.emit('progress', {percent: 65});
+      mockUpload.emit('response');
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+
+    describe('upon response', () => {
+      let state = {};
+
+      beforeEach(() => {
+        spyOn(routeActions, 'requestViewerState').and.returnValue({then: (cb) => cb(state)});
+        spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
+        mockUpload.emit('response');
+      });
+
+      it('should request and set viewer states', () => {
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es');
+        expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
+        expect(store.getActions()).toContain({type: 'setViewerState'});
+      });
     });
   });
 });

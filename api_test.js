@@ -1,3 +1,4 @@
+var exec = require('child_process').exec;
 require('babel-core/register')({
   "retainLines": "true",
   "presets": ["es2015", "react"],
@@ -11,6 +12,12 @@ require('babel-core/register')({
     "add-module-exports"
   ]
 }); //babel polyfill ES6
+
+var verbose = false;
+
+if (process.argv[2] === '--v') {
+  verbose = true;
+}
 
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
@@ -38,9 +45,11 @@ jasmine.loadConfig({
 
 jasmine.addReporter(new SpecReporter({
   displayStacktrace: 'summary',
-  displaySuccessfulSpec: false,
+  displaySuccessfulSpec: verbose,
   displayFailedSpec: false,
   displaySpecDuration: true
 }));
 
-jasmine.execute();
+exec('./couchdb/restore_views.sh uwazi_testing', function () {
+  jasmine.execute();
+}).stdout.pipe(process.stdout);

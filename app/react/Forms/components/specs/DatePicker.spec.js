@@ -32,7 +32,7 @@ describe('DatePicker', () => {
       render();
       let input = component.find(DatePickerComponent);
       input.simulate('change', date);
-      expect(props.onChange).toHaveBeenCalledWith('1469664000');
+      expect(props.onChange).toHaveBeenCalledWith(1469664000);
     });
 
     describe('when clearing the input', () => {
@@ -50,7 +50,7 @@ describe('DatePicker', () => {
         render();
         let input = component.find(DatePickerComponent);
         input.simulate('change', date);
-        expect(props.onChange).toHaveBeenCalledWith('1469750399');
+        expect(props.onChange).toHaveBeenCalledWith(1469750399);
       });
     });
 
@@ -61,11 +61,11 @@ describe('DatePicker', () => {
 
         let twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00').tz('Europe/Madrid');
         input.simulate('change', twoHoursFromUtc);
-        expect(props.onChange).toHaveBeenCalledWith('1469664000');
+        expect(props.onChange).toHaveBeenCalledWith(1469664000);
 
         let twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00').tz('Europe/Madrid');
         input.simulate('change', twoHoursAfterUtc);
-        expect(props.onChange).toHaveBeenCalledWith('1469664000');
+        expect(props.onChange).toHaveBeenCalledWith(1469664000);
       });
     });
   });

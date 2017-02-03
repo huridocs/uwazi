@@ -5,6 +5,7 @@ import {actions} from 'app/BasicReducer';
 import PageView from '../PageView';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import PagesAPI from 'app/Pages/PagesAPI';
 import PageViewer from 'app/Pages/components/PageViewer';
 import RouteHandler from 'app/App/RouteHandler';
@@ -25,6 +26,7 @@ describe('PageView', () => {
 
     spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(page));
     spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve('templates'));
+    spyOn(ThesaurisAPI, 'get').and.returnValue(Promise.resolve('thesauris'));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
       params: ['?a=1&b=2', '', '?x=1&y=2&limit=24']
@@ -55,9 +57,9 @@ describe('PageView', () => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
         expect(api.search.calls.count()).toBe(3);
-        expect(JSON.stringify(api.search.calls.argsFor(0)[0])).toBe('{"a":"1","b":"2","limit":"6"}');
-        expect(JSON.stringify(api.search.calls.argsFor(1)[0])).toEqual('{"filters":{},"types":[],"limit":"6"}');
-        expect(JSON.stringify(api.search.calls.argsFor(2)[0])).toEqual('{"x":"1","y":"2","limit":"6"}');
+        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({a: '1', b: '2', limit: '6'});
+        expect(api.search.calls.argsFor(1)[0]).toEqual({filters: {}, types: [], limit: '6'});
+        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({x: '1', y: '2', limit: '6'});
 
         expect(response.page.itemLists.length).toBe(3);
 
@@ -72,10 +74,11 @@ describe('PageView', () => {
       .catch(done.fail);
     });
 
-    it('should set the state templates', (done) => {
+    it('should set the state templates and thesauris', (done) => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
         expect(response.templates).toBe('templates');
+        expect(response.thesauris).toBe('thesauris');
         done();
       });
     });
@@ -84,17 +87,25 @@ describe('PageView', () => {
   describe('setReduxState()', () => {
     it('should set pageView data', () => {
       spyOn(actions, 'set').and.callFake(path => {
-        if (path === 'page/pageView') {
+        switch (path) {
+        case 'page/pageView':
           return 'PAGE DATA SET';
-        }
-        if (path === 'page/itemLists') {
+        case 'page/itemLists':
           return 'ITEM LISTS DATA SET';
+        case 'templates':
+          return 'TEMPLATES SET';
+        case 'thesauris':
+          return 'THESAURIS SET';
+        default:
+          return;
         }
       });
 
       instance.setReduxState({page: {pageView: 'data', itemLists: 'lists'}});
       expect(actions.set).toHaveBeenCalledWith('page/pageView', 'data');
       expect(actions.set).toHaveBeenCalledWith('page/itemLists', 'lists');
+      expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATES SET');
+      expect(context.store.dispatch).toHaveBeenCalledWith('THESAURIS SET');
       expect(context.store.dispatch).toHaveBeenCalledWith('PAGE DATA SET');
       expect(context.store.dispatch).toHaveBeenCalledWith('ITEM LISTS DATA SET');
     });

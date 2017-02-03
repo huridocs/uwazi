@@ -1,0 +1,28 @@
+.order-by-arrow {
+  color: $c-primary;
+  font-size: 20px;
+  width: 15px;
+  height: 13px;
+  line-height: 18px;
+  cursor: pointer;
+  margin-left: 5px;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  top: -1px;
+
+  &:hover {
+    color: $c-primary-dark;
+  }
+  
+  &.fa-long-arrow-down:before {
+    position: relative;
+    bottom: 5px;
+  }
+}
+
+.Dropdown.is-active {
+  .order-by-arrow {
+    display: none;
+  }
+}

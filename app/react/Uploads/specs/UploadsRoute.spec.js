@@ -9,8 +9,6 @@ import * as actionTypes from 'app/Uploads/actions/actionTypes.js';
 
 describe('UploadsRoute', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
-  let templates = [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}];
-  let thesauris = [{name: 'countries', _id: '1', values: []}];
   let component;
   let instance;
   let context;
@@ -24,9 +22,7 @@ describe('UploadsRoute', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'search/unpublished', 'GET', {body: JSON.stringify({rows: documents})})
-    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: templates})})
-    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})});
+    .mock(APIURL + 'search/unpublished', 'GET', {body: JSON.stringify({rows: documents})});
   });
 
   describe('static requestState()', () => {
@@ -34,8 +30,6 @@ describe('UploadsRoute', () => {
       UploadsRoute.requestState()
       .then((state) => {
         expect(state.uploads.documents).toEqual(documents);
-        expect(state.uploads.templates).toEqual(templates);
-        expect(state.uploads.thesauris).toEqual(thesauris);
         done();
       })
       .catch(done.fail);
@@ -44,19 +38,11 @@ describe('UploadsRoute', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({uploads: {documents, templates, thesauris}});
+      instance.setReduxState({uploads: {documents}});
     });
 
     it('should call setDocuments with the documents', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_UPLOADS, documents});
-    });
-
-    it('should call setTemplates with the templates', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_TEMPLATES_UPLOADS, templates});
-    });
-
-    it('should call setThesauris with the thesauris', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_THESAURIS_UPLOADS, thesauris});
     });
   });
 });

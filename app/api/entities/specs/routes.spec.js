@@ -3,6 +3,8 @@ import database from '../../utils/database.js';
 import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
+import templates from '../../templates/templates';
+import thesauris from '../../thesauris/thesauris';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('entities', () => {
@@ -35,6 +37,30 @@ describe('entities', () => {
         expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
         done();
       })
+      .catch(catchErrors(done));
+    });
+
+    it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
+      let req = {
+        body: {title: 'Batman begins', template: 'template'},
+        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        language: 'lang',
+        io: {
+          sockets: {
+            emit: jasmine.createSpy('emit').and.callFake((event, thesauri) => {
+              expect(event).toBe('thesauriChange');
+              expect(thesauri).toBe('templateTransformed');
+              expect(thesauris.templateToThesauri).toHaveBeenCalledWith('template', 'lang');
+              done();
+            })
+          }
+        }
+      };
+
+      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve('template')));
+      spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('templateTransformed')));
+      routes.post('/api/entities', req)
       .catch(catchErrors(done));
     });
   });

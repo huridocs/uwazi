@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {FormField, Select, SelectField} from 'app/Forms';
+import {Select} from 'app/ReactReduxForms';
 import {connect} from 'react-redux';
+import {Field} from 'react-redux-form';
 
 export class FormConfigSelect extends Component {
 
@@ -29,94 +30,68 @@ export class FormConfigSelect extends Component {
       optionGroups[0].options.push(thesauri);
     });
 
-    let labelClass = 'input-group';
+    let labelClass = '';
     let labelKey = `properties.${index}.label`;
-    let requiredLabel = formState.errors[labelKey + '.required'];
-    let duplicatedLabel = formState.errors[labelKey + '.duplicated'];
+    let requiredLabel = formState.$form.errors[labelKey + '.required'];
+    let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
 
     return (
       <div>
-        <div className="row">
-          <div className="col-sm-4">
-            <div className={labelClass}>
-              <span className="input-group-addon">
-              Label
-              </span>
-              <FormField model={`template.data.properties[${index}].label`}>
-                <input className="form-control"/>
-              </FormField>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">Thesauri</span>
-              <SelectField model={`template.data.properties[${index}].content`}>
-                <Select options={optionGroups} optionsLabel="name" optionsValue="_id"/>
-              </SelectField>
-            </div>
-          </div>
-          <div className="col-sm-4">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <FormField model={`template.data.properties[${index}].required`}>
-                  <input id={'required' + this.props.index} type="checkbox"/>
-                </FormField>
-              </span>
-              <label htmlFor={'required' + this.props.index} className="form-control">Required</label>
-            </div>
-          </div>
+        <div className={labelClass}>
+          <label>Label</label>
+          <Field model={`template.data.properties[${index}].label`}>
+            <input className="form-control"/>
+          </Field>
         </div>
-        {(() => {
-          if (duplicatedLabel) {
-            return <div className="row has-error">
-                    <div className="col-sm-4">
-                    <i className="fa fa-exclamation-triangle"></i>
-                      &nbsp;
-                      Duplicated label
-                    </div>
-                  </div>;
-          }
-        })()}
 
-        <div className="well well-metadata-creator">
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].filter`}>
-                <input id={'filter' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'filter' + this.props.index} title="This property will be used for filtering the library results.
-              When properties match in equal name and field type with other document types, they will be combined for filtering.">
-                Use as filter
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className="col-sm-8 border-bottom">
-              <FilterSuggestions {...ptoperty} />
-            </div>
-          </div>
+        <div>
+          <label>Thesauri</label>
+          <Select model={`template.data.properties[${index}].content`}
+                  options={optionGroups}
+                  optionsLabel="name"
+                  optionsValue="_id" />
+        </div>
 
-          <div className="row">
-            <div className="col-sm-4">
-              <FormField model={`template.data.properties[${index}].showInCard`}>
-                <input id={'showInCard' + this.props.index} type="checkbox"/>
-              </FormField>
-              &nbsp;
-              <label htmlFor={'showInCard' + this.props.index}
-                     title="This property will appear in the library cards as part of the basic info.">
-                Show in cards
-                &nbsp;
-                <i className="fa fa-question-circle"></i>
-              </label>
-            </div>
-            <div className="col-sm-8 help">
-              Show this property in the library card's basic info.
-            </div>
-          </div>
+        <Field model={`template.data.properties[${index}].required`}>
+          <input id={'required' + this.props.index} type="checkbox"/>
+          &nbsp;
+          <label className="property-label" htmlFor={'required' + this.props.index}>
+            Required property
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+            </i>
+          </label>
+        </Field>
+
+        <Field model={`template.data.properties[${index}].showInCard`}>
+          <input id={'showInCard' + this.props.index} type="checkbox"/>
+          &nbsp;
+          <label className="property-label" htmlFor={'showInCard' + this.props.index}>
+            Show in cards
+            <i className="property-help fa fa-question-circle">
+              <div className="property-description">This property will appear in the library cards as part of the basic info.</div>
+            </i>
+          </label>
+        </Field>
+
+        <div>
+          <Field model={`template.data.properties[${index}].filter`}>
+            <input id={'filter' + this.props.index} type="checkbox"/>
+            &nbsp;
+            <label className="property-label" htmlFor={'filter' + this.props.index}>
+              Use as filter
+              <i className="property-help fa fa-question-circle">
+                <div className="property-description">
+                  This property will be used for filtering the library results.
+                  When properties match in equal name and field type with other document types, they will be combined for filtering.
+                </div>
+              </i>
+            </label>
+          </Field>
+          <FilterSuggestions {...ptoperty} />
         </div>
 
       </div>

@@ -20,6 +20,18 @@ describe('templates', () => {
     let getAllTemplates = () => request.get(dbURL + '/_design/templates/_view/all').then((response) => response.json.rows);
     let getTemplate = (id = 'c08ef2532f0bd008ac5174b45e033c94') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
+    it('should return the saved template', (done) => {
+      let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
+
+      templates.save(newTemplate)
+      .then((template) => {
+        expect(template._id).toBeDefined();
+        expect(template.name).toBe('created_template');
+        done();
+      })
+      .catch(done.fail);
+    });
+
     it('should create a template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
@@ -63,18 +75,19 @@ describe('templates', () => {
       ]};
 
       templates.save(newTemplate)
-      .then(() => {
+      .then((response) => {
         let expectedValues = {
           'created template': 'created template',
           'label 1': 'label 1',
           'label 2': 'label 2'
         };
-        expect(translations.addContext).toHaveBeenCalledWith('created template', expectedValues);
+
+        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues);
         done();
       });
     });
 
-    it('should assign a safe property name based on the label to each', (done) => {
+    it('should assign a safe property name based on the label to each only when name not already set', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 2'},
@@ -92,83 +105,40 @@ describe('templates', () => {
         expect(newDoc.value.properties[0].name).toEqual('label_1');
         expect(newDoc.value.properties[1].name).toEqual('label_2');
         expect(newDoc.value.properties[2].name).toEqual('label_3');
-        expect(newDoc.value.properties[3].name).toEqual('label_4');
+        expect(newDoc.value.properties[3].name).toEqual('name');
         done();
       })
       .catch(done.fail);
     });
 
-    describe('when updating a property label', () => {
-      it('should update the name and update all documents using this template', (done) => {
-        let newTemplate = {name: 'created_template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
-        spyOn(templates, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-        templates.save(newTemplate)
-        .then((createdTemplate) => getTemplate(createdTemplate.id))
-        .then((template) => {
-          template.properties[0].label = 'new label 1';
-          template.properties[1].label = 'new label 2';
-          return templates.save(template);
-        })
-        .then((updatedTemplate) => {
-          expect(templates.updateMetadataProperties).toHaveBeenCalledWith(updatedTemplate.id, {
-            label_1: 'new_label_1',
-            label_2: 'new_label_2'
-          }, []);
-          done();
-        })
-        .catch(done.fail);
-      });
+    it('should not repeat names', (done) => {
+      let newTemplate = {name: 'created_template', properties: [
+        {label: 'label 1'},
+        {label: 'label 2'},
+        {label: 'label 3'},
+        {label: 'name'},
+        {label: 'test2', name: 'name--1'},
+        {label: 'label 4', name: 'name'},
+        {label: 'test', name: 'label_1'}
+      ]};
 
-      it('should update update the translation context for it', (done) => {
-        let newTemplate = {name: 'created template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
-        let template;
-        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-        spyOn(translations, 'updateContext');
-        templates.save(newTemplate)
-        .then((createdTemplate) => getTemplate(createdTemplate.id))
-        .then((_template) => {
-          template = _template;
-          spyOn(translations, 'addContext');
-          template.name = 'new title';
-          template.properties[0].label = 'new label 1';
-          template.properties.pop();
-          template.properties.push({label: 'label 3'});
-          return templates.save(template);
-        })
-        .then(() => {
-          expect(translations.addContext).not.toHaveBeenCalled();
-          expect(translations.updateContext).toHaveBeenCalledWith(
-            'created template',
-            'new title',
-            {
-              'label 1': 'new label 1',
-              'created template': 'new title'
-            },
-            ['label 2'],
-            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
-          );
-          done();
-        })
-        .catch(done.fail);
-      });
-    });
+      templates.save(newTemplate)
+      .then(getAllTemplates)
+      .then((allTemplates) => {
+        let newDoc = allTemplates.find((template) => {
+          return template.value.name === 'created_template';
+        });
 
-    describe('when removing properties', () => {
-      it('should remove the properties on all documents using the template', (done) => {
-        let newTemplate = {name: 'created_template', properties: [ {label: 'label 1'}, {label: 'label 2'}, {label: 'label 3'}]};
-        spyOn(templates, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-        templates.save(newTemplate)
-        .then((createdTemplate) => getTemplate(createdTemplate.id))
-        .then((template) => {
-          template.properties = [template.properties[1]];
-          return templates.save(template);
-        })
-        .then((updatedTemplate) => {
-          expect(templates.updateMetadataProperties).toHaveBeenCalledWith(updatedTemplate.id, {}, ['label_1', 'label_3']);
-          done();
-        })
-        .catch(done.fail);
-      });
+        expect(newDoc.value.properties[0].name).toEqual('label_1--1');
+        expect(newDoc.value.properties[1].name).toEqual('label_2');
+        expect(newDoc.value.properties[2].name).toEqual('label_3');
+        expect(newDoc.value.properties[3].name).toEqual('name--2');
+        expect(newDoc.value.properties[4].name).toEqual('name--1');
+        expect(newDoc.value.properties[5].name).toEqual('name');
+        expect(newDoc.value.properties[6].name).toEqual('label_1');
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
     it('should set a default value of [] to properties', (done) => {
@@ -189,13 +159,58 @@ describe('templates', () => {
 
     describe('when passing _id and _rev', () => {
       it('edit an existing one', (done) => {
-        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         getTemplate()
         .then((template) => {
           let edited = {_id: template._id, _rev: template._rev, name: 'changed name'};
           return templates.save(edited);
         })
         .then((savedTemplate) => getTemplate(savedTemplate.id))
+        .then((template) => {
+          expect(template.name).toBe('changed name');
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should update update the translation context for it', (done) => {
+        let newTemplate = {name: 'created template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
+        let template;
+        spyOn(translations, 'updateContext');
+        templates.save(newTemplate)
+        .then((_template) => {
+          template = _template;
+          spyOn(translations, 'addContext');
+          template.name = 'new title';
+          template.isEntity = true;
+          template.properties[0].label = 'new label 1';
+          template.properties.pop();
+          template.properties.push({label: 'label 3'});
+          return templates.save(template);
+        })
+        .then((response) => {
+          expect(translations.addContext).not.toHaveBeenCalled();
+          expect(translations.updateContext).toHaveBeenCalledWith(
+            response._id,
+            'new title',
+            {
+              'label 1': 'new label 1',
+              'created template': 'new title'
+            },
+            ['label 2'],
+            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
+          );
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should return the saved template', (done) => {
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
+        getTemplate()
+        .then((template) => {
+          let edited = {_id: template._id, _rev: template._rev, name: 'changed name'};
+          return templates.save(edited);
+        })
         .then((template) => {
           expect(template.name).toBe('changed name');
           done();
@@ -283,7 +298,7 @@ describe('templates', () => {
         return templates.delete(template.json);
       })
       .then(() => {
-        expect(translations.deleteContext).toHaveBeenCalledWith('template_test');
+        expect(translations.deleteContext).toHaveBeenCalledWith('c08ef2532f0bd008ac5174b45e033c93');
         done();
       })
       .catch(catchErrors(done));
@@ -323,50 +338,6 @@ describe('templates', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('updateMetadataProperties', () => {
-    let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/documents/_view/metadata_by_template?key="' + template + '"')
-    .then((response) => {
-      return response.json.rows.map((r) => r.value);
-    });
-
-    it('should update metadata property names on the documents matching the template', (done) => {
-      let nameChanges = {property1: 'new_name1', property2: 'new_name2'};
-      templates.updateMetadataProperties('template1', nameChanges)
-      .then(() => getDocumentsByTemplate('template1'))
-      .then((docs) => {
-        expect(docs[0].metadata.new_name1).toBe('value1');
-        expect(docs[0].metadata.new_name2).toBe('value2');
-        expect(docs[0].metadata.property3).toBe('value3');
-
-        expect(docs[1].metadata.new_name1).toBe('value1');
-        expect(docs[1].metadata.new_name2).toBe('value2');
-        expect(docs[1].metadata.property3).toBe('value3');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should delete properties passed', (done) => {
-      let nameChanges = {property2: 'new_name'};
-      let deleteProperties = ['property1', 'property3'];
-      templates.updateMetadataProperties('template1', nameChanges, deleteProperties)
-      .then(() => getDocumentsByTemplate('template1'))
-      .then((docs) => {
-        expect(docs[0].metadata.property1).not.toBeDefined();
-        expect(docs[0].metadata.new_name).toBe('value2');
-        expect(docs[0].metadata.property2).not.toBeDefined();
-        expect(docs[0].metadata.property3).not.toBeDefined();
-
-        expect(docs[1].metadata.property1).not.toBeDefined();
-        expect(docs[1].metadata.new_name).toBe('value2');
-        expect(docs[1].metadata.property2).not.toBeDefined();
-        expect(docs[1].metadata.property3).not.toBeDefined();
-        done();
-      })
-      .catch(done.fail);
     });
   });
 

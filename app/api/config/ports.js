@@ -1,5 +1,6 @@
+const PORT = process.env.PORT;
 export default {
-  production: 3001,
-  development: 3000,
-  demo: 4000
+  production: PORT ? PORT :  3001,
+  development: PORT ? PORT : 3000,
+  demo: PORT ? PORT : 4000
 };

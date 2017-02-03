@@ -12,6 +12,7 @@ describe('RelationTypeForm', () => {
       relationType: {name: 'test'},
       relationTypes: Immutable.fromJS([]),
       resetForm: jasmine.createSpy('resetForm'),
+      setInitial: jasmine.createSpy('setInitial'),
       handleSubmit: jasmine.createSpy('handleSubmit'),
       state: {fields: []}
     };
@@ -20,9 +21,10 @@ describe('RelationTypeForm', () => {
   });
 
   describe('when unmount', () => {
-    it('shoould call resetRelationType', () => {
+    it('shoould reset the form', () => {
       component.unmount();
       expect(props.resetForm).toHaveBeenCalled();
+      expect(props.setInitial).toHaveBeenCalled();
     });
   });
 

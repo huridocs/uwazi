@@ -3,13 +3,17 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
+import {APIURL} from 'app/config.js';
+import {PDFUtils} from '../../PDF/';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
 import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
+import referencesUtils from '../utils/referencesUtils';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
+import {isClient} from 'app/utils';
 
 export function setDocument(document, html) {
   return {
@@ -32,12 +36,19 @@ export function loadDefaultViewerMenu() {
 }
 
 export function saveDocument(doc) {
+  const updateDoc = {};
+  Object.keys(doc).forEach(key => {
+    if (key !== 'fullText') {
+      updateDoc[key] = doc[key];
+    }
+  });
+
   return function (dispatch) {
-    return documents.api.save(doc)
+    return documents.api.save(updateDoc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
       dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
-      dispatch(formActions.reset('documentViewer.docForm'));
+      dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', updatedDoc));
     });
   };
@@ -45,11 +56,10 @@ export function saveDocument(doc) {
 
 export function saveToc(toc) {
   return function (dispatch, getState) {
-    let doc = getState().documentViewer.doc.toJS();
-    doc.toc = toc;
-    dispatch(formActions.reset('documentViewer.tocForm'));
+    const {_id, _rev, sharedId} = getState().documentViewer.doc.toJS();
+    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
-    return dispatch(saveDocument(doc));
+    return dispatch(saveDocument({_id, _rev, sharedId, toc}));
   };
 }
 
@@ -65,18 +75,36 @@ export function deleteDocument(doc) {
   };
 }
 
+export function getDocument(id) {
+  return api.get('documents?_id=' + id)
+  .then((response) => {
+    let doc = response.json.rows[0];
+    if (!isClient) {
+      return doc;
+    }
+    if (doc.pdfInfo) {
+      return doc;
+    }
+    return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
+    .then((pdfInfo) => {
+      doc.pdfInfo = pdfInfo;
+      return api.post('documents/pdfInfo', doc)
+      .then((res) => {
+        return res.json;
+      });
+    });
+  });
+}
 
 export function loadTargetDocument(id) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     return Promise.all([
-      api.get('documents?_id=' + id),
-      api.get('documents/html?_id=' + id),
+      getDocument(id),
       referencesAPI.get(id)
     ])
-    .then(([docResponse, htmlResponse, references]) => {
-      dispatch(actions.set('viewer/targetDoc', docResponse.json.rows[0]));
-      dispatch(actions.set('viewer/targetDocHTML', htmlResponse.json));
-      dispatch(actions.set('viewer/targetDocReferences', references));
+    .then(([targetDoc, references]) => {
+      dispatch(actions.set('viewer/targetDoc', targetDoc));
+      dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };
 }
@@ -85,7 +113,6 @@ export function cancelTargetDocument() {
   return function (dispatch) {
     dispatch({type: connectionsTypes.CANCEL_RANGED_CONNECTION});
     dispatch(actions.unset('viewer/targetDoc'));
-    dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
     dispatch(selectionActions.unsetTargetSelection());
     dispatch(uiActions.openPanel('viewMetadataPanel'));
@@ -97,7 +124,7 @@ export function editToc(toc) {
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
     dispatch(uiActions.openPanel('viewMetadataPanel'));
-    dispatch(uiActions.showTab('toc'));
+    dispatch(actions.set('viewer.sidepanel.tab', 'toc'));
   };
 }
 
@@ -117,12 +144,12 @@ export function removeFromToc(tocElement) {
 export function indentTocElement(tocElement, indentation) {
   return function (dispatch, getState) {
     let state = getState();
-    let toc = state.documentViewer.tocForm.concat();
-
-    toc.forEach((entry) => {
-      if (entry === tocElement) {
+    let toc = state.documentViewer.tocForm.map((_entry) => {
+      let entry = Object.assign({}, _entry);
+      if (_entry === tocElement) {
         entry.indentation = indentation;
       }
+      return entry;
     });
 
     dispatch(formActions.load('documentViewer.tocForm', toc));
@@ -132,11 +159,10 @@ export function indentTocElement(tocElement, indentation) {
 export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
     let state = getState();
-    let toc = state.documentViewer.tocForm;
+    let toc = state.documentViewer.tocForm.concat();
     if (!toc.length) {
       toc = state.documentViewer.doc.toJS().toc || [];
     }
-
     let tocElement = {
       range: {
         start: textSelectedObject.sourceRange.start,

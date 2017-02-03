@@ -55,8 +55,10 @@ export class Viewer extends Component {
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
 
-        <ContextMenu>
+        <ContextMenu align="bottom" overrideShow={true} show={!this.props.panelIsOpen}>
           <ViewerDefaultMenu/>
+        </ContextMenu>
+        <ContextMenu align="center" overrideShow={true} show={this.props.showTextSelectMenu}>
           <ViewerTextSelectedMenu/>
         </ContextMenu>
       </div>
@@ -70,7 +72,8 @@ Viewer.propTypes = {
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
   loadTargetDocument: PropTypes.func,
-  showConnections: PropTypes.bool
+  showConnections: PropTypes.bool,
+  showTextSelectMenu: PropTypes.bool
 };
 
 Viewer.contextTypes = {
@@ -83,7 +86,8 @@ const mapStateToProps = ({documentViewer}) => {
     doc: documentViewer.doc,
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
-    showConnections: uiState.tab === 'references'
+    showConnections: documentViewer.sidepanel.tab === 'references',
+    showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
   };
 };
 

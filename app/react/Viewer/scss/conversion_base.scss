@@ -7,7 +7,7 @@
 //
 .document .pf {
   position:relative;
-  background-color:#FFF;
+  //background-color:#FFF;
   overflow:hidden;
   border:0;
   margin:0;
@@ -101,10 +101,6 @@
   transform-origin:0 100%;
   -ms-transform-origin:0 100%;
   -webkit-transform-origin:0 100%;
-}
-
-::selection,::-moz-selection {
-  background:rgba(127,255,255,0.4);
 }
 
 @media screen{

@@ -20,12 +20,14 @@ export default {
     //settings
     {"_id":"c08ef2532f0bd008ac5174b45e033c02","type":"settings", "languages": [{key: 'es'}, {key: 'pt'}, {key: 'en'}]},
     //templates
-    {"_id":"c08ef2532f0bd008ac5174b45e033c93", "type":"template", "name":"template_test", "properties": 
+    {"_id":"c08ef2532f0bd008ac5174b45e033c93", "type":"template", "name":"template_test", "properties":
       [
         {type: "text", "name": "text"},
         {type: "select", "name": "select"},
         {type: "multiselect", "name": "multiselect"},
-        {type: "date", "name": "date"}
+        {type: "date", "name": "date"},
+        {type: "multidate", "name": "multidate"},
+        {type: "multidaterange", "name": "multidaterange"}
       ]
     },
   ]

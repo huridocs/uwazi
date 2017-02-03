@@ -16,24 +16,27 @@
 }
 
 .toc-edit {
+  display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   padding: 5px 0;
 
-  input {
+  div {
+    width: 100%;
     margin: 0 5px;
   }
 }
 
 
-.toc-indent-0 a{
+.toc-indent-0 .toc-view-link{
   font-size: $f-size-lg;
   text-transform: uppercase;
   font-weight: bold;
   font-style: normal;
 }
 
-.toc-indent-1 a{
+.toc-indent-1 .toc-view-link{
   text-transform: uppercase;
   font-style: normal;
 }

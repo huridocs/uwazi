@@ -20,7 +20,7 @@ let ProgressBar = ({progress}) => {
     icon = 'fa fa-clock-o';
   }
   return (
-    <div>
+    <div className="label-progress">
       <span className="label label-info">
         <i className={icon}></i>&nbsp;
         <span>{message}</span>
@@ -58,7 +58,7 @@ let RowList = ({children}) => {
   return <div className="item-group">{children}</div>;
 };
 
-let RowListItem = ({children, status, onClick, active, className}) => {
+let RowListItem = ({children, status, onClick, onMouseEnter, onMouseLeave, active, className}) => {
   let activeClass = '';
   if (active === true) {
     activeClass = 'is-active';
@@ -68,11 +68,15 @@ let RowListItem = ({children, status, onClick, active, className}) => {
   }
 
   return (
-    <div className={className + ' item item-status item-' + (status || 'default') + ' ' + activeClass} onClick={onClick}>
+    <div className={className + ' item item-status item-' + (status || 'default') + ' ' + activeClass}
+         onClick={onClick}
+         onMouseEnter={onMouseEnter}
+         onMouseLeave={onMouseLeave}>
       {children}
     </div>
   );
 };
+
 RowList.Item = RowListItem;
 
 let childrenType = PropTypes.oneOfType([
@@ -87,6 +91,8 @@ RowListItem.propTypes = {
   children: childrenType,
   status: PropTypes.string,
   onClick: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+  onMouseLeave: PropTypes.func,
   active: PropTypes.bool,
   className: PropTypes.string
 };

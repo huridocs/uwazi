@@ -9,6 +9,7 @@ import EntityTypesList from './components/EntityTypesList';
 import RelationTypesList from './components/RelationTypesList';
 import ThesaurisList from './components/ThesaurisList';
 import TranslationsList from './components/TranslationsList';
+import FiltersForm from './components/FiltersForm';
 
 export {
   Settings,
@@ -20,5 +21,6 @@ export {
   EntityTypesList,
   RelationTypesList,
   ThesaurisList,
-  TranslationsList
+  TranslationsList,
+  FiltersForm
 };

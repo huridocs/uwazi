@@ -11,6 +11,7 @@ import {MetadataProperty, dragSource, dropTarget} from 'app/Templates/components
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 import FormConfigNested from 'app/Templates/components/FormConfigNested';
+import FormConfigCommon from 'app/Templates/components/FormConfigCommon';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -35,7 +36,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           isDragging: false,
           uiState: Immutable.fromJS({}),
           templates: Immutable.fromJS([]),
-          formState: {fields: [], errors: {}}
+          formState: {fields: [], $form: {errors: {}}}
         };
         let sourceProps = {
           label: 'source',
@@ -45,7 +46,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           isDragging: false,
           uiState: Immutable.fromJS({}),
           templates: Immutable.fromJS([]),
-          formState: {fields: [], errors: {}}
+          formState: {fields: [], $form: {errors: {}}}
         };
         return <div>
                 <Target {...targetProps} {...actions}/>
@@ -58,6 +59,51 @@ function sourceTargetTestContext(Target, Source, actions) {
 
 describe('MetadataProperty', () => {
   let component;
+
+  describe('commonProperty', () => {
+    let editProperty;
+    beforeEach(() => {
+      let identity = x => x;
+      editProperty = jasmine.createSpy('editProperty');
+      let props = {
+        isCommonProperty: true,
+        isDragging: false,
+        connectDragSource: identity,
+        connectDropTarget: identity,
+        label: 'test',
+        type: 'propertyType',
+        index: 1,
+        localID: 'id',
+        formState: {fields: [], $form: {errors: {}}},
+        editProperty,
+        uiState: Immutable.fromJS({editingProperty: ''}),
+        templates: Immutable.fromJS([])
+      };
+
+      component = shallow(<MetadataProperty {...props}/>);
+    });
+
+    describe('FormConfigCommon', () => {
+      it('should pass the localID', () => {
+        expect(component.find(FormConfigCommon).first().props().formKey).toBe('id');
+      });
+    });
+
+    describe('ui actions', () => {
+      describe('delete button', () => {
+        it('should be disabled', () => {
+          expect(component.find('.property-remove').props().disabled).toBe(true);
+        });
+      });
+
+      describe('edit button', () => {
+        it('should editProperty', () => {
+          component.find('.property-edit').simulate('click');
+          expect(editProperty).toHaveBeenCalledWith('id');
+        });
+      });
+    });
+  });
 
   describe('simple component', () => {
     let removeProperty;
@@ -75,7 +121,7 @@ describe('MetadataProperty', () => {
         type: 'propertyType',
         index: 1,
         localID: 'id',
-        formState: {fields: [], errors: {}},
+        formState: {fields: [], $form: {errors: {}}},
         removeProperty,
         editProperty,
         uiState: Immutable.fromJS({editingProperty: ''}),
@@ -159,7 +205,7 @@ describe('MetadataProperty', () => {
       beforeEach(() => {
         let TestComponent = wrapInTestContext(dragSource);
         component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}),
-                                    formState: {fields: [], errors: {}}});
+                                    formState: {fields: [], $form: {errors: {}}}});
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });

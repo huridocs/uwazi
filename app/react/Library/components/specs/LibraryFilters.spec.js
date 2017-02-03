@@ -3,30 +3,23 @@ import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
 import {LibraryFilters, mapStateToProps} from 'app/Library/components/LibraryFilters';
-import {MultiSelect} from 'app/Forms';
+import SidePanel from 'app/Layout/SidePanel';
 
 describe('LibraryFilters', () => {
   let component;
-  let templates;
   let props;
 
   beforeEach(() => {
-    templates = [{name: 'decision'}, {name: 'ruling'}];
-    props = {
-      templates,
-      aggregations: Immutable.fromJS({types: {buckets: [{key: 'decision', doc_count: 2}]}}),
-      documentTypes: [],
-      searchTerm: 'Bruce Wayne',
-      form: {isBatman: {value: true}},
-      searchDocuments: jasmine.createSpy('searchDocuments'),
-      search: {sort: 'title'}
-    };
-    component = shallow(<LibraryFilters {...props} />);
+    props = {open: true};
   });
 
-  it('should render a MultiSelect to filter for all types and one for each document type', () => {
-    let multiselect = component.find(MultiSelect);
-    expect(multiselect.props().options).toEqual(templates);
+  let render = () => {
+    component = shallow(<LibraryFilters {...props} />);
+  };
+
+  it('shoud have library-filters class', () => {
+    render();
+    expect(component.find(SidePanel).hasClass('library-filters')).toBe(true);
   });
 
   describe('maped state', () => {
@@ -35,19 +28,15 @@ describe('LibraryFilters', () => {
         library: {
           filters: Immutable.fromJS({properties: 'filters state', documentTypes: ['Decision']}),
           ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true}),
-          aggregations: Immutable.fromJS({types: {buckets: []}})
+          aggregations: Immutable.fromJS({types: {buckets: []}}),
+          settings: Immutable.fromJS({collection: {filters: []}})
         },
         templates: Immutable.fromJS([])
       };
+
       let state = mapStateToProps(store);
-      expect(state).toEqual({
-        properties: 'filters state',
-        documentTypes: ['Decision'],
-        searchTerm: 'Zerg Rush',
-        open: true,
-        templates: [],
-        aggregations: store.library.aggregations
-      });
+
+      expect(state).toEqual({open: true});
     });
   });
 });

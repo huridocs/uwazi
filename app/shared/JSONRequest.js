@@ -32,7 +32,7 @@ let _fetch = (url, data, method, _headers) => {
     params = toUrlParams(data);
   }
 
-  if (method === 'POST') {
+  if (method === 'POST' || method === 'PUT') {
     body = JSON.stringify(data);
   }
 
@@ -63,6 +63,10 @@ let _fetch = (url, data, method, _headers) => {
 export default {
   post: (url, data, headers) => {
     return _fetch(url, data, 'POST', headers);
+  },
+
+  put: (url, data, headers) => {
+    return _fetch(url, data, 'PUT', headers);
   },
 
   get: (url, data, headers) => {

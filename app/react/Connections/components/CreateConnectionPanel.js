@@ -19,6 +19,7 @@ export class CreateConnectionPanel extends Component {
     const connection = this.props.connection.toJS();
     const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
     const open = Boolean(this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument);
+    const pdfInfo = this.props.pdfInfo ? this.props.pdfInfo.toJS() : null;
 
     return (
       <SidePanel open={open} className="create-reference">
@@ -46,7 +47,9 @@ export class CreateConnectionPanel extends Component {
 
       <div className="sidepanel-footer">
         <ShowIf if={connection.type !== 'targetRanged'}>
-          <ActionButton action="save" onCreate={this.props.onCreate}/>
+          <ActionButton action="save" onCreate={(reference) => {
+            this.props.onCreate(reference, pdfInfo);
+          }}/>
         </ShowIf>
         <ShowIf if={connection.type === 'targetRanged'}>
           <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
@@ -69,6 +72,7 @@ CreateConnectionPanel.propTypes = {
   uiState: PropTypes.object,
   containerId: PropTypes.string,
   connection: PropTypes.object,
+  pdfInfo: PropTypes.object,
   relationTypes: PropTypes.object,
   setRelationType: PropTypes.func,
   setTargetDocument: PropTypes.func,
@@ -78,9 +82,10 @@ CreateConnectionPanel.propTypes = {
   closePanel: PropTypes.func
 };
 
-export const mapStateToProps = ({connections, relationTypes}) => {
+export const mapStateToProps = ({connections, relationTypes, documentViewer}) => {
   return {
     uiState: connections.uiState,
+    pdfInfo: documentViewer.doc.get('pdfInfo'),
     connection: connections.connection,
     searchResults: connections.searchResults,
     relationTypes: relationTypes

@@ -2,7 +2,9 @@ export function required(val) {
   if (Array.isArray(val)) {
     return Boolean(val.length);
   }
-
+  if (typeof val === 'number') {
+    return true;
+  }
   return !!val && val.trim() !== '';
 }
 

@@ -1,17 +1,22 @@
 .document-viewer {
   width: 100%;
-  padding: 30px;
+  padding: 15px;
   transition: all 500ms;
 
-  &.is-active {
     @media(min-width: 1024px) {
-      width: 66.666%;
+      &.with-panel,
+      &.is-active {
+      width: calc(100% - 400px);
     }
   }
 
   .cs-loader {
     height: 80px;
   }
+
+  // Hack to solve issue selecting text in some documents
+  div.c { pointer-events: none; }
+  div.c>* { pointer-events: auto; padding-right: 100px; }
 }
 
 .document-article {
@@ -19,7 +24,7 @@
   background: $c-white;
   border-radius: 0 !important;
   border-bottom: 1px solid $c-grey;
-  box-shadow: $shadow;
+  box-shadow: $box-shadow;
   position: relative;
   font-size: $f-size-lg;
   font-family: sans-serif;
@@ -44,27 +49,6 @@
   &.connections a.is-active {
     background-color: $c-secondary;
     cursor: pointer;
-  }
-}
-
-.document-article-2 {
-  position: fixed;
-  top: 30px;
-  left: 100%;
-  right: -100%;
-  opacity: 0;
-}
-
-.document-viewer.is-active-2 {
-  .document-article {
-    opacity: 0.3;
-    &:hover {
-      opacity: 1;
-      cursor: pointer;
-    }
-  }
-  .document-article-2 {
-    opacity: 1;
   }
 }
 
@@ -108,7 +92,6 @@
     padding: 15px;
     @media(min-width: 1024px) {
       left: auto;
-      max-width: 800px;
       padding: 15px 0;
     }
   }
