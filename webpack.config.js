@@ -9,11 +9,11 @@ module.exports = {
   context: __dirname,
   devtool: '#source-map',
   //entry: [
-    //path.join(__dirname, 'app/react/index.js')
+  //path.join(__dirname, 'app/react/index.js')
   //],
   entry: {
-   main: path.join(__dirname, 'app/react/index.js'),
-   'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
+    main: path.join(__dirname, 'app/react/index.js'),
+    'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
   },
   output: {
     path: path.join(__dirname, '/dist/'),
@@ -21,35 +21,64 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   module: {
+    //noParse: /node_modules/,
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        include: path.join(__dirname, 'app')
+        loader: 'babel-loader?cacheDirectory',
+        include: path.join(__dirname, 'app'),
+        exclude: /node_modules/
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'),
-        include: [path.join(__dirname, 'app'),path.join(__dirname, 'node_modules')]
+        loader: ExtractTextPlugin.extract({
+          fallbackLoader: 'style-loader',
+          loader: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
+        }),
+        include: [
+          path.join(__dirname, 'app'),
+          path.join(__dirname, 'node_modules/react-widgets/lib/scss/')
+        ]
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract("style-loader", "css?sourceMap"),
-        include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
+        loader: ExtractTextPlugin.extract({
+          fallbackLoader: 'style-loader',
+          loader: 'css-loader?sourceMap'
+        }),
+        include: [
+          path.join(__dirname, 'app'),
+          path.join(__dirname, 'node_modules/react-datepicker/dist/'),
+          path.join(__dirname, 'node_modules/bootstrap/dist/'),
+          path.join(__dirname, 'node_modules/font-awesome/css/'),
+          path.join(__dirname, 'node_modules/pdfjs-dist/web')
+        ]
       },
       {
         test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
-        loaders: ['url-loader', 'img'],
-        include: [path.join(__dirname, 'public'), path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
+        loaders: ['url-loader', 'img-loader'],
+        include: [
+          path.join(__dirname, 'public'), 
+          path.join(__dirname, 'app'),
+          path.join(__dirname, 'node_modules/react-widgets/lib/fonts/'),
+          path.join(__dirname, 'node_modules/font-awesome/fonts/'),
+          path.join(__dirname, 'node_modules/react-widgets/lib/img/'),
+          path.join(__dirname, 'node_modules/pdfjs-dist/web/images/'),
+          path.join(__dirname, 'node_modules/pdfjs-dist/web/images/'),
+          path.join(__dirname, 'node_modules/bootstrap/dist/fonts/')
+        ]
       },
       {
         test:/\.json$/i,
         loaders: ['json-loader'],
-        include: [path.join(__dirname, 'app'), path.join(__dirname, 'node_modules')]
+        include: [
+          path.join(__dirname, 'app')
+          //path.join(__dirname, 'node_modules')
+        ]
       }
     ]
   },
   plugins: [
-      new ExtractTextPlugin("style.css")
+    new ExtractTextPlugin("style.css")
   ]
 };
