@@ -23,7 +23,7 @@ export class TranslationsList extends Component {
           return <li key={index} className="list-group-item">
               <div>
                 <span className="item-type item-type-empty">
-                  <span className="item-type__name no-icon">{context.type}</span>
+                  <span className="item-type__name">{context.type}</span>
                 </span>
                 <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)}>{context.label}</I18NLink>
               </div>
