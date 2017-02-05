@@ -15,7 +15,7 @@ if (process.argv[2] === '--v') {
 
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
-var SpecReporter = require('jasmine-spec-reporter');
+var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 //var customMatchers = require('./app/api/utils/jasmineMatchers.js');
 //jasmine.getEnv().addMatchers(customMatchers);
@@ -38,10 +38,12 @@ jasmine.loadConfig({
 });
 
 jasmine.addReporter(new SpecReporter({
-  displayStacktrace: 'summary',
-  displaySuccessfulSpec: verbose,
-  displayFailedSpec: false,
-  displaySpecDuration: true
+  spec: {
+    //displayStacktrace: 'summary',
+    displaySuccessful: verbose,
+    displayFailedSpec: true,
+    displaySpecDuration: true
+  }
 }));
 
 exec('./couchdb/restore_views.sh uwazi_testing', function () {
