@@ -1,17 +1,5 @@
 var exec = require('child_process').exec;
-require('babel-core/register')({
-  "retainLines": "true",
-  "presets": ["es2015", "react"],
-  "plugins": [
-    ["babel-plugin-module-alias", [
-      { "src": "./app/react", "expose": "app" },
-      { "src": "./app/shared", "expose": "shared" },
-      { "src": "./app/api", "expose": "api" }
-    ]],
-    "transform-class-properties",
-    "add-module-exports"
-  ]
-}); //babel polyfill ES6
+require('babel-core/register')(); //babel polyfill ES6
 
 process.on('warning', (warning) => {
   console.log(warning.name);
@@ -27,7 +15,7 @@ if (process.argv[2] === '--v') {
 
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
-var SpecReporter = require('jasmine-spec-reporter');
+var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 //var customMatchers = require('./app/api/utils/jasmineMatchers.js');
 //jasmine.getEnv().addMatchers(customMatchers);
@@ -50,10 +38,12 @@ jasmine.loadConfig({
 });
 
 jasmine.addReporter(new SpecReporter({
-  displayStacktrace: 'summary',
-  displaySuccessfulSpec: verbose,
-  displayFailedSpec: false,
-  displaySpecDuration: true
+  spec: {
+    //displayStacktrace: 'summary',
+    displaySuccessful: verbose,
+    displayFailedSpec: true,
+    displaySpecDuration: true
+  }
 }));
 
 exec('./couchdb/restore_views.sh uwazi_testing', function () {

@@ -1,18 +1,7 @@
 require('es6-promise').polyfill(); // Required in some browsers
 
 //babel polyfill ES6
-require('babel-core/register')({
-  presets: ['es2015', 'react'],
-  plugins: [
-    'transform-class-properties',
-    'add-module-exports',
-    ['babel-plugin-module-alias', [
-      {src: './app/react', expose: 'app'},
-      {src: './app/shared', expose: 'shared'},
-      {src: './app/api', expose: 'api'}
-    ]]
-  ]
-});
+require('babel-core/register')();
 
 require.extensions['.scss'] = function () { return; };
 require.extensions['.css'] = function () { return; };
