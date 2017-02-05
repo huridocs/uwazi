@@ -25,33 +25,11 @@
     box-shadow: none;
     z-index: 4;
 
-    &::-webkit-input-placeholder {
-      color: $c-black;
-    }
-    &::-moz-placeholder { /* Firefox 19+ */
-      color: $c-black;
-    }
-    &:-ms-input-placeholder { /* IE 10+ */
-      color: $c-black;
-    }
-    &:-moz-placeholder { /* Firefox 18- */
-      color: $c-black;
-    }
+    @include placeholder($c-black);
 
     &:focus {
       box-shadow: none;
-      &::-webkit-input-placeholder {
-        color: transparent;
-      }
-      &::-moz-placeholder { /* Firefox 19+ */
-        color: transparent;
-      }
-      &:-ms-input-placeholder { /* IE 10+ */
-        color: transparent;
-      }
-      &:-moz-placeholder { /* Firefox 18- */
-        color: transparent;
-      }
+      @include placeholder(transparent);
     }
   }
   .input-group .fa-search,
@@ -608,34 +586,13 @@ label.multiselectItem-label {
   .form-control {
     width: auto;
     padding-left: 20px;
+    margin-bottom: 5px;
     cursor: pointer;
-
-    &::-webkit-input-placeholder {
-      color: $c-primary;
-    }
-    &::-moz-placeholder { /* Firefox 19+ */
-      color: $c-primary;
-    }
-    &:-ms-input-placeholder { /* IE 10+ */
-      color: $c-primary;
-    }
-    &:-moz-placeholder { /* Firefox 18- */
-      color: $c-primary;
-    }
+    @include placeholder($c-primary);
+    
     &:focus {
       cursor: text;
-      &::-webkit-input-placeholder {
-        color: $c-grey;
-      }
-      &::-moz-placeholder { /* Firefox 19+ */
-        color: $c-grey;
-      }
-      &:-ms-input-placeholder { /* IE 10+ */
-        color: $c-grey;
-      }
-      &:-moz-placeholder { /* Firefox 18- */
-        color: $c-grey;
-      }
+      @include placeholder(transparent);
     }
   }
   .btn {
