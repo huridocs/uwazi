@@ -4197,9 +4197,9 @@ jvent@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/jvent/-/jvent-0.2.0.tgz#a48e4e2dc69883fecae04b465d8dde691edef876"
 
-karma-chrome-launcher@^0.2.1:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-0.2.3.tgz#4c6d700d163a9d34c618efd87918be49e7a4a8c9"
+karma-chrome-launcher@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-2.0.0.tgz#c2790c5a32b15577d0fff5a4d5a2703b3b439c25"
   dependencies:
     fs-access "^1.0.0"
     which "^1.2.1"
@@ -4213,9 +4213,9 @@ karma-coverage@^0.5.3:
     minimatch "^3.0.0"
     source-map "^0.5.1"
 
-karma-firefox-launcher@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/karma-firefox-launcher/-/karma-firefox-launcher-0.1.7.tgz#c05dd86533691e62f31952595098e8bd357d39f3"
+karma-firefox-launcher@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/karma-firefox-launcher/-/karma-firefox-launcher-1.0.0.tgz#e08af3ce42e39860c2952ea7b7eaa64d63508bdc"
 
 karma-jasmine-diff-reporter@^0.3.4:
   version "0.3.4"

@@ -58,20 +58,30 @@ module.exports = function (config) {
   if (config.ci) {
     karmaConfig.browsers = ['Firefox', 'Chrome'];
     karmaConfig.singleRun = true;
-    karmaConfig.reporters.push('coverage');
-    karmaConfig.webpack.module.preLoaders = [{
-      test: /\.js$/,
-      include: [path.join(__dirname)],
-      loader: 'babel-istanbul',
-      exclude: /node_modules|specs/
-    }];
-    karmaConfig.coverageReporter = {
-      type: 'lcov',
-      dir: 'coverage/',
-      subdir: function(browser) {
-        return browser.toLowerCase().split(/[ /-]/)[0];
-      }
-    };
+    //karmaConfig.reporters.push('coverage');
+    //karmaConfig.webpack.module.rules = [{
+      //enforce: 'pre',
+      //test: /\.js$/,
+      //include: [
+        //path.join(__dirname, 'public'), 
+        //path.join(__dirname, 'app'),
+        //path.join(__dirname, 'node_modules/react-widgets/lib/fonts/'),
+        //path.join(__dirname, 'node_modules/font-awesome/fonts/'),
+        //path.join(__dirname, 'node_modules/react-widgets/lib/img/'),
+        //path.join(__dirname, 'node_modules/pdfjs-dist/web/images/'),
+        //path.join(__dirname, 'node_modules/pdfjs-dist/web/images/'),
+        //path.join(__dirname, 'node_modules/bootstrap/dist/fonts/')
+      //],
+      //loader: 'babel-istanbul-loader',
+      //exclude: /node_modules|specs/
+    //}];
+    //karmaConfig.coverageReporter = {
+      //type: 'lcov',
+      //dir: 'coverage/',
+      //subdir: function(browser) {
+        //return browser.toLowerCase().split(/[ /-]/)[0];
+      //}
+    //};
   }
   config.set(karmaConfig)
 };

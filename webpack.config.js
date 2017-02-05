@@ -22,7 +22,7 @@ module.exports = {
   },
   module: {
     //noParse: /node_modules/,
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         loader: 'babel-loader?cacheDirectory',
