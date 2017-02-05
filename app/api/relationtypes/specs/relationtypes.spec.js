@@ -41,6 +41,7 @@ describe('relationtypes', () => {
   describe('save()', () => {
     beforeEach(() => {
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+      spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
     });
 
     describe('when the relation type did not exist', () => {
@@ -82,7 +83,6 @@ describe('relationtypes', () => {
       });
 
       it('should update the translation for it', (done) => {
-        spyOn(translations, 'updateContext');
         request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
         .then((result) => {
           let relationtype = result.json;

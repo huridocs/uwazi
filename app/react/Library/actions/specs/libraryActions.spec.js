@@ -97,21 +97,21 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'search/match_title?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
-      .mock(APIURL + 'search?searchTerm=batman', 'get', {body: JSON.stringify(documentCollection)})
-      .mock(APIURL +
+      .get(APIURL + 'search/match_title?searchTerm=batman', {body: JSON.stringify(documentCollection)})
+      .get(APIURL + 'search?searchTerm=batman', {body: JSON.stringify(documentCollection)})
+      .get(APIURL +
         'search?searchTerm=batman' +
         '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D' +
         '&aggregations=%5B%5D' +
         '&types=%5B%22decision%22%5D',
-        'get',
         {body: JSON.stringify({rows: documentCollection, aggregations})}
       )
-      .mock(APIURL + 'search?searchTerm=batman&filters=%7B%7D&aggregations=%5B%5D&types=%5B%22decision%22%5D', 'get',
+      .get(APIURL + 'search?searchTerm=batman&filters=%7B%7D&aggregations=%5B%5D&types=%5B%22decision%22%5D',
             {body: JSON.stringify({rows: documentCollection, aggregations})});
       dispatch = jasmine.createSpy('dispatch');
     });
 
+    afterEach(() => backend.restore());
 
     describe('searchDocuments', () => {
       let store;
@@ -193,6 +193,7 @@ describe('libraryActions', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         mockID();
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
         let doc = {name: 'doc'};
 
         const expectedActions = [

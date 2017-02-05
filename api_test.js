@@ -13,6 +13,12 @@ require('babel-core/register')({
   ]
 }); //babel polyfill ES6
 
+process.on('warning', (warning) => {
+  console.log(warning.name);
+  console.log(warning.message);
+  console.log(warning.stack);
+});
+
 var verbose = false;
 
 if (process.argv[2] === '--v') {

@@ -7,9 +7,11 @@ describe('SettingsAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'settings', 'POST', {body: JSON.stringify('ok')})
-    .mock(APIURL + 'settings', 'GET', {body: JSON.stringify({site_name: 'Uwazi'})});
+    .post(APIURL + 'settings', {body: JSON.stringify('ok')})
+    .get(APIURL + 'settings', {body: JSON.stringify({site_name: 'Uwazi'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('save()', () => {
     let settings;

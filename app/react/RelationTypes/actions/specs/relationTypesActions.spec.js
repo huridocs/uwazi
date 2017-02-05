@@ -25,9 +25,11 @@ describe('relationTypesActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'relationtypes?_id=relationTypeId', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})});
+      .delete(APIURL + 'relationtypes?_id=relationTypeId', {body: JSON.stringify({testBackendResult: 'ok'})});
       dispatch = jasmine.createSpy('dispatch');
     });
+
+    afterEach(() => backend.restore());
 
     describe('deleteRelationType', () => {
       it('should delete the relationType and dispatch a relationTypes/REMOVE action with the relation type', (done) => {

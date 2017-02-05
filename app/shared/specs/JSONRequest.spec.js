@@ -5,12 +5,12 @@ describe('JSONRequest', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock('http://localhost:3000/api/test', 'POST', JSON.stringify({response: 'post'}))
-    .mock('http://localhost:3000/api/test', 'PUT', JSON.stringify({response: 'put'}))
-    .mock('http://localhost:3000/api/test', 'GET', JSON.stringify({response: 'get'}))
-    .mock('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', 'GET', JSON.stringify({response: 'get with params'}))
-    .mock('http://localhost:3000/api/test', 'DELETE', JSON.stringify({response: 'delete'}))
-    .mock('http://localhost:3000/api/test?id=123', 'DELETE', JSON.stringify({response: 'delete with params'}));
+    .post('http://localhost:3000/api/test', JSON.stringify({response: 'post'}))
+    .put('http://localhost:3000/api/test', JSON.stringify({response: 'put'}))
+    .get('http://localhost:3000/api/test', JSON.stringify({response: 'get'}))
+    .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', JSON.stringify({response: 'get with params'}))
+    .delete('http://localhost:3000/api/test', JSON.stringify({response: 'delete'}))
+    .delete('http://localhost:3000/api/test?id=123', JSON.stringify({response: 'delete with params'}));
   });
 
   describe('post()', () => {
@@ -26,7 +26,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'POST', {status: 400, body: JSON.stringify({error: 'error!'})});
+        backend.restore().post('http://localhost:3000/api/test', {status: 400, body: JSON.stringify({error: 'error!'})});
 
         request.post('http://localhost:3000/api/test')
         .then(() => {
@@ -67,7 +67,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'PUT', {status: 400, body: JSON.stringify({error: 'error!'})});
+        backend.restore().put('http://localhost:3000/api/test', {status: 400, body: JSON.stringify({error: 'error!'})});
 
         request.put('http://localhost:3000/api/test')
         .then(() => {
@@ -134,7 +134,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'GET', {status: 500, body: JSON.stringify({error: 'error!'})});
+        backend.restore().get('http://localhost:3000/api/test', {status: 500, body: JSON.stringify({error: 'error!'})});
 
         request.get('http://localhost:3000/api/test')
         .then(() => {
@@ -174,7 +174,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.reMock('http://localhost:3000/api/test', 'DELETE', {status: 404, body: JSON.stringify({error: 'error!'})});
+        backend.restore().delete('http://localhost:3000/api/test', {status: 404, body: JSON.stringify({error: 'error!'})});
 
         request.delete('http://localhost:3000/api/test')
         .then(() => {

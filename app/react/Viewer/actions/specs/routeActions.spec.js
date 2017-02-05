@@ -12,12 +12,14 @@ describe('Viewer routeActions', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: [document]})})
-    .mock(APIURL + 'relationtypes', 'GET', {body: JSON.stringify(relationTypes)})
-    .mock(APIURL + 'references/by_document/documentId', 'GET', {body: JSON.stringify(references)});
+    .get(APIURL + 'documents?_id=documentId', {body: JSON.stringify({rows: [document]})})
+    .get(APIURL + 'relationtypes', {body: JSON.stringify(relationTypes)})
+    .get(APIURL + 'references/by_document/documentId', {body: JSON.stringify(references)});
 
     spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
   });
+
+  afterEach(() => backend.restore());
 
   describe('requestViewerState', () => {
     it('should request for the document passed, the thesauris and return an object to populate the state', (done) => {

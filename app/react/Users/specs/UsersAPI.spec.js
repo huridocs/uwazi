@@ -7,9 +7,11 @@ describe('UsersAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'users', 'POST', {body: JSON.stringify('ok')})
-    .mock(APIURL + 'user', 'GET', {body: JSON.stringify({name: 'doe'})});
+    .post(APIURL + 'users', {body: JSON.stringify('ok')})
+    .get(APIURL + 'user', {body: JSON.stringify({name: 'doe'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('save()', () => {
     let user;

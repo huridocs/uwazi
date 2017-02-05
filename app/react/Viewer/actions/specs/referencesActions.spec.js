@@ -27,8 +27,10 @@ describe('Viewer referencesActions', () => {
       mockID();
       spyOn(scroller, 'to');
       backend.restore();
-      backend.mock(APIURL + 'references?_id=abc', 'DELETE', {body: JSON.stringify({_id: 'reference'})});
+      backend.delete(APIURL + 'references?_id=abc', {body: JSON.stringify({_id: 'reference'})});
     });
+
+    afterEach(() => backend.restore());
 
     describe('addReference', () => {
       let getState;

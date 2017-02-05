@@ -41,7 +41,7 @@ describe('RouteHandler', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: []})});
+    .get(APIURL + 'templates', {body: JSON.stringify({rows: []})});
     delete window.__initialData__;
 
     spyOn(TestController, 'requestState').and.callThrough();
@@ -51,6 +51,8 @@ describe('RouteHandler', () => {
     instance = component.instance();
     instance.constructor = TestController;
   });
+
+  afterEach(() => backend.restore());
 
   describe('static requestState', () => {
     it('should return a promise with an empty object', (done) => {

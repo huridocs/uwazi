@@ -21,7 +21,6 @@ export default (app) => {
     return documents.savePDFInfo(req.body, {language: req.language})
     .then(doc => res.json(doc))
     .catch(error => {
-      console.log(error);
       res.json({error: error});
     });
   });
