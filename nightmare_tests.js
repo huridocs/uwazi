@@ -8,6 +8,9 @@ var exec = require('child_process').exec;
 var dbConfig = require('./app/api/config/database.js');
 dbConfig.db_url = dbConfig.development;
 
+var systemKeys = require('./app/api/i18n/systemKeys.js');
+var translations = require('./app/api/i18n/translations.js');
+
 jasmine.loadConfig({
   spec_dir: '/',
   spec_files: [
@@ -32,6 +35,9 @@ exec('cd nightmare/fixtures;./restore.sh', (error) => {
       console.log(err);
       return;
     }
-    jasmine.execute();
+    translations.processSystemKeys(systemKeys).then(() => {
+      console.log('here');
+      jasmine.execute();
+    });
   }).stdout.pipe(process.stdout);
 }).stdout.pipe(process.stdout);
