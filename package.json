@@ -124,7 +124,7 @@
     "karma-jasmine-diff-reporter": "^0.3.4",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.6",
-    "karma-webpack": "^1.7.0",
+    "karma-webpack": "2.0.2",
     "node-sass": "^3.3.3",
     "phantomjs-polyfill-find": "0.0.1",
     "phantomjs-polyfill-object-assign": "0.0.2",
