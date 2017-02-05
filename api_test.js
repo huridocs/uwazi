@@ -1,17 +1,5 @@
 var exec = require('child_process').exec;
-require('babel-core/register')({
-  "retainLines": "true",
-  "presets": ["es2015", "react"],
-  "plugins": [
-    ["babel-plugin-module-alias", [
-      { "src": "./app/react", "expose": "app" },
-      { "src": "./app/shared", "expose": "shared" },
-      { "src": "./app/api", "expose": "api" }
-    ]],
-    "transform-class-properties",
-    "add-module-exports"
-  ]
-}); //babel polyfill ES6
+require('babel-core/register')(); //babel polyfill ES6
 
 process.on('warning', (warning) => {
   console.log(warning.name);
