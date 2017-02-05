@@ -69,13 +69,14 @@ $timeline-item-size: 18px;
     height: 100%;
     display: flex;
     align-items: center;
-    padding: 1px 3px;
+    padding: 0 1px;
     white-space: nowrap;
     font-size: 9px;
-    background: #fff;
+    background: $c-white;
     color: $c-grey-dark;
     border: 1px solid $c-grey;
-    border-radius: 3px;
+    border-radius: $border-radius;
+    font-family: 'Roboto Mono', monospace;
     &:after {
       content: '';
       position: absolute;
