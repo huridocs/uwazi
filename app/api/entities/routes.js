@@ -15,7 +15,8 @@ export default (app) => {
     })
     .then((templateTransformed) => {
       req.io.sockets.emit('thesauriChange', templateTransformed);
-    });
+    })
+    .catch(error => res.json({error: error}));
   });
 
   app.get('/api/entities/count_by_template', (req, res) => {

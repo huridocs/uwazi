@@ -42,8 +42,7 @@ describe('entities', () => {
         expect(document).toBe('document');
         expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
         done();
-      })
-      .catch(catchErrors(done));
+      });
     });
 
     it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
