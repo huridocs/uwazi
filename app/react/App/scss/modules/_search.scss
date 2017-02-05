@@ -404,14 +404,15 @@
 
 
 .switcher {
+  $switcher-height: 12px;
   position: relative;
   top: 2px;
   display: inline-block;
   background: $c-grey;
   width: 20px;
-  height: 12px;
+  height: $switcher-height;
   margin-left: 6px;
-  border-radius: $border-radius;
+  border-radius: $switcher-height / 2;
   cursor: pointer;
   &:after {
     background: $c-white;
