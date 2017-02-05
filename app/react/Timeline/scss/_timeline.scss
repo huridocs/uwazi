@@ -76,7 +76,7 @@ $timeline-item-size: 18px;
     color: $c-grey-dark;
     border: 1px solid $c-grey;
     border-radius: $border-radius;
-    font-family: 'Roboto Mono', monospace;
+    font-family: $f-mono;
     &:after {
       content: '';
       position: absolute;

@@ -104,9 +104,7 @@ footer {
 }
 
 .footer-collection_name {
-  font-family: "Droid Serif", serif;
-  font-style: italic;
-  font-weight: 300;
+  font-family: $f-mono;
 
   @media(min-width: 1024px) {
     width: auto;
