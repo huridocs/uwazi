@@ -55,13 +55,25 @@ export class CollectionSettings extends Component {
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Landing page')}</label>
               <div className="radio">
                 <label>
-                  <input onChange={this.changeLandingPage.bind(this)} name="landingPage" type="radio" value="library" checked={!this.state.customLandingpage}/>
+                  <input
+                    onChange={this.changeLandingPage.bind(this)}
+                    name="landingPage"
+                    type="radio"
+                    value="library"
+                    checked={!this.state.customLandingpage}
+                  />
                   {t('System', 'Library')}
                 </label>
               </div>
               <div className="radio">
                 <label>
-                  <input onChange={this.changeLandingPage.bind(this)} name="landingPage" type="radio" value="custom" checked={this.state.customLandingpage}/>
+                  <input
+                    onChange={this.changeLandingPage.bind(this)}
+                    name="landingPage"
+                    type="radio"
+                    value="custom"
+                    checked={this.state.customLandingpage}
+                  />
                   {t('System', 'Custom page')}
                 </label>
               </div>
@@ -69,12 +81,19 @@ export class CollectionSettings extends Component {
                 <span disabled={!this.state.customLandingpage} className="input-group-addon">
                   {hostname}
                 </span>
-                <input disabled={!this.state.customLandingpage} onChange={this.changeHomePage.bind(this)} value={this.state.homePage} type="text" className="form-control"/>
+                <input
+                  disabled={!this.state.customLandingpage}
+                  onChange={this.changeHomePage.bind(this)}
+                  value={this.state.homePage}
+                  type="text"
+                  className="form-control"
+                />
               </div>
             </div>
             <div className="alert alert-info full-width">
               <i className="fa fa-home"></i>
-              <p>The landing page is the first thing users will see when visiting your Uwazi instance. You can use any URL from your Uwazi instance as a landing page, examples:</p>
+              <p>The landing page is the first thing users will see when visiting your Uwazi instance.
+              You can use any URL from your Uwazi instance as a landing page, examples:</p>
               <ul>
                 <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
                 <li>Library results: /library/?searchTerm=test</li>
