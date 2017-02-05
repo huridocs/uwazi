@@ -283,9 +283,9 @@
     width: 100%;
     font-weight: 300;
     font-style: normal;
-    font-family: $f-special;
+    font-family: $f-mono;
     margin-bottom: 0;
-    color: $c-black;
+    color: $c-grey-dark;
     line-height: inherit;
     label {
       font-size: $f-size;
@@ -404,29 +404,29 @@
 
 
 .switcher {
-  $switcher-height: 12px;
+  $switcher-height: 8px;
   position: relative;
-  top: 2px;
   display: inline-block;
-  background: $c-grey;
-  width: 20px;
+  width: 16px;
   height: $switcher-height;
   margin-left: 6px;
+  background-color: $c-grey-light;
   border-radius: $switcher-height / 2;
   cursor: pointer;
+  
   &:after {
-    background: $c-white;
-    width: 8px;
-    height: 8px;
     content: '';
     display: block;
     position: absolute;
     top: 2px;
     left: 2px;
+    width: $switcher-height - 4;
+    height: $switcher-height - 4;
+    background: $c-white;
     border-radius: 50%;
   }
   .search__filter.is-active & {
-    background: $c-success;
+    background-color: $c-success;
     &:after {
       left: auto;
       right: 2px;
@@ -667,11 +667,14 @@ label.multiselectItem-label {
         .multiselectItem-input:checked + label .multiselectItem-icon:last-of-type  { display: inline-block; }
 
   .multiselectItem-input:checked + label .multiselectItem-name,
-  .multiselectItem-input:checked + label .multiselectItem-icon,
   .multiselectItem-input:checked + label .multiselectItem-results,
   .multiselectItem-input:checked ~ .multiselectItem-results {
-    color: $c-primary;
+    color: $c-black;
     font-weight: bold;
+  }
+  
+  .multiselectItem-input:checked + label .multiselectItem-icon {
+    color: $c-success;
   }
 }
 
