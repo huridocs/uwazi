@@ -4,3 +4,18 @@ $box-shadow-danger: 0px 5px 10px -5px $c-danger;
 $header-height: 50px;
 
 $border-radius: 0;
+
+@mixin placeholder ($color) {
+  &::-webkit-input-placeholder {
+    color: $color;
+  }
+  &::-moz-placeholder {
+    color: $color;
+  }
+  &:-ms-input-placeholder {
+    color: $color;
+  }
+  &:-moz-placeholder {
+    color: $color;
+  }
+}
