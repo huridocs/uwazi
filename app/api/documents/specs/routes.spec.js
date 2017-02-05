@@ -18,17 +18,20 @@ describe('documents', () => {
   });
 
   describe('POST', () => {
-    it('should need authorization', () => {
-      expect(routes.post('/api/documents')).toNeedAuthorization();
-    });
-
-    it('should create a new document with use user', (done) => {
-      let req = {
+    let req;
+    beforeEach(() => {
+      req = {
         body: {title: 'Batman begins'},
         user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
         language: 'es'
       };
+    });
 
+    it('should need authorization', () => {
+      expect(routes.post('/api/documents', req)).toNeedAuthorization();
+    });
+
+    it('should create a new document with use user', (done) => {
       spyOn(documents, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/documents', req)
       .then((document) => {
@@ -101,14 +104,18 @@ describe('documents', () => {
   });
 
   describe('/uploads', () => {
+    let req;
+
+    beforeEach(() => {
+      req = {user: {_id: 'c08ef2532f0bd008ac5174b45e033c94'}};
+    });
+
     it('should need authorization', () => {
-      expect(routes.get('/api/documents/uploads')).toNeedAuthorization();
+      expect(routes.get('/api/documents/uploads', req)).toNeedAuthorization();
     });
 
     it('should return documents.uploadsByUser', (done) => {
       spyOn(documents, 'getUploadsByUser').and.returnValue(new Promise((resolve) => resolve('results')));
-      let req = {user: {_id: 'c08ef2532f0bd008ac5174b45e033c94'}};
-
       routes.get('/api/documents/uploads', req)
       .then((response) => {
         expect(response).toBe('results');

@@ -9,13 +9,14 @@ describe('Login', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'test_get', 'GET', JSON.stringify({method: 'GET'}))
-    .mock(APIURL + 'test_post', 'POST', JSON.stringify({method: 'POST'}))
-    .mock(APIURL + 'test_delete?data=delete', 'DELETE', JSON.stringify({method: 'DELETE'}))
-    .mock(APIURL + 'unauthorised', 'GET', {status: 401, body: {}})
-    .mock(APIURL + 'error_url', 'GET', {status: 500, body: {}});
+    .get(APIURL + 'test_get', JSON.stringify({method: 'GET'}))
+    .post(APIURL + 'test_post', JSON.stringify({method: 'POST'}))
+    .delete(APIURL + 'test_delete?data=delete', JSON.stringify({method: 'DELETE'}))
+    .get(APIURL + 'unauthorised', {status: 401, body: {}})
+    .get(APIURL + 'error_url', {status: 500, body: {}});
   });
 
+  afterEach(() => backend.restore());
 
   describe('GET', () => {
     it('should prefix url with config api url', (done) => {

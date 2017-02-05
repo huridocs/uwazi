@@ -143,7 +143,6 @@ describe('templates', () => {
 
     it('should set a default value of [] to properties', (done) => {
       let newTemplate = {name: 'created_template'};
-
       templates.save(newTemplate)
       .then(getAllTemplates)
       .then((allTemplates) => {
@@ -159,6 +158,7 @@ describe('templates', () => {
 
     describe('when passing _id and _rev', () => {
       it('edit an existing one', (done) => {
+        spyOn(translations, 'updateContext');
         getTemplate()
         .then((template) => {
           let edited = {_id: template._id, _rev: template._rev, name: 'changed name'};
@@ -205,6 +205,7 @@ describe('templates', () => {
       });
 
       it('should return the saved template', (done) => {
+        spyOn(translations, 'updateContext');
         spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         getTemplate()
         .then((template) => {
@@ -235,6 +236,7 @@ describe('templates', () => {
 
     describe('when there is a db error', () => {
       it('should return the error', (done) => {
+        spyOn(translations, 'updateContext');
         spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''};
         templates.save(badTemplate)

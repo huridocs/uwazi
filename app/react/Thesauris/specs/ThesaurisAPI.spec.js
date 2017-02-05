@@ -9,11 +9,13 @@ describe('ThesaurisAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'thesauris?_id=thesauriId', 'GET', {body: JSON.stringify({rows: singleResponse})})
-    .mock(APIURL + 'thesauris?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
-    .mock(APIURL + 'thesauris', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(APIURL + 'thesauris', {body: JSON.stringify({rows: arrayResponse})})
+    .get(APIURL + 'thesauris?_id=thesauriId', {body: JSON.stringify({rows: singleResponse})})
+    .delete(APIURL + 'thesauris?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .post(APIURL + 'thesauris', {body: JSON.stringify({backednResponse: 'test'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request thesauris', (done) => {

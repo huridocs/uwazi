@@ -8,11 +8,13 @@ describe('referencesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'references/by_document/sourceDocument', 'GET', {body: JSON.stringify(arrayResponse)})
-    .mock(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', 'GET', {body: '2'})
-    .mock(APIURL + 'references?_id=id&_rev=rev', 'DELETE', {body: JSON.stringify({backendResponse: 'testdelete'})})
-    .mock(APIURL + 'references', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(APIURL + 'references/by_document/sourceDocument', {body: JSON.stringify(arrayResponse)})
+    .get(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', {body: '2'})
+    .delete(APIURL + 'references?_id=id&_rev=rev', {body: JSON.stringify({backendResponse: 'testdelete'})})
+    .post(APIURL + 'references', {body: JSON.stringify({backednResponse: 'test'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request references', (done) => {

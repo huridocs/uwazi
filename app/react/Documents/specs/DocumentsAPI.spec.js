@@ -12,17 +12,19 @@ describe('DocumentsAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'documents', 'GET', {body: JSON.stringify({rows: arrayResponse})})
-    .mock(APIURL + 'documents/search', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'documents/list?keys=%5B%221%22%2C%222%22%5D', 'GET', {body: JSON.stringify({rows: listResponse})})
-    .mock(APIURL + 'documents/uploads', 'GET', {body: JSON.stringify({rows: 'uploads'})})
-    .mock(APIURL + 'documents/count_by_template?templateId=templateId', 'GET', {body: JSON.stringify(1)})
-    .mock(APIURL + 'documents/match_title?searchTerm=term', 'GET', {body: JSON.stringify(searchResponse)})
-    .mock(APIURL + 'documents/search?searchTerm=Batman&joker=true', 'GET', {body: JSON.stringify(filteredSearchResult)})
-    .mock(APIURL + 'documents?_id=documentId', 'GET', {body: JSON.stringify({rows: singleResponse})})
-    .mock(APIURL + 'documents?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
-    .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(APIURL + 'documents', {body: JSON.stringify({rows: arrayResponse})})
+    .get(APIURL + 'documents/search', {body: JSON.stringify(searchResponse)})
+    .get(APIURL + 'documents/list?keys=%5B%221%22%2C%222%22%5D', {body: JSON.stringify({rows: listResponse})})
+    .get(APIURL + 'documents/uploads', {body: JSON.stringify({rows: 'uploads'})})
+    .get(APIURL + 'documents/count_by_template?templateId=templateId', {body: JSON.stringify(1)})
+    .get(APIURL + 'documents/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
+    .get(APIURL + 'documents/search?searchTerm=Batman&joker=true', {body: JSON.stringify(filteredSearchResult)})
+    .get(APIURL + 'documents?_id=documentId', {body: JSON.stringify({rows: singleResponse})})
+    .delete(APIURL + 'documents?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .post(APIURL + 'documents', {body: JSON.stringify({backednResponse: 'test'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('uploads', () => {
     it('should request uploads', (done) => {

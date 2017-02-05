@@ -19,18 +19,24 @@ describe('entities', () => {
   });
 
   describe('POST', () => {
+    let req;
+    beforeEach(() => {
+      req = {
+        body: {title: 'Batman begins', template: 'template'},
+        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        language: 'lang',
+        io: {sockets: {emit: () => {}}}
+      };
+    });
+
     it('should need authorization', () => {
-      expect(routes.post('/api/entities')).toNeedAuthorization();
+      expect(routes.post('/api/entities', req)).toNeedAuthorization();
     });
 
     it('should create a new document with use user', (done) => {
-      let req = {
-        body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
-        language: 'lang'
-      };
-
       spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
+      spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/entities', req)
       .then((document) => {
         expect(document).toBe('document');
@@ -41,7 +47,7 @@ describe('entities', () => {
     });
 
     it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
-      let req = {
+      req = {
         body: {title: 'Batman begins', template: 'template'},
         user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
         language: 'lang',

@@ -20,8 +20,10 @@ describe('EditThesauri', () => {
 
     backend.restore();
     backend
-    .mock(APIURL + 'thesauris?_id=thesauriId', 'GET', {body: JSON.stringify({rows: [thesauri]})});
+    .get(APIURL + 'thesauris?_id=thesauriId', {body: JSON.stringify({rows: [thesauri]})});
   });
+
+  afterEach(() => backend.restore());
 
   it('should render a ThesauriForm', () => {
     expect(component.find(ThesauriForm).length).toBe(1);

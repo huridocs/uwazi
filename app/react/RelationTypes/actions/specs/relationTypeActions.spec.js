@@ -15,8 +15,10 @@ describe('relationTypesActions', () => {
     mockID();
     backend.restore();
     backend
-    .mock(APIURL + 'relationtypes', 'post', {body: JSON.stringify({testBackendResult: 'ok'})});
+    .post(APIURL + 'relationtypes', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('saveRelationType', () => {
     it('should save the relationType and dispatch a relationTypeSaved action and a notify', (done) => {

@@ -17,9 +17,11 @@ describe('uploadsActions', () => {
     mockID();
     backend.restore();
     backend
-    .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({testBackendResult: 'ok'})})
-    .mock(APIURL + 'documents?name=doc&_id=abc1', 'DELETE', {body: JSON.stringify({testBackendResult: 'ok'})});
+    .post(APIURL + 'documents', {body: JSON.stringify({testBackendResult: 'ok'})})
+    .delete(APIURL + 'documents?name=doc&_id=abc1', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('enterUploads()', () => {
     it('should return a ENTER_UPLOADS_SECTION', () => {
@@ -83,7 +85,7 @@ describe('uploadsActions', () => {
       it('should create a document', (done) => {
         backend.restore();
         backend
-        .mock(APIURL + 'documents', 'POST', {body: JSON.stringify({_id: 'test'})});
+        .post(APIURL + 'documents', {body: JSON.stringify({_id: 'test'})});
 
         let newDoc = {name: 'doc'};
         const store = mockStore({});

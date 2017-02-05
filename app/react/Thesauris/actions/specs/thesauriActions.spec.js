@@ -21,8 +21,10 @@ describe('thesaurisActions', () => {
     getState = jasmine.createSpy('getState').and.returnValue({thesauri: {data: {values: [{label: 'something'}]}}});
     backend.restore();
     backend
-    .mock(APIURL + 'thesauris', 'post', {body: JSON.stringify({testBackendResult: 'ok'})});
+    .post(APIURL + 'thesauris', {body: JSON.stringify({testBackendResult: 'ok'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('saveThesauri', () => {
     it('should save the thesauri and dispatch a thesauriSaved action and a notify', (done) => {

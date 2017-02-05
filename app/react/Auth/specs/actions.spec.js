@@ -13,11 +13,13 @@ describe('auth actions', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'login', 'POST', {body: JSON.stringify({success: true})})
-    .mock(APIURL + 'recoverPassword', 'POST', {body: JSON.stringify({success: true})})
-    .mock(APIURL + 'resetPassword', 'POST', {body: JSON.stringify({success: true})})
-    .mock(APIURL + 'user', 'GET', {body: JSON.stringify({username: 'username'})});
+    .post(APIURL + 'login', {body: JSON.stringify({success: true})})
+    .post(APIURL + 'recoverPassword', {body: JSON.stringify({success: true})})
+    .post(APIURL + 'resetPassword', {body: JSON.stringify({success: true})})
+    .get(APIURL + 'user', {body: JSON.stringify({username: 'username'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('login', () => {
     describe('when success', () => {

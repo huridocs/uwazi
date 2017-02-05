@@ -62,7 +62,7 @@ describe('Attachments Routes', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.post('/api/attachments/upload')).toNeedAuthorization();
+      expect(routes.post('/api/attachments/upload', req)).toNeedAuthorization();
     });
 
     it('should add the uploaded file to attachments', (done) => {
@@ -71,7 +71,7 @@ describe('Attachments Routes', () => {
         return Promise.all([addedFile, request.get(`${dbUrl}/${req.body.entityId}`)]);
       })
       .then(([addedFile, dbEntity]) => {
-        expect(dbEntity.json.attachments.length).toBe(3);
+        expect(dbEntity.json.attachments.length).toBe(4);
         expect(dbEntity.json.attachments[2]).toEqual(file);
         expect(addedFile.filename).toBe('mockfile.doc');
         done();
@@ -94,7 +94,7 @@ describe('Attachments Routes', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.delete('/api/attachments/delete')).toNeedAuthorization();
+      expect(routes.delete('/api/attachments/delete', {query: {entityId: 'a'}})).toNeedAuthorization();
     });
 
     it('should remove the passed file from attachments and delte the local file', (done) => {

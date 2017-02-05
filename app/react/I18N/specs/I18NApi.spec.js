@@ -10,10 +10,12 @@ describe('I18NApi', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'translations', 'GET', {body: JSON.stringify({rows: translations})})
-    .mock(APIURL + 'translations', 'POST', {body: JSON.stringify(translation)})
-    .mock(APIURL + 'translations/addentry', 'POST', {body: JSON.stringify(addentryresponse)});
+    .get(APIURL + 'translations', {body: JSON.stringify({rows: translations})})
+    .post(APIURL + 'translations', {body: JSON.stringify(translation)})
+    .post(APIURL + 'translations/addentry', {body: JSON.stringify(addentryresponse)});
   });
+
+  afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request translations', (done) => {

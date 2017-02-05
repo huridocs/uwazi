@@ -9,11 +9,13 @@ describe('pagesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'pages?sharedId=documentId', 'GET', {body: JSON.stringify(singleResponse)})
-    .mock(APIURL + 'pages/list', 'GET', {body: JSON.stringify({rows: listResponse})})
-    .mock(APIURL + 'pages', 'POST', {body: JSON.stringify({backednResponse: 'post'})})
-    .mock(APIURL + 'pages?sharedId=id', 'DELETE', {body: JSON.stringify({backednResponse: 'delete'})});
+    .get(APIURL + 'pages?sharedId=documentId', {body: JSON.stringify(singleResponse)})
+    .get(APIURL + 'pages/list', {body: JSON.stringify({rows: listResponse})})
+    .post(APIURL + 'pages', {body: JSON.stringify({backednResponse: 'post'})})
+    .delete(APIURL + 'pages?sharedId=id', {body: JSON.stringify({backednResponse: 'delete'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request for the page', (done) => {

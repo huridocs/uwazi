@@ -9,12 +9,14 @@ describe('TemplatesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .mock(APIURL + 'templates', 'GET', {body: JSON.stringify({rows: mockResponse})})
-    .mock(APIURL + 'templates/count_by_thesauri?_id=id', 'GET', {body: JSON.stringify({total: 1})})
-    .mock(APIURL + 'templates?_id=templateId', 'GET', {body: JSON.stringify({rows: templateResponse})})
-    .mock(APIURL + 'templates?_id=id', 'DELETE', {body: JSON.stringify({backednResponse: 'testdelete'})})
-    .mock(APIURL + 'templates', 'POST', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(APIURL + 'templates', {body: JSON.stringify({rows: mockResponse})})
+    .get(APIURL + 'templates/count_by_thesauri?_id=id', {body: JSON.stringify({total: 1})})
+    .get(APIURL + 'templates?_id=templateId', {body: JSON.stringify({rows: templateResponse})})
+    .delete(APIURL + 'templates?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .post(APIURL + 'templates', {body: JSON.stringify({backednResponse: 'test'})});
   });
+
+  afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request templates', (done) => {

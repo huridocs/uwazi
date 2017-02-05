@@ -13,14 +13,14 @@ describe('NewThesauri', () => {
   let thesauris = [{name: 'Countries', values: [{id: '1', label: 'label1'}, {id: '2', label: 'label2'}]}];
 
   beforeEach(() => {
+    backend.restore();
+    backend.get(APIURL + 'thesauris', {body: JSON.stringify({rows: thesauris})});
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<NewThesauri />, {context});
     instance = component.instance();
-
-    backend.restore();
-    backend
-    .mock(APIURL + 'thesauris', 'GET', {body: JSON.stringify({rows: thesauris})});
   });
+
+  afterEach(() => backend.restore());
 
   it('should render a ThesauriForm with new=true', () => {
     expect(component.find(ThesauriForm).length).toBe(1);

@@ -22,11 +22,13 @@ describe('thesaurisActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .mock(APIURL + 'thesauris?_id=thesauriId', 'delete', {body: JSON.stringify({testBackendResult: 'ok'})})
-      .mock(APIURL + 'templates/count_by_thesauri?_id=thesauriWithTemplates', 'GET', {body: JSON.stringify(2)})
-      .mock(APIURL + 'templates/count_by_thesauri?_id=thesauriWithoutTemplates', 'GET', {body: JSON.stringify(0)});
+      .delete(APIURL + 'thesauris?_id=thesauriId', {body: JSON.stringify({testBackendResult: 'ok'})})
+      .get(APIURL + 'templates/count_by_thesauri?_id=thesauriWithTemplates', {body: JSON.stringify(2)})
+      .get(APIURL + 'templates/count_by_thesauri?_id=thesauriWithoutTemplates', {body: JSON.stringify(0)});
       dispatch = jasmine.createSpy('dispatch');
     });
+
+    afterEach(() => backend.restore());
 
     describe('deleteThesauri', () => {
       it('should delete the thesauri and dispatch a thesauris/REMOVE action with the thesauri', (done) => {
