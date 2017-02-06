@@ -415,7 +415,13 @@
 .nested-strict {
   display: inline;
   position: absolute;
-  right: 40px
+  right: -5px;
+  
+  & > div,
+  & > label {
+    float: left;
+    cursor: pointer;
+  }
 }
 
 .multiselect {
