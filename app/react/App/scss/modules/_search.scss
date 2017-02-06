@@ -84,7 +84,7 @@
   &:hover,
   &:active {
     @if $theme == light {
-      color: $c-primary-dark;
+      color: $c-black;
     } @else {
       color: $c-white;
     }
@@ -101,8 +101,8 @@
       border-color: $c-white;
     } @else {
       color: $c-white;
-      background-color: $c-primary;
-      border-color: $c-primary;
+      background-color: $c-black;
+      border-color: $c-black;
     }
     @media(min-width: 454px) {
       right: 400px;
@@ -120,7 +120,7 @@
         background-color: $c-white;
       } @else {
         color: $c-white;
-        background-color: $c-primary;
+        background-color: $c-black;
       }
     }
   }
@@ -451,7 +451,7 @@
     padding-left: 26px;
 
     &:focus {
-      border-bottom-color: $c-primary;
+      border-bottom-color: $c-black;
     }
   }
 
@@ -463,7 +463,7 @@
   }
 
   input.form-control:focus ~ .fa {
-    color: $c-primary;
+    color: $c-black;
   }
 }
 .multiselectLabel-icon {
@@ -510,7 +510,7 @@
   border: 1px solid $c-grey;
   border-radius: $border-radius;
   &:hover {
-    border-color: $c-primary;
+    border-color: $c-black;
     cursor: pointer;
   }
 
@@ -570,7 +570,7 @@ label.multiselectItem-label {
       position: absolute;
       top: 5px;
       left: 1px;
-      color: $c-primary;
+      color: $c-black;
       cursor: pointer;
     }
   }
@@ -581,11 +581,11 @@ label.multiselectItem-label {
     border-radius: 0;
     border: 0;
     border-bottom: 1px solid transparent;
-    color: $c-primary;
+    color: $c-black;
     box-shadow: none !important;
     &:hover,
     &:focus {
-      border-color: $c-primary;
+      border-color: $c-black;
       background: transparent;
     }
   }
@@ -594,7 +594,7 @@ label.multiselectItem-label {
     padding-left: 20px;
     margin-bottom: 5px;
     cursor: pointer;
-    @include placeholder($c-primary);
+    @include placeholder($c-black);
     
     &:focus {
       cursor: text;
@@ -669,7 +669,7 @@ label.multiselectItem-label {
     padding: 3px 6px 3px 9px;
     font-size: $f-size-sm;
     background: $c-grey-lighten;
-    color: $c-primary;
+    color: $c-black;
     border-radius: $border-radius;
     line-height: 1.7em;
 
@@ -681,7 +681,7 @@ label.multiselectItem-label {
       padding: 0px 3px 1px 3px;
       margin-left: 5px;
       text-align: center;
-      background: $c-primary;
+      background: $c-black;
       color: $c-white;
       border-radius: 50%;
     }
