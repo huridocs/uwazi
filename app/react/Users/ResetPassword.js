@@ -42,14 +42,14 @@ export class ResetPassword extends Component {
         <div className="col-xs-12 col-sm-4 col-sm-offset-4">
           <form onSubmit={this.submit.bind(this)}>
             <div className={'form-group login-email' + (this.state.error ? ' has-error' : '')}>
-              <label htmlFor="password">Password</label>
+              <label className="form-group-label" htmlFor="password">Password</label>
               <input
                 onChange={this.passwordChange.bind(this)}
                 value={this.state.password}
                 type="password" name="password" id="password" className="form-control"/>
             </div>
             <div className={'form-group login-password ' + (this.state.error ? 'has-error' : '')}>
-              <label htmlFor="repeat-password">Repeat Password</label>
+              <label className="form-group-label" htmlFor="repeat-password">Repeat Password</label>
               <input
                 value={this.state.repeatPassword}
                 onChange={this.repeatPasswordChange.bind(this)}

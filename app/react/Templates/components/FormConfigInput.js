@@ -12,7 +12,7 @@ export class FormConfigInput extends Component {
   render() {
     const {index, data, formState, type} = this.props;
     const property = data.properties[index];
-    let labelClass = '';
+    let labelClass = 'form-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
