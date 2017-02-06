@@ -222,7 +222,7 @@ $item-padding: 15px;
     }
 
     &.item-current-sort {
-      color: $c-primary;
+      font-style: italic;
     }
   }
   .item-icon {
