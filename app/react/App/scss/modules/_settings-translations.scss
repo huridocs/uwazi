@@ -3,6 +3,11 @@
     -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
   }
+  .input-group-addon {
+    min-width: 45px;
+    text-transform: uppercase;
+    color: $c-grey-dark;
+  }
 }
 
 .TranslationsList {

@@ -30,7 +30,7 @@ export class FormConfigSelect extends Component {
       optionGroups[0].options.push(thesauri);
     });
 
-    let labelClass = '';
+    let labelClass = 'form-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
@@ -47,7 +47,7 @@ export class FormConfigSelect extends Component {
           </Field>
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Thesauri</label>
           <Select model={`template.data.properties[${index}].content`}
                   options={optionGroups}

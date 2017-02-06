@@ -8,9 +8,10 @@ import * as notifications from 'app/Notifications/actions/notificationsActions';
 
 export function saveThesauri(thesauri) {
   return function (dispatch) {
-    return api.save(thesauri).then(() => {
+    return api.save(thesauri).then((_thesauri) => {
       dispatch({type: types.THESAURI_SAVED});
       notifications.notify(t('System', 'Thesauri saved'), 'success')(dispatch);
+      dispatch(formActions.change('thesauri.data', _thesauri));
     });
   };
 }

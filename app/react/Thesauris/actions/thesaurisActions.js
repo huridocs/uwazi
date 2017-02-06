@@ -13,7 +13,7 @@ export function deleteThesauri(thesauri) {
   return function (dispatch) {
     return api.delete(thesauri)
     .then(() => {
-      dispatch(actions.remove('thesauris', thesauri));
+      dispatch(actions.remove('dictionaries', thesauri));
     });
   };
 }
