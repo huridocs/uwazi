@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {isClient} from 'app/utils';
 
 import {actions} from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -16,32 +17,37 @@ export class CollectionSettings extends Component {
 
   changeLandingPage(e) {
     const customLandingpage = e.target.value === 'custom';
-    const homePage = customLandingpage ? this.state.homePage : '';
-    this.setState({customLandingpage, homePage});
+    this.setState({customLandingpage, homePage: ''});
+    let settings = Object.assign(this.props.settings, {home_page: ''});
+    this.props.setSettings(settings);
   }
 
   changeName(e) {
     this.setState({siteName: e.target.value});
-    this.props.setSettings(Object.assign(this.props.settings, {site_name: e.target.value}));
+    let settings = Object.assign(this.props.settings, {site_name: e.target.value});
+    this.props.setSettings(settings);
   }
 
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
-    this.props.setSettings(Object.assign(this.props.settings, {home_page: e.target.value}));
+    let settings = Object.assign(this.props.settings, {home_page: e.target.value});
+    this.props.setSettings(settings);
   }
 
   updateSettings(e) {
     e.preventDefault();
-    const {_id, _rev, site_name, home_page} = this.props.settings;
-    SettingsAPI.save({_id, _rev, site_name, home_page})
+    let settings = Object.assign({}, this.props.settings);
+    settings.home_page = this.state.homePage;
+    settings.site_name = this.state.siteName;
+    SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated.'), 'success');
-      this.props.setSettings(Object.assign(this.props.settings, result));
+      this.props.setSettings(result);
     });
   }
 
   render() {
-    const hostname = window ? window.location.origin : '';
+    const hostname = isClient ? window.location.origin : '';
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection settings')}</div>

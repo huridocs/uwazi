@@ -47,10 +47,10 @@ import Library from 'app/Library/Library';
 import store from './store';
 
 function getIndexRoute(nextState, callBack) {
-  let collectionSettings = store().getState().settings.collection.toJS();
   let indexRoute = {
     component: Library,
     onEnter: (nxtState, replace) => {
+      let collectionSettings = store().getState().settings.collection.toJS();
       if (collectionSettings.home_page) {
         replace(collectionSettings.home_page);
       }
