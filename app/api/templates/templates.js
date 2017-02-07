@@ -3,6 +3,10 @@ import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
 import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
+import model from 'api/odm';
+import templatesModel from './templatesModel.js';
+
+const db = model(templatesModel);
 
 let checkDuplicated = (template) => {
   return request.get(`${dbURL}/_design/templates/_view/all`)
@@ -52,10 +56,7 @@ let save = (template) => {
   return checkDuplicated(template)
   .then(() => validateTemplate(template))
   .then(() => {
-    return request.post(dbURL, template);
-  })
-  .then((response) => {
-    return response.json;
+    return db.save(template);
   });
 };
 
@@ -76,10 +77,13 @@ export default {
 
     return save(template)
     .then((response) => {
-      template._id = response.id;
-      addTemplateTranslation(template);
-      return this.getById(response.id);
+      addTemplateTranslation(response);
+      return response;
     });
+  },
+
+  get() {
+    return db.get();
   },
 
   /// MAL !! deberia hacer un count de documents y entitites ??? revisar

@@ -7,7 +7,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-describe('templates', () => {
+fdescribe('templates', () => {
   beforeEach((done) => {
     database.reset_testing_database()
     .then(() => database.import(fixtures))
@@ -20,7 +20,7 @@ describe('templates', () => {
     let getAllTemplates = () => request.get(dbURL + '/_design/templates/_view/all').then((response) => response.json.rows);
     let getTemplate = (id = 'c08ef2532f0bd008ac5174b45e033c94') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    it('should return the saved template', (done) => {
+    fit('should return the saved template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
       templates.save(newTemplate)
@@ -32,24 +32,24 @@ describe('templates', () => {
       .catch(done.fail);
     });
 
-    it('should create a template', (done) => {
+    fit('should create a template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
       templates.save(newTemplate)
-      .then(getAllTemplates)
+      .then(templates.get)
       .then((allTemplates) => {
         let newDoc = allTemplates.find((template) => {
-          return template.value.name === 'created_template';
+          return template.name === 'created_template';
         });
 
-        expect(newDoc.value.name).toBe('created_template');
-        expect(newDoc.value.properties[0].label).toEqual('fieldLabel');
+        expect(newDoc.name).toBe('created_template');
+        expect(newDoc.properties[0].label).toEqual('fieldLabel');
         done();
       })
       .catch(done.fail);
     });
 
-    it('should validate properties not having repeated names and return an error', (done) => {
+    fit('should validate properties not having repeated names and return an error', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 1'},
@@ -67,7 +67,7 @@ describe('templates', () => {
       });
     });
 
-    it('should add it to the translations', (done) => {
+    fit('should add it to the translations', (done) => {
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       let newTemplate = {name: 'created template', properties: [
         {label: 'label 1'},
@@ -96,19 +96,19 @@ describe('templates', () => {
       ]};
 
       templates.save(newTemplate)
-      .then(getAllTemplates)
+      .then(templates.get)
       .then((allTemplates) => {
         let newDoc = allTemplates.find((template) => {
-          return template.value.name === 'created_template';
+          return template.name === 'created_template';
         });
 
-        expect(newDoc.value.properties[0].name).toEqual('label_1');
-        expect(newDoc.value.properties[1].name).toEqual('label_2');
-        expect(newDoc.value.properties[2].name).toEqual('label_3');
-        expect(newDoc.value.properties[3].name).toEqual('name');
+        expect(newDoc.properties[0].name).toEqual('label_1');
+        expect(newDoc.properties[1].name).toEqual('label_2');
+        expect(newDoc.properties[2].name).toEqual('label_3');
+        expect(newDoc.properties[3].name).toEqual('name');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     it('should not repeat names', (done) => {
