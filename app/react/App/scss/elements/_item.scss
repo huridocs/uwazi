@@ -118,15 +118,14 @@ $item-padding: 15px;
   font-size: 14px;
 }
 .item-type__name {
-  font-family: $f-mono;
   color: $c-white;
   border-radius: $border-radius;
-  padding: 0 5px;
-  height: 14px;
-  line-height: 14px;
+  padding: 0 6px;
+  height: 17px;
+  line-height: 18px;
   font-size: $f-size-xs;
-  text-transform: uppercase;
-  letter-spacing: 0.075em;;
+  font-weight: 500;
+  letter-spacing: 0.075em;
   max-width: calc(100% - 20px);
   overflow: hidden;
   text-overflow: ellipsis;
