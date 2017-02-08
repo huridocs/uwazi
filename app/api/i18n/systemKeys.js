@@ -34,6 +34,7 @@ export default [
 {key: 'of', label: 'of'},
 {key: 'Uploads', label: 'Uploads'},
 {key: 'Reset', label: 'Reset'},
+{key: 'in', label: 'in'},
 {key: 'Info', label: 'Info'},
 {key: 'View', label: 'View'},
 {key: 'Cancel', label: 'Cancel'},
