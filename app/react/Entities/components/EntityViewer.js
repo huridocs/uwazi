@@ -140,6 +140,7 @@ export class EntityViewer extends Component {
             </div>
           </div>
         </aside>
+
         <aside className="side-panel entity-connections">
 
           <div className="sidepanel-header">
