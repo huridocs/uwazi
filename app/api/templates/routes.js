@@ -15,6 +15,7 @@ export default app => {
     });
   });
 
+  //
   app.get('/api/templates', (req, res) => {
     let id = '';
     if (req.query && req.query._id) {
@@ -48,9 +49,5 @@ export default app => {
     .then((response) => {
       res.json(response);
     });
-  });
-
-  app.get('/api/templates/select_options', (req, res) => {
-    templates.selectOptions().then((response) => res.json(response));
   });
 };

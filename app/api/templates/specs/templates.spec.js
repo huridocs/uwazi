@@ -20,9 +20,6 @@ fdescribe('templates', () => {
 
 
   describe('save', () => {
-    //let getAllTemplates = () => request.get(dbURL + '/_design/templates/_view/all').then((response) => response.json.rows);
-    let getTemplate = (id = 'c08ef2532f0bd008ac5174b45e033c94') => request.get(dbURL + `/${id}`).then((response) => response.json);
-
     fit('should return the saved template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
@@ -313,36 +310,19 @@ fdescribe('templates', () => {
   });
 
   describe('countByThesauri()', () => {
-    it('should return number of templates using a thesauri', (done) => {
+    fit('should return number of templates using a thesauri', (done) => {
       templates.countByThesauri('thesauri1')
-        .then((result) => {
-          expect(result).toBe(1);
-          done();
-        })
-        .catch(catchErrors(done));
+      .then((result) => {
+        expect(result).toBe(2);
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
-    it('should return zero when none is using it', (done) => {
+    fit('should return zero when none is using it', (done) => {
       templates.countByThesauri('not_used_relation')
         .then((result) => {
           expect(result).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-  });
-
-  describe('selectOptions', () => {
-    it('should return all the thesauris and entities with same format as thesauri', (done) => {
-      templates.selectOptions()
-        .then((result) => {
-          expect(result.length).toBe(3);
-          expect(result[0].name).toBe('thesauri');
-          expect(result[0].type).toBe('thesauri');
-          expect(result[1].name).toBe('entity1');
-          expect(result[1].type).toBe('entity');
-          expect(result[2].name).toBe('entity2');
-          expect(result[2].type).toBe('entity');
           done();
         })
         .catch(catchErrors(done));

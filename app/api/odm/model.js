@@ -6,9 +6,15 @@ export default (MongooseModel) => {
       }
       return MongooseModel.create(data);
     },
+
     get: () => {
       return MongooseModel.find({}, {}, {lean: true});
     },
+
+    count: (condition) => {
+      return MongooseModel.count(condition);
+    },
+
     getById: (id) => {
       return MongooseModel.findById(id, {}, {lean: true});
     },

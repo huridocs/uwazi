@@ -18,7 +18,9 @@ export default {
   templates: [
     {_id: db.id(templateToBeEditedId), name: 'template to be edited'},
     {_id: db.id(templateToBeDeleted), name: 'to be deleted'},
-    {_id: db.id(), name: 'duplicated name'}
+    {_id: db.id(), name: 'duplicated name'},
+    {_id: db.id(), name: 'thesauri template', properties: [{type: 'select', content: 'thesauri1'}]},
+    {_id: db.id(), name: 'thesauri template 2', properties: [{type: 'select', content: 'thesauri1'}]}
   ]
 };
 

@@ -136,19 +136,6 @@ export default {
   },
 
   countByThesauri(thesauriId) {
-    return request.get(`${dbURL}/_design/templates/_view/count_by_thesauri?key="${thesauriId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
-  },
-
-  selectOptions() {
-    return request.get(`${dbURL}/_design/templates/_view/select_options`)
-    .then((response) => {
-      return response.json.rows.map(row => row.value);
-    });
+    return model.count({'properties.content': thesauriId});
   }
 };
