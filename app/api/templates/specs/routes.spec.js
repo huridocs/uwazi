@@ -16,25 +16,25 @@ describe('templates routes', () => {
     .catch(catchErrors(done));
   });
 
-  describe('GET', () => {
+  fdescribe('GET', () => {
     it('should return all templates by default', (done) => {
+      spyOn(templates, 'get').and.returnValue(Promise.resolve('templates'));
       routes.get('/api/templates')
       .then((response) => {
         let docs = response.rows;
-        expect(docs[0].name).toBe('template_test');
+        expect(docs).toBe('templates');
         done();
       })
       .catch(catchErrors(done));
     });
 
-    describe('when passing id', () => {
-      it('should return matching template', (done) => {
-        let req = {query: {_id: 'c08ef2532f0bd008ac5174b45e033c94'}};
+    fdescribe('when there is an error', () => {
+      it('should return the error in the response', (done) => {
+        spyOn(templates, 'get').and.returnValue(Promise.reject('error'));
 
-        routes.get('/api/templates', req)
+        routes.get('/api/templates', {})
         .then((response) => {
-          let docs = response.rows;
-          expect(docs[0].name).toBe('template_test2');
+          expect(response.error).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -43,7 +43,7 @@ describe('templates routes', () => {
   });
 
   describe('DELETE', () => {
-    it('should delete a template', (done) => {
+    fit('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
       routes.delete('/api/templates', {query: 'template'})
       .then((response) => {
@@ -54,13 +54,13 @@ describe('templates routes', () => {
       .catch(catchErrors(done));
     });
 
-    describe('when there is a db error', () => {
+    fdescribe('when there is an error', () => {
       it('should return the error in the response', (done) => {
-        let req = {query: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev'}};
+        spyOn(templates, 'delete').and.returnValue(Promise.reject('error'));
 
-        routes.delete('/api/templates', req)
+        routes.delete('/api/templates', {})
         .then((response) => {
-          expect(response.error.error).toBe('bad_request');
+          expect(response.error).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -69,7 +69,7 @@ describe('templates routes', () => {
   });
 
   describe('POST', () => {
-    it('should create a template', (done) => {
+    fit('should create a template', (done) => {
       spyOn(templates, 'save').and.returnValue(new Promise((resolve) => resolve('response')));
       let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}};
 
@@ -82,13 +82,12 @@ describe('templates routes', () => {
       .catch(catchErrors(done));
     });
 
-    describe('when there is a db error', () => {
-      it('should return the error in the response', (done) => {
-        spyOn(templates, 'save').and.returnValue(new Promise((resolve, reject) => reject('error')));
-        let req = {body: {}};
-        routes.post('/api/templates', req)
-        .then((error) => {
-          expect(error.error).toBe('error');
+    describe('when there is an error', () => {
+      fit('should return the error in the response', (done) => {
+        spyOn(templates, 'save').and.returnValue(Promise.reject('error'));
+        routes.post('/api/templates', {})
+        .then((response) => {
+          expect(response.error).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -97,26 +96,13 @@ describe('templates routes', () => {
   });
 
   describe('/templates/count_by_thesauri', () => {
-    it('should return the number of templates using a thesauri', (done) => {
+    fit('should return the number of templates using a thesauri', (done) => {
       spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(2));
       let req = {query: {_id: 'abc1'}};
       routes.get('/api/templates/count_by_thesauri', req)
       .then((result) => {
         expect(result).toBe(2);
         expect(templates.countByThesauri).toHaveBeenCalledWith('abc1');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
-
-  describe('/templates/select_options', () => {
-    it('should return the number of templates using a thesauri', (done) => {
-      spyOn(templates, 'selectOptions').and.returnValue(Promise.resolve('options'));
-      let req = {};
-      routes.get('/api/templates/select_options', req)
-      .then((result) => {
-        expect(result).toBe('options');
         done();
       })
       .catch(catchErrors(done));

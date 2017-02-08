@@ -1,5 +1,3 @@
-import {db_url as dbURL} from '../config/database.js';
-import request from 'shared/JSONRequest.js';
 import templates from './templates';
 import needsAuthorization from '../auth/authMiddleware';
 
@@ -10,27 +8,13 @@ export default app => {
       res.json(response);
       req.io.sockets.emit('templateChange', response);
     })
-    .catch((error) => {
-      res.json({error});
-    });
+    .catch(error => res.json({error}));
   });
 
-  //
   app.get('/api/templates', (req, res) => {
-    let id = '';
-    if (req.query && req.query._id) {
-      id = '?key="' + req.query._id + '"';
-    }
-
-    //let url = dbURL + '/_design/templates/_view/all' + id;
     templates.get()
-    .then((response) => {
-      //response.json.rows = response.json.rows.map((row) => row.value);
-      res.json({rows: response});
-    })
-    .catch((error) => {
-      res.json({error: error.json});
-    });
+    .then(response => res.json({rows: response}))
+    .catch(error => res.json({error}));
   });
 
   app.delete('/api/templates', needsAuthorization, (req, res) => {
@@ -39,15 +23,11 @@ export default app => {
       res.json(response);
       req.io.sockets.emit('templateDelete', response);
     })
-    .catch((error) => {
-      res.json({error: error.json});
-    });
+    .catch(error => res.json({error}));
   });
 
   app.get('/api/templates/count_by_thesauri', (req, res) => {
     templates.countByThesauri(req.query._id)
-    .then((response) => {
-      res.json(response);
-    });
+    .then(response => res.json(response));
   });
 };
