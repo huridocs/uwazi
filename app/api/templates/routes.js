@@ -21,11 +21,11 @@ export default app => {
       id = '?key="' + req.query._id + '"';
     }
 
-    let url = dbURL + '/_design/templates/_view/all' + id;
-    request.get(url)
+    //let url = dbURL + '/_design/templates/_view/all' + id;
+    templates.get()
     .then((response) => {
-      response.json.rows = response.json.rows.map((row) => row.value);
-      res.json(response.json);
+      //response.json.rows = response.json.rows.map((row) => row.value);
+      res.json({rows: response});
     })
     .catch((error) => {
       res.json({error: error.json});

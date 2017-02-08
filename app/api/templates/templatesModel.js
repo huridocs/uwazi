@@ -13,6 +13,7 @@ const propertiesSchema = new mongoose.Schema({
 
 const templateSchema = new mongoose.Schema({
   name: String,
+  isEntity: Boolean,
   properties: [propertiesSchema]
 });
 

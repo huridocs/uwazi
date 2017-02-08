@@ -1,25 +1,6 @@
 import mongoose from 'mongoose';
 import couchStream from './couchStream.js';
-mongoose.Promise = Promise;
-mongoose.createConnection('mongodb://localhost/uwazi_development');
-
-const propertiesSchema = new mongoose.Schema({
-  id: String,
-  label: String,
-  type: String,
-  content: String,
-  name: String,
-  filter: Boolean,
-  sortable: Boolean,
-  showInCard: Boolean
-});
-
-const templateSchema = new mongoose.Schema({
-  name: String,
-  properties: [propertiesSchema]
-});
-
-const Templates = mongoose.model('templates', templateSchema);
+import templates from '../app/api/templates';
 
 const entitySchema = new mongoose.Schema({
   title: String,
@@ -34,9 +15,12 @@ function migrateTemplate(template) {
   let oldId = template._id;
   delete template._id;
   delete template._rev;
-  return Templates.create(template)
+  return templates.save(template)
   .then((created) => {
     idMapping[oldId] = created._id;
+  })
+  .catch((e) => {
+    console.error(e);
   });
 }
 
@@ -51,15 +35,6 @@ function migrateEntity(entity) {
   });
 }
 
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  mongoose.connection.db.dropDatabase(() => {
-    couchStream('_design/templates/_view/all', migrateTemplate)
-    .then(() => couchStream('/_design/entities_and_docs/_view/sharedId', migrateEntity))
-    .then(() => {
-      mongoose.disconnect();
-    });
-  })
-});
+couchStream('_design/templates/_view/all', migrateTemplate)
+.then(() => couchStream('/_design/entities_and_docs/_view/sharedId', migrateEntity))
+.then(() => mongoose.disconnect());

@@ -6,10 +6,6 @@ import db_config from '../app/api/config/database';
 import indexConfig from '../app/api/config/elasticIndexes';
 db_config.db_url = 'http://127.0.0.1:5984/uwazi_development/';
 
-import mongoose from 'mongoose';
-mongoose.connect('mongodb://localhost/uwazi');
-
-
 export default function(view, callback) {
 
   const limit = 50;

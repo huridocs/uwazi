@@ -73,7 +73,7 @@ export default {
 
     return save(template)
     .then((newTemplate) => {
-      addTemplateTranslation(newTemplate);
+      //addTemplateTranslation(newTemplate);
       return newTemplate;
     });
   },
