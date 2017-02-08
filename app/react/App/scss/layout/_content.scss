@@ -4,6 +4,33 @@
 	flex-direction: column;
 }
 
+.content-header {
+  background: $c-white;
+  position: relative;
+  min-height: $header-height;
+  line-height: $header-height;
+  border-bottom: 1px solid $c-grey-light;
+  padding: 0 0 0 15px;
+  
+  h1 {
+    margin: 0;
+    font-size: $f-size;
+  }
+}
+.content-header-tabs {
+  float: right;
+  .nav-tabs {
+    right: 0;
+    width: 400px;
+  }
+}
+.content-header-document {
+  z-index: 4;
+}
+.content-header-entity {
+  z-index: 5;
+}
+
 @media(min-width: 1024px) {
   .main-wrapper {
     position: relative;

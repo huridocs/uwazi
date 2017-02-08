@@ -212,16 +212,7 @@ $c-sidebar: $c-white;
     position: absolute;
     left: 0;
     bottom: 0;
-    height: $header-height;
     right: $header-height;
-    border: 0;
-  }
-  .connectionsNumber {
-    position: relative;
-    top: 2px;
-    font-size: 11px;
-    line-height: 1em;
-    margin-left: 5px;
   }
 
   .fa {

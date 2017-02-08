@@ -115,6 +115,35 @@ export class EntityViewer extends Component {
     return (
       <div className="row entity-content">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
+
+        <div className="content-header content-header-entity">
+          <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+          <h1 className="item-name">{entity.title}</h1>
+          <TemplateLabel template={entity.template}/>
+
+          <Tabs className="content-header-tabs" selectedTab={selectedTab}
+                handleSelect={tabName => {
+                  this.props.showTab(tabName);
+                }}>
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="references">
+                  <i className="fa fa-exchange"></i>
+                  <span className="connectionsNumber">{references.length}</span>
+                  <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                </TabLink>
+              </li>
+              <li>
+                <TabLink to="attachments">
+                  <i className="fa fa-download"></i>
+                  <span className="connectionsNumber">{attachments.length}</span>
+                  <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
+                </TabLink>
+              </li>
+            </ul>
+          </Tabs>
+        </div>
+
         <aside className="side-panel entity-metadata">
           <MetadataFormButtons
             delete={this.deleteEntity.bind(this)}
@@ -124,13 +153,6 @@ export class EntityViewer extends Component {
 
           <div className="sidepanel-body">
             <div className="document">
-              <ShowIf if={!entityBeingEdited}>
-                <div className="item-info">
-                  <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
-                  <h1 className="item-name">{entity.title}</h1>
-                  <TemplateLabel template={entity.template}/>
-                </div>
-              </ShowIf>
               {(() => {
                 if (entityBeingEdited) {
                   return <EntityForm/>;
@@ -142,32 +164,6 @@ export class EntityViewer extends Component {
         </aside>
 
         <aside className="side-panel entity-connections">
-
-          <div className="sidepanel-header">
-            <Tabs selectedTab={selectedTab}
-                  handleSelect={tabName => {
-                    this.props.showTab(tabName);
-                  }}>
-              <ul className="nav nav-tabs">
-                <li>
-                  <TabLink to="references">
-                    <i className="fa fa-exchange"></i>
-                    <span className="connectionsNumber">{references.length}</span>
-                    <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                  </TabLink>
-                </li>
-                <li>
-                  <TabLink to="attachments">
-                    <i className="fa fa-download"></i>
-                    <span className="connectionsNumber">{attachments.length}</span>
-                    <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
-                  </TabLink>
-                </li>
-              </ul>
-            </Tabs>
-            &nbsp;
-          </div>
-
           <NeedAuthorization>
             <ShowIf if={selectedTab === 'references'}>
               <div className="sidepanel-footer">

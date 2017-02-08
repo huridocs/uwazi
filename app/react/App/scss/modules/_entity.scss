@@ -3,6 +3,7 @@
 }
 
 .entity-metadata {
+  top: $header-height * 2 + 1 !important;
   left: 0 !important;
   right: auto !important;
   width: calc(100% - 400px) !important;
@@ -43,6 +44,7 @@
 
 .entity-connections {
   right: 0 !important;
+  top: $header-height * 2 + 1 !important;
 
   @media (max-width: 1023px) {
     position: relative !important;
