@@ -73,7 +73,9 @@ export default {
 
     return save(template)
     .then((newTemplate) => {
-      //addTemplateTranslation(newTemplate);
+      //this produces an unhandled promise rejection warning
+      addTemplateTranslation(newTemplate);
+      //
       return newTemplate;
     });
   },
