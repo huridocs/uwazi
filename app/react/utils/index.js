@@ -16,4 +16,4 @@ export function getPropsFromRoute({routes}, componentProps) {
 export const isClient = typeof document !== 'undefined';
 
 import Jvent from 'jvent';
-export const events = new Jvent();
+export const events = new Jvent()
