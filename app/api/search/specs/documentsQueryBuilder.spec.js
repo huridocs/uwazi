@@ -27,7 +27,7 @@ describe('documentQueryBuilder', () => {
       expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'es'}});
 
       baseQuery = queryBuilder().language('en').query();
-      expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'en'}});
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {language: 'en'}});
     });
   });
 
@@ -60,8 +60,15 @@ describe('documentQueryBuilder', () => {
     });
   });
 
-  describe('aggregations', () => {
+  describe('filterById', () => {
+    it('should add a match to get only documents that match with the passed ids', () => {
+      let baseQuery = queryBuilder().filterById(['id1', 'id2']).query();
+      let expectedMatcher = {terms: {'_id.raw': ['id1', 'id2']}};
+      expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+    });
+  });
 
+  describe('aggregations', () => {
     it('default aggregations should contain types', () => {
       let baseQuery = queryBuilder().query();
       let typesAggregation = {

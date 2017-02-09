@@ -325,6 +325,14 @@ export default function () {
       return this;
     },
 
+    filterById(ids = []) {
+      if (ids.length) {
+        let match = {terms: {'_id.raw': ids}};
+        baseQuery.filter.bool.must.push(match);
+      }
+      return this;
+    },
+
     highlight(fields) {
       baseQuery.highlight = {
         pre_tags: ['<b>'],
