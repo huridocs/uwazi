@@ -11,7 +11,7 @@ export default combineReducers({
   entity: addAttachmentsReducer(createReducer('entityView/entity', {})),
   entityForm: modelReducer('entityView.entityForm'),
   entityFormState: formReducer('entityView.entityForm'),
-  references: createReducer('entityView/references', []),
+  referenceGroups: createReducer('entityView/referenceGroups', []),
   sort: modelReducer('entityView.sort', prioritySortingCriteria.get()),
   uiState
 });
