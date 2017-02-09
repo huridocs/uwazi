@@ -6,6 +6,11 @@ export default {
     return api.get(url).then((response) => response.json);
   },
 
+  getGroupedByConnection(documentId) {
+    let url = `references/group_by_connection/${documentId}`;
+    return api.get(url).then((response) => response.json);
+  },
+
   getInbound(targetDocument) {
     return api.get(`references/by_target/${targetDocument}`)
     .then((response) => {

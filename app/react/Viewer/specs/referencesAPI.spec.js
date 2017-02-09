@@ -3,12 +3,14 @@ import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('referencesAPI', () => {
-  let arrayResponse = [{documents: 'array'}];
+  let byDocumentResponse = [{documents: 'array'}];
+  let groupByConnectionResponse = [{connections: 'array'}];
 
   beforeEach(() => {
     backend.restore();
     backend
-    .get(APIURL + 'references/by_document/sourceDocument', {body: JSON.stringify(arrayResponse)})
+    .get(APIURL + 'references/by_document/sourceDocument', {body: JSON.stringify(byDocumentResponse)})
+    .get(APIURL + 'references/group_by_connection/sourceDocument', {body: JSON.stringify(groupByConnectionResponse)})
     .get(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', {body: '2'})
     .delete(APIURL + 'references?_id=id&_rev=rev', {body: JSON.stringify({backendResponse: 'testdelete'})})
     .post(APIURL + 'references', {body: JSON.stringify({backednResponse: 'test'})});
@@ -20,7 +22,18 @@ describe('referencesAPI', () => {
     it('should request references', (done) => {
       referencesAPI.get('sourceDocument')
       .then((response) => {
-        expect(response).toEqual(arrayResponse);
+        expect(response).toEqual(byDocumentResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('getGroupedByConnection()', () => {
+    it('should request grouped references', (done) => {
+      referencesAPI.getGroupedByConnection('sourceDocument')
+      .then((response) => {
+        expect(response).toEqual(groupByConnectionResponse);
         done();
       })
       .catch(done.fail);
