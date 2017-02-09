@@ -10,106 +10,136 @@ import {advancedSort} from 'app/utils/advancedSort';
 
 export class ReferencesGroup extends Component {
 
-  toggleGroup() {
+  toggleExpandGroup() {
     this.setState({expanded: !this.state.expanded});
+  }
+
+  toggleSelectGroup() {
+    const {group} = this.props;
+    const selectedItems = !this.state.selected ? group.get('templates').map(i => group.get('key') + i.get('_id')) : Immutable([]);
+
+    this.setState({selected: !this.state.selected, selectedItems});
+  }
+
+  toggleSelectItem(item) {
+    let selectedItems;
+    let groupSelected;
+
+    if (this.state.selectedItems.includes(item)) {
+      groupSelected = false;
+      selectedItems = this.state.selectedItems.splice(this.state.selectedItems.indexOf(item), 1);
+    }
+
+    if (!this.state.selectedItems.includes(item)) {
+      selectedItems = this.state.selectedItems.push(item);
+      groupSelected = selectedItems.size === this.props.group.get('templates').size;
+    }
+
+    this.setState({selectedItems, selected: groupSelected});
   }
 
   componentWillMount() {
     this.setState({expanded: false});
+    this.setState({selected: false});
+    this.setState({selectedItems: Immutable([])});
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return !is(this.props.group, nextProps.group) ||
            !is(this.props.sort, nextProps.sort) ||
-           this.state.expanded !== nextState.expanded;
+           this.state.expanded !== nextState.expanded ||
+           this.state.selected !== nextState.selected ||
+           this.state.selectedItems.size !== nextState.selectedItems.size;
   }
 
   render() {
     const group = this.props.group.toJS();
-    const {connectionType, connectionLabel, templateLabel} = group;
+    const {connectionType, connectionLabel, templates} = group;
 
-    const sortValues = this.props.sort.toJS();
-    const sortOptions = {
-      property: ['doc'].concat(sortValues.sort.split('.')),
-      order: sortValues.order,
-      treatAs: sortValues.treatAs
-    };
+    // const sortValues = this.props.sort.toJS();
+    // const sortOptions = {
+    //   property: ['doc'].concat(sortValues.sort.split('.')),
+    //   order: sortValues.order,
+    //   treatAs: sortValues.treatAs
+    // };
 
-    const refs = advancedSort(group.refs.map(reference => {
-      return {
-        reference,
-        doc: {
-          sharedId: reference.connectedDocument,
-          type: reference.connectedDocumentType,
-          title: reference.connectedDocumentTitle,
-          icon: reference.connectedDocumentIcon,
-          template: reference.connectedDocumentTemplate,
-          metadata: reference.connectedDocumentMetadata,
-          published: reference.connectedDocumentPublished,
-          creationDate: reference.connectedDocumentCreationDate
-        }
-      };
-    }), sortOptions);
-    const groupClassName = this.state.expanded ? 'is-expanded' : 'is-collapsed';
+    // const refs = advancedSort(group.refs.map(reference => {
+    //   return {
+    //     reference,
+    //     doc: {
+    //       sharedId: reference.connectedDocument,
+    //       type: reference.connectedDocumentType,
+    //       title: reference.connectedDocumentTitle,
+    //       icon: reference.connectedDocumentIcon,
+    //       template: reference.connectedDocumentTemplate,
+    //       metadata: reference.connectedDocumentMetadata,
+    //       published: reference.connectedDocumentPublished,
+    //       creationDate: reference.connectedDocumentCreationDate
+    //     }
+    //   };
+    // }), sortOptions);
 
     return (
-      <div className="item-group">
-        <button className={`item-group-header ${groupClassName}`} onClick={this.toggleGroup.bind(this)}>
-          <div className="title">
-            <ShowIf if={connectionType === 'metadata'}>
-              <span className="itemGroup-title">{t(group.context, connectionLabel)} in {t(group.templateContext, templateLabel)}</span>
-            </ShowIf>
-            <ShowIf if={connectionType === 'connection'}>
-              <span className="itemGroup-title">{t(group.context, connectionLabel)}</span>
-            </ShowIf>
-            <span className="multiselectItem-results">
-              <span>{refs.length}</span>
-              <span className="multiselectItem-action">
-                <i className={`fa ${this.state.expanded ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
-              </span>
+      <li>
+        <div className="multiselectItem">
+          <input
+            type='checkbox'
+            className="form-control"
+            id={'group' + group.key}
+            className="multiselectItem-input"
+            onChange={this.toggleSelectGroup.bind(this)}
+            checked={this.state.selected}
+          />
+          <label htmlFor={'group' + group.key} className="multiselectItem-label">
+            <i className="multiselectItem-icon fa fa-square-o"></i>
+            <i className="multiselectItem-icon fa fa-check"></i>
+            <span className="multiselectItem-name">
+              <b>{connectionType === 'metadata' ?
+                  t(group.context, connectionLabel) + ' ' + t('System', 'in') + '...' :
+                  t(group.context, connectionLabel)}</b>
             </span>
-          </div>
-        </button>
+          </label>
+          <span className="multiselectItem-results">
+            <span>{group.templates.reduce((size, i) => size + i.count, 0)}</span>
+            <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
+              <i className={this.state.expanded ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+            </span>
+          </span>
+        </div>
+        <ShowIf if={this.state.expanded}>
+          <ul className="multiselectChild is-active">
+            {templates.map((template, index) => {
+              // const reference = data.reference;
+              // const doc = data.doc;
 
-        {refs.map((data, index) => {
-          if (!this.state.expanded) {
-            return false;
-          }
-
-          const reference = data.reference;
-          const doc = data.doc;
-
-          return (
-            <Item
-              key={index}
-              doc={Immutable(doc)}
-              additionalText={reference.text}
-              evalPublished={true}
-              searchParams={this.props.sort.toJS()}
-              buttons={
-                <div className="item-shortcut-group">
-                  <NeedAuthorization>
-                    <ShowIf if={reference.sourceType !== 'metadata'}>
-                      <a className="item-shortcut item-shortcut--danger" onClick={this.props.deleteReference.bind(this, reference)}>
-                        <i className="fa fa-trash"></i>
-                      </a>
-                    </ShowIf>
-                  </NeedAuthorization>
-                  &nbsp;
-                  <I18NLink
-                    to={`/${doc.type}/${doc.sharedId}`}
-                    onClick={e => e.stopPropagation()}
-                    className="item-shortcut">
-                    <span className="itemShortcut-arrow">
-                      <i className="fa fa-file-text-o"></i>
-                    </span>
-                  </I18NLink>
-                </div>
-              }
-            />
-          );
-        })}
-      </div>
+              // console.log('Reference:', reference);
+              // console.log('doc:', doc);
+              return (
+                <li className="multiselectItem" key={index} title={template.label}>
+                  <input
+                    type='checkbox'
+                    className="multiselectItem-input"
+                    value={group.key + template._id}
+                    id={group.key + template._id}
+                    onChange={this.toggleSelectItem.bind(this, group.key + template._id)}
+                    checked={this.state.selectedItems.includes(group.key + template._id)}
+                  />
+                  <label
+                    className="multiselectItem-label"
+                    htmlFor={group.key + template._id}>
+                      <i className="multiselectItem-icon fa fa-square-o"></i>
+                      <i className="multiselectItem-icon fa fa-check"></i>
+                      <span className="multiselectItem-name">{t(template._id, template.label)}</span>
+                  </label>
+                  <span className="multiselectItem-results">
+                    {template.count}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </ShowIf>
+      </li>
     );
   }
 }

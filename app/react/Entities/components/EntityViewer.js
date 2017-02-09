@@ -51,66 +51,20 @@ export class EntityViewer extends Component {
       });
     }
   }
-
-  conformGroupData(connectionType, groupedReferences, options) {
-    let {key, connectionLabel, templateLabel, context, templateContext} = options;
-    let groupData = groupedReferences.find(ref => ref.key === key);
-
-    if (!groupData) {
-      groupData = {key, connectionType, connectionLabel, templateLabel, refs: [], context, templateContext};
-      groupedReferences.push(groupData);
-    }
-
-    return groupData;
-  }
-
-  getGroupData(reference, groupedReferences) {
-    const referenceTemplate = this.props.templates
-                              .find(template => template._id === reference.connectedDocumentTemplate);
-
-
-    if (reference.sourceType === 'metadata') {
-      return this.conformGroupData('metadata', groupedReferences, {
-        key: reference.sourceProperty + '-' + reference.connectedDocumentTemplate,
-        context: reference.connectedDocumentTemplate,
-        connectionLabel: referenceTemplate
-                         .properties
-                         .find(p => p.name === reference.sourceProperty)
-                         .label,
-        templateLabel: referenceTemplate.name,
-        templateContext: referenceTemplate._id
-      });
-    }
-
-    if (reference.sourceType !== 'metadata') {
-      return this.conformGroupData('connection', groupedReferences, {
-        key: reference.relationType,
-        context: reference.relationType,
-        connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name
-      });
-    }
-  }
-
-  groupReferences() {
-    const references = this.props.references.toJS();
-
-    const groupedReferences = [];
-    references.forEach((reference) => {
-      const groupData = this.getGroupData(reference, groupedReferences);
-      groupData.refs.push(reference);
-    });
-
-    return groupedReferences;
-  }
   // --
 
   render() {
-    const {entity, entityBeingEdited, tab} = this.props;
+    const {entity, entityBeingEdited, tab, referenceGroups} = this.props;
     const selectedTab = tab || 'references';
-    const references = this.props.references.toJS();
     const attachments = entity.attachments ? entity.attachments : [];
 
-    const referencesTemplates = references.map(r => r.connectedDocumentTemplate);
+    const summary = referenceGroups.reduce((summaryData, g) => {
+      g.get('templates').forEach(template => {
+        summaryData.referencesTemplates.push(template.get('_id'));
+        summaryData.totalReferences += template.get('count');
+      });
+      return summaryData;
+    }, {referencesTemplates: [], totalReferences: 0});
 
     return (
       <div className="row entity-content">
@@ -129,7 +83,7 @@ export class EntityViewer extends Component {
               <li>
                 <TabLink to="references">
                   <i className="fa fa-exchange"></i>
-                  <span className="connectionsNumber">{references.length}</span>
+                  <span className="connectionsNumber">{summary.totalReferences}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
@@ -189,13 +143,17 @@ export class EntityViewer extends Component {
               <TabContent for="references">
                 <div className="sort-by">
                   <SortButtons stateProperty="entityView.sort"
-                               selectedTemplates={Immutable(referencesTemplates)} />
+                               selectedTemplates={Immutable(summary.referencesTemplates)} />
                 </div>
-                {this.groupReferences(references).map(group =>
-                  <ReferencesGroup key={group.key}
-                                   group={Immutable(group)}
-                                   deleteReference={this.deleteReference.bind(this)} />
-                )}
+                <div className="nested-selector">
+                  <ul className="multiselect is-active">
+                    {referenceGroups.map(group =>
+                      <ReferencesGroup key={group.get('key')}
+                                       group={group}
+                                       deleteReference={this.deleteReference.bind(this)} />
+                    )}
+                  </ul>
+                </div>
               </TabContent>
               <TabContent for="attachments">
                 <AttachmentsList files={Immutable(attachments)}
@@ -217,7 +175,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
-  references: PropTypes.object,
+  referenceGroups: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
@@ -246,11 +204,12 @@ const prepareMetadata = createSelector(
   selectThesauris,
   (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
 );
-const selectReferences = createSelector(
-  s => !!s.user.get('_id'),
-  s => s.entityView.references,
-  (loged, references) => references.filter(ref => loged || ref.get('connectedDocumentPublished'))
-);
+
+// const selectReferences = createSelector(
+//   s => !!s.user.get('_id'),
+//   s => s.entityView.references,
+//   (loged, references) => references.filter(ref => loged || ref.get('connectedDocumentPublished'))
+// );
 
 const mapStateToProps = (state) => {
   return {
@@ -258,7 +217,7 @@ const mapStateToProps = (state) => {
     templates: selectTemplates(state),
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
-    references: selectReferences(state),
+    referenceGroups: state.entityView.referenceGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab')
   };
