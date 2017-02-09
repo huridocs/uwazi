@@ -5,6 +5,7 @@ import entities from 'api/entities/entities';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import {generateIds, getUpdatedNames, getDeletedProperties} from 'api/templates/utils';
+import model from './dictionariesModel';
 
 let autoincrementValuesId = (thesauri) => {
   thesauri.values = generateIds(thesauri.values);
@@ -101,21 +102,23 @@ export default {
   },
 
   get(thesauriId, language) {
-    let url = `${dbUrl}/_design/thesauris/_view/all`;
+    let query;
     if (thesauriId) {
-      url += `?key="${thesauriId}"`;
+      query = {_id: thesauriId};
     }
-    return request.get(url)
-    .then((response) => {
-      let thesauris = sanitizeResponse(response.json);
-      let requests = thesauris.rows.map((result, index) => {
-        if (result.type === 'template') {
+    return Promise.all([
+      model.get(query),
+      templates.get(query)
+    ])
+    .then(([dictionaries, allTemplates]) => {
+      let thesauris = dictionaries.concat(allTemplates);
+      let requests = thesauris.map((result, index) => {
+        if (result.isEntity === true) {
           return this.templateToThesauri(result, language)
           .then((templateTransformedInThesauri) => {
-            thesauris.rows[index] = templateTransformedInThesauri;
+            thesauris[index] = templateTransformedInThesauri;
           });
         }
-
         return Promise.resolve(result);
       });
 
@@ -123,9 +126,6 @@ export default {
       .then(() => {
         return thesauris;
       });
-    })
-    .catch((error) => {
-      return {error: error.json};
     });
   },
 

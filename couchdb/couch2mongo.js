@@ -2,13 +2,14 @@ import mongoose from 'mongoose';
 import couchStream from './couchStream.js';
 import templates from '../app/api/templates';
 
-const entitySchema = new mongoose.Schema({
-  title: String,
-  template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'}
+const dictionarySchema = new mongoose.Schema({
+  name: String,
+  values: [{
+    label: String
+  }]
 });
 
-const Entities = mongoose.model('entities', entitySchema);
-
+const dictionaries = mongoose.model('dictionaries', dictionarySchema);
 let idMapping = {};
 
 function migrateTemplate(template) {
@@ -24,17 +25,17 @@ function migrateTemplate(template) {
   });
 }
 
-function migrateEntity(entity) {
-  let oldId = entity._id;
-  delete entity._id;
-  delete entity._rev;
-  entity.template = idMapping[entity.template];
-  return Entities.create(entity)
-  .then((created) => {
-    idMapping[oldId] = created._id;
-  });
-}
+//function migrateEntity(entity) {
+  //let oldId = entity._id;
+  //delete entity._id;
+  //delete entity._rev;
+  //entity.template = idMapping[entity.template];
+  //return Entities.create(entity)
+  //.then((created) => {
+    //idMapping[oldId] = created._id;
+  //});
+//}
 
 couchStream('_design/templates/_view/all', migrateTemplate)
-.then(() => couchStream('/_design/entities_and_docs/_view/sharedId', migrateEntity))
+//.then(() => couchStream('/_design/entities_and_docs/_view/sharedId', migrateEntity))
 .then(() => mongoose.disconnect());

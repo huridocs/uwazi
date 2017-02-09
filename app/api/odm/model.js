@@ -7,8 +7,8 @@ export default (MongooseModel) => {
       return MongooseModel.create(data);
     },
 
-    get: () => {
-      return MongooseModel.find({}, {}, {lean: true});
+    get: (query) => {
+      return MongooseModel.find(query, {}, {lean: true});
     },
 
     count: (condition) => {

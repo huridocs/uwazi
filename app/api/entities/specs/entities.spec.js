@@ -29,7 +29,7 @@ describe('entities', () => {
       let user = {_id: 'user Id'};
 
       entities.save(doc, {user, language: 'es'})
-      .then(getDocuments)
+      .then(entities.get)
       .then((docs) => {
         let createdDocumentEs = docs.find((d) => d.title === 'Batman begins' && d.language === 'es');
         let createdDocumentEn = docs.find((d) => d.title === 'Batman begins' && d.language === 'en');

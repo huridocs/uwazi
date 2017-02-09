@@ -1,69 +1,43 @@
 import thesauris from '../thesauris.js';
 import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 
+import {db} from 'api/utils';
+import fixtures, {dictionaryId} from './fixtures.js';
+
 describe('thesauris', () => {
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('get()', () => {
-    it('should return all thesauris by default', (done) => {
+    fit('should return all thesauris including entity templates as options', (done) => {
       thesauris.get(null, 'es')
-      .then((response) => {
-        let docs = response.rows;
-        expect(docs[0].name).toBe('secret recipes');
+      .then((thesauris) => {
+        expect(thesauris[0].name).toBe('dictionary');
+        expect(thesauris[1].name).toBe('dictionary 2');
+        expect(thesauris[2].name).toBe('entityTemplate');
+        expect(thesauris[2].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
         done();
       })
       .catch(done.fail);
     });
 
-    it('should also return entity templates with the entitties as options', (done) => {
-      thesauris.get(null, 'es')
-      .then((response) => {
-        let docs = response.rows;
-        expect(docs[2].name).toBe('Judge');
-        expect(docs[2].values).toEqual([{id: 'sharedId', label: 'Dredd', icon: 'Icon'}]);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when passing id', () => {
+    fdescribe('when passing id', () => {
       it('should return matching thesauri', (done) => {
-        thesauris.get('c08ef2532f0bd008ac5174b45e033c94')
+        thesauris.get(dictionaryId)
         .then((response) => {
-          expect(response.rows[0].name).toBe('Top 2 scify books');
-          done();
-        })
-        .catch(done.fail);
-      });
-    });
-  });
-
-  describe('dictionaries()', () => {
-    it('should return all thesauris by default', (done) => {
-      thesauris.get()
-      .then((response) => {
-        let docs = response.rows;
-        expect(docs[0].name).toBe('secret recipes');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when passing id', () => {
-      it('should return matching thesauri', (done) => {
-        thesauris.get('c08ef2532f0bd008ac5174b45e033c94')
-        .then((response) => {
-          expect(response.rows[0].name).toBe('Top 2 scify books');
+          expect(response[0].name).toBe('dictionary 2');
+          expect(response[0].values[0].label).toBe('value 1');
+          expect(response[0].values[1].label).toBe('value 2');
           done();
         })
         .catch(done.fail);

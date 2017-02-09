@@ -8,6 +8,7 @@ import references from '../references/references.js';
 import settings from '../settings';
 import templates from '../templates';
 import ID from 'shared/uniqueID';
+import model from './entitiesModel';
 
 export default {
   save(doc, {user, language}) {
@@ -112,7 +113,8 @@ export default {
     });
   },
 
-  getByTemplate(templateId, language) {
+  getByTemplate(template, language) {
+    return model.get({template, language});
     return request.get(`${dbURL}/_design/entities/_view/by_template`, {key: [templateId, language]})
     .then((response) => {
       return sanitizeResponse(response.json).rows;

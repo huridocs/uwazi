@@ -80,8 +80,8 @@ export default {
     });
   },
 
-  get() {
-    return model.get();
+  get(query) {
+    return model.get(query);
   },
 
   getById(templateId) {
