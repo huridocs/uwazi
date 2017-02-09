@@ -18,7 +18,6 @@ fdescribe('templates', () => {
     });
   });
 
-
   describe('save', () => {
     fit('should return the saved template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};

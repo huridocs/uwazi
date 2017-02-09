@@ -16,7 +16,7 @@ export default {
     {_id: db.id(dictionaryId), name: 'dictionary 2', values: [{label: 'value 1'}, {label: 'value 2'}]}
   ],
   templates: [
-    {_id: db.id(entityTemplateId), name: 'entityTemplate', isEntity: true}
+    {_id: db.id(entityTemplateId), name: 'entityTemplate', isEntity: true, properties: [{}]}
   ],
   entities: [
     {_id: db.id(), sharedId: 'sharedId', title: 'english entity', language: 'en', template: db.id(entityTemplateId), icon: 'Icon'},

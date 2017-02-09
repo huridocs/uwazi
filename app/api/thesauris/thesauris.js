@@ -144,15 +144,17 @@ export default {
     });
   },
 
-  delete(thesauriId, rev) {
-    return templates.countByThesauri(thesauriId)
+  delete(id) {
+    return templates.countByThesauri(id)
     .then((count) => {
       if (count) {
         return Promise.reject({key: 'templates_using_dictionary', value: count});
       }
-      return translations.deleteContext(thesauriId);
+      return translations.deleteContext(id);
     })
-    .then(() => request.delete(`${dbUrl}/${thesauriId}`, {rev}))
-    .then((response) => response.json);
+    .then(() => model.delete(id))
+    .then(() => {
+      return {ok: true};
+    });
   }
 };

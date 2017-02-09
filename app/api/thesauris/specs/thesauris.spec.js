@@ -4,6 +4,7 @@ import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import {db} from 'api/utils';
 import fixtures, {dictionaryId} from './fixtures.js';
@@ -28,7 +29,7 @@ describe('thesauris', () => {
         expect(thesauris[2].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     fdescribe('when passing id', () => {
@@ -40,7 +41,7 @@ describe('thesauris', () => {
           expect(response[0].values[1].label).toBe('value 2');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
   });
@@ -52,45 +53,34 @@ describe('thesauris', () => {
       spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
     });
 
-    it('should delete a thesauri', (done) => {
-      request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
-      .then(thesauri => {
-        return thesauris.delete(thesauri.json._id, thesauri.json._rev);
-      })
+    fit('should delete a thesauri', (done) => {
+      return thesauris.delete(dictionaryId)
       .then((response) => {
         expect(response.ok).toBe(true);
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
+        return thesauris.get({_id: dictionaryId});
       })
-      .then((response) => {
-        let docs = response.json.rows;
-        expect(docs.length).toBe(2);
-        expect(docs[0].value.name).toBe('Top 2 scify books');
+      .then((dictionaries) => {
+        expect(dictionaries.length).toBe(0);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
-    it('should delete the translation', (done) => {
-      request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
-      .then(thesauri => {
-        return thesauris.delete(thesauri.json._id, thesauri.json._rev);
-      })
+    fit('should delete the translation', (done) => {
+      thesauris.delete(dictionaryId)
       .then((response) => {
         expect(response.ok).toBe(true);
-        expect(translations.deleteContext).toHaveBeenCalledWith('c08ef2532f0bd008ac5174b45e033c93');
+        expect(translations.deleteContext).toHaveBeenCalledWith(dictionaryId);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     describe('when the dictionary is in use', () => {
-      it('should return an error in the response', (done) => {
+      fit('should return an error in the response', (done) => {
         templatesCountSpy.and.returnValue(Promise.resolve(1));
-        request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c93')
-        .then(thesauri => {
-          return thesauris.delete(thesauri.json._id, thesauri.json._rev);
-        })
-        .then(done.fail)
+        thesauris.delete(dictionaryId)
+        .then(catchErrors(done))
         .catch((response) => {
           expect(response.key).toBe('templates_using_dictionary');
           done();
@@ -105,7 +95,7 @@ describe('thesauris', () => {
       spyOn(translations, 'updateContext');
     });
 
-    it('should create a thesauri', (done) => {
+    fit('should create a thesauri', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
 
       thesauris.save(data)
