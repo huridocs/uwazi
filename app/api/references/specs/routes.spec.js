@@ -56,6 +56,22 @@ describe('references routes', () => {
     });
   });
 
+  describe('GET group_by_connection', () => {
+    it('should return grouped refernces by connection', (done) => {
+      let req = {params: {id: 'documentId'}, language: 'es'};
+
+      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve('groupedByConnection'));
+
+      routes.get('/api/references/group_by_connection/:id', req)
+      .then((response) => {
+        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: true});
+        expect(response).toBe('groupedByConnection');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('/references/count_by_relationtype', () => {
     it('should return the number of references using a relationtype', (done) => {
       spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));

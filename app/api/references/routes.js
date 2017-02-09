@@ -20,6 +20,16 @@ export default app => {
     .catch((error) => res.status(500).json({error: error.json}));
   });
 
+  app.get('/api/references/group_by_connection/:id', (req, res) => {
+    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: true})
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((error) => {
+      res.status(500).json({error: error.json});
+    });
+  });
+
   app.get('/api/references/count_by_relationtype', (req, res) => {
     references.countByRelationType(req.query.relationtypeId)
     .then((response) => res.json(response));
