@@ -68,7 +68,7 @@ export default {
       request.get(`${dbURL}/_design/relationtypes/_view/all`)
     ])
     .then(([references, templates, relationTypes]) => {
-      const relevantReferences = filterRelevantReferences(references, language);
+      const relevantReferences = filterRelevantReferences(references, language, options.user);
       const groupedReferences = groupReferences(relevantReferences, sanitizeResponse(templates.json).rows, sanitizeResponse(relationTypes.json).rows);
 
       if (options.excludeRefs) {

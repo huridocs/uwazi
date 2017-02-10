@@ -236,6 +236,25 @@ describe('references', () => {
       .catch(catchErrors(done));
     });
 
+    it('should return groups of connection including unpublished docs if user is found', (done) => {
+      references.getGroupsByConnection('source2', 'es', {user: 'found'})
+      .then(results => {
+        expect(results.length).toBe(3);
+
+        expect(results[0].key).toBe('relation1');
+        expect(results[0].templates[0]._id).toBe('template3_id');
+
+        expect(results[1].key).toBe('relation2');
+        expect(results[1].templates[0].count).toBe(3);
+
+        expect(results[2].key).toBe('selectName');
+        expect(results[2].templates[0]._id).toBe('template1_id');
+
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     it('should return groups of connection wihtout refs if excluded', (done) => {
       references.getGroupsByConnection('source2', 'es', {excludeRefs: true})
       .then(results => {

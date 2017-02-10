@@ -58,13 +58,13 @@ describe('references routes', () => {
 
   describe('GET group_by_connection', () => {
     it('should return grouped refernces by connection', (done) => {
-      let req = {params: {id: 'documentId'}, language: 'es'};
+      let req = {params: {id: 'documentId'}, language: 'es', user: 'user'};
 
       spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve('groupedByConnection'));
 
       routes.get('/api/references/group_by_connection/:id', req)
       .then((response) => {
-        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: true});
+        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: true, user: 'user'});
         expect(response).toBe('groupedByConnection');
         done();
       })

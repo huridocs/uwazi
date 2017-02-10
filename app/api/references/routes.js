@@ -22,7 +22,7 @@ export default app => {
   });
 
   app.get('/api/references/group_by_connection/:id', (req, res) => {
-    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: true})
+    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: true, user: req.user})
     .then((response) => {
       res.json(response);
     })
@@ -33,7 +33,7 @@ export default app => {
 
   // TEST!!!
   app.get('/api/references/search/:id', (req, res) => {
-    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false})
+    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
     .then(groups => {
       const entityIds = groups.reduce((ids, group) => {
         return group.templates.reduce((refs, t) => refs.concat(t.refs.map(r => r.connectedDocument)), ids);

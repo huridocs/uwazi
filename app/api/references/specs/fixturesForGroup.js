@@ -12,10 +12,12 @@ export default {
     {"_id":"c08ef2532f0bd008ac5174b45e033c05","type":"reference", "title":"targetDocument", "targetDocument": "target"},
     {"_id":"c08ef2532f0bd008ac5174b45e033c06","type":"reference", "title":"targetDocument1", "targetDocument": "target1"},
     {"_id":"c08ef2532f0bd008ac5174b45e033c08","type":"reference", "title":"reference5", "sourceDocument": "source2", "targetDocument": "doc4", language: 'es', "sourceRange": {for: "range3", text: 'range3'}, "relationType": 'relation2'},
-    {"_id":"source1Id", "sharedId": "source1", "language": "es", title: "source1 title", type: "document", template: "template3_id", icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {"_id":"c08ef2532f0bd008ac5174b45e033c09","type":"reference", "title":"reference5", "sourceDocument": "source2", "targetDocument": "doc6", language: 'es', "sourceRange": {for: "range3", text: 'range3'}, "relationType": 'relation2'},
+    {"_id":"source1Id", "sharedId": "source1", "language": "es", title: "source1 title", type: "document", template: "template3_id", published: true, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
     {"_id":"doc3Id", "sharedId": "doc3", "language": "es", title: "doc3 title", type: "entity", template: "template1_id", published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
-    {"_id":"doc4Id", "sharedId": "doc4", "language": "es", title: "doc4 title", type: "document", template: "template1_id", metadata: {data: 'data3'}, creationDate: 789},
-    {"_id":"doc5Id", "sharedId": "doc5", "language": "es", title: "doc5 title", type: "document", template: "template2_id"},
+    {"_id":"doc4Id", "sharedId": "doc4", "language": "es", title: "doc4 title", type: "document", template: "template1_id", published: true, metadata: {data: 'data3'}, creationDate: 789},
+    {"_id":"doc5Id", "sharedId": "doc5", "language": "es", title: "doc5 title", type: "document", template: "template2_id", published: true},
+    {"_id":"doc6Id", "sharedId": "doc6", "language": "es", title: "doc6 title", type: "entity", template: "template1_id", published: false, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
 
     //document-based existing reference
     {"_id":"c08ef2532f0bd008ac5174b45e033c10", "type":"reference", "title":"reference1", "sourceDocument": "entity_id", "targetDocument": "value2ID", "targetRange": "range1", "sourceRange": {text: 'sourceRange'}, "relationType": 'relation1'},

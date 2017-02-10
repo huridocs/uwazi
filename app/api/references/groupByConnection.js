@@ -33,11 +33,12 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 }
 
 export default {
-  filterRelevantReferences: (references, locale) => {
+  filterRelevantReferences: (references, locale, user) => {
     return references.filter(ref => {
       const isOutboundMetadata = !ref.inbound && ref.sourceType === 'metadata';
       const isOtherLocale = ref.language && ref.language !== locale;
-      return !(isOtherLocale || isOutboundMetadata);
+      const publishedOrLoggedIn = Boolean(ref.connectedDocumentPublished || user);
+      return !(isOtherLocale || isOutboundMetadata) && publishedOrLoggedIn;
     });
   },
 
