@@ -12,6 +12,7 @@ export default {
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)
     .filterByTemplate(query.types)
+    .filterById(query.ids)
     .language(language);
 
     if (query.sort) {
@@ -28,6 +29,10 @@ export default {
 
     if (query.aggregations) {
       documentsQuery.aggregations(query.aggregations);
+    }
+
+    if (query.includeUnpublished) {
+      documentsQuery.includeUnpublished();
     }
 
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})
