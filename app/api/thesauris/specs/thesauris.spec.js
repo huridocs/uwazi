@@ -7,7 +7,7 @@ import templates from 'api/templates/templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import {db} from 'api/utils';
-import fixtures, {dictionaryId} from './fixtures.js';
+import fixtures, {dictionaryId, dictionaryIdToTranslate, dictionaryValueId} from './fixtures.js';
 
 describe('thesauris', () => {
   beforeEach((done) => {
@@ -19,14 +19,18 @@ describe('thesauris', () => {
     });
   });
 
+  afterEach((done) => {
+    db.clear(done);
+  });
+
   describe('get()', () => {
     fit('should return all thesauris including entity templates as options', (done) => {
       thesauris.get(null, 'es')
-      .then((thesauris) => {
-        expect(thesauris[0].name).toBe('dictionary');
-        expect(thesauris[1].name).toBe('dictionary 2');
-        expect(thesauris[2].name).toBe('entityTemplate');
-        expect(thesauris[2].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
+      .then((dictionaties) => {
+        expect(dictionaties[0].name).toBe('dictionary');
+        expect(dictionaties[1].name).toBe('dictionary 2');
+        expect(dictionaties[3].name).toBe('entityTemplate');
+        expect(dictionaties[3].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
         done();
       })
       .catch(catchErrors(done));
@@ -36,6 +40,34 @@ describe('thesauris', () => {
       it('should return matching thesauri', (done) => {
         thesauris.get(dictionaryId)
         .then((response) => {
+          expect(response[0].name).toBe('dictionary 2');
+          expect(response[0].values[0].label).toBe('value 1');
+          expect(response[0].values[1].label).toBe('value 2');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+  });
+
+  describe('dictionaries()', () => {
+    fit('should return all dictionaries', (done) => {
+      thesauris.dictionaries()
+      .then((dictionaties) => {
+        expect(dictionaties.length).toBe(3);
+        expect(dictionaties[0].name).toBe('dictionary');
+        expect(dictionaties[1].name).toBe('dictionary 2');
+        expect(dictionaties[2].name).toBe('Top 2 scify books');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    describe('when passing a query', () => {
+      fit('should return matching thesauri', (done) => {
+        thesauris.dictionaries({_id: dictionaryId})
+        .then((response) => {
+          expect(response.length).toBe(1);
           expect(response[0].name).toBe('dictionary 2');
           expect(response[0].values[0].label).toBe('value 1');
           expect(response[0].values[1].label).toBe('value 2');
@@ -90,24 +122,23 @@ describe('thesauris', () => {
   });
 
   describe('save', () => {
-
     beforeEach(() => {
       spyOn(translations, 'updateContext');
     });
 
     fit('should create a thesauri', (done) => {
-      let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
+      let _id = db.id();
+      let data = {name: 'Batman wish list', values: [{_id, id: '1', label: 'Joker BFF'}]};
 
       thesauris.save(data)
       .then((response) => {
-        expect(response.values).toEqual([{id: '1', label: 'Joker BFF'}]);
-        expect(response._rev).toBeDefined();
+        expect(response.values).toEqual([{_id, id: '1', label: 'Joker BFF'}]);
         done();
       })
-      .catch(done.fail);
+     .catch(catchErrors(done));
     });
 
-    it('should create a translation context', (done) => {
+    fit('should create a translation context', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
       spyOn(translations, 'addContext');
       thesauris.save(data)
@@ -126,61 +157,46 @@ describe('thesauris', () => {
       .catch(done.fail);
     });
 
-    it('should set a default value of [] to values property if its missing', (done) => {
+    fit('should set a default value of [] to values property if its missing', (done) => {
       let data = {name: 'Scarecrow nightmares'};
-      let postResponse;
 
       thesauris.save(data)
       .then((response) => {
-        postResponse = response;
-        return request.get(dbUrl + '/_design/thesauris/_view/all');
+        return thesauris.get();
       })
       .then((response) => {
-        let newDoc = response.json.rows.find((template) => {
-          return template.value.name === 'Scarecrow nightmares';
+        let newThesauri = response.find((thesauri) => {
+          return thesauri.name === 'Scarecrow nightmares';
         });
 
-        expect(newDoc.value.name).toBe('Scarecrow nightmares');
-        expect(newDoc.value.values).toEqual([]);
-        expect(newDoc.value._rev).toBe(postResponse._rev);
+        expect(newThesauri.name).toBe('Scarecrow nightmares');
+        expect(newThesauri.values).toEqual([]);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
-    describe('when passing _id and _rev', () => {
-      it('edit an existing one', (done) => {
-        request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94')
-        .then((response) => {
-          let template = response.json;
-          let data = {_id: template._id, _rev: template._rev, name: 'changed name'};
-          return thesauris.save(data);
-        })
-        .then(() => {
-          return request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94');
-        })
-        .then((response) => {
-          let template = response.json;
-          expect(template.name).toBe('changed name');
+    describe('when passing _id', () => {
+      fit('edit an existing one', (done) => {
+        let data = {_id: dictionaryId, name: 'changed name'};
+        return thesauris.save(data)
+        .then(() => thesauris.getById(dictionaryId))
+        .then((edited) => {
+          expect(edited.name).toBe('changed name');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
 
-      it('should update the translation', (done) => {
-        request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94')
-        .then((response) => {
-          let template = response.json;
-          let data = {
-            _id: template._id,
-            _rev: template._rev,
-            name: 'Top 1 games',
-            values: [
-              {id: '1', label: 'Marios game'}
-            ]
-          };
-          return thesauris.save(data);
-        })
+      fit('should update the translation', (done) => {
+        const data = {
+          _id: dictionaryIdToTranslate,
+          name: 'Top 1 games',
+          values: [
+            {id: dictionaryValueId, label: 'Marios game'}
+          ]
+        };
+        return thesauris.save(data)
         .then((response) => {
           expect(translations.updateContext)
           .toHaveBeenCalledWith(
@@ -192,33 +208,19 @@ describe('thesauris', () => {
           );
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
 
     describe('when trying to save a duplicated thesauri', () => {
-      it('should return an error', (done) => {
-        let data = {name: 'secret recipes'};
+      fit('should return an error', (done) => {
+        let data = {name: 'dictionary'};
         thesauris.save(data)
-        .then((response) => {
-          expect(response.error).toBe('duplicated_entry');
+        .then(catchErrors(done))
+        .catch((response) => {
+          expect(response).toBe('duplicated_entry');
           done();
-        })
-        .catch(done.fail);
-      });
-    });
-
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        let data = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''};
-
-        thesauris.save(data)
-        .then((response) => {
-          let error = response.error;
-          expect(error.error).toBe('bad_request');
-          done();
-        })
-        .catch(done.fail);
+        });
       });
     });
   });

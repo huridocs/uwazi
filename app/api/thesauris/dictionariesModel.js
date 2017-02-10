@@ -4,6 +4,7 @@ import instanceModel from 'api/odm';
 const dictionarySchema = new mongoose.Schema({
   name: String,
   values: [{
+    id: String,
     label: String
   }]
 });

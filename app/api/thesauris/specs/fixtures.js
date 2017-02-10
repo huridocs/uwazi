@@ -10,10 +10,17 @@
 import {db} from 'api/utils';
 const entityTemplateId = '589af97080fc0b23471d67f3';
 const dictionaryId = '589af97080fc0b23471d67f4';
+const dictionaryIdToTranslate = '589af97080fc0b23471d67f5';
+const dictionaryValueId = '1';
+
 export default {
   dictionaries: [
     {_id: db.id(), name: 'dictionary'},
-    {_id: db.id(dictionaryId), name: 'dictionary 2', values: [{label: 'value 1'}, {label: 'value 2'}]}
+    {_id: db.id(dictionaryId), name: 'dictionary 2', values: [{label: 'value 1'}, {label: 'value 2'}]},
+    {_id: db.id(dictionaryIdToTranslate), name: 'Top 2 scify books', values: [
+      {id: dictionaryValueId, label: 'Enders game'},
+      {id: '2', label: 'Fundation'}
+    ]}
   ],
   templates: [
     {_id: db.id(entityTemplateId), name: 'entityTemplate', isEntity: true, properties: [{}]}
@@ -25,5 +32,7 @@ export default {
 };
 
 export {
-  dictionaryId
+  dictionaryId,
+  dictionaryIdToTranslate,
+  dictionaryValueId
 };
