@@ -33,8 +33,8 @@ function _save(thesauri) {
 
   return model.save(thesauri)
   .then((response) => {
-    translations.addContext(response._id, thesauri.name, context);
-    return response;
+    return translations.addContext(response._id, thesauri.name, context)
+    .then(() => response);
   });
 }
 
@@ -54,14 +54,14 @@ let updateTranslation = (current, thesauri) => {
 
   context[thesauri.name] = thesauri.name;
 
-  translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+  return translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 function _update(thesauri) {
   return model.getById(thesauri._id)
   .then((currentThesauri) => {
-    updateTranslation(currentThesauri, thesauri);
-    return model.save(thesauri);
+    return updateTranslation(currentThesauri, thesauri)
+    .then(() => model.save(thesauri));
   });
 }
 

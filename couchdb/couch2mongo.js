@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import couchStream from './couchStream.js';
 import templates from '../app/api/templates';
 import thesauris from '../app/api/thesauris/thesauris';
+//import db from '../app/api/thesauris/thesauris';
+//import {db} from '../app/api/utils';
 
 let idMapping = {};
 

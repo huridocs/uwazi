@@ -86,6 +86,7 @@ describe('thesauris routes', () => {
 
   describe('POST', () => {
     fit('should create a thesauri', (done) => {
+      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       let req = {body: {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]}};
       routes.post('/api/thesauris', req)
       .then((response) => {

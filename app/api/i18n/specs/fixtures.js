@@ -1,7 +1,8 @@
+import {db} from 'api/utils';
 export default {
-  docs: [
+  translations: [
     {
-      _id: '2',
+      _id: db.id(),
       type: 'translation',
       locale: 'en',
       contexts: [
@@ -9,10 +10,10 @@ export default {
           id: 'System',
           label: 'System',
           values: {
-            'Password': 'Password',
-            'Account': 'Account',
-            'Email': 'E-Mail',
-            'Age': 'Age'
+            Password: 'Password',
+            Account: 'Account',
+            Email: 'E-Mail',
+            Age: 'Age'
           }
         },
         {
@@ -38,7 +39,7 @@ export default {
       ]
     },
     {
-      _id: '3',
+      _id: db.id(),
       type: 'translation',
       locale: 'es',
       contexts: [
@@ -53,9 +54,11 @@ export default {
           }
         }
       ]
-    },
+    }
+  ],
+  settings: [
     {
-      _id: '4',
+      _id: db.id(),
       type: 'settings',
       languages: [
         {
@@ -68,16 +71,16 @@ export default {
           default: true
         }
       ]
-    },
-    {
-      _id: 'entity_template_id',
-      type: 'template',
-      isEntity: true
-    },
-    {
-      _id: 'document_template_id',
-      type: 'template',
-      isEntity: false
     }
+    //{
+      //_id: 'entity_template_id',
+      //type: 'template',
+      //isEntity: true
+    //},
+    //{
+      //_id: 'document_template_id',
+      //type: 'template',
+      //isEntity: false
+    //}
   ]
 };

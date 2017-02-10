@@ -1,16 +1,19 @@
 import database from 'api/utils/database.js';
-
+import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from '../translations.js';
+
+import {db} from 'api/utils';
 import fixtures from './fixtures.js';
 
-import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('translations', () => {
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('process System context', () => {
@@ -19,8 +22,8 @@ describe('translations', () => {
       translations.processSystemKeys(keys)
       .then(translations.get)
       .then((result) => {
-        const ESTrnaslations = result.rows.find(t => t.locale === 'es').contexts.find(c => c.label === 'System').values;
-        const ENTrnaslations = result.rows.find(t => t.locale === 'en').contexts.find(c => c.label === 'System').values;
+        const ESTrnaslations = result.find(t => t.locale === 'es').contexts.find(c => c.label === 'System').values;
+        const ENTrnaslations = result.find(t => t.locale === 'en').contexts.find(c => c.label === 'System').values;
 
         expect(ENTrnaslations.Password).toBe('Password');
         expect(ENTrnaslations.Account).toBe('Account');
@@ -36,7 +39,8 @@ describe('translations', () => {
         expect(ESTrnaslations['new key']).toBe('new key');
         expect(ESTrnaslations['new key 2']).toBe('label2');
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
     it('should delete the keys that are missing', (done) => {
@@ -44,8 +48,8 @@ describe('translations', () => {
       translations.processSystemKeys(keys)
       .then(translations.get)
       .then((result) => {
-        const ESTrnaslations = result.rows.find(t => t.locale === 'es').contexts.find(c => c.label === 'System').values;
-        const ENTrnaslations = result.rows.find(t => t.locale === 'en').contexts.find(c => c.label === 'System').values;
+        const ESTrnaslations = result.find(t => t.locale === 'es').contexts.find(c => c.label === 'System').values;
+        const ENTrnaslations = result.find(t => t.locale === 'en').contexts.find(c => c.label === 'System').values;
 
         expect(ENTrnaslations.Password).not.toBeDefined();
         expect(ENTrnaslations.Account).not.toBeDefined();

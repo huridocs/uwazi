@@ -30,7 +30,7 @@ let addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  translations.addContext(template._id, template.name, values);
+  return translations.addContext(template._id, template.name, values);
 };
 
 let updateTranslation = (currentTemplate, template) => {
@@ -49,7 +49,7 @@ let updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
+  return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 let save = (template) => {
@@ -73,10 +73,11 @@ export default {
 
     return save(template)
     .then((newTemplate) => {
-      //this produces an unhandled promise rejection warning
-      addTemplateTranslation(newTemplate);
+      //maybe this is not a good idea (having an unhandled async process)
+      return addTemplateTranslation(newTemplate)
+      .then(() => newTemplate);
       //
-      return newTemplate;
+      //return newTemplate;
     });
   },
 

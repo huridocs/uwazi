@@ -10,6 +10,7 @@ import fixtures, {templateToBeEditedId, templateToBeDeleted} from './fixtures.js
 
 fdescribe('templates', () => {
   beforeEach((done) => {
+    spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
     db.clearAndLoad(fixtures, (err) => {
       if (err) {
         done.fail(err);
@@ -67,7 +68,6 @@ fdescribe('templates', () => {
     });
 
     fit('should add it to the translations', (done) => {
-      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       let newTemplate = {name: 'created template', properties: [
         {label: 'label 1'},
         {label: 'label 2'}
@@ -174,12 +174,12 @@ fdescribe('templates', () => {
         spyOn(translations, 'updateContext');
         templates.save(newTemplate)
         .then((template) => {
-          spyOn(translations, 'addContext');
           template.name = 'new title';
           template.isEntity = true;
           template.properties[0].label = 'new label 1';
           template.properties.pop();
           template.properties.push({label: 'label 3'});
+          translations.addContext.calls.reset();
           return templates.save(template);
         })
         .then((response) => {

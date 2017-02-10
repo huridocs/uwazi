@@ -123,7 +123,7 @@ describe('thesauris', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      spyOn(translations, 'updateContext');
+      spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
     });
 
     fit('should create a thesauri', (done) => {
@@ -140,7 +140,7 @@ describe('thesauris', () => {
 
     fit('should create a translation context', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
-      spyOn(translations, 'addContext');
+      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       thesauris.save(data)
       .then((response) => {
         expect(translations.addContext)
@@ -177,7 +177,8 @@ describe('thesauris', () => {
     });
 
     describe('when passing _id', () => {
-      fit('edit an existing one', (done) => {
+      fit('should edit an existing one', (done) => {
+        spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
         let data = {_id: dictionaryId, name: 'changed name'};
         return thesauris.save(data)
         .then(() => thesauris.getById(dictionaryId))

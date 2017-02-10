@@ -1,10 +1,17 @@
 export default (MongooseModel) => {
   return {
     save: (data) => {
-      if (data._id) {
-        return MongooseModel.findOneAndUpdate({_id: data._id}, data, {new: true}).then((saved) => saved.toObject());
+      if (Array.isArray(data)) {
+        let promises = data.map((entry) => {
+          return MongooseModel.findOneAndUpdate({_id: entry._id}, entry, {new: true}).then(saved => saved.toObject());
+        });
+        return Promise.all(promises);
       }
-      return MongooseModel.create(data).then((saved) => saved.toObject());
+
+      if (data._id) {
+        return MongooseModel.findOneAndUpdate({_id: data._id}, data, {new: true}).then(saved => saved.toObject());
+      }
+      return MongooseModel.create(data).then(saved => saved.toObject());
     },
 
     get: (query) => {
