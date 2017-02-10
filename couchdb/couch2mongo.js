@@ -1,15 +1,8 @@
 import mongoose from 'mongoose';
 import couchStream from './couchStream.js';
 import templates from '../app/api/templates';
+import thesauris from '../app/api/thesauris/thesauris';
 
-const dictionarySchema = new mongoose.Schema({
-  name: String,
-  values: [{
-    label: String
-  }]
-});
-
-const dictionaries = mongoose.model('dictionaries', dictionarySchema);
 let idMapping = {};
 
 function migrateTemplate(template) {
@@ -17,6 +10,19 @@ function migrateTemplate(template) {
   delete template._id;
   delete template._rev;
   return templates.save(template)
+  .then((created) => {
+    idMapping[oldId] = created._id;
+  })
+  .catch((e) => {
+    console.error(e);
+  });
+}
+
+function migrateThesauri(thesauri) {
+  let oldId = thesauri._id;
+  delete thesauri._id;
+  delete thesauri._rev;
+  return thesauris.save(thesauri)
   .then((created) => {
     idMapping[oldId] = created._id;
   })
@@ -37,5 +43,6 @@ function migrateTemplate(template) {
 //}
 
 couchStream('_design/templates/_view/all', migrateTemplate)
+.then(() => couchStream('_design/thesauris/_view/dictionaries', migrateThesauri))
 //.then(() => couchStream('/_design/entities_and_docs/_view/sharedId', migrateEntity))
 .then(() => mongoose.disconnect());
