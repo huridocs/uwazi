@@ -1,4 +1,5 @@
 import references from './references.js';
+import search from '../search/search';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
@@ -29,6 +30,29 @@ export default app => {
       res.status(500).json({error: error.json});
     });
   });
+
+  // TEST!!!
+  app.get('/api/references/search/:id', (req, res) => {
+    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false})
+    .then(groups => {
+      const entityIds = groups.reduce((ids, group) => {
+        return group.templates.reduce((refs, t) => refs.concat(t.refs.map(r => r.connectedDocument)), ids);
+      }, []);
+
+
+      req.query.ids = entityIds;
+      req.query.includeUnpublished = true;
+      // req.query.order = 'desc';
+      // req.query.sort = 'creationDate';
+
+      search.search(req.query, req.language)
+      .then(results => res.json(results));
+    })
+    .catch((error) => {
+      res.status(500).json({error: error.json});
+    });
+  });
+  // ---
 
   app.get('/api/references/count_by_relationtype', (req, res) => {
     references.countByRelationType(req.query.relationtypeId)
