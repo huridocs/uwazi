@@ -31,6 +31,16 @@ describe('documentQueryBuilder', () => {
     });
   });
 
+  describe('includeUnpublished', () => {
+    it('should allow including unpulbished documents', () => {
+      let baseQuery = queryBuilder().includeUnpublished().query();
+      expect(baseQuery.query.bool.must.length).toBe(0);
+
+      baseQuery = queryBuilder().language('es').includeUnpublished().query();
+      expect(baseQuery.query.bool.must[0]).toEqual({match: {language: 'es'}});
+    });
+  });
+
   describe('filterMetadata', () => {
     it('should add filter conditions', () => {
       let baseQuery = queryBuilder().filterMetadata({
@@ -63,7 +73,7 @@ describe('documentQueryBuilder', () => {
   describe('filterById', () => {
     it('should add a match to get only documents that match with the passed ids', () => {
       let baseQuery = queryBuilder().filterById(['id1', 'id2']).query();
-      let expectedMatcher = {terms: {'_id.raw': ['id1', 'id2']}};
+      let expectedMatcher = {terms: {'sharedId.raw': ['id1', 'id2']}};
       expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
     });
   });
