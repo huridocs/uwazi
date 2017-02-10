@@ -2,9 +2,9 @@ export default (MongooseModel) => {
   return {
     save: (data) => {
       if (data._id) {
-        return MongooseModel.findOneAndUpdate({_id: data._id}, data, {new: true});
+        return MongooseModel.findOneAndUpdate({_id: data._id}, data, {new: true}).then((saved) => saved.toObject());
       }
-      return MongooseModel.create(data);
+      return MongooseModel.create(data).then((saved) => saved.toObject());
     },
 
     get: (query) => {
