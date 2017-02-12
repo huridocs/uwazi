@@ -74,13 +74,13 @@ describe('references', () => {
       .catch(catchErrors(done));
     });
 
-    it('should not attempt to create references for missing properties', (done) => {
+    fit('should not attempt to create references for missing properties', (done) => {
       const entity = {
         _id: 'id_testing',
         sharedId: 'entity_id',
         template,
         metadata: {
-          selectName: 'selectValueID'
+          selectName: selectValueID
         }
       };
 
@@ -96,24 +96,24 @@ describe('references', () => {
     });
 
     describe('when a select value changes', () => {
-      it('should update the references properly', (done) => {
+      fit('should update the references properly', (done) => {
         const entity = {
           _id: 'id_testing',
           sharedId: 'entity_id',
           template,
           metadata: {
-            selectName: 'selectValueID',
-            multiSelectName: ['value1ID', 'value2ID']
+            selectName: selectValueID,
+            multiSelectName: [value1ID, value2ID]
           }
         };
 
         let generatedIds = [];
         references.saveEntityBasedReferences(entity, 'es')
         .then((createdReferences) => {
-          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value1ID')._id);
-          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value2ID')._id);
-          entity.metadata.selectName = 'value1ID';
-          entity.metadata.multiSelectName = ['value2ID'];
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === value1ID)._id);
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === value2ID)._id);
+          entity.metadata.selectName = value1ID;
+          entity.metadata.multiSelectName = [value2ID];
           return references.saveEntityBasedReferences(entity, 'es');
         })
         .then(() => {
@@ -122,11 +122,11 @@ describe('references', () => {
         .then((refs) => {
           expect(refs.length).toBe(4);
 
-          expect(refs.find((ref) => ref.targetDocument === 'value1ID')._id).not.toBe(generatedIds[0]);
-          expect(refs.find((ref) => ref.targetDocument === 'value1ID').sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === 'value2ID' && ref.sourceType === 'metadata')._id).toBe(generatedIds[1]);
-          expect(refs.find((ref) => ref.targetDocument === 'value2ID' && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === 'value2ID' && !ref.sourceType)._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+          expect(refs.find((ref) => ref.targetDocument === value1ID)._id).not.toBe(generatedIds[0]);
+          expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
+          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString()).toBe(generatedIds[1].toString());
+          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
+          expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
 
           done();
         })
@@ -136,7 +136,7 @@ describe('references', () => {
   });
 
   describe('getByDocument()', () => {
-    it('should return all the references of a document', (done) => {
+    fit('should return all the references of a document', (done) => {
       references.getByDocument('source2', 'es')
       .then((result) => {
         expect(result.length).toBe(4);
@@ -189,19 +189,19 @@ describe('references', () => {
   });
 
   describe('getByTarget()', () => {
-    it('should return all the references with specific target document', (done) => {
+    fit('should return all the references with specific target document', (done) => {
       references.getByTarget('target')
       .then((result) => {
-        expect(result.rows.length).toBe(2);
-        expect(result.rows[0].targetDocument).toBe('target');
-        expect(result.rows[1].targetDocument).toBe('target');
+        expect(result.length).toBe(2);
+        expect(result[0].targetDocument).toBe('target');
+        expect(result[1].targetDocument).toBe('target');
         done();
       }).catch(catchErrors(done));
     });
   });
 
   describe('countByRelationType()', () => {
-    it('should return number of references using a relationType', (done) => {
+    fit('should return number of references using a relationType', (done) => {
       references.countByRelationType('relation2')
       .then((result) => {
         expect(result).toBe(2);
@@ -209,7 +209,7 @@ describe('references', () => {
       }).catch(catchErrors(done));
     });
 
-    it('should return zero when none is using it', (done) => {
+    fit('should return zero when none is using it', (done) => {
       references.countByRelationType('not_used_relation')
       .then((result) => {
         expect(result).toBe(0);
@@ -220,7 +220,7 @@ describe('references', () => {
 
   describe('save()', () => {
     describe('when the reference did not exist', () => {
-      it('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
+      fit('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
         references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: 'range', targetRange: {text: 'text'}}, 'es')
         .then((result) => {
           expect(result.sourceDocument).toBe('sourceDoc');
@@ -234,7 +234,6 @@ describe('references', () => {
           expect(result.inbound).toBe(false);
 
           expect(result._id).toBeDefined();
-          expect(result._rev).toBeDefined();
           done();
         })
         .catch(catchErrors(done));

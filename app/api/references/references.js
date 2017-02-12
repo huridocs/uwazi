@@ -21,7 +21,7 @@ let normalizeConnection = (connection, docId) => {
 
 let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentTemplate = connectedDocument.template;
-  connection.connectedDocumentType = connectedDocument.type;
+  connection.connectedDocumentType = connectedDocument.isEntity ? 'entity' : 'document';
   connection.connectedDocumentTitle = connectedDocument.title;
   connection.connectedDocumentIcon = connectedDocument.icon;
   connection.connectedDocumentPublished = Boolean(connectedDocument.published);
@@ -57,20 +57,11 @@ export default {
   },
 
   getByTarget(docId) {
-    return request.get(`${dbURL}/_design/references/_view/by_target?key="${docId}"`)
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    });
+    return model.get({targetDocument: docId});
   },
 
   countByRelationType(typeId) {
-    return request.get(`${dbURL}/_design/references/_view/count_by_relation_type?key="${typeId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
+    return model.count({relationtype: typeId});
   },
 
   save(connection, language) {
@@ -79,6 +70,9 @@ export default {
       return normalizeConnection(result, connection.sourceDocument);
     })
     .then((result) => {
+      if(result.sourceDocument === 'sourceDoc') {
+        console.log(result);
+      }
       return Promise.all([result, entities.getById(result.connectedDocument, language)]);
     })
     .then(([result, connectedDocument]) => {
@@ -155,10 +149,7 @@ export default {
   },
 
   delete(reference) {
-    return request.delete(`${dbURL}/${reference._id}`, {rev: reference._rev})
-    .then((result) => {
-      return result.json;
-    });
+    return model.delete(reference._id);
   },
 
   deleteTextReferences(sharedId, language) {
