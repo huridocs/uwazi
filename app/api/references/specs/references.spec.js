@@ -5,7 +5,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import {db} from 'api/utils';
-import fixtures, {template, selectValueID, value1ID, value2ID} from './fixtures.js';
+import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
 
 describe('references', () => {
   beforeEach((done) => {
@@ -62,12 +62,12 @@ describe('references', () => {
       .then((refs) => {
         expect(refs.length).toBe(5);
 
-        expect(refs.find((ref) => ref.targetDocument === 'selectValueID').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === 'selectValueID').sourceType).toBe('metadata');
-        expect(refs.find((ref) => ref.targetDocument === 'value1ID').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === 'value2ID' && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === 'value2ID' && !ref.sourceType)._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
-        expect(refs.find((ref) => ref.sourceDocument === 'value2ID')._id).toBe('inbound');
+        expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceDocument).toBe('entity_id');
+        expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceType).toBe('metadata');
+        expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
+        expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
+        expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
+        expect(refs.find((ref) => ref.sourceDocument === value2ID)._id.toString()).toBe(inbound.toString());
 
         done();
       })

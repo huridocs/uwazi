@@ -1,6 +1,5 @@
 import thesaurisRoute from '../routes.js';
 import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -8,15 +7,20 @@ import thesauris from '../thesauris';
 import translations from 'api/i18n/translations';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
+import {db} from 'api/utils';
+import fixtures from './fixtures.js';
+
 describe('thesauris routes', () => {
   let routes;
 
   beforeEach((done) => {
     routes = instrumentRoutes(thesaurisRoute);
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('GET', () => {

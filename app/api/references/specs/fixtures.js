@@ -2,10 +2,11 @@ import {db} from 'api/utils';
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
+const sourceDocument = db.id();
 const entityTemplate = db.id();
-const selectValueID = db.id();
-const value1ID = db.id();
-const value2ID = db.id();
+const selectValueID = db.id().toString()
+const value1ID = db.id().toString()
+const value2ID = db.id().toString()
 
 export default {
   connections: [
@@ -16,7 +17,7 @@ export default {
     {title: 'targetDocument', targetDocument: 'target'},
     {title: 'targetDocument', targetDocument: 'target'},
     {title: 'targetDocument1', targetDocument: 'target1'},
-    {title: 'reference1', sourceDocument: 'entity_id', targetDocument: value2ID, targetRange: 'range1', sourceRange: {text: 'sourceRange'}, relationtype: 'relation1'},
+    {_id: sourceDocument, title: 'reference1', sourceDocument: 'entity_id', targetDocument: value2ID, targetRange: 'range1', sourceRange: {text: 'sourceRange'}, relationtype: 'relation1'},
     ////inbound existing reference
     {_id: inbound, type: 'reference', title: 'indound_reference_1', sourceDocument: value2ID, targetDocument: 'entity_id', sourceType: 'metadata', sourceProperty: 'selectName'},
   ],
@@ -64,6 +65,8 @@ export default {
 
 export {
   template,
+  inbound,
+  sourceDocument,
   selectValueID,
   value1ID,
   value2ID

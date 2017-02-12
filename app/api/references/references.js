@@ -74,19 +74,15 @@ export default {
   },
 
   save(connection, language) {
-    connection.type = 'reference';
-    return request.post(dbURL, connection)
+    return model.save(connection)
     .then((result) => {
-      return request.get(`${dbURL}/${result.json.id}`);
+      return normalizeConnection(result, connection.sourceDocument);
     })
     .then((result) => {
-      return normalizeConnection(result.json, connection.sourceDocument);
-    })
-    .then((result) => {
-      return Promise.all([result, entities.get(result.connectedDocument, language)]);
+      return Promise.all([result, entities.getById(result.connectedDocument, language)]);
     })
     .then(([result, connectedDocument]) => {
-      return normalizeConnectedDocumentData(result, connectedDocument.rows[0]);
+      return normalizeConnectedDocumentData(result, connectedDocument);
     });
   },
 
@@ -121,7 +117,6 @@ export default {
         if (typeof propertyValues === 'string') {
           propertyValues = [propertyValues];
         }
-
         return memo.concat(propertyValues.map(value => {
           return {property, value};
         }));
