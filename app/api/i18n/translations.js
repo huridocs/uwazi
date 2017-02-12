@@ -15,7 +15,7 @@ function addTypeToContexts(contexts) {
       return Promise.resolve(context);
     }
 
-    return request.get(`${dbURL}/${context.id}`)
+    return model.getById(context.id)
     .then((resp) => {
       if (resp.json.type === 'template') {
         context.type = resp.json.isEntity ? 'Entity' : 'Document';
@@ -27,7 +27,8 @@ function addTypeToContexts(contexts) {
         return context;
       }
 
-      if (resp.json.type === 'relationtype') { context.type = 'Connection';
+      if (resp.json.type === 'relationtype') { 
+        context.type = 'Connection';
         return context;
       }
 
@@ -39,12 +40,12 @@ function addTypeToContexts(contexts) {
 
 export default {
   get() {
-    return model.get();
+    return model.get()
     //.then((response) => {
       //return Promise.all(response.map((translation) => {
         //return addTypeToContexts(translation.contexts).then((contexts) => {
-          //row.value.contexts = contexts;
-          //return row;
+          //translation.contexts = contexts;
+          //return translation;
         //});
       //})).then((rows) => {
         //response.json.rows = rows;
@@ -54,15 +55,7 @@ export default {
   },
 
   save(translation) {
-    translation.type = 'translation';
-
-    let url = dbURL;
-    if (translation._id) {
-      url = `${dbURL}/_design/settings/_update/partialUpdate/${translation._id}`;
-    }
-
-    return request.post(url, translation)
-    .then(response => request.get(`${dbURL}/${response.json.id}`)).then((response) => response.json);
+    return model.save(translation);
   },
 
   addEntries(entries) {
@@ -95,11 +88,11 @@ export default {
     });
   },
 
-  addContext(id, contextName, values) {
-    return this.get()
+  addContext(id, contextName, values, type) {
+    return model.get()
     .then((result) => {
       return Promise.all(result.map((translation) => {
-        translation.contexts.push({id, label: contextName, values});
+        translation.contexts.push({id, label: contextName, values, type});
         return this.save(translation);
       }));
     })
@@ -125,24 +118,24 @@ export default {
   processSystemKeys(keys) {
     return this.get()
     .then((languages) => {
-      //const existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
-      //const newKeys = keys.map(k => k.key);
-      //let keysToAdd = {};
-      //let keysToRemove = Object.keys(existingKeys).filter((i) => newKeys.indexOf(i) < 0);
-      //keys.forEach((key) => {
-        //key.label = key.label || key.key;
-        //if (!existingKeys[key.key]) {
-          //keysToAdd[key.key] = key.label;
-        //}
-      //});
+      const existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
+      const newKeys = keys.map(k => k.key);
+      let keysToAdd = {};
+      let keysToRemove = Object.keys(existingKeys).filter((i) => newKeys.indexOf(i) < 0);
+      keys.forEach((key) => {
+        key.label = key.label || key.key;
+        if (!existingKeys[key.key]) {
+          keysToAdd[key.key] = key.label;
+        }
+      });
 
-      //languages.forEach((language) => {
-        //let system = language.contexts.find(c => c.label === 'System');
-        //system.values = Object.assign(system.values, keysToAdd);
-        //keysToRemove.forEach((toRemove) => {
-          //delete system.values[toRemove];
-        //});
-      //});
+      languages.forEach((language) => {
+        let system = language.contexts.find(c => c.label === 'System');
+        system.values = Object.assign(system.values, keysToAdd);
+        keysToRemove.forEach((toRemove) => {
+          delete system.values[toRemove];
+        });
+      });
 
       return model.save(languages);
     });

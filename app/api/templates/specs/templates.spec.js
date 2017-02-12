@@ -67,7 +67,7 @@ fdescribe('templates', () => {
       });
     });
 
-    fit('should add it to the translations', (done) => {
+    fit('should add it to the translations with Document type', (done) => {
       let newTemplate = {name: 'created template', properties: [
         {label: 'label 1'},
         {label: 'label 2'}
@@ -81,8 +81,29 @@ fdescribe('templates', () => {
           'label 2': 'label 2'
         };
 
-        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues);
+        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Document');
         done();
+      });
+    });
+
+    describe('when isEntity', () => {
+      fit('should add it to translations with Entity type', (done) => {
+        let newTemplate = {name: 'created template', isEntity: true, properties: [
+          {label: 'label 1'},
+          {label: 'label 2'}
+        ]};
+
+        templates.save(newTemplate)
+        .then((response) => {
+          let expectedValues = {
+            'created template': 'created template',
+            'label 1': 'label 1',
+            'label 2': 'label 2'
+          };
+
+          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Entity');
+          done();
+        });
       });
     });
 

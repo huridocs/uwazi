@@ -1,25 +1,28 @@
 import {db_url as dbURL} from 'api/config/database.js';
 import references from '../references.js';
 import database from 'api/utils/database.js';
-import fixtures, {template} from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
+import {db} from 'api/utils';
+import fixtures, {template, selectValueID, value1ID, value2ID} from './fixtures.js';
+
 describe('references', () => {
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
-  describe('getAll()', () => {
-    it('should return all the references in the database', (done) => {
-      references.getAll()
+  describe('get()', () => {
+    fit('should return all the references', (done) => {
+      references.get()
       .then((result) => {
-        expect(result.rows.length).toBe(9);
-        expect(result.rows[0].type).toBe('reference');
-        expect(result.rows[0].title).toBe('reference1');
+        expect(result.length).toBe(9);
+        expect(result[0].title).toBe('reference1');
         done();
       }).catch(catchErrors(done));
     });
@@ -27,7 +30,7 @@ describe('references', () => {
 
   describe('saveEntityBasedReferences', () => {
     describe('when entity has no template', () => {
-      it('should return a resolved promise', (done) => {
+      fit('should return a resolved promise', (done) => {
         const entity = {_id: 'id_testing'};
         references.saveEntityBasedReferences(entity)
         .then((refs) => {
@@ -40,15 +43,15 @@ describe('references', () => {
       });
     });
 
-    it('should create references for each option on selects/multiselects using entities ' +
+    fit('should create references for each option on selects/multiselects using entities ' +
        '(not affecting document references or inbound refences)', (done) => {
       const entity = {
         _id: 'id_testing',
         sharedId: 'entity_id',
         template,
         metadata: {
-          selectName: 'selectValueID',
-          multiSelectName: ['value1ID', 'value2ID']
+          selectName: selectValueID,
+          multiSelectName: [value1ID, value2ID]
         }
       };
 

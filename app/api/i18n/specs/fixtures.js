@@ -1,9 +1,10 @@
 import {db} from 'api/utils';
+const entityTemplateId = db.id();
+const documentTemplateId = db.id();
 export default {
   translations: [
     {
       _id: db.id(),
-      type: 'translation',
       locale: 'en',
       contexts: [
         {
@@ -27,12 +28,12 @@ export default {
           values: {}
         },
         {
-          id: 'entity_template_id',
+          id: entityTemplateId.toString(),
           label: 'Judge',
           values: {}
         },
         {
-          id: 'document_template_id',
+          id: documentTemplateId.toString(),
           label: 'Court order',
           values: {}
         }
@@ -72,15 +73,22 @@ export default {
         }
       ]
     }
-    //{
-      //_id: 'entity_template_id',
-      //type: 'template',
-      //isEntity: true
-    //},
-    //{
-      //_id: 'document_template_id',
-      //type: 'template',
-      //isEntity: false
-    //}
+  ],
+  templates: [
+    {
+      _id: entityTemplateId,
+      type: 'template',
+      isEntity: true
+    },
+    {
+      _id: documentTemplateId,
+      type: 'template',
+      isEntity: false
+    }
   ]
+};
+
+export {
+  entityTemplateId,
+  documentTemplateId
 };

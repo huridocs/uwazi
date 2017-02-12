@@ -4,6 +4,11 @@ import sanitizeResponse from 'api/utils/sanitizeResponse';
 import templates from 'api/templates';
 import entities from 'api/entities';
 
+import instanceModel from 'api/odm';
+import connectionsModel from './connectionsModel.js';
+
+const model = instanceModel(connectionsModel);
+
 let normalizeConnection = (connection, docId) => {
   connection.targetRange = connection.targetRange || {text: ''};
   connection.sourceRange = connection.sourceRange || {text: ''};
@@ -26,22 +31,20 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
 };
 
 export default {
-  getAll() {
-    return request.get(`${dbURL}/_design/references/_view/all`)
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    });
+  get() {
+    return model.get();
   },
 
   getByDocument(id, language) {
-    return request.get(`${dbURL}/_design/references/_view/by_document?key="${id}"`)
+    //return request.get(`${dbURL}/_design/references/_view/by_document?key="${id}"`)
+    return model.get({$or: [{targetDocument: id}, {sourceDocument: id}]})
     .then((response) => {
-      let connections = sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, id));
+      let connections = response.map((connection) => normalizeConnection(connection, id));
       let requestDocuments = [];
       connections.forEach((connection) => {
         let promise = entities.get(connection.connectedDocument, language)
         .then((connectedDocument) => {
-          normalizeConnectedDocumentData(connection, connectedDocument.rows[0]);
+          normalizeConnectedDocumentData(connection, connectedDocument[0]);
         });
         requestDocuments.push(promise);
       });
@@ -97,9 +100,9 @@ export default {
       const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
       const entitySelects = [];
       return Promise.all(selects.map((select) => {
-        return request.get(`${dbURL}/${select.content}`)
+        return templates.getById(select.content)
         .then((result) => {
-          if (result.json.type === 'template') {
+          if (result) {
             entitySelects.push(select.name);
           }
         });

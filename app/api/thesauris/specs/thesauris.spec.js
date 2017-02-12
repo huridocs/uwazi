@@ -150,7 +150,8 @@ describe('thesauris', () => {
           {
             'Batman wish list': 'Batman wish list',
             'Joker BFF': 'Joker BFF'
-          }
+          },
+          'Dictionary'
         );
         done();
       })

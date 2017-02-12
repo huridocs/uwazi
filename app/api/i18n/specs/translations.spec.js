@@ -17,7 +17,7 @@ describe('translations', () => {
   });
 
   describe('process System context', () => {
-    it('should add keys that do not exist into all languages', (done) => {
+    fit('should add keys that do not exist into all languages', (done) => {
       const keys = [{key: 'Password'}, {key: 'Account'}, {key: 'Email'}, {key: 'Age'}, {key: 'new key'}, {key: 'new key 2', label: 'label2'}];
       translations.processSystemKeys(keys)
       .then(translations.get)
@@ -43,7 +43,7 @@ describe('translations', () => {
       .catch(catchErrors(done));
     });
 
-    it('should delete the keys that are missing', (done) => {
+    fit('should delete the keys that are missing', (done) => {
       const keys = [{key: 'Email'}, {key: 'Age'}, {key: 'new key'}];
       translations.processSystemKeys(keys)
       .then(translations.get)
@@ -64,7 +64,7 @@ describe('translations', () => {
         expect(ESTrnaslations['new key']).toBe('new key');
         done();
       })
-      .catch(catchErrors(done))
+      .catch(catchErrors(done));
     });
   });
 
@@ -72,35 +72,34 @@ describe('translations', () => {
     it('should return the translations', (done) => {
       translations.get()
       .then((result) => {
-        expect(result.rows.length).toBe(2);
-        expect(result.rows[0].locale).toBe('en');
-        expect(result.rows[0].contexts[0].id).toBe('System');
-        expect(result.rows[0].contexts[0].type).toBe('Uwazi UI');
+        expect(result.length).toBe(2);
+        expect(result[0].locale).toBe('en');
+        expect(result[0].contexts[0].id).toBe('System');
+        expect(result[0].contexts[0].type).toBe('Uwazi UI');
 
-        expect(result.rows[0].contexts[1].id).toBe('Filters');
-        expect(result.rows[0].contexts[1].type).toBe('Uwazi UI');
+        expect(result[0].contexts[1].id).toBe('Filters');
+        expect(result[0].contexts[1].type).toBe('Uwazi UI');
 
-        expect(result.rows[0].contexts[2].id).toBe('Menu');
-        expect(result.rows[0].contexts[2].type).toBe('Uwazi UI');
+        expect(result[0].contexts[2].id).toBe('Menu');
+        expect(result[0].contexts[2].type).toBe('Uwazi UI');
 
-        expect(result.rows[0].contexts[3].id).toBe('entity_template_id');
-        expect(result.rows[0].contexts[3].type).toBe('Entity');
+        expect(result[0].contexts[3].id).toBe('entity_template_id');
+        expect(result[0].contexts[3].type).toBe('Entity');
 
-        expect(result.rows[0].contexts[4].id).toBe('document_template_id');
-        expect(result.rows[0].contexts[4].type).toBe('Document');
+        expect(result[0].contexts[4].id).toBe('document_template_id');
+        expect(result[0].contexts[4].type).toBe('Document');
 
-        expect(result.rows[1].locale).toBe('es');
+        expect(result[1].locale).toBe('es');
         done();
       }).catch(catchErrors(done));
     });
   });
 
   describe('save()', () => {
-    it('should save the translation and return it', (done) => {
+    fit('should save the translation and return it', (done) => {
       translations.save({locale: 'fr'})
       .then((result) => {
         expect(result._id).toBeDefined();
-        expect(result.type).toBe('translation');
         done();
       }).catch(catchErrors(done));
     });
@@ -145,16 +144,18 @@ describe('translations', () => {
   });
 
   describe('addContext()', () => {
-    it('should add a context with his values', (done) => {
+    fit('should add a context with his values', (done) => {
       let values = {Name: 'Name', Surname: 'Surname'};
-      translations.addContext('System', 'Judge', values)
+      translations.addContext('System', 'Judge', values, 'type')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts[5].values).toEqual(values);
-        expect(result.rows[1].contexts[1].values).toEqual(values);
+        expect(result[0].contexts[5].values).toEqual(values);
+        expect(result[0].contexts[5].type).toEqual('type');
+        expect(result[1].contexts[1].values).toEqual(values);
+        expect(result[1].contexts[1].type).toEqual('type');
         done();
       })
       .catch(catchErrors(done));

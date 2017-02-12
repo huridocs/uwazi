@@ -33,7 +33,7 @@ function _save(thesauri) {
 
   return model.save(thesauri)
   .then((response) => {
-    return translations.addContext(response._id, thesauri.name, context)
+    return translations.addContext(response._id, thesauri.name, context, 'Dictionary')
     .then(() => response);
   });
 }

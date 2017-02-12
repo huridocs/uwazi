@@ -74,18 +74,12 @@ export default {
     });
   },
 
-  get(id, language) {
-    return request.get(`${dbURL}/_design/entities_and_docs/_view/by_language`, {key: [id, language]})
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    });
+  get(sharedId, language) {
+    return model.get({sharedId, language});
   },
 
-  getById(id) {
-    return request.get(`${dbURL}/${id}`)
-    .then((response) => {
-      return response.json;
-    });
+  getById(sharedId, language) {
+    return model.get({sharedId, language}).then((result) => result[0]);
   },
 
   saveMultiple(docs) {
