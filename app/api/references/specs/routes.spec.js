@@ -20,7 +20,7 @@ describe('references routes', () => {
   });
 
   describe('POST', () => {
-    it('should save a reference', (done) => {
+    fit('should save a reference', (done) => {
       let req = {body: {name: 'created_reference'}, language: 'es'};
 
       routes.post('/api/references', req)
@@ -33,12 +33,12 @@ describe('references routes', () => {
   });
 
   describe('DELETE', () => {
-    it('should delete the reference', (done) => {
-      let req = {query: {name: 'created_reference'}};
+    fit('should delete the reference', (done) => {
+      let req = {query: {_id: 'to_delete_id'}};
 
       routes.delete('/api/references', req)
       .then(() => {
-        expect(references.delete).toHaveBeenCalledWith(req.query);
+        expect(references.delete).toHaveBeenCalledWith(req.query._id);
         done();
       })
       .catch(catchErrors(done));
@@ -46,7 +46,7 @@ describe('references routes', () => {
   });
 
   describe('GET by_document', () => {
-    it('should return references.getByDocument', (done) => {
+    fit('should return references.getByDocument', (done) => {
       let req = {params: {id: 'documentId'}, language: 'es'};
 
       spyOn(references, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
@@ -62,7 +62,7 @@ describe('references routes', () => {
   });
 
   describe('/references/count_by_relationtype', () => {
-    it('should return the number of references using a relationtype', (done) => {
+    fit('should return the number of references using a relationtype', (done) => {
       spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));
       let req = {query: {relationtypeId: 'abc1'}};
       routes.get('/api/references/count_by_relationtype', req)
