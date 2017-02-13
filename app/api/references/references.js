@@ -35,6 +35,10 @@ export default {
     return model.get();
   },
 
+  getById(id) {
+    return model.getById(id);
+  },
+
   getByDocument(id, language) {
     //return request.get(`${dbURL}/_design/references/_view/by_document?key="${id}"`)
     return model.get({$or: [{targetDocument: id}, {sourceDocument: id}]})
@@ -70,9 +74,6 @@ export default {
       return normalizeConnection(result, connection.sourceDocument);
     })
     .then((result) => {
-      if(result.sourceDocument === 'sourceDoc') {
-        console.log(result);
-      }
       return Promise.all([result, entities.getById(result.connectedDocument, language)]);
     })
     .then(([result, connectedDocument]) => {
@@ -136,7 +137,7 @@ export default {
         return !isInReferences;
       });
 
-      const deletes = toDelete.map((ref) => this.delete(ref));
+      const deletes = toDelete.map((ref) => this.delete(ref._id));
       const creates = toCreate.map((item) => this.save({
         sourceType: 'metadata',
         sourceDocument: entity.sharedId,
@@ -148,18 +149,11 @@ export default {
     });
   },
 
-  delete(reference) {
-    return model.delete(reference._id);
+  delete(id) {
+    return model.delete(id);
   },
 
   deleteTextReferences(sharedId, language) {
-    return this.getByDocument(sharedId, language)
-    .then(connections => {
-      const toDelete = connections
-      .filter(c => c.language === language && c.range.text.length)
-      .map(reference => this.delete(reference));
-
-      return Promise.all(toDelete);
-    });
+    return model.delete({sourceDocument: sharedId, language});
   }
 };

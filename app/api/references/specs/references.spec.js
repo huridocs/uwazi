@@ -1,7 +1,4 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import references from '../references.js';
-import database from 'api/utils/database.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import {db} from 'api/utils';
@@ -221,7 +218,7 @@ describe('references', () => {
   describe('save()', () => {
     describe('when the reference did not exist', () => {
       fit('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
-        references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: 'range', targetRange: {text: 'text'}}, 'es')
+        references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: {text: 'range'}, targetRange: {text: 'text'}}, 'es')
         .then((result) => {
           expect(result.sourceDocument).toBe('sourceDoc');
           expect(result.connectedDocument).toBe('doc3');
@@ -229,7 +226,7 @@ describe('references', () => {
           expect(result.connectedDocumentType).toBe('entity');
           expect(result.connectedDocumentTitle).toBe('doc3 title');
           expect(result.connectedDocumentPublished).toBe(true);
-          expect(result.range).toBe('range');
+          expect(result.range).toEqual({text: 'range'});
           expect(result.text).toBe('text');
           expect(result.inbound).toBe(false);
 
@@ -241,51 +238,45 @@ describe('references', () => {
     });
 
     describe('when the reference exists', () => {
-      it('should update it', (done) => {
-        let previousRev;
-        request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`)
-        .then((result) => {
-          let reference = result.json;
+      fit('should update it', (done) => {
+        references.getById(sourceDocument)
+        .then((reference) => {
           reference.sourceDocument = 'source1';
-          previousRev = reference._rev;
           return references.save(reference, 'es');
         })
         .then((result) => {
           expect(result.sourceDocument).toBe('source1');
-          expect(result._id).toBe('c08ef2532f0bd008ac5174b45e033c01');
-          expect(result._rev !== previousRev).toBe(true);
+          expect(result._id.equals(sourceDocument)).toBe(true);
           done();
-        }).catch(catchErrors(done));
+        })
+        .catch(catchErrors(done));
       });
     });
   });
 
   describe('delete()', () => {
-    it('should delete the reference', (done) => {
-      request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`)
-      .then((result) => {
-        return references.delete(result.json);
-      })
+    fit('should delete the reference', (done) => {
+      return references.delete(sourceDocument)
       .then(() => {
-        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
+        return references.getById(sourceDocument);
       })
-      .catch((result) => {
-        expect(result.json.error).toBe('not_found');
-        expect(result.json.reason).toBe('deleted');
+      .then((result) => {
+        expect(result).toBe(null);
         done();
       });
     });
   });
 
   describe('deleteTextReferences()', () => {
-    it('should delete the entity text references (that match language)', (done) => {
+    fit('should delete the entity text references (that match language)', (done) => {
       references.deleteTextReferences('source2', 'es')
       .then(() => {
         return references.getByDocument('source2', 'es');
       })
       .then(results => {
         expect(results.length).toBe(3);
-        expect(results.filter(r => r._id === 'c08ef2532f0bd008ac5174b45e033c03').length).toBe(0);
+        expect(results.filter(r => r.sourceDocument === 'source2').length).toBe(1);
+        expect(results.filter(r => r.sourceDocument === 'source2')[0].language).toBe('en');
         done();
       });
     });

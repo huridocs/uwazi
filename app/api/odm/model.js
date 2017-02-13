@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 export default (MongooseModel) => {
   return {
     save: (data) => {
@@ -26,8 +28,12 @@ export default (MongooseModel) => {
       return MongooseModel.findById(id, {}, {lean: true});
     },
 
-    delete: (id) => {
-      return MongooseModel.findOneAndRemove({_id: id});
+    delete: (condition) => {
+      let cond = condition;
+      if (mongoose.Types.ObjectId.isValid(condition)) {
+        cond = {_id: condition};
+      }
+      return MongooseModel.findOneAndRemove(cond);
     }
   };
 };
