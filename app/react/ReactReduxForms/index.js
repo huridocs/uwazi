@@ -11,6 +11,8 @@ let Nested = (props) => <Control.select component={forms.Nested} {...props}/>;
 let NestedMultiselect = forms.NestedMultiselect;
 let MultiDate = (props) => <Control.select component={forms.MultiDate} {...props}/>;
 let MultiDateRange = (props) => <Control.select component={forms.MultiDateRange} {...props}/>;
+let Numeric = (props) => <Control component={forms.Numeric} {...props}/>;
+let NumericRange = (props) => <Control.select component={forms.NumericRange} {...props}/>;
 let DropdownList = (props) => <Control.select component={forms.DropdownList} {...props}/>;
 let IconSelector = (props) => <Control.select component={forms.IconSelector} {...props}/>;
 let FormGroup = forms.FormGroup;
@@ -24,6 +26,8 @@ export {
   MarkDown,
   Nested,
   NestedMultiselect,
+  Numeric,
+  NumericRange,
   MultiDate,
   MultiDateRange,
   DropdownList,

@@ -69,7 +69,7 @@ export function URLQueryToState(query, templates, thesauris) {
       defaultValue = [];
     }
 
-    if (property.type === 'nested') {
+    if (property.type === 'nested' || property.type === 'date' || property.type === 'numeric') {
       defaultValue = {};
     }
 

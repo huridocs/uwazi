@@ -17,6 +17,10 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
       model[property.name] = {};
     }
 
+    if (property.type === 'numeric' || property.type === 'date') {
+      model[property.name] = {};
+    }
+
     return model;
   }, {});
   dispatch(formActions.change('search.filters', modelFilters));

@@ -34,6 +34,7 @@ export class TemplateCreator extends Component {
             <div className="panel-heading">Properties</div>
             <ul className="list-group">
               <PropertyOption label='Text' type='text'/>
+              <PropertyOption label='Numeric' type='numeric'/>
               <PropertyOption label='Select' type='select'/>
               <PropertyOption label='Multi Select' type='multiselect'/>
               <PropertyOption label='Date' type='date'/>

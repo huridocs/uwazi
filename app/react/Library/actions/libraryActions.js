@@ -87,7 +87,7 @@ export function processFilters(readOnlySearch, filters, limit) {
       return;
     }
     let type = 'text';
-    if (property.type === 'date' || property.type === 'multidate') {
+    if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
     if (property.type === 'select' || property.type === 'multiselect') {
