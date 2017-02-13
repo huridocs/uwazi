@@ -1,6 +1,3 @@
-import {db_url as dbURL} from 'api/config/database';
-import request from 'shared/JSONRequest';
-import sanitizeResponse from 'api/utils/sanitizeResponse';
 import templates from 'api/templates';
 import entities from 'api/entities';
 
@@ -40,7 +37,6 @@ export default {
   },
 
   getByDocument(id, language) {
-    //return request.get(`${dbURL}/_design/references/_view/by_document?key="${id}"`)
     return model.get({$or: [{targetDocument: id}, {sourceDocument: id}]})
     .then((response) => {
       let connections = response.map((connection) => normalizeConnection(connection, id));
