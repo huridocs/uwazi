@@ -3,7 +3,7 @@ import {Form, Field} from 'react-redux-form';
 
 import validator from '../helpers/validator';
 import {Select as SimpleSelect} from 'app/Forms';
-import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector} from 'app/ReactReduxForms';
+import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector, Numeric} from 'app/ReactReduxForms';
 import t from 'app/I18N/t';
 
 export class MetadataForm extends Component {
@@ -101,6 +101,8 @@ export class MetadataForm extends Component {
               return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
             case 'date':
               return <DatePicker model={_model}/>;
+            case 'numeric':
+              return <Numeric model={_model}/>;
             case 'markdown':
               return <MarkDown model={_model}/>;
             case 'nested':

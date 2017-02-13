@@ -5,7 +5,7 @@ import {Field, Form} from 'react-redux-form';
 import {createSelector} from 'reselect';
 import {is} from 'immutable';
 
-import {MultiSelect, DateRange, NestedMultiselect} from 'app/ReactReduxForms';
+import {MultiSelect, DateRange, NestedMultiselect, NumericRange} from 'app/ReactReduxForms';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -13,8 +13,6 @@ import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {t} from 'app/I18N';
 
 import {selectTemplates} from 'app/utils/coreSelectors';
-
-const selectSearch = createSelector(s => s ? s.search : {});
 
 export class FiltersForm extends Component {
 
@@ -51,7 +49,7 @@ export class FiltersForm extends Component {
     return (
       <div className="filters-box">
         {(() => {
-          let activeTypes = templates.filter((template) => documentTypes.includes(template._id));
+          let activeTypes = templates.filter((template) => documentTypes.includes(template.get('_id')));
 
           if (documentTypes.length === 0) {
             return <div className="empty-state select-type">
@@ -136,13 +134,31 @@ export class FiltersForm extends Component {
                   <li className="wide">
                     <DateRange
                       model={`.filters.${property.name}`}
-                      fromChange={() => {
+                      onChange={(val) => {
                         this.autoSearch = true;
-                        this.props.activateFilter(property.name, true);
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to));
                       }}
-                      toChange={() => {
+                    />
+                  </li>
+                </ul>
+              </FormGroup>
+              );
+          }
+          if (property.type === 'numeric') {
+            return (
+              <FormGroup key={index}>
+                <ul className={propertyClass}>
+                  <li>
+                    {t(translationContext, property.label)}
+                    {property.required ? <span className="required">*</span> : ''}
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                  </li>
+                  <li className="wide">
+                    <NumericRange
+                      model={`.filters.${property.name}`}
+                      onChange={(val) => {
                         this.autoSearch = true;
-                        this.props.activateFilter(property.name, true);
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to));
                       }}
                     />
                   </li>
@@ -176,7 +192,7 @@ export class FiltersForm extends Component {
 }
 
 FiltersForm.propTypes = {
-  templates: PropTypes.array,
+  templates: PropTypes.object,
   aggregations: PropTypes.object,
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,
@@ -190,8 +206,8 @@ export function mapStateToProps(state) {
   return {
     fields: state.library.filters.get('properties'),
     aggregations: state.library.aggregations,
-    templates: selectTemplates(state),
-    search: selectSearch(state),
+    templates: state.templates,
+    search: state.search,
     documentTypes: state.library.filters.get('documentTypes')
   };
 }
