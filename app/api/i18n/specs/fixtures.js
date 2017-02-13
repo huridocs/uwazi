@@ -30,12 +30,14 @@ export default {
         {
           id: entityTemplateId.toString(),
           label: 'Judge',
-          values: {}
+          values: {},
+          type: 'Entity'
         },
         {
           id: documentTemplateId.toString(),
           label: 'Court order',
-          values: {}
+          values: {},
+          type: 'Document'
         }
       ]
     },

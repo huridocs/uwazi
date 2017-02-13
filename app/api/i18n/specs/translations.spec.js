@@ -1,9 +1,8 @@
-import database from 'api/utils/database.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from '../translations.js';
 
 import {db} from 'api/utils';
-import fixtures from './fixtures.js';
+import fixtures, {entityTemplateId, documentTemplateId} from './fixtures.js';
 
 
 describe('translations', () => {
@@ -69,7 +68,7 @@ describe('translations', () => {
   });
 
   describe('get()', () => {
-    it('should return the translations', (done) => {
+    fit('should return the translations', (done) => {
       translations.get()
       .then((result) => {
         expect(result.length).toBe(2);
@@ -83,15 +82,16 @@ describe('translations', () => {
         expect(result[0].contexts[2].id).toBe('Menu');
         expect(result[0].contexts[2].type).toBe('Uwazi UI');
 
-        expect(result[0].contexts[3].id).toBe('entity_template_id');
+        expect(result[0].contexts[3].id).toBe(entityTemplateId.toString());
         expect(result[0].contexts[3].type).toBe('Entity');
 
-        expect(result[0].contexts[4].id).toBe('document_template_id');
+        expect(result[0].contexts[4].id).toBe(documentTemplateId.toString());
         expect(result[0].contexts[4].type).toBe('Document');
 
         expect(result[1].locale).toBe('es');
         done();
-      }).catch(catchErrors(done));
+      })
+      .catch(catchErrors(done));
     });
   });
 
@@ -106,7 +106,7 @@ describe('translations', () => {
   });
 
   describe('addEntries()', () => {
-    it('should add the new keys to each dictionary in the given contexts', (done) => {
+    fit('should add the new keys to each dictionary in the given contexts', (done) => {
       translations.addEntries([
         {contextId: 'System', key: 'Key', defaultValue: 'default'},
         {contextId: 'System', key: 'Key1', defaultValue: 'default 1'}
@@ -116,11 +116,11 @@ describe('translations', () => {
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts[0].values.Key).toBe('default');
-        expect(result.rows[1].contexts[0].values.Key).toBe('default');
+        expect(result[0].contexts[0].values.Key).toBe('default');
+        expect(result[1].contexts[0].values.Key).toBe('default');
 
-        expect(result.rows[0].contexts[0].values.Key1).toBe('default 1');
-        expect(result.rows[1].contexts[0].values.Key1).toBe('default 1');
+        expect(result[0].contexts[0].values.Key1).toBe('default 1');
+        expect(result[1].contexts[0].values.Key1).toBe('default 1');
         done();
       })
       .catch(catchErrors(done));
@@ -128,15 +128,15 @@ describe('translations', () => {
   });
 
   describe('addEntry()', () => {
-    it('should add the new key to each dictionary in the given context', (done) => {
+    fit('should add the new key to each dictionary in the given context', (done) => {
       translations.addEntry('System', 'Key', 'default')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts[0].values.Key).toBe('default');
-        expect(result.rows[1].contexts[0].values.Key).toBe('default');
+        expect(result[0].contexts[0].values.Key).toBe('default');
+        expect(result[1].contexts[0].values.Key).toBe('default');
         done();
       })
       .catch(catchErrors(done));
@@ -146,7 +146,7 @@ describe('translations', () => {
   describe('addContext()', () => {
     fit('should add a context with his values', (done) => {
       let values = {Name: 'Name', Surname: 'Surname'};
-      translations.addContext('System', 'Judge', values, 'type')
+      translations.addContext('context', 'Judge', values, 'type')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
@@ -163,15 +163,15 @@ describe('translations', () => {
   });
 
   describe('deleteContext()', () => {
-    it('should add a context with his values', (done) => {
+    fit('should add a context with his values', (done) => {
       translations.deleteContext('System')
       .then((result) => {
         expect(result).toBe('ok');
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts.length).toBe(4);
-        expect(result.rows[1].contexts.length).toBe(0);
+        expect(result[0].contexts.length).toBe(4);
+        expect(result[1].contexts.length).toBe(0);
         done();
       })
       .catch(catchErrors(done));
@@ -179,8 +179,8 @@ describe('translations', () => {
   });
 
   describe('updateContext()', () => {
-    it('should add a context with his values', (done) => {
-      let keyNameChanges = {Password: 'Pass', Account: 'Acc', 'System': 'Interface'};
+    fit('should add a context with his values', (done) => {
+      let keyNameChanges = {Password: 'Pass', Account: 'Acc', System: 'Interface'};
       let deletedProperties = ['Age'];
       let context = {Pass: 'Pass', Acc: 'Acc', Email: 'Email', Name: 'Name', Interface: 'Interface'};
 
@@ -190,18 +190,18 @@ describe('translations', () => {
         return translations.get();
       })
       .then((result) => {
-        expect(result.rows[0].contexts[0].label).toBe('Interface');
-        expect(result.rows[0].contexts[0].values.Pass).toBe('Pass');
-        expect(result.rows[0].contexts[0].values.Interface).toBe('Interface');
-        expect(result.rows[1].contexts[0].values.Pass).toBe('Contraseña');
+        expect(result[0].contexts[0].label).toBe('Interface');
+        expect(result[0].contexts[0].values.Pass).toBe('Pass');
+        expect(result[0].contexts[0].values.Interface).toBe('Interface');
+        expect(result[1].contexts[0].values.Pass).toBe('Contraseña');
 
-        expect(result.rows[0].contexts[0].values.Age).not.toBeDefined();
-        expect(result.rows[1].contexts[0].values.Age).not.toBeDefined();
-        expect(result.rows[0].contexts[0].values.System).not.toBeDefined();
-        expect(result.rows[1].contexts[0].values.System).not.toBeDefined();
+        expect(result[0].contexts[0].values.Age).not.toBeDefined();
+        expect(result[1].contexts[0].values.Age).not.toBeDefined();
+        expect(result[0].contexts[0].values.System).not.toBeDefined();
+        expect(result[1].contexts[0].values.System).not.toBeDefined();
 
-        expect(result.rows[0].contexts[0].values.Name).toBe('Name');
-        expect(result.rows[1].contexts[0].values.Name).toBe('Name');
+        expect(result[0].contexts[0].values.Name).toBe('Name');
+        expect(result[1].contexts[0].values.Name).toBe('Name');
         done();
       })
       .catch(catchErrors(done));

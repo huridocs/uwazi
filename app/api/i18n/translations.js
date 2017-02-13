@@ -12,46 +12,23 @@ function addTypeToContexts(contexts) {
   return Promise.all(contexts.map((context) => {
     if (context.id === 'System' || context.id === 'Filters' || context.id === 'Menu') {
       context.type = 'Uwazi UI';
-      return Promise.resolve(context);
     }
 
-    return model.getById(context.id)
-    .then((resp) => {
-      if (resp.json.type === 'template') {
-        context.type = resp.json.isEntity ? 'Entity' : 'Document';
-        return context;
-      }
-
-      if (resp.json.type === 'thesauri') {
-        context.type = 'Dictionary';
-        return context;
-      }
-
-      if (resp.json.type === 'relationtype') { 
-        context.type = 'Connection';
-        return context;
-      }
-
-      context.type = resp.json.type.replace(/\b\w/g, l => l.toUpperCase());
-      return context;
-    });
+    return Promise.resolve(context);
   }));
 }
 
 export default {
   get() {
     return model.get()
-    //.then((response) => {
-      //return Promise.all(response.map((translation) => {
-        //return addTypeToContexts(translation.contexts).then((contexts) => {
-          //translation.contexts = contexts;
-          //return translation;
-        //});
-      //})).then((rows) => {
-        //response.json.rows = rows;
-        //return sanitizeResponse(response.json);
-      //});
-    //});
+    .then((response) => {
+      return Promise.all(response.map((translation) => {
+        return addTypeToContexts(translation.contexts).then((contexts) => {
+          translation.contexts = contexts;
+          return translation;
+        });
+      }));
+    });
   },
 
   save(translation) {
@@ -61,7 +38,7 @@ export default {
   addEntries(entries) {
     return this.get()
     .then((result) => {
-      return Promise.all(result.rows.map((translation) => {
+      return Promise.all(result.map((translation) => {
         entries.forEach(({contextId, key, defaultValue}) => {
           let context = translation.contexts.find((ctx) => ctx.id === contextId);
           context.values[key] = defaultValue;
@@ -77,7 +54,7 @@ export default {
   addEntry(contextId, key, defaultValue) {
     return this.get()
     .then((result) => {
-      return Promise.all(result.rows.map((translation) => {
+      return Promise.all(result.map((translation) => {
         let context = translation.contexts.find((ctx) => ctx.id === contextId);
         context.values[key] = defaultValue;
         return this.save(translation);
@@ -102,10 +79,9 @@ export default {
   },
 
   deleteContext(id) {
-    return request.get(`${dbURL}/_design/translations/_view/all`)
+    return model.get()
     .then((result) => {
-      return Promise.all(result.json.rows.map((row) => {
-        let translation = row.value;
+      return Promise.all(result.map((translation) => {
         translation.contexts = translation.contexts.filter((tr) => tr.id !== id);
         return this.save(translation);
       }));
