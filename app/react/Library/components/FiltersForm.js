@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
-import {createSelector} from 'reselect';
 import {is} from 'immutable';
 
 import {MultiSelect, DateRange, NestedMultiselect, NumericRange} from 'app/ReactReduxForms';
@@ -11,8 +10,6 @@ import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {t} from 'app/I18N';
-
-import {selectTemplates} from 'app/utils/coreSelectors';
 
 export class FiltersForm extends Component {
 
