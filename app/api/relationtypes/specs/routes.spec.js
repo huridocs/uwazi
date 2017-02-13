@@ -12,24 +12,24 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
-    it('should ask relationtypes for all documents', (done) => {
-      spyOn(relationtypes, 'getAll').and.returnValue(mockRequest);
+    fit('should ask relationtypes for all documents', (done) => {
+      spyOn(relationtypes, 'get').and.returnValue(mockRequest);
       routes.get('/api/relationtypes', {query: {}})
       .then((response) => {
-        expect(relationtypes.getAll).toHaveBeenCalled();
-        expect(response).toEqual({relationtypes: 'response'});
+        expect(relationtypes.get).toHaveBeenCalled();
+        expect(response).toEqual({rows: {relationtypes: 'response'}});
         done();
       })
       .catch(catchErrors(done));
     });
 
     describe('when passing id', () => {
-      it('should ask for the specific relationtype', (done) => {
+      fit('should ask for the specific relationtype', (done) => {
         spyOn(relationtypes, 'getById').and.returnValue(mockRequest);
         routes.get('/api/relationtypes', {query: {_id: 'someId'}})
         .then((response) => {
           expect(relationtypes.getById).toHaveBeenCalledWith('someId');
-          expect(response).toEqual({relationtypes: 'response'});
+          expect(response).toEqual({rows: {relationtypes: 'response'}});
           done();
         })
         .catch(catchErrors(done));
@@ -38,11 +38,11 @@ describe('relationtypes routes', () => {
   });
 
   describe('DELETE', () => {
-    it('should delete the relationtype', (done) => {
+    fit('should delete the relationtype', (done) => {
       spyOn(relationtypes, 'delete').and.returnValue(mockRequest);
       routes.delete('/api/relationtypes', {query: {_id: 'someId', _rev: 'latest'}})
       .then((response) => {
-        expect(relationtypes.delete).toHaveBeenCalledWith({_id: 'someId', _rev: 'latest'});
+        expect(relationtypes.delete).toHaveBeenCalledWith('someId');
         expect(response).toEqual({relationtypes: 'response'});
         done();
       })
@@ -51,7 +51,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('POST', () => {
-    it('should save the relationtype', (done) => {
+    fit('should save the relationtype', (done) => {
       spyOn(relationtypes, 'save').and.returnValue(mockRequest);
       routes.post('/api/relationtypes', {body: {name: 'my new template'}})
       .then((response) => {
