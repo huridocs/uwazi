@@ -10,6 +10,8 @@ import MultiDate from './components/MultiDate';
 import MultiDateRange from './components/MultiDateRange';
 import DropdownList from './components/DropdownList';
 import IconSelector from './components/IconSelector';
+import Numeric from './components/Numeric';
+import NumericRange from './components/NumericRange';
 
 export {
   Select,
@@ -20,6 +22,8 @@ export {
   MarkDown,
   Nested,
   NestedMultiselect,
+  Numeric,
+  NumericRange,
   MultiDate,
   MultiDateRange,
   DropdownList,

@@ -37,7 +37,6 @@ export default class Library extends RouteHandler {
     .then((documents) => {
       const state = store.getState();
       const filterState = libraryHelpers.URLQueryToState(query, state.templates.toJS(), state.thesauris.toJS());
-
       return {
         library: {
           documents,

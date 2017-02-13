@@ -14,6 +14,7 @@ export default class DatePicker extends Component {
   }
 
   onChange(value) {
+    this.setState({value});
     if (!value) {
       return this.props.onChange(null);
     }
@@ -23,14 +24,6 @@ export default class DatePicker extends Component {
     }
 
     this.props.onChange(parseInt(value.utc().format('X'), 10));
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.value) {
-      return this.setState({value: moment.utc(newProps.value, 'X')});
-    }
-
-    this.setState({value: null});
   }
 
   render() {

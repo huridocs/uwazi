@@ -11,8 +11,8 @@ describe('DateRange', () => {
   beforeEach(() => {
     props = {
       model: 'model',
-      fromChange: jasmine.createSpy('fromChange'),
-      toChange: jasmine.createSpy('toChange')
+      onChange: jasmine.createSpy('onChange'),
+      value: {from: 0, to: 1}
     };
   });
 
@@ -20,19 +20,13 @@ describe('DateRange', () => {
     component = shallow(<DateRange {...props}/>);
   };
 
-  it('should render two DatePickerField components passing the correct models', () => {
-    render();
-    expect(component.find(DatePicker).at(0).props().model).toBe('model.from');
-    expect(component.find(DatePicker).at(1).props().model).toBe('model.to');
-  });
-
   describe('when a date is selected', () => {
     it('should triger onChange events', () => {
       render();
-      component.find(DatePicker).first().simulate('change', '1469656800');
-      expect(props.fromChange).toHaveBeenCalled();
-      component.find(DatePicker).last().simulate('change', '1469656800');
-      expect(props.toChange).toHaveBeenCalled();
+      component.find(DatePicker).first().simulate('change', 1469656800);
+      expect(props.onChange).toHaveBeenCalledWith({from: 1469656800, to: 1});
+      component.find(DatePicker).last().simulate('change', 1469656800);
+      expect(props.onChange).toHaveBeenCalledWith({from: 1469656800, to: 1469656800});
     });
   });
 });
