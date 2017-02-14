@@ -121,8 +121,8 @@ export default {
     return Promise.all([this.get(), settings.get()])
     .then(([translations, siteSettings]) => {
       let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;
-      return Promise.all(translations.rows.map((translation) => {
-        let context = translation.contexts.find((tr) => tr.id === id);
+      return Promise.all(translations.map((translation) => {
+        let context = translation.contexts.find((tr) => tr.id.toString() === id.toString());
         if (!context) {
           translation.contexts.push({id, label: newContextName, values});
           return this.save(translation);

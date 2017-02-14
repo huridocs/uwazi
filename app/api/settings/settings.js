@@ -1,6 +1,7 @@
 import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import translations from 'api/i18n/translations';
+import model from './settingsModel';
 
 function saveLinksTranslations(newLinks = [], currentLinks = []) {
   let updatedTitles = {};
@@ -51,14 +52,7 @@ function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
 
 export default {
   get() {
-    return request.get(`${dbURL}/_design/settings/_view/all`)
-    .then((result) => {
-      if (result.json.rows.length) {
-        return result.json.rows[0].value;
-      }
-
-      return {};
-    });
+    return model.get().then(settings => settings[0]);
   },
 
   save(settings) {

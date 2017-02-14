@@ -62,7 +62,6 @@ export default {
   settings: [
     {
       _id: db.id(),
-      type: 'settings',
       languages: [
         {
           key: 'es',

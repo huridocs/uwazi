@@ -152,10 +152,10 @@ describe('translations', () => {
         return translations.get();
       })
       .then((result) => {
-        expect(result[0].contexts[5].values).toEqual(values);
-        expect(result[0].contexts[5].type).toEqual('type');
-        expect(result[1].contexts[1].values).toEqual(values);
-        expect(result[1].contexts[1].type).toEqual('type');
+        expect(result.find(t => t.locale === 'en').contexts[5].values).toEqual(values);
+        expect(result.find(t => t.locale === 'en').contexts[5].type).toEqual('type');
+        expect(result.find(t => t.locale === 'es').contexts[1].values).toEqual(values);
+        expect(result.find(t => t.locale === 'es').contexts[1].type).toEqual('type');
         done();
       })
       .catch(catchErrors(done));
@@ -190,18 +190,21 @@ describe('translations', () => {
         return translations.get();
       })
       .then((result) => {
-        expect(result[0].contexts[0].label).toBe('Interface');
-        expect(result[0].contexts[0].values.Pass).toBe('Pass');
-        expect(result[0].contexts[0].values.Interface).toBe('Interface');
-        expect(result[1].contexts[0].values.Pass).toBe('Contraseña');
+        const en = result.find(t => t.locale === 'en');
+        const es = result.find(t => t.locale === 'es');
 
-        expect(result[0].contexts[0].values.Age).not.toBeDefined();
-        expect(result[1].contexts[0].values.Age).not.toBeDefined();
-        expect(result[0].contexts[0].values.System).not.toBeDefined();
-        expect(result[1].contexts[0].values.System).not.toBeDefined();
+        expect(en.contexts[0].label).toBe('Interface');
+        expect(en.contexts[0].values.Pass).toBe('Pass');
+        expect(en.contexts[0].values.Interface).toBe('Interface');
+        expect(es.contexts[0].values.Pass).toBe('Contraseña');
 
-        expect(result[0].contexts[0].values.Name).toBe('Name');
-        expect(result[1].contexts[0].values.Name).toBe('Name');
+        expect(en.contexts[0].values.Age).not.toBeDefined();
+        expect(es.contexts[0].values.Age).not.toBeDefined();
+        expect(en.contexts[0].values.System).not.toBeDefined();
+        expect(es.contexts[0].values.System).not.toBeDefined();
+
+        expect(en.contexts[0].values.Name).toBe('Name');
+        expect(es.contexts[0].values.Name).toBe('Name');
         done();
       })
       .catch(catchErrors(done));
