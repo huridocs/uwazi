@@ -8,7 +8,7 @@ function saveLinksTranslations(newLinks = [], currentLinks = []) {
   let deletedLinks = [];
 
   currentLinks.forEach((link) => {
-    let matchLink = newLinks.find((l) => l.localID === link.localID);
+    let matchLink = newLinks.find((l) => link._id.equals(l._id));
     if (matchLink && matchLink.title !== link.title) {
       updatedTitles[link.title] = matchLink.title;
     }
@@ -52,25 +52,18 @@ function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
 
 export default {
   get() {
-    return model.get().then(settings => settings[0]);
+    return model.get().then(settings => settings[0] || {});
   },
 
   save(settings) {
-    settings.type = 'settings';
-
-    let url = dbURL;
-    if (settings._id) {
-      url = `${dbURL}/_design/settings/_update/partialUpdate/${settings._id}`;
-    }
-
     return this.get()
     .then((currentSettings) => {
-      saveLinksTranslations(settings.links, currentSettings.links)
+      return saveLinksTranslations(settings.links, currentSettings.links)
+      .then(() => saveFiltersTranslations(settings.filters, currentSettings.filters))
       .then(() => {
-          saveFiltersTranslations(settings.filters, currentSettings.filters);
+        settings._id = currentSettings._id;
+        return model.save(settings);
       });
-      return request.post(url, settings);
-    })
-    .then(response => this.get(`${dbURL}/${response.json.id}`));
+    });
   }
 };

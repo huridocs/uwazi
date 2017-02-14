@@ -1,7 +1,9 @@
+import {db} from 'api/utils';
+
 export default {
-  docs: [
+  settings: [
     {
-      _id: '1',
+      _id: db.id(),
       site_name: 'Uwazi'
     }
   ]
