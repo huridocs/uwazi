@@ -30,7 +30,7 @@ describe('Pages Routes', () => {
       expect(routes.post('/api/pages', req)).toNeedAuthorization();
     });
 
-    fit('should create a new document with use user', (done) => {
+    fit('should create a new document with current user', (done) => {
       spyOn(pages, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/pages', req)
       .then((document) => {

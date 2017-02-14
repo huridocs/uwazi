@@ -1,7 +1,4 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import pages from '../pages.js';
-import database from 'api/utils/database.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import {mockID} from 'shared/uniqueID';
 import date from 'api/utils/date.js';
@@ -20,11 +17,6 @@ describe('pages', () => {
   });
 
   describe('save', () => {
-    let getPageInAllLanguages = (sharedId) => {
-      return request.get(`${dbURL}/_design/pages/_view/sharedId?key="${sharedId}"`).then((response) => response.json.rows.map(r => r.value));
-    };
-    let getDocument = (id = '8202c463d6158af8065022d9b50ddccb') => request.get(dbURL + `/${id}`).then(response => response.json);
-
     fit('should create a new document with logged user id and UTC date for each language', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       mockID('sharedid');
