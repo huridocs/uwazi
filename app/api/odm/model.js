@@ -5,7 +5,10 @@ export default (MongooseModel) => {
     save: (data) => {
       if (Array.isArray(data)) {
         let promises = data.map((entry) => {
-          return MongooseModel.findOneAndUpdate({_id: entry._id}, entry, {new: true}).then(saved => saved.toObject());
+          if (entry._id) {
+            return MongooseModel.findOneAndUpdate({_id: entry._id}, entry, {new: true, lean: true});
+          }
+          return MongooseModel.create(entry).then(saved => saved.toObject());
         });
         return Promise.all(promises);
       }
@@ -33,7 +36,7 @@ export default (MongooseModel) => {
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = {_id: condition};
       }
-      return MongooseModel.findOneAndRemove(cond);
+      return MongooseModel.remove(cond);
     }
   };
 };

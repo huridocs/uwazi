@@ -8,11 +8,11 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 describe('Pages Routes', () => {
   let routes;
 
-  beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+  beforeEach(() => {
+    //database.reset_testing_database()
+    //.then(() => database.import(fixtures))
+    //.then(done)
+    //.catch(done.fail);
     routes = instrumentRoutes(pagesRoutes);
   });
 
@@ -21,16 +21,16 @@ describe('Pages Routes', () => {
     beforeEach(() => {
       req = {
         body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        user: {username: 'admin'},
         language: 'lang'
       };
     });
 
-    it('should need authorization', () => {
+    fit('should need authorization', () => {
       expect(routes.post('/api/pages', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with use user', (done) => {
+    fit('should create a new document with use user', (done) => {
       spyOn(pages, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/pages', req)
       .then((document) => {
@@ -43,15 +43,15 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages', () => {
-    it('should ask pages model for the page in the current locale', (done) => {
+    fit('should ask pages model for the page in the current locale', (done) => {
       let req = {
         query: {sharedId: '123'},
         language: 'es'
       };
-      spyOn(pages, 'get').and.returnValue(Promise.resolve('page'));
+      spyOn(pages, 'getById').and.returnValue(Promise.resolve('page'));
       routes.get('/api/pages', req)
       .then((response) => {
-        expect(pages.get).toHaveBeenCalledWith('123', 'es');
+        expect(pages.getById).toHaveBeenCalledWith('123', 'es');
         expect(response).toBe('page');
         done();
       })
@@ -81,7 +81,7 @@ describe('Pages Routes', () => {
       spyOn(pages, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
 
-    it('should use pages to delete it', (done) => {
+    fit('should use pages to delete it', (done) => {
       let req = {query: {_id: 123, _rev: 456, sharedId: '456'}};
       return routes.delete('/api/pages', req)
       .then(() => {
