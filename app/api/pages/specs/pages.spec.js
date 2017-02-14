@@ -3,7 +3,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import {mockID} from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 
-import fixtures from './fixtures.js';
+import fixtures, {pageToUpdate} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('pages', () => {
@@ -55,31 +55,18 @@ describe('pages', () => {
     });
 
     describe('when updating', () => {
-      ffit('should not assign again user and creation date and partial update data', (done) => {
-        spyOn(date, 'currentUTC').and.returnValue('another_date');
+      fit('should not assign again user and creation date and partial update data', (done) => {
+        spyOn(date, 'currentUTC').and.returnValue(10);
 
-        return pages.save({sharedId: 'sharedId', title: 'Edited title'}, 'another_user')
+        return pages.save({_id: pageToUpdate, sharedId: '1', title: 'Edited title'}, 'another_user')
         .then((modifiedDoc) => {
           expect(modifiedDoc.title).toBe('Edited title');
           expect(modifiedDoc.user).not.toBe('another_user');
-          expect(modifiedDoc.creationDate).toBe('1');
+          expect(modifiedDoc.creationDate).toBe(1);
           done();
         })
         .catch(catchErrors(done));
       });
-    });
-  });
-
-  describe('list', () => {
-    it('should return a list of pages for the given language', (done) => {
-      pages.list('es')
-      .then((results) => {
-        expect(results.rows.length).toBe(2);
-        expect(results.rows[0].title).toBe('Batman finishes');
-        expect(results.rows[1].title).toBe('Penguin almost done');
-        done();
-      })
-      .catch(catchErrors(done));
     });
   });
 

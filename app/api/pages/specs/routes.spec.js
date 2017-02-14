@@ -9,10 +9,6 @@ describe('Pages Routes', () => {
   let routes;
 
   beforeEach(() => {
-    //database.reset_testing_database()
-    //.then(() => database.import(fixtures))
-    //.then(done)
-    //.catch(done.fail);
     routes = instrumentRoutes(pagesRoutes);
   });
 
@@ -60,16 +56,16 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages/list', () => {
-    it('return the list from pages passing the keys', (done) => {
+    fit('return the list from pages passing the keys', (done) => {
       let req = {
         language: 'es'
       };
 
-      spyOn(pages, 'list').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(pages, 'get').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.get('/api/pages/list', req)
       .then((document) => {
         expect(document).toBe('document');
-        expect(pages.list).toHaveBeenCalledWith('es');
+        expect(pages.get).toHaveBeenCalledWith({language: 'es'});
         done();
       })
       .catch(catchErrors(done));

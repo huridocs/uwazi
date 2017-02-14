@@ -9,7 +9,7 @@ export default (app) => {
   });
 
   app.get('/api/pages/list', (req, res) => {
-    return pages.list(req.language)
+    return pages.get({language: req.language})
     .then(response => res.json(response))
     .catch(error => res.json({error}));
   });

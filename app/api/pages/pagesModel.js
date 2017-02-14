@@ -5,7 +5,7 @@ const pagesSchema = new mongoose.Schema({
   title: String,
   language: String,
   sharedId: String,
-  creationDate: Number,
+  creationDate: {type: Number},
   metadata: new mongoose.Schema({
     content: String
   }),
