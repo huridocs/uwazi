@@ -56,8 +56,6 @@ export class EntityViewer extends Component {
   // --
 
   render() {
-    console.log(this.props.searchResults.toJS());
-
     const {entity, entityBeingEdited, tab, referenceGroups} = this.props;
     const selectedTab = tab || 'info';
     const attachments = entity.attachments ? entity.attachments : [];

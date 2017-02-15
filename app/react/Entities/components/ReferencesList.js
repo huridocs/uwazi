@@ -10,7 +10,6 @@ import DocumentsList from 'app/Layout/DocumentsList';
 const selectDocuments = createSelector(s => s.entityView.searchResults, d => d.toJS());
 
 export function mapStateToProps(state) {
-  console.log('DOCUMENTS: ', selectDocuments(state));
   return {
     documents: selectDocuments(state),
     filters: Immutable({documentTypes: []}),
@@ -21,7 +20,6 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
-  console.log('MDTP:', ownProps);
   return bindActionCreators({
     loadMoreDocuments: loadMoreReferences,
     searchDocuments: searchReferences.bind(null, ownProps.entity.sharedId)

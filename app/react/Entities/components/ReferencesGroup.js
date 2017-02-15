@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {is, fromJS as Immutable} from 'immutable';
 
@@ -7,6 +8,8 @@ import ShowIf from 'app/App/ShowIf';
 import {Item} from 'app/Layout';
 import {t, I18NLink} from 'app/I18N';
 import {advancedSort} from 'app/utils/advancedSort';
+
+import {setFilter} from '../actions/actions';
 
 export class ReferencesGroup extends Component {
 
@@ -18,6 +21,7 @@ export class ReferencesGroup extends Component {
     const {group} = this.props;
     const selectedItems = !this.state.selected ? group.get('templates').map(i => group.get('key') + i.get('_id')) : Immutable([]);
 
+    this.setGroupFilter(selectedItems);
     this.setState({selected: !this.state.selected, selectedItems});
   }
 
@@ -35,7 +39,14 @@ export class ReferencesGroup extends Component {
       groupSelected = selectedItems.size === this.props.group.get('templates').size;
     }
 
+    this.setGroupFilter(selectedItems);
     this.setState({selectedItems, selected: groupSelected});
+  }
+
+  setGroupFilter(selectedItems) {
+    const newFilter = {};
+    newFilter[this.props.group.get('key')] = selectedItems;
+    this.props.setFilter(newFilter);
   }
 
   componentWillMount() {
@@ -147,11 +158,19 @@ export class ReferencesGroup extends Component {
 ReferencesGroup.propTypes = {
   group: PropTypes.object,
   deleteReference: PropTypes.func,
-  sort: PropTypes.object
+  setFilter: PropTypes.func,
+  sort: PropTypes.object,
+  filter: PropTypes.object
 };
 
 export const mapStateToProps = ({entityView}) => {
-  return {sort: Immutable(entityView.sort)};
+  return {sort: Immutable(entityView.sort), filter: entityView.filter};
 };
 
-export default connect(mapStateToProps)(ReferencesGroup);
+export const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    setFilter
+  }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ReferencesGroup);
