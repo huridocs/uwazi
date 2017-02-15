@@ -5,7 +5,8 @@ export default function () {
       include: [ 'title', 'icon', 'processed', 'creationDate', 'template', 'metadata', 'type', 'sharedId', 'toc', 'attachments', 'language']
     },
     from: 0,
-    size: 30,
+    // Change back to 30!!!
+    size: 5,
     query: {
       bool: {
         must: [{match: {published: true}}]

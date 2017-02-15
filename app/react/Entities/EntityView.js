@@ -19,13 +19,21 @@ export default class Entity extends RouteHandler {
     return Promise.all([
       entitiesAPI.get(entityId),
       referencesAPI.getGroupedByConnection(entityId),
+      // TEST!!!
+      referencesAPI.search(entityId),
+      // -----
       relationTypesAPI.get()
     ])
-    .then(([entities, referenceGroups, relationTypes]) => {
+    .then(([entities, referenceGroups, searchResults, relationTypes]) => {
+      console.log('En static:', searchResults);
       return {
         entityView: {
           entity: entities[0],
           referenceGroups: referenceGroups,
+          // TEST!!!
+          searchResults,
+          filters: {},
+          // -------
           sort: prioritySortingCriteria(
             // {
             //   currentCriteria: {},
@@ -46,6 +54,10 @@ export default class Entity extends RouteHandler {
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
     this.context.store.dispatch(actions.unset('entityView/referenceGroups'));
+    // TEST!!!
+    this.context.store.dispatch(actions.unset('entityView/searchResults'));
+    this.context.store.dispatch(actions.unset('entityView/filters'));
+    this.context.store.dispatch(actions.unset('entityView.sort'));
   }
 
   // TEST!
@@ -53,6 +65,8 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
     this.context.store.dispatch(actions.set('entityView/referenceGroups', state.entityView.referenceGroups));
+    this.context.store.dispatch(actions.set('entityView/searchResults', state.entityView.searchResults));
+    this.context.store.dispatch(actions.set('entityView/filters', state.entityView.filters));
     this.context.store.dispatch(formActions.merge('entityView.sort', state.entityView.sort));
   }
   // ---

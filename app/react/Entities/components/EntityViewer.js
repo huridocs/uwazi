@@ -22,6 +22,8 @@ import SortButtons from 'app/Library/components/SortButtons';
 import ReferencesGroup from './ReferencesGroup';
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
+
+import ReferencesList from './ReferencesList';
 import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 
 export class EntityViewer extends Component {
@@ -54,8 +56,10 @@ export class EntityViewer extends Component {
   // --
 
   render() {
+    console.log(this.props.searchResults.toJS());
+
     const {entity, entityBeingEdited, tab, referenceGroups} = this.props;
-    const selectedTab = tab || 'references';
+    const selectedTab = tab || 'info';
     const attachments = entity.attachments ? entity.attachments : [];
 
     const summary = referenceGroups.reduce((summaryData, g) => {
@@ -81,6 +85,12 @@ export class EntityViewer extends Component {
                 }}>
             <ul className="nav nav-tabs">
               <li>
+                <TabLink to="info">
+                  <i className="fa fa-info-circle"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                </TabLink>
+              </li>
+              <li>
                 <TabLink to="references">
                   <i className="fa fa-exchange"></i>
                   <span className="connectionsNumber">{summary.totalReferences}</span>
@@ -99,21 +109,31 @@ export class EntityViewer extends Component {
         </div>
 
         <aside className="side-panel entity-metadata">
-          <MetadataFormButtons
-            delete={this.deleteEntity.bind(this)}
-            data={this.props.rawEntity}
-            formStatePath='entityView.entityForm'
-            entityBeingEdited={entityBeingEdited}/>
+          <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
+            <MetadataFormButtons
+              delete={this.deleteEntity.bind(this)}
+              data={this.props.rawEntity}
+              formStatePath='entityView.entityForm'
+              entityBeingEdited={entityBeingEdited}
+            />
+          </ShowIf>
 
           <div className="sidepanel-body">
-            <div className="document">
-              {(() => {
-                if (entityBeingEdited) {
-                  return <EntityForm/>;
-                }
-                return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
-              })()}
-            </div>
+            <Tabs selectedTab={selectedTab}>
+              <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
+                <div className="document">
+                  {(() => {
+                    if (entityBeingEdited) {
+                      return <EntityForm/>;
+                    }
+                    return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
+                  })()}
+                </div>
+              </TabContent>
+              <TabContent for="references">
+                <ReferencesList entity={this.props.entity} />
+              </TabContent>
+            </Tabs>
           </div>
         </aside>
 
@@ -140,7 +160,7 @@ export class EntityViewer extends Component {
 
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
-              <TabContent for="references">
+              <TabContent for={selectedTab === 'info' || selectedTab === 'references' ? selectedTab : 'none'}>
                 <div className="sort-by">
                   <SortButtons stateProperty="entityView.sort"
                                selectedTemplates={Immutable(summary.referencesTemplates)} />
@@ -176,6 +196,7 @@ EntityViewer.propTypes = {
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
   referenceGroups: PropTypes.object,
+  searchResults: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
@@ -218,6 +239,7 @@ const mapStateToProps = (state) => {
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
     referenceGroups: state.entityView.referenceGroups,
+    searchResults: state.entityView.searchResults,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab')
   };

@@ -51,3 +51,34 @@ export function deleteReference(reference) {
     });
   };
 }
+
+// TEST!!!
+export function searchReferences(entityId) {
+  console.log('----------------------------------');
+  console.log('entityId:', entityId);
+  // console.log('limit:', limit);
+
+  return function (dispatch, getState) {
+    const entityView = getState().entityView;
+    // console.log('entityView:', entityView);
+    const sort = entityView.sort;
+    // console.log('sort:', sort);
+    const filters = entityView.filters;
+    // console.log('filters:', filters.toJS());
+    const options = filters.merge(sort);
+    // console.log('options:', options.toJS());
+    // console.log('----------------------------------');
+    return refenrecesAPI.search(entityId, options.toJS())
+    .then(results => {
+      dispatch(actions.set('entityView/searchResults', results));
+    });
+  };
+}
+
+export function loadMoreReferences(limit) {
+  return function (dispatch, getState) {
+    const entityView = getState().entityView;
+    dispatch(actions.set('entityView/filters', entityView.filters.set('limit', limit)));
+    searchReferences(entityView.entity.get('sharedId'))(dispatch, getState);
+  };
+}
