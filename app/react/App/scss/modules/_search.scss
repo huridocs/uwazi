@@ -713,7 +713,9 @@ label.multiselectItem-label {
 /* react-datepicker overwrites */
 
 .DatePicker__From,
-.DatePicker__To {
+.DatePicker__To,
+.Numeric__From,
+.Numeric__To {
   position: relative;
   float: left;
   width: 100%;
@@ -731,20 +733,27 @@ label.multiselectItem-label {
     color: $c-grey-dark;
     padding-left: 10px;
   }
-  .react-datepicker__input-container {
+  & > div {
     width: 100%;
     z-index: 1;
-    input {
-      cursor: pointer;
-      padding-left: 60px;
-      padding-right: 0;
-      background: transparent;
-    }
+  }
+  input {
+    padding-left: 60px;
+    padding-right: 0;
+    background: transparent;
+  }
+}
+
+.DatePicker__From,
+.DatePicker__To {
+  input {
+    cursor: pointer;
   }
 }
 
 @media(min-width: 454px) {
-  .DatePicker__From {
+  .DatePicker__From,
+  .Numeric__From {
     margin-right: 2%; 
   }
 }
