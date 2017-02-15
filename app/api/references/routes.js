@@ -37,16 +37,26 @@ export default app => {
     setTimeout(() => {
       references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
       .then(groups => {
+        const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
+
+        const anyFilteredGroups = Object.keys(filter).reduce((filteredGroups, key) => {
+          return Boolean(filter[key].length) || filteredGroups;
+        }, false);
+
         const entityIds = groups.reduce((ids, group) => {
-          return group.templates.reduce((refs, t) => refs.concat(t.refs.map(r => r.connectedDocument)), ids);
+          return group.templates.reduce((referenceIds, template) => {
+            let usefulRefs = template.refs;
+
+            if (anyFilteredGroups) {
+              usefulRefs = usefulRefs.filter(() => filter[group.key] && filter[group.key].includes(group.key + template._id));
+            }
+
+            return referenceIds.concat(usefulRefs.map(r => r.connectedDocument));
+          }, ids);
         }, []);
 
-
-        req.query.ids = entityIds;
+        req.query.ids = entityIds.length ? entityIds : ['no_results'];
         req.query.includeUnpublished = true;
-
-        // req.query.order = 'desc';
-        // req.query.sort = 'creationDate';
 
         search.search(req.query, req.language)
         .then(results => res.json(results));
