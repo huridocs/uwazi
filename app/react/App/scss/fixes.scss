@@ -2,14 +2,6 @@
 @import "../../App/scss/config/_materials.scss";
 @import "../../App/scss/config/_typography.scss";
 
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding-top: 54px;
-  overflow: hidden;
-}
-
 header {
   width: 100%;
 }
