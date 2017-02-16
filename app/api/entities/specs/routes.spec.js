@@ -1,42 +1,47 @@
 import documentRoutes from '../routes.js';
 import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import templates from '../../templates/templates';
 import thesauris from '../../thesauris/thesauris';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
+import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
+import {db} from 'api/utils';
+
 describe('entities', () => {
   let routes;
 
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
     routes = instrumentRoutes(documentRoutes);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('POST', () => {
     let req;
     beforeEach(() => {
       req = {
-        body: {title: 'Batman begins', template: 'template'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        body: {title: 'Batman begins', template: templateId},
+        user: {username: 'admin'},
         language: 'lang',
         io: {sockets: {emit: () => {}}}
       };
     });
 
-    it('should need authorization', () => {
+    fit('should need authorization', () => {
       expect(routes.post('/api/entities', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with use user', (done) => {
+    fit('should create a new document with current user', (done) => {
       spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
+
       routes.post('/api/entities', req)
       .then((document) => {
         expect(document).toBe('document');
@@ -45,7 +50,7 @@ describe('entities', () => {
       });
     });
 
-    it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
+    fit('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
       req = {
         body: {title: 'Batman begins', template: 'template'},
         user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
@@ -71,8 +76,8 @@ describe('entities', () => {
   });
 
   describe('GET', () => {
-    it('should return matching document', (done) => {
-      spyOn(entities, 'get').and.returnValue(Promise.resolve('result'));
+    fit('should return matching document', (done) => {
+      spyOn(entities, 'getById').and.returnValue(Promise.resolve('result'));
       let req = {
         query: {_id: 'id'},
         language: 'lang'
@@ -80,7 +85,7 @@ describe('entities', () => {
 
       routes.get('/api/entities', req)
       .then((response) => {
-        expect(entities.get).toHaveBeenCalledWith('id', 'lang');
+        expect(entities.getById).toHaveBeenCalledWith('id', 'lang');
         expect(response).toBe('result');
         done();
       })
@@ -89,7 +94,7 @@ describe('entities', () => {
   });
 
   describe('/api/entities/count_by_template', () => {
-    it('should return count of entities using a specific template', (done) => {
+    fit('should return count of entities using a specific template', (done) => {
       spyOn(entities, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
       let req = {query: {templateId: 'templateId'}};
 
@@ -108,7 +113,7 @@ describe('entities', () => {
       spyOn(entities, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
 
-    it('should use entities to delete it', (done) => {
+    fit('should use entities to delete it', (done) => {
       let req = {query: {sharedId: 123, _rev: 456}};
       return routes.delete('/api/entities', req)
       .then(() => {

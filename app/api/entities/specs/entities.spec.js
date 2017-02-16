@@ -1,35 +1,40 @@
 import {db_url as dbURL} from 'api/config/database.js';
 import entities from '../entities.js';
 import database from 'api/utils/database.js';
-import fixtures from './fixtures.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import references from 'api/references';
 
+import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
+import {db} from 'api/utils';
+
 describe('entities', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('save', () => {
     let getDocuments = () => request.get(dbURL + '/_design/entities/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
-      spyOn(date, 'currentUTC').and.returnValue('universal time');
+    fit('should create a new entity for each language in settings with a language property and a shared id', (done) => {
+      const universal_time = 1;
+      spyOn(date, 'currentUTC').and.returnValue(universal_time);
       let doc = {title: 'Batman begins'};
-      let user = {_id: 'user Id'};
+      let user = {username: 'username'};
 
       entities.save(doc, {user, language: 'es'})
-      .then(entities.get)
+      .then(() => entities.get())
       .then((docs) => {
         let createdDocumentEs = docs.find((d) => d.title === 'Batman begins' && d.language === 'es');
         let createdDocumentEn = docs.find((d) => d.title === 'Batman begins' && d.language === 'en');
@@ -38,24 +43,23 @@ describe('entities', () => {
 
         expect(createdDocumentEs.title).toBe(doc.title);
         expect(createdDocumentEs.user).toEqual(user);
-        expect(createdDocumentEs.creationDate).toEqual('universal time');
+        expect(createdDocumentEs.creationDate).toEqual(universal_time);
 
         expect(createdDocumentEn.title).toBe(doc.title);
         expect(createdDocumentEn.user).toEqual(user);
-        expect(createdDocumentEn.creationDate).toEqual('universal time');
+        expect(createdDocumentEn.creationDate).toEqual(universal_time);
         done();
       })
       .catch(catchErrors(done));
     });
 
-    it('should return the newly created document for the passed language', (done) => {
+    fit('should return the newly created document for the passed language', (done) => {
       let doc = {title: 'the dark knight', fullText: 'the full text!'};
-      let user = {_id: 'user Id'};
+      let user = {username: 'username'};
 
       entities.save(doc, {user, language: 'en'})
       .then((createdDocument) => {
         expect(createdDocument._id).toBeDefined();
-        expect(createdDocument._rev).toBeDefined();
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user).toEqual(user);
         expect(createdDocument.language).toEqual('en');
@@ -65,36 +69,37 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    it('should index the newly created documents', (done) => {
+    fit('should index the newly created documents', (done) => {
       let doc = {title: 'the dark knight'};
       let user = {_id: 'user Id'};
 
       entities.save(doc, {user, language: 'en'})
       .then(() => {
-        expect(search.index).toHaveBeenCalled();
+        expect(search.index.calls.all()[0].args[0].language).toBe('es');
+        expect(search.index.calls.all()[1].args[0].language).toBe('pt');
+        expect(search.index.calls.all()[2].args[0].language).toBe('en');
         done();
       })
       .catch(catchErrors(done));
     });
 
     describe('when other languages have no metadata', () => {
-      it('should replicate metadata being saved', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared',
-                   metadata: {text: 'newMetadata'}, template: 'c08ef2532f0bd008ac5174b45e033c93'};
+      fit('should replicate metadata being saved', (done) => {
+        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {text: 'newMetadata'}, template: templateId};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
           expect(updatedDoc.language).toBe('en');
           return Promise.all([
-            entities.get('shared', 'es'),
-            entities.get('shared', 'en'),
-            entities.get('shared', 'pt')
+            entities.getById('shared', 'es'),
+            entities.getById('shared', 'en'),
+            entities.getById('shared', 'pt')
           ]);
         })
         .then(([docES, docEN, docPT]) => {
-          expect(docEN.rows[0].metadata.text).toBe('newMetadata');
-          expect(docES.rows[0].metadata.text).toBe('newMetadata');
-          expect(docPT.rows[0].metadata).toEqual({test: 'test'});
+          expect(docEN.metadata.text).toBe('newMetadata');
+          expect(docES.metadata.text).toBe('newMetadata');
+          expect(docPT.metadata.text).toBe('test');
           done();
         })
         .catch(catchErrors(done));
@@ -102,31 +107,30 @@ describe('entities', () => {
     });
 
     describe('when published/template property changes', () => {
-      it('should replicate the change for all the languages', (done) => {
-        let doc = {_id: '8202c463d6158af8065022d9b5014a18', sharedId: 'shared', metadata: {},
-                   published: false, template: 'c08ef2532f0bd008ac5174b45e033c93'};
+      fit('should replicate the change for all the languages', (done) => {
+        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateId};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
           expect(updatedDoc.language).toBe('en');
           return Promise.all([
-            entities.get('shared', 'es'),
-            entities.get('shared', 'en')
+            entities.getById('shared', 'es'),
+            entities.getById('shared', 'en')
           ]);
         })
         .then(([docES, docEN]) => {
-          expect(docES.rows[0].published).toBe(false);
-          expect(docES.rows[0].template).toBe('c08ef2532f0bd008ac5174b45e033c93');
-          expect(docEN.rows[0].published).toBe(false);
-          expect(docEN.rows[0].template).toBe('c08ef2532f0bd008ac5174b45e033c93');
+          expect(docES.published).toBe(false);
+          expect(docES.template.equals(templateId)).toBe(true);
+          expect(docEN.published).toBe(false);
+          expect(docEN.template.equals(templateId)).toBe(true);
           done();
         })
         .catch(catchErrors(done));
       });
     });
 
-    it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
-      let doc = {_id: '8202c463d6158af8065022d9b5014a19', sharedId: 'shared1', template: 'c08ef2532f0bd008ac5174b45e033c93', metadata: {
+    fit('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
+      let doc = {_id: syncPropertiesEntityId, sharedId: 'shared1', template: templateId, metadata: {
         text: 'changedText',
         select: 'select',
         multiselect: 'multiselect',
@@ -139,80 +143,60 @@ describe('entities', () => {
       .then((updatedDoc) => {
         expect(updatedDoc.language).toBe('en');
         return Promise.all([
-          entities.get('shared1', 'en'),
-          entities.get('shared1', 'es'),
-          entities.get('shared1', 'pt')
+          entities.getById('shared1', 'en'),
+          entities.getById('shared1', 'es'),
+          entities.getById('shared1', 'pt')
         ]);
       })
       .then(([docEN, docES, docPT]) => {
-        expect(docEN.rows[0].metadata.text).toBe('changedText');
-        expect(docEN.rows[0].metadata.select).toBe('select');
-        expect(docEN.rows[0].metadata.multiselect).toBe('multiselect');
-        expect(docEN.rows[0].metadata.date).toBe('date');
-        expect(docEN.rows[0].metadata.multidate).toBe('multidate');
-        expect(docEN.rows[0].metadata.multidaterange).toBe('multidaterange');
+        expect(docEN.metadata.text).toBe('changedText');
+        expect(docEN.metadata.select).toBe('select');
+        expect(docEN.metadata.multiselect).toBe('multiselect');
+        expect(docEN.metadata.date).toBe('date');
+        expect(docEN.metadata.multidate).toBe('multidate');
+        expect(docEN.metadata.multidaterange).toBe('multidaterange');
 
-        expect(docES.rows[0].metadata.text).toBe('text');
-        expect(docES.rows[0].metadata.select).toBe('select');
-        expect(docES.rows[0].metadata.multiselect).toBe('multiselect');
-        expect(docES.rows[0].metadata.date).toBe('date');
-        expect(docES.rows[0].metadata.multidate).toBe('multidate');
-        expect(docES.rows[0].metadata.multidaterange).toBe('multidaterange');
+        expect(docES.metadata.text).toBe('text');
+        expect(docES.metadata.select).toBe('select');
+        expect(docES.metadata.multiselect).toBe('multiselect');
+        expect(docES.metadata.date).toBe('date');
+        expect(docES.metadata.multidate).toBe('multidate');
+        expect(docES.metadata.multidaterange).toBe('multidaterange');
 
-        expect(docPT.rows[0].metadata.text).toBe('text');
-        expect(docPT.rows[0].metadata.select).toBe('select');
-        expect(docPT.rows[0].metadata.multiselect).toBe('multiselect');
-        expect(docPT.rows[0].metadata.date).toBe('date');
-        expect(docPT.rows[0].metadata.multidate).toBe('multidate');
-        expect(docPT.rows[0].metadata.multidaterange).toBe('multidaterange');
+        expect(docPT.metadata.text).toBe('text');
+        expect(docPT.metadata.select).toBe('select');
+        expect(docPT.metadata.multiselect).toBe('multiselect');
+        expect(docPT.metadata.date).toBe('date');
+        expect(docPT.metadata.multidate).toBe('multidate');
+        expect(docPT.metadata.multidaterange).toBe('multidaterange');
         done();
       })
       .catch(catchErrors(done));
     });
 
-    it('should saveEntityBasedReferences', (done) => {
-      spyOn(date, 'currentUTC').and.returnValue('universal time');
+    fit('should saveEntityBasedReferences', (done) => {
+      spyOn(date, 'currentUTC').and.returnValue(1);
       let doc = {title: 'Batman begins'};
-      let user = {_id: 'user Id'};
+      let user = {username: 'username'};
 
       entities.save(doc, {user, language: 'es'})
       .then(() => {
         expect(references.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
         expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
-        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._rev).toBeDefined();
         done();
       })
       .catch(catchErrors(done));
     });
 
     describe('when document have _id', () => {
-      it('should not assign again user and creation date', (done) => {
-        spyOn(date, 'currentUTC').and.returnValue('another_date');
-        getDocument()
+      fit('should not assign again user and creation date', (done) => {
+        spyOn(date, 'currentUTC').and.returnValue(10);
+        let modifiedDoc = {_id: batmanFinishesId, sharedId: 'shared'};
+        return entities.save(modifiedDoc, {user: 'another_user', language: 'en'})
+        .then(() => entities.getById('shared', 'en'))
         .then((doc) => {
-          let modifiedDoc = {_id: doc._id, _rev: doc._rev, sharedId: doc.sharedId, language: doc.language, template: doc.template};
-          return entities.save(modifiedDoc, {user: 'another_user', language: 'en'});
-        })
-        .then(getDocuments)
-        .then((docs) => {
-          let modifiedDoc = docs.find((d) => d.title === 'Penguin almost done');
-          expect(modifiedDoc.user).not.toBe('another_user');
-          expect(modifiedDoc.creationDate).not.toBe('another_date');
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should be able to partially update it', (done) => {
-        getDocument()
-        .then((doc) => {
-          let modifiedDoc = {_id: doc._id, _rev: doc._rev, test: 'test', sharedId: doc.sharedId, language: doc.language};
-          return entities.save(modifiedDoc, {language: 'es'});
-        })
-        .then(getDocuments)
-        .then((docs) => {
-          let modifiedDoc = docs.find((d) => d.title === 'Penguin almost done');
-          expect(modifiedDoc.test).toBe('test');
+          expect(doc.user).not.toBe('another_user');
+          expect(doc.creationDate).not.toBe(10);
           done();
         })
         .catch(catchErrors(done));
@@ -221,33 +205,34 @@ describe('entities', () => {
   });
 
   describe('get', () => {
-    it('should return matching document for language', (done) => {
-      let id = 'sharedId';
+    fit('should return matching documents for the conditions', (done) => {
+      let sharedId = 'shared1';
 
       Promise.all([
-        entities.get(id, 'en'),
-        entities.get(id, 'es')
+        entities.get({sharedId, language: 'en'}),
+        entities.get({sharedId, language: 'es'}),
       ])
       .then(([enDoc, esDoc]) => {
-        expect(enDoc.rows[0].title).toBe('doc1 english');
-        expect(esDoc.rows[0].title).toBe('doc1 spanish');
+        expect(enDoc[0].title).toBe('EN');
+        expect(esDoc[0].title).toBe('ES');
         done();
       })
       .catch(catchErrors(done));
     });
   });
+
   describe('countByTemplate', () => {
-    it('should return how many entities using the template passed', (done) => {
-      entities.countByTemplate('template1')
+    fit('should return how many entities using the template passed', (done) => {
+      entities.countByTemplate(templateId)
       .then((count) => {
-        expect(count).toBe(3);
+        expect(count).toBe(4);
         done();
       })
       .catch(done.fail);
     });
 
-    it('should return 0 when no count found', (done) => {
-      entities.countByTemplate('newTemplate')
+    fit('should return 0 when no count found', (done) => {
+      entities.countByTemplate(db.id())
       .then((count) => {
         expect(count).toBe(0);
         done();
@@ -257,18 +242,19 @@ describe('entities', () => {
   });
 
   describe('getByTemplate', () => {
-    it('should return all entities with passed template and language', (done) => {
-      entities.getByTemplate('template1', 'en')
+    fit('should return all entities with passed template and language', (done) => {
+      entities.getByTemplate(templateId, 'en')
       .then((docs) => {
         expect(docs.length).toBe(2);
-        expect(docs[0].title).toBe('doc1 english');
-        expect(docs[1].title).toBe('doc2');
+        expect(docs[0].title).toBe('Batman finishes');
+        expect(docs[1].title).toBe('EN');
         done();
       })
       .catch(done.fail);
     });
   });
 
+  /// not used right now but it needs to be improved and used
   describe('updateMetadataProperties', () => {
     let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/entities/_view/metadata_by_template?key="' + template + '"')
     .then((response) => {
@@ -314,71 +300,36 @@ describe('entities', () => {
   });
 
   describe('delete', () => {
-    it('should delete the document in the database', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
+    fit('should delete the document in the database', (done) => {
+      entities.delete('shared')
+      .then(() => entities.get({sharedId: 'shared'}))
       .then((response) => {
-        return entities.delete(response.json.sharedId);
-      })
-      .then((deletedDocuments) => {
-        return request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`);
-      })
-      .then(done.fail)
-      .catch((error) => {
-        expect(error.json.error).toBe('not_found');
-        expect(error.json.reason).toBe('deleted');
-        return request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`);
-      })
-      .then(done.fail)
-      .catch((error) => {
-        expect(error.json.error).toBe('not_found');
-        expect(error.json.reason).toBe('deleted');
+        expect(response.length).toBe(0);
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
-    it('should delete the document from the search', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      .then((response) => {
-        return entities.delete(response.json.sharedId);
-      })
+    fit('should delete the document from the search', (done) => {
+      return entities.delete('shared')
       .then(() => {
         const argumnets = search.delete.calls.allArgs();
         expect(search.delete).toHaveBeenCalled();
-        expect(argumnets[0][0]._id).toBe('8202c463d6158af8065022d9b5014a18');
+        expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
-    it('should delete the document references', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      .then((response) => {
-        return entities.delete(response.json.sharedId);
-      })
-      .then(() => {
-        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
-      })
-      .then(done.fail)
-      .catch((error) => {
-        expect(error.json.error).toBe('not_found');
-        expect(error.json.reason).toBe('deleted');
+    fit('should delete the document references', (done) => {
+      return entities.delete('shared')
+      .then(() => references.get())
+      .then((refs) => {
+        expect(refs.length).toBe(1);
+        expect(refs[0].title).toBe('reference3');
         done();
-      });
-    });
-
-    it('should delete references to the document', (done) => {
-      request.get(`${dbURL}/8202c463d6158af8065022d9b5014a18`)
-      .then((response) => {
-        return entities.delete(response.json.sharedId);
       })
-      .then(() => {
-        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`);
-      })
-      .then(done.fail)
-      .catch((error) => {
-        expect(error.json.error).toBe('not_found');
-        expect(error.json.reason).toBe('deleted');
-        done();
-      });
+      .catch(catchErrors(done));
     });
   });
 });

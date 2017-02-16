@@ -15,12 +15,14 @@ const entitySchema = new mongoose.Schema({
     filename: String
   }],
   creationDate: Number,
-  fullText: String,
+  fullText: {type: String, select: false},
   processed: Boolean,
   uploaded: Boolean,
   published: Boolean,
-  metadata: mongoose.Schema.Types.Mixed
-  //user is still missing missing
+  metadata: mongoose.Schema.Types.Mixed,
+  user: {
+    username: String
+  }
 });
 
 let Model = mongoose.model('entities', entitySchema);

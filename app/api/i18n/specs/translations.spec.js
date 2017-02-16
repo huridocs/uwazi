@@ -7,7 +7,7 @@ import fixtures, {entityTemplateId, documentTemplateId} from './fixtures.js';
 
 describe('translations', () => {
   beforeEach((done) => {
-    db.clearAndLoad(fixtures, (err) => {
+    db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
         done.fail(err);
       }

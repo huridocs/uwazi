@@ -4,15 +4,15 @@ import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils'
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import sanitizeResponse from '../utils/sanitizeResponse';
-import references from '../references/references.js';
 import settings from '../settings';
+import references from '../references';
 import templates from '../templates';
 import ID from 'shared/uniqueID';
+
 import model from './entitiesModel';
 
 export default {
   save(doc, {user, language}) {
-    doc.type = doc.type || 'entity';
     if (!doc.sharedId) {
       doc.user = user;
       doc.creationDate = date.currentUTC();
@@ -29,8 +29,8 @@ export default {
         .then(([docLanguages, templateResult]) => {
           const template = templateResult || {properties: []};
           const toSyncProperties = template.properties.filter(p => p.type.match('select|multiselect|date|multidate|multidaterange')).map(p => p.name);
-          const docs = docLanguages.rows.map((d) => {
-            if (d._id === doc._id) {
+          const docs = docLanguages.map((d) => {
+            if (d._id.equals(doc._id)) {
               return doc;
             }
             if (!d.metadata) {
@@ -45,8 +45,7 @@ export default {
           });
 
           return Promise.all(docs.map(d => {
-            return request.post(dbURL + '/_design/entities/_update/partialUpdate/' + d._id, d)
-            .then(() => this.getById(d._id))
+            return model.save(d)
             .then((_d) => {
               return search.index(_d);
             });
@@ -60,22 +59,20 @@ export default {
         langDoc.sharedId = sharedId;
         return langDoc;
       });
-      return request.post(`${dbURL}/_bulk_docs`, {docs})
-      .then(() => Promise.all(docs.map((d) => search.index(d))));
+
+      return model.save(docs).then(() => Promise.all(docs.map((d) => search.index(d))));
     })
-    .then(() => this.get(sharedId, language))
+    .then(() => this.getById(sharedId, language))
     .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response.rows[0], language)]);
+      return Promise.all([response, references.saveEntityBasedReferences(response, language)]);
     })
-    .then(([response]) => {
-      let entity = response.rows[0];
-      delete entity.fullText;
+    .then(([entity]) => {
       return entity;
     });
   },
 
-  get(sharedId, language) {
-    return model.get({sharedId, language});
+  get(query) {
+    return model.get(query);
   },
 
   getById(sharedId, language) {
@@ -90,21 +87,12 @@ export default {
     });
   },
 
-  getAllLanguages(id) {
-    return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="${id}"`)
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    });
+  getAllLanguages(sharedId) {
+    return model.get({sharedId});
   },
 
-  countByTemplate(templateId) {
-    return request.get(`${dbURL}/_design/entities/_view/count_by_template?group_level=1&key="${templateId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
+  countByTemplate(template) {
+    return model.count({template});
   },
 
   getByTemplate(template, language) {
@@ -132,33 +120,20 @@ export default {
     });
   },
 
-  delete(id) {
-    let docsToDelete = [];
-    let docs = [];
-    return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="${id}"`)
-    .then((response) => {
-      docs = sanitizeResponse(response.json).rows;
-      docs.forEach((doc) => docsToDelete.push({_id: doc._id, _rev: doc._rev}));
-      return request.get(`${dbURL}/_design/references/_view/by_source?key="${id}"`);
+  delete(sharedId) {
+    return this.get({sharedId})
+    .then((docs) => {
+      return Promise.all([
+        model.delete({sharedId}),
+        references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]})
+      ])
+      .then(() => docs);
     })
-    .then((response) => {
-      sanitizeResponse(response.json);
-      docsToDelete = docsToDelete.concat(response.json.rows);
-      return request.get(`${dbURL}/_design/references/_view/by_target?key="${id}"`);
-    })
-    .then((response) => {
-      sanitizeResponse(response.json);
-      docsToDelete = docsToDelete.concat(response.json.rows);
-      docsToDelete.map((doc) => doc._deleted = true);
-      return request.post(`${dbURL}/_bulk_docs`, {docs: docsToDelete});
-    })
-    .then(() => {
+    .then((docs) => {
       return Promise.all(docs.map((doc) => {
         return search.delete(doc);
-      }));
-    })
-    .then(() => {
-      return docs;
+      }))
+      .then(() => docs);
     });
   }
 };

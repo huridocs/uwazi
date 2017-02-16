@@ -42,9 +42,9 @@ export default {
       let connections = response.map((connection) => normalizeConnection(connection, id));
       let requestDocuments = [];
       connections.forEach((connection) => {
-        let promise = entities.get(connection.connectedDocument, language)
+        let promise = entities.getById(connection.connectedDocument, language)
         .then((connectedDocument) => {
-          normalizeConnectedDocumentData(connection, connectedDocument[0]);
+          normalizeConnectedDocumentData(connection, connectedDocument);
         });
         requestDocuments.push(promise);
       });
