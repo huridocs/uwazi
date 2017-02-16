@@ -1,0 +1,9 @@
+#app {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: $header-height;
+  overflow: hidden;
+}
