@@ -21,7 +21,7 @@ export default class DateRange extends Component {
     return (
         <div>
           <div className="DatePicker__From">
-            <span>{t('System', 'Label date "From"', 'Form:')}&nbsp;</span>
+            <span>{t('System', 'Label date "From"', 'From:')}&nbsp;</span>
               <DatePicker value={this.state.from} onChange={(val) => this.onChange('from', val)}/>
           </div>
           <div className="DatePicker__To">
