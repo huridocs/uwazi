@@ -17,7 +17,7 @@ describe('pages', () => {
   });
 
   describe('save', () => {
-    fit('should create a new document with logged user id and UTC date for each language', (done) => {
+    it('should create a new document with logged user id and UTC date for each language', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       mockID('sharedid');
 

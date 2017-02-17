@@ -8,17 +8,16 @@ import entities from '../entities';
 
 export default {
   save(doc, params) {
-    doc.type = 'document';
-    if (doc.toc) {
-      doc.toc = doc.toc.map((tocEntry) => {
-        if (!tocEntry._id) {
-          tocEntry._id = uniqueID();
-        }
+    //if (doc.toc) {
+      //doc.toc = doc.toc.map((tocEntry) => {
+        //if (!tocEntry._id) {
+          //tocEntry._id = uniqueID();
+        //}
 
-        return tocEntry;
-      });
-    }
-    
+        //return tocEntry;
+      //});
+    //}
+
     return entities.save(doc, params);
   },
 
@@ -34,22 +33,12 @@ export default {
   },
   //
 
-  get: (id, language) => {
-    return entities.get(id, language)
-    .then((doc) => {
-      delete doc.rows[0].fullText;
-      return doc;
-    });
+  get(query) {
+    return entities.get(query);
   },
 
-  getUploadsByUser(user) {
-    let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"&descending=true`;
-
-    return request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
-      return response.json;
-    });
+  getById(sharedId, language) {
+    return entities.getById(sharedId, language);
   },
 
   countByTemplate(templateId) {
@@ -119,11 +108,12 @@ export default {
   },
 
   deleteFiles(deletedDocs) {
-    let filesToDelete = deletedDocs.map((doc) => {
+    let filesToDelete = deletedDocs
+    .filter(d => d.file)
+    .map((doc) => {
       return `./uploaded_documents/${doc.file.filename}`;
     });
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
-
     return deleteFiles(filesToDelete);
   },
 

@@ -40,14 +40,14 @@ jasmine.loadConfig({
   ]
 });
 
-jasmine.addReporter(new SpecReporter({
-  spec: {
-    //displayStacktrace: 'summary',
-    displaySuccessful: verbose,
-    displayFailedSpec: true,
-    displaySpecDuration: true
-  }
-}));
+//jasmine.addReporter(new SpecReporter({
+  //spec: {
+    ////displayStacktrace: 'summary',
+    //displaySuccessful: verbose,
+    //displayFailedSpec: true,
+    //displaySpecDuration: true
+  //}
+//}));
 
 mongoose.connect('mongodb://localhost/uwazi_testing');
 var db = mongoose.connection;

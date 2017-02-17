@@ -35,12 +35,6 @@ export default (app) => {
     .then(results => res.json(results));
   });
 
-  app.get('/api/documents/uploads', needsAuthorization, (req, res) => {
-    documents.getUploadsByUser(req.user)
-    .then(response => res.json(response))
-    .catch(error => res.json({error: error}));
-  });
-
   app.get('/api/documents', (req, res) => {
     let id;
 

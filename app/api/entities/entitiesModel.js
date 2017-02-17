@@ -10,6 +10,14 @@ const entitySchema = new mongoose.Schema({
     originalname: String,
     filename: String
   },
+  toc: [{
+    label: String,
+    indentation: Number,
+    range: {
+      start: Number,
+      end: Number
+    }
+  }],
   attachments: [{
     originalname: String,
     filename: String
