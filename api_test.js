@@ -40,22 +40,20 @@ jasmine.loadConfig({
   ]
 });
 
-//jasmine.addReporter(new SpecReporter({
-  //spec: {
-    ////displayStacktrace: 'summary',
-    //displaySuccessful: verbose,
-    //displayFailedSpec: true,
-    //displaySpecDuration: true
-  //}
-//}));
+jasmine.addReporter(new SpecReporter({
+  spec: {
+    //displayStacktrace: 'summary',
+    displaySuccessful: verbose,
+    displayFailedSpec: true,
+    displaySpecDuration: true
+  }
+}));
 
 mongoose.connect('mongodb://localhost/uwazi_testing');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
   mongoose.connection.db.dropDatabase(function () {
-    exec('./couchdb/restore_views.sh uwazi_testing', function () {
-      jasmine.execute();
-    }).stdout.pipe(process.stdout);
+    jasmine.execute();
   });
 });
