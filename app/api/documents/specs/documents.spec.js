@@ -12,7 +12,7 @@ import documents from '../documents.js';
 import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
 import {db} from 'api/utils';
 
-describe('documents', () => {
+fdescribe('documents', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
@@ -26,9 +26,9 @@ describe('documents', () => {
     });
   });
 
-  describe('get', () => {
+  fdescribe('get', () => {
     describe('when passing query', () => {
-      fit('should return matching document', (done) => {
+      it('should return matching document', (done) => {
         documents.get({sharedId: 'shared'})
         .then((docs) => {
           expect(docs[1].title).toBe('Penguin almost done');
@@ -41,8 +41,8 @@ describe('documents', () => {
     });
   });
 
-  describe('save', () => {
-    fit('should call entities.save', (done) => {
+  fdescribe('save', () => {
+    it('should call entities.save', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
       let doc = {title: 'Batman begins'};
       let user = {username: 'username'};
@@ -57,7 +57,7 @@ describe('documents', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should assign unique ids to toc entries', (done) => {
+    it('should assign unique ids to toc entries', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       let doc = {title: 'Batman begins', toc: [{}, {}]};
       let user = {username: 'username'};
@@ -90,16 +90,10 @@ describe('documents', () => {
     });
 
     fit('should delete the original file', (done) => {
-      documents.delete('id')
+      documents.delete('shared')
       .then(() => {
-        try {
-          //expect(true).toBe(true);
-          //expect(true).toEqual(false);
-          //expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
-        }
-        catch(e) {
-          done.fail(e);
-        }
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
         done();
       })
       .catch(catchErrors(done));

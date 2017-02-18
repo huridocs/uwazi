@@ -2,22 +2,11 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import fs from 'fs';
-import uniqueID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
 import entities from '../entities';
 
 export default {
   save(doc, params) {
-    //if (doc.toc) {
-      //doc.toc = doc.toc.map((tocEntry) => {
-        //if (!tocEntry._id) {
-          //tocEntry._id = uniqueID();
-        //}
-
-        //return tocEntry;
-      //});
-    //}
-
     return entities.save(doc, params);
   },
 
