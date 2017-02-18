@@ -22,11 +22,11 @@ describe('Pages Routes', () => {
       };
     });
 
-    fit('should need authorization', () => {
+    it('should need authorization', () => {
       expect(routes.post('/api/pages', req)).toNeedAuthorization();
     });
 
-    fit('should create a new document with current user', (done) => {
+    it('should create a new document with current user', (done) => {
       spyOn(pages, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/pages', req)
       .then((document) => {
@@ -39,7 +39,7 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages', () => {
-    fit('should ask pages model for the page in the current locale', (done) => {
+    it('should ask pages model for the page in the current locale', (done) => {
       let req = {
         query: {sharedId: '123'},
         language: 'es'
@@ -56,7 +56,7 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages/list', () => {
-    fit('return the list from pages passing the keys', (done) => {
+    it('return the list from pages passing the keys', (done) => {
       let req = {
         language: 'es'
       };
@@ -77,7 +77,7 @@ describe('Pages Routes', () => {
       spyOn(pages, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
 
-    fit('should use pages to delete it', (done) => {
+    it('should use pages to delete it', (done) => {
       let req = {query: {_id: 123, _rev: 456, sharedId: '456'}};
       return routes.delete('/api/pages', req)
       .then(() => {

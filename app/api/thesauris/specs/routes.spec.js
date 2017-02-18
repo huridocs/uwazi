@@ -24,7 +24,7 @@ describe('thesauris routes', () => {
   });
 
   describe('GET', () => {
-    fit('should return all thesauris by default', (done) => {
+    it('should return all thesauris by default', (done) => {
       spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
       routes.get('/api/thesauris', {language: 'es'})
       .then((response) => {
@@ -36,7 +36,7 @@ describe('thesauris routes', () => {
     });
 
     describe('when passing id', () => {
-      fit('should get passing id', (done) => {
+      it('should get passing id', (done) => {
         spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
         let req = {query: {_id: 'id'}};
 
@@ -50,7 +50,7 @@ describe('thesauris routes', () => {
     });
 
     describe('dictionaries', () => {
-      fit('should return all dictionaries by default', (done) => {
+      it('should return all dictionaries by default', (done) => {
         spyOn(thesauris, 'dictionaries').and.returnValue(Promise.resolve('response'));
         routes.get('/api/dictionaries')
         .then((response) => {
@@ -61,7 +61,7 @@ describe('thesauris routes', () => {
         .catch(catchErrors(done));
       });
       describe('when passing id', () => {
-        fit('should get matching id', (done) => {
+        it('should get matching id', (done) => {
           spyOn(thesauris, 'dictionaries').and.returnValue(Promise.resolve('response'));
           routes.get('/api/dictionaries', {query: {_id: 'id'}})
           .then((response) => {
@@ -76,7 +76,7 @@ describe('thesauris routes', () => {
   });
 
   describe('DELETE', () => {
-    fit('should delete a thesauri', (done) => {
+    it('should delete a thesauri', (done) => {
       spyOn(thesauris, 'delete').and.returnValue(Promise.resolve());
       let req = {query: {_id: 'abc', _rev: '123'}};
       return routes.delete('/api/thesauris', req)
@@ -89,7 +89,7 @@ describe('thesauris routes', () => {
   });
 
   describe('POST', () => {
-    fit('should create a thesauri', (done) => {
+    it('should create a thesauri', (done) => {
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       let req = {body: {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]}};
       routes.post('/api/thesauris', req)

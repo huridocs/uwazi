@@ -20,7 +20,7 @@ describe('relationtypes', () => {
   });
 
   describe('get()', () => {
-    fit('should return all the relationtypes in the database', (done) => {
+    it('should return all the relationtypes in the database', (done) => {
       relationtypes.get()
       .then((result) => {
         expect(result.length).toBe(3);
@@ -32,7 +32,7 @@ describe('relationtypes', () => {
   });
 
   describe('getById()', () => {
-    fit('should return the relationtype with the id', (done) => {
+    it('should return the relationtype with the id', (done) => {
       relationtypes.getById(against)
       .then((result) => {
         expect(result.name).toBe('Against');
@@ -49,7 +49,7 @@ describe('relationtypes', () => {
     });
 
     describe('when the relation type did not exist', () => {
-      fit('should create a new one and return it', (done) => {
+      it('should create a new one and return it', (done) => {
         relationtypes.save({name: 'Indiferent'})
         .then((result) => {
           expect(result.name).toBe('Indiferent');
@@ -58,7 +58,7 @@ describe('relationtypes', () => {
         .catch(catchErrors(done));
       });
 
-      fit('should create a new translation for it', (done) => {
+      it('should create a new translation for it', (done) => {
         relationtypes.save({name: 'Indiferent'})
         .then((response) => {
           expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'}, 'Connection');
@@ -68,7 +68,7 @@ describe('relationtypes', () => {
     });
 
     describe('when the relation type exists', () => {
-      fit('should update it', (done) => {
+      it('should update it', (done) => {
         relationtypes.getById(against)
         .then((relationtype) => {
           relationtype.name = 'Not that Against';
@@ -81,7 +81,7 @@ describe('relationtypes', () => {
         .catch(catchErrors(done));
       });
 
-      fit('should update the translation for it', (done) => {
+      it('should update the translation for it', (done) => {
         relationtypes.getById(against)
         .then((relationtype) => {
           relationtype.name = 'Pro';
@@ -96,7 +96,7 @@ describe('relationtypes', () => {
     });
 
     describe('when its duplicated', () => {
-      fit('should return an error', (done) => {
+      it('should return an error', (done) => {
         let relationtype = {name: 'Against'};
         return relationtypes.save(relationtype)
         .then(catchErrors(done))
@@ -112,7 +112,7 @@ describe('relationtypes', () => {
         spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
       });
 
-      fit('should remove it from the database and return true', (done) => {
+      it('should remove it from the database and return true', (done) => {
         relationtypes.delete(against)
         .then((result) => {
           expect(result).toBe(true);
@@ -124,7 +124,7 @@ describe('relationtypes', () => {
         });
       });
 
-      fit('should remove the translation', (done) => {
+      it('should remove the translation', (done) => {
         relationtypes.delete(against)
         .then(() => {
           expect(translations.deleteContext).toHaveBeenCalledWith(against);
@@ -132,7 +132,7 @@ describe('relationtypes', () => {
         });
       });
 
-      fit('when its been used should not delete it and return false', (done) => {
+      it('when its been used should not delete it and return false', (done) => {
         relationtypes.delete(canNotBeDeleted)
         .then((result) => {
           expect(result).toBe(false);

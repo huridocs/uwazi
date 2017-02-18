@@ -22,8 +22,8 @@ export default {
   },
   //
 
-  get(query) {
-    return entities.get(query);
+  get(query, select) {
+    return entities.get(query, select);
   },
 
   getById(sharedId, language) {

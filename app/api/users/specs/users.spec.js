@@ -20,7 +20,7 @@ describe('Users', () => {
   });
 
   describe('update', () => {
-    fit('should update user matching id', (done) => {
+    it('should update user matching id', (done) => {
       return users.update({_id: userId, password: 'new_password'})
       .then(() => users.getById(userId))
       .then(user => {
@@ -38,7 +38,7 @@ describe('Users', () => {
       spyOn(mailer, 'send');
     });
 
-    fit('should find the matching email create a recover password doc in the database and send an email', (done) => {
+    it('should find the matching email create a recover password doc in the database and send an email', (done) => {
       spyOn(Date, 'now').and.returnValue(1000);
       const key = SHA256('test@email.com' + 1000).toString();
       users.recoverPassword('test@email.com', 'domain')
@@ -61,7 +61,7 @@ describe('Users', () => {
     });
 
     describe('when the user does not exist with that email', () => {
-      fit('should do nothing', (done) => {
+      it('should do nothing', (done) => {
         spyOn(Date, 'now').and.returnValue(1000);
         let key = SHA256('false@email.com' + 1000).toString();
         users.recoverPassword('false@email.com')
@@ -78,7 +78,7 @@ describe('Users', () => {
   });
 
   describe('resetPassword', () => {
-    fit('should reset the password for the user based on the provided key', (done) => {
+    it('should reset the password for the user based on the provided key', (done) => {
       users.resetPassword({key: expectedKey, password: '1234'})
       .then(() => users.getById(recoveryUserId))
       .then(user => {
@@ -88,7 +88,7 @@ describe('Users', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the resetPassword', (done) => {
+    it('should delete the resetPassword', (done) => {
       users.resetPassword({key: expectedKey, password: '1234'})
       .then(() => passwordRecoveriesModel.get({key: expectedKey}))
       .then(response => {

@@ -27,7 +27,7 @@ describe('entities', () => {
     let getDocuments = () => request.get(dbURL + '/_design/entities/_view/all').then((response) => response.json.rows.map(r => r.value));
     let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
 
-    fit('should create a new entity for each language in settings with a language property and a shared id', (done) => {
+    it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
       const universal_time = 1;
       spyOn(date, 'currentUTC').and.returnValue(universal_time);
       let doc = {title: 'Batman begins'};
@@ -53,7 +53,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should return the newly created document for the passed language', (done) => {
+    it('should return the newly created document for the passed language', (done) => {
       let doc = {title: 'the dark knight', fullText: 'the full text!'};
       let user = {username: 'username'};
 
@@ -69,7 +69,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should index the newly created documents', (done) => {
+    it('should index the newly created documents', (done) => {
       let doc = {title: 'the dark knight'};
       let user = {_id: 'user Id'};
 
@@ -84,7 +84,7 @@ describe('entities', () => {
     });
 
     describe('when other languages have no metadata', () => {
-      fit('should replicate metadata being saved', (done) => {
+      it('should replicate metadata being saved', (done) => {
         let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {text: 'newMetadata'}, template: templateId};
 
         entities.save(doc, {language: 'en'})
@@ -107,7 +107,7 @@ describe('entities', () => {
     });
 
     describe('when published/template property changes', () => {
-      fit('should replicate the change for all the languages', (done) => {
+      it('should replicate the change for all the languages', (done) => {
         let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateId};
 
         entities.save(doc, {language: 'en'})
@@ -129,7 +129,7 @@ describe('entities', () => {
       });
     });
 
-    fit('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
+    it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
       let doc = {_id: syncPropertiesEntityId, sharedId: 'shared1', template: templateId, metadata: {
         text: 'changedText',
         select: 'select',
@@ -174,7 +174,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should saveEntityBasedReferences', (done) => {
+    it('should saveEntityBasedReferences', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       let doc = {title: 'Batman begins'};
       let user = {username: 'username'};
@@ -189,7 +189,7 @@ describe('entities', () => {
     });
 
     describe('when document have _id', () => {
-      fit('should not assign again user and creation date', (done) => {
+      it('should not assign again user and creation date', (done) => {
         spyOn(date, 'currentUTC').and.returnValue(10);
         let modifiedDoc = {_id: batmanFinishesId, sharedId: 'shared'};
         return entities.save(modifiedDoc, {user: 'another_user', language: 'en'})
@@ -205,7 +205,7 @@ describe('entities', () => {
   });
 
   describe('get', () => {
-    fit('should return matching documents for the conditions', (done) => {
+    it('should return matching documents for the conditions', (done) => {
       let sharedId = 'shared1';
 
       Promise.all([
@@ -222,7 +222,7 @@ describe('entities', () => {
   });
 
   describe('countByTemplate', () => {
-    fit('should return how many entities using the template passed', (done) => {
+    it('should return how many entities using the template passed', (done) => {
       entities.countByTemplate(templateId)
       .then((count) => {
         expect(count).toBe(4);
@@ -231,7 +231,7 @@ describe('entities', () => {
       .catch(done.fail);
     });
 
-    fit('should return 0 when no count found', (done) => {
+    it('should return 0 when no count found', (done) => {
       entities.countByTemplate(db.id())
       .then((count) => {
         expect(count).toBe(0);
@@ -242,7 +242,7 @@ describe('entities', () => {
   });
 
   describe('getByTemplate', () => {
-    fit('should return all entities with passed template and language', (done) => {
+    it('should return all entities with passed template and language', (done) => {
       entities.getByTemplate(templateId, 'en')
       .then((docs) => {
         expect(docs.length).toBe(2);
@@ -300,7 +300,7 @@ describe('entities', () => {
   });
 
   describe('delete', () => {
-    fit('should delete the document in the database', (done) => {
+    it('should delete the document in the database', (done) => {
       entities.delete('shared')
       .then(() => entities.get({sharedId: 'shared'}))
       .then((response) => {
@@ -310,7 +310,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the document from the search', (done) => {
+    it('should delete the document from the search', (done) => {
       return entities.delete('shared')
       .then(() => {
         const argumnets = search.delete.calls.allArgs();
@@ -321,7 +321,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the document references', (done) => {
+    it('should delete the document references', (done) => {
       return entities.delete('shared')
       .then(() => references.get())
       .then((refs) => {

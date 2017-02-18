@@ -1,13 +1,15 @@
 import uploadRoutes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import {db_url as dbURL} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
+import documents from 'api/documents';
 import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
+
+import {db} from 'api/utils';
+import fixtures from './fixtures.js';
 
 describe('upload routes', () => {
   let routes;
@@ -32,29 +34,31 @@ describe('upload routes', () => {
             size: 171411271};
     req = {language: 'es', user: 'admin', headers: {}, body: {document: 'id'}, files: [file], io};
 
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
-  describe('POST/upload', () => {
+  fdescribe('POST/upload', () => {
     //temporary test for the conversion, probably this will go on another
     it('should process the document after upload', (done) => {
       routes.post('/api/upload', req)
       .then(() => {
         setTimeout(() => {
-          return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="id"`)
+          return documents.get({sharedId: 'id'}, '+fullText')
           .then((docs) => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
-            expect(docs.json.rows[0].value.processed).toBe(true);
-            expect(docs.json.rows[0].value.fullText).toMatch(/Test file/);
-            expect(docs.json.rows[0].value.language).toBe('en');
+            expect(docs[1].processed).toBe(true);
+            expect(docs[1].fullText).toMatch(/Test file/);
+            expect(docs[1].language).toBe('en');
 
-            expect(docs.json.rows[1].value.processed).toBe(true);
-            expect(docs.json.rows[1].value.fullText).toMatch(/Test file/);
-            expect(docs.json.rows[1].value.language).toBe('es');
+            expect(docs[0].processed).toBe(true);
+            expect(docs[0].fullText).toMatch(/Test file/);
+            expect(docs[0].language).toBe('es');
             done();
           })
           .catch(catchErrors(done));

@@ -1,7 +1,3 @@
-import {db_url as dbURL} from 'api/config/database.js';
-import request from 'shared/JSONRequest';
-import database from 'api/utils/database.js';
-
 import translations from 'api/i18n/translations';
 import settings from '../settings.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -21,9 +17,7 @@ describe('settings', () => {
   });
 
   describe('save()', () => {
-    let getSettings = () => request.get(dbURL + '/_design/settings/_view/all').then((response) => response.json.rows.map(r => r.value));
-
-    fit('should save the settings', (done) => {
+    it('should save the settings', (done) => {
       let config = {site_name: 'My collection'};
       settings.save(config)
       .then(() => {
@@ -36,7 +30,7 @@ describe('settings', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should return the newly created document', (done) => {
+    it('should return the newly created document', (done) => {
       let config = {site_name: 'New settings'};
 
       settings.save(config)
@@ -48,7 +42,7 @@ describe('settings', () => {
     });
 
     describe('when has links', () => {
-      fit('should create a translation context for the links', (done) => {
+      it('should create a translation context for the links', (done) => {
         let config = {site_name: 'My collection', links: [{title: 'Page one'}]};
         settings.save(config)
         .then(() => {
@@ -58,7 +52,7 @@ describe('settings', () => {
       });
 
       describe('updating the links', () => {
-        fit('should update the translation context for the links', (done) => {
+        it('should update the translation context for the links', (done) => {
           let config = {site_name: 'My collection', links: [{title: 'Page one'}, {title: 'Page two'}]};
           settings.save(config)
           .then((savedConfig) => {
@@ -76,7 +70,7 @@ describe('settings', () => {
     });
 
     describe('when there are filter groups', () => {
-      fit('should create translations for them', (done) => {
+      it('should create translations for them', (done) => {
         let config = {site_name: 'My collection', filters: [{id: 1, name: 'Judge'}, {id: 2, name: 'Documents', items: [{id: 3, name: 'Cause'}]}]};
         settings.save(config)
         .then(() => {
@@ -86,7 +80,7 @@ describe('settings', () => {
         .catch(catchErrors(done));
       });
 
-      fit('should update them', (done) => {
+      it('should update them', (done) => {
         let config = {site_name: 'My collection', filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Documents', items: []}, {id: '3', name: 'Files', items: []}]};
         settings.save(config)
         .then(() => {
@@ -108,7 +102,7 @@ describe('settings', () => {
 
   describe('get()', () => {
     describe('if there is no settings on the DB', () => {
-      fit('should return an empty object', (done) => {
+      it('should return an empty object', (done) => {
         db.clear(['settings'], () => {
           settings.get()
           .then((result) => {

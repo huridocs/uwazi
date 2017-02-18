@@ -71,8 +71,8 @@ export default {
     });
   },
 
-  get(query) {
-    return model.get(query);
+  get(query, select) {
+    return model.get(query, select);
   },
 
   getById(sharedId, language) {
@@ -80,7 +80,7 @@ export default {
   },
 
   saveMultiple(docs) {
-    return request.post(`${dbURL}/_bulk_docs`, {docs})
+    return model.save(docs)
     .then((response) => {
       Promise.all(docs.map((d) => search.index(d)));
       return response;
@@ -97,28 +97,24 @@ export default {
 
   getByTemplate(template, language) {
     return model.get({template, language});
-    return request.get(`${dbURL}/_design/entities/_view/by_template`, {key: [templateId, language]})
-    .then((response) => {
-      return sanitizeResponse(response.json).rows;
-    });
   },
 
-  updateMetadataProperties(templateId, nameMatches, deleteProperties) {
-    return request.get(`${dbURL}/_design/entities/_view/metadata_by_template?key="${templateId}"`)
-    .then((response) => {
-      let entities = response.json.rows.map((r) => r.value);
-      entities = updateMetadataNames(entities, nameMatches);
-      entities = deleteMetadataProperties(entities, deleteProperties);
+  //updateMetadataProperties(templateId, nameMatches, deleteProperties) {
+    //return request.get(`${dbURL}/_design/entities/_view/metadata_by_template?key="${templateId}"`)
+    //.then((response) => {
+      //let entities = response.json.rows.map((r) => r.value);
+      //entities = updateMetadataNames(entities, nameMatches);
+      //entities = deleteMetadataProperties(entities, deleteProperties);
 
-      let updates = [];
-      entities.forEach((entity) => {
-        let url = `${dbURL}/_design/entities/_update/partialUpdate/${entity._id}`;
-        updates.push(request.post(url, entity));
-      });
+      //let updates = [];
+      //entities.forEach((entity) => {
+        //let url = `${dbURL}/_design/entities/_update/partialUpdate/${entity._id}`;
+        //updates.push(request.post(url, entity));
+      //});
 
-      return Promise.all(updates);
-    });
-  },
+      //return Promise.all(updates);
+    //});
+  //},
 
   delete(sharedId) {
     return this.get({sharedId})

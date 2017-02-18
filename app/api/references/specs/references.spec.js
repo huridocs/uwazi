@@ -15,7 +15,7 @@ describe('references', () => {
   });
 
   describe('get()', () => {
-    fit('should return all the references', (done) => {
+    it('should return all the references', (done) => {
       references.get()
       .then((result) => {
         expect(result.length).toBe(9);
@@ -27,7 +27,7 @@ describe('references', () => {
 
   describe('saveEntityBasedReferences', () => {
     describe('when entity has no template', () => {
-      fit('should return a resolved promise', (done) => {
+      it('should return a resolved promise', (done) => {
         const entity = {_id: 'id_testing'};
         references.saveEntityBasedReferences(entity)
         .then((refs) => {
@@ -40,7 +40,7 @@ describe('references', () => {
       });
     });
 
-    fit('should create references for each option on selects/multiselects using entities ' +
+    it('should create references for each option on selects/multiselects using entities ' +
        '(not affecting document references or inbound refences)', (done) => {
       const entity = {
         _id: 'id_testing',
@@ -71,7 +71,7 @@ describe('references', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should not attempt to create references for missing properties', (done) => {
+    it('should not attempt to create references for missing properties', (done) => {
       const entity = {
         _id: 'id_testing',
         sharedId: 'entity_id',
@@ -93,7 +93,7 @@ describe('references', () => {
     });
 
     describe('when a select value changes', () => {
-      fit('should update the references properly', (done) => {
+      it('should update the references properly', (done) => {
         const entity = {
           _id: 'id_testing',
           sharedId: 'entity_id',
@@ -133,7 +133,7 @@ describe('references', () => {
   });
 
   describe('getByDocument()', () => {
-    fit('should return all the references of a document', (done) => {
+    it('should return all the references of a document', (done) => {
       references.getByDocument('source2', 'es')
       .then((result) => {
         expect(result.length).toBe(4);
@@ -186,7 +186,7 @@ describe('references', () => {
   });
 
   describe('getByTarget()', () => {
-    fit('should return all the references with specific target document', (done) => {
+    it('should return all the references with specific target document', (done) => {
       references.getByTarget('target')
       .then((result) => {
         expect(result.length).toBe(2);
@@ -198,7 +198,7 @@ describe('references', () => {
   });
 
   describe('countByRelationType()', () => {
-    fit('should return number of references using a relationType', (done) => {
+    it('should return number of references using a relationType', (done) => {
       references.countByRelationType('relation2')
       .then((result) => {
         expect(result).toBe(2);
@@ -206,7 +206,7 @@ describe('references', () => {
       }).catch(catchErrors(done));
     });
 
-    fit('should return zero when none is using it', (done) => {
+    it('should return zero when none is using it', (done) => {
       references.countByRelationType('not_used_relation')
       .then((result) => {
         expect(result).toBe(0);
@@ -217,7 +217,7 @@ describe('references', () => {
 
   describe('save()', () => {
     describe('when the reference did not exist', () => {
-      fit('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
+      it('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
         references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: {text: 'range'}, targetRange: {text: 'text'}}, 'es')
         .then((result) => {
           expect(result.sourceDocument).toBe('sourceDoc');
@@ -238,7 +238,7 @@ describe('references', () => {
     });
 
     describe('when the reference exists', () => {
-      fit('should update it', (done) => {
+      it('should update it', (done) => {
         references.getById(sourceDocument)
         .then((reference) => {
           reference.sourceDocument = 'source1';
@@ -255,7 +255,7 @@ describe('references', () => {
   });
 
   describe('delete()', () => {
-    fit('should delete the reference', (done) => {
+    it('should delete the reference', (done) => {
       return references.delete(sourceDocument)
       .then(() => {
         return references.getById(sourceDocument);
@@ -268,7 +268,7 @@ describe('references', () => {
   });
 
   describe('deleteTextReferences()', () => {
-    fit('should delete the entity text references (that match language)', (done) => {
+    it('should delete the entity text references (that match language)', (done) => {
       references.deleteTextReferences('source2', 'es')
       .then(() => {
         return references.getByDocument('source2', 'es');

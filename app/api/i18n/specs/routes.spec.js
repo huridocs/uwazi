@@ -12,7 +12,7 @@ describe('i18n translations routes', () => {
   });
 
   describe('GET', () => {
-    fit('should return the translations', (done) => {
+    it('should return the translations', (done) => {
       spyOn(translations, 'get').and.returnValue(mockRequest);
       routes.get('/api/translations')
       .then((response) => {
@@ -25,7 +25,7 @@ describe('i18n translations routes', () => {
   });
 
   describe('POST', () => {
-    fit('should save the translation', (done) => {
+    it('should save the translation', (done) => {
       spyOn(translations, 'save').and.returnValue(mockRequest);
       routes.post('/api/translations', {body: {key: 'my new key'}})
       .then((response) => {
@@ -38,7 +38,7 @@ describe('i18n translations routes', () => {
   });
 
   describe('POST addentry', () => {
-    fit('should add entry to a translation context', (done) => {
+    it('should add entry to a translation context', (done) => {
       spyOn(translations, 'addEntry').and.returnValue(mockRequest);
       routes.post('/api/translations/addentry', {body: {context: 'System', key: 'Search', value: 'Buscar'}})
       .then((response) => {

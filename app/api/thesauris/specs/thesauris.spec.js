@@ -24,7 +24,7 @@ describe('thesauris', () => {
   });
 
   describe('get()', () => {
-    fit('should return all thesauris including entity templates as options', (done) => {
+    it('should return all thesauris including entity templates as options', (done) => {
       thesauris.get(null, 'es')
       .then((dictionaties) => {
         expect(dictionaties[0].name).toBe('dictionary');
@@ -36,7 +36,7 @@ describe('thesauris', () => {
       .catch(catchErrors(done));
     });
 
-    fdescribe('when passing id', () => {
+    describe('when passing id', () => {
       it('should return matching thesauri', (done) => {
         thesauris.get(dictionaryId)
         .then((response) => {
@@ -51,7 +51,7 @@ describe('thesauris', () => {
   });
 
   describe('dictionaries()', () => {
-    fit('should return all dictionaries', (done) => {
+    it('should return all dictionaries', (done) => {
       thesauris.dictionaries()
       .then((dictionaties) => {
         expect(dictionaties.length).toBe(3);
@@ -64,7 +64,7 @@ describe('thesauris', () => {
     });
 
     describe('when passing a query', () => {
-      fit('should return matching thesauri', (done) => {
+      it('should return matching thesauri', (done) => {
         thesauris.dictionaries({_id: dictionaryId})
         .then((response) => {
           expect(response.length).toBe(1);
@@ -85,7 +85,7 @@ describe('thesauris', () => {
       spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
     });
 
-    fit('should delete a thesauri', (done) => {
+    it('should delete a thesauri', (done) => {
       return thesauris.delete(dictionaryId)
       .then((response) => {
         expect(response.ok).toBe(true);
@@ -98,7 +98,7 @@ describe('thesauris', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the translation', (done) => {
+    it('should delete the translation', (done) => {
       thesauris.delete(dictionaryId)
       .then((response) => {
         expect(response.ok).toBe(true);
@@ -109,7 +109,7 @@ describe('thesauris', () => {
     });
 
     describe('when the dictionary is in use', () => {
-      fit('should return an error in the response', (done) => {
+      it('should return an error in the response', (done) => {
         templatesCountSpy.and.returnValue(Promise.resolve(1));
         thesauris.delete(dictionaryId)
         .then(catchErrors(done))
@@ -126,7 +126,7 @@ describe('thesauris', () => {
       spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
     });
 
-    fit('should create a thesauri', (done) => {
+    it('should create a thesauri', (done) => {
       let _id = db.id();
       let data = {name: 'Batman wish list', values: [{_id, id: '1', label: 'Joker BFF'}]};
 
@@ -138,7 +138,7 @@ describe('thesauris', () => {
      .catch(catchErrors(done));
     });
 
-    fit('should create a translation context', (done) => {
+    it('should create a translation context', (done) => {
       let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       thesauris.save(data)
@@ -158,7 +158,7 @@ describe('thesauris', () => {
       .catch(done.fail);
     });
 
-    fit('should set a default value of [] to values property if its missing', (done) => {
+    it('should set a default value of [] to values property if its missing', (done) => {
       let data = {name: 'Scarecrow nightmares'};
 
       thesauris.save(data)
@@ -178,7 +178,7 @@ describe('thesauris', () => {
     });
 
     describe('when passing _id', () => {
-      fit('should edit an existing one', (done) => {
+      it('should edit an existing one', (done) => {
         spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
         let data = {_id: dictionaryId, name: 'changed name'};
         return thesauris.save(data)
@@ -190,7 +190,7 @@ describe('thesauris', () => {
         .catch(catchErrors(done));
       });
 
-      fit('should update the translation', (done) => {
+      it('should update the translation', (done) => {
         const data = {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
@@ -215,7 +215,7 @@ describe('thesauris', () => {
     });
 
     describe('when trying to save a duplicated thesauri', () => {
-      fit('should return an error', (done) => {
+      it('should return an error', (done) => {
         let data = {name: 'dictionary'};
         thesauris.save(data)
         .then(catchErrors(done))

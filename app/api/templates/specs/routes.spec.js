@@ -8,15 +8,11 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 describe('templates routes', () => {
   let routes;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     routes = instrumentRoutes(templateRoutes);
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(catchErrors(done));
   });
 
-  fdescribe('GET', () => {
+  describe('GET', () => {
     it('should return all templates by default', (done) => {
       spyOn(templates, 'get').and.returnValue(Promise.resolve('templates'));
       routes.get('/api/templates')
@@ -28,7 +24,7 @@ describe('templates routes', () => {
       .catch(catchErrors(done));
     });
 
-    fdescribe('when there is an error', () => {
+    describe('when there is an error', () => {
       it('should return the error in the response', (done) => {
         spyOn(templates, 'get').and.returnValue(Promise.reject('error'));
 
@@ -43,7 +39,7 @@ describe('templates routes', () => {
   });
 
   describe('DELETE', () => {
-    fit('should delete a template', (done) => {
+    it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
       routes.delete('/api/templates', {query: 'template'})
       .then((response) => {
@@ -54,7 +50,7 @@ describe('templates routes', () => {
       .catch(catchErrors(done));
     });
 
-    fdescribe('when there is an error', () => {
+    describe('when there is an error', () => {
       it('should return the error in the response', (done) => {
         spyOn(templates, 'delete').and.returnValue(Promise.reject('error'));
 
@@ -69,7 +65,7 @@ describe('templates routes', () => {
   });
 
   describe('POST', () => {
-    fit('should create a template', (done) => {
+    it('should create a template', (done) => {
       spyOn(templates, 'save').and.returnValue(new Promise((resolve) => resolve('response')));
       let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}};
 
@@ -83,7 +79,7 @@ describe('templates routes', () => {
     });
 
     describe('when there is an error', () => {
-      fit('should return the error in the response', (done) => {
+      it('should return the error in the response', (done) => {
         spyOn(templates, 'save').and.returnValue(Promise.reject('error'));
         routes.post('/api/templates', {})
         .then((response) => {
@@ -96,7 +92,7 @@ describe('templates routes', () => {
   });
 
   describe('/templates/count_by_thesauri', () => {
-    fit('should return the number of templates using a thesauri', (done) => {
+    it('should return the number of templates using a thesauri', (done) => {
       spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(2));
       let req = {query: {_id: 'abc1'}};
       routes.get('/api/templates/count_by_thesauri', req)

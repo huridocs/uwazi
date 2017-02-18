@@ -16,7 +16,7 @@ describe('translations', () => {
   });
 
   describe('process System context', () => {
-    fit('should add keys that do not exist into all languages', (done) => {
+    it('should add keys that do not exist into all languages', (done) => {
       const keys = [{key: 'Password'}, {key: 'Account'}, {key: 'Email'}, {key: 'Age'}, {key: 'new key'}, {key: 'new key 2', label: 'label2'}];
       translations.processSystemKeys(keys)
       .then(translations.get)
@@ -42,7 +42,7 @@ describe('translations', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the keys that are missing', (done) => {
+    it('should delete the keys that are missing', (done) => {
       const keys = [{key: 'Email'}, {key: 'Age'}, {key: 'new key'}];
       translations.processSystemKeys(keys)
       .then(translations.get)
@@ -68,7 +68,7 @@ describe('translations', () => {
   });
 
   describe('get()', () => {
-    fit('should return the translations', (done) => {
+    it('should return the translations', (done) => {
       translations.get()
       .then((result) => {
         expect(result.length).toBe(2);
@@ -96,7 +96,7 @@ describe('translations', () => {
   });
 
   describe('save()', () => {
-    fit('should save the translation and return it', (done) => {
+    it('should save the translation and return it', (done) => {
       translations.save({locale: 'fr'})
       .then((result) => {
         expect(result._id).toBeDefined();
@@ -106,7 +106,7 @@ describe('translations', () => {
   });
 
   describe('addEntries()', () => {
-    fit('should add the new keys to each dictionary in the given contexts', (done) => {
+    it('should add the new keys to each dictionary in the given contexts', (done) => {
       translations.addEntries([
         {contextId: 'System', key: 'Key', defaultValue: 'default'},
         {contextId: 'System', key: 'Key1', defaultValue: 'default 1'}
@@ -128,7 +128,7 @@ describe('translations', () => {
   });
 
   describe('addEntry()', () => {
-    fit('should add the new key to each dictionary in the given context', (done) => {
+    it('should add the new key to each dictionary in the given context', (done) => {
       translations.addEntry('System', 'Key', 'default')
       .then((result) => {
         expect(result).toBe('ok');
@@ -144,7 +144,7 @@ describe('translations', () => {
   });
 
   describe('addContext()', () => {
-    fit('should add a context with his values', (done) => {
+    it('should add a context with his values', (done) => {
       let values = {Name: 'Name', Surname: 'Surname'};
       translations.addContext('context', 'Judge', values, 'type')
       .then((result) => {
@@ -163,7 +163,7 @@ describe('translations', () => {
   });
 
   describe('deleteContext()', () => {
-    fit('should add a context with his values', (done) => {
+    it('should add a context with his values', (done) => {
       translations.deleteContext('System')
       .then((result) => {
         expect(result).toBe('ok');
@@ -179,7 +179,7 @@ describe('translations', () => {
   });
 
   describe('updateContext()', () => {
-    fit('should add a context with his values', (done) => {
+    it('should add a context with his values', (done) => {
       let keyNameChanges = {Password: 'Pass', Account: 'Acc', System: 'Interface'};
       let deletedProperties = ['Age'];
       let context = {Pass: 'Pass', Acc: 'Acc', Email: 'Email', Name: 'Name', Interface: 'Interface'};

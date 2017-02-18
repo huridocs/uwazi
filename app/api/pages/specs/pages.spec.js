@@ -39,7 +39,7 @@ describe('pages', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should return the newly created document', (done) => {
+    it('should return the newly created document', (done) => {
       let doc = {title: 'the dark knight'};
       let user = {username: 'user Id'};
 
@@ -55,7 +55,7 @@ describe('pages', () => {
     });
 
     describe('when updating', () => {
-      fit('should not assign again user and creation date and partial update data', (done) => {
+      it('should not assign again user and creation date and partial update data', (done) => {
         spyOn(date, 'currentUTC').and.returnValue(10);
 
         return pages.save({_id: pageToUpdate, sharedId: '1', title: 'Edited title'}, 'another_user')
@@ -71,7 +71,7 @@ describe('pages', () => {
   });
 
   describe('delete', () => {
-    fit('should delete the document in all languages', (done) => {
+    it('should delete the document in all languages', (done) => {
       let sharedId = '1';
       return pages.delete(sharedId)
       .then(() => {

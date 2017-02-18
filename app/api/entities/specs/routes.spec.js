@@ -33,11 +33,11 @@ describe('entities', () => {
       };
     });
 
-    fit('should need authorization', () => {
+    it('should need authorization', () => {
       expect(routes.post('/api/entities', req)).toNeedAuthorization();
     });
 
-    fit('should create a new document with current user', (done) => {
+    it('should create a new document with current user', (done) => {
       spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
@@ -50,7 +50,7 @@ describe('entities', () => {
       });
     });
 
-    fit('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
+    it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
       req = {
         body: {title: 'Batman begins', template: 'template'},
         user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
@@ -76,7 +76,7 @@ describe('entities', () => {
   });
 
   describe('GET', () => {
-    fit('should return matching document', (done) => {
+    it('should return matching document', (done) => {
       spyOn(entities, 'getById').and.returnValue(Promise.resolve('result'));
       let req = {
         query: {_id: 'id'},
@@ -94,7 +94,7 @@ describe('entities', () => {
   });
 
   describe('/api/entities/count_by_template', () => {
-    fit('should return count of entities using a specific template', (done) => {
+    it('should return count of entities using a specific template', (done) => {
       spyOn(entities, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
       let req = {query: {templateId: 'templateId'}};
 
@@ -113,7 +113,7 @@ describe('entities', () => {
       spyOn(entities, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
 
-    fit('should use entities to delete it', (done) => {
+    it('should use entities to delete it', (done) => {
       let req = {query: {sharedId: 123, _rev: 456}};
       return routes.delete('/api/entities', req)
       .then(() => {

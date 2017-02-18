@@ -12,7 +12,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
-    fit('should respond with settings', (done) => {
+    it('should respond with settings', (done) => {
       spyOn(settings, 'get').and.returnValue(mockRequest);
       routes.get('/api/settings')
       .then((response) => {
@@ -25,7 +25,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('POST', () => {
-    fit('should save settings', (done) => {
+    it('should save settings', (done) => {
       spyOn(settings, 'save').and.returnValue(mockRequest);
       routes.post('/api/settings', {body: {collection_name: 'my new name'}})
       .then((response) => {

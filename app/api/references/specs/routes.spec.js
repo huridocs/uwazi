@@ -8,19 +8,14 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 describe('references routes', () => {
   let routes;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     routes = instrumentRoutes(referencesRroutes);
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(catchErrors(done));
-
     spyOn(references, 'save').and.returnValue(Promise.resolve());
     spyOn(references, 'delete').and.returnValue(Promise.resolve());
   });
 
   describe('POST', () => {
-    fit('should save a reference', (done) => {
+    it('should save a reference', (done) => {
       let req = {body: {name: 'created_reference'}, language: 'es'};
 
       routes.post('/api/references', req)
@@ -33,7 +28,7 @@ describe('references routes', () => {
   });
 
   describe('DELETE', () => {
-    fit('should delete the reference', (done) => {
+    it('should delete the reference', (done) => {
       let req = {query: {_id: 'to_delete_id'}};
 
       routes.delete('/api/references', req)
@@ -46,7 +41,7 @@ describe('references routes', () => {
   });
 
   describe('GET by_document', () => {
-    fit('should return references.getByDocument', (done) => {
+    it('should return references.getByDocument', (done) => {
       let req = {params: {id: 'documentId'}, language: 'es'};
 
       spyOn(references, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
@@ -62,7 +57,7 @@ describe('references routes', () => {
   });
 
   describe('/references/count_by_relationtype', () => {
-    fit('should return the number of references using a relationtype', (done) => {
+    it('should return the number of references using a relationtype', (done) => {
       spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));
       let req = {query: {relationtypeId: 'abc1'}};
       routes.get('/api/references/count_by_relationtype', req)

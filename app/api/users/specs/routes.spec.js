@@ -10,7 +10,7 @@ describe('users routes', () => {
   });
 
   describe('POST /users', () => {
-    fit('should call users update with the body', (done) => {
+    it('should call users update with the body', (done) => {
       spyOn(users, 'update').and.returnValue(Promise.resolve());
       let req = {body: 'changes'};
       routes.post('/api/users', req)
@@ -23,7 +23,7 @@ describe('users routes', () => {
   });
 
   describe('POST /recoverpassword', () => {
-    fit('should call users update with the body email', (done) => {
+    it('should call users update with the body email', (done) => {
       spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
       let req = {body: {email: 'recover@me.com'}, protocol: 'http', get: () => 'localhost'};
       routes.post('/api/recoverpassword', req)
@@ -36,7 +36,7 @@ describe('users routes', () => {
   });
 
   describe('POST /resetpassword', () => {
-    fit('should call users update with the body', (done) => {
+    it('should call users update with the body', (done) => {
       spyOn(users, 'resetPassword').and.returnValue(Promise.resolve());
       let req = {body: 'changes'};
       routes.post('/api/resetpassword', req)

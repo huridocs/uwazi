@@ -12,7 +12,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
-    fit('should ask relationtypes for all documents', (done) => {
+    it('should ask relationtypes for all documents', (done) => {
       spyOn(relationtypes, 'get').and.returnValue(mockRequest);
       routes.get('/api/relationtypes', {query: {}})
       .then((response) => {
@@ -24,7 +24,7 @@ describe('relationtypes routes', () => {
     });
 
     describe('when passing id', () => {
-      fit('should ask for the specific relationtype', (done) => {
+      it('should ask for the specific relationtype', (done) => {
         spyOn(relationtypes, 'getById').and.returnValue(mockRequest);
         routes.get('/api/relationtypes', {query: {_id: 'someId'}})
         .then((response) => {
@@ -38,7 +38,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('DELETE', () => {
-    fit('should delete the relationtype', (done) => {
+    it('should delete the relationtype', (done) => {
       spyOn(relationtypes, 'delete').and.returnValue(mockRequest);
       routes.delete('/api/relationtypes', {query: {_id: 'someId', _rev: 'latest'}})
       .then((response) => {
@@ -51,7 +51,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('POST', () => {
-    fit('should save the relationtype', (done) => {
+    it('should save the relationtype', (done) => {
       spyOn(relationtypes, 'save').and.returnValue(mockRequest);
       routes.post('/api/relationtypes', {body: {name: 'my new template'}})
       .then((response) => {

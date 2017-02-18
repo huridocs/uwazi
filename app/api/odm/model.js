@@ -19,8 +19,8 @@ export default (MongooseModel) => {
       return MongooseModel.create(data).then(saved => saved.toObject());
     },
 
-    get: (query) => {
-      return MongooseModel.find(query, {}, {lean: true});
+    get: (query, select = '') => {
+      return MongooseModel.find(query, select, {lean: true});
     },
 
     count: (condition) => {

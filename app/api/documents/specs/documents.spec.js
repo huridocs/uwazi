@@ -12,7 +12,7 @@ import documents from '../documents.js';
 import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
 import {db} from 'api/utils';
 
-fdescribe('documents', () => {
+describe('documents', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
@@ -26,7 +26,7 @@ fdescribe('documents', () => {
     });
   });
 
-  fdescribe('get', () => {
+  describe('get', () => {
     describe('when passing query', () => {
       it('should return matching document', (done) => {
         documents.get({sharedId: 'shared'})
@@ -41,7 +41,7 @@ fdescribe('documents', () => {
     });
   });
 
-  fdescribe('save', () => {
+  describe('save', () => {
     it('should call entities.save', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
       let doc = {title: 'Batman begins'};
@@ -79,7 +79,7 @@ fdescribe('documents', () => {
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
     });
 
-    fit('should delete the document in the database', (done) => {
+    it('should delete the document in the database', (done) => {
       return documents.delete('shared')
       .then(() => documents.getById('shared', 'es'))
       .then((result) => {
@@ -89,7 +89,7 @@ fdescribe('documents', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the original file', (done) => {
+    it('should delete the original file', (done) => {
       documents.delete('shared')
       .then(() => {
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);

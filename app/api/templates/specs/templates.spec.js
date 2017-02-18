@@ -8,7 +8,7 @@ import translations from 'api/i18n/translations';
 import {db} from 'api/utils';
 import fixtures, {templateToBeEditedId, templateToBeDeleted} from './fixtures.js';
 
-fdescribe('templates', () => {
+describe('templates', () => {
   beforeEach((done) => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
     db.clearAndLoad(fixtures, (err) => {
@@ -20,7 +20,7 @@ fdescribe('templates', () => {
   });
 
   describe('save', () => {
-    fit('should return the saved template', (done) => {
+    it('should return the saved template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
       templates.save(newTemplate)
@@ -32,7 +32,7 @@ fdescribe('templates', () => {
       .catch(done.fail);
     });
 
-    fit('should create a template', (done) => {
+    it('should create a template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
       templates.save(newTemplate)
@@ -49,7 +49,7 @@ fdescribe('templates', () => {
       .catch(done.fail);
     });
 
-    fit('should validate properties not having repeated names and return an error', (done) => {
+    it('should validate properties not having repeated names and return an error', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 1'},
@@ -67,7 +67,7 @@ fdescribe('templates', () => {
       });
     });
 
-    fit('should add it to the translations with Document type', (done) => {
+    it('should add it to the translations with Document type', (done) => {
       let newTemplate = {name: 'created template', properties: [
         {label: 'label 1'},
         {label: 'label 2'}
@@ -87,7 +87,7 @@ fdescribe('templates', () => {
     });
 
     describe('when isEntity', () => {
-      fit('should add it to translations with Entity type', (done) => {
+      it('should add it to translations with Entity type', (done) => {
         let newTemplate = {name: 'created template', isEntity: true, properties: [
           {label: 'label 1'},
           {label: 'label 2'}
@@ -107,7 +107,7 @@ fdescribe('templates', () => {
       });
     });
 
-    fit('should assign a safe property name based on the label to each only when name not already set', (done) => {
+    it('should assign a safe property name based on the label to each only when name not already set', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 2'},
@@ -131,7 +131,7 @@ fdescribe('templates', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should not repeat names', (done) => {
+    it('should not repeat names', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 2'},
@@ -161,7 +161,7 @@ fdescribe('templates', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should set a default value of [] to properties', (done) => {
+    it('should set a default value of [] to properties', (done) => {
       let newTemplate = {name: 'created_template'};
       templates.save(newTemplate)
       .then(templates.get)
@@ -177,7 +177,7 @@ fdescribe('templates', () => {
     });
 
     describe('when passing _id', () => {
-      fit('should edit an existing one', (done) => {
+      it('should edit an existing one', (done) => {
         spyOn(translations, 'updateContext');
         let toSave = {_id: templateToBeEditedId, name: 'changed name'};
         templates.save(toSave)
@@ -190,7 +190,7 @@ fdescribe('templates', () => {
         .catch(catchErrors(done));
       });
 
-      fit('should update the translation context for it', (done) => {
+      it('should update the translation context for it', (done) => {
         let newTemplate = {name: 'created template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
         spyOn(translations, 'updateContext');
         templates.save(newTemplate)
@@ -220,7 +220,7 @@ fdescribe('templates', () => {
         .catch(done.fail);
       });
 
-      fit('should return the saved template', (done) => {
+      it('should return the saved template', (done) => {
         spyOn(translations, 'updateContext');
         spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
         let edited = {_id: templateToBeEditedId, name: 'changed name'};
@@ -234,7 +234,7 @@ fdescribe('templates', () => {
     });
 
     describe('when the template name exists', () => {
-      fit('should return the error', (done) => {
+      it('should return the error', (done) => {
         let template = {name: 'duplicated name'};
         templates.save(template)
         .then(() => {
@@ -265,7 +265,7 @@ fdescribe('templates', () => {
   });
 
   //describe('countByTemplate', () => {
-    //fit('should return how many documents using the template passed', (done) => {
+    //it('should return how many documents using the template passed', (done) => {
       //templates.countByTemplate('template1')
       //.then((count) => {
         //expect(count).toBe(2);
@@ -285,7 +285,7 @@ fdescribe('templates', () => {
   //});
 
   describe('delete', () => {
-    fit('should delete a template when no document is using it', (done) => {
+    it('should delete a template when no document is using it', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
       return templates.delete({_id: templateToBeDeleted})
       .then((response) => {
@@ -300,7 +300,7 @@ fdescribe('templates', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should delete the template translation', (done) => {
+    it('should delete the template translation', (done) => {
       spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(0));
       spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
 
@@ -330,7 +330,7 @@ fdescribe('templates', () => {
   });
 
   describe('countByThesauri()', () => {
-    fit('should return number of templates using a thesauri', (done) => {
+    it('should return number of templates using a thesauri', (done) => {
       templates.countByThesauri('thesauri1')
       .then((result) => {
         expect(result).toBe(2);
@@ -339,7 +339,7 @@ fdescribe('templates', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should return zero when none is using it', (done) => {
+    it('should return zero when none is using it', (done) => {
       templates.countByThesauri('not_used_relation')
         .then((result) => {
           expect(result).toBe(0);
