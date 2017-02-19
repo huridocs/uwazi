@@ -1,6 +1,4 @@
 import uploadRoutes from '../routes.js';
-import {db_url as dbURL} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
 import documents from 'api/documents';
@@ -9,7 +7,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
 
 import {db} from 'api/utils';
-import fixtures from './fixtures.js';
+import fixtures, {entityId} from './fixtures.js';
 
 describe('upload routes', () => {
   let routes;
@@ -42,7 +40,7 @@ describe('upload routes', () => {
     });
   });
 
-  fdescribe('POST/upload', () => {
+  describe('POST/upload', () => {
     //temporary test for the conversion, probably this will go on another
     it('should process the document after upload', (done) => {
       routes.post('/api/upload', req)
@@ -74,8 +72,8 @@ describe('upload routes', () => {
             setTimeout(() => {
               entities.getAllLanguages('id')
               .then(docs => {
-                expect(docs.rows[0].processed).toBe(false);
-                expect(docs.rows[1].processed).toBe(false);
+                expect(docs[0].processed).toBe(false);
+                expect(docs[1].processed).toBe(false);
                 done();
               });
             }, 500);
@@ -93,11 +91,12 @@ describe('upload routes', () => {
         routes.post('/api/upload', req)
         .then((response) => {
           expect(response).toEqual(file);
-          return request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`);
+          return documents.getById('id', 'es');
         })
         .then((doc) => {
-          expect(doc.json.file).toEqual(file);
-          expect(doc.json.uploaded).toEqual(true);
+          expect(doc.file.originalname).toEqual(file.originalname);
+          expect(doc.file.filename).toEqual(file.filename);
+          expect(doc.uploaded).toEqual(true);
           done();
         })
         .catch(done.fail);
@@ -111,7 +110,7 @@ describe('upload routes', () => {
     });
 
     it('should reupload a document', (done) => {
-      req.body.document = '8202c463d6158af8065022d9b5014ccb';
+      req.body.document = entityId;
       routes.post('/api/reupload', req)
       .then(response => {
         expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');

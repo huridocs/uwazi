@@ -1,6 +1,4 @@
 import documentRoutes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import search from '../search';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -8,11 +6,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 describe('search routes', () => {
   let routes;
 
-  beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+  beforeEach(() => {
     routes = instrumentRoutes(documentRoutes);
   });
 

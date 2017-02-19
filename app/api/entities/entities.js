@@ -76,6 +76,10 @@ export default {
   },
 
   getById(sharedId, language) {
+    if (!language) {
+      return model.getById(sharedId);
+    }
+
     return model.get({sharedId, language}).then((result) => result[0]);
   },
 

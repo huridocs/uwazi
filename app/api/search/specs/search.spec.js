@@ -1,10 +1,11 @@
 import search from '../search.js';
 import elastic from '../elastic';
 import elasticResult from './elasticResult';
-import database from 'api/utils/database.js';
-import fixtures from './fixtures.js';
 import queryBuilder from 'api/search/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+
+import fixtures, {templateId, userId, unpublishedId} from './fixtures.js';
+import {db} from 'api/utils';
 
 describe('search', () => {
   let result;
@@ -12,26 +13,30 @@ describe('search', () => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1'},
       {title: 'doc2', _id: 'id2'}
-    ]).toObject();
+    ])
+    .toObject();
 
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('countByTemplate', () => {
     it('should return how many entities or documents are using the template passed', (done) => {
-      search.countByTemplate('template1')
+      search.countByTemplate(templateId)
       .then((count) => {
-        expect(count).toBe(2);
+        expect(count).toBe(4);
         done();
       })
       .catch(done.fail);
     });
 
     it('should return 0 when no count found', (done) => {
-      search.countByTemplate('newTemplate')
+      const newTemplate = db.id();
+      search.countByTemplate(newTemplate)
       .then((count) => {
         expect(count).toBe(0);
         done();
@@ -42,12 +47,11 @@ describe('search', () => {
 
   describe('getUploadsByUser', () => {
     it('should request all unpublished entities or documents for the user', (done) => {
-      let user = {_id: 'c08ef2532f0bd008ac5174b45e033c94'};
-      search.getUploadsByUser(user, 'es')
+      let user = {_id: userId};
+      search.getUploadsByUser(user, 'en')
       .then((response) => {
-        expect(response.rows.length).toBe(1);
-        expect(response.rows[0].title).toBe('unpublished');
-        expect(response.rows[0]._id).toBe('d0298a48d1221c5ceb53c4879301508f');
+        expect(response.length).toBe(1);
+        expect(response[0].title).toBe('unpublished');
         done();
       })
       .catch(catchErrors(done));

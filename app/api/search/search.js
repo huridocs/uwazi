@@ -2,6 +2,8 @@ import {db_url as dbURL} from 'api/config/database';
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
+import entities from '../entities';
+import model from '../entities/entitiesModel';
 import request from 'shared/JSONRequest';
 
 export default {
@@ -42,13 +44,7 @@ export default {
   },
 
   getUploadsByUser(user, language) {
-    let url = `${dbURL}/_design/search/_view/uploads`;
-
-    return request.get(url, {key: [user._id, language]})
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
-      return response.json;
-    });
+    return model.get({'user._id': user._id, language, published: false});
   },
 
   matchTitle(searchTerm, language) {
@@ -71,13 +67,7 @@ export default {
   },
 
   countByTemplate(templateId) {
-    return request.get(`${dbURL}/_design/search/_view/count_by_template?group_level=1&key="${templateId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
+    return entities.countByTemplate(templateId);
   },
 
   index(entity) {
