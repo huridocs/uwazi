@@ -46,17 +46,20 @@ describe('upload routes', () => {
       routes.post('/api/upload', req)
       .then(() => {
         setTimeout(() => {
-          return documents.get({sharedId: 'id'}, '+fullText')
-          .then((docs) => {
+          return Promise.all([
+            documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
+            documents.get({sharedId: 'id', language: 'en'}, '+fullText')
+          ])
+          .then(([docES, docEN]) => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
-            expect(docs[1].processed).toBe(true);
-            expect(docs[1].fullText).toMatch(/Test file/);
-            expect(docs[1].language).toBe('en');
+            expect(docEN[0].processed).toBe(true);
+            expect(docEN[0].fullText).toMatch(/Test file/);
+            expect(docEN[0].language).toBe('en');
 
-            expect(docs[0].processed).toBe(true);
-            expect(docs[0].fullText).toMatch(/Test file/);
-            expect(docs[0].language).toBe('es');
+            expect(docES[0].processed).toBe(true);
+            expect(docES[0].fullText).toMatch(/Test file/);
+            expect(docES[0].language).toBe('es');
             done();
           })
           .catch(catchErrors(done));
