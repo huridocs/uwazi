@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import instanceModel from 'api/odm';
 
 const connectionSchema = new mongoose.Schema({
   sourceDocument: String,
@@ -19,4 +20,4 @@ const connectionSchema = new mongoose.Schema({
 });
 
 let Model = mongoose.model('connections', connectionSchema);
-export default Model;
+export default instanceModel(Model);

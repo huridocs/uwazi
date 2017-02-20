@@ -1,10 +1,7 @@
 import templates from 'api/templates';
 import entities from 'api/entities';
 
-import instanceModel from 'api/odm';
-import connectionsModel from './connectionsModel.js';
-
-const model = instanceModel(connectionsModel);
+import model from './connectionsModel.js';
 
 let normalizeConnection = (connection, docId) => {
   connection.targetRange = connection.targetRange || {text: ''};
