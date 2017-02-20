@@ -10,7 +10,7 @@ export default app => {
   app.get('/api/relationtypes', (req, res) => {
     if (req.query._id) {
       return relationtypes.getById(req.query._id)
-      .then(response => res.json({rows: response}));
+      .then(response => res.json({rows: [response]}));
     }
 
     relationtypes.get()

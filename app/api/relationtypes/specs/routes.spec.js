@@ -29,7 +29,7 @@ describe('relationtypes routes', () => {
         routes.get('/api/relationtypes', {query: {_id: 'someId'}})
         .then((response) => {
           expect(relationtypes.getById).toHaveBeenCalledWith('someId');
-          expect(response).toEqual({rows: {relationtypes: 'response'}});
+          expect(response).toEqual({rows: [{relationtypes: 'response'}]});
           done();
         })
         .catch(catchErrors(done));
