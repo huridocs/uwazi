@@ -13,6 +13,7 @@ export default {
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
+      doc.published = false;
     }
 
     if (!doc.type) {

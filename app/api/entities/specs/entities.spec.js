@@ -40,11 +40,13 @@ describe('entities', () => {
         expect(createdDocumentEs.title).toBe(doc.title);
         expect(createdDocumentEs.user.equals(user._id)).toBe(true);
         expect(createdDocumentEs.type).toBe('entity');
+        expect(createdDocumentEs.published).toBe(false);
         expect(createdDocumentEs.creationDate).toEqual(universalTime);
 
         expect(createdDocumentEn.title).toBe(doc.title);
         expect(createdDocumentEn.user.equals(user._id)).toBe(true);
         expect(createdDocumentEn.type).toBe('entity');
+        expect(createdDocumentEn.published).toBe(false);
         expect(createdDocumentEn.creationDate).toEqual(universalTime);
         done();
       })

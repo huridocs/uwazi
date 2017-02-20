@@ -34,7 +34,7 @@ export default (app) => {
 
   app.get('/api/search/unpublished', needsAuthorization, (req, res) => {
     search.getUploadsByUser(req.user, req.language)
-    .then(response => res.json(response))
+    .then(response => res.json({rows: response}))
     .catch(error => res.json({error}));
   });
 };
