@@ -17,7 +17,7 @@ describe('i18n translations routes', () => {
       routes.get('/api/translations')
       .then((response) => {
         expect(translations.get).toHaveBeenCalled();
-        expect(response).toEqual({translations: 'response'});
+        expect(response).toEqual({rows: {translations: 'response'}});
         done();
       })
       .catch(catchErrors(done));

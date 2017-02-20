@@ -4,6 +4,7 @@ import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils
 import fs from 'fs';
 import {deleteFiles} from '../utils/files.js';
 import entities from '../entities';
+import model from '../entities/entitiesModel';
 
 export default {
   save(doc, params) {
@@ -17,7 +18,7 @@ export default {
       if (existingDoc.pdfInfo) {
         return existingDoc;
       }
-      return this.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
+      return model.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
     });
   },
   //

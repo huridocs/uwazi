@@ -15,7 +15,9 @@ export default (app) => {
   app.post('/api/documents/pdfInfo', (req, res) => {
     return documents.savePDFInfo(req.body, {language: req.language})
     .then(doc => res.json(doc))
-    .catch((error) => res.json({error}, 500));
+    .catch((error) => {
+      res.json({error}, 500)
+    });
   });
 
   app.get('/api/documents/html', (req, res) => {
@@ -37,8 +39,8 @@ export default (app) => {
       id = req.query._id;
     }
 
-    documents.get(id, req.language).then(response => {
-      res.json(response);
+    documents.getById(id, req.language).then(response => {
+      res.json({rows: [response]});
     })
     .catch((error) => res.json({error}, 500));
   });

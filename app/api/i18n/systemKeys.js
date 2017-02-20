@@ -82,7 +82,7 @@ export default [
 {key: 'Save', label: 'Save'},
 {key: 'Search item', label: 'Search item'},
 {key: 'Search', label: 'Search'},
-{key: 'Settings updated.', label: 'Settings updated.'},
+{key: 'Settings updated', label: 'Settings updated.'},
 {key: 'Settings', label: 'Settings'},
 {key: 'Size', label: 'Size'},
 {key: 'Table of Content', label: 'Table of Content'},

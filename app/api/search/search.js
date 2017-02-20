@@ -71,7 +71,7 @@ export default {
   },
 
   index(entity) {
-    const id = entity._id;
+    const id = entity._id.toString();
     delete entity._id;
     delete entity._rev;
     const body = entity;

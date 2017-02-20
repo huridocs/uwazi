@@ -23,8 +23,11 @@ export class Doc extends Component {
   }
 
   render() {
-    const {type, sharedId} = this.props.doc.toJS();
-    const documentViewUrl = `/${type}/${sharedId}`;
+    const {sharedId, isEntity} = this.props.doc.toJS();
+    let documentViewUrl = `/document/${sharedId}`;
+    if (isEntity) {
+      documentViewUrl = `/entity/${sharedId}`;
+    }
 
     return <Item onClick={this.select.bind(this, this.props.active)}
                  active={this.props.active}

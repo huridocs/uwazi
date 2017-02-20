@@ -50,11 +50,11 @@ describe('documents', () => {
   describe('/api/documents', () => {
     it('should return documents.get', (done) => {
       let req = {query: {_id: 'id'}, language: 'es'};
-      spyOn(documents, 'get').and.returnValue(new Promise((resolve) => resolve('documents')));
+      spyOn(documents, 'getById').and.returnValue(new Promise((resolve) => resolve('documents')));
       routes.get('/api/documents', req)
       .then((response) => {
-        expect(documents.get).toHaveBeenCalledWith(req.query._id, req.language);
-        expect(response).toBe('documents');
+        expect(documents.getById).toHaveBeenCalledWith(req.query._id, req.language);
+        expect(response).toEqual({rows: ['documents']});
         done();
       })
       .catch(catchErrors(done));

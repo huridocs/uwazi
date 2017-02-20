@@ -92,7 +92,7 @@ export default {
   },
 
   processSystemKeys(keys) {
-    return this.get()
+    return model.get()
     .then((languages) => {
       const existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
       const newKeys = keys.map(k => k.key);

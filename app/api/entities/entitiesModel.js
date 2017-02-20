@@ -28,6 +28,7 @@ const entitySchema = new mongoose.Schema({
   uploaded: Boolean,
   published: Boolean,
   metadata: mongoose.Schema.Types.Mixed,
+  pdfInfo: mongoose.Schema.Types.Mixed,
   user: {
     username: String
   }

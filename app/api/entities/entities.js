@@ -71,8 +71,8 @@ export default {
     });
   },
 
-  get(query, select) {
-    return model.get(query, select);
+  get(query, select, pagination) {
+    return model.get(query, select, pagination);
   },
 
   getById(sharedId, language) {
