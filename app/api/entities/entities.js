@@ -2,7 +2,7 @@
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
-import references from '../references';
+import references from '../references/references';
 import templates from '../templates';
 import ID from 'shared/uniqueID';
 
