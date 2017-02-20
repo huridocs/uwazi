@@ -64,7 +64,7 @@ describe('Pages Routes', () => {
       spyOn(pages, 'get').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.get('/api/pages/list', req)
       .then((document) => {
-        expect(document).toBe('document');
+        expect(document).toEqual({rows: 'document'});
         expect(pages.get).toHaveBeenCalledWith({language: 'es'});
         done();
       })

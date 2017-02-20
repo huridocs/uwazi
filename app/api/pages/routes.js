@@ -10,7 +10,7 @@ export default (app) => {
 
   app.get('/api/pages/list', (req, res) => {
     return pages.get({language: req.language})
-    .then(response => res.json(response))
+    .then(response => res.json({rows: response}))
     .catch(error => res.json({error}));
   });
 

@@ -22,7 +22,7 @@ describe('pages', () => {
       mockID('sharedid');
 
       let doc = {title: 'Batman begins'};
-      let user = {username: 'bruce'};
+      let user = {_id: db.id()};
 
       pages.save(doc, user, 'es')
       .then((result) => {
@@ -32,7 +32,7 @@ describe('pages', () => {
         expect(docs.length).toBe(3);
         expect(docs[0].language).toBe('es');
         expect(docs[0].title).toBe(doc.title);
-        expect(docs[0].user.username).toEqual(user.username);
+        expect(docs[0].user.equals(user._id)).toBe(true);
         expect(docs[0].creationDate).toEqual(1);
         done();
       })
@@ -41,13 +41,13 @@ describe('pages', () => {
 
     it('should return the newly created document', (done) => {
       let doc = {title: 'the dark knight'};
-      let user = {username: 'user Id'};
+      let user = {_id: db.id()};
 
       pages.save(doc, user, 'es')
       .then((createdDocument) => {
         expect(createdDocument._id.toString()).toBeDefined();
         expect(createdDocument.title).toBe(doc.title);
-        expect(createdDocument.user.username).toEqual(user.username);
+        expect(createdDocument.user.equals(user._id)).toBe(true);
         expect(createdDocument.language).toBe('es');
         done();
       })

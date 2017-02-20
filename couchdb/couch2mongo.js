@@ -93,6 +93,7 @@ function migratePage(page) {
   let oldId = page._id;
   delete page._id;
   delete page._rev;
+  page.user = idMapping[page.user._id];
   return pages.save(page)
   .then((created) => {
     idMapping[oldId] = created._id;
