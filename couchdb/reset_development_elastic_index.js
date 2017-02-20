@@ -14,9 +14,17 @@ require('babel-core/register')({
   ]
 });
 
-var db_config = require('../app/api/config/database.js');
-db_config.db_url = db_config.development;
+//var db_config = require('../app/api/config/database.js');
+//db_config.db_url = db_config.development;
 
 var indexConfig = require('../app/api/config/elasticIndexes.js');
 indexConfig.index = indexConfig.development;
-require('./reset_elastic_index.js');
+
+var mongoose = require('mongoose');
+mongoose.Promise = Promise;
+mongoose.connect('mongodb://localhost/uwazi_development');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  require('./reset_elastic_index.js');
+});
