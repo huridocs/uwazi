@@ -109,6 +109,8 @@ function migrateEntity(entity) {
     delete tocElement._id;
   });
 
+  entity.user = idMapping[entity.user._id];
+
   delete entity._rev;
   entity.template = idMapping[entity.template];
   return entities.save(entity)

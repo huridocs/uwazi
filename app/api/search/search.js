@@ -40,11 +40,10 @@ export default {
 
       return {rows, totalRows: response.hits.total, aggregations: response.aggregations};
     })
-    .catch(console.log);
   },
 
   getUploadsByUser(user, language) {
-    return model.get({'user._id': user._id, language, published: false});
+    return model.get({user: user._id, language, published: false});
   },
 
   matchTitle(searchTerm, language) {

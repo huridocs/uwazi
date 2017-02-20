@@ -30,9 +30,7 @@ const entitySchema = new mongoose.Schema({
   published: Boolean,
   metadata: mongoose.Schema.Types.Mixed,
   pdfInfo: mongoose.Schema.Types.Mixed,
-  user: {
-    username: String
-  }
+  user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'}
 });
 
 let Model = mongoose.model('entities', entitySchema);

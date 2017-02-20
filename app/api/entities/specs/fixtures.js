@@ -7,16 +7,15 @@ const referenceId = db.id();
 
 export default {
   entities: [
-    {_id: batmanFinishesId, sharedId: 'shared', template: templateId,  language: 'en', title: 'Batman finishes', published: true, user: {username: 'username'}},
-    {_id: db.id(), sharedId: 'shared', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, user: {username: 'username'}},
+    {_id: batmanFinishesId, sharedId: 'shared', template: templateId, language: 'en', title: 'Batman finishes', published: true},
+    {_id: db.id(), sharedId: 'shared', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true},
     {
-      _id: db.id(), sharedId: 'shared', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'},
-      user: {username: 'username'}
+      _id: db.id(), sharedId: 'shared', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'}
     },
     //select/multiselect/date sync
-    {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', language: 'en', title: 'EN', published: true, metadata: {text: 'text'}, user: {username: 'username'}},
-    {_id: db.id(), template: templateId, sharedId: 'shared1', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: {text: 'text'}, user: {username: 'username'}},
-    {_id: db.id(), template: templateId, sharedId: 'shared1', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {text: 'text'}, user: {username: 'username'}}
+    {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', language: 'en', title: 'EN', published: true, metadata: {text: 'text'}},
+    {_id: db.id(), template: templateId, sharedId: 'shared1', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: {text: 'text'}},
+    {_id: db.id(), template: templateId, sharedId: 'shared1', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {text: 'text'}}
   ],
   settings: [
     {_id: db.id(), languages: [{key: 'es'}, {key: 'pt'}, {key: 'en'}]}

@@ -1,5 +1,3 @@
-import {db_url as dbURL} from 'api/config/database.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import fs from 'fs';
@@ -9,7 +7,7 @@ import entities from 'api/entities';
 import search from 'api/search/search';
 
 import documents from '../documents.js';
-import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
+import fixtures from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('documents', () => {
@@ -45,7 +43,7 @@ describe('documents', () => {
     it('should call entities.save', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
       let doc = {title: 'Batman begins'};
-      let user = {username: 'username'};
+      let user = {_id: db.id()};
       let language = 'es';
 
       documents.save(doc, {user, language})
@@ -60,7 +58,7 @@ describe('documents', () => {
     it('should assign unique ids to toc entries', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       let doc = {title: 'Batman begins', toc: [{}, {}]};
-      let user = {username: 'username'};
+      let user = {_id: db.id()};
 
       documents.save(doc, {user, language: 'es'})
       .then(() => documents.getById('unique_id', 'es'))

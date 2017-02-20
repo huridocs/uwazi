@@ -9,9 +9,9 @@ const pagesSchema = new mongoose.Schema({
   metadata: new mongoose.Schema({
     content: String
   }),
-  user: new mongoose.Schema({
+  user: {
     username: String
-  })
+  }
 });
 
 let Model = mongoose.model('pages', pagesSchema);

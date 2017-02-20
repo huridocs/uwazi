@@ -11,7 +11,7 @@ import model from './entitiesModel';
 export default {
   save(doc, {user, language}) {
     if (!doc.sharedId) {
-      doc.user = user;
+      doc.user = user._id;
       doc.creationDate = date.currentUTC();
     }
 

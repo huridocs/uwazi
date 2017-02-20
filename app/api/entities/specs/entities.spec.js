@@ -1,6 +1,5 @@
 import {db_url as dbURL} from 'api/config/database.js';
 import entities from '../entities.js';
-import database from 'api/utils/database.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
@@ -24,14 +23,11 @@ describe('entities', () => {
   });
 
   describe('save', () => {
-    let getDocuments = () => request.get(dbURL + '/_design/entities/_view/all').then((response) => response.json.rows.map(r => r.value));
-    let getDocument = (id = '8202c463d6158af8065022d9b5014ccb') => request.get(dbURL + `/${id}`).then((response) => response.json);
-
     it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
-      const universal_time = 1;
-      spyOn(date, 'currentUTC').and.returnValue(universal_time);
+      const universalTime = 1;
+      spyOn(date, 'currentUTC').and.returnValue(universalTime);
       let doc = {title: 'Batman begins'};
-      let user = {username: 'username'};
+      let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'es'})
       .then(() => entities.get())
@@ -42,14 +38,14 @@ describe('entities', () => {
         expect(createdDocumentEs.sharedId).toBe(createdDocumentEn.sharedId);
 
         expect(createdDocumentEs.title).toBe(doc.title);
-        expect(createdDocumentEs.user).toEqual(user);
+        expect(createdDocumentEs.user.equals(user._id)).toBe(true);
         expect(createdDocumentEs.type).toBe('entity');
-        expect(createdDocumentEs.creationDate).toEqual(universal_time);
+        expect(createdDocumentEs.creationDate).toEqual(universalTime);
 
         expect(createdDocumentEn.title).toBe(doc.title);
-        expect(createdDocumentEn.user).toEqual(user);
+        expect(createdDocumentEn.user.equals(user._id)).toBe(true);
         expect(createdDocumentEn.type).toBe('entity');
-        expect(createdDocumentEn.creationDate).toEqual(universal_time);
+        expect(createdDocumentEn.creationDate).toEqual(universalTime);
         done();
       })
       .catch(catchErrors(done));
@@ -57,13 +53,13 @@ describe('entities', () => {
 
     it('should return the newly created document for the passed language', (done) => {
       let doc = {title: 'the dark knight', fullText: 'the full text!'};
-      let user = {username: 'username'};
+      let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
       .then((createdDocument) => {
         expect(createdDocument._id).toBeDefined();
         expect(createdDocument.title).toBe(doc.title);
-        expect(createdDocument.user).toEqual(user);
+        expect(createdDocument.user.equals(user._id)).toBe(true);
         expect(createdDocument.language).toEqual('en');
         expect(createdDocument.fullText).not.toBeDefined();
         done();
@@ -73,7 +69,7 @@ describe('entities', () => {
 
     it('should index the newly created documents', (done) => {
       let doc = {title: 'the dark knight'};
-      let user = {_id: 'user Id'};
+      let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
       .then(() => {
@@ -179,7 +175,7 @@ describe('entities', () => {
     it('should saveEntityBasedReferences', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       let doc = {title: 'Batman begins'};
-      let user = {username: 'username'};
+      let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'es'})
       .then(() => {
