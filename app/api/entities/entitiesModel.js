@@ -4,6 +4,7 @@ import instanceModel from 'api/odm';
 const entitySchema = new mongoose.Schema({
   language: String,
   sharedId: String,
+  type: String,
   title: String,
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
   file: {

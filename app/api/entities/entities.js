@@ -1,9 +1,6 @@
-import {db_url as dbURL} from 'api/config/database';
-import request from 'shared/JSONRequest';
-import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
+//import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
-import sanitizeResponse from '../utils/sanitizeResponse';
 import settings from '../settings';
 import references from '../references';
 import templates from '../templates';
@@ -16,6 +13,10 @@ export default {
     if (!doc.sharedId) {
       doc.user = user;
       doc.creationDate = date.currentUTC();
+    }
+
+    if (!doc.type) {
+      doc.type = 'entity';
     }
 
     const sharedId = doc.sharedId || ID();

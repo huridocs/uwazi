@@ -50,7 +50,7 @@ describe('documents', () => {
 
       documents.save(doc, {user, language})
       .then((docs) => {
-        expect(entities.save).toHaveBeenCalledWith(doc, {user, language});
+        expect(entities.save).toHaveBeenCalledWith({title: 'Batman begins', type: 'document'}, {user, language});
         expect(docs).toBe('result');
         done();
       })

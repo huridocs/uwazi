@@ -33,7 +33,7 @@ export default (app) => {
 
   app.get('/api/entities', (req, res) => {
     entities.getById(req.query._id, req.language)
-    .then(response => res.json(response))
+    .then(response => res.json({rows: [response]}))
     .catch(error => res.json({error}));
   });
 

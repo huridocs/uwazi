@@ -86,7 +86,7 @@ describe('entities', () => {
       routes.get('/api/entities', req)
       .then((response) => {
         expect(entities.getById).toHaveBeenCalledWith('id', 'lang');
-        expect(response).toBe('result');
+        expect(response).toEqual({rows: ['result']});
         done();
       })
       .catch(catchErrors(done));

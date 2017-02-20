@@ -8,6 +8,7 @@ import model from '../entities/entitiesModel';
 
 export default {
   save(doc, params) {
+    doc.type = 'document';
     return entities.save(doc, params);
   },
 
