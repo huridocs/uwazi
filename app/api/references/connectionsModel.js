@@ -5,6 +5,7 @@ const connectionSchema = new mongoose.Schema({
   sourceDocument: String,
   sourceProperty: String,
   sourceType: String,
+  relationType: String,
   targetDocument: String,
   sourceRange: {
     start: Number,

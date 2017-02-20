@@ -15,7 +15,7 @@ let normalizeConnection = (connection, docId) => {
 
 let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentTemplate = connectedDocument.template;
-  connection.connectedDocumentType = connectedDocument.isEntity ? 'entity' : 'document';
+  connection.connectedDocumentType = connectedDocument.type;
   connection.connectedDocumentTitle = connectedDocument.title;
   connection.connectedDocumentIcon = connectedDocument.icon;
   connection.connectedDocumentPublished = Boolean(connectedDocument.published);
@@ -58,7 +58,7 @@ export default {
   },
 
   countByRelationType(typeId) {
-    return model.count({relationtype: typeId});
+    return model.count({relationType: typeId});
   },
 
   save(connection, language) {

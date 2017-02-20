@@ -5,7 +5,10 @@ export default app => {
   app.post('/api/settings', needsAuthorization, (req, res) => {
     settings.save(req.body)
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(error => {
+      console.log(error);
+      res.json({error}) 
+    });
   });
 
   app.get('/api/settings', (req, res) => {

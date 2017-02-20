@@ -68,6 +68,9 @@ function migrateConnections(connection) {
   let oldId = connection._id;
   delete connection._id;
   delete connection._rev;
+  if (connection.relationType) {
+    connection.relationType = idMapping[connection.relationType];
+  }
   return references.save(connection)
   .then((created) => {
     idMapping[oldId] = created._id;
