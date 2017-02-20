@@ -51,7 +51,10 @@ export default (app) => {
   app.delete('/api/documents', needsAuthorization, (req, res) => {
     documents.delete(req.query.sharedId)
     .then((response) => res.json(response))
-    .catch((error) => res.json({error}, 500));
+    .catch((error) => {
+      console.log(error);
+      res.json({error}, 500);
+    });
   });
 
   app.get('/api/documents/download', (req, res) => {

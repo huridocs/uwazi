@@ -79,7 +79,7 @@ export default {
   },
 
   delete(entity) {
-    const id = entity._id;
+    const id = entity._id.toString();
     return elastic.delete({index: elasticIndex, type: 'entity', id});
   }
 };

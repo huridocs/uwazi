@@ -155,9 +155,10 @@ describe('search', () => {
     it('should delete the index', (done) => {
       spyOn(elastic, 'delete').and.returnValue(Promise.resolve());
 
+      const id = db.id();
+
       const entity = {
-        _id: 'asd1',
-        _rev: '1-a3fs',
+        _id: id,
         type: 'document',
         title: 'Batman indexes'
       };
@@ -165,7 +166,7 @@ describe('search', () => {
       search.delete(entity)
       .then(() => {
         expect(elastic.delete)
-        .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1'});
+        .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: id.toString()});
         done();
       })
       .catch(done.fail);
