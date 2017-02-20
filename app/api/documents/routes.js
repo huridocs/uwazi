@@ -9,7 +9,10 @@ export default (app) => {
   app.post('/api/documents', needsAuthorization, (req, res) => {
     return documents.save(req.body, {user: req.user, language: req.language})
     .then(doc => res.json(doc))
-    .catch((error) => res.json({error}, 500));
+    .catch((error) => {
+      console.log(error);
+      res.json({error}, 500);
+    });
   });
 
   app.post('/api/documents/pdfInfo', (req, res) => {

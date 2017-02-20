@@ -61,7 +61,7 @@ export default {
         return langDoc;
       });
 
-      return model.save(docs).then(() => Promise.all(docs.map((d) => search.index(d))));
+      return model.save(docs).then((savedDocs) => Promise.all(savedDocs.map((d) => search.index(d))));
     })
     .then(() => this.getById(sharedId, language))
     .then(response => {

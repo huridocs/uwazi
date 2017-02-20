@@ -74,6 +74,7 @@ describe('entities', () => {
       entities.save(doc, {user, language: 'en'})
       .then(() => {
         expect(search.index.calls.all()[0].args[0].language).toBe('es');
+        expect(search.index.calls.all()[0].args[0]._id).toBeDefined();
         expect(search.index.calls.all()[1].args[0].language).toBe('pt');
         expect(search.index.calls.all()[2].args[0].language).toBe('en');
         done();

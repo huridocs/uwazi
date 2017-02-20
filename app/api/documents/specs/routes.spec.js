@@ -26,16 +26,17 @@ describe('documents', () => {
     beforeEach(() => {
       req = {
         body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        user: {_id: db.id(), username: 'admin'},
         language: 'es'
       };
     });
 
     it('should need authorization', () => {
+      spyOn(documents, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       expect(routes.post('/api/documents', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with use user', (done) => {
+    it('should create a new document with current user', (done) => {
       spyOn(documents, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/documents', req)
       .then((document) => {
