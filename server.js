@@ -33,13 +33,13 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
   translations.processSystemKeys(systemKeys)
-    .then(function() {
-      http.listen(port, '0.0.0.0', function onStart(err) {
-        if (err) {
-          console.log(err);
-        }
-        console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
-      });
-    })
-    .catch(console.log);
+  .then(function() {
+    http.listen(port, '0.0.0.0', function onStart(err) {
+      if (err) {
+        console.log(err);
+      }
+      console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
+    });
+  })
+  .catch(console.log);
 });

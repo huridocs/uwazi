@@ -51,7 +51,7 @@ export default {
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a',
-    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(2) > label > span'
+    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span'
   },
   documentView: {
     viewer: '#app > div.content > div > div > main',
@@ -60,7 +60,7 @@ export default {
     createParagraphLinkButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(1)',
     createReferenceSidePanelIsActive: '#app > div.content > div > div > aside.side-panel.create-reference.is-active',
     createReferenceSidePanelSelect: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > select',
-    createReferenceSidePanelSelectFirstValue: '3653d89a99f6ef61fdd6b8a00d022a96',
+    createReferenceSidePanelSelectFirstValue: '58ac2ed2bab16361a6b6025f',
     createReferenceSidePanelInput: '.input-group input[type="text"]',
     createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div',
     createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button',

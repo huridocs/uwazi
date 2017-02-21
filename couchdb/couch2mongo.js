@@ -111,6 +111,7 @@ function migrateEntity(entity) {
   });
 
   entity.user = idMapping[entity.user._id];
+  entity.published = entity.published || false;
 
   delete entity._rev;
   entity.template = idMapping[entity.template];
