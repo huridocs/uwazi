@@ -44,6 +44,18 @@ function migrateSettings(setting) {
   let oldId = setting._id;
   delete setting._id;
   delete setting._rev;
+
+  setting.filters.forEach((filter) => {
+    if (idMapping[filter.id]) {
+      filter.id = idMapping[filter.id];
+    }
+    if (filter.items) {
+      filter.items.forEach((item) => {
+        item.id = idMapping[item.id];
+      });
+    }
+  });
+
   return settings.save(setting)
   .then((created) => {
     idMapping[oldId] = created._id;
