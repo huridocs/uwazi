@@ -206,12 +206,12 @@ describe('entities', () => {
   });
 
   describe('get', () => {
-    it('should return matching documents for the conditions', (done) => {
+    it('should return matching entities for the conditions', (done) => {
       let sharedId = 'shared1';
 
       Promise.all([
         entities.get({sharedId, language: 'en'}),
-        entities.get({sharedId, language: 'es'}),
+        entities.get({sharedId, language: 'es'})
       ])
       .then(([enDoc, esDoc]) => {
         expect(enDoc[0].title).toBe('EN');

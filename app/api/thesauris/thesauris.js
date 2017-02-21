@@ -87,6 +87,7 @@ export default {
       template.values = response.map((entity) => {
         return {id: entity.sharedId, label: entity.title, icon: entity.icon};
       });
+      template.type = 'template';
       return template;
     });
   },
@@ -102,7 +103,7 @@ export default {
     }
     return Promise.all([
       model.get(query),
-      templates.get(query)
+      templates.get(query || {isEntity: true})
     ])
     .then(([dictionaries, allTemplates]) => {
       let thesauris = dictionaries.concat(allTemplates);

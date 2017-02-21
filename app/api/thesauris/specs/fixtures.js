@@ -23,11 +23,12 @@ export default {
     ]}
   ],
   templates: [
-    {_id: db.id(entityTemplateId), name: 'entityTemplate', isEntity: true, properties: [{}]}
+    {_id: db.id(entityTemplateId), name: 'entityTemplate', isEntity: true, properties: [{}]},
+    {_id: db.id(), name: 'documentTemplate', properties: [{}]}
   ],
   entities: [
-    {_id: db.id(), sharedId: 'sharedId', title: 'english entity', language: 'en', template: db.id(entityTemplateId), icon: 'Icon'},
-    {_id: db.id(), sharedId: 'sharedId', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon'}
+    {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'english entity', language: 'en', template: db.id(entityTemplateId), icon: 'Icon'},
+    {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon'}
   ]
 };
 

@@ -27,10 +27,12 @@ describe('thesauris', () => {
     it('should return all thesauris including entity templates as options', (done) => {
       thesauris.get(null, 'es')
       .then((dictionaties) => {
+        expect(dictionaties.length).toBe(4);
         expect(dictionaties[0].name).toBe('dictionary');
         expect(dictionaties[1].name).toBe('dictionary 2');
         expect(dictionaties[3].name).toBe('entityTemplate');
         expect(dictionaties[3].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
+        expect(dictionaties[3].type).toBe('template');
         done();
       })
       .catch(catchErrors(done));
