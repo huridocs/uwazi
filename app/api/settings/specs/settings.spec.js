@@ -48,7 +48,8 @@ describe('settings', () => {
         .then(() => {
           expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], {'Page one': 'Page one'});
           done();
-        }).catch(catchErrors(done));
+        })
+        .catch(catchErrors(done));
       });
 
       describe('updating the links', () => {

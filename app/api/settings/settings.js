@@ -1,5 +1,3 @@
-import {db_url as dbURL} from 'api/config/database';
-import request from 'shared/JSONRequest';
 import translations from 'api/i18n/translations';
 import model from './settingsModel';
 

@@ -19,13 +19,11 @@ export default {
         },
         {
           id: 'Filters',
-          label: 'Filters',
-          values: {}
+          label: 'Filters'
         },
         {
           id: 'Menu',
-          label: 'Menu',
-          values: {}
+          label: 'Menu'
         },
         {
           id: entityTemplateId.toString(),

@@ -179,6 +179,19 @@ describe('translations', () => {
   });
 
   describe('updateContext()', () => {
+    it('should add values if the context values are undefined', (done) => {
+      let keyNameChanges = {Password: 'Pass', Account: 'Acc', System: 'Interface'};
+      let deletedProperties = ['Age'];
+      let context = {Pass: 'Pass', Acc: 'Acc', Email: 'Email', Name: 'Name', Interface: 'Interface'};
+
+      translations.updateContext('Menu', 'Menu', keyNameChanges, deletedProperties, context)
+      .then((result) => {
+        expect(result).toBe('ok');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     it('should add a context with his values', (done) => {
       let keyNameChanges = {Password: 'Pass', Account: 'Acc', System: 'Interface'};
       let deletedProperties = ['Age'];

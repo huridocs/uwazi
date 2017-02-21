@@ -1,6 +1,3 @@
-import {db_url as dbURL} from 'api/config/database';
-import request from 'shared/JSONRequest';
-import sanitizeResponse from 'api/utils/sanitizeResponse';
 import settings from 'api/settings';
 
 import instanceModel from 'api/odm';
@@ -127,6 +124,8 @@ export default {
           translation.contexts.push({id, label: newContextName, values});
           return this.save(translation);
         }
+
+        context.values = context.values || {};
 
         deletedProperties.forEach((key) => {
           delete context.values[key];
