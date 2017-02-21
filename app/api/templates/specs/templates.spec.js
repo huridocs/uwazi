@@ -312,20 +312,17 @@ describe('templates', () => {
       .catch(catchErrors(done));
     });
 
-    xit('should throw an error when there is documents using it', (done) => {
+    it('should throw an error when there is documents using it', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(1));
-      request.get(dbURL + '/c08ef2532f0bd008ac5174b45e033c93')
-        .then(template => {
-          return templates.delete(template.json);
-        })
-        .then(() => {
-          done.fail('should not delete the template and throw an error because there is some documents associated with the template');
-        })
-        .catch((error) => {
-          expect(error.key).toEqual('documents_using_template');
-          expect(error.value).toEqual(1);
-          done();
-        });
+      return templates.delete({_id: templateToBeDeleted})
+      .then(() => {
+        done.fail('should not delete the template and throw an error because there is some documents associated with the template');
+      })
+      .catch((error) => {
+        expect(error.key).toEqual('documents_using_template');
+        expect(error.value).toEqual(1);
+        done();
+      });
     });
   });
 
@@ -341,11 +338,11 @@ describe('templates', () => {
 
     it('should return zero when none is using it', (done) => {
       templates.countByThesauri('not_used_relation')
-        .then((result) => {
-          expect(result).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done));
+      .then((result) => {
+        expect(result).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 });

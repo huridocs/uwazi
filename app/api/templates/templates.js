@@ -91,8 +91,6 @@ export default {
 
   /// MAL !! deberia hacer un count de documents y entitites ??? revisar
   delete(template) {
-    let url = `${dbURL}/${template._id}?rev=${template._rev}`;
-
     return this.countByTemplate(template._id)
     .then((count) => {
       if (count > 0) {
