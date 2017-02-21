@@ -8,7 +8,11 @@ const propertiesSchema = new mongoose.Schema({
   name: String,
   filter: Boolean,
   sortable: Boolean,
-  showInCard: Boolean
+  showInCard: Boolean,
+  nestedProperties: [{
+    key: String,
+    label: String
+  }]
 });
 
 const templateSchema = new mongoose.Schema({
