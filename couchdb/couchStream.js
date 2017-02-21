@@ -1,13 +1,11 @@
 import request from '../app/shared/JSONRequest';
 import P from 'bluebird';
-import elastic_mapping from './elastic_mapping';
 
-import db_config from '../app/api/config/database';
-import indexConfig from '../app/api/config/elasticIndexes';
-db_config.db_url = 'http://127.0.0.1:5984/uwazi_development/';
+const COUCHDBURL = process.env.COUCHDB_URL;
+const DATABASE_NAME = process.env.DATABASE_NAME;
+const dbUrl = COUCHDBURL ? `${COUCHDBURL}/${DATABASE_NAME}` : 'http://127.0.0.1:5984/uwazi_development/';
 
-export default function(view, callback) {
-
+export default function (view, callback) {
   const limit = 50;
   const start = Date.now();
   let end;
@@ -17,16 +15,15 @@ export default function(view, callback) {
   let spinner = ['|', '/', '-', '\\'];
 
   return new Promise((resolve, reject) => {
-
     function migrate(offset) {
-      return request.get(db_config.db_url + view + '?limit=' + limit + '&skip=' + offset)
-        .then(function(docsResponse) {
+      return request.get(dbUrl + view + '?limit=' + limit + '&skip=' + offset)
+        .then(function (docsResponse) {
           if (offset >= docsResponse.json.total_rows) {
             end = Date.now();
             return;
           }
 
-          return P.resolve(docsResponse.json.rows).map(function(doc) {
+          return P.resolve(docsResponse.json.rows).map(function (doc) {
             process.stdout.write(`Indexing... ${spinner[pos]} - ${docsIndexed} indexed\r`);
             return callback(doc.value).then(() => {
               docsIndexed += 1;
@@ -34,14 +31,16 @@ export default function(view, callback) {
           }, {concurrency: 1})
             .then(function () {
               pos += 1;
-              if (pos > 3) {pos = 0;}
+              if (pos > 3) {
+                pos = 0;
+              }
               return migrate(docsResponse.json.offset + limit);
             });
         });
     }
 
     migrate(0)
-      .catch(function(error) {
+      .catch(function (error) {
         reject(error);
         console.log('Migration error: ', error);
       })

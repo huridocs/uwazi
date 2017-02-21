@@ -20,6 +20,7 @@ app.use('/flag-images', express.static(path.resolve(__dirname, 'node_modules/rea
 
 require('./app/api/api.js')(app, http);
 require('./app/react/server.js')(app);
+var dbConfig = require('./app/api/config/database');
 var translations = require('./app/api/i18n/translations.js');
 var systemKeys = require('./app/api/i18n/systemKeys.js');
 var ports = require('./app/api/config/ports.js');
@@ -28,7 +29,7 @@ const port = ports[app.get('env')];
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
 
-mongoose.connect('mongodb://localhost/uwazi_development');
+mongoose.connect(dbConfig[app.get('env')]);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
