@@ -6,7 +6,7 @@ import model from './pagesModel';
 
 export default {
   save(doc, user, language) {
-    if (!doc._id) {
+    if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
     }
