@@ -10,12 +10,12 @@ export default {
         {
           id: 'System',
           label: 'System',
-          values: {
-            Password: 'Password',
-            Account: 'Account',
-            Email: 'E-Mail',
-            Age: 'Age'
-          }
+          values: [
+            {key: 'Password', value: 'Password'},
+            {key: 'Account', value: 'Account'},
+            {key: 'Email', value: 'E-Mail'},
+            {key: 'Age', value: 'Age'}
+          ]
         },
         {
           id: 'Filters',
@@ -28,13 +28,13 @@ export default {
         {
           id: entityTemplateId.toString(),
           label: 'Judge',
-          values: {},
+          values: [],
           type: 'Entity'
         },
         {
           id: documentTemplateId.toString(),
           label: 'Court order',
-          values: {},
+          values: [],
           type: 'Document'
         }
       ]
@@ -47,12 +47,12 @@ export default {
         {
           id: 'System',
           label: 'System',
-          values: {
-            Password: 'Contraseña',
-            Account: 'Cuenta',
-            Email: 'Correo electronico',
-            Age: 'Edad'
-          }
+          values: [
+            {key: 'Password', value: 'Contraseña'},
+            {key: 'Account', value: 'Cuenta'},
+            {key: 'Email', value: 'Correo electronico'},
+            {key: 'Age', value: 'Edad'}
+          ]
         }
       ]
     }

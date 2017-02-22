@@ -4,7 +4,10 @@ const contextSchema = new mongoose.Schema({
   id: String,
   label: String,
   type: String,
-  values: mongoose.Schema.Types.Mixed
+  values: [{
+    key: String,
+    value: String
+  }]
 });
 
 const translationSchema = new mongoose.Schema({

@@ -144,12 +144,11 @@ function migrateTranslation(translation) {
     if (context.id !== 'System' && context.id !== 'Menu' && context.id !== 'Filters') {
       context.id = idMapping[context.id];
     }
+    let values = [];
     Object.keys(context.values).forEach((key) => {
-      if (key.match(/\./)) {
-        context.values[key.replace(/\./, '')] = context.values[key];
-        delete context.values[key];
-      }
+      values.push({key, value: context.values[key]});
     });
+    context.values = values;
   });
   return translations.save(translation)
   .then((created) => {
