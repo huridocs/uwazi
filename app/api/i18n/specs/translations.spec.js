@@ -103,6 +103,17 @@ describe('translations', () => {
         done();
       }).catch(catchErrors(done));
     });
+
+    it('should transform values from map to array if its a map', (done) => {
+      translations.save({locale: 'fr', contexts: [ {values: {test: 'value'}}, {values: [{key: 'test2', value: 'value2'}]}]})
+      .then(() => translations.get())
+      .then((result) => {
+        let fr = result.find(r => r.locale === 'fr');
+        expect(fr.contexts[0].values.test).toEqual('value');
+        expect(fr.contexts[1].values.test2).toEqual('value2');
+        done();
+      }).catch(catchErrors(done));
+    });
   });
 
   describe('addEntry()', () => {

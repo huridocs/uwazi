@@ -60,7 +60,7 @@ export default {
     createParagraphLinkButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(1)',
     createReferenceSidePanelIsActive: '#app > div.content > div > div > aside.side-panel.create-reference.is-active',
     createReferenceSidePanelSelect: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > select',
-    createReferenceSidePanelSelectFirstValue: '58ac2ed2bab16361a6b6025f',
+    createReferenceSidePanelSelectFirstValue: '58ad7d240d44252fee4e6216',
     createReferenceSidePanelInput: '.input-group input[type="text"]',
     createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div',
     createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button',

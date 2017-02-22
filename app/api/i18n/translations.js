@@ -36,6 +36,17 @@ export default {
   },
 
   save(translation) {
+    if(translation.contexts) {
+      translation.contexts.forEach((context) => {
+        if (context.values && !Array.isArray(context.values)) {
+          let values = [];
+          Object.keys(context.values).forEach((key) => {
+            values.push({key, value: context.values[key]});
+          });
+          context.values = values;
+        }
+      });
+    }
     return model.save(translation);
   },
 
@@ -45,7 +56,7 @@ export default {
       return Promise.all(result.map((translation) => {
         let context = translation.contexts.find((ctx) => ctx.id === contextId);
         context.values = context.values || [];
-        context.values.push({key, value: defaultValue})
+        context.values.push({key, value: defaultValue});
         return this.save(translation);
       }));
     })
