@@ -1,29 +1,33 @@
 import documentRoutes from '../routes.js';
 import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import templates from '../../templates/templates';
 import thesauris from '../../thesauris/thesauris';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
+import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
+import {db} from 'api/utils';
+
 describe('entities', () => {
   let routes;
 
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
     routes = instrumentRoutes(documentRoutes);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('POST', () => {
     let req;
     beforeEach(() => {
       req = {
-        body: {title: 'Batman begins', template: 'template'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        body: {title: 'Batman begins', template: templateId},
+        user: {username: 'admin'},
         language: 'lang',
         io: {sockets: {emit: () => {}}}
       };
@@ -33,10 +37,11 @@ describe('entities', () => {
       expect(routes.post('/api/entities', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with use user', (done) => {
+    it('should create a new document with current user', (done) => {
       spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
+
       routes.post('/api/entities', req)
       .then((document) => {
         expect(document).toBe('document');
@@ -72,7 +77,7 @@ describe('entities', () => {
 
   describe('GET', () => {
     it('should return matching document', (done) => {
-      spyOn(entities, 'get').and.returnValue(Promise.resolve('result'));
+      spyOn(entities, 'getById').and.returnValue(Promise.resolve('result'));
       let req = {
         query: {_id: 'id'},
         language: 'lang'
@@ -80,8 +85,8 @@ describe('entities', () => {
 
       routes.get('/api/entities', req)
       .then((response) => {
-        expect(entities.get).toHaveBeenCalledWith('id', 'lang');
-        expect(response).toBe('result');
+        expect(entities.getById).toHaveBeenCalledWith('id', 'lang');
+        expect(response).toEqual({rows: ['result']});
         done();
       })
       .catch(catchErrors(done));

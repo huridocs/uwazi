@@ -20,10 +20,7 @@ export default (app) => {
 
   let getDocuments = (id, allLanguages) => {
     if (allLanguages) {
-      return entities.getAllLanguages(id)
-      .then((response) => {
-        return response.rows;
-      });
+      return entities.getAllLanguages(id);
     }
 
     return entities.getById(id).then((doc) => {
@@ -40,7 +37,6 @@ export default (app) => {
         doc.processed = false;
         return doc;
       });
-
       return entities.saveMultiple(docs);
     })
     .then(() => {
@@ -69,12 +65,7 @@ export default (app) => {
         return doc;
       });
 
-      delete conversion.fullText;
-      let saves = [];
-
-      saves.push(entities.saveMultiple(docs));
-
-      return Promise.all(saves);
+      return entities.saveMultiple(docs);
     })
     .catch((err) => {
       if (err.error === 'conversion_error') {

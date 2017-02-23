@@ -5,7 +5,7 @@ export function catchErrors(done) {
     if (error instanceof Error) {
       return done.fail(error.stack);
     }
-    done.fail(JSON.stringify(error));
+    return done.fail(JSON.stringify(error));
   };
 }
 

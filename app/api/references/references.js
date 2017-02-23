@@ -1,8 +1,7 @@
-import {db_url as dbURL} from 'api/config/database';
-import request from 'shared/JSONRequest';
-import sanitizeResponse from 'api/utils/sanitizeResponse';
 import templates from 'api/templates';
 import entities from 'api/entities';
+
+import model from './connectionsModel.js';
 
 let normalizeConnection = (connection, docId) => {
   connection.targetRange = connection.targetRange || {text: ''};
@@ -26,22 +25,23 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
 };
 
 export default {
-  getAll() {
-    return request.get(`${dbURL}/_design/references/_view/all`)
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    });
+  get() {
+    return model.get();
+  },
+
+  getById(id) {
+    return model.getById(id);
   },
 
   getByDocument(id, language) {
-    return request.get(`${dbURL}/_design/references/_view/by_document?key="${id}"`)
+    return model.get({$or: [{targetDocument: id}, {sourceDocument: id}]})
     .then((response) => {
-      let connections = sanitizeResponse(response.json).rows.map((connection) => normalizeConnection(connection, id));
+      let connections = response.map((connection) => normalizeConnection(connection, id));
       let requestDocuments = [];
       connections.forEach((connection) => {
-        let promise = entities.get(connection.connectedDocument, language)
+        let promise = entities.getById(connection.connectedDocument, language)
         .then((connectedDocument) => {
-          normalizeConnectedDocumentData(connection, connectedDocument.rows[0]);
+          normalizeConnectedDocumentData(connection, connectedDocument);
         });
         requestDocuments.push(promise);
       });
@@ -54,36 +54,23 @@ export default {
   },
 
   getByTarget(docId) {
-    return request.get(`${dbURL}/_design/references/_view/by_target?key="${docId}"`)
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    });
+    return model.get({targetDocument: docId});
   },
 
   countByRelationType(typeId) {
-    return request.get(`${dbURL}/_design/references/_view/count_by_relation_type?key="${typeId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
+    return model.count({relationType: typeId});
   },
 
   save(connection, language) {
-    connection.type = 'reference';
-    return request.post(dbURL, connection)
+    return model.save(connection)
     .then((result) => {
-      return request.get(`${dbURL}/${result.json.id}`);
+      return normalizeConnection(result, connection.sourceDocument);
     })
     .then((result) => {
-      return normalizeConnection(result.json, connection.sourceDocument);
-    })
-    .then((result) => {
-      return Promise.all([result, entities.get(result.connectedDocument, language)]);
+      return Promise.all([result, entities.getById(result.connectedDocument, language)]);
     })
     .then(([result, connectedDocument]) => {
-      return normalizeConnectedDocumentData(result, connectedDocument.rows[0]);
+      return normalizeConnectedDocumentData(result, connectedDocument);
     });
   },
 
@@ -97,9 +84,9 @@ export default {
       const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
       const entitySelects = [];
       return Promise.all(selects.map((select) => {
-        return request.get(`${dbURL}/${select.content}`)
+        return templates.getById(select.content)
         .then((result) => {
-          if (result.json.type === 'template') {
+          if (result) {
             entitySelects.push(select.name);
           }
         });
@@ -118,7 +105,6 @@ export default {
         if (typeof propertyValues === 'string') {
           propertyValues = [propertyValues];
         }
-
         return memo.concat(propertyValues.map(value => {
           return {property, value};
         }));
@@ -144,7 +130,7 @@ export default {
         return !isInReferences;
       });
 
-      const deletes = toDelete.map((ref) => this.delete(ref));
+      const deletes = toDelete.map((ref) => this.delete(ref._id));
       const creates = toCreate.map((item) => this.save({
         sourceType: 'metadata',
         sourceDocument: entity.sharedId,
@@ -156,21 +142,11 @@ export default {
     });
   },
 
-  delete(reference) {
-    return request.delete(`${dbURL}/${reference._id}`, {rev: reference._rev})
-    .then((result) => {
-      return result.json;
-    });
+  delete(id) {
+    return model.delete(id);
   },
 
   deleteTextReferences(sharedId, language) {
-    return this.getByDocument(sharedId, language)
-    .then(connections => {
-      const toDelete = connections
-      .filter(c => c.language === language && c.range.text.length)
-      .map(reference => this.delete(reference));
-
-      return Promise.all(toDelete);
-    });
+    return model.delete({sourceDocument: sharedId, language});
   }
 };

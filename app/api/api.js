@@ -1,11 +1,9 @@
 import bodyParser from 'body-parser';
 import languageMiddleware from './utils/languageMiddleware';
-import db_config from './config/database';
 import elasticConfig from './config/elasticIndexes';
 
 export default (app, server) => {
   //set db to use
-  db_config.db_url = db_config[app.get('env')];
   elasticConfig.index = elasticConfig[app.get('env')];
 
   //common middlewares

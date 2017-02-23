@@ -3,19 +3,19 @@ import request from 'shared/JSONRequest';
 import sanitizeResponse from 'api/utils/sanitizeResponse';
 import references from 'api/references/references';
 import translations from 'api/i18n/translations';
+import model from './relationTypesModel';
 
 let checkDuplicated = (relationtype) => {
-  let url = `${dbUrl}/_design/relationtypes/_view/all`;
-  return request.get(url)
+  return model.get()
   .then((response) => {
-    let duplicated = response.json.rows.find((entry) => {
-      let sameEntity = entry.id === relationtype._id;
-      let sameName = entry.value.name.trim().toLowerCase() === relationtype.name.trim().toLowerCase();
+    let duplicated = response.find((entry) => {
+      let sameEntity = entry._id.equals(relationtype._id);
+      let sameName = entry.name.trim().toLowerCase() === relationtype.name.trim().toLowerCase();
       return sameName && !sameEntity;
     });
 
     if (duplicated) {
-      return Promise.reject({json: 'duplicated_entry'});
+      return Promise.reject('duplicated_entry');
     }
   });
 };
@@ -23,9 +23,9 @@ let checkDuplicated = (relationtype) => {
 function _save(relationtype) {
   let values = {};
   values[relationtype.name] = relationtype.name;
-  return request.post(dbUrl, relationtype)
+  return model.save(relationtype)
   .then((response) => {
-    return translations.addContext(response.json.id, relationtype.name, values)
+    return translations.addContext(response._id, relationtype.name, values, 'Connection')
     .then(() => {
       return response;
     });
@@ -41,26 +41,20 @@ function updateTranslation(id, oldName, newName) {
 }
 
 function _update(relationtype) {
-  return request.get(`${dbUrl}/${relationtype._id}`)
+  return model.getById({_id: relationtype._id})
   .then((response) => {
-    updateTranslation(relationtype._id, response.json.name, relationtype.name);
-    return request.post(dbUrl, relationtype);
+    updateTranslation(relationtype._id, response.name, relationtype.name);
+    return model.save(relationtype);
   });
 }
 
 export default {
-  getAll() {
-    return request.get(`${dbUrl}/_design/relationtypes/_view/all`)
-    .then((result) => {
-      return sanitizeResponse(result.json);
-    });
+  get() {
+    return model.get();
   },
 
   getById(id) {
-    return request.get(`${dbUrl}/_design/relationtypes/_view/all?key="${id}"`)
-    .then((result) => {
-      return sanitizeResponse(result.json);
-    });
+    return model.getById(id);
   },
 
   save(relationtype) {
@@ -72,23 +66,18 @@ export default {
       }
       return _update(relationtype);
     })
-    .then(response => request.get(`${dbUrl}/${response.json.id}`))
-    .then(response => response.json)
-    .catch((error) => {
-      return {error: error.json};
-    });
   },
 
-  delete(relationtype) {
-    return references.countByRelationType(relationtype._id)
+  delete(id) {
+    return references.countByRelationType(id)
     .then((referencesUsingIt) => {
       if (referencesUsingIt === 0) {
-        return translations.deleteContext(relationtype._id)
-        .then(() => request.delete(`${dbUrl}/${relationtype._id}`, {rev: relationtype._rev}))
+        return translations.deleteContext(id)
+        .then(() => model.delete(id))
         .then(() => true);
       }
 
       return false;
-    }).catch(console.log);
+    });
   }
 };

@@ -2,8 +2,6 @@ import userRoutes from '../routes.js';
 import users from '../users.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 
-
-
 describe('users routes', () => {
   let routes;
 

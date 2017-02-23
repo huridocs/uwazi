@@ -1,13 +1,13 @@
 import uploadRoutes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
-import {db_url as dbURL} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
+import documents from 'api/documents';
 import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
+
+import {db} from 'api/utils';
+import fixtures, {entityId} from './fixtures.js';
 
 describe('upload routes', () => {
   let routes;
@@ -32,10 +32,12 @@ describe('upload routes', () => {
             size: 171411271};
     req = {language: 'es', user: 'admin', headers: {}, body: {document: 'id'}, files: [file], io};
 
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('POST/upload', () => {
@@ -44,17 +46,20 @@ describe('upload routes', () => {
       routes.post('/api/upload', req)
       .then(() => {
         setTimeout(() => {
-          return request.get(`${dbURL}/_design/entities_and_docs/_view/sharedId?key="id"`)
-          .then((docs) => {
+          return Promise.all([
+            documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
+            documents.get({sharedId: 'id', language: 'en'}, '+fullText')
+          ])
+          .then(([docES, docEN]) => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
-            expect(docs.json.rows[0].value.processed).toBe(true);
-            expect(docs.json.rows[0].value.fullText).toMatch(/Test file/);
-            expect(docs.json.rows[0].value.language).toBe('en');
+            expect(docEN[0].processed).toBe(true);
+            expect(docEN[0].fullText).toMatch(/Test file/);
+            expect(docEN[0].language).toBe('en');
 
-            expect(docs.json.rows[1].value.processed).toBe(true);
-            expect(docs.json.rows[1].value.fullText).toMatch(/Test file/);
-            expect(docs.json.rows[1].value.language).toBe('es');
+            expect(docES[0].processed).toBe(true);
+            expect(docES[0].fullText).toMatch(/Test file/);
+            expect(docES[0].language).toBe('es');
             done();
           })
           .catch(catchErrors(done));
@@ -70,8 +75,8 @@ describe('upload routes', () => {
             setTimeout(() => {
               entities.getAllLanguages('id')
               .then(docs => {
-                expect(docs.rows[0].processed).toBe(false);
-                expect(docs.rows[1].processed).toBe(false);
+                expect(docs[0].processed).toBe(false);
+                expect(docs[1].processed).toBe(false);
                 done();
               });
             }, 500);
@@ -89,11 +94,12 @@ describe('upload routes', () => {
         routes.post('/api/upload', req)
         .then((response) => {
           expect(response).toEqual(file);
-          return request.get(`${dbURL}/8202c463d6158af8065022d9b5014ccb`);
+          return documents.getById('id', 'es');
         })
         .then((doc) => {
-          expect(doc.json.file).toEqual(file);
-          expect(doc.json.uploaded).toEqual(true);
+          expect(doc.file.originalname).toEqual(file.originalname);
+          expect(doc.file.filename).toEqual(file.filename);
+          expect(doc.uploaded).toEqual(true);
           done();
         })
         .catch(done.fail);
@@ -107,7 +113,7 @@ describe('upload routes', () => {
     });
 
     it('should reupload a document', (done) => {
-      req.body.document = '8202c463d6158af8065022d9b5014ccb';
+      req.body.document = entityId;
       routes.post('/api/reupload', req)
       .then(response => {
         expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');

@@ -3,13 +3,17 @@ import request from 'shared/JSONRequest.js';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
 import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
+import instanceModel from 'api/odm';
+import templatesModel from './templatesModel.js';
+
+const model = instanceModel(templatesModel);
 
 let checkDuplicated = (template) => {
-  return request.get(`${dbURL}/_design/templates/_view/all`)
-  .then((response) => {
-    let duplicated = response.json.rows.find((entry) => {
-      let sameEntity = entry.id === template._id;
-      let sameName = entry.value.name.trim().toLowerCase() === template.name.trim().toLowerCase();
+  return model.get()
+  .then((templates) => {
+    let duplicated = templates.find((entry) => {
+      let sameEntity = entry._id.equals(template._id);
+      let sameName = entry.name.trim().toLowerCase() === template.name.trim().toLowerCase();
       return sameName && !sameEntity;
     });
 
@@ -26,7 +30,7 @@ let addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  translations.addContext(template._id, template.name, values);
+  return translations.addContext(template._id, template.name, values, template.isEntity ? 'Entity' : 'Document');
 };
 
 let updateTranslation = (currentTemplate, template) => {
@@ -45,47 +49,48 @@ let updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
+  return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 let save = (template) => {
   return checkDuplicated(template)
   .then(() => validateTemplate(template))
   .then(() => {
-    return request.post(dbURL, template);
-  })
-  .then((response) => {
-    return response.json;
+    return model.save(template);
   });
 };
 
 export default {
   save(template) {
-    template.type = 'template';
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
 
     if (template._id) {
-      return request.get(`${dbURL}/${template._id}`)
-      .then((response) => {
-        return updateTranslation(response.json, template);
-      })
-      .then(() => save(template))
-      .then(response => this.getById(response.id));
+      return this.getById(template._id)
+      .then((currentTemplate) => updateTranslation(currentTemplate, template))
+      .then(() => save(template));
     }
 
     return save(template)
-    .then((response) => {
-      template._id = response.id;
-      addTemplateTranslation(template);
-      return this.getById(response.id);
+    .then((newTemplate) => {
+      //maybe this is not a good idea (having an unhandled async process)
+      return addTemplateTranslation(newTemplate)
+      .then(() => newTemplate);
+      //
+      //return newTemplate;
     });
+  },
+
+  get(query) {
+    return model.get(query);
+  },
+
+  getById(templateId) {
+    return model.getById(templateId);
   },
 
   /// MAL !! deberia hacer un count de documents y entitites ??? revisar
   delete(template) {
-    let url = `${dbURL}/${template._id}?rev=${template._rev}`;
-
     return this.countByTemplate(template._id)
     .then((count) => {
       if (count > 0) {
@@ -94,32 +99,22 @@ export default {
       return translations.deleteContext(template._id);
     })
     .then(() => {
-      return request.delete(url);
+      return model.delete(template._id);
     })
     .then((response) => {
-      return response.json;
+      return {ok: true};
     });
   },
 
   countByTemplate(templateId) {
-    return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
-  },
-
-  getById(templateId) {
-    const id = '?key="' + templateId + '"';
-    const url = dbURL + '/_design/templates/_view/all' + id;
-
-    return request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value);
-      return response.json.rows[0];
-    });
+    return Promise.resolve(0);
+    //return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
+    //.then((response) => {
+      //if (!response.json.rows.length) {
+        //return 0;
+      //}
+      //return response.json.rows[0].value;
+    //});
   },
 
   getEntitySelectNames(templateId) {
@@ -140,19 +135,6 @@ export default {
   },
 
   countByThesauri(thesauriId) {
-    return request.get(`${dbURL}/_design/templates/_view/count_by_thesauri?key="${thesauriId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
-  },
-
-  selectOptions() {
-    return request.get(`${dbURL}/_design/templates/_view/select_options`)
-    .then((response) => {
-      return response.json.rows.map(row => row.value);
-    });
+    return model.count({'properties.content': thesauriId});
   }
 };

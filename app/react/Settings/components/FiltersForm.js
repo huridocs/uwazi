@@ -73,7 +73,7 @@ export class FiltersForm extends Component {
     settings.filters = this.state.activeFilters;
     SettingsAPI.save(settings)
     .then((result) => {
-      this.props.notify(t('System', 'Settings updated.'), 'success');
+      this.props.notify(t('System', 'Settings updated'), 'success');
       this.props.setSettings(Object.assign(settings, result));
     });
   }

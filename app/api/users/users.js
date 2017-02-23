@@ -1,30 +1,33 @@
-import {db_url as dbURL} from '../config/database.js';
-import request from 'shared/JSONRequest.js';
 import SHA256 from 'crypto-js/sha256';
 import mailer from '../utils/mailer';
 
+import model from './usersModel';
+import passwordRecoveriesModel from './passwordRecoveriesModel';
+
 export default {
-  update(userProperties) {
-    if (userProperties.password) {
-      userProperties.password = SHA256(userProperties.password).toString();
+  update(user) {
+    if (user.password) {
+      user.password = SHA256(user.password).toString();
     }
 
-    return request.get(`${dbURL}/${userProperties._id}`)
-    .then((user) => {
-      return request.post(dbURL, Object.assign(user.json, userProperties));
-    })
-    .then((response) => {
-      return response.json;
-    });
+    return model.save(user);
+  },
+
+  get(query) {
+    return model.get(query);
+  },
+
+  getById(id) {
+    return model.getById(id);
   },
 
   recoverPassword(email, domain) {
     let key = SHA256(email + Date.now()).toString();
-    return request.get(`${dbURL}/_design/users/_view/all`)
+    return model.get({email})
     .then((results) => {
-      let user = results.json.rows.find((row) => row.value.email === email);
+      const user = results[0];
       if (user) {
-        return request.post(`${dbURL}`, {key, user: user.id, type: 'recoverpassword'})
+        return passwordRecoveriesModel.save({key, user: user._id})
         .then(() => {
           let mailOptions = {
             from: '"Uwazi" <no-reply@uwazi.com>',
@@ -39,11 +42,13 @@ export default {
   },
 
   resetPassword(credentials) {
-    return request.get(`${dbURL}/_design/recoverpassword/_view/all?key="${credentials.key}"`)
+    return passwordRecoveriesModel.get({key: credentials.key})
     .then((response) => {
-      if (response.json.rows.length) {
-        request.delete(`${dbURL}/${response.json.rows[0].id}`, {rev: response.json.rows[0].value._rev});
-        return this.update({_id: response.json.rows[0].value.user, password: credentials.password});
+      if (response.length) {
+        return Promise.all([
+          passwordRecoveriesModel.delete(response[0]._id),
+          this.update({_id: response[0].user, password: credentials.password})
+        ]);
       }
     });
   }

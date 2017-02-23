@@ -4,7 +4,8 @@ import needsAuthorization from '../auth/authMiddleware';
 export default (app) => {
   app.get('/api/search/count_by_template', (req, res) => {
     return search.countByTemplate(req.query.templateId)
-    .then(results => res.json(results));
+    .then(results => res.json(results))
+    .catch(error => res.json({error}));
   });
 
   app.get('/api/search', (req, res) => {
@@ -21,17 +22,19 @@ export default (app) => {
       req.query.aggregations = JSON.parse(req.query.aggregations);
     }
     return search.search(req.query, req.language)
-    .then(results => res.json(results));
+    .then(results => res.json(results))
+    .catch(error => res.json({error}));
   });
 
   app.get('/api/search/match_title', (req, res) => {
     return search.matchTitle(req.query.searchTerm, req.language)
-    .then(results => res.json(results));
+    .then(results => res.json(results))
+    .catch(error => res.json({error}));
   });
 
   app.get('/api/search/unpublished', needsAuthorization, (req, res) => {
     search.getUploadsByUser(req.user, req.language)
-    .then(response => res.json(response))
-    .catch(error => res.json({error: error}));
+    .then(response => res.json({rows: response}))
+    .catch(error => res.json({error}));
   });
 };

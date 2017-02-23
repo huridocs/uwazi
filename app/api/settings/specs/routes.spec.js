@@ -12,7 +12,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
-    it('should ask relationtypes for all documents', (done) => {
+    it('should respond with settings', (done) => {
       spyOn(settings, 'get').and.returnValue(mockRequest);
       routes.get('/api/settings')
       .then((response) => {
@@ -25,7 +25,7 @@ describe('relationtypes routes', () => {
   });
 
   describe('POST', () => {
-    it('should save the relationtype', (done) => {
+    it('should save settings', (done) => {
       spyOn(settings, 'save').and.returnValue(mockRequest);
       routes.post('/api/settings', {body: {collection_name: 'my new name'}})
       .then((response) => {

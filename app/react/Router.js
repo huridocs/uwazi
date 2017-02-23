@@ -143,6 +143,7 @@ function handleRoute(res, renderProps, req) {
         renderPage(initialData, true);
       })
       .catch((error) => {
+        console.log('ERROR !');
         console.trace(error);
       });
     });

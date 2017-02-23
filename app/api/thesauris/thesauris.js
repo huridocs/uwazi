@@ -1,10 +1,8 @@
-import request from '../../shared/JSONRequest.js';
-import {db_url as dbUrl} from '../config/database.js';
-import sanitizeResponse from 'api/utils/sanitizeResponse.js';
 import entities from 'api/entities/entities';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import {generateIds, getUpdatedNames, getDeletedProperties} from 'api/templates/utils';
+import model from './dictionariesModel';
 
 let autoincrementValuesId = (thesauri) => {
   thesauri.values = generateIds(thesauri.values);
@@ -12,17 +10,16 @@ let autoincrementValuesId = (thesauri) => {
 };
 
 let checkDuplicated = (thesauri) => {
-  let url = `${dbUrl}/_design/thesauris/_view/all`;
-  return request.get(url)
-  .then((response) => {
-    let duplicated = response.json.rows.find((entry) => {
-      let sameEntity = entry.id === thesauri._id;
-      let sameName = entry.value.name.trim().toLowerCase() === thesauri.name.trim().toLowerCase();
+  return model.get()
+  .then((thesauris) => {
+    let duplicated = thesauris.find((entry) => {
+      let sameEntity = entry._id.equals(thesauri._id);
+      let sameName = entry.name.trim().toLowerCase() === thesauri.name.trim().toLowerCase();
       return sameName && !sameEntity;
     });
 
     if (duplicated) {
-      return Promise.reject({json: 'duplicated_entry'});
+      return Promise.reject('duplicated_entry');
     }
   });
 };
@@ -34,10 +31,10 @@ function _save(thesauri) {
   }, {});
   context[thesauri.name] = thesauri.name;
 
-  return request.post(dbUrl, thesauri)
+  return model.save(thesauri)
   .then((response) => {
-    translations.addContext(response.json.id, thesauri.name, context);
-    return response;
+    return translations.addContext(response._id, thesauri.name, context, 'Dictionary')
+    .then(() => response);
   });
 }
 
@@ -57,14 +54,14 @@ let updateTranslation = (current, thesauri) => {
 
   context[thesauri.name] = thesauri.name;
 
-  translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+  return translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
 function _update(thesauri) {
-  return request.get(`${dbUrl}/${thesauri._id}`)
-  .then((response) => {
-    updateTranslation(response.json, thesauri);
-    return request.post(dbUrl, thesauri);
+  return model.getById(thesauri._id)
+  .then((currentThesauri) => {
+    return updateTranslation(currentThesauri, thesauri)
+    .then(() => model.save(thesauri));
   });
 }
 
@@ -81,12 +78,6 @@ export default {
         return _update(thesauri);
       }
       return _save(thesauri);
-    })
-    .then((response) => {
-      return this.dictionaries(response.json.id).then(t => t.rows[0]);
-    })
-    .catch((error) => {
-      return {error: error.json};
     });
   },
 
@@ -96,26 +87,33 @@ export default {
       template.values = response.map((entity) => {
         return {id: entity.sharedId, label: entity.title, icon: entity.icon};
       });
+      template.type = 'template';
       return template;
     });
   },
 
+  getById(id) {
+    return model.getById(id);
+  },
+
   get(thesauriId, language) {
-    let url = `${dbUrl}/_design/thesauris/_view/all`;
+    let query;
     if (thesauriId) {
-      url += `?key="${thesauriId}"`;
+      query = {_id: thesauriId};
     }
-    return request.get(url)
-    .then((response) => {
-      let thesauris = sanitizeResponse(response.json);
-      let requests = thesauris.rows.map((result, index) => {
-        if (result.type === 'template') {
+    return Promise.all([
+      model.get(query),
+      templates.get(query || {isEntity: true})
+    ])
+    .then(([dictionaries, allTemplates]) => {
+      let thesauris = dictionaries.concat(allTemplates);
+      let requests = thesauris.map((result, index) => {
+        if (result.isEntity === true) {
           return this.templateToThesauri(result, language)
           .then((templateTransformedInThesauri) => {
-            thesauris.rows[index] = templateTransformedInThesauri;
+            thesauris[index] = templateTransformedInThesauri;
           });
         }
-
         return Promise.resolve(result);
       });
 
@@ -123,36 +121,24 @@ export default {
       .then(() => {
         return thesauris;
       });
-    })
-    .catch((error) => {
-      return {error: error.json};
     });
   },
 
-  dictionaries(thesauriId) {
-    let url = `${dbUrl}/_design/thesauris/_view/dictionaries`;
-    if (thesauriId) {
-      url += `?key="${thesauriId}"`;
-    }
-
-    return request.get(url)
-    .then((response) => {
-      return sanitizeResponse(response.json);
-    })
-    .catch((error) => {
-      return {error: error.json};
-    });
+  dictionaries(query) {
+    return model.get(query);
   },
 
-  delete(thesauriId, rev) {
-    return templates.countByThesauri(thesauriId)
+  delete(id) {
+    return templates.countByThesauri(id)
     .then((count) => {
       if (count) {
         return Promise.reject({key: 'templates_using_dictionary', value: count});
       }
-      return translations.deleteContext(thesauriId);
+      return translations.deleteContext(id);
     })
-    .then(() => request.delete(`${dbUrl}/${thesauriId}`, {rev}))
-    .then((response) => response.json);
+    .then(() => model.delete(id))
+    .then(() => {
+      return {ok: true};
+    });
   }
 };

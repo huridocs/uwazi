@@ -1,62 +1,65 @@
+import {db} from 'api/utils';
+const entityTemplateId = db.id();
+const documentTemplateId = db.id();
 export default {
-  docs: [
+  translations: [
     {
-      _id: '2',
-      type: 'translation',
+      _id: db.id(),
       locale: 'en',
       contexts: [
         {
           id: 'System',
           label: 'System',
-          values: {
-            'Password': 'Password',
-            'Account': 'Account',
-            'Email': 'E-Mail',
-            'Age': 'Age'
-          }
+          values: [
+            {key: 'Password', value: 'Password'},
+            {key: 'Account', value: 'Account'},
+            {key: 'Email', value: 'E-Mail'},
+            {key: 'Age', value: 'Age'}
+          ]
         },
         {
           id: 'Filters',
-          label: 'Filters',
-          values: {}
+          label: 'Filters'
         },
         {
           id: 'Menu',
-          label: 'Menu',
-          values: {}
+          label: 'Menu'
         },
         {
-          id: 'entity_template_id',
+          id: entityTemplateId.toString(),
           label: 'Judge',
-          values: {}
+          values: [],
+          type: 'Entity'
         },
         {
-          id: 'document_template_id',
+          id: documentTemplateId.toString(),
           label: 'Court order',
-          values: {}
+          values: [],
+          type: 'Document'
         }
       ]
     },
     {
-      _id: '3',
+      _id: db.id(),
       type: 'translation',
       locale: 'es',
       contexts: [
         {
           id: 'System',
           label: 'System',
-          values: {
-            Password: 'Contraseña',
-            Account: 'Cuenta',
-            Email: 'Correo electronico',
-            Age: 'Edad'
-          }
+          values: [
+            {key: 'Password', value: 'Contraseña'},
+            {key: 'Account', value: 'Cuenta'},
+            {key: 'Email', value: 'Correo electronico'},
+            {key: 'Age', value: 'Edad'}
+          ]
         }
       ]
-    },
+    }
+  ],
+  settings: [
     {
-      _id: '4',
-      type: 'settings',
+      _id: db.id(),
       languages: [
         {
           key: 'es',
@@ -68,16 +71,23 @@ export default {
           default: true
         }
       ]
-    },
+    }
+  ],
+  templates: [
     {
-      _id: 'entity_template_id',
+      _id: entityTemplateId,
       type: 'template',
       isEntity: true
     },
     {
-      _id: 'document_template_id',
+      _id: documentTemplateId,
       type: 'template',
       isEntity: false
     }
   ]
+};
+
+export {
+  entityTemplateId,
+  documentTemplateId
 };
