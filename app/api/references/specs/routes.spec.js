@@ -8,13 +8,8 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 describe('references routes', () => {
   let routes;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     routes = instrumentRoutes(referencesRroutes);
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(catchErrors(done));
-
     spyOn(references, 'save').and.returnValue(Promise.resolve());
     spyOn(references, 'delete').and.returnValue(Promise.resolve());
   });
@@ -34,11 +29,11 @@ describe('references routes', () => {
 
   describe('DELETE', () => {
     it('should delete the reference', (done) => {
-      let req = {query: {name: 'created_reference'}};
+      let req = {query: {_id: 'to_delete_id'}};
 
       routes.delete('/api/references', req)
       .then(() => {
-        expect(references.delete).toHaveBeenCalledWith(req.query);
+        expect(references.delete).toHaveBeenCalledWith(req.query._id);
         done();
       })
       .catch(catchErrors(done));

@@ -30,14 +30,6 @@ exec('cd nightmare/fixtures;./restore.sh', (error) => {
     console.log(error);
     return;
   }
-  exec('cd couchdb;node reset_development_elastic_index.js', (err) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    translations.processSystemKeys(systemKeys).then(() => {
-      console.log('here');
-      jasmine.execute();
-    });
-  }).stdout.pipe(process.stdout);
-}).stdout.pipe(process.stdout);
+  jasmine.execute();
+})
+.stdout.pipe(process.stdout);

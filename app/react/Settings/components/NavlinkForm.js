@@ -72,7 +72,7 @@ export class NavlinkForm extends Component {
 
     let className = 'list-group-item' + (isDragging ? ' dragging' : '');
     let titleClass = 'input-group';
-    
+
     if (formState.$form.errors[`links.${index}.title.required`]) {
       className += ' error';
       titleClass += ' has-error';

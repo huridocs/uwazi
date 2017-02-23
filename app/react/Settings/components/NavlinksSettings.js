@@ -49,9 +49,9 @@ export class NavlinksSettings extends Component {
               <ul className="list-group">
                 {links.map((link, i) => {
                   return (
-                    <NavlinkForm key={link.localID}
+                    <NavlinkForm key={link.localID || link._id}
                                  index={i}
-                                 id={link.localID}
+                                 id={link.localID || link._id}
                                  link={link}
                                  sortLink={this.props.sortLink} />
                   );

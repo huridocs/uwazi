@@ -1,25 +1,25 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import references from '../references.js';
-import database from 'api/utils/database.js';
-import fixtures, {template} from './fixtures.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+
+import {db} from 'api/utils';
+import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
 
 describe('references', () => {
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
-  describe('getAll()', () => {
-    it('should return all the references in the database', (done) => {
-      references.getAll()
+  describe('get()', () => {
+    it('should return all the references', (done) => {
+      references.get()
       .then((result) => {
-        expect(result.rows.length).toBe(9);
-        expect(result.rows[0].type).toBe('reference');
-        expect(result.rows[0].title).toBe('reference1');
+        expect(result.length).toBe(9);
+        expect(result[0].title).toBe('reference1');
         done();
       }).catch(catchErrors(done));
     });
@@ -47,8 +47,8 @@ describe('references', () => {
         sharedId: 'entity_id',
         template,
         metadata: {
-          selectName: 'selectValueID',
-          multiSelectName: ['value1ID', 'value2ID']
+          selectName: selectValueID,
+          multiSelectName: [value1ID, value2ID]
         }
       };
 
@@ -59,12 +59,12 @@ describe('references', () => {
       .then((refs) => {
         expect(refs.length).toBe(5);
 
-        expect(refs.find((ref) => ref.targetDocument === 'selectValueID').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === 'selectValueID').sourceType).toBe('metadata');
-        expect(refs.find((ref) => ref.targetDocument === 'value1ID').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === 'value2ID' && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === 'value2ID' && !ref.sourceType)._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
-        expect(refs.find((ref) => ref.sourceDocument === 'value2ID')._id).toBe('inbound');
+        expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceDocument).toBe('entity_id');
+        expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceType).toBe('metadata');
+        expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
+        expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
+        expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
+        expect(refs.find((ref) => ref.sourceDocument === value2ID)._id.toString()).toBe(inbound.toString());
 
         done();
       })
@@ -77,7 +77,7 @@ describe('references', () => {
         sharedId: 'entity_id',
         template,
         metadata: {
-          selectName: 'selectValueID'
+          selectName: selectValueID
         }
       };
 
@@ -99,18 +99,18 @@ describe('references', () => {
           sharedId: 'entity_id',
           template,
           metadata: {
-            selectName: 'selectValueID',
-            multiSelectName: ['value1ID', 'value2ID']
+            selectName: selectValueID,
+            multiSelectName: [value1ID, value2ID]
           }
         };
 
         let generatedIds = [];
         references.saveEntityBasedReferences(entity, 'es')
         .then((createdReferences) => {
-          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value1ID')._id);
-          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === 'value2ID')._id);
-          entity.metadata.selectName = 'value1ID';
-          entity.metadata.multiSelectName = ['value2ID'];
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === value1ID)._id);
+          generatedIds.push(createdReferences.find((ref) => ref.targetDocument === value2ID)._id);
+          entity.metadata.selectName = value1ID;
+          entity.metadata.multiSelectName = [value2ID];
           return references.saveEntityBasedReferences(entity, 'es');
         })
         .then(() => {
@@ -119,11 +119,11 @@ describe('references', () => {
         .then((refs) => {
           expect(refs.length).toBe(4);
 
-          expect(refs.find((ref) => ref.targetDocument === 'value1ID')._id).not.toBe(generatedIds[0]);
-          expect(refs.find((ref) => ref.targetDocument === 'value1ID').sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === 'value2ID' && ref.sourceType === 'metadata')._id).toBe(generatedIds[1]);
-          expect(refs.find((ref) => ref.targetDocument === 'value2ID' && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === 'value2ID' && !ref.sourceType)._id).toBe('c08ef2532f0bd008ac5174b45e033c10');
+          expect(refs.find((ref) => ref.targetDocument === value1ID)._id).not.toBe(generatedIds[0]);
+          expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
+          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString()).toBe(generatedIds[1].toString());
+          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
+          expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
 
           done();
         })
@@ -189,9 +189,9 @@ describe('references', () => {
     it('should return all the references with specific target document', (done) => {
       references.getByTarget('target')
       .then((result) => {
-        expect(result.rows.length).toBe(2);
-        expect(result.rows[0].targetDocument).toBe('target');
-        expect(result.rows[1].targetDocument).toBe('target');
+        expect(result.length).toBe(2);
+        expect(result[0].targetDocument).toBe('target');
+        expect(result[1].targetDocument).toBe('target');
         done();
       }).catch(catchErrors(done));
     });
@@ -218,7 +218,7 @@ describe('references', () => {
   describe('save()', () => {
     describe('when the reference did not exist', () => {
       it('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
-        references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: 'range', targetRange: {text: 'text'}}, 'es')
+        references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: {text: 'range'}, targetRange: {text: 'text'}}, 'es')
         .then((result) => {
           expect(result.sourceDocument).toBe('sourceDoc');
           expect(result.connectedDocument).toBe('doc3');
@@ -226,12 +226,11 @@ describe('references', () => {
           expect(result.connectedDocumentType).toBe('entity');
           expect(result.connectedDocumentTitle).toBe('doc3 title');
           expect(result.connectedDocumentPublished).toBe(true);
-          expect(result.range).toBe('range');
+          expect(result.range).toEqual({text: 'range'});
           expect(result.text).toBe('text');
           expect(result.inbound).toBe(false);
 
           expect(result._id).toBeDefined();
-          expect(result._rev).toBeDefined();
           done();
         })
         .catch(catchErrors(done));
@@ -240,36 +239,29 @@ describe('references', () => {
 
     describe('when the reference exists', () => {
       it('should update it', (done) => {
-        let previousRev;
-        request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c01`)
-        .then((result) => {
-          let reference = result.json;
+        references.getById(sourceDocument)
+        .then((reference) => {
           reference.sourceDocument = 'source1';
-          previousRev = reference._rev;
           return references.save(reference, 'es');
         })
         .then((result) => {
           expect(result.sourceDocument).toBe('source1');
-          expect(result._id).toBe('c08ef2532f0bd008ac5174b45e033c01');
-          expect(result._rev !== previousRev).toBe(true);
+          expect(result._id.equals(sourceDocument)).toBe(true);
           done();
-        }).catch(catchErrors(done));
+        })
+        .catch(catchErrors(done));
       });
     });
   });
 
   describe('delete()', () => {
     it('should delete the reference', (done) => {
-      request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`)
-      .then((result) => {
-        return references.delete(result.json);
-      })
+      return references.delete(sourceDocument)
       .then(() => {
-        return request.get(`${dbURL}/c08ef2532f0bd008ac5174b45e033c00`);
+        return references.getById(sourceDocument);
       })
-      .catch((result) => {
-        expect(result.json.error).toBe('not_found');
-        expect(result.json.reason).toBe('deleted');
+      .then((result) => {
+        expect(result).toBe(null);
         done();
       });
     });
@@ -283,7 +275,8 @@ describe('references', () => {
       })
       .then(results => {
         expect(results.length).toBe(3);
-        expect(results.filter(r => r._id === 'c08ef2532f0bd008ac5174b45e033c03').length).toBe(0);
+        expect(results.filter(r => r.sourceDocument === 'source2').length).toBe(1);
+        expect(results.filter(r => r.sourceDocument === 'source2')[0].language).toBe('en');
         done();
       });
     });

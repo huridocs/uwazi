@@ -2,6 +2,7 @@
   "presets": ["es2015", "react"],
   "retainLines": "true",
   "plugins": [
+    "transform-es2015-typeof-symbol",
     "transform-class-properties",
     "add-module-exports",
     ['module-resolver', {

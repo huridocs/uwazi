@@ -1,19 +1,46 @@
+import {db} from 'api/utils';
+
+const batmanFinishesId = db.id();
+const syncPropertiesEntityId = db.id();
+const templateId = db.id();
+const referenceId = db.id();
+
 export default {
-  "docs":[
-    {"_id":"8202c463d6158af8065022d9b5014a18", "type":"document","title":"Batman finishes", "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014a18.pdf'}},
-    {"_id":"8202c463d6158af8065022d9b5014ccb", "sharedId": "id", "language":"es", "fullText":"full", "type":"document","title":"Penguin almost done", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf'}},
-    {"_id":"8202c463d6158af8065022d9b5014cc1", "sharedId": "id", "language":"en", "type":"document","title":"Penguin almost done english", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
-    {"_id":"8202c463d6158af8065022d9b5014cc2", "sharedId": "id", "language":"pt", "type":"document","title":"Penguin almost done pt", "creationDate": '1', "published": true, "user" : {"_id": "c08ef2532f0bd008ac5174b45e033c93"}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
-    {"_id":"d0298a48d1221c5ceb53c4879301507f", "type":"document","title":"Right there", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c95"}},
-    {"_id":"d0298a48d1221c5ceb53c4879301508f", "type":"document","title":"unpublished", "user":{"_id": "c08ef2532f0bd008ac5174b45e033c94"}},
-    // metadata property name changes
-    {"_id":"d0298a48d1221c5ceb53c48793015080", "type":"document","title":"doc1", "template": 'template1', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
-    {"_id":"d0298a48d1221c5ceb53c48793015081", "type":"document","title":"doc2", "template": 'template1', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
-    {"_id":"d0298a48d1221c5ceb53c48793015082", "type":"document","title":"doc3", "template": 'template2', "metadata": {"property1": 'value1', "property2": 'value2', "property3": 'value3'}},
-    //references
-    {"_id":"c08ef2532f0bd008ac5174b45e033c00","type":"reference", "title":"reference1", "sourceDocument": "8202c463d6158af8065022d9b5014a18", relationtype: 'relation1'},
-    {"_id":"c08ef2532f0bd008ac5174b45e033c01","type":"reference", "title":"reference2", "sourceDocument": "source2", relationtype: 'relation2', "targetDocument": "8202c463d6158af8065022d9b5014a18"},
-    //settings
-    {"_id":"c08ef2532f0bd008ac5174b45e033c02","type":"settings", "languages": [{key: 'es'}, {key: 'en'}, {key: 'pt'}]}
+  entities: [
+    {_id: batmanFinishesId, sharedId: 'shared', template: templateId,  language: 'en', title: 'Batman finishes', published: true, user: {username: 'username'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
+    {_id: db.id(), sharedId: 'shared', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, user: {username: 'username'}, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf'}},
+    {
+      _id: db.id(), sharedId: 'shared', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'},
+      user: {username: 'username'}
+    },
+    //select/multiselect/date sync
+    {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', language: 'en', title: 'EN', published: true, metadata: {text: 'text'}, user: {username: 'username'}},
+    {_id: db.id(), template: templateId, sharedId: 'shared1', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: {text: 'text'}, user: {username: 'username'}},
+    {_id: db.id(), template: templateId, sharedId: 'shared1', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {text: 'text'}, user: {username: 'username'}}
+  ],
+  settings: [
+    {_id: db.id(), languages: [{key: 'es'}, {key: 'pt'}, {key: 'en'}]}
+  ],
+  templates: [
+    {_id: templateId, name: 'template_test', properties: [
+      {type: 'text', name: 'text'},
+      {type: 'select', name: 'select'},
+      {type: 'multiselect', name: 'multiselect'},
+      {type: 'date', name: 'date'},
+      {type: 'multidate', name: 'multidate'},
+      {type: 'multidaterange', name: 'multidaterange'}
+    ]
+    }
+  ],
+  connections: [
+    {_id: referenceId, title: 'reference1', sourceDocument: 'shared', relationtype: 'relation1'},
+    {_id: db.id(), title: 'reference2', sourceDocument: 'source2', relationtype: 'relation2', targetDocument: 'shared'},
+    {_id: db.id(), title: 'reference3', sourceDocument: 'another', relationtype: 'relation3', targetDocument: 'document'}
   ]
+};
+
+export {
+  batmanFinishesId,
+  syncPropertiesEntityId,
+  templateId
 };

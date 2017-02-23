@@ -41,7 +41,7 @@ export class CollectionSettings extends Component {
     settings.site_name = this.state.siteName;
     SettingsAPI.save(settings)
     .then((result) => {
-      this.props.notify(t('System', 'Settings updated.'), 'success');
+      this.props.notify(t('System', 'Settings updated'), 'success');
       this.props.setSettings(result);
     });
   }

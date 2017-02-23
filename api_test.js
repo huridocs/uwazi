@@ -1,6 +1,9 @@
 var exec = require('child_process').exec;
 require('babel-core/register')(); //babel polyfill ES6
 
+var mongoose = require('mongoose');
+mongoose.Promise = Promise;
+
 process.on('warning', (warning) => {
   console.log(warning.name);
   console.log(warning.message);
@@ -46,6 +49,11 @@ jasmine.addReporter(new SpecReporter({
   }
 }));
 
-exec('./couchdb/restore_views.sh uwazi_testing', function () {
-  jasmine.execute();
-}).stdout.pipe(process.stdout);
+mongoose.connect('mongodb://localhost/uwazi_testing');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  mongoose.connection.db.dropDatabase(function () {
+    jasmine.execute();
+  });
+});

@@ -9,17 +9,16 @@ export default app => {
 
   app.get('/api/relationtypes', (req, res) => {
     if (req.query._id) {
-      relationtypes.getById(req.query._id)
-      .then((response) => res.json(response));
-      return;
+      return relationtypes.getById(req.query._id)
+      .then(response => res.json({rows: [response]}));
     }
 
-    relationtypes.getAll()
-    .then((response) => res.json(response));
+    relationtypes.get()
+    .then(response => res.json({rows: response}));
   });
 
   app.delete('/api/relationtypes', needsAuthorization, (req, res) => {
-    relationtypes.delete(req.query)
-    .then((response) => res.json(response));
+    relationtypes.delete(req.query._id)
+    .then(response => res.json(response));
   });
 };

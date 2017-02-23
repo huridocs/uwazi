@@ -1,8 +1,8 @@
-const COUCHDBURL = process.env.COUCHDB_URL;
+const DBHOST = process.env.DBHOST;
 const DATABASE_NAME = process.env.DATABASE_NAME;
 export default {
-  demo: 'http://127.0.0.1:5984/uwazi_demo',
-  development: COUCHDBURL ? `${COUCHDBURL}/${DATABASE_NAME}` : 'http://127.0.0.1:5984/uwazi_development',
-  testing: COUCHDBURL ? `${COUCHDBURL}/${DATABASE_NAME}` : 'http://127.0.0.1:5984/uwazi_testing',
-  production: `http://127.0.0.1:5984/${DATABASE_NAME}`
+  demo: 'mongodb://localhost/uwazi_demo',
+  development: DBHOST ? `mongodb://${DBHOST}/${DATABASE_NAME}` : 'mongodb://localhost/uwazi_development',
+  testing: DBHOST ? `mongodb://${DBHOST}/${DATABASE_NAME}` : 'mongodb://localhost/uwazi_testing',
+  production: `mongodb://localhost/${DATABASE_NAME}`
 };

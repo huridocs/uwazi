@@ -1,14 +1,13 @@
 import fs from 'fs';
-import {db_url as dbUrl} from '../../config/database';
-import database from '../../utils/database';
-import fixtures from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
 import paths, {attachmentsPath} from '../../config/paths';
-import request from '../../../shared/JSONRequest';
 
+import entities from '../../entities';
 import attachmentsRoutes from '../routes';
+import fixtures, {entityId, toDeleteId} from './fixtures';
+import {db} from 'api/utils';
 
 describe('Attachments Routes', () => {
   let routes;
@@ -20,10 +19,12 @@ describe('Attachments Routes', () => {
     originalAttachmentsPath = paths.attachmentsPath;
     paths.attachmentsPath = __dirname + '/uploads/';
 
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
     routes = instrumentRoutes(attachmentsRoutes);
   });
 
@@ -33,7 +34,7 @@ describe('Attachments Routes', () => {
 
   describe('/download', () => {
     it('should download the document with the titile as file name (replacing extension with file ext)', (done) => {
-      let req = {query: {_id: '8abcc463d6158af8065022d9b5014a19', file: 'match.doc'}};
+      let req = {query: {_id: entityId, file: 'match.doc'}};
       let res = {};
 
       routes.get('/api/attachments/download', req, res)
@@ -50,15 +51,17 @@ describe('Attachments Routes', () => {
     let file;
 
     beforeEach(() => {
-      file = {fieldname: 'file',
-            originalname: 'new original name.miss',
-            encoding: '7bit',
-            mimetype: 'application/octet-stream',
-            destination: __dirname + '/uploads/',
-            filename: 'mockfile.doc',
-            path: __dirname + '/uploads/mockfile.doc',
-            size: 171411271};
-      req = {user: 'admin', headers: {}, body: {entityId: '8abcc463d6158af8065022d9b5014a19'}, files: [file]};
+      file = {
+        //fieldname: 'file',
+        originalname: 'new original name.miss',
+        filename: 'mockfile.doc'
+        //encoding: '7bit',
+        //mimetype: 'application/octet-stream',
+        //destination: __dirname + '/uploads/',
+        //path: __dirname + '/uploads/mockfile.doc',
+        //size: 171411271
+      };
+      req = {user: 'admin', headers: {}, body: {entityId}, files: [file]};
     });
 
     it('should need authorization', () => {
@@ -68,15 +71,16 @@ describe('Attachments Routes', () => {
     it('should add the uploaded file to attachments', (done) => {
       routes.post('/api/attachments/upload', req)
       .then(addedFile => {
-        return Promise.all([addedFile, request.get(`${dbUrl}/${req.body.entityId}`)]);
+        return Promise.all([addedFile, entities.getById(req.body.entityId)]);
       })
       .then(([addedFile, dbEntity]) => {
-        expect(dbEntity.json.attachments.length).toBe(4);
-        expect(dbEntity.json.attachments[2]).toEqual(file);
+        expect(dbEntity.attachments.length).toBe(3);
+        expect(dbEntity.attachments[2].filename).toEqual(file.filename);
+        expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
         expect(addedFile.filename).toBe('mockfile.doc');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 
@@ -84,7 +88,7 @@ describe('Attachments Routes', () => {
     let req;
 
     beforeEach((done) => {
-      req = {user: 'admin', headers: {}, query: {entityId: '8abcc463d6158af8065022d9b5014a18', filename: 'toDelete.txt'}};
+      req = {user: 'admin', headers: {}, query: {entityId: toDeleteId, filename: 'toDelete.txt'}};
       fs.writeFile(paths.attachmentsPath + 'toDelete.txt', 'dummy file', (err) => {
         if (err) {
           done.fail(err);
@@ -101,12 +105,11 @@ describe('Attachments Routes', () => {
       expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
       routes.delete('/api/attachments/delete', req)
       .then(response => {
-        return Promise.all([response, request.get(`${dbUrl}/${req.query.entityId}`)]);
+        return Promise.all([response, entities.getById(req.query.entityId)]);
       })
       .then(([response, dbEntity]) => {
-        expect(dbEntity.json.attachments.length).toBe(1);
-        expect(dbEntity.json.attachments[0].filename).toBe('other.doc');
-        expect(response.ok).toBe(true);
+        expect(dbEntity.attachments.length).toBe(1);
+        expect(dbEntity.attachments[0].filename).toBe('other.doc');
         expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(false);
         done();
       })

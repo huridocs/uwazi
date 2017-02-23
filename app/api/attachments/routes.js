@@ -24,21 +24,18 @@ export default (app) => {
   let upload = multer({storage});
 
   app.get('/api/attachments/download', (req, res) => {
-    request.get(`${dbUrl}/${req.query._id}`)
+    entities.getById(req.query._id)
     .then(response => {
-      const file = response.json.attachments.find(a => a.filename === req.query.file);
+      const file = response.attachments.find(a => a.filename === req.query.file);
       const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
       res.download(attachmentsPath + file.filename, sanitize(newName));
     })
-    .catch((error) => {
-      res.json({error: error.json}, 500);
-    });
+    .catch((error) => res.json({error}, 500));
   });
 
   app.post('/api/attachments/upload', needsAuthorization, upload.any(), (req, res) => {
-    return request.get(`${dbUrl}/${req.body.entityId}`)
-    .then(entityResponse => {
-      const entity = entityResponse.json;
+    return entities.getById(req.body.entityId)
+    .then(entity => {
       entity.attachments = entity.attachments || [];
       entity.attachments.push(req.files[0]);
       return entities.saveMultiple([entity]);
@@ -46,13 +43,12 @@ export default (app) => {
     .then(() => {
       res.json(req.files[0]);
     })
-    .catch(error => res.json({error: error}));
+    .catch(error => res.json({error}));
   });
 
   app.delete('/api/attachments/delete', needsAuthorization, (req, res) => {
-    return request.get(`${dbUrl}/${req.query.entityId}`)
-    .then(entityResponse => {
-      const entity = entityResponse.json;
+    return entities.getById(req.query.entityId)
+    .then(entity => {
       entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
       return entities.saveMultiple([entity]);
     })
@@ -63,7 +59,7 @@ export default (app) => {
             reject(err);
             return;
           }
-          resolve(res.json(response.json[0]));
+          resolve(res.json(response[0]));
         });
       });
     })

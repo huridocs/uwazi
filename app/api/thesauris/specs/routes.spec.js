@@ -1,47 +1,76 @@
 import thesaurisRoute from '../routes.js';
 import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import {db_url as dbUrl} from '../../config/database.js';
 import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import thesauris from '../thesauris';
 import translations from 'api/i18n/translations';
+import {catchErrors} from 'api/utils/jasmineHelpers';
+
+import {db} from 'api/utils';
+import fixtures from './fixtures.js';
 
 describe('thesauris routes', () => {
   let routes;
 
   beforeEach((done) => {
     routes = instrumentRoutes(thesaurisRoute);
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
   });
 
   describe('GET', () => {
     it('should return all thesauris by default', (done) => {
-      spyOn(thesauris, 'get').and.callThrough();
+      spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
       routes.get('/api/thesauris', {language: 'es'})
       .then((response) => {
-        let docs = response.rows;
         expect(thesauris.get).toHaveBeenCalledWith(undefined, 'es');
-        expect(docs[0].name).toBe('secret recipes');
+        expect(response).toEqual({rows: 'response'});
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     describe('when passing id', () => {
-      it('should return matching thesauri', (done) => {
-        let req = {query: {_id: 'c08ef2532f0bd008ac5174b45e033c94'}};
+      it('should get passing id', (done) => {
+        spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
+        let req = {query: {_id: 'id'}};
 
         routes.get('/api/thesauris', req)
-        .then((response) => {
-          let docs = response.rows;
-          expect(docs[0].name).toBe('Top 2 scify books');
+        .then(() => {
+          expect(thesauris.get).toHaveBeenCalledWith('id', undefined);
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('dictionaries', () => {
+      it('should return all dictionaries by default', (done) => {
+        spyOn(thesauris, 'dictionaries').and.returnValue(Promise.resolve('response'));
+        routes.get('/api/dictionaries')
+        .then((response) => {
+          expect(thesauris.dictionaries).toHaveBeenCalled();
+          expect(response).toEqual({rows: 'response'});
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+      describe('when passing id', () => {
+        it('should get matching id', (done) => {
+          spyOn(thesauris, 'dictionaries').and.returnValue(Promise.resolve('response'));
+          routes.get('/api/dictionaries', {query: {_id: 'id'}})
+          .then((response) => {
+            expect(thesauris.dictionaries).toHaveBeenCalledWith({_id: 'id'});
+            expect(response).toEqual({rows: 'response'});
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
     });
   });
@@ -55,68 +84,21 @@ describe('thesauris routes', () => {
         expect(thesauris.delete).toHaveBeenCalledWith('abc', '123');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 
   describe('POST', () => {
     it('should create a thesauri', (done) => {
+      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       let req = {body: {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]}};
-
       routes.post('/api/thesauris', req)
       .then((response) => {
-        expect(response.values).toEqual([{id: '1', label: 'Joker BFF'}]);
-        expect(response._rev).toBeDefined();
+        expect(response.values[0].id).toEqual('1');
+        expect(response.values[0].label).toEqual('Joker BFF');
         done();
       })
-      .catch(done.fail);
-    });
-
-    it('should set a default value of [] to values property if its missing', (done) => {
-      let req = {body: {name: 'Scarecrow nightmares'}};
-
-      routes.post('/api/thesauris', req)
-      .then((response) => {
-        expect(response.name).toBe('Scarecrow nightmares');
-        expect(response.values).toEqual([]);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when passing _id and _rev', () => {
-      it('edit an existing one', (done) => {
-        spyOn(translations, 'updateContext');
-        request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94')
-        .then((response) => {
-          let template = response.json;
-          let req = {body: {_id: template._id, _rev: template._rev, name: 'changed name'}};
-          return routes.post('/api/thesauris', req);
-        })
-        .then(() => {
-          return request.get(dbUrl + '/c08ef2532f0bd008ac5174b45e033c94');
-        })
-        .then((response) => {
-          let template = response.json;
-          expect(template.name).toBe('changed name');
-          done();
-        })
-        .catch(done.fail);
-      });
-    });
-
-    describe('when there is a db error', () => {
-      it('return the error in the response', (done) => {
-        let req = {body: {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''}};
-        spyOn(translations, 'updateContext');
-        routes.post('/api/thesauris', req)
-        .then((response) => {
-          let error = response.error;
-          expect(error.error).toBe('bad_request');
-          done();
-        })
-        .catch(done.fail);
-      });
+      .catch(catchErrors(done));
     });
   });
 });

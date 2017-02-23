@@ -1,13 +1,12 @@
-import {db_url as dbURL} from 'api/config/database';
-import request from 'shared/JSONRequest';
 import translations from 'api/i18n/translations';
+import model from './settingsModel';
 
 function saveLinksTranslations(newLinks = [], currentLinks = []) {
   let updatedTitles = {};
   let deletedLinks = [];
 
   currentLinks.forEach((link) => {
-    let matchLink = newLinks.find((l) => l.localID === link.localID);
+    let matchLink = newLinks.find((l) => link._id.equals(l._id));
     if (matchLink && matchLink.title !== link.title) {
       updatedTitles[link.title] = matchLink.title;
     }
@@ -51,32 +50,18 @@ function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
 
 export default {
   get() {
-    return request.get(`${dbURL}/_design/settings/_view/all`)
-    .then((result) => {
-      if (result.json.rows.length) {
-        return result.json.rows[0].value;
-      }
-
-      return {};
-    });
+    return model.get().then(settings => settings[0] || {});
   },
 
   save(settings) {
-    settings.type = 'settings';
-
-    let url = dbURL;
-    if (settings._id) {
-      url = `${dbURL}/_design/settings/_update/partialUpdate/${settings._id}`;
-    }
-
     return this.get()
     .then((currentSettings) => {
-      saveLinksTranslations(settings.links, currentSettings.links)
+      return saveLinksTranslations(settings.links, currentSettings.links)
+      .then(() => saveFiltersTranslations(settings.filters, currentSettings.filters))
       .then(() => {
-          saveFiltersTranslations(settings.filters, currentSettings.filters);
+        settings._id = currentSettings._id;
+        return model.save(settings);
       });
-      return request.post(url, settings);
-    })
-    .then(response => this.get(`${dbURL}/${response.json.id}`));
+    });
   }
 };

@@ -13,11 +13,11 @@ describe('relationtypes routes', () => {
 
   describe('GET', () => {
     it('should ask relationtypes for all documents', (done) => {
-      spyOn(relationtypes, 'getAll').and.returnValue(mockRequest);
+      spyOn(relationtypes, 'get').and.returnValue(mockRequest);
       routes.get('/api/relationtypes', {query: {}})
       .then((response) => {
-        expect(relationtypes.getAll).toHaveBeenCalled();
-        expect(response).toEqual({relationtypes: 'response'});
+        expect(relationtypes.get).toHaveBeenCalled();
+        expect(response).toEqual({rows: {relationtypes: 'response'}});
         done();
       })
       .catch(catchErrors(done));
@@ -29,7 +29,7 @@ describe('relationtypes routes', () => {
         routes.get('/api/relationtypes', {query: {_id: 'someId'}})
         .then((response) => {
           expect(relationtypes.getById).toHaveBeenCalledWith('someId');
-          expect(response).toEqual({relationtypes: 'response'});
+          expect(response).toEqual({rows: [{relationtypes: 'response'}]});
           done();
         })
         .catch(catchErrors(done));
@@ -42,7 +42,7 @@ describe('relationtypes routes', () => {
       spyOn(relationtypes, 'delete').and.returnValue(mockRequest);
       routes.delete('/api/relationtypes', {query: {_id: 'someId', _rev: 'latest'}})
       .then((response) => {
-        expect(relationtypes.delete).toHaveBeenCalledWith({_id: 'someId', _rev: 'latest'});
+        expect(relationtypes.delete).toHaveBeenCalledWith('someId');
         expect(response).toEqual({relationtypes: 'response'});
         done();
       })

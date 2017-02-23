@@ -8,9 +8,7 @@ export default app => {
       res.json(response);
       req.io.sockets.emit('thesauriChange', response);
     })
-    .catch((error) => {
-      res.json({error: error});
-    });
+    .catch((error) => res.json({error}));
   });
 
   app.get('/api/thesauris', (req, res) => {
@@ -19,26 +17,18 @@ export default app => {
       id = req.query._id;
     }
     thesauris.get(id, req.language)
-    .then((response) => {
-      res.json(response);
-    })
-    .catch((error) => {
-      res.json({error: error.json});
-    });
+    .then((response) => res.json({rows: response}))
+    .catch((error) => res.json({error}));
   });
 
   app.get('/api/dictionaries', (req, res) => {
     let id;
-    if (req.query) {
-      id = req.query._id;
+    if (req.query && req.query._id) {
+      id = {_id: req.query._id};
     }
     thesauris.dictionaries(id)
-    .then((response) => {
-      res.json(response);
-    })
-    .catch((error) => {
-      res.json({error: error.json});
-    });
+    .then((response) => res.json({rows: response}))
+    .catch((error) => res.json({error}));
   });
 
   app.delete('/api/thesauris', needsAuthorization, (req, res) => {
@@ -47,8 +37,6 @@ export default app => {
       res.json(response);
       req.io.sockets.emit('thesauriDelete', response);
     })
-    .catch((error) => {
-      res.json({error: error.json});
-    });
+    .catch((error) => res.json({error}));
   });
 };

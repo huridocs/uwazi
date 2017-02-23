@@ -2,23 +2,13 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import fs from 'fs';
-import uniqueID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
 import entities from '../entities';
+import model from '../entities/entitiesModel';
 
 export default {
   save(doc, params) {
     doc.type = 'document';
-    if (doc.toc) {
-      doc.toc = doc.toc.map((tocEntry) => {
-        if (!tocEntry._id) {
-          tocEntry._id = uniqueID();
-        }
-
-        return tocEntry;
-      });
-    }
-    
     return entities.save(doc, params);
   },
 
@@ -29,37 +19,21 @@ export default {
       if (existingDoc.pdfInfo) {
         return existingDoc;
       }
-      return this.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
+      return model.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
     });
   },
   //
 
-  get: (id, language) => {
-    return entities.get(id, language)
-    .then((doc) => {
-      delete doc.rows[0].fullText;
-      return doc;
-    });
+  get(query, select) {
+    return entities.get(query, select);
   },
 
-  getUploadsByUser(user) {
-    let url = `${dbURL}/_design/documents/_view/uploads?key="${user._id}"&descending=true`;
-
-    return request.get(url)
-    .then(response => {
-      response.json.rows = response.json.rows.map(row => row.value).sort((a, b) => b.creationDate - a.creationDate);
-      return response.json;
-    });
+  getById(sharedId, language) {
+    return entities.getById(sharedId, language);
   },
 
   countByTemplate(templateId) {
-    return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
-    .then((response) => {
-      if (!response.json.rows.length) {
-        return 0;
-      }
-      return response.json.rows[0].value;
-    });
+    return entities.countByTemplate(templateId);
   },
 
   updateMetadataProperties(templateId, nameMatches, deleteProperties) {
@@ -119,11 +93,12 @@ export default {
   },
 
   deleteFiles(deletedDocs) {
-    let filesToDelete = deletedDocs.map((doc) => {
+    let filesToDelete = deletedDocs
+    .filter(d => d.file)
+    .map((doc) => {
       return `./uploaded_documents/${doc.file.filename}`;
     });
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
-
     return deleteFiles(filesToDelete);
   },
 

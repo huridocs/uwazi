@@ -3,18 +3,16 @@
 
 #Global dependencies
 
-- **NodeJs 4.x**
+- **NodeJs 6.9.5**
     - Ubuntu
-
       ```
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
       ```
-- **Elasticsearch / Logstash** (2.4 / 2.4)
+- **Elasticsearch** (2.4)
     - OSX
       - `brew update`
       - `brew install elasticsearch@2.4`
-      - `brew install homebrew/versions/logstash24`
 
     - Ubuntu
       ```
@@ -26,14 +24,6 @@
       $ echo "deb https://packages.elastic.co/logstash/2.3/debian stable main" | sudo tee -a /etc/apt/sources.list
       $ sudo apt-get update && sudo apt-get install logstash
       ```
-      For adding logstash bin to PATH do:
-      ```
-      $ sudo vim /etc/profile.d/logstash.sh
-      ```
-      Add the following line:
-      `PATH=$PATH:/opt/logstash/bin`.
-      Relog into the system to have the logstash command available.
-
 - **Docsplit**
     - OSX
       - `brew install ruby`
@@ -45,23 +35,17 @@
       - `gem install docsplit`
       - install non optional dependencies for docsplit -> [https://documentcloud.github.io/docsplit/](https://documentcloud.github.io/docsplit/)
 
-- **CouchDB and Futon**
+- **MongoDB**
     - Ubuntu
-
-      ```
-      $ sudo apt-get install software-properties-common -y
-      $ sudo add-apt-repository ppa:couchdb/stable -y
-      $ sudo apt-get update
-      $ sudo apt-get install couchdb -y
-      ```
+      https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 
 #Development
 
 - **Dependencies**
 
-  cd into uwazy folder and:
+  install [yarn](https://yarnpkg.com/en/) and execute:
 
-  `$ npm install` (on npm v2.x this can take a considerable time).
+  `$ yarn install`.
 
   Several globally accessible gems and npm modules are required:
 
@@ -74,19 +58,12 @@
 
 - **Fixtures**
 
+  clone fixtures inside uwazi project
   `$ git clone https://github.com/huridocs/uwazi-fixtures.git`
 
-  cd into uwazy-fixtures and:
-
   ```
-  $ npm install
-  $ ./restore.sh
+  $ ./install_fixtures.sh
   ```
-
-- **Create CouchDB views**
-  cd into uwazy/couchdb and:
-
-  `$ ./restore_views.sh`
 
 - launch application: `foreman start`, the app will be available after few seconds on localhost:3000
 - test api: `node test_api.js`

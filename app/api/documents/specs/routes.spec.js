@@ -1,37 +1,42 @@
 import documentRoutes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import documents from '../documents';
 import templates from '../../templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
+import fixtures, {batmanFinishesId} from './fixtures.js';
+import {db} from 'api/utils';
+
 describe('documents', () => {
   let routes;
 
   beforeEach((done) => {
-    database.reset_testing_database()
-    .then(() => database.import(fixtures))
-    .then(done)
-    .catch(done.fail);
+    db.clearAllAndLoad(fixtures, (err) => {
+      if (err) {
+        done.fail(err);
+      }
+      done();
+    });
     routes = instrumentRoutes(documentRoutes);
   });
 
   describe('POST', () => {
     let req;
+
     beforeEach(() => {
       req = {
         body: {title: 'Batman begins'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        user: {_id: db.id(), username: 'admin'},
         language: 'es'
       };
     });
 
     it('should need authorization', () => {
+      spyOn(documents, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       expect(routes.post('/api/documents', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with use user', (done) => {
+    it('should create a new document with current user', (done) => {
       spyOn(documents, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
       routes.post('/api/documents', req)
       .then((document) => {
@@ -39,25 +44,25 @@ describe('documents', () => {
         expect(documents.save).toHaveBeenCalledWith(req.body, {user: req.user, language: req.language});
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 
   describe('/api/documents', () => {
     it('should return documents.get', (done) => {
-      let req = {query: {_id: '8202c463d6158af8065022d9b5014ccb'}, language: 'es'};
-      spyOn(documents, 'get').and.returnValue(new Promise((resolve) => resolve('documents')));
+      let req = {query: {_id: 'id'}, language: 'es'};
+      spyOn(documents, 'getById').and.returnValue(new Promise((resolve) => resolve('documents')));
       routes.get('/api/documents', req)
       .then((response) => {
-        expect(documents.get).toHaveBeenCalledWith(req.query._id, req.language);
-        expect(response).toBe('documents');
+        expect(documents.getById).toHaveBeenCalledWith(req.query._id, req.language);
+        expect(response).toEqual({rows: ['documents']});
         done();
       })
-      .catch(console.log);
+      .catch(catchErrors(done));
     });
   });
 
-  describe('/api/documents/html', () => {
+  xdescribe('/api/documents/html', () => {
     it('should get the thml conversion', (done) => {
       spyOn(documents, 'getHTML').and.returnValue(new Promise((resolve) => resolve('html')));
       let req = {query: {_id: 'test'}, language: 'es'};
@@ -68,7 +73,7 @@ describe('documents', () => {
         expect(documents.getHTML).toHaveBeenCalledWith('test', 'es');
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 
@@ -83,7 +88,7 @@ describe('documents', () => {
         expect(response).toEqual(2);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 
@@ -99,37 +104,14 @@ describe('documents', () => {
         expect(documents.delete).toHaveBeenCalledWith(req.query.sharedId);
         done();
       })
-      .catch(done.fail);
-    });
-  });
-
-  describe('/uploads', () => {
-    let req;
-
-    beforeEach(() => {
-      req = {user: {_id: 'c08ef2532f0bd008ac5174b45e033c94'}};
-    });
-
-    it('should need authorization', () => {
-      expect(routes.get('/api/documents/uploads', req)).toNeedAuthorization();
-    });
-
-    it('should return documents.uploadsByUser', (done) => {
-      spyOn(documents, 'getUploadsByUser').and.returnValue(new Promise((resolve) => resolve('results')));
-      routes.get('/api/documents/uploads', req)
-      .then((response) => {
-        expect(response).toBe('results');
-        expect(documents.getUploadsByUser).toHaveBeenCalledWith(req.user);
-        done();
-      })
       .catch(catchErrors(done));
     });
   });
 
   describe('/download', () => {
     it('should download the document with the titile as file name', (done) => {
-      let req = {query: {_id: '8202c463d6158af8065022d9b5014a18'}};
-      let res = {};
+      let req = {query: {_id: batmanFinishesId}};
+      let res = {download: jasmine.createSpy('download')};
 
       routes.get('/api/documents/download', req, res)
       .then(() => {

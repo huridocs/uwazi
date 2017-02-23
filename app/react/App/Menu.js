@@ -17,7 +17,7 @@ class Menu extends Component {
     const user = this.props.user.toJS();
 
     const navLinks = links.map(link =>
-      <li key={link.get('localID')} className="menuNav-item">
+      <li key={link.get('_id')} className="menuNav-item">
         <I18NLink to={link.get('url') || '/'} className="btn menuNav-btn">{t('Menu', link.get('title'))}</I18NLink>
       </li>
     );
