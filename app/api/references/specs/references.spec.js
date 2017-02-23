@@ -3,7 +3,9 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import {db} from 'api/utils';
 import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
-import fixturesForGroup from './fixturesForGroup';
+import fixturesForGroup, {template as templateForGroup,
+                          entityTemplate, template1Id, template2Id,
+                          template3Id, thesauri, relation1, relation2} from './fixturesForGroup';
 
 describe('references', () => {
   beforeEach((done) => {
@@ -188,10 +190,12 @@ describe('references', () => {
 
   describe('getGroupsByConnection()', () => {
     beforeEach((done) => {
-      database.reset_testing_database()
-      .then(() => database.import(fixturesForGroup))
-      .then(done)
-      .catch(done.fail);
+      db.clearAllAndLoad(fixturesForGroup, (err) => {
+        if (err) {
+          done.fail(err);
+        }
+        done();
+      });
     });
 
     it('should return groups of connection types and templates of all the references of a document', (done) => {
@@ -199,24 +203,24 @@ describe('references', () => {
       .then(results => {
         expect(results.length).toBe(3);
 
-        expect(results[0].key).toBe('relation1');
+        expect(results[0].key).toBe(relation1.toString());
         expect(results[0].connectionType).toBe('connection');
         expect(results[0].connectionLabel).toBe('relation 1');
-        expect(results[0].context).toBe('relation1');
+        expect(results[0].context).toBe(relation1.toString());
         expect(results[0].templates.length).toBe(3);
 
-        expect(results[0].templates[0]._id).toBe('template3_id');
+        expect(results[0].templates[0]._id.toString()).toBe(template3Id.toString());
         expect(results[0].templates[0].label).toBe('template 3');
-        expect(results[0].templates[1]._id).toBe('template2_id');
+        expect(results[0].templates[1]._id.toString()).toBe(template2Id.toString());
         expect(results[0].templates[1].label).toBe('template 2');
         expect(results[0].templates[1].count).toBe(1);
         expect(results[0].templates[1].refs[0].title).toBe('reference4');
-        expect(results[0].templates[1].refs[0].connectedDocumentTemplate).toBe('template2_id');
+        expect(results[0].templates[1].refs[0].connectedDocumentTemplate.toString()).toBe(template2Id.toString());
 
-        expect(results[1].key).toBe('relation2');
+        expect(results[1].key).toBe(relation2.toString());
         expect(results[1].connectionType).toBe('connection');
         expect(results[1].connectionLabel).toBe('relation 2');
-        expect(results[1].context).toBe('relation2');
+        expect(results[1].context).toBe(relation2.toString());
         expect(results[1].templates.length).toBe(1);
 
         expect(results[1].templates[0].count).toBe(2);
@@ -226,10 +230,10 @@ describe('references', () => {
         expect(results[2].key).toBe('selectName');
         expect(results[2].connectionType).toBe('metadata');
         expect(results[2].connectionLabel).toBe('Select Name');
-        expect(results[2].context).toBe('template1_id');
+        expect(results[2].context).toBe(template1Id.toString());
         expect(results[2].templates.length).toBe(1);
 
-        expect(results[2].templates[0]._id).toBe('template1_id');
+        expect(results[2].templates[0]._id.toString()).toBe(template1Id.toString());
 
         done();
       })
@@ -241,14 +245,14 @@ describe('references', () => {
       .then(results => {
         expect(results.length).toBe(3);
 
-        expect(results[0].key).toBe('relation1');
-        expect(results[0].templates[0]._id).toBe('template3_id');
+        expect(results[0].key).toBe(relation1.toString());
+        expect(results[0].templates[0]._id.toString()).toBe(template3Id.toString());
 
-        expect(results[1].key).toBe('relation2');
+        expect(results[1].key).toBe(relation2.toString());
         expect(results[1].templates[0].count).toBe(3);
 
         expect(results[2].key).toBe('selectName');
-        expect(results[2].templates[0]._id).toBe('template1_id');
+        expect(results[2].templates[0]._id.toString()).toBe(template1Id.toString());
 
         done();
       })

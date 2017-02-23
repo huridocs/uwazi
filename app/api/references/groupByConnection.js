@@ -11,11 +11,11 @@ function conformGroupData(connectionType, groupedReferences, options) {
 }
 
 function getGroupData(reference, groupedReferences, templates, relationTypes) {
-  const referenceTemplate = templates.find(template => template._id === reference.connectedDocumentTemplate);
+  const referenceTemplate = templates.find(template => template._id.toString() === reference.connectedDocumentTemplate.toString());
   if (reference.sourceType === 'metadata') {
     return conformGroupData('metadata', groupedReferences, {
       key: reference.sourceProperty,
-      context: reference.connectedDocumentTemplate,
+      context: reference.connectedDocumentTemplate.toString(),
       connectionLabel: referenceTemplate
                        .properties
                        .find(p => p.name === reference.sourceProperty)
@@ -25,9 +25,9 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 
   if (reference.sourceType !== 'metadata') {
     return conformGroupData('connection', groupedReferences, {
-      key: reference.relationType,
-      context: reference.relationType,
-      connectionLabel: relationTypes.find(r => r._id === reference.relationType).name
+      key: reference.relationType.toString(),
+      context: reference.relationType.toString(),
+      connectionLabel: relationTypes.find(r => r._id.toString() === reference.relationType.toString()).name
     });
   }
 }
@@ -47,10 +47,10 @@ export default {
     references.forEach((reference) => {
       const groupData = getGroupData(reference, groupedReferences, templates, relationTypes);
 
-      let groupDataTemplate = groupData.templates.find(template => template._id === reference.connectedDocumentTemplate);
+      let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.connectedDocumentTemplate.toString());
 
       if (!groupDataTemplate) {
-        const referenceTemplate = templates.find(template => template._id === reference.connectedDocumentTemplate);
+        const referenceTemplate = templates.find(template => template._id.toString() === reference.connectedDocumentTemplate.toString());
 
         groupDataTemplate = {
           _id: reference.connectedDocumentTemplate,

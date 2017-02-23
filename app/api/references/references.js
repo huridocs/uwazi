@@ -1,9 +1,9 @@
-import templates from 'api/templates';
+import templatesAPI from 'api/templates';
+import relationTypesAPI from 'api/relationtypes/relationtypes';
 import entities from 'api/entities';
 
 import model from './connectionsModel.js';
 
-import templatesAPI from 'api/templates';
 import {filterRelevantReferences, groupReferences} from './groupByConnection';
 
 let normalizeConnection = (connection, docId) => {
@@ -64,12 +64,12 @@ export default {
   getGroupsByConnection(id, language, options = {}) {
     return Promise.all([
       this.getByDocument(id, language),
-      request.get(`${dbURL}/_design/templates/_view/all`),
-      request.get(`${dbURL}/_design/relationtypes/_view/all`)
+      templatesAPI.get(),
+      relationTypesAPI.get()
     ])
     .then(([references, templates, relationTypes]) => {
       const relevantReferences = filterRelevantReferences(references, language, options.user);
-      const groupedReferences = groupReferences(relevantReferences, sanitizeResponse(templates.json).rows, sanitizeResponse(relationTypes.json).rows);
+      const groupedReferences = groupReferences(relevantReferences, templates, relationTypes);
 
       if (options.excludeRefs) {
         groupedReferences.forEach(g => {
@@ -112,7 +112,7 @@ export default {
       const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
       const entitySelects = [];
       return Promise.all(selects.map((select) => {
-        return templates.getById(select.content)
+        return templatesAPI.getById(select.content)
         .then((result) => {
           if (result) {
             entitySelects.push(select.name);
