@@ -52,10 +52,12 @@ export class MetadataTemplate extends Component {
           {connectDropTarget(
             <ul className="metadataTemplate-list list-group">
               {this.props.template.commonProperties.map((config, index) => {
-                return <MetadataProperty {...config} key={config.localID} index={index - this.props.template.commonProperties.length} />;
+                const localID = config.localID || config._id;
+                return <MetadataProperty {...config} key={localID} localID={localID} index={index - this.props.template.commonProperties.length} />;
               })}
               {this.props.template.properties.map((config, index) => {
-                return <MetadataProperty {...config} key={config.localID} index={index}/>;
+                const localID = config.localID || config._id;
+                return <MetadataProperty {...config} key={localID} localID={localID} index={index}/>;
               })}
               <div className="no-properties">
                 <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
