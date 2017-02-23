@@ -40,9 +40,11 @@ export class CreateConnectionPanel extends Component {
             onChange={e => this.props.setRelationType(e.target.value)}/>
 
         <div className="relationship-steps">
-          <h2>Select document<small>2</small></h2>
+          <h2>Select document or entity<small>2</small></h2>
         </div>
-        <SearchForm connectionType={connection.type}/>
+        <div className="form-group">
+          <SearchForm connectionType={connection.type}/>
+        </div>
       </div>
 
       <div className="sidepanel-footer">
