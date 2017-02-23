@@ -12,11 +12,6 @@ const linksSchema = new mongoose.Schema({
   url: String
 });
 
-//const itemsSchema = new mongoose.Schema({
-  //id: String,
-  //name: String,
-  //index: Number
-//});
 const filtersSchema = new mongoose.Schema({
   id: String,
   name: String,
@@ -26,6 +21,7 @@ const filtersSchema = new mongoose.Schema({
 const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
+  home_page: String,
   languages: [languagesSchema],
   links: [linksSchema],
   filters: [filtersSchema]
