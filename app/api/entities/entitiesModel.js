@@ -11,6 +11,11 @@ const entitySchema = new mongoose.Schema({
     originalname: String,
     filename: String
   },
+  icon: new mongoose.Schema({
+    _id: String,
+    label: String,
+    type: String
+  }),
   toc: [{
     label: String,
     indentation: Number,
