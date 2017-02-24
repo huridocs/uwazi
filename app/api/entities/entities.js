@@ -5,6 +5,7 @@ import settings from '../settings';
 import references from '../references/references';
 import templates from '../templates';
 import ID from 'shared/uniqueID';
+import {deleteFiles} from '../utils/files.js';
 
 import model from './entitiesModel';
 
@@ -116,12 +117,27 @@ export default {
     return model.db.updateMany({template}, actions);
   },
 
+  deleteFiles(deletedDocs) {
+    let filesToDelete = deletedDocs
+    .filter(d => d.file)
+    .map((doc) => {
+      return `./uploaded_documents/${doc.file.filename}`;
+    });
+    filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
+    return deleteFiles(filesToDelete);
+  },
+
+  deleteMultiple(sharedIds) {
+    return Promise.all(sharedIds.map((sharedId) => this.delete(sharedId)));
+  },
+
   delete(sharedId) {
     return this.get({sharedId})
     .then((docs) => {
       return Promise.all([
         model.delete({sharedId}),
-        references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]})
+        references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
+        this.deleteFiles(docs)
       ])
       .then(() => docs);
     })

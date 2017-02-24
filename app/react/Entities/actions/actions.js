@@ -3,7 +3,7 @@ import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
 import refenrecesAPI from 'app/Viewer/referencesAPI';
-import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
+import {removeDocument, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
 
 export function saveEntity(entity) {
   return function (dispatch) {
@@ -23,6 +23,17 @@ export function deleteEntity(entity) {
       dispatch(notify('Entity deleted', 'success'));
       dispatch(removeDocument(entity));
       dispatch(unselectDocument(entity._id));
+    });
+  };
+}
+
+export function deleteEntities(entities) {
+  return function (dispatch) {
+    return api.deleteMultiple(entities)
+    .then(() => {
+      dispatch(notify('Deletion success', 'success'));
+      entities.map((entity) => dispatch(removeDocument(entity)));
+      dispatch(unselectAllDocuments());
     });
   };
 }

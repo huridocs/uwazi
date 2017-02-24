@@ -1,4 +1,5 @@
 import {db_url as dbURL} from 'api/config/database.js';
+import fs from 'fs';
 import entities from '../entities.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -306,6 +307,11 @@ describe('entities', () => {
   });
 
   describe('delete', () => {
+    beforeEach(() => {
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
+    });
+
     it('should delete the document in the database', (done) => {
       entities.delete('shared')
       .then(() => entities.get({sharedId: 'shared'}))
@@ -333,6 +339,29 @@ describe('entities', () => {
       .then((refs) => {
         expect(refs.length).toBe(1);
         expect(refs[0].title).toBe('reference3');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should delete the original file', (done) => {
+      entities.delete('shared')
+      .then(() => {
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('deleteMultiple()', () => {
+    it('should delete() all the given entities', (done) => {
+      spyOn(entities, 'delete').and.returnValue(Promise.resolve());
+      entities.deleteMultiple(['id1', 'id2'])
+      .then(() => {
+        expect(entities.delete).toHaveBeenCalledWith('id1');
+        expect(entities.delete).toHaveBeenCalledWith('id2');
         done();
       })
       .catch(catchErrors(done));

@@ -5,17 +5,16 @@ export function toUrlParams(_data) {
   if (!data || Object.keys(data).length === 0) {
     return '';
   }
-  return '?' + Object.keys(data).reduce((params, key) => {
+  return '?' + Object.keys(data).map((key) => {
     if (typeof data[key] === 'undefined' || data[key] === null) {
-      return params;
+      return;
     }
 
     if (typeof data[key] === 'object') {
       data[key] = JSON.stringify(data[key]);
     }
-    params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
-    return params;
-  }, []).join('&');
+    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+  }).filter((param) => param).join('&');
 }
 
 let _fetch = (url, data, method, _headers) => {

@@ -57,5 +57,12 @@ export default {
     .then((response) => {
       return response.json;
     });
+  },
+
+  deleteMultiple(entities) {
+    return api.delete('entities/multiple', {sharedIds: entities.map((entity) => entity.sharedId)})
+    .then((response) => {
+      return response.json;
+    });
   }
 };

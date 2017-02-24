@@ -17,7 +17,7 @@ export default (app) => {
       req.io.sockets.emit('thesauriChange', templateTransformed);
     })
     .catch(error => {
-      res.json({error})
+      res.json({error});
     });
   });
 
@@ -41,6 +41,12 @@ export default (app) => {
 
   app.delete('/api/entities', needsAuthorization, (req, res) => {
     entities.delete(req.query.sharedId)
+    .then(response => res.json(response))
+    .catch(error => res.json({error}));
+  });
+
+  app.delete('/api/entities/multiple', needsAuthorization, (req, res) => {
+    entities.deleteMultiple(JSON.parse(req.query.sharedIds))
     .then(response => res.json(response))
     .catch(error => res.json({error}));
   });

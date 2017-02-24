@@ -32,7 +32,7 @@ const formatMetadata = createSelector(
 const mapStateToProps = (state) => {
   const library = state.library;
   return {
-    open: library.ui.get('selectedDocuments').size === 1 ? true : false,
+    open: library.ui.get('selectedDocuments').size === 1,
     doc: library.ui.get('selectedDocuments').first() || Immutable.fromJS({}),
     metadata: formatMetadata(state),
     references: library.sidepanel.references,

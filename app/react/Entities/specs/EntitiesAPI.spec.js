@@ -18,7 +18,8 @@ describe('EntitiesAPI', () => {
     .get(APIURL + 'entities/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
     .get(APIURL + 'entities/search?searchTerm=Batman&joker=true', {body: JSON.stringify(filteredSearchResult)})
     .get(APIURL + 'entities?_id=documentId', {body: JSON.stringify({rows: singleResponse})})
-    .delete(APIURL + 'entities?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .delete(APIURL + 'entities?sharedId=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .delete(APIURL + 'entities/multiple?sharedIds=%5B%22id1%22%2C%22id2%22%5D', {body: JSON.stringify({backednResponse: 'testdeleteMultiple'})})
     .post(APIURL + 'entities', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -116,10 +117,22 @@ describe('EntitiesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {_id: 'id'};
+      let document = {sharedId: 'id'};
       entitiesAPI.delete(document)
       .then((response) => {
         expect(response).toEqual({backednResponse: 'testdelete'});
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('deleteMultiple()', () => {
+    it('should delete all the entities', (done) => {
+      let documents = [{sharedId: 'id1'}, {sharedId: 'id2'}];
+      entitiesAPI.deleteMultiple(documents)
+      .then((response) => {
+        expect(response).toEqual({backednResponse: 'testdeleteMultiple'});
         done();
       })
       .catch(done.fail);
