@@ -13,9 +13,11 @@ describe('Doc', () => {
   beforeEach(() => {
     props = {
       doc: Immutable({_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'}),
+      user: Immutable({_id: 'batId'}),
       active: false,
       selectDocument: jasmine.createSpy('selectDocument'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
+      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       searchParams: {sort: 'sortProperty'}
     };
   });
@@ -51,7 +53,7 @@ describe('Doc', () => {
     describe('onClick', () => {
       it('should selectDocument', () => {
         render();
-        component.find(Item).simulate('click');
+        component.find(Item).simulate('click', {metaKey: false});
         expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
       });
     });
@@ -68,7 +70,7 @@ describe('Doc', () => {
       it('should unselectDocument', () => {
         props.active = true;
         render();
-        component.find(Item).simulate('click');
+        component.find(Item).simulate('click', {metaKey: false});
         expect(props.unselectDocument).toHaveBeenCalled();
       });
     });
@@ -81,7 +83,8 @@ describe('Doc', () => {
       store = {
         library: {
           ui: Immutable({selectedDocuments: [{_id: 'docId'}]})
-        }
+        },
+        user: Immutable({_id: 'batId'})
       };
     });
 

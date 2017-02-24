@@ -29,6 +29,14 @@ export class SelectMultiplePanel extends Component {
     });
   }
 
+  save() {
+
+  }
+
+  edit() {
+
+  }
+
   render() {
     const {entitiesSelected, open} = this.props;
 
@@ -39,14 +47,18 @@ export class SelectMultiplePanel extends Component {
         <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
         </div>
         <div className="sidepanel-body">
-          <ul>
+          <ul className="entities-list">
             {entitiesSelected.map((entity, index) => {
-              return <li key={index}><TemplateLabel template={entity.get('template')}/> {entity.get('title')}</li>;
+              return <li key={index}><TemplateLabel template={entity.get('template')}/> <span>{entity.get('title')}</span></li>;
             })}
           </ul>
         </div>
         <div className="sidepanel-footer">
-          <button className="delete-metadata btn btn-danger" onClick={this.delete.bind(this)}>
+          <button className="edit btn btn-primary" onClick={this.edit.bind(this)}>
+            <i className="fa fa-pencil"></i>
+            <span className="btn-label">{t('System', 'Edit')}</span>
+          </button>
+          <button className="delete btn btn-danger" onClick={this.delete.bind(this)}>
             <i className="fa fa-trash"></i>
             <span className="btn-label">{t('System', 'Delete')}</span>
           </button>
