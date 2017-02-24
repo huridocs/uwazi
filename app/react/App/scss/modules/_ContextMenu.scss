@@ -21,11 +21,12 @@
   .btn {
     position: relative;
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
     padding: 0;
-    margin: 0 3px;
+    margin: 0 6px;
     opacity: 0.9;
     &:hover {
       opacity: 1;
