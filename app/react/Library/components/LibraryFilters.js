@@ -47,7 +47,7 @@ LibraryFilters.propTypes = {
 
 export function mapStateToProps({library}) {
   return {
-    open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocument')
+    open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocuments').size > 0
   };
 }
 

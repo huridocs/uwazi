@@ -6,7 +6,7 @@ import * as actions from 'app/Library/actions/libraryActions';
 import 'jasmine-immutablejs-matchers';
 
 describe('uiReducer', () => {
-  const initialState = Immutable.fromJS({searchTerm: '', previewDoc: '', suggestions: []});
+  const initialState = Immutable.fromJS({searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: []});
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
@@ -18,14 +18,21 @@ describe('uiReducer', () => {
   describe('selectDocument', () => {
     it('should set selected document', () => {
       let newState = uiReducer(initialState, {type: types.SELECT_DOCUMENT, doc: {_id: 'document'}});
-      expect(newState.get('selectedDocument').get('_id')).toBe('document');
+      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
     });
   });
 
   describe('unselectDocument', () => {
     it('should set selected document', () => {
-      let newState = uiReducer(Immutable.fromJS({selectDocument: 'document'}), actions.unselectDocument());
-      expect(newState.toJS().selectedDocument).not.toBeDefined();
+      let newState = uiReducer(Immutable.fromJS({selectedDocuments: [{_id: 'document'}]}), actions.unselectDocument('document'));
+      expect(newState.toJS().selectedDocuments.length).toBe(0);
+    });
+  });
+
+  describe('unselectAllDocuments', () => {
+    it('should set selected document', () => {
+      let newState = uiReducer(Immutable.fromJS({selectedDocuments: [{_id: 'document'}]}), actions.unselectAllDocuments());
+      expect(newState.toJS().selectedDocuments.length).toBe(0);
     });
   });
 

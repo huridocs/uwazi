@@ -9,7 +9,7 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
-import {removeDocument, unselectDocument} from 'app/Library/actions/libraryActions';
+import {removeDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
 import referencesUtils from '../utils/referencesUtils';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
@@ -70,7 +70,7 @@ export function deleteDocument(doc) {
       dispatch(notify('Document deleted', 'success'));
       dispatch(resetDocumentViewer());
       dispatch(removeDocument(doc));
-      dispatch(unselectDocument());
+      dispatch(unselectAllDocuments());
     });
   };
 }

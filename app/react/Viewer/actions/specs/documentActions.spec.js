@@ -241,7 +241,7 @@ describe('documentActions', () => {
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'success', id: 'unique_id'}},
           {type: types.RESET_DOCUMENT_VIEWER},
           {type: 'REMOVE_DOCUMENT', doc: {name: 'doc'}},
-          {type: 'VIEWER/UNSELECT_DOCUMENT'}
+          {type: 'UNSELECT_ALL_DOCUMENTS'}
         ];
         const store = mockStore({});
 

@@ -27,7 +27,7 @@ describe('LibraryFilters', () => {
       let store = {
         library: {
           filters: Immutable.fromJS({properties: 'filters state', documentTypes: ['Decision']}),
-          ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true}),
+          ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true, selectedDocuments: []}),
           aggregations: Immutable.fromJS({types: {buckets: []}}),
           settings: Immutable.fromJS({collection: {filters: []}})
         },

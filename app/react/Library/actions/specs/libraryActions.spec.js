@@ -222,7 +222,7 @@ describe('libraryActions', () => {
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'success', id: 'unique_id'}},
-          {type: types.UNSELECT_DOCUMENT},
+          {type: types.UNSELECT_ALL_DOCUMENTS},
           {type: types.REMOVE_DOCUMENT, doc}
         ];
         const store = mockStore({});

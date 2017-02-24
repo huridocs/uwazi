@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {t} from 'app/I18N';
 
 import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
-import {unselectDocument} from '../actions/libraryActions';
+import {unselectAllDocuments} from '../actions/libraryActions';
 
 export class SearchButton extends Component {
   render() {
@@ -12,14 +12,14 @@ export class SearchButton extends Component {
     let activeClass = this.props.open ? ' is-active' : '';
 
     if (this.props.open && this.props.metadataPanelIsOpen) {
-      toggle = this.props.unselectDocument;
+      toggle = this.props.unselectAllDocuments;
       activeClass = '';
     }
 
     if (!this.props.open && this.props.metadataPanelIsOpen) {
       toggle = () => {
         this.props.showFilters();
-        this.props.unselectDocument();
+        this.props.unselectAllDocuments();
       };
     }
 
@@ -40,7 +40,7 @@ export class SearchButton extends Component {
 SearchButton.propTypes = {
   showFilters: PropTypes.func,
   hideFilters: PropTypes.func,
-  unselectDocument: PropTypes.func,
+  unselectAllDocuments: PropTypes.func,
   open: PropTypes.bool,
   metadataPanelIsOpen: PropTypes.bool
 };
@@ -48,7 +48,7 @@ SearchButton.propTypes = {
 export function mapStateToProps(state) {
   return {
     open: state.library.ui.get('filtersPanel'),
-    metadataPanelIsOpen: !!state.library.ui.get('selectedDocument')
+    metadataPanelIsOpen: state.library.ui.get('selectedDocuments').size > 0
   };
 }
 
@@ -56,7 +56,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     showFilters,
     hideFilters,
-    unselectDocument
+    unselectAllDocuments
   }, dispatch);
 }
 

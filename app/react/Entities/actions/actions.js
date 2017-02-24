@@ -22,7 +22,7 @@ export function deleteEntity(entity) {
     .then(() => {
       dispatch(notify('Entity deleted', 'success'));
       dispatch(removeDocument(entity));
-      dispatch(unselectDocument);
+      dispatch(unselectDocument(entity._id));
     });
   };
 }

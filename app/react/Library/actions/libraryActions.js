@@ -28,8 +28,12 @@ export function selectDocument(doc) {
   };
 }
 
-export function unselectDocument() {
-  return {type: types.UNSELECT_DOCUMENT};
+export function unselectDocument(docId) {
+  return {type: types.UNSELECT_DOCUMENT, docId};
+}
+
+export function unselectAllDocuments() {
+  return {type: types.UNSELECT_ALL_DOCUMENTS};
 }
 
 export function showFilters() {
@@ -148,7 +152,7 @@ export function deleteDocument(doc) {
     return documents.api.delete(doc)
     .then(() => {
       dispatch(notify('Document deleted', 'success'));
-      dispatch(unselectDocument());
+      dispatch(unselectAllDocuments());
       dispatch(removeDocument(doc));
     });
   };
@@ -159,7 +163,7 @@ export function deleteEntity(entity) {
     return entities.api.delete(entity)
     .then(() => {
       dispatch(notify('Entity deleted', 'success'));
-      dispatch(unselectDocument());
+      dispatch(unselectDocument(entity._id));
       dispatch(removeDocument(entity));
     });
   };

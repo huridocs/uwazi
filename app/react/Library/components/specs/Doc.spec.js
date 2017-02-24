@@ -80,7 +80,7 @@ describe('Doc', () => {
     beforeEach(() => {
       store = {
         library: {
-          ui: Immutable({selectedDocument: {_id: 'docId'}})
+          ui: Immutable({selectedDocuments: [{_id: 'docId'}]})
         }
       };
     });

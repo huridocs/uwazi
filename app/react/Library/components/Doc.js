@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
-import {selectDocument, unselectDocument} from '../actions/libraryActions';
+import {selectDocument, unselectDocument, unselectAllDocuments} from '../actions/libraryActions';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
@@ -11,7 +11,7 @@ export class Doc extends Component {
 
   select(active) {
     if (active) {
-      return this.props.unselectDocument();
+      return this.props.unselectDocument(this.props.doc.get('_id'));
     }
     this.props.selectDocument(this.props.doc);
   }
@@ -49,12 +49,12 @@ Doc.propTypes = {
 
 export function mapStateToProps({library}, ownProps) {
   return {
-    active: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') === ownProps.doc.get('_id') : false
+    active: !!library.ui.get('selectedDocuments').find((doc) => doc.get('_id') === ownProps.doc.get('_id'))
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({selectDocument, unselectDocument}, dispatch);
+  return bindActionCreators({selectDocument, unselectDocument, unselectAllDocuments}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Doc);

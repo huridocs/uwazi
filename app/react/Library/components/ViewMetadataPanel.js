@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {getDocumentReferences, unselectDocument, saveDocument} from '../actions/libraryActions';
+import {getDocumentReferences, unselectAllDocuments, saveDocument} from '../actions/libraryActions';
 
 import Immutable from 'immutable';
 import {actions as formActions} from 'react-redux-form';
@@ -16,7 +16,7 @@ import EntityForm from '../containers/EntityForm';
 import {actions as actionCreators} from 'app/BasicReducer';
 import {DocumentSidePanel} from 'app/Documents';
 
-const selectedDocument = state => state.library.ui.get('selectedDocument') || Immutable.fromJS({});
+const selectedDocument = state => state.library.ui.get('selectedDocuments').first() || Immutable.fromJS({});
 const getTemplates = state => state.templates;
 const selectThesauris = state => state.thesauris;
 const formatMetadata = createSelector(
@@ -32,8 +32,8 @@ const formatMetadata = createSelector(
 const mapStateToProps = (state) => {
   const library = state.library;
   return {
-    open: library.ui.get('selectedDocument') ? true : false,
-    doc: library.ui.get('selectedDocument') || Immutable.fromJS({}),
+    open: library.ui.get('selectedDocuments').size === 1 ? true : false,
+    doc: library.ui.get('selectedDocuments').first() || Immutable.fromJS({}),
     metadata: formatMetadata(state),
     references: library.sidepanel.references,
     tab: library.sidepanel.tab,
@@ -51,7 +51,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     getDocumentReferences,
-    closePanel: unselectDocument,
+    closePanel: unselectAllDocuments,
     resetForm: () => {
       return (_dispatch) => {
         _dispatch(formActions.setInitial('library.sidepanel.metadata'));
