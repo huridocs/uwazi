@@ -3,8 +3,8 @@
   z-index: 1;
 
   &-bottom {
-    bottom: 15px;
-    right: 15px;
+    bottom: 25px;
+    right: 20px;
   }
 
   &-center {
@@ -69,5 +69,20 @@
   }
   .btn:hover .ContextMenu-tooltip {
     display: block;
+  }
+  
+  .btn-label {
+    color: $c-grey-dark;
+    position: absolute;
+    top: 100%;
+    font-size: 10px;
+    line-height: 1.5em;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
+  }
+  &:hover .btn-label {
+    color: $c-black;
   }
 }
