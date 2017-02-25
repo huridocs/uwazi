@@ -3,7 +3,7 @@ import P from 'bluebird';
 
 const COUCHDBURL = process.env.COUCHDB_URL;
 const DATABASE_NAME = process.env.DATABASE_NAME;
-const dbUrl = COUCHDBURL ? `${COUCHDBURL}/${DATABASE_NAME}` : 'http://127.0.0.1:5984/uwazi_development/';
+const dbUrl = COUCHDBURL ? `${COUCHDBURL}/${DATABASE_NAME}/` : 'http://127.0.0.1:5984/uwazi_development/';
 
 export default function (view, callback) {
   const limit = 50;
