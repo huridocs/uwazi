@@ -3,8 +3,8 @@
   z-index: 1;
 
   &-bottom {
-    bottom: 15px;
-    right: 15px;
+    bottom: 25px;
+    right: 20px;
   }
 
   &-center {
@@ -21,11 +21,12 @@
   .btn {
     position: relative;
     border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
     padding: 0;
-    margin: 0 3px;
+    margin: 0 6px;
     opacity: 0.9;
     &:hover {
       opacity: 1;
@@ -68,5 +69,20 @@
   }
   .btn:hover .ContextMenu-tooltip {
     display: block;
+  }
+  
+  .btn-label {
+    color: $c-grey-dark;
+    position: absolute;
+    top: 100%;
+    font-size: 10px;
+    line-height: 1.5em;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
+  }
+  &:hover .btn-label {
+    color: $c-black;
   }
 }
