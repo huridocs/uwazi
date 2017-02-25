@@ -14,11 +14,12 @@ require('babel-core/register')({
   ]
 });
 
+var dbConfig = require('../app/api/config/database');
 var mongoose = require('mongoose');
 
 mongoose.Promise = Promise;
 
-mongoose.connect('mongodb://localhost/uwazi_development');
+mongoose.connect(dbConfig.development);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
