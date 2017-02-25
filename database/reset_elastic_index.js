@@ -3,7 +3,6 @@ import P from 'bluebird';
 import search from '../app/api/search/search';
 import elastic_mapping from './elastic_mapping';
 
-import db_config from '../app/api/config/database';
 import indexConfig from '../app/api/config/elasticIndexes';
 import entities from '../app/api/entities/entitiesModel';
 import mongoose from 'mongoose';
