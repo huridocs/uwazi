@@ -5,14 +5,14 @@ export default function debounce(func, wait, immediate) {
     let later = () => {
       timeout = null;
       if (!immediate) {
-        func.apply(this, args);
+        return func.apply(this, args);
       }
     };
     let callNow = immediate && !timeout;
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) {
-      func.apply(this, args);
+      return func.apply(this, args);
     }
   };
 }
