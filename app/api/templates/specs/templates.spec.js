@@ -1,8 +1,7 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import templates from 'api/templates/templates.js';
+import entities from 'api/entities/entities.js';
 import documents from 'api/documents/documents.js';
 //import database from 'api/utils/database.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 import {db} from 'api/utils';
@@ -30,6 +29,21 @@ describe('templates', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    fit('should change/delete properties of all entities for a given template', (done) => {
+      spyOn(entities, 'updateMetadataProperties');
+      let newTemplate = {name: 'created_template', properties: [{label: 'property1'}, {label: 'property2'}, {label: 'property3'}]};
+      templates.save(newTemplate)
+      .then((createdTemplate) => {
+        createdTemplate.properties = createdTemplate.properties.filter((p, index) => index < 2);
+        createdTemplate.properties[0].label = 'property1_changed';
+        return templates.save(newTemplate);
+      })
+      .then((templateUpdated) => {
+        expect(entities.updateMetadataProperties).toHaveBeenCalledWith(templateUpdated._id.toString());
+        done();
+      });
     });
 
     it('should create a template', (done) => {

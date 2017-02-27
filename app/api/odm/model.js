@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 export default (MongooseModel) => {
   return {
+    db: MongooseModel,
     save: (data) => {
       if (Array.isArray(data)) {
         let promises = data.map((entry) => {
