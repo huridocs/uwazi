@@ -62,21 +62,6 @@ describe('documents', () => {
     });
   });
 
-  xdescribe('/api/documents/html', () => {
-    it('should get the thml conversion', (done) => {
-      spyOn(documents, 'getHTML').and.returnValue(new Promise((resolve) => resolve('html')));
-      let req = {query: {_id: 'test'}, language: 'es'};
-
-      routes.get('/api/documents/html', req)
-      .then((response) => {
-        expect(response).toEqual('html');
-        expect(documents.getHTML).toHaveBeenCalledWith('test', 'es');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
-
   describe('/api/documents/count_by_template', () => {
     it('should return count of documents using a specific template', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
