@@ -1,8 +1,3 @@
-.entity-content {
-  overflow-y: scroll;
-  
-}
-
 @media(min-width: 1024px) {
   .entity-viewer ~ .sidepanel-footer {
     left: calc((100% - 400px)/2);
