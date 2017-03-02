@@ -25,7 +25,7 @@ export default class Entity extends RouteHandler {
       relationTypesAPI.get()
     ])
     .then(([entities, referenceGroups, searchResults, relationTypes]) => {
-      console.log('En static:', searchResults);
+      // console.log('En static:', searchResults);
       return {
         entityView: {
           entity: entities[0],

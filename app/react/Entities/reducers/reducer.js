@@ -15,5 +15,6 @@ export default combineReducers({
   searchResults: createReducer('entityView/searchResults', {totalRows: 0, rows: []}),
   sort: modelReducer('entityView.sort', prioritySortingCriteria.get()),
   filters: createReducer('entityView/filters', {}),
+  search: formReducer('entityView/search'),
   uiState
 });

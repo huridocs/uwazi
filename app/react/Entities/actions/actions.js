@@ -5,6 +5,7 @@ import {actions} from 'app/BasicReducer';
 import refenrecesAPI from 'app/Viewer/referencesAPI';
 import {removeDocument, removeDocuments, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
 import {fromJS as Immutable} from 'immutable';
+import * as uiActions from './uiActions';
 
 export function saveEntity(entity) {
   return function (dispatch) {
@@ -54,7 +55,7 @@ export function deleteReference(reference) {
 }
 
 // TEST!!!
-export function searchReferences(entityId) {
+export function searchReferences() {
   // console.log('----------------------------------');
   // console.log('entityId:', entityId);
   // console.log('limit:', limit);
@@ -62,16 +63,21 @@ export function searchReferences(entityId) {
   return function (dispatch, getState) {
     const entiimport {fromJS as Immutable} from 'immutable';tyView = getState().entityView;
     // console.log('entityView:', entityView);
+    const entityId = entityView.entity.get('sharedId');
+    // console.log('entityId:', entityId);
     const sort = entityView.sort;
     // console.log('sort:', sort);
     const filters = entityView.filters;
     // console.log('filters:', filters.toJS());
-    const options = filters.merge(sort);
+    const searchTerm = entityView.search && entityView.search.searchTerm ? entityView.search.searchTerm.value : '';
+    // console.log('searchTerm', searchTerm);
+    const options = filters.merge(sort).merge({searchTerm});
     // console.log('options:', options.toJS());
     // console.log('----------------------------------');
     return refenrecesAPI.search(entityId, options.toJS())
     .then(results => {
       dispatch(actions.set('entityView/searchResults', results));
+      dispatch(uiActions.showTab('references'));
     });
   };
 }
@@ -80,17 +86,17 @@ export function loadMoreReferences(limit) {
   return function (dispatch, getState) {
     const entityView = getState().entityView;
     dispatch(actions.set('entityView/filters', entityView.filters.set('limit', limit)));
-    return searchReferences(entityView.entity.get('sharedId'))(dispatch, getState);
+    return searchReferences()(dispatch, getState);
   };
 }
 
 export function setFilter(groupFilterValues) {
-  console.log('Group filter values: ', groupFilterValues);
+  // console.log('Group filter values: ', groupFilterValues);
   return function (dispatch, getState) {
     const entityView = getState().entityView;
     const currentFilter = entityView.filters.get('filter') || Immutable({});
     const newFilter = currentFilter.merge(groupFilterValues);
     dispatch(actions.set('entityView/filters', entityView.filters.set('filter', newFilter)));
-    return searchReferences(entityView.entity.get('sharedId'))(dispatch, getState);
+    return searchReferences()(dispatch, getState);
   };
 }

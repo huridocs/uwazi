@@ -22,6 +22,7 @@ export default (app) => {
       req.query.aggregations = JSON.parse(req.query.aggregations);
     }
 
+    console.log(req.query);
     return search.search(req.query, req.language)
     .then(results => res.json(results))
     .catch(error => res.json({error}));

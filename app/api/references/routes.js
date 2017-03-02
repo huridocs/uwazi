@@ -33,38 +33,37 @@ export default app => {
 
   // TEST!!!
   app.get('/api/references/search/:id', (req, res) => {
-    // Remove forced timeout
-    setTimeout(() => {
-      references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
-      .then(groups => {
-        const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
+    references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
+    .then(groups => {
+      const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
 
-        const anyFilteredGroups = Object.keys(filter).reduce((filteredGroups, key) => {
-          return Boolean(filter[key].length) || filteredGroups;
-        }, false);
+      const anyFilteredGroups = Object.keys(filter).reduce((filteredGroups, key) => {
+        return Boolean(filter[key].length) || filteredGroups;
+      }, false);
 
-        const entityIds = groups.reduce((ids, group) => {
-          return group.templates.reduce((referenceIds, template) => {
-            let usefulRefs = template.refs;
+      const entityIds = groups.reduce((ids, group) => {
+        return group.templates.reduce((referenceIds, template) => {
+          let usefulRefs = template.refs;
 
-            if (anyFilteredGroups) {
-              usefulRefs = usefulRefs.filter(() => filter[group.key] && filter[group.key].includes(group.key + template._id));
-            }
+          if (anyFilteredGroups) {
+            usefulRefs = usefulRefs.filter(() => filter[group.key] && filter[group.key].includes(group.key + template._id));
+          }
 
-            return referenceIds.concat(usefulRefs.map(r => r.connectedDocument));
-          }, ids);
-        }, []);
+          return referenceIds.concat(usefulRefs.map(r => r.connectedDocument));
+        }, ids);
+      }, []);
 
-        req.query.ids = entityIds.length ? entityIds : ['no_results'];
-        req.query.includeUnpublished = true;
+      req.query.ids = entityIds.length ? entityIds : ['no_results'];
+      req.query.includeUnpublished = true;
 
-        search.search(req.query, req.language)
-        .then(results => res.json(results));
-      })
-      .catch((error) => {
-        res.status(500).json({error: error.json});
-      });
-    }, 1000);
+      console.log('en References:', req.query);
+
+      search.search(req.query, req.language)
+      .then(results => res.json(results));
+    })
+    .catch((error) => {
+      res.status(500).json({error: error.json});
+    });
   });
   // ---
 

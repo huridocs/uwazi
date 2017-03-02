@@ -18,7 +18,7 @@ import {actions as connectionsActions} from 'app/Connections';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
-import SortButtons from 'app/Library/components/SortButtons';
+import SearchBar from './SearchBar';
 import ReferencesGroup from './ReferencesGroup';
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
@@ -159,10 +159,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'references' ? selectedTab : 'none'}>
-                <div className="sort-by">
-                  <SortButtons stateProperty="entityView.sort"
-                               selectedTemplates={Immutable(summary.referencesTemplates)} />
-                </div>
+                <SearchBar />
                 <div className="nested-selector">
                   <ul className="multiselect is-active">
                     {referenceGroups.map(group =>
@@ -223,12 +220,6 @@ const prepareMetadata = createSelector(
   selectThesauris,
   (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
 );
-
-// const selectReferences = createSelector(
-//   s => !!s.user.get('_id'),
-//   s => s.entityView.references,
-//   (loged, references) => references.filter(ref => loged || ref.get('connectedDocumentPublished'))
-// );
 
 const mapStateToProps = (state) => {
   return {
