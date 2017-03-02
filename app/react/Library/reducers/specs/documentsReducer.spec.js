@@ -32,6 +32,15 @@ describe('documentsReducer', () => {
     });
   });
 
+  describe('LIBRARY/UPDATE_DOCUMENTS', () => {
+    it('should set the documents in the state', () => {
+      let currentState = Immutable.fromJS({rows: [{title: '1', _id: 1}, {title: '2', _id: 2}]});
+      let newState = documentsReducer(currentState, {type: types.UPDATE_DOCUMENTS, docs: [{title: '1!', _id: 1}, {_id: 2, title: 'new title'}]});
+
+      expect(newState.toJS()).toEqual({rows: [{title: '1!', _id: 1}, {title: 'new title', _id: 2}]});
+    });
+  });
+
   describe('REMOVE_DOCUMENT', () => {
     it('should remove the documents from the state', () => {
       let currentState = Immutable.fromJS({rows: [{title: '1', _id: 1}, {title: '2', _id: 2}]});

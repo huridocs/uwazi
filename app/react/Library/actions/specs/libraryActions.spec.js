@@ -9,10 +9,10 @@ import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import documents from 'app/Documents';
+import {api} from 'app/Entities';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 
-import libraryHelper from 'app/Library/helpers/libraryFilters';
 import referencesAPI from 'app/Viewer/referencesAPI';
 
 const middlewares = [thunk];
@@ -33,7 +33,6 @@ describe('libraryActions', () => {
 
   describe('setTemplates', () => {
     let documentTypes = ['typea'];
-    let libraryFilters = 'generated filters';
     let dispatch;
     let getState;
     let filters = {
@@ -42,7 +41,6 @@ describe('libraryActions', () => {
     };
 
     beforeEach(() => {
-      spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
       dispatch = jasmine.createSpy('dispatch');
       getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters)}});
     });
@@ -207,6 +205,28 @@ describe('libraryActions', () => {
         store.dispatch(actions.saveDocument(doc))
         .then(() => {
           expect(documents.api.save).toHaveBeenCalledWith(doc);
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('multipleUpdate', () => {
+      it('should update selected entities with the given metadata', (done) => {
+        mockID();
+        spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
+        let entities = Immutable.fromJS([{sharedId: '1'}, {sharedId: '2'}]);
+        const metadata = {text: 'something new'};
+
+        const expectedActions = [
+          {type: notificationsTypes.NOTIFY, notification: {message: 'Update success', type: 'success', id: 'unique_id'}},
+          {type: types.UPDATE_DOCUMENTS, docs: [{sharedId: '1', metadata}, {sharedId: '2', metadata}]}
+        ];
+        const store = mockStore({});
+        store.dispatch(actions.multipleUpdate(entities, metadata))
+        .then(() => {
+          expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], metadata);
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

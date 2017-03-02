@@ -1,20 +1,5 @@
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-
-function sameProperty(prop1, prop2) {
-  return prop1.name === prop2.name && prop1.type === prop2.type && prop1.content === prop2.content;
-}
-
-function templateHasProperty(template, property) {
-  return template.properties.filter((prop) => {
-    return sameProperty(prop, property) && prop.filter;
-  }).length;
-}
-
-function allTemplatesHaveIt(templates, property) {
-  return templates.reduce((allHaveIt, template) => {
-    return allHaveIt && templateHasProperty(template, property);
-  }, true);
-}
+import {comonProperties} from 'app/Metadata/helpers/comonProperties';
 
 function getOptions(property, thesauris) {
   let matchingTHesauri = thesauris.find((thesauri) => {
@@ -24,23 +9,6 @@ function getOptions(property, thesauris) {
   if (matchingTHesauri) {
     return matchingTHesauri.values;
   }
-}
-
-export function libraryFilters(templates, documentTypes = []) {
-  let filters = [];
-  let selectedTemplates = templates.filter((template) => {
-    return documentTypes.includes(template._id);
-  });
-
-  if (selectedTemplates.length) {
-    selectedTemplates[0].properties.forEach((property) => {
-      if (property.filter && allTemplatesHaveIt(selectedTemplates, property)) {
-        filters.push(Object.assign({}, property));
-      }
-    });
-  }
-
-  return filters;
 }
 
 export function populateOptions(filters, thesauris) {
@@ -56,7 +24,8 @@ export function populateOptions(filters, thesauris) {
 }
 
 export function URLQueryToState(query, templates, thesauris) {
-  let properties = libraryFilters(templates, query.types);
+  let properties = comonProperties(templates, query.types)
+  .filter((prop) => prop.filter);
   let {searchTerm, filters = {}, sort = prioritySortingCriteria.get().sort, order = prioritySortingCriteria.get().order} = query;
 
   properties = populateOptions(properties, thesauris).map((property) => {
@@ -103,7 +72,6 @@ export function parseWithAggregations(filters, aggregations) {
 }
 
 export default {
-  libraryFilters,
   URLQueryToState,
   populateOptions,
   parseWithAggregations

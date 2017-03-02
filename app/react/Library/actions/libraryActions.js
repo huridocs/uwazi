@@ -9,6 +9,7 @@ import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
+import {api as entitiesAPI} from 'app/Entities';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -119,14 +120,38 @@ export function searchDocuments(readOnlySearch, limit) {
   };
 }
 
+export function updateEntity(updatedDoc) {
+  return {type: types.UPDATE_DOCUMENT, doc: updatedDoc};
+}
+
+export function updateEntities(updatedDocs) {
+  return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
+}
+
 export function saveDocument(doc) {
   return function (dispatch) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
-      dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(updateEntity(updatedDoc));
       dispatch(selectDocument(updatedDoc));
+    });
+  };
+}
+
+export function multipleUpdate(_entities, metadata) {
+  return function (dispatch) {
+    const updatedEntities = _entities.toJS().map((entity) => {
+      entity.metadata = Object.assign({}, entity.metadata, metadata);
+      return entity;
+    });
+
+    const updatedEntitiesIds = updatedEntities.map((entity) => entity.sharedId);
+    return entitiesAPI.multipleUpdate(updatedEntitiesIds, metadata)
+    .then(() => {
+      dispatch(notify('Update success', 'success'));
+      dispatch(updateEntities(updatedEntities));
     });
   };
 }
@@ -137,7 +162,7 @@ export function saveEntity(entity) {
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
-      dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(dispatch(updateEntity(updatedDoc)));
       dispatch(selectDocument(updatedDoc));
     });
   };

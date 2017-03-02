@@ -1,5 +1,5 @@
 
-import validator, {required} from '../validator';
+import validator, {notEmpty} from '../validator';
 
 describe('metadata validator', () => {
   let fieldsTemplate = [
@@ -12,24 +12,24 @@ describe('metadata validator', () => {
 
   describe('required', () => {
     it('should return false on an empty string', () => {
-      expect(required('')).toBe(false);
-      expect(required('  ')).toBe(false);
-      expect(required('value')).toBe(true);
-      expect(required(423)).toBe(true);
-      expect(required(0)).toBe(true);
+      expect(notEmpty('')).toBe(false);
+      expect(notEmpty('  ')).toBe(false);
+      expect(notEmpty('value')).toBe(true);
+      expect(notEmpty(423)).toBe(true);
+      expect(notEmpty(0)).toBe(true);
     });
 
     it('should return false on an empty array', () => {
-      expect(required([])).toBe(false);
+      expect(notEmpty([])).toBe(false);
     });
   });
 
   describe('generate', () => {
     it('should should generate a validation based on the template passed', () => {
       let validationObject = validator.generate(template);
-      expect(validationObject.title).toEqual({required});
-      expect(validationObject['metadata.field1']).toEqual({required});
-      expect(validationObject['metadata.field3']).toEqual({required});
+      expect(validationObject.title).toEqual({required: notEmpty});
+      expect(validationObject['metadata.field1']).toEqual({required: notEmpty});
+      expect(validationObject['metadata.field3']).toEqual({required: notEmpty});
     });
   });
 });

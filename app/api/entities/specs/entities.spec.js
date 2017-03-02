@@ -256,6 +256,22 @@ describe('entities', () => {
     });
   });
 
+  describe('multipleUpdate()', () => {
+    it('should save() all the entities with the new metadata', (done) => {
+      spyOn(entities, 'save').and.returnValue(Promise.resolve());
+      const metadata = {text: 'new text', description: 'yeah!'};
+      entities.multipleUpdate(['shared', 'shared1'], metadata, {language: 'en'})
+      .then(() => {
+        expect(entities.save).toHaveBeenCalled();
+        expect(entities.save).toHaveBeenCalled();
+        expect(entities.save.calls.argsFor(0)[0].metadata).toEqual(metadata);
+        expect(entities.save.calls.argsFor(1)[0].metadata).toEqual(metadata);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   /// not used right now but it needs to be improved and used
   describe('updateMetadataProperties', () => {
     let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/entities/_view/metadata_by_template?key="' + template + '"')

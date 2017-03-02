@@ -94,6 +94,16 @@ export default {
     });
   },
 
+  multipleUpdate(ids, metadata, params) {
+    return Promise.all(ids.map((id) => {
+      return this.getById(id, params.language)
+      .then((entity) => {
+        entity.metadata = Object.assign({}, entity.metadata, metadata);
+        return this.save(entity, params);
+      });
+    }));
+  },
+
   getAllLanguages(sharedId) {
     return model.get({sharedId});
   },

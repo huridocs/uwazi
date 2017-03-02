@@ -12,9 +12,13 @@ describe('SelectMultiplePanel', () => {
 
   beforeEach(() => {
     props = {
-      entitiesSelected: Immutable.fromJS([{title: 'A rude awakening', template: '1'}, {title: 'A falling star', template: '1'}]),
+      entitiesSelected: Immutable.fromJS([{title: 'A rude awakening', template: '1'}, {title: 'A falling star', template: '2'}]),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
-      deleteEntities: jasmine.createSpy('deleteEntities')
+      deleteEntities: jasmine.createSpy('deleteEntities'),
+      resetForm: jasmine.createSpy('resetForm'),
+      loadForm: jasmine.createSpy('resetForm'),
+      templates: Immutable.fromJS([]),
+      thesauris: Immutable.fromJS([])
     };
     context = {confirm: jasmine.createSpy('confirm')};
   });
@@ -51,6 +55,7 @@ describe('SelectMultiplePanel', () => {
       expect(context.confirm).toHaveBeenCalled();
       context.confirm.calls.mostRecent().args[0].accept();
       expect(props.unselectAllDocuments).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalled();
     });
   });
 
@@ -61,6 +66,36 @@ describe('SelectMultiplePanel', () => {
       expect(context.confirm).toHaveBeenCalled();
       context.confirm.calls.mostRecent().args[0].accept();
       expect(props.deleteEntities).toHaveBeenCalledWith(props.entitiesSelected.toJS());
+    });
+  });
+
+  describe('edit()', () => {
+    it('should load the form with the comon properties for the selectedEntities', () => {
+      props.templates = Immutable.fromJS([
+        {_id: '1', properties: [
+          {name: 'year', type: 'numeric'},
+          {name: 'powers', content: '1', type: 'multiselect'},
+          {name: 'enemies', content: '2', type: 'multiselect'},
+          {name: 'color', type: 'text', required: true}
+        ]},
+        {_id: '2', properties: [
+          {name: 'year', type: 'date'},
+          {name: 'powers', content: '1', type: 'multiselect'},
+          {name: 'enemies', content: '3', type: 'multiselect'},
+          {name: 'color', type: 'text', required: false}
+        ]}
+      ]);
+      
+      let expectedTemplate = {
+        properties: [
+          {name: 'powers', content: '1', type: 'multiselect'},
+          {name: 'color', type: 'text', required: true}
+        ]
+      };
+
+      render();
+      component.find('.edit').simulate('click');
+      expect(props.loadForm).toHaveBeenCalledWith('library.sidepanel.multipleEdit', expectedTemplate);
     });
   });
 });

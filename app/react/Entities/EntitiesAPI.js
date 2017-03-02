@@ -52,6 +52,13 @@ export default {
     });
   },
 
+  multipleUpdate(ids, metadata) {
+    return api.post('entities/multipleupdate', {ids, metadata})
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   delete(entity) {
     return api.delete('entities', entity)
     .then((response) => {

@@ -21,6 +21,16 @@ export default (app) => {
     });
   });
 
+  app.post('/api/entities/multipleupdate', needsAuthorization, (req, res) => {
+    return entities.multipleUpdate(req.body.ids, req.body.metadata, {user: req.user, language: req.language})
+    .then(docs => {
+      res.json(docs.map((doc) => doc.sharedId));
+    })
+    .catch(error => {
+      res.json({error});
+    });
+  });
+
   app.get('/api/entities/count_by_template', (req, res) => {
     return entities.countByTemplate(req.query.templateId)
     .then(response => res.json(response))
