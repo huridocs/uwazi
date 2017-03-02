@@ -40,9 +40,11 @@ export class Viewer extends Component {
       <div className="row">
         <Helmet title={this.props.doc.get('title') ? this.props.doc.get('title') : 'Document'} />
         <div className="content-header content-header-document">
-          <span className="item-icon item-icon-center"><i className="fa fa-adn fa-lg"></i></span>
-          <h1 className="item-name">Test entity</h1>
-          <span className="item-type item-type-0"><span className="item-type__name">Test</span></span>
+          <div className="content-header-title">
+            <span className="item-icon item-icon-center"><i className="fa fa-adn fa-lg"></i></span>
+            <h1 className="item-name">Test entity</h1>
+            <span className="item-type item-type-0"><span className="item-type__name">Test</span></span>
+          </div>
         </div>
         <main className={className}>
           <div className="main-wrapper">
