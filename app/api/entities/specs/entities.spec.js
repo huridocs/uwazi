@@ -158,14 +158,14 @@ describe('entities', () => {
         expect(docEN.metadata.multidate).toBe('multidate');
         expect(docEN.metadata.multidaterange).toBe('multidaterange');
 
-        expect(docES.metadata.text).toBe('text');
+        expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
         expect(docES.metadata.multiselect).toBe('multiselect');
         expect(docES.metadata.date).toBe('date');
         expect(docES.metadata.multidate).toBe('multidate');
         expect(docES.metadata.multidaterange).toBe('multidaterange');
 
-        expect(docPT.metadata.text).toBe('text');
+        expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
         expect(docPT.metadata.multiselect).toBe('multiselect');
         expect(docPT.metadata.date).toBe('date');
@@ -259,7 +259,7 @@ describe('entities', () => {
   describe('multipleUpdate()', () => {
     it('should save() all the entities with the new metadata', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve());
-      const metadata = {text: 'new text', description: 'yeah!'};
+      const metadata = {property1: 'new text', description: 'yeah!'};
       entities.multipleUpdate(['shared', 'shared1'], metadata, {language: 'en'})
       .then(() => {
         expect(entities.save).toHaveBeenCalled();
