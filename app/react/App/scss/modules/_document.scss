@@ -1,6 +1,9 @@
 .document-viewer {
+  position: relative;
   width: 100%;
+  height: 100%;
   padding: 15px;
+  overflow-y: scroll;
   transition: all 500ms;
 
     @media(min-width: 1024px) {

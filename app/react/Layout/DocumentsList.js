@@ -32,7 +32,7 @@ export default class DocumentsList extends Component {
     const documents = this.props.documents;
 
     return (
-      <main className="document-viewer with-panel">
+      <div className="documents-list">
         <div className="main-wrapper">
           <div className="sort-by">
               <div className="u-floatLeft documents-counter">
@@ -68,7 +68,7 @@ export default class DocumentsList extends Component {
           </div>
           <Footer/>
         </div>
-      </main>
+      </div>
     );
   }
 }

@@ -67,7 +67,9 @@ export default class Library extends RouteHandler {
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
-        <DocumentsList />
+        <main className="document-viewer with-panel">
+          <DocumentsList />
+        </main>
         <ConfirmCloseForm />
         <LibraryFilters />
         <ViewMetadataPanel />

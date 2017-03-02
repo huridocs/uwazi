@@ -73,9 +73,11 @@ export class EntityViewer extends Component {
         <Helmet title={entity.title ? entity.title : 'Entity'} />
 
         <div className="content-header content-header-entity">
-          <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
-          <h1 className="item-name">{entity.title}</h1>
-          <TemplateLabel template={entity.template}/>
+          <div className="content-header-title">
+            <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+            <h1 className="item-name">{entity.title}</h1>
+            <TemplateLabel template={entity.template}/>
+          </div>
 
           <Tabs className="content-header-tabs" selectedTab={selectedTab}
                 handleSelect={tabName => {
@@ -106,38 +108,36 @@ export class EntityViewer extends Component {
           </Tabs>
         </div>
 
-        <aside className="side-panel entity-metadata">
-          <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
-            <MetadataFormButtons
-              delete={this.deleteEntity.bind(this)}
-              data={this.props.rawEntity}
-              formStatePath='entityView.entityForm'
-              entityBeingEdited={entityBeingEdited}
-            />
-          </ShowIf>
+        <main className="entity-viewer">
 
-          <div className="sidepanel-body">
-            <Tabs selectedTab={selectedTab}>
-              <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
-                <div className="document">
-                  {(() => {
-                    if (entityBeingEdited) {
-                      return <EntityForm/>;
-                    }
-                    return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
-                  })()}
-                </div>
-              </TabContent>
-              <TabContent for="references">
-                <ReferencesList entity={this.props.entity} />
-              </TabContent>
-            </Tabs>
-          </div>
-        </aside>
+          <Tabs selectedTab={selectedTab}>
+            <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
+              <div className="document">
+                {(() => {
+                  if (entityBeingEdited) {
+                    return <EntityForm/>;
+                  }
+                  return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
+                })()}
+              </div>
+            </TabContent>
+            <TabContent for="references">
+              <ReferencesList entity={this.props.entity} />
+            </TabContent>
+          </Tabs>
+        </main>
+        <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
+          <MetadataFormButtons
+            delete={this.deleteEntity.bind(this)}
+            data={this.props.rawEntity}
+            formStatePath='entityView.entityForm'
+            entityBeingEdited={entityBeingEdited}
+            />
+        </ShowIf>
 
         <aside className="side-panel entity-connections">
           <NeedAuthorization>
-            <ShowIf if={selectedTab === 'references'}>
+            <ShowIf if={selectedTab === 'info' || selectedTab === 'references'}>
               <div className="sidepanel-footer">
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">

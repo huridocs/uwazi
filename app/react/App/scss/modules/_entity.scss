@@ -1,50 +1,29 @@
 .entity-content {
   overflow-y: scroll;
+  
 }
 
-.entity-metadata {
-  top: $header-height * 2 + 1 !important;
-  left: 0 !important;
-  right: auto !important;
-  width: calc(100% - 400px) !important;
-  z-index: 3 !important;
+@media(min-width: 1024px) {
+  .entity-viewer ~ .sidepanel-footer {
+    left: calc((100% - 400px)/2);
+  }
+}
+
+.entity-viewer {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 51px);
+  padding: 15px;
   background: $c-white;
-  @media (max-width: 1023px) {
-    position: relative !important;
-    width: 100% !important;
-    max-width: 999px !important;
-    top: 0 !important;
-  }
-  .sidepanel-header {
-    display: none;
-  }
-  .item-info {
-    padding: 15px;
-  }
-  .item-icon {
-    margin-right: 10px;
-    top: 0;
-  }
-  .item-name {
-    font-weight: 300;
-    font-size: 18px !important;
-  }
-  dt {
-    width: 25%;
-  }
-  dd {
-    width: 75%;
-    
-    .item-icon {
-      margin-right: 4px;
-      top: -2px;
-    }
+  overflow-y: scroll;
+  
+  @media(min-width: 1024px) {
+    width: calc(100% - 400px) !important;
   }
 }
 
 .entity-connections {
   right: 0 !important;
-  top: $header-height * 2 + 1 !important;
 
   @media (max-width: 1023px) {
     position: relative !important;
@@ -57,6 +36,10 @@
 .entity-content {
   z-index: 3;
   max-width: 9999px;
+
+  .side-panel {
+    top: $header-height * 2 + 1 !important;
+  }
 }
 
 .entities-list {
