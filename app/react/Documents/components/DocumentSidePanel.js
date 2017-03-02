@@ -55,8 +55,8 @@ export class DocumentSidePanel extends Component {
     });
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
-    const docFile = Object.assign({}, doc.file, {originalname: doc.title + '.pdf'});
-    const attachments = doc.file ? [docFile].concat(docAttachments) : docAttachments;
+    const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS(): {}, {originalname: doc.get('title') + '.pdf'});
+    const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
     const readOnly = this.props.readOnly;
     const startNewConnection = readOnly ? () => {} : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'));
 

@@ -14,7 +14,7 @@ describe('DocumentSidePanel', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({metadata: [], attachmenas: [], type: 'document'}),
+      doc: Immutable.fromJS({metadata: [], attachmenas: [], type: 'document', file: {}}),
       rawDoc: fromJS({}),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),

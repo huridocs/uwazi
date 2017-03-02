@@ -105,22 +105,16 @@ export default {
     return model.get({template, language});
   },
 
-  //updateMetadataProperties(templateId, nameMatches, deleteProperties) {
-    //return request.get(`${dbURL}/_design/entities/_view/metadata_by_template?key="${templateId}"`)
-    //.then((response) => {
-      //let entities = response.json.rows.map((r) => r.value);
-      //entities = updateMetadataNames(entities, nameMatches);
-      //entities = deleteMetadataProperties(entities, deleteProperties);
-
-      //let updates = [];
-      //entities.forEach((entity) => {
-        //let url = `${dbURL}/_design/entities/_update/partialUpdate/${entity._id}`;
-        //updates.push(request.post(url, entity));
-      //});
-
-      //return Promise.all(updates);
-    //});
-  //},
+  updateMetadataProperties(template, nameMatches, deleteProperties) {
+    let actions = {};
+    actions.$rename = nameMatches;
+    if (deleteProperties) {
+      let toUnset = {};
+      deleteProperties.forEach(p => toUnset[p] = '');
+      actions.$unset = toUnset;
+    }
+    return model.db.updateMany({template}, actions);
+  },
 
   delete(sharedId) {
     return this.get({sharedId})

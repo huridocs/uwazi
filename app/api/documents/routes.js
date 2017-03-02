@@ -23,12 +23,6 @@ export default (app) => {
     });
   });
 
-  app.get('/api/documents/html', (req, res) => {
-    return documents.getHTML(req.query._id, req.language)
-    .then(doc => res.json(doc))
-    .catch((error) => res.json({error}, 500));
-  });
-
   app.get('/api/documents/count_by_template', (req, res) => {
     return templates.countByTemplate(req.query.templateId)
     .then(results => res.json(results))

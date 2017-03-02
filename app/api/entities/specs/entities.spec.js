@@ -6,7 +6,7 @@ import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import references from 'api/references';
 
-import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
+import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('entities', () => {
@@ -262,11 +262,14 @@ describe('entities', () => {
       return response.json.rows.map((r) => r.value);
     });
 
-    xit('should update metadata property names on the entities matching the template', (done) => {
-      let nameChanges = {property1: 'new_name1', property2: 'new_name2'};
-      entities.updateMetadataProperties('template1', nameChanges)
-      .then(() => getDocumentsByTemplate('template1'))
-      .then((docs) => {
+    it('should update metadata property names on the entities matching the template', (done) => {
+      let nameChanges = {'metadata.property1': 'metadata.new_name1', 'metadata.property2': 'metadata.new_name2'};
+      entities.updateMetadataProperties(templateChangingNames, nameChanges)
+      .then(() => Promise.all([
+        entities.get({template: templateChangingNames}),
+        entities.getById('shared', 'en')
+      ]))
+      .then(([docs, docDiferentTemplate]) => {
         expect(docs[0].metadata.new_name1).toBe('value1');
         expect(docs[0].metadata.new_name2).toBe('value2');
         expect(docs[0].metadata.property3).toBe('value3');
@@ -274,16 +277,18 @@ describe('entities', () => {
         expect(docs[1].metadata.new_name1).toBe('value1');
         expect(docs[1].metadata.new_name2).toBe('value2');
         expect(docs[1].metadata.property3).toBe('value3');
+
+        expect(docDiferentTemplate.metadata.property1).toBe('value1');
         done();
       })
       .catch(done.fail);
     });
 
-    xit('should delete properties passed', (done) => {
-      let nameChanges = {property2: 'new_name'};
-      let deleteProperties = ['property1', 'property3'];
-      entities.updateMetadataProperties('template1', nameChanges, deleteProperties)
-      .then(() => getDocumentsByTemplate('template1'))
+    it('should delete properties passed', (done) => {
+      let nameChanges = {'metadata.property2': 'metadata.new_name'};
+      let deleteProperties = ['metadata.property1', 'metadata.property3'];
+      entities.updateMetadataProperties(templateChangingNames, nameChanges, deleteProperties)
+      .then(() => entities.get({template: templateChangingNames}))
       .then((docs) => {
         expect(docs[0].metadata.property1).not.toBeDefined();
         expect(docs[0].metadata.new_name).toBe('value2');

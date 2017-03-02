@@ -10,13 +10,21 @@ import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {t} from 'app/I18N';
+import debounce from 'app/utils/debounce';
 
 export class FiltersForm extends Component {
+
+  constructor(props) {
+    super(props);
+    this.search = debounce((values) => {
+      this.props.searchDocuments(values);
+    }, 400);
+  }
 
   onChange(values) {
     if (this.autoSearch) {
       this.autoSearch = false;
-      this.props.searchDocuments(values);
+      this.search(values);
     }
   }
 
@@ -175,7 +183,10 @@ export class FiltersForm extends Component {
                     </label>
                   </li>
                   <li className="wide">
-                    <input className="form-control" onChange={(e) => this.props.activateFilter(property.name, !!e.target.value)} />
+                    <input className="form-control" onChange={(e) => {
+                      this.autoSearch = true;
+                      this.props.activateFilter(property.name, !!e.target.value);
+                    }} />
                   </li>
                 </ul>
               </Field>
@@ -210,7 +221,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments, toggleFilter, activateFilter}, dispatch);
+  return bindActionCreators({searchDocuments: searchDocuments, toggleFilter, activateFilter}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

@@ -1,8 +1,7 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import templates from 'api/templates/templates.js';
+import entities from 'api/entities/entities.js';
 import documents from 'api/documents/documents.js';
 //import database from 'api/utils/database.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 import {db} from 'api/utils';
