@@ -97,20 +97,27 @@ export class SelectMultiplePanel extends Component {
     return (
       <SidePanel open={open} className="metadata-sidepanel">
         <div className="sidepanel-header">
-        <span>{entitiesSelected.size} {t('System', 'selected')}.</span>
-        <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
+          <i className="fa fa-check-square"></i> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
+          <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
         </div>
         <div className="sidepanel-body">
           <ShowIf if={!editing}>
             <ul className="entities-list">
               {entitiesSelected.map((entity, index) => {
-                return <li key={index}><TemplateLabel template={entity.get('template')}/> <span>{entity.get('title')}</span></li>;
+                return <li key={index}>
+                  <TemplateLabel template={entity.get('template')}/> <span className="entity-title">{entity.get('title')}</span>
+                </li>;
               })}
             </ul>
           </ShowIf>
           <ShowIf if={editing}>
             <Form id='multiEdit' model='library.sidepanel.multipleEdit' onSubmit={this.save.bind(this)} validators={validation}>
               <FormGroup>
+                <div className="alert alert-warning">
+                  <i className="fa fa-warning"></i>
+                  Be careful, you are editing multiple files!
+                  We will update all the properties marked with <i className="fa fa-warning"></i> with the new values.
+                </div>
                 <ul className="search__filter">
                   <li><label>{t('System', 'Icon')} / {t('System', 'Flag')}</label></li>
                   <li className="wide">
