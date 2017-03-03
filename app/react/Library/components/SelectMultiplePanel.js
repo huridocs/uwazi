@@ -16,13 +16,17 @@ import {TemplateLabel, SidePanel} from 'app/Layout';
 export class SelectMultiplePanel extends Component {
 
   close() {
+    let message = t('System', 'This action will unselect all the entities.');
+    if (this.props.editing) {
+      message = t('System', 'This action will discard any changes.');
+    }
     this.context.confirm({
       accept: () => {
         this.props.unselectAllDocuments();
         this.props.resetForm('library.sidepanel.multipleEdit');
       },
       title: t('System', 'Confirm'),
-      message: t('System', 'This will unselect all the entities and discard any changes.')
+      message
     });
   }
 
@@ -37,7 +41,8 @@ export class SelectMultiplePanel extends Component {
   }
 
   fieldModified(key) {
-    return !this.props.formState.metadata[key].pristine && (!this.props.formState.metadata[key].$form || !this.props.formState.metadata[key].$form.pristine);
+    return !this.props.formState.metadata[key].pristine &&
+    (!this.props.formState.metadata[key].$form || !this.props.formState.metadata[key].$form.pristine);
   }
 
   save(formValues) {
@@ -54,6 +59,14 @@ export class SelectMultiplePanel extends Component {
 
   cancel() {
     this.props.resetForm('library.sidepanel.multipleEdit');
+    this.context.confirm({
+      accept: () => {
+        this.props.unselectAllDocuments();
+        this.props.resetForm('library.sidepanel.multipleEdit');
+      },
+      title: t('System', 'Confirm'),
+      message: t('System', 'This action will discard any changes.')
+    });
   }
 
   edit() {
@@ -64,12 +77,12 @@ export class SelectMultiplePanel extends Component {
     const comonTypes = this.props.entitiesSelected.map((entity) => entity.get('template'))
     .filter((type, index, _types) => _types.indexOf(type) === index);
     const properties = comonProperties(this.props.templates.toJS(), comonTypes);
-    return {properties};
+    return {_id: comonTypes.get(0), properties};
   }
 
   render() {
     const {entitiesSelected, open, editing} = this.props;
-    const template = this.comontemplate();
+    let template = this.comontemplate();
     let validation = validator.generate(template);
     delete validation.title;
 
@@ -92,7 +105,7 @@ export class SelectMultiplePanel extends Component {
               <MetadataFormFields
                 template={template}
                 thesauris={this.props.thesauris.toJS()}
-                state={this.props.state}
+                state={this.props.formState}
               />
             </Form>
           </ShowIf>

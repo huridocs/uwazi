@@ -85,8 +85,9 @@ describe('SelectMultiplePanel', () => {
           {name: 'color', type: 'text', required: false}
         ]}
       ]);
-      
+
       let expectedTemplate = {
+        _id: '1',
         properties: [
           {name: 'powers', content: '1', type: 'multiselect'},
           {name: 'color', type: 'text', required: true}
