@@ -52,8 +52,8 @@ export default {
     });
   },
 
-  multipleUpdate(ids, metadata) {
-    return api.post('entities/multipleupdate', {ids, metadata})
+  multipleUpdate(ids, values) {
+    return api.post('entities/multipleupdate', {ids, values})
     .then((response) => {
       return response.json;
     });

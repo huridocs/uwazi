@@ -224,9 +224,9 @@ describe('libraryActions', () => {
           {type: types.UPDATE_DOCUMENTS, docs: [{sharedId: '1', metadata}, {sharedId: '2', metadata}]}
         ];
         const store = mockStore({});
-        store.dispatch(actions.multipleUpdate(entities, metadata))
+        store.dispatch(actions.multipleUpdate(entities, {metadata}))
         .then(() => {
-          expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], metadata);
+          expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], {metadata});
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

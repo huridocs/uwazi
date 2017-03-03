@@ -10,6 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import {comonProperties} from 'app/Metadata/helpers/comonProperties';
 import {actions as metadataActions} from 'app/Metadata';
 import validator from 'app/Metadata/helpers/validator';
+import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 
 import {TemplateLabel, SidePanel} from 'app/Layout';
 
@@ -40,21 +41,28 @@ export class SelectMultiplePanel extends Component {
     });
   }
 
-  fieldModified(key) {
+  metadataFieldModified(key) {
     return !this.props.formState.metadata[key].pristine &&
     (!this.props.formState.metadata[key].$form || !this.props.formState.metadata[key].$form.pristine);
   }
 
   save(formValues) {
-    let modifiedValues = {};
+    let modifiedValues = {metadata: {}};
     Object.keys(formValues.metadata).forEach((key) => {
-      if (this.fieldModified(key)) {
-        modifiedValues[key] = formValues.metadata[key];
+      if (this.metadataFieldModified(key)) {
+        modifiedValues.metadata[key] = formValues.metadata[key];
       }
     });
 
-    this.props.multipleUpdate(this.props.entitiesSelected, modifiedValues);
-    this.cancel();
+    if (this.props.formState.icon && !this.props.formState.icon.pristine) {
+      modifiedValues.icon = formValues.icon;
+    }
+
+    this.props.multipleUpdate(this.props.entitiesSelected, modifiedValues)
+    .then(() => {
+      this.props.unselectAllDocuments();
+      this.props.resetForm('library.sidepanel.multipleEdit');
+    });
   }
 
   cancel() {
@@ -102,6 +110,14 @@ export class SelectMultiplePanel extends Component {
           </ShowIf>
           <ShowIf if={editing}>
             <Form id='multiEdit' model='library.sidepanel.multipleEdit' onSubmit={this.save.bind(this)} validators={validation}>
+              <FormGroup>
+                <ul className="search__filter">
+                  <li><label>{t('System', 'Icon')} / {t('System', 'Flag')}</label></li>
+                  <li className="wide">
+                    <IconSelector model={'.icon'}/>
+                  </li>
+                </ul>
+              </FormGroup>
               <MetadataFormFields
                 template={template}
                 thesauris={this.props.thesauris.toJS()}

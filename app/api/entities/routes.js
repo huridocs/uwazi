@@ -22,7 +22,7 @@ export default (app) => {
   });
 
   app.post('/api/entities/multipleupdate', needsAuthorization, (req, res) => {
-    return entities.multipleUpdate(req.body.ids, req.body.metadata, {user: req.user, language: req.language})
+    return entities.multipleUpdate(req.body.ids, req.body.values, {user: req.user, language: req.language})
     .then(docs => {
       res.json(docs.map((doc) => doc.sharedId));
     })

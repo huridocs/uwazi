@@ -94,11 +94,14 @@ export default {
     });
   },
 
-  multipleUpdate(ids, metadata, params) {
+  multipleUpdate(ids, values, params) {
     return Promise.all(ids.map((id) => {
       return this.getById(id, params.language)
       .then((entity) => {
-        entity.metadata = Object.assign({}, entity.metadata, metadata);
+        entity.metadata = Object.assign({}, entity.metadata, values.metadata);
+        if (values.icon) {
+          entity.icon = values.icon;
+        }
         return this.save(entity, params);
       });
     }));

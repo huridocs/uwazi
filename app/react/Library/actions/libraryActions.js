@@ -140,15 +140,18 @@ export function saveDocument(doc) {
   };
 }
 
-export function multipleUpdate(_entities, metadata) {
+export function multipleUpdate(_entities, values) {
   return function (dispatch) {
     const updatedEntities = _entities.toJS().map((entity) => {
-      entity.metadata = Object.assign({}, entity.metadata, metadata);
+      entity.metadata = Object.assign({}, entity.metadata, values.metadata);
+      if (values.icon) {
+        entity.icon = values.icon;
+      }
       return entity;
     });
 
     const updatedEntitiesIds = updatedEntities.map((entity) => entity.sharedId);
-    return entitiesAPI.multipleUpdate(updatedEntitiesIds, metadata)
+    return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
     .then(() => {
       dispatch(notify('Update success', 'success'));
       dispatch(updateEntities(updatedEntities));

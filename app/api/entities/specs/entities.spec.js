@@ -260,7 +260,7 @@ describe('entities', () => {
     it('should save() all the entities with the new metadata', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve());
       const metadata = {property1: 'new text', description: 'yeah!'};
-      entities.multipleUpdate(['shared', 'shared1'], metadata, {language: 'en'})
+      entities.multipleUpdate(['shared', 'shared1'], {metadata}, {language: 'en'})
       .then(() => {
         expect(entities.save).toHaveBeenCalled();
         expect(entities.save).toHaveBeenCalled();
@@ -274,11 +274,6 @@ describe('entities', () => {
 
   /// not used right now but it needs to be improved and used
   describe('updateMetadataProperties', () => {
-    let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/entities/_view/metadata_by_template?key="' + template + '"')
-    .then((response) => {
-      return response.json.rows.map((r) => r.value);
-    });
-
     it('should update metadata property names on the entities matching the template', (done) => {
       let nameChanges = {'metadata.property1': 'metadata.new_name1', 'metadata.property2': 'metadata.new_name2'};
       entities.updateMetadataProperties(templateChangingNames, nameChanges)

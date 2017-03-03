@@ -118,11 +118,11 @@ describe('EntitiesAPI', () => {
 
   describe('multipleUpdate()', () => {
     it('should post the ids and metadata to /entities/multipleupdate', (done) => {
-      let metadata = {text: 'document text'};
+      let values = {metadata: {text: 'document text'}};
       let ids = ['1', '2'];
-      entitiesAPI.multipleUpdate(ids, metadata)
+      entitiesAPI.multipleUpdate(ids, values)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'entities/multipleupdate').body)).toEqual({ids, metadata});
+        expect(JSON.parse(backend.lastOptions(APIURL + 'entities/multipleupdate').body)).toEqual({ids, values});
         expect(response).toEqual({backednResponse: 'test multiple'});
         done();
       })

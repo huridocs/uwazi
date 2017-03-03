@@ -16,6 +16,7 @@ export default [
 {key: 'Collection', label: 'Collection'},
 {key: 'Custom page', label: 'Custom page'},
 {key: 'Menu', label: 'Menu'},
+{key: 'Confirm', label: 'Confirm'},
 {key: 'Confirm delete document type message', label: 'Are you sure you want to delete this document type?'},
 {key: 'Confirm delete document type title', label: 'Connection type'},
 {key: 'Confirm new password', label: 'Confirm new password'},
