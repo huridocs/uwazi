@@ -48,7 +48,7 @@ describe('PDF', () => {
     it('should get the new PDF if filename changed', (done) => {
       render();
       instance.componentWillReceiveProps({filename: 'newfile.pdf'});
-      expect(instance.pagesLoaded).toBe(0);
+      expect(Object.keys(instance.pagesLoaded).length).toBe(0);
       expect(instance.setState.calls.argsFor(0)[0]).toEqual({pdf: {numPages: 0}});
       expect(PDFJS.getDocument.calls.count()).toBe(2);
       setTimeout(() => {

@@ -75,7 +75,7 @@ export class PDF extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
-      this.pagesLoaded = 0;
+      this.pagesLoaded = {};
       this.setState({pdf: {numPages: 0}}, () => {
         PDFJS.getDocument(nextProps.file).then(pdf => {
           this.setState({pdf});
