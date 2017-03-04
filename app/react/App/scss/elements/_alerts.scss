@@ -41,7 +41,8 @@
 .alert-success,
 .alert-warning,
 .alert-danger {
-  //color: $c-grey-dark;
+  background: $c-white;
+  color: $c-grey-dark;
   .alert-title {
     margin-right: 5px;
   }
@@ -74,6 +75,12 @@
     margin: 0 0 45px;
     width: 100%;
     left: 0;
+  }
+}
+
+.sidepanel-body {
+  .alert {
+    background: $c-warning-light;
   }
 }
 
