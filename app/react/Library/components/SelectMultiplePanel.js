@@ -128,7 +128,12 @@ export class SelectMultiplePanel extends Component {
                   We will update all the properties marked with <i className="fa fa-warning"></i> with the new values.
                 </div>
                 <ul className="search__filter">
-                  <li><label>{t('System', 'Icon')} / {t('System', 'Flag')}</label></li>
+                  <li>
+                    <ShowIf if={this.props.formState.icon && !this.props.formState.icon.pristine}>
+                      <span><i className="fa fa-warning"></i>&nbsp;</span>
+                    </ShowIf>
+                    <label>{t('System', 'Icon')} / {t('System', 'Flag')}</label>
+                  </li>
                   <li className="wide">
                     <IconSelector model={'.icon'}/>
                   </li>
@@ -138,6 +143,7 @@ export class SelectMultiplePanel extends Component {
                 template={template}
                 thesauris={this.props.thesauris.toJS()}
                 state={this.props.formState}
+                multipleEdition={true}
               />
             </Form>
           </ShowIf>

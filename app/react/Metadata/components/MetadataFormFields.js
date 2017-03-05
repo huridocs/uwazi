@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {Field} from 'react-redux-form';
-import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
+import {Field, FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
 import t from 'app/I18N/t';
+import ShowIf from 'app/App/ShowIf';
 
 export class MetadataFormFields extends Component {
 
@@ -10,6 +10,10 @@ export class MetadataFormFields extends Component {
       option.label = t(thesauri._id, option.label);
       return option;
     });
+  }
+
+  isPristine(field) {
+    return field.pristine || (field.$form && field.$form.pristine);
   }
 
   render() {
@@ -44,11 +48,15 @@ export class MetadataFormFields extends Component {
             }
           };
 
+          const field = state.metadata[`${property.name}`] || {pristine: true};
           return (
-            <FormGroup key={property.name} {...state.metadata[`${property.name}`]} submitFailed={state.submitFailed}>
+            <FormGroup key={property.name} {...field} submitFailed={state.submitFailed}>
               <ul className="search__filter is-active">
                 <li>
                   <label>
+                    <ShowIf if={this.props.multipleEdition && !this.isPristine(field)}>
+                      <span><i className="fa fa-warning"></i>&nbsp;</span>
+                    </ShowIf>
                     {t(template._id, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
@@ -67,7 +75,8 @@ MetadataFormFields.propTypes = {
   template: PropTypes.object,
   model: PropTypes.string,
   state: PropTypes.object,
-  thesauris: PropTypes.array
+  thesauris: PropTypes.array,
+  multipleEdition: PropTypes.bool
 };
 
 export default MetadataFormFields;
