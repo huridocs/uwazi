@@ -175,6 +175,10 @@ export function removeDocument(doc) {
   return {type: types.REMOVE_DOCUMENT, doc};
 }
 
+export function removeDocuments(docs) {
+  return {type: types.REMOVE_DOCUMENTS, docs};
+}
+
 export function deleteDocument(doc) {
   return function (dispatch) {
     return documents.api.delete(doc)

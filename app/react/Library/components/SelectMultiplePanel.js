@@ -19,7 +19,7 @@ export class SelectMultiplePanel extends Component {
   close() {
     let message = t('System', 'This action will unselect all the entities.');
     if (this.props.editing) {
-      message = t('System', 'This action will discard any changes.');
+      message = t('System', 'Discard changes');
     }
     this.context.confirm({
       accept: () => {
@@ -37,7 +37,7 @@ export class SelectMultiplePanel extends Component {
         this.props.deleteEntities(this.props.entitiesSelected.toJS());
       },
       title: t('System', 'Confirm'),
-      message: t('System', 'Are you sure you want to delete all the selected items?')
+      message: t('System', 'Confirm delete multiple items')
     });
   }
 
@@ -66,33 +66,42 @@ export class SelectMultiplePanel extends Component {
   }
 
   cancel() {
-    this.props.resetForm('library.sidepanel.multipleEdit');
     this.context.confirm({
       accept: () => {
-        this.props.unselectAllDocuments();
         this.props.resetForm('library.sidepanel.multipleEdit');
       },
       title: t('System', 'Confirm'),
-      message: t('System', 'This action will discard any changes.')
+      message: t('System', 'Discard changes')
     });
   }
 
   edit() {
-    this.props.loadForm('library.sidepanel.multipleEdit', this.comontemplate());
+    this.props.loadForm('library.sidepanel.multipleEdit', this.comonTemplate());
   }
 
-  comontemplate() {
+  comonTemplate() {
     const comonTypes = this.props.entitiesSelected.map((entity) => entity.get('template'))
     .filter((type, index, _types) => _types.indexOf(type) === index);
     const properties = comonProperties(this.props.templates.toJS(), comonTypes);
     return {_id: comonTypes.get(0), properties};
   }
 
-  render() {
-    const {entitiesSelected, open, editing} = this.props;
-    let template = this.comontemplate();
+  validation(template) {
     let validation = validator.generate(template);
     delete validation.title;
+    Object.keys(this.props.state.metadata || {}).forEach((key) => {
+      if (!this.metadataFieldModified(key)) {
+        delete validation[`metadata.${key}`];
+      }
+    });
+
+    return validation;
+  }
+
+  render() {
+    const {entitiesSelected, open, editing} = this.props;
+    const template = this.comonTemplate();
+    const validation = this.validation(template);
 
     return (
       <SidePanel open={open} className="metadata-sidepanel">

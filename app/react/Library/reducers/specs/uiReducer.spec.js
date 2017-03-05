@@ -20,6 +20,12 @@ describe('uiReducer', () => {
       let newState = uiReducer(initialState, {type: types.SELECT_DOCUMENT, doc: {_id: 'document'}});
       expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
     });
+
+    it('should not select an already selected document', () => {
+      let newState = uiReducer(initialState, {type: types.SELECT_DOCUMENT, doc: {_id: 'document'}});
+      newState = uiReducer(newState, {type: types.SELECT_DOCUMENT, doc: {_id: 'document', something: 'change'}});
+      expect(newState.get('selectedDocuments').size).toBe(1);
+    });
   });
 
   describe('unselectDocument', () => {

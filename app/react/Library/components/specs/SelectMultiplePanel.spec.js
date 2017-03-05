@@ -18,6 +18,7 @@ describe('SelectMultiplePanel', () => {
       resetForm: jasmine.createSpy('resetForm'),
       loadForm: jasmine.createSpy('resetForm'),
       templates: Immutable.fromJS([]),
+      state: {metadata: {}},
       thesauris: Immutable.fromJS([])
     };
     context = {confirm: jasmine.createSpy('confirm')};
