@@ -49,7 +49,7 @@ $c-sidebar: $c-white;
     margin-top: 15px;
   }
 
-  .closeSidepanel {
+  .fa.closeSidepanel {
     position: absolute;
     top: 0;
     right: 0;
@@ -219,6 +219,11 @@ $c-sidebar: $c-white;
     font-size: 11px;
     line-height: 1em;
     margin-left: 5px;
+  }
+  
+  .fa {
+    font-size: $f-size-lg;
+    color: $c-grey-dark;
   }
 }
 .sidepanel-footer {
