@@ -1,4 +1,4 @@
-export function required(val) {
+export function notEmpty(val) {
   if (Array.isArray(val)) {
     return Boolean(val.length);
   }
@@ -11,12 +11,12 @@ export function required(val) {
 export default {
   generate(template) {
     let validationObject = {
-      title: {required}
+      title: {required: notEmpty}
     };
 
     template.properties.forEach((property) => {
       if (property.required) {
-        validationObject[`metadata.${property.name}`] = {required};
+        validationObject[`metadata.${property.name}`] = {required: notEmpty};
       }
     });
 

@@ -29,7 +29,9 @@ FormGroup.propTypes = {
 };
 
 export const mapStateToProps = ({}, props) => {
-  return {hasError: (props.touched || props.submitFailed) && props.valid === false};
+  const touched = !props.pristine || props.$form && !props.$form.pristine;
+  const invalid = props.valid === false || !!props.$form && props.$form.valid === false;
+  return {hasError: (touched || props.submitFailed) && invalid};
 };
 
 export default connect(mapStateToProps)(FormGroup);

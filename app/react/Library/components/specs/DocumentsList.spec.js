@@ -51,7 +51,7 @@ describe('DocumentsList', () => {
         library: {
           documents: documents,
           filters,
-          ui: Immutable.fromJS({filtersPanel: 'panel', selectedDocument: 'selected'})
+          ui: Immutable.fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']})
         },
         search: {sort: 'sortProperty'}
       };
@@ -61,7 +61,6 @@ describe('DocumentsList', () => {
         documents: documents.toJS(),
         filters,
         filtersPanel: 'panel',
-        selectedDocument: 'selected',
         search: {sort: 'sortProperty'}
       });
     });

@@ -56,3 +56,28 @@
   z-index: 3;
   max-width: 9999px;
 }
+
+.entities-list {
+  padding: 15px;
+  margin: 0;
+  list-style: none;
+  
+  li {
+    display: -webkit-flex;
+    display: flex;
+    padding: 5px 0;
+  }
+  
+  .item-type {
+    float: left;
+    width: auto;
+    max-width: 25%;
+  }
+  
+  .entity-title {
+    padding-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -8,7 +8,7 @@ describe('SearchButton', () => {
   let props;
 
   beforeEach(() => {
-    props = jasmine.createSpyObj(['hideFilters', 'showFilters', 'unselectDocument']);
+    props = jasmine.createSpyObj(['hideFilters', 'showFilters', 'unselectAllDocuments']);
     props.open = true;
   });
 
@@ -31,11 +31,11 @@ describe('SearchButton', () => {
     });
 
     describe('on metadataPanelIsOpen', () => {
-      it('should unselectDocument', () => {
+      it('should unselectAllDocuments', () => {
         props.metadataPanelIsOpen = true;
         render();
         component.find('.search-button').simulate('click');
-        expect(props.unselectDocument).toHaveBeenCalled();
+        expect(props.unselectAllDocuments).toHaveBeenCalled();
       });
     });
   });
@@ -57,12 +57,12 @@ describe('SearchButton', () => {
     });
 
     describe('on metadataPanelIsOpen', () => {
-      it('should unselectDocument and showFilters', () => {
+      it('should unselectAllDocuments and showFilters', () => {
         props.open = false;
         props.metadataPanelIsOpen = true;
         render();
         component.find('.search-button').simulate('click');
-        expect(props.unselectDocument).toHaveBeenCalled();
+        expect(props.unselectAllDocuments).toHaveBeenCalled();
         expect(props.showFilters).toHaveBeenCalled();
       });
     });

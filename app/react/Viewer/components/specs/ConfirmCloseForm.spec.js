@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import Modal from 'app/Layout/Modal';
 
@@ -14,7 +15,7 @@ describe('ConfirmCloseForm', () => {
       hideModal: jasmine.createSpy('hideModal'),
       resetForm: jasmine.createSpy('resetForm'),
       closePanel: jasmine.createSpy('closePanel'),
-      doc: {_id: 'docId', title: 'test'}
+      doc: Immutable.fromJS({_id: 'docId', title: 'test'})
     };
   });
 

@@ -40,7 +40,7 @@ export class DocumentsList extends Component {
         <div className="main-wrapper">
           <div className="sort-by">
               <div className="u-floatLeft documents-counter">
-                <b>{documents.totalRows}</b> {t('System', 'documents')}
+                <span><b>{documents.totalRows}</b> {t('System', 'documents')}</span>
               </div>
               <SortButtons sortCallback={this.props.searchDocuments}
                            selectedTemplates={this.props.filters.get('documentTypes')} />
@@ -79,7 +79,6 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   filters: PropTypes.object,
   filtersPanel: PropTypes.bool,
-  selectedDocument: PropTypes.object,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func
@@ -90,7 +89,6 @@ export function mapStateToProps(state) {
     documents: selectDocuments(state),
     filters: state.library.filters,
     filtersPanel: state.library.ui.get('filtersPanel'),
-    selectedDocument: state.library.ui.get('selectedDocument'),
     search: state.search
   };
 }

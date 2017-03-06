@@ -1,12 +1,11 @@
 import documentRoutes from '../routes.js';
-import database from '../../utils/database.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import templates from '../../templates/templates';
 import thesauris from '../../thesauris/thesauris';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import fixtures, {batmanFinishesId, templateId, syncPropertiesEntityId} from './fixtures.js';
+import fixtures, {templateId} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('entities', () => {
@@ -72,6 +71,31 @@ describe('entities', () => {
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('templateTransformed')));
       routes.post('/api/entities', req)
       .catch(catchErrors(done));
+    });
+
+    describe('/entities/multipleupdate', () => {
+      beforeEach(() => {
+        req = {
+          body: {ids: ['1', '2'], values: {metadata: {text: 'new text'}}},
+          user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+          language: 'lang'
+        };
+      });
+
+      it('should need authorization', () => {
+        expect(routes.post('/api/entities/multipleupdate', req)).toNeedAuthorization();
+      });
+
+      it('should call multipleUpdate with the ids and the metadata in the body', (done) => {
+        spyOn(entities, 'multipleUpdate').and.returnValue(new Promise((resolve) => resolve([{sharedId: '1'}, {sharedId: '2'}])));
+        routes.post('/api/entities/multipleupdate', req)
+        .then((response) => {
+          expect(entities.multipleUpdate).toHaveBeenCalledWith(['1', '2'], {metadata: {text: 'new text'}}, {user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}, language: 'lang'});
+          expect(response).toEqual(['1', '2']);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 

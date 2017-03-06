@@ -74,6 +74,15 @@ export function changeTemplate(form, onlyReadEntity, template) {
   };
 }
 
+export function loadTemplate(form, template) {
+  return function (dispatch) {
+    let data = {metadata: {}};
+    resetMetadata(data.metadata, template, {resetExisting: true});
+    dispatch(formActions.load(form, data));
+    dispatch(formActions.setInitial(form));
+  };
+}
+
 export function reuploadDocument(docId, file, docSharedId) {
   return function (dispatch, getState) {
     dispatch({type: types.START_REUPLOAD_DOCUMENT, doc: docId});

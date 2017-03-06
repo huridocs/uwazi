@@ -2,17 +2,26 @@ import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
-import {selectDocument, unselectDocument} from '../actions/libraryActions';
+import {selectDocument, unselectDocument, unselectAllDocuments} from '../actions/libraryActions';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
 
 export class Doc extends Component {
 
-  select(active) {
-    if (active) {
-      return this.props.unselectDocument();
+  select(e) {
+    if (!(e.metaKey || e.ctrlKey) || !this.props.authorized) {
+      this.props.unselectAllDocuments();
     }
+
+    if (this.props.active && this.props.multipleSelected && !(e.metaKey || e.ctrlKey)) {
+      return this.props.selectDocument(this.props.doc);
+    }
+
+    if (this.props.active) {
+      return this.props.unselectDocument(this.props.doc.get('_id'));
+    }
+
     this.props.selectDocument(this.props.doc);
   }
 
@@ -26,7 +35,7 @@ export class Doc extends Component {
     const {sharedId, type} = this.props.doc.toJS();
     let documentViewUrl = `/${type}/${sharedId}`;
 
-    return <Item onClick={this.select.bind(this, this.props.active)}
+    return <Item onClick={this.select.bind(this)}
                  active={this.props.active}
                  doc={this.props.doc}
                  searchParams={this.props.searchParams}
@@ -42,19 +51,24 @@ Doc.propTypes = {
   doc: PropTypes.object,
   searchParams: PropTypes.object,
   active: PropTypes.bool,
+  authorized: PropTypes.bool,
+  multipleSelected: PropTypes.bool,
   selectDocument: PropTypes.func,
-  unselectDocument: PropTypes.func
+  unselectDocument: PropTypes.func,
+  unselectAllDocuments: PropTypes.func
 };
 
 
-export function mapStateToProps({library}, ownProps) {
+export function mapStateToProps({library, user}, ownProps) {
   return {
-    active: library.ui.get('selectedDocument') ? library.ui.get('selectedDocument').get('_id') === ownProps.doc.get('_id') : false
+    active: !!library.ui.get('selectedDocuments').find((doc) => doc.get('_id') === ownProps.doc.get('_id')),
+    multipleSelected: library.ui.get('selectedDocuments').size > 1,
+    authorized: !!user.get('_id')
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({selectDocument, unselectDocument}, dispatch);
+  return bindActionCreators({selectDocument, unselectDocument, unselectAllDocuments}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Doc);

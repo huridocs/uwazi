@@ -12,7 +12,7 @@ export class ConfirmCloseForm extends Component {
   confirm() {
     this.props.hideModal('ConfirmCloseForm');
     this.props.resetForm('library.sidepanel.metadata');
-    this.props.unselectDocument();
+    this.props.unselectDocument(this.props.doc.get('_id'));
   }
 
   render() {

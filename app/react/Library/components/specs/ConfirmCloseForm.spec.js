@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import Immutable from 'immutable';
 
 import Modal from 'app/Layout/Modal';
 
@@ -14,7 +15,7 @@ describe('ConfirmCloseForm', () => {
       hideModal: jasmine.createSpy('hideModal'),
       resetForm: jasmine.createSpy('resetForm'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
-      doc: {_id: 'docId', title: 'test'}
+      doc: Immutable.fromJS({_id: 'docId', title: 'test'})
     };
   });
 
@@ -33,7 +34,7 @@ describe('ConfirmCloseForm', () => {
       component.find('.confirm-button').simulate('click');
       expect(props.hideModal).toHaveBeenCalledWith('ConfirmCloseForm');
       expect(props.resetForm).toHaveBeenCalledWith('library.sidepanel.metadata');
-      expect(props.unselectDocument).toHaveBeenCalled();
+      expect(props.unselectDocument).toHaveBeenCalledWith('docId');
     });
   });
 

@@ -10,7 +10,6 @@ export default (app) => {
     return documents.save(req.body, {user: req.user, language: req.language})
     .then(doc => res.json(doc))
     .catch((error) => {
-      console.log(error);
       res.json({error}, 500);
     });
   });
@@ -19,7 +18,7 @@ export default (app) => {
     return documents.savePDFInfo(req.body, {language: req.language})
     .then(doc => res.json(doc))
     .catch((error) => {
-      res.json({error}, 500)
+      res.json({error}, 500);
     });
   });
 
@@ -46,7 +45,6 @@ export default (app) => {
     documents.delete(req.query.sharedId)
     .then((response) => res.json(response))
     .catch((error) => {
-      console.log(error);
       res.json({error}, 500);
     });
   });

@@ -2,7 +2,6 @@ import {db_url as dbURL} from 'api/config/database';
 import request from 'shared/JSONRequest';
 import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
 import fs from 'fs';
-import {deleteFiles} from '../utils/files.js';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
 
@@ -92,20 +91,7 @@ export default {
     });
   },
 
-  deleteFiles(deletedDocs) {
-    let filesToDelete = deletedDocs
-    .filter(d => d.file)
-    .map((doc) => {
-      return `./uploaded_documents/${doc.file.filename}`;
-    });
-    filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
-    return deleteFiles(filesToDelete);
-  },
-
   delete(id) {
-    return entities.delete(id)
-    .then((deletedDocuments) => {
-      return this.deleteFiles(deletedDocuments);
-    });
+    return entities.delete(id);
   }
 };

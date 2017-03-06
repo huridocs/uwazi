@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import {MetadataForm} from '../MetadataForm';
 import {Form, Field} from 'react-redux-form';
 import {Select as SimpleSelect} from 'app/Forms';
-import {Select, IconSelector, MultiSelect, DatePicker} from 'app/ReactReduxForms';
+import {IconSelector} from 'app/ReactReduxForms';
 
 
 describe('MetadataForm', () => {
@@ -46,6 +46,12 @@ describe('MetadataForm', () => {
     expect(form.props().model).toEqual('metadata');
   });
 
+  it('should pass the field state to every fields', () => {
+    render();
+    let FormGroup = component.findWhere((node) => node.props().titleProp === 'prop');
+    expect(FormGroup.length).toBe(1);
+  });
+
   it('should render title field as a textarea', () => {
     render();
     let title = component.find('textarea').closest(Field);
@@ -71,34 +77,6 @@ describe('MetadataForm', () => {
       template.simulate('change', {target: {value: '2'}});
       expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.metadata, props.templates.toJS()[1]);
     });
-  });
-
-  it('should pass the field state to every fields', () => {
-    render();
-    let FormGroup = component.findWhere((node) => node.props().titleProp === 'prop');
-    expect(FormGroup.length).toBe(1);
-
-    FormGroup = component.findWhere((node) => node.props().field1Prop === 'prop');
-    expect(FormGroup.length).toBe(1);
-  });
-
-  it('should render dynamic fields based on the template selected', () => {
-    render();
-    let inputField = component.findWhere((node) => node.props().model === '.metadata.field1');
-    let input = inputField.find('input');
-    expect(input).toBeDefined();
-
-    let selectField = component.findWhere((node) => node.props().model === '.metadata.field2');
-    let select = selectField.find(Select);
-    expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
-    expect(select.props().optionsValue).toEqual('id');
-
-    let multiselect = component.find(MultiSelect);
-    expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
-    expect(multiselect.props().optionsValue).toEqual('id');
-
-    let datepicker = component.find(DatePicker);
-    expect(datepicker.length).toBe(1);
   });
 
   describe('submit', () => {

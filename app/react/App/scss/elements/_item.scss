@@ -126,7 +126,7 @@ $item-padding: 15px;
   font-size: $f-size-xs;
   font-weight: 500;
   letter-spacing: 0.075em;
-  max-width: calc(100% - 20px);
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
