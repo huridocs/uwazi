@@ -48,7 +48,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
       </Provider>
     );
   } catch (e) {
-    console.trace(e);
+    console.trace(e); // eslint-disable-line
   }
 
   const head = Helmet.rewind();
@@ -88,7 +88,7 @@ function handleRoute(res, renderProps, req) {
       const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
       res.status(200).send(wholeHtml);
     } catch (error) {
-      console.trace(error);
+      console.trace(error); // eslint-disable-line
     }
   }
 
@@ -143,8 +143,7 @@ function handleRoute(res, renderProps, req) {
         renderPage(initialData, true);
       })
       .catch((error) => {
-        console.log('ERROR !');
-        console.trace(error);
+        console.trace(error); // eslint-disable-line
       });
     });
   }

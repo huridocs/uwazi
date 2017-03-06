@@ -30,7 +30,7 @@ export class Doc extends Component {
                  active={this.props.active}
                  doc={this.props.doc}
                  searchParams={this.props.searchParams}
-                 buttons={<I18NLink to={documentViewUrl} className="item-shortcut">
+                 buttons={<I18NLink to={documentViewUrl} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
                             <span className="itemShortcut-arrow">
                               <i className="fa fa-file-text-o"></i>
                              </span>
