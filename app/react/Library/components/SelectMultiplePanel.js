@@ -214,7 +214,13 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({unselectAllDocuments, deleteEntities, loadForm: metadataActions.loadTemplate, resetForm: metadataActions.resetReduxForm, multipleUpdate}, dispatch);
+  return bindActionCreators({
+    unselectAllDocuments,
+    deleteEntities,
+    loadForm: metadataActions.loadTemplate,
+    resetForm: metadataActions.resetReduxForm,
+    multipleUpdate
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);

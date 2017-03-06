@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import {MetadataForm} from '../MetadataForm';
 import {Form, Field} from 'react-redux-form';
 import {Select as SimpleSelect} from 'app/Forms';
-import {Select, IconSelector, MultiSelect, DatePicker} from 'app/ReactReduxForms';
+import {IconSelector} from 'app/ReactReduxForms';
 
 
 describe('MetadataForm', () => {

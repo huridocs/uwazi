@@ -1,11 +1,8 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
 
 import {MetadataFormFields} from '../MetadataFormFields';
-import {Form, Field} from 'react-redux-form';
-import {Select as SimpleSelect} from 'app/Forms';
-import {Select, IconSelector, MultiSelect, DatePicker} from 'app/ReactReduxForms';
+import {Select, MultiSelect, DatePicker} from 'app/ReactReduxForms';
 
 
 describe('MetadataFormFields', () => {
