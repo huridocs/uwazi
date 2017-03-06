@@ -1,4 +1,4 @@
-// TEST!!! Entirely ... moved from Library
+// TEST!!! Very sparsely tested, all the 'load more' functionality is not tested
 import React, {Component, PropTypes} from 'react';
 import {fromJS as Immutable} from 'immutable';
 
@@ -9,8 +9,7 @@ import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import {t} from 'app/I18N';
 
-// Change back to 30!!!
-const loadMoreAmmount = 5;
+const loadMoreAmmount = 30;
 
 export default class DocumentsList extends Component {
 
