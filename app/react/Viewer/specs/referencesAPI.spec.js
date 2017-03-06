@@ -5,12 +5,16 @@ import backend from 'fetch-mock';
 describe('referencesAPI', () => {
   let byDocumentResponse = [{documents: 'array'}];
   let groupByConnectionResponse = [{connections: 'array'}];
+  let searchResponse = [{results: 'array'}];
+  let searchSortedResponse = [{results: 'sorted array'}];
 
   beforeEach(() => {
     backend.restore();
     backend
     .get(APIURL + 'references/by_document/sourceDocument', {body: JSON.stringify(byDocumentResponse)})
     .get(APIURL + 'references/group_by_connection/sourceDocument', {body: JSON.stringify(groupByConnectionResponse)})
+    .get(APIURL + 'references/search/sourceDocument', {body: JSON.stringify(searchResponse)})
+    .get(APIURL + 'references/search/sourceDocument?sort=title', {body: JSON.stringify(searchSortedResponse)})
     .get(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', {body: '2'})
     .delete(APIURL + 'references?_id=id&_rev=rev', {body: JSON.stringify({backendResponse: 'testdelete'})})
     .post(APIURL + 'references', {body: JSON.stringify({backednResponse: 'test'})});
@@ -34,6 +38,26 @@ describe('referencesAPI', () => {
       referencesAPI.getGroupedByConnection('sourceDocument')
       .then((response) => {
         expect(response).toEqual(groupByConnectionResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('search()', () => {
+    it('should search references', (done) => {
+      referencesAPI.search('sourceDocument')
+      .then((response) => {
+        expect(response).toEqual(searchResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should search references with additional options', (done) => {
+      referencesAPI.search('sourceDocument', {sort: 'title'})
+      .then((response) => {
+        expect(response).toEqual(searchSortedResponse);
         done();
       })
       .catch(done.fail);

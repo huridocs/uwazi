@@ -18,14 +18,12 @@ export default {
     });
   },
 
-  // TEST!!!
   search(documentId, options = {}) {
     return api.get(`references/search/${documentId}`, options)
     .then((response) => {
       return response.json;
     });
   },
-  // -------
 
   save(reference) {
     return api.post('references', reference)
