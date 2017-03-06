@@ -1,7 +1,6 @@
 import referencesRroutes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
+import search from '../../search/search';
 import references from 'api/references/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -66,6 +65,72 @@ describe('references routes', () => {
       .then((response) => {
         expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: true, user: 'user'});
         expect(response).toBe('groupedByConnection');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('GET search', () => {
+    let groupsResult;
+
+    beforeEach(() => {
+      spyOn(search, 'search').and.returnValue(Promise.resolve('search results'));
+      groupsResult = [{
+        key: 'k1',
+        templates: [
+          {_id: 't1', refs: [{connectedDocument: 'id1'}]}
+        ]
+      }, {
+        key: 'k2',
+        templates: [
+          {_id: 't2', refs: [{connectedDocument: 'id2'}, {connectedDocument: 'id3'}]}
+        ]
+      }];
+    });
+
+    it('should return references limited by the entity they belong to', (done) => {
+      const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {sort: 'sort'}};
+
+      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
+
+      routes.get('/api/references/search/:id', req)
+      .then((response) => {
+        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
+        expect(search.search).toHaveBeenCalledWith({sort: 'sort', ids: ['id1', 'id2', 'id3'], includeUnpublished: true}, 'es');
+        expect(response).toBe('search results');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should return references limited by the entity they belong to and selected filter', (done) => {
+      const filter = '{"k1": [], "k2": ["k2t2"]}';
+      const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {filter}};
+
+      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
+
+      routes.get('/api/references/search/:id', req)
+      .then((response) => {
+        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
+        expect(search.search).toHaveBeenCalledWith({filter, ids: ['id2', 'id3'], includeUnpublished: true}, 'es');
+        expect(response).toBe('search results');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should return no results if grouped references is empty', (done) => {
+      groupsResult = [];
+      const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {}};
+
+      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
+
+      routes.get('/api/references/search/:id', req)
+      .then((response) => {
+        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
+        expect(search.search).toHaveBeenCalledWith({ids: [ 'no_results' ], includeUnpublished: true}, 'es');
+        expect(response).toBe('search results');
         done();
       })
       .catch(catchErrors(done));

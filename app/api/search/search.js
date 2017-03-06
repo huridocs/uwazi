@@ -4,7 +4,6 @@ import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
-import request from 'shared/JSONRequest';
 
 export default {
   search(query, language) {
@@ -44,7 +43,7 @@ export default {
       });
 
       return {rows, totalRows: response.hits.total, aggregations: response.aggregations};
-    })
+    });
   },
 
   getUploadsByUser(user, language) {

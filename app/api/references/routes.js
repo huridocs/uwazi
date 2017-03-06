@@ -31,7 +31,6 @@ export default app => {
     });
   });
 
-  // TEST!!!
   app.get('/api/references/search/:id', (req, res) => {
     references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
     .then(groups => {
@@ -56,8 +55,6 @@ export default app => {
       req.query.ids = entityIds.length ? entityIds : ['no_results'];
       req.query.includeUnpublished = true;
 
-      console.log('en References:', req.query);
-
       search.search(req.query, req.language)
       .then(results => res.json(results));
     })
@@ -65,7 +62,6 @@ export default app => {
       res.status(500).json({error: error.json});
     });
   });
-  // ---
 
   app.get('/api/references/count_by_relationtype', (req, res) => {
     references.countByRelationType(req.query.relationtypeId)
