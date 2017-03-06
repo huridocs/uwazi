@@ -13,34 +13,28 @@ import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria'
 export default class Entity extends RouteHandler {
 
   static requestState({entityId, lang}, query, globalResources) {
-    // Sorting requires the refs, check if this is the most useful approach.
-    // console.log(globalResources);
-    // ------
     return Promise.all([
       entitiesAPI.get(entityId),
       referencesAPI.getGroupedByConnection(entityId),
-      // TEST!!!
-      referencesAPI.search(entityId),
-      // -----
       relationTypesAPI.get()
     ])
-    .then(([entities, referenceGroups, searchResults, relationTypes]) => {
-      // console.log('En static:', searchResults);
+    .then(([entities, referenceGroups, relationTypes]) => {
+      const filteredTemplates = referenceGroups.reduce((templateIds, group) => {
+        return templateIds.concat(group.templates.map(t => t._id.toString()));
+      }, []);
+
+      const sortOptions = prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: globalResources.templates});
+
+      return Promise.all([entities[0], referenceGroups, referencesAPI.search(entityId, sortOptions), relationTypes, sortOptions]);
+    })
+    .then(([entity, referenceGroups, searchResults, relationTypes, sort]) => {
       return {
         entityView: {
-          entity: entities[0],
-          referenceGroups: referenceGroups,
-          // TEST!!!
+          entity,
+          referenceGroups,
           searchResults,
-          filters: {},
-          // -------
-          sort: prioritySortingCriteria(
-            // {
-            //   currentCriteria: {},
-            //   filteredTemplates: relevantReferences.map(r => r.connectedDocumentTemplate),
-            //   templates: globalResources.templates
-            // }
-          )
+          sort,
+          filters: {}
         },
         relationTypes
       };
@@ -54,13 +48,11 @@ export default class Entity extends RouteHandler {
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
     this.context.store.dispatch(actions.unset('entityView/referenceGroups'));
-    // TEST!!!
     this.context.store.dispatch(actions.unset('entityView/searchResults'));
     this.context.store.dispatch(actions.unset('entityView/filters'));
     this.context.store.dispatch(actions.unset('entityView.sort'));
   }
 
-  // TEST!
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
@@ -69,7 +61,6 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.set('entityView/filters', state.entityView.filters));
     this.context.store.dispatch(formActions.merge('entityView.sort', state.entityView.sort));
   }
-  // ---
 
   render() {
     return <EntityViewer/>;
