@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {Field, FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
+import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
+import {Field} from 'react-redux-form';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
 

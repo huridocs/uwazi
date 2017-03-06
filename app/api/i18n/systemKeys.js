@@ -74,6 +74,7 @@ export default [
 {key: 'Recently', label: 'Recently'},
 {key: 'References', label: 'References'},
 {key: 'Attachments', label: 'Attachments'},
+{key: 'selected', label: 'selected'},
 {key: 'Size', label: 'Size'},
 {key: 'RelationType saved', label: 'RelationType saved'},
 {key: 'Confirm delete document type message', label: 'Are you sure you want to delete this document type?'},
