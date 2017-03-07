@@ -11,14 +11,14 @@ import ReferencesAPI from 'app/Viewer/referencesAPI';
 
 import moment from 'moment';
 
-const caseTemplate = 'cd951f1feec188a75916812d43252418';
-const matterTemplate = '6e2bfa14cc35c78b202a63e5c63ec969';
+const caseTemplate = '58b2f3a35d59f31e1345b48a';
+const matterTemplate = '58b2f3a35d59f31e1345b4a4';
 
 const renderableTemplates = {
-  judgement: '5c7180d3dd310766a1c6817c165ed5f4',
-  admissibilityReport: 'e8e039070aa95f8f964c281d4583100d',
-  orderOfThePresident: 'd0565557e2c6f741bb73738c56868584',
-  orderOfTheCourt: 'ea4dab90522f811e06c208ceef46db95'
+  judgement: '58b2f3a35d59f31e1345b4ac',
+  admissibilityReport: '58b2f3a35d59f31e1345b479',
+  orderOfThePresident: '58b2f3a35d59f31e1345b482',
+  orderOfTheCourt: '58b2f3a35d59f31e1345b471'
 };
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
