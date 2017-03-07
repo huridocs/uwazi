@@ -3,11 +3,8 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {is, fromJS as Immutable} from 'immutable';
 
-import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import {Item} from 'app/Layout';
-import {t, I18NLink} from 'app/I18N';
-import {advancedSort} from 'app/utils/advancedSort';
+import {t} from 'app/I18N';
 
 import {setFilter} from '../actions/actions';
 
@@ -67,29 +64,6 @@ export class ReferencesGroup extends Component {
     const group = this.props.group.toJS();
     const {connectionType, connectionLabel, templates} = group;
 
-    // const sortValues = this.props.sort.toJS();
-    // const sortOptions = {
-    //   property: ['doc'].concat(sortValues.sort.split('.')),
-    //   order: sortValues.order,
-    //   treatAs: sortValues.treatAs
-    // };
-
-    // const refs = advancedSort(group.refs.map(reference => {
-    //   return {
-    //     reference,
-    //     doc: {
-    //       sharedId: reference.connectedDocument,
-    //       type: reference.connectedDocumentType,
-    //       title: reference.connectedDocumentTitle,
-    //       icon: reference.connectedDocumentIcon,
-    //       template: reference.connectedDocumentTemplate,
-    //       metadata: reference.connectedDocumentMetadata,
-    //       published: reference.connectedDocumentPublished,
-    //       creationDate: reference.connectedDocumentCreationDate
-    //     }
-    //   };
-    // }), sortOptions);
-
     return (
       <li>
         <div className="multiselectItem">
@@ -120,17 +94,11 @@ export class ReferencesGroup extends Component {
         <ShowIf if={this.state.expanded}>
           <ul className="multiselectChild is-active">
             {templates.map((template, index) => {
-              // const reference = data.reference;
-              // const doc = data.doc;
-
-              // console.log('Reference:', reference);
-              // console.log('doc:', doc);
               return (
                 <li className="multiselectItem" key={index} title={template.label}>
                   <input
                     type='checkbox'
                     className="multiselectItem-input"
-                    value={group.key + template._id}
                     id={group.key + template._id}
                     onChange={this.toggleSelectItem.bind(this, group.key + template._id)}
                     checked={this.state.selectedItems.includes(group.key + template._id)}

@@ -8,43 +8,25 @@ import {I18NLink} from 'app/I18N';
 
 import {ReferencesGroup, mapStateToProps} from '../ReferencesGroup';
 import {Item} from 'app/Layout';
+import ShowIf from 'app/App/ShowIf';
 
 describe('ReferencesGroup', () => {
   let component;
   let props;
-  let references;
+  let group;
 
   beforeEach(() => {
-    references = [{
-      sourceType: 'metadata',
-      connectedDocument: 'id1',
-      connectedDocumentTitle: 'title1',
-      connectedDocumentIcon: 'icon1',
-      connectedDocumentType: 'entity',
-      connectedDocumentTemplate: 'template1',
-      connectedDocumentCreationDate: 123,
-      connectedDocumentPublished: true,
-      connectedDocumentMetadata: {data: 'a'},
-      text: 'text1'
-    }, {
-      sourceType: 'not metadata',
-      connectedDocument: 'id2',
-      connectedDocumentTitle: 'title2',
-      connectedDocumentIcon: 'icon2',
-      connectedDocumentType: 'document',
-      connectedDocumentTemplate: 'template2',
-      connectedDocumentCreationDate: 456,
-      connectedDocumentPublished: false,
-      connectedDocumentMetadata: {data: 'b'},
-      text: 'text2'
-    }];
-
-    spyOn(advancedSortUtil, 'advancedSort').and.callFake(normalizedReferences => normalizedReferences);
+    group = {
+      key: 'g1',
+      templates: [
+        {_id: 't1', label: 'template 1', count: 1},
+        {_id: 't2', label: 'template 2', count: 2}
+      ]
+    };
 
     props = {
-      group: Immutable({refs: references}),
-      deleteReference: jasmine.createSpy('deleteReference'),
-      sort: Immutable({sort: 'metadata.date', order: 'desc', treatAs: 'number'})
+      group: Immutable(group),
+      setFilter: jasmine.createSpy('setFilter')
     };
   });
 
@@ -52,13 +34,76 @@ describe('ReferencesGroup', () => {
     component = shallow(<ReferencesGroup {...props} />);
   };
 
-  describe('groupReferences', () => {
-    it('should render the group collapsed', () => {
+  fit('should render the group multiselect item with checked state, types count and collapsed', () => {
+    render();
+    expect(component.find('input').at(0).props().checked).toBe(false);
+    expect(component.find('.multiselectItem-results').find('span').at(0).text()).toBe('3');
+    expect(component.find(ShowIf).props().if).toBe(false);
+  });
+
+  describe('when the group is expanded', () => {
+    let subItem1;
+    let subItem2;
+
+    beforeEach(() => {
       render();
-      expect(component.find('.item-group-header').props().className).toContain('is-collapsed');
-      expect(component.find('.item-group-header').props().className).not.toContain('is-expanded');
+      component.find('.multiselectItem-results').find('span').at(2).simulate('click');
+      subItem1 = component.find('ul').find('li').at(0);
+      subItem2 = component.find('ul').find('li').at(1);
     });
 
+    fit('should render the group templates', () => {
+      expect(component.find(ShowIf).props().if).toBe(true);
+      expect(component.find('ul').find('li').length).toBe(2);
+
+      expect(subItem1.props().title).toBe('template 1');
+      expect(subItem1.find('input').props().checked).toBe(false);
+      expect(subItem1.find('.multiselectItem-name').text()).toBe('template 1');
+      expect(subItem1.find('.multiselectItem-results').text()).toBe('1');
+
+      expect(subItem2.props().title).toBe('template 2');
+      expect(subItem2.find('input').props().checked).toBe(false);
+      expect(subItem2.find('.multiselectItem-name').text()).toBe('template 2');
+      expect(subItem2.find('.multiselectItem-results').text()).toBe('2');
+    });
+
+    fit('should allow selecting a single item', () => {
+      component.find('ul').find('li').at(1).find('input').simulate('change');
+      subItem1 = component.find('ul').find('li').at(0);
+      subItem2 = component.find('ul').find('li').at(1);
+
+      expect(subItem1.find('input').props().checked).toBe(false);
+      expect(subItem2.find('input').props().checked).toBe(true);
+      expect(props.setFilter.calls.argsFor(0)[0].g1.toJS()).toEqual(['g1t2']);
+    });
+
+    describe('When selecting all sub items', () => {
+      fit('should select also the entire group', () => {
+        expect(component.find('input').at(0).props().checked).toBe(false);
+
+        component.find('ul').find('li').at(0).find('input').simulate('change');
+        component.find('ul').find('li').at(1).find('input').simulate('change');
+        subItem1 = component.find('ul').find('li').at(0);
+        subItem2 = component.find('ul').find('li').at(1);
+
+        expect(component.find('input').at(0).props().checked).toBe(true);
+        expect(subItem1.find('input').props().checked).toBe(true);
+        expect(subItem2.find('input').props().checked).toBe(true);
+        expect(props.setFilter.calls.argsFor(0)[0].g1.toJS()).toEqual(['g1t2']);
+      });
+    });
+  });
+
+  describe('when selecting the entire group', () => {
+    fit('should allow expanding the multiselect group', () => {
+      render();
+      component.find('input').at(0).simulate('change');
+      expect(component.find('input').at(0).props().checked).toBe(true);
+    });
+  });
+
+
+  describe('groupReferences', () => {
     it('should not show any references upon mount', () => {
       render();
       expect(component.find(Item).length).toBe(0);
