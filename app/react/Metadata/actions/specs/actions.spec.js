@@ -112,6 +112,32 @@ describe('Metadata Actions', () => {
     });
   });
 
+  describe('loadTemplate', () => {
+    it('should load the given template with empty values', () => {
+      spyOn(formActions, 'load').and.returnValue('formLoad');
+
+      let template = {_id: '1', properties: [
+        {name: 'year', type: 'numeric'},
+        {name: 'powers', content: '1', type: 'multiselect'},
+        {name: 'enemies', content: '2', type: 'multiselect'},
+        {name: 'color', type: 'text', required: true}
+      ]};
+
+      let expectedModel = {
+        metadata: {
+          year: '',
+          powers: [],
+          enemies: [],
+          color: ''
+        }
+      };
+
+      let dispatch = jasmine.createSpy('dispatch');
+      actions.loadTemplate('formNamespace', template)(dispatch);
+      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedModel);
+    });
+  });
+
   describe('reuploadDocument', () => {
     let mockUpload;
     let store;

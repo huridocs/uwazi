@@ -10,6 +10,7 @@ describe('Entities actions', () => {
     dispatch = jasmine.createSpy('dispatch');
     spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', _rev: 'newRev'}));
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
+    spyOn(api, 'deleteMultiple').and.returnValue(Promise.resolve());
     spyOn(refenrecesAPI, 'delete').and.returnValue(Promise.resolve());
     spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
   });
@@ -34,7 +35,20 @@ describe('Entities actions', () => {
         expect(api.delete).toHaveBeenCalledWith('data');
         expect(Notifications.notify).toHaveBeenCalledWith('Entity deleted', 'success');
         done();
-      });
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('deleteEntities', () => {
+    it('should delete the entities and notify', (done) => {
+      actions.deleteEntities(['entity1', 'entity2'])(dispatch)
+      .then(() => {
+        expect(api.deleteMultiple).toHaveBeenCalledWith(['entity1', 'entity2']);
+        expect(Notifications.notify).toHaveBeenCalledWith('Deletion success', 'success');
+        done();
+      })
+      .catch(done.fail);
     });
   });
 
@@ -45,7 +59,8 @@ describe('Entities actions', () => {
         expect(refenrecesAPI.delete).toHaveBeenCalledWith('data');
         expect(Notifications.notify).toHaveBeenCalledWith('Connection deleted', 'success');
         done();
-      });
+      })
+      .catch(done.fail);
     });
   });
 });

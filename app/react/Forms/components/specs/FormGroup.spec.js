@@ -24,12 +24,14 @@ describe('FormGroup', () => {
   });
 
   describe('mapStateToProps', () => {
-    it('should return hasError true when touched and invalid', () => {
-      expect(mapStateToProps({}, {touched: true, valid: false})).toEqual({hasError: true});
+    it('should return hasError true when pristine and invalid', () => {
+      expect(mapStateToProps({}, {pristine: false, valid: false})).toEqual({hasError: true});
+      expect(mapStateToProps({}, {$form: {pristine: false, valid: false}})).toEqual({hasError: true});
     });
 
     it('should return hasError true when submitFailed and valid false', () => {
       expect(mapStateToProps({}, {submitFailed: true, valid: false})).toEqual({hasError: true});
+      expect(mapStateToProps({}, {submitFailed: true, $form: {valid: false}})).toEqual({hasError: true});
     });
 
     it('should return hasError false when submitFailed with no errors', () => {

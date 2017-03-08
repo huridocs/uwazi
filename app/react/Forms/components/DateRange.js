@@ -10,7 +10,7 @@ export default class DateRange extends Component {
     this.state = {from: value.from, to: value.to};
   }
 
-  onChange(prop, value){
+  onChange(prop, value) {
     let state = Object.assign({}, this.state);
     state[prop] = value;
     this.setState(state);

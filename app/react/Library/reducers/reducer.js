@@ -16,6 +16,8 @@ export default combineReducers({
   sidepanel: combineReducers({
     metadata: modelReducer('library.sidepanel.metadata', {}),
     metadataForm: formReducer('library.sidepanel.metadata', {}),
+    multipleEdit: modelReducer('library.sidepanel.multipleEdit', {}),
+    multipleEditForm: formReducer('library.sidepanel.multipleEdit', {}),
     references: createReducer('library.sidepanel.references', []),
     tab: createReducer('library.sidepanel.tab', '')
   })

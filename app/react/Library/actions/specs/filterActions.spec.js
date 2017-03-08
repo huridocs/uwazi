@@ -5,6 +5,7 @@ import {actions as formActions} from 'react-redux-form';
 import Immutable from 'immutable';
 
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import comonPropertiesHelper from 'app/Metadata/helpers/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('filterActions', () => {
@@ -19,7 +20,7 @@ describe('filterActions', () => {
   let filtersState;
 
   beforeEach(() => {
-    libraryFilters = [{name: 'author'}, {name: 'country'}];
+    libraryFilters = [{name: 'author', filter: true}, {name: 'country', filter: true}];
     search = {searchTerm: '', filters: {author: 'RR Martin', country: ''}};
     filtersState = {
       documentTypes,
@@ -34,7 +35,7 @@ describe('filterActions', () => {
       thesauris: Immutable.fromJS(thesauris)
     };
 
-    spyOn(libraryHelper, 'libraryFilters').and.returnValue(libraryFilters);
+    spyOn(comonPropertiesHelper, 'comonProperties').and.returnValue(libraryFilters);
     spyOn(libraryHelper, 'populateOptions').and.returnValue(libraryFilters);
     dispatch = jasmine.createSpy('dispatch');
     spyOn(formActions, 'change').and.returnValue('FILTERS_UPDATED');
@@ -50,7 +51,7 @@ describe('filterActions', () => {
 
     it('should dispatch an action SET_LIBRARY_FILTERS with the given types', () => {
       actions.filterDocumentTypes(['a'])(dispatch, getState);
-      expect(libraryHelper.libraryFilters).toHaveBeenCalledWith(templates, ['a']);
+      expect(comonPropertiesHelper.comonProperties).toHaveBeenCalledWith(templates, ['a']);
       expect(libraryHelper.populateOptions).toHaveBeenCalledWith(libraryFilters, thesauris);
       expect(dispatch).toHaveBeenCalledWith({type: types.SET_LIBRARY_FILTERS, libraryFilters, documentTypes: ['a']});
     });
@@ -117,8 +118,8 @@ describe('filterActions', () => {
         actions.toggleFilter('author')(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({
           type: types.UPDATE_LIBRARY_FILTERS,
-          libraryFilters: [{name: 'author', active: true},
-          {name: 'country'}]
+          libraryFilters: [{name: 'author', filter: true, active: true},
+          {name: 'country', filter: true}]
         });
       });
     });
@@ -131,8 +132,8 @@ describe('filterActions', () => {
         actions.toggleFilter('author')(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({
           type: types.UPDATE_LIBRARY_FILTERS,
-          libraryFilters: [{name: 'author', active: false},
-          {name: 'country'}]
+          libraryFilters: [{name: 'author', filter: true, active: false},
+          {name: 'country', filter: true}]
         });
       });
     });
@@ -143,8 +144,8 @@ describe('filterActions', () => {
       actions.activateFilter('author', true)(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.UPDATE_LIBRARY_FILTERS,
-        libraryFilters: [{name: 'author', active: true},
-        {name: 'country'}]
+        libraryFilters: [{name: 'author', filter: true, active: true},
+        {name: 'country', filter: true}]
       });
     });
   });

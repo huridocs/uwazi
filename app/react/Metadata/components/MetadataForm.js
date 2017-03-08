@@ -3,7 +3,8 @@ import {Form, Field} from 'react-redux-form';
 
 import validator from '../helpers/validator';
 import {Select as SimpleSelect} from 'app/Forms';
-import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, IconSelector, Numeric} from 'app/ReactReduxForms';
+import MetadataFormFields from './MetadataFormFields';
+import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import t from 'app/I18N/t';
 
 export class MetadataForm extends Component {
@@ -38,7 +39,6 @@ export class MetadataForm extends Component {
       return !template.isEntity;
     });
 
-    let thesauris = this.props.thesauris.toJS();
     let template = templates.find((tmpl) => tmpl._id === metadata.template);
     const {model} = this.props;
     if (!template) {
@@ -89,47 +89,7 @@ export class MetadataForm extends Component {
           </ul>
         </FormGroup>
 
-        {template.properties.map((property) => {
-          const getField = (propertyType, _model) => {
-            let thesauri;
-            switch (propertyType) {
-            case 'select':
-              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-              return <Select model={_model} optionsValue='id' options={this.translateOptions(thesauri)}/>;
-            case 'multiselect':
-              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-              return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
-            case 'date':
-              return <DatePicker model={_model}/>;
-            case 'numeric':
-              return <Numeric model={_model}/>;
-            case 'markdown':
-              return <MarkDown model={_model}/>;
-            case 'nested':
-              return <Nested model={_model}/>;
-            case 'multidate':
-              return <MultiDate model={_model}/>;
-            case 'multidaterange':
-              return <MultiDateRange model={_model}/>;
-            default:
-              return <Field model={_model}><input className="form-control"/></Field>;
-            }
-          };
-
-          return (
-            <FormGroup key={property.name} {...state.metadata[`${property.name}`]} submitFailed={state.submitFailed}>
-              <ul className="search__filter is-active">
-                <li>
-                  <label>
-                    {t(template._id, property.label)}
-                    {property.required ? <span className="required">*</span> : ''}
-                  </label>
-                </li>
-                <li className="wide">{getField(property.type, `.metadata.${property.name}`)}</li>
-              </ul>
-            </FormGroup>
-            );
-        })}
+        <MetadataFormFields thesauris={this.props.thesauris.toJS()} state={state} template={template} />
       </Form>
     );
   }

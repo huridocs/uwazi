@@ -15,7 +15,7 @@ let t = (contextId, key, _text) => {
   }
 
   if (contextId === 'System' && !context.values[key]) {
-    console.error(`"${key}" (${text})  key does not exist, configure it on /api/i18n/systemKeys.js`);
+    console.error(`"${key}" (${text})  key does not exist, configure it on /api/i18n/systemKeys.js`); // eslint-disable-line
   }
 
   return context.values[key] || text;

@@ -1,5 +1,6 @@
 import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import comonPropertiesHelper from 'app/Metadata/helpers/comonProperties';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import {actions as formActions} from 'react-redux-form';
 
@@ -33,7 +34,8 @@ export function filterDocumentTypes(documentTypes) {
     const templates = state.templates.toJS();
     const thesauris = state.thesauris.toJS();
 
-    let libraryFilters = libraryHelper.libraryFilters(templates, documentTypes);
+    let libraryFilters = comonPropertiesHelper.comonProperties(templates, documentTypes)
+    .filter((prop) => prop.filter);
 
     let aggregations = libraryFilters
     .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')

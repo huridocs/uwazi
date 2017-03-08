@@ -62,7 +62,7 @@ export class ShowMetadata extends Component {
       <div className="view">
         {header}
 
-        <ShowIf if={entity.template === 'cd951f1feec188a75916812d43252418' || entity.template === '6e2bfa14cc35c78b202a63e5c63ec969'}>
+        <ShowIf if={entity.template === '58b2f3a35d59f31e1345b48a' || entity.template === '58b2f3a35d59f31e1345b4a4'}>
           <dl>
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>

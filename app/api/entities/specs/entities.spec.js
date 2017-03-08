@@ -1,4 +1,5 @@
 import {db_url as dbURL} from 'api/config/database.js';
+import fs from 'fs';
 import entities from '../entities.js';
 import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -157,14 +158,14 @@ describe('entities', () => {
         expect(docEN.metadata.multidate).toBe('multidate');
         expect(docEN.metadata.multidaterange).toBe('multidaterange');
 
-        expect(docES.metadata.text).toBe('text');
+        expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
         expect(docES.metadata.multiselect).toBe('multiselect');
         expect(docES.metadata.date).toBe('date');
         expect(docES.metadata.multidate).toBe('multidate');
         expect(docES.metadata.multidaterange).toBe('multidaterange');
 
-        expect(docPT.metadata.text).toBe('text');
+        expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
         expect(docPT.metadata.multiselect).toBe('multiselect');
         expect(docPT.metadata.date).toBe('date');
@@ -255,13 +256,24 @@ describe('entities', () => {
     });
   });
 
+  describe('multipleUpdate()', () => {
+    it('should save() all the entities with the new metadata', (done) => {
+      spyOn(entities, 'save').and.returnValue(Promise.resolve());
+      const metadata = {property1: 'new text', description: 'yeah!'};
+      entities.multipleUpdate(['shared', 'shared1'], {metadata}, {language: 'en'})
+      .then(() => {
+        expect(entities.save).toHaveBeenCalled();
+        expect(entities.save).toHaveBeenCalled();
+        expect(entities.save.calls.argsFor(0)[0].metadata).toEqual(metadata);
+        expect(entities.save.calls.argsFor(1)[0].metadata).toEqual(metadata);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   /// not used right now but it needs to be improved and used
   describe('updateMetadataProperties', () => {
-    let getDocumentsByTemplate = (template) => request.get(dbURL + '/_design/entities/_view/metadata_by_template?key="' + template + '"')
-    .then((response) => {
-      return response.json.rows.map((r) => r.value);
-    });
-
     it('should update metadata property names on the entities matching the template', (done) => {
       let nameChanges = {'metadata.property1': 'metadata.new_name1', 'metadata.property2': 'metadata.new_name2'};
       entities.updateMetadataProperties(templateChangingNames, nameChanges)
@@ -306,6 +318,11 @@ describe('entities', () => {
   });
 
   describe('delete', () => {
+    beforeEach(() => {
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
+    });
+
     it('should delete the document in the database', (done) => {
       entities.delete('shared')
       .then(() => entities.get({sharedId: 'shared'}))
@@ -333,6 +350,29 @@ describe('entities', () => {
       .then((refs) => {
         expect(refs.length).toBe(1);
         expect(refs[0].title).toBe('reference3');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should delete the original file', (done) => {
+      entities.delete('shared')
+      .then(() => {
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);
+        expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(false);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('deleteMultiple()', () => {
+    it('should delete() all the given entities', (done) => {
+      spyOn(entities, 'delete').and.returnValue(Promise.resolve());
+      entities.deleteMultiple(['id1', 'id2'])
+      .then(() => {
+        expect(entities.delete).toHaveBeenCalledWith('id1');
+        expect(entities.delete).toHaveBeenCalledWith('id2');
         done();
       })
       .catch(catchErrors(done));

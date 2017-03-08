@@ -52,8 +52,22 @@ export default {
     });
   },
 
+  multipleUpdate(ids, values) {
+    return api.post('entities/multipleupdate', {ids, values})
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   delete(entity) {
     return api.delete('entities', entity)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
+  deleteMultiple(entities) {
+    return api.delete('entities/multiple', {sharedIds: entities.map((entity) => entity.sharedId)})
     .then((response) => {
       return response.json;
     });

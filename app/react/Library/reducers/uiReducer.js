@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 
-const initialState = {searchTerm: '', previewDoc: '', suggestions: []};
+const initialState = {searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: []};
 
 export default function ui(state = initialState, action = {}) {
   if (action.type === types.SET_SEARCHTERM) {
@@ -14,11 +14,20 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SELECT_DOCUMENT) {
-    return state.set('selectedDocument', Immutable.fromJS(action.doc));
+    const alreadtySelected = state.get('selectedDocuments').filter((doc) => doc.get('_id') === action.doc._id).size;
+    if (!alreadtySelected) {
+      return state.update('selectedDocuments', selectedDocuments => selectedDocuments.push(Immutable.fromJS(action.doc)));
+    }
+
+    return state;
   }
 
   if (action.type === types.UNSELECT_DOCUMENT) {
-    return state.remove('selectedDocument');
+    return state.update('selectedDocuments', selectedDocuments => selectedDocuments.filter((doc) => doc.get('_id') !== action.docId));
+  }
+
+  if (action.type === types.UNSELECT_ALL_DOCUMENTS) {
+    return state.set('selectedDocuments', Immutable.fromJS([]));
   }
 
   if (action.type === types.HIDE_FILTERS) {

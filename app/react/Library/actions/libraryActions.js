@@ -9,6 +9,7 @@ import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
+import {api as entitiesAPI} from 'app/Entities';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -28,8 +29,12 @@ export function selectDocument(doc) {
   };
 }
 
-export function unselectDocument() {
-  return {type: types.UNSELECT_DOCUMENT};
+export function unselectDocument(docId) {
+  return {type: types.UNSELECT_DOCUMENT, docId};
+}
+
+export function unselectAllDocuments() {
+  return {type: types.UNSELECT_ALL_DOCUMENTS};
 }
 
 export function showFilters() {
@@ -115,14 +120,41 @@ export function searchDocuments(readOnlySearch, limit) {
   };
 }
 
+export function updateEntity(updatedDoc) {
+  return {type: types.UPDATE_DOCUMENT, doc: updatedDoc};
+}
+
+export function updateEntities(updatedDocs) {
+  return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
+}
+
 export function saveDocument(doc) {
   return function (dispatch) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
-      dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(updateEntity(updatedDoc));
       dispatch(selectDocument(updatedDoc));
+    });
+  };
+}
+
+export function multipleUpdate(_entities, values) {
+  return function (dispatch) {
+    const updatedEntities = _entities.toJS().map((entity) => {
+      entity.metadata = Object.assign({}, entity.metadata, values.metadata);
+      if (values.icon) {
+        entity.icon = values.icon;
+      }
+      return entity;
+    });
+
+    const updatedEntitiesIds = updatedEntities.map((entity) => entity.sharedId);
+    return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
+    .then(() => {
+      dispatch(notify('Update success', 'success'));
+      dispatch(updateEntities(updatedEntities));
     });
   };
 }
@@ -133,7 +165,7 @@ export function saveEntity(entity) {
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
-      dispatch({type: types.UPDATE_DOCUMENT, doc: updatedDoc});
+      dispatch(dispatch(updateEntity(updatedDoc)));
       dispatch(selectDocument(updatedDoc));
     });
   };
@@ -143,12 +175,16 @@ export function removeDocument(doc) {
   return {type: types.REMOVE_DOCUMENT, doc};
 }
 
+export function removeDocuments(docs) {
+  return {type: types.REMOVE_DOCUMENTS, docs};
+}
+
 export function deleteDocument(doc) {
   return function (dispatch) {
     return documents.api.delete(doc)
     .then(() => {
       dispatch(notify('Document deleted', 'success'));
-      dispatch(unselectDocument());
+      dispatch(unselectAllDocuments());
       dispatch(removeDocument(doc));
     });
   };
@@ -159,7 +195,7 @@ export function deleteEntity(entity) {
     return entities.api.delete(entity)
     .then(() => {
       dispatch(notify('Entity deleted', 'success'));
-      dispatch(unselectDocument());
+      dispatch(unselectDocument(entity._id));
       dispatch(removeDocument(entity));
     });
   };
