@@ -47,9 +47,7 @@ export class ReferencesGroup extends Component {
   }
 
   componentWillMount() {
-    this.setState({expanded: true});
-    this.setState({selected: false});
-    this.setState({selectedItems: Immutable([])});
+    this.setState({expanded: true, selected: false, selectedItems: Immutable([])});
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -57,6 +55,16 @@ export class ReferencesGroup extends Component {
            this.state.expanded !== nextState.expanded ||
            this.state.selected !== nextState.selected ||
            this.state.selectedItems.size !== nextState.selectedItems.size;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.filters.size) {
+      this.setState({selected: false, selectedItems: Immutable([])});
+    }
+
+    if (nextProps.group.get('templates').size > this.props.group.get('templates').size) {
+      this.setState({selected: false});
+    }
   }
 
   render() {
@@ -126,11 +134,11 @@ ReferencesGroup.propTypes = {
   group: PropTypes.object,
   deleteReference: PropTypes.func,
   setFilter: PropTypes.func,
-  filter: PropTypes.object
+  filters: PropTypes.object
 };
 
 export const mapStateToProps = ({entityView}) => {
-  return {filter: entityView.filter};
+  return {filters: entityView.filters};
 };
 
 export const mapDispatchToProps = (dispatch) => {

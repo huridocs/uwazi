@@ -2,9 +2,11 @@ import api from '../EntitiesAPI';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
-import refenrecesAPI from 'app/Viewer/referencesAPI';
+import referencesAPI from 'app/Viewer/referencesAPI';
 import {removeDocument, removeDocuments, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
 import {fromJS as Immutable} from 'immutable';
+import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
+
 import * as uiActions from './uiActions';
 
 export function saveEntity(entity) {
@@ -40,13 +42,51 @@ export function deleteEntities(entities) {
   };
 }
 
-export function addReference(reference) {
-  return actions.push('entityView/references', reference);
+// TEST!!!
+export function searchReferences() {
+  return function (dispatch, getState) {
+    const entityView = getState().entityView;
+    const entityId = entityView.entity.get('sharedId');
+    const sort = entityView.sort;
+    const filters = entityView.filters;
+    const searchTerm = entityView.search && entityView.search.searchTerm ? entityView.search.searchTerm.value : '';
+    const options = filters.merge(sort).merge({searchTerm});
+
+    return referencesAPI.search(entityId, options.toJS())
+    .then(results => {
+      dispatch(actions.set('entityView/searchResults', results));
+      dispatch(uiActions.showTab('references'));
+    });
+  };
+}
+// ---
+
+export function addReference() {
+  // TEST!!!!
+  return function (dispatch, getState) {
+    const entityView = getState().entityView;
+    const entityId = entityView.entity.get('sharedId');
+
+    return referencesAPI.getGroupedByConnection(entityId)
+    .then(referenceGroups => {
+      const filteredTemplates = referenceGroups.reduce((templateIds, group) => {
+        return templateIds.concat(group.templates.map(t => t._id.toString()));
+      }, []);
+
+      const sortOptions = prioritySortingCriteria({currentCriteria: entityView.sort, filteredTemplates, templates: getState().templates});
+      return Promise.all([referenceGroups, sortOptions]);
+    })
+    .then(([referenceGroups, sort]) => {
+      dispatch(actions.set('entityView/referenceGroups', referenceGroups));
+      dispatch(formActions.merge('entityView.sort', sort));
+      return searchReferences()(dispatch, getState);
+    });
+  };
 }
 
 export function deleteReference(reference) {
   return function (dispatch) {
-    return refenrecesAPI.delete(reference)
+    return referencesAPI.delete(reference)
     .then(() => {
       dispatch(actions.remove('entityView/references', reference));
       dispatch(notify('Connection deleted', 'success'));
@@ -55,33 +95,6 @@ export function deleteReference(reference) {
 }
 
 // TEST!!!
-export function searchReferences() {
-  // console.log('----------------------------------');
-  // console.log('entityId:', entityId);
-  // console.log('limit:', limit);
-
-  return function (dispatch, getState) {
-    const entityView = getState().entityView;
-    // console.log('entityView:', entityView);
-    const entityId = entityView.entity.get('sharedId');
-    // console.log('entityId:', entityId);
-    const sort = entityView.sort;
-    // console.log('sort:', sort);
-    const filters = entityView.filters;
-    // console.log('filters:', filters.toJS());
-    const searchTerm = entityView.search && entityView.search.searchTerm ? entityView.search.searchTerm.value : '';
-    // console.log('searchTerm', searchTerm);
-    const options = filters.merge(sort).merge({searchTerm});
-    // console.log('options:', options.toJS());
-    // console.log('----------------------------------');
-    return refenrecesAPI.search(entityId, options.toJS())
-    .then(results => {
-      dispatch(actions.set('entityView/searchResults', results));
-      dispatch(uiActions.showTab('references'));
-    });
-  };
-}
-
 export function loadMoreReferences(limit) {
   return function (dispatch, getState) {
     const entityView = getState().entityView;
@@ -100,3 +113,13 @@ export function setFilter(groupFilterValues) {
     return searchReferences()(dispatch, getState);
   };
 }
+
+export function resetSearch() {
+  return function (dispatch, getState) {
+    dispatch(formActions.change('entityView/search.searchTerm', ''));
+    dispatch(actions.set('entityView/filters', Immutable({})));
+    return searchReferences()(dispatch, getState);
+  };
+}
+
+// END untested TEST!!

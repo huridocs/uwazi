@@ -11,7 +11,7 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, addReference, deleteReference} from '../actions/actions';
+import {deleteEntity, addReference, deleteReference, resetSearch} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
 import {actions as connectionsActions} from 'app/Connections';
@@ -136,17 +136,22 @@ export class EntityViewer extends Component {
         </ShowIf>
 
         <aside className="side-panel entity-connections">
-          <NeedAuthorization>
-            <ShowIf if={selectedTab === 'info' || selectedTab === 'references'}>
-              <div className="sidepanel-footer">
+          <ShowIf if={selectedTab === 'info' || selectedTab === 'references'}>
+            <div className="sidepanel-footer">
+              <button onClick={this.props.resetSearch}
+                      className="create-connection btn btn-primary">
+                <i className="fa fa-refresh"></i>
+                <span className="btn-label">{t('System', 'Reset')}</span>
+              </button>
+              <NeedAuthorization>
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">
                   <i className="fa fa-plus"></i>
                   <span className="btn-label">New</span>
                 </button>
-              </div>
-            </ShowIf>
-          </NeedAuthorization>
+              </NeedAuthorization>
+            </div>
+          </ShowIf>
 
           <NeedAuthorization>
             <ShowIf if={this.props.tab === 'attachments'}>
@@ -198,6 +203,7 @@ EntityViewer.propTypes = {
   addReference: PropTypes.func,
   deleteReference: PropTypes.func,
   startNewConnection: PropTypes.func,
+  resetSearch: PropTypes.func,
   tab: PropTypes.string,
   showTab: PropTypes.func
 };
@@ -240,6 +246,7 @@ function mapDispatchToProps(dispatch) {
     addReference,
     deleteReference,
     showTab,
+    resetSearch,
     startNewConnection: connectionsActions.startNewConnection
   }, dispatch);
 }
