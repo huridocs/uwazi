@@ -61,7 +61,7 @@ export function searchReferences() {
   // console.log('limit:', limit);
 
   return function (dispatch, getState) {
-    const entiimport {fromJS as Immutable} from 'immutable';tyView = getState().entityView;
+    const entityView = getState().entityView;
     // console.log('entityView:', entityView);
     const entityId = entityView.entity.get('sharedId');
     // console.log('entityId:', entityId);
