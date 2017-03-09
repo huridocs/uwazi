@@ -47,14 +47,13 @@ export class ReferencesGroup extends Component {
   }
 
   componentWillMount() {
-    this.setState({expanded: false});
+    this.setState({expanded: true});
     this.setState({selected: false});
     this.setState({selectedItems: Immutable([])});
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return !is(this.props.group, nextProps.group) ||
-           !is(this.props.sort, nextProps.sort) ||
            this.state.expanded !== nextState.expanded ||
            this.state.selected !== nextState.selected ||
            this.state.selectedItems.size !== nextState.selectedItems.size;
@@ -127,12 +126,11 @@ ReferencesGroup.propTypes = {
   group: PropTypes.object,
   deleteReference: PropTypes.func,
   setFilter: PropTypes.func,
-  sort: PropTypes.object,
   filter: PropTypes.object
 };
 
 export const mapStateToProps = ({entityView}) => {
-  return {sort: Immutable(entityView.sort), filter: entityView.filter};
+  return {filter: entityView.filter};
 };
 
 export const mapDispatchToProps = (dispatch) => {
