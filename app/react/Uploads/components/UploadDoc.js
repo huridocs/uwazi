@@ -20,19 +20,19 @@ export class UploadDoc extends Component {
     if (active) {
       return this.props.finishEdit();
     }
-    this.props.loadInReduxForm('uploads.metadata', doc, this.props.templates.toJS());
-    this.props.edit(doc);
+    this.props.loadInReduxForm('uploads.metadata', doc.toJS(), this.props.templates.toJS());
+    this.props.edit(doc.toJS());
   }
 
   render() {
-    let doc = this.props.doc.toJS();
+    let doc = this.props.doc;
     let modal = 'readyToPublish';
 
     let status = 'success';
     let message = 'Ready to publish';
     let progress = 0;
 
-    let itsProcessing = doc.uploaded && typeof doc.processed === 'undefined';
+    let itsProcessing = doc.get('uploaded') && typeof doc.get('processed') === 'undefined';
 
     if (itsProcessing) {
       status = 'processing';
@@ -41,19 +41,19 @@ export class UploadDoc extends Component {
       progress = 100;
     }
 
-    if (!doc.template && doc.processed) {
+    if (!doc.get('template') && doc.get('processed')) {
       status = 'warning';
       message = 'Metadata required';
       modal = '';
     }
 
-    if (doc.uploaded && doc.processed === false) {
+    if (doc.get('uploaded') && doc.get('processed') === false) {
       status = 'danger';
       message = 'Conversion failed';
       modal = '';
     }
 
-    if (doc.uploaded === false) {
+    if (doc.get('uploaded') === false) {
       status = 'danger';
       message = 'Upload failed';
       modal = 'uploadFailed';
@@ -69,24 +69,24 @@ export class UploadDoc extends Component {
 
     let active;
     if (this.props.metadataBeingEdited) {
-      active = this.props.metadataBeingEdited._id === doc._id;
+      active = this.props.metadataBeingEdited._id === doc.get('_id');
     }
 
     return (
       <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
       <div className="item-info">
         <i className="item-private-icon fa fa-lock"></i>
-        <Icon className="item-icon item-icon-center" data={doc.icon} />
-        <ItemName>{doc.title}</ItemName>
+        <Icon className="item-icon item-icon-center" data={doc.get('icon')} />
+        <ItemName>{doc.get('title')}</ItemName>
       </div>
       <ItemFooter>
         <div className="item-label-group">
-          <TemplateLabel template={doc.template}/>
+          <TemplateLabel template={doc.get('template')}/>
           {(() => {
             if (itsUploading || itsProcessing) {
               return <ItemFooter.ProgressBar progress={progress} />;
             }
-            if (doc.processed) {
+            if (doc.get('processed')) {
               return <ItemFooter.Label status={status}>
                       {message}
                      </ItemFooter.Label>;
@@ -101,7 +101,7 @@ export class UploadDoc extends Component {
             </span>
           </a>
           &nbsp;
-          <I18NLink to={`/document/${doc.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+          <I18NLink to={`/document/${doc.get('sharedId')}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
             <span className="itemShortcut-arrow">
               <i className="fa fa-file-text-o"></i>
             </span>
