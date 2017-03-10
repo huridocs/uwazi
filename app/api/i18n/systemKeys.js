@@ -105,5 +105,6 @@ export default [
 {key: 'User', label: 'User'},
 {key: 'View in library', label: 'View in library'},
 {key: 'x less', label: ' less'},
-{key: 'x more', label: ' more'}
+{key: 'x more', label: ' more'},
+{key: 'selected', label: 'selected'}
 ];

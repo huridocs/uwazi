@@ -12,6 +12,8 @@ import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 
 export class ShowMetadata extends Component {
   getValue(property) {
+    property.value = property.value || '';
+
     if (property.url) {
       return <I18NLink to={property.url}>
                <Icon className="item-icon item-icon-center" data={property.icon} />
