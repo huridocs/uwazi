@@ -96,6 +96,25 @@ export class Item extends Component {
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
     const metadata = this.getMetadata(doc);
 
+    let itemConnection = null;
+    if (doc.connections && doc.connections.length) {
+      itemConnection =
+        <div className="item-connection">
+          <i className="fa fa-exchange"></i>
+          {doc.connections.map((connection, index) => {
+            return (
+              <span key={index}>
+                {connection.type === 'metadata' ?
+                 t(connection.context, connection.label) + ' ' + t('System', 'in') + '...' :
+                 t(connection.context, connection.label)
+                }{index + 1 < doc.connections.length ? ',' : ''}
+              </span>
+            );
+          })}
+        </div>
+      ;
+    }
+
     return (
       <RowList.Item
         className={`item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`}
@@ -103,6 +122,7 @@ export class Item extends Component {
         onMouseEnter={onMouseEnter || function () {}}
         onMouseLeave={onMouseLeave || function () {}}
         active={active}>
+        {itemConnection}
         <div className="item-info">
           <div className="item-name">
             <ShowIf if={evalPublished && !doc.published}>

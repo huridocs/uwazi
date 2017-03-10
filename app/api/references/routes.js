@@ -40,6 +40,7 @@ export default app => {
         return Boolean(filter[key].length) || filteredGroups;
       }, false);
 
+      const entityGroupMap = {};
       const entityIds = groups.reduce((ids, group) => {
         return group.templates.reduce((referenceIds, template) => {
           let usefulRefs = template.refs;
@@ -48,7 +49,21 @@ export default app => {
             usefulRefs = usefulRefs.filter(() => filter[group.key] && filter[group.key].includes(group.key + template._id));
           }
 
-          return referenceIds.concat(usefulRefs.map(r => r.connectedDocument));
+          usefulRefs.forEach(ref => {
+            // TEST!!!
+            if (!entityGroupMap[ref.connectedDocument]) {
+              entityGroupMap[ref.connectedDocument] = [];
+            }
+            entityGroupMap[ref.connectedDocument].push({
+              context: group.context,
+              label: group.connectionLabel,
+              type: group.connectionType
+            });
+            // --------
+            referenceIds.push(ref.connectedDocument);
+          });
+
+          return referenceIds;
         }, ids);
       }, []);
 
@@ -56,7 +71,14 @@ export default app => {
       req.query.includeUnpublished = true;
 
       search.search(req.query, req.language)
-      .then(results => res.json(results));
+      .then(results => {
+        // TEST!!!
+        results.rows.forEach(item => {
+          item.connections = entityGroupMap[item.sharedId];
+        });
+        // -------
+        return res.json(results);
+      });
     })
     .catch((error) => {
       res.status(500).json({error: error.json});
