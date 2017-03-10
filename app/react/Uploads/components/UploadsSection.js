@@ -64,9 +64,8 @@ UploadsSection.contextTypes = {
 };
 
 const mapStateToProps = (state) => {
-  let uiState = state.uploads.uiState.toJS();
   return {
-    panelIsOpen: !!uiState.metadataBeingEdited
+    panelIsOpen: !!state.uploads.uiState.get('selectedDocuments').size
   };
 };
 

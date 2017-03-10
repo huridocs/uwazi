@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {edit, finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {selectDocument, unselectAllDocuments, unselectDocument} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {actions} from 'app/Metadata';
 import {I18NLink} from 'app/I18N';
@@ -16,12 +16,22 @@ export class UploadDoc extends Component {
     }
   }
 
-  edit(doc, active) {
-    if (active) {
-      return this.props.finishEdit();
+  select(e) {
+    if (!(e.metaKey || e.ctrlKey) || !this.props.authorized) {
+      this.props.unselectAllDocuments();
     }
-    this.props.loadInReduxForm('uploads.metadata', doc.toJS(), this.props.templates.toJS());
-    this.props.edit(doc.toJS());
+
+    if (this.props.active && this.props.multipleSelected && !(e.metaKey || e.ctrlKey)) {
+      this.props.loadInReduxForm('uploads.metadata', this.props.doc, this.props.templates.toJS());
+      return this.props.selectDocument(this.props.doc);
+    }
+
+    if (this.props.active) {
+      return this.props.unselectDocument(this.props.doc.get('_id'));
+    }
+
+    this.props.selectDocument(this.props.doc);
+    this.props.loadInReduxForm('uploads.metadata', this.props.doc.toJS(), this.props.templates.toJS());
   }
 
   render() {
@@ -67,13 +77,16 @@ export class UploadDoc extends Component {
       progress = this.props.progress;
     }
 
+<<<<<<< HEAD
     let active;
     if (this.props.metadataBeingEdited) {
       active = this.props.metadataBeingEdited._id === doc.get('_id');
     }
 
+=======
+>>>>>>> uploads working with multiple selection, missing the side panel WIP
     return (
-      <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
+      <RowList.Item status={status} active={this.props.active} onClick={this.select.bind(this)}>
       <div className="item-info">
         <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={doc.get('icon')} />
@@ -116,24 +129,29 @@ export class UploadDoc extends Component {
 UploadDoc.propTypes = {
   doc: PropTypes.object,
   progress: PropTypes.number,
-  edit: PropTypes.func,
-  metadataBeingEdited: PropTypes.object,
+  selectDocument: PropTypes.func,
+  unselectDocument: PropTypes.func,
+  active: PropTypes.bool,
+  authorized: PropTypes.bool,
+  multipleSelected: PropTypes.bool,
   loadInReduxForm: PropTypes.func,
-  finishEdit: PropTypes.func,
+  unselectAllDocuments: PropTypes.func,
   showModal: PropTypes.func,
   templates: PropTypes.object
 };
 
-export function mapStateToProps({uploads, templates}, props) {
+export function mapStateToProps({uploads, templates, user}, props) {
   return {
+    active: !!uploads.uiState.get('selectedDocuments').find((doc) => doc.get('_id') === props.doc.get('_id')),
+    multipleSelected: uploads.uiState.get('selectedDocuments').size > 1,
     progress: uploads.progress.get(props.doc.get('sharedId')),
-    metadataBeingEdited: uploads.uiState.get('metadataBeingEdited'),
-    templates
+    templates,
+    authorized: !!user.get('_id')
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, edit, loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
+  return bindActionCreators({unselectAllDocuments, selectDocument, unselectDocument, loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

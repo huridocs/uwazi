@@ -66,7 +66,7 @@ export class UploadEntity extends Component {
 
 UploadEntity.propTypes = {
   entity: PropTypes.object,
-  metadataBeingEdited: PropTypes.object,
+  selected: PropTypes.bool,
   loadInReduxForm: PropTypes.func,
   finishEdit: PropTypes.func,
   templates: PropTypes.object,
@@ -80,8 +80,7 @@ UploadEntity.contextTypes = {
 
 export function mapStateToProps(state) {
   return {
-    templates: state.templates,
-    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited')
+    templates: state.templates
   };
 }
 

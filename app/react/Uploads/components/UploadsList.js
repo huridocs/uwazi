@@ -47,7 +47,8 @@ UploadsList.propTypes = {
 
 export function mapStateToProps(state) {
   return {
-    documents: state.uploads.documents
+    documents: state.uploads.documents,
+    selectedDocuments: state.uploads.uiState.get('selectedDocuments')
   };
 }
 

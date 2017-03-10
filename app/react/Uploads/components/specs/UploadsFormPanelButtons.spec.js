@@ -21,13 +21,9 @@ describe('UploadsFormPanelButtons', () => {
       metadata: {type: 'type', sharedId: 'sharedId'},
       moveToLibrary: jasmine.createSpy('moveToLibrary'),
       publishEntity: jasmine.createSpy('publishEntity'),
-      finishEdit: jasmine.createSpy('finishEdit'),
+      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       deleteEntity: jasmine.createSpy('deleteEntity'),
       deleteDocument: jasmine.createSpy('deleteDocument')
-      // active: true,
-      // showModal: jasmine.createSpy('showModal'),
-      // templates: Immutable.fromJS([]),
-      // newEntity: jasmine.createSpy('newEntity')
     };
   });
 
@@ -99,7 +95,7 @@ describe('UploadsFormPanelButtons', () => {
         accept();
         expect(props.moveToLibrary).not.toHaveBeenCalled();
         expect(props.publishEntity).toHaveBeenCalledWith(props.metadata);
-        expect(props.finishEdit).toHaveBeenCalled();
+        expect(props.unselectAllDocuments).toHaveBeenCalled();
       });
 
       it('should call move to library if document', () => {
@@ -147,7 +143,7 @@ describe('UploadsFormPanelButtons', () => {
       it('should delete entity', () => {
         prepareDeleteDataConfirm();
         accept();
-        expect(props.finishEdit).toHaveBeenCalled();
+        expect(props.unselectAllDocuments).toHaveBeenCalled();
         expect(props.deleteEntity).toHaveBeenCalledWith(props.metadata);
         expect(props.deleteDocument).not.toHaveBeenCalled();
       });
@@ -156,7 +152,7 @@ describe('UploadsFormPanelButtons', () => {
         props.metadata.type = 'document';
         prepareDeleteDataConfirm();
         accept();
-        expect(props.finishEdit).toHaveBeenCalled();
+        expect(props.unselectAllDocuments).toHaveBeenCalled();
         expect(props.deleteDocument).toHaveBeenCalledWith(props.metadata);
         expect(props.deleteEntity).not.toHaveBeenCalled();
       });

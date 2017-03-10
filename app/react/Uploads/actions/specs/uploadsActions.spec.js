@@ -30,25 +30,10 @@ describe('uploadsActions', () => {
     });
   });
 
-  describe('finishEdit()', () => {
-    it('should return a FINISH_EDIT_METADATA', () => {
-      let action = actions.finishEdit();
-      expect(action).toEqual({type: types.FINISH_EDIT_METADATA});
-    });
-  });
-
   describe('updateDocument()', () => {
     it('should return a UPDATE_DOCUMENT with the document', () => {
       let action = actions.updateDocument('document');
       expect(action).toEqual({type: types.UPDATE_DOCUMENT, doc: 'document'});
-    });
-  });
-
-  describe('edit()', () => {
-    it('should return a EDIT_UPLOADED_DOCUMENT with the document', () => {
-      let dispatch = jasmine.createSpy('dispatch');
-      actions.edit('document')(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({type: types.EDIT_METADATA, doc: 'document'});
     });
   });
 
@@ -146,7 +131,7 @@ describe('uploadsActions', () => {
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.UPDATE_DOCUMENT, doc},
-          {type: types.FINISH_EDIT_METADATA}
+          {type: types.UNSELECT_ALL_DOCUMENTS}
         ];
         const store = mockStore({});
 

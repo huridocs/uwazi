@@ -51,13 +51,15 @@ describe('UploadsList', () => {
 
   describe('maped state', () => {
     it('should contain the documents', () => {
+      const selectedDocuments = Immutable.fromJS([]);
       let store = {
         uploads: {
-          documents
+          documents,
+          uiState: Immutable.fromJS({selectedDocuments})
         }
       };
       let state = mapStateToProps(store);
-      expect(state).toEqual({documents});
+      expect(state).toEqual({documents, selectedDocuments});
     });
   });
 });
