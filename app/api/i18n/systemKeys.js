@@ -22,6 +22,7 @@ export default [
 {key: 'Confirm new password', label: 'Confirm new password'},
 {key: 'Connection type', label: 'Confirm delete document type:'},
 {key: 'Connections', label: 'Connections'},
+{key: 'connections', label: 'connections'},
 {key: 'Create group', label: 'Create group'},
 {key: 'Date added', label: 'Date added'},
 {key: 'Delete', label: 'Delete'},
