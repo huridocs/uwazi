@@ -11,6 +11,7 @@
 .toc-view-link {
   display: block;
   padding: 5px 0;
+  font-size: 14px;
   color: $c-black;
 }
 
@@ -27,23 +28,13 @@
   }
 }
 
-
-.toc-indent-0 .toc-view-link{
-  font-size: $f-size-xl;
-  font-weight: bold;
-}
-
 .toc-indent:first-child .toc-view-link{
   padding-top: 0;
 }
 
-.toc-indent-1 .toc-view-link{
-  font-size: $f-size-lg;
+.toc-indent-0 .toc-view-link,
+.toc-indent-1 .toc-view-link {
   font-weight: bold;
-}
-
-.toc-indent-2 .toc-view-link{
-  font-size: $f-size-lg;
 }
 
 .toc-indent-0 { padding-left: 0% }
