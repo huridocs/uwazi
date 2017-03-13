@@ -50,16 +50,18 @@ export default app => {
           }
 
           usefulRefs.forEach(ref => {
-            // TEST!!!
             if (!entityGroupMap[ref.connectedDocument]) {
               entityGroupMap[ref.connectedDocument] = [];
             }
+
             entityGroupMap[ref.connectedDocument].push({
               context: group.context,
               label: group.connectionLabel,
-              type: group.connectionType
+              type: group.connectionType,
+              _id: ref._id,
+              sourceType: ref.sourceType
             });
-            // --------
+
             referenceIds.push(ref.connectedDocument);
           });
 
@@ -72,11 +74,9 @@ export default app => {
 
       search.search(req.query, req.language)
       .then(results => {
-        // TEST!!!
         results.rows.forEach(item => {
           item.connections = entityGroupMap[item.sharedId];
         });
-        // -------
         return res.json(results);
       });
     })
