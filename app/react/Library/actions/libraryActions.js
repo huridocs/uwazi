@@ -4,7 +4,6 @@ import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
 import documents from 'app/Documents';
-import entities from 'app/Entities';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 import referencesAPI from 'app/Viewer/referencesAPI';
@@ -35,6 +34,10 @@ export function unselectDocument(docId) {
 
 export function unselectAllDocuments() {
   return {type: types.UNSELECT_ALL_DOCUMENTS};
+}
+
+export function updateSelectedEntities(entities) {
+  return {type: types.UPDATE_SELECTED_ENTITIES, entities};
 }
 
 export function showFilters() {
@@ -140,9 +143,9 @@ export function saveDocument(doc) {
   };
 }
 
-export function multipleUpdate(_entities, values) {
+export function multipleUpdate(entities, values) {
   return function (dispatch) {
-    const updatedEntities = _entities.toJS().map((entity) => {
+    const updatedEntities = entities.toJS().map((entity) => {
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
         entity.icon = values.icon;
@@ -161,7 +164,7 @@ export function multipleUpdate(_entities, values) {
 
 export function saveEntity(entity) {
   return function (dispatch) {
-    return entities.api.save(entity)
+    return entitiesAPI.save(entity)
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
@@ -192,7 +195,7 @@ export function deleteDocument(doc) {
 
 export function deleteEntity(entity) {
   return function (dispatch) {
-    return entities.api.delete(entity)
+    return entitiesAPI.delete(entity)
     .then(() => {
       dispatch(notify('Entity deleted', 'success'));
       dispatch(unselectDocument(entity._id));

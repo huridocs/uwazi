@@ -5,6 +5,7 @@ import comonProperties from './helpers/comonProperties';
 import MetadataForm from './components/MetadataForm';
 import MetadataFormButtons from './components/MetadataFormButtons';
 import MetadataFormFields from './components/MetadataFormFields';
+import SelectMultiplePanel from './components/SelectMultiplePanel';
 import ShowMetadata from './components/ShowMetadata';
 import reducer from './reducers/reducer';
 
@@ -16,6 +17,7 @@ export default {
   MetadataFormButtons,
   MetadataFormFields,
   ShowMetadata,
+  SelectMultiplePanel,
   comonProperties,
   reducer
 };

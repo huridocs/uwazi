@@ -9,7 +9,7 @@ import {enterLibrary, setDocuments} from './actions/libraryActions';
 import libraryHelpers from './helpers/libraryFilters';
 import SearchButton from './components/SearchButton';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
-import SelectMultiplePanel from './components/SelectMultiplePanel';
+import SelectMultiplePanelContainer from './containers/SelectMultiplePanelContainer';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
@@ -71,7 +71,7 @@ export default class Library extends RouteHandler {
         <ConfirmCloseForm />
         <LibraryFilters />
         <ViewMetadataPanel />
-        <SelectMultiplePanel />
+        <SelectMultiplePanelContainer />
       </div>
     );
   }

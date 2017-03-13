@@ -102,6 +102,9 @@ export default {
         if (values.icon) {
           entity.icon = values.icon;
         }
+        if (values.template) {
+          entity.template = values.template;
+        }
         return this.save(entity, params);
       });
     }));

@@ -27,12 +27,21 @@ export function unselectAllDocuments() {
   return {type: types.UNSELECT_ALL_DOCUMENTS};
 }
 
+export function updateSelectedEntities(entities) {
+  return {type: types.UPDATE_SELECTED_ENTITIES, entities};
+}
+
 export function updateDocument(doc) {
   return {
     type: types.UPDATE_DOCUMENT,
     doc
   };
 }
+
+export function updateEntities(updatedDocs) {
+  return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
+}
+
 
 export function setUploads(documents) {
   return {

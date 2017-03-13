@@ -3,6 +3,8 @@ import {actions as formActions} from 'react-redux-form';
 import {requestViewerState, setViewerState} from 'app/Viewer/actions/routeActions';
 import {APIURL} from 'app/config.js';
 import * as types from './actionTypes';
+import {api as entitiesAPI} from 'app/Entities';
+import {notify} from 'app/Notifications';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -102,5 +104,24 @@ export function reuploadDocument(docId, file, docSharedId) {
       });
     })
     .end();
+  };
+}
+
+export function multipleUpdate(_entities, values) {
+  return function (dispatch) {
+    const updatedEntities = _entities.toJS().map((entity) => {
+      entity.metadata = Object.assign({}, entity.metadata, values.metadata);
+      if (values.icon) {
+        entity.icon = values.icon;
+      }
+      return entity;
+    });
+
+    const updatedEntitiesIds = updatedEntities.map((entity) => entity.sharedId);
+    return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
+    .then(() => {
+      dispatch(notify('Update success', 'success'));
+      return updatedEntities;
+    });
   };
 }

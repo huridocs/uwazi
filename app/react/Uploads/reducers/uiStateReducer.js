@@ -22,5 +22,9 @@ export default function uiState(state = initialState, action = {}) {
     return state.set('selectedDocuments', Immutable.fromJS([]));
   }
 
+  if (action.type === types.UPDATE_SELECTED_ENTITIES) {
+    return state.set('selectedDocuments', action.entities);
+  }
+
   return Immutable.fromJS(state);
 }

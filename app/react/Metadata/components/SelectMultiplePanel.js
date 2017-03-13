@@ -3,14 +3,14 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Form} from 'react-redux-form';
 import {t} from 'app/I18N';
-import {unselectAllDocuments, multipleUpdate} from 'app/Library/actions/libraryActions';
 import {deleteEntities} from 'app/Entities/actions/actions';
-import {MetadataFormFields} from 'app/Metadata';
+import MetadataFormFields from './MetadataFormFields';
 import ShowIf from 'app/App/ShowIf';
 import {comonProperties} from 'app/Metadata/helpers/comonProperties';
-import {actions as metadataActions} from 'app/Metadata';
+import * as metadataActions from 'app/Metadata/actions/actions';
 import validator from 'app/Metadata/helpers/validator';
 import {FormGroup, IconSelector} from 'app/ReactReduxForms';
+import {Select as SimpleSelect} from 'app/Forms';
 
 import {TemplateLabel, SidePanel} from 'app/Layout';
 
@@ -24,7 +24,7 @@ export class SelectMultiplePanel extends Component {
     this.context.confirm({
       accept: () => {
         this.props.unselectAllDocuments();
-        this.props.resetForm('library.sidepanel.multipleEdit');
+        this.props.resetForm(this.props.formKey);
       },
       title: t('System', 'Confirm'),
       message
@@ -48,27 +48,38 @@ export class SelectMultiplePanel extends Component {
 
   save(formValues) {
     let modifiedValues = {metadata: {}};
+    const comonTemplate = this.comonTemplate();
     Object.keys(formValues.metadata).forEach((key) => {
       if (this.metadataFieldModified(key)) {
         modifiedValues.metadata[key] = formValues.metadata[key];
       }
     });
 
+    if (comonTemplate._id) {
+      modifiedValues.template = comonTemplate._id;
+    }
+
     if (this.props.formState.icon && !this.props.formState.icon.pristine) {
       modifiedValues.icon = formValues.icon;
     }
 
-    this.props.multipleUpdate(this.props.entitiesSelected, modifiedValues)
-    .then(() => {
+    return this.props.multipleUpdate(this.props.entitiesSelected, modifiedValues)
+    .then((updatedEntities) => {
+      this.props.updateEntities(updatedEntities);
       this.props.unselectAllDocuments();
-      this.props.resetForm('library.sidepanel.multipleEdit');
+      this.props.resetForm(this.props.formKey);
     });
+  }
+
+  changeTemplate(template) {
+    const updatedEntities = this.props.entitiesSelected.map((entity) => entity.set('template', template));
+    this.props.updateSelectedEntities(updatedEntities);
   }
 
   cancel() {
     this.context.confirm({
       accept: () => {
-        this.props.resetForm('library.sidepanel.multipleEdit');
+        this.props.resetForm(this.props.formKey);
       },
       title: t('System', 'Confirm'),
       message: t('System', 'Discard changes')
@@ -76,14 +87,15 @@ export class SelectMultiplePanel extends Component {
   }
 
   edit() {
-    this.props.loadForm('library.sidepanel.multipleEdit', this.comonTemplate());
+    this.props.loadForm(this.props.formKey, this.comonTemplate());
   }
 
   comonTemplate() {
     const comonTypes = this.props.entitiesSelected.map((entity) => entity.get('template'))
     .filter((type, index, _types) => _types.indexOf(type) === index);
     const properties = comonProperties(this.props.templates.toJS(), comonTypes);
-    return {_id: comonTypes.get(0), properties};
+    let _id = comonTypes.size === 1 ? comonTypes.first() : '';
+    return {_id, properties};
   }
 
   validation(template) {
@@ -99,9 +111,12 @@ export class SelectMultiplePanel extends Component {
   }
 
   render() {
-    const {entitiesSelected, open, editing} = this.props;
+    const {entitiesSelected, open, editing, templates} = this.props;
     const template = this.comonTemplate();
     const validation = this.validation(template);
+    const templateOptions = templates.toJS().map((tmpl) => {
+      return {label: tmpl.name, value: tmpl._id};
+    });
 
     return (
       <SidePanel open={open} className="metadata-sidepanel">
@@ -120,13 +135,27 @@ export class SelectMultiplePanel extends Component {
             </ul>
           </ShowIf>
           <ShowIf if={editing}>
-            <Form id='multiEdit' model='library.sidepanel.multipleEdit' onSubmit={this.save.bind(this)} validators={validation}>
+            <Form id='multiEdit' model={this.props.formKey} onSubmit={this.save.bind(this)} validators={validation}>
               <FormGroup>
                 <div className="alert alert-warning">
                   <i className="fa fa-warning"></i>
                   Be careful, you are editing multiple files!
                   We will update all the properties marked with <i className="fa fa-warning"></i> with the new values.
                 </div>
+                <FormGroup>
+                  <ul className="search__filter">
+                    <li><label>{t('System', 'Type')} <span className="required">*</span></label></li>
+                    <li className="wide">
+                      <SimpleSelect
+                        className="form-control template-selector"
+                        value={template._id}
+                        options={templateOptions}
+                        onChange={(e) => this.changeTemplate(e.target.value)}
+                      >
+                      </SimpleSelect>
+                    </li>
+                  </ul>
+                </FormGroup>
                 <ul className="search__filter">
                   <li>
                     <ShowIf if={this.props.formState.icon && !this.props.formState.icon.pristine}>
@@ -190,36 +219,32 @@ SelectMultiplePanel.propTypes = {
   resetForm: PropTypes.func,
   deleteEntities: PropTypes.func,
   multipleUpdate: PropTypes.func,
+  updateEntities: PropTypes.func,
+  updateSelectedEntities: PropTypes.func,
   templates: PropTypes.object,
   thesauris: PropTypes.object,
   formState: PropTypes.object,
-  state: PropTypes.object
+  state: PropTypes.object,
+  formKey: PropTypes.string
 };
 
 SelectMultiplePanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = (state) => {
-  const library = state.library;
+const mapStateToProps = (state, props) => {
   return {
-    open: library.ui.get('selectedDocuments').size > 1,
-    entitiesSelected: library.ui.get('selectedDocuments'),
-    editing: Object.keys(library.sidepanel.multipleEdit).length > 0,
-    templates: state.templates,
-    thesauris: state.thesauris,
-    state: library.sidepanel.multipleEdit,
-    formState: library.sidepanel.multipleEditForm
+    open: props.entitiesSelected.size > 1,
+    editing: Object.keys(props.state).length > 0
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    unselectAllDocuments,
     deleteEntities,
     loadForm: metadataActions.loadTemplate,
     resetForm: metadataActions.resetReduxForm,
-    multipleUpdate
+    multipleUpdate: metadataActions.multipleUpdate
   }, dispatch);
 }
 

@@ -30,6 +30,10 @@ export default function ui(state = initialState, action = {}) {
     return state.set('selectedDocuments', Immutable.fromJS([]));
   }
 
+  if (action.type === types.UPDATE_SELECTED_ENTITIES) {
+    return state.set('selectedDocuments', action.entities);
+  }
+
   if (action.type === types.HIDE_FILTERS) {
     return state.set('filtersPanel', false);
   }
