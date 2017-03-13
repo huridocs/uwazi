@@ -58,6 +58,13 @@ describe('Item', () => {
     expect(props.onMouseLeave).toHaveBeenCalled();
   });
 
+  it('should include a header if present', () => {
+    props.itemHeader = <div className="item-header">Item Header</div>;
+    render();
+
+    expect(component.find('.item-header').text()).toBe('Item Header');
+  });
+
   it('should include additionalIcon, icon and title in the components name', () => {
     render();
     expect(component.find('.item-name').text()).toContain('additionalIcon');
