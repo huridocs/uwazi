@@ -1,4 +1,3 @@
-// TEST!!!
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -68,10 +67,10 @@ SearchBar.propTypes = {
   entityId: PropTypes.string
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps({entityView}) {
   return {
-    entityId: state.entityView.entity.get('sharedId'),
-    search: state.entityView.search
+    entityId: entityView.entity.get('sharedId'),
+    search: entityView.search
   };
 }
 
