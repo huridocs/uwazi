@@ -11,7 +11,7 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, addReference, deleteReference, resetSearch} from '../actions/actions';
+import {deleteEntity, referencesChanged, deleteReference, resetSearch} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
 import {actions as connectionsActions} from 'app/Connections';
@@ -20,10 +20,10 @@ import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
 import SearchBar from './SearchBar';
 import ReferencesGroup from './ReferencesGroup';
+import ReferencesList from './ReferencesList';
+
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-
-import ReferencesList from './ReferencesList';
 import {AttachmentsList, UploadAttachment} from 'app/Attachments';
 
 export class EntityViewer extends Component {
@@ -122,7 +122,7 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="references">
-              <ReferencesList entity={this.props.entity} />
+              <ReferencesList entity={this.props.entity} deleteConnection={this.deleteReference.bind(this)} />
             </TabContent>
           </Tabs>
         </main>
@@ -131,8 +131,7 @@ export class EntityViewer extends Component {
             delete={this.deleteEntity.bind(this)}
             data={this.props.rawEntity}
             formStatePath='entityView.entityForm'
-            entityBeingEdited={entityBeingEdited}
-            />
+            entityBeingEdited={entityBeingEdited} />
         </ShowIf>
 
         <aside className="side-panel entity-connections">
@@ -169,8 +168,7 @@ export class EntityViewer extends Component {
                   <ul className="multiselect is-active">
                     {referenceGroups.map(group =>
                       <ReferencesGroup key={group.get('key')}
-                                       group={group}
-                                       deleteReference={this.deleteReference.bind(this)} />
+                                       group={group} />
                     )}
                   </ul>
                 </div>
@@ -184,7 +182,7 @@ export class EntityViewer extends Component {
 
         </aside>
 
-        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
+        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.referencesChanged}/>
 
       </div>
     );
@@ -200,7 +198,7 @@ EntityViewer.propTypes = {
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
-  addReference: PropTypes.func,
+  referencesChanged: PropTypes.func,
   deleteReference: PropTypes.func,
   startNewConnection: PropTypes.func,
   resetSearch: PropTypes.func,
@@ -243,7 +241,7 @@ const mapStateToProps = (state) => {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     deleteEntity,
-    addReference,
+    referencesChanged,
     deleteReference,
     showTab,
     resetSearch,
