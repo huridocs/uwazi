@@ -74,9 +74,10 @@ $item-width: auto;
 $item-padding: 15px;
 
 .item-connection {
-  background-color: transparentize($c-primary, .75);
+  background-color: transparentize($c-primary, .5);
   color: white;
   padding: 3px 5px 3px 5px;
+  border-bottom: 1px solid white;
 
   & span {
     padding-left: 5px;
