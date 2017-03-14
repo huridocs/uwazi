@@ -7,6 +7,7 @@ import EntityViewer from './components/EntityViewer';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions as formActions} from 'react-redux-form';
+import * as uiActions from './actions/uiActions';
 
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
@@ -39,6 +40,10 @@ export default class Entity extends RouteHandler {
         relationTypes
       };
     });
+  }
+
+  componentWillMount() {
+    this.context.store.dispatch(uiActions.showTab('info'));
   }
 
   componentWillUnmount() {
