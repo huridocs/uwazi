@@ -132,7 +132,6 @@ export class ReferencesGroup extends Component {
 
 ReferencesGroup.propTypes = {
   group: PropTypes.object,
-  deleteReference: PropTypes.func,
   setFilter: PropTypes.func,
   filters: PropTypes.object
 };

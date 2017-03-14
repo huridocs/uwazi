@@ -7,6 +7,7 @@ import ShowIf from 'app/App/ShowIf';
 
 describe('ReferencesGroup', () => {
   let component;
+  let instance;
   let props;
   let group;
 
@@ -27,6 +28,7 @@ describe('ReferencesGroup', () => {
 
   let render = () => {
     component = shallow(<ReferencesGroup {...props} />);
+    instance = component.instance();
   };
 
   it('should render the group multiselect item with checked state, types count and expanded', () => {
@@ -118,10 +120,28 @@ describe('ReferencesGroup', () => {
     });
   });
 
+  describe('componentWillReceiveProps', () => {
+    beforeEach(() => {
+      render();
+      spyOn(instance, 'setState');
+    });
+
+    it('should unselect all options if filters is empty', () => {
+      instance.componentWillReceiveProps({filters: Immutable({}), group: Immutable({templates: []})});
+      expect(instance.setState.calls.mostRecent().args[0].selected).toBe(false);
+      expect(instance.setState.calls.mostRecent().args[0].selectedItems.toJS()).toEqual([]);
+    });
+
+    it('should set selected False if there is more templates in new props', () => {
+      instance.componentWillReceiveProps({filters: Immutable({a: 3}), group: Immutable({templates: [1, 2, 3]})});
+      expect(instance.setState.calls.mostRecent().args[0].selected).toBe(false);
+    });
+  });
+
   describe('mapStateToProps', () => {
-    it('should map entityViewer.filter', () => {
-      const state = {entityView: {filter: {a: 'b'}}};
-      expect(mapStateToProps(state).filter).toBe(state.entityView.filter);
+    it('should map entityViewer.filters', () => {
+      const state = {entityView: {filters: {a: 'b'}}};
+      expect(mapStateToProps(state).filters).toBe(state.entityView.filters);
     });
   });
 });
