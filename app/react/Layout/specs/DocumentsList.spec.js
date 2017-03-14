@@ -16,7 +16,8 @@ describe('DocumentsList', () => {
       documents: documents.toJS(),
       search: {sort: 'sort'},
       filters: Immutable.fromJS({documentTypes: []}),
-      searchDocuments: () => {}
+      searchDocuments: () => {},
+      deleteConnection: () => {}
     };
   });
 
@@ -30,6 +31,7 @@ describe('DocumentsList', () => {
     expect(docs.length).toBe(2);
     expect(docs.first().props().doc.get('title')).toBe('Document one');
     expect(docs.first().props().searchParams).toEqual({sort: 'sort'});
+    expect(docs.first().props().deleteConnection).toBe(props.deleteConnection);
   });
 
   it('should hold sortButtons with search callback and selectedTemplates', () => {

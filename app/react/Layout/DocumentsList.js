@@ -28,22 +28,27 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const documents = this.props.documents;
+    const {documents, connections} = this.props;
+
+    let counter = <span><b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
+    if (connections) {
+      counter = <span><b>{documents.totalRows}</b> {t('System', 'documents')}, <b>{connections.totalRows}</b> {t('System', 'connections')}</span>;
+    }
 
     return (
       <div className="documents-list">
         <div className="main-wrapper">
           <div className="sort-by">
-              <div className="u-floatLeft documents-counter">
-                <b>{documents.totalRows}</b> {t('System', 'documents')}
-              </div>
+              <div className="u-floatLeft documents-counter">{counter}</div>
               <SortButtons sortCallback={this.props.searchDocuments}
                            selectedTemplates={this.props.filters.get('documentTypes')}
                            stateProperty={this.props.sortButtonsStateProperty}
               />
           </div>
           <RowList>
-            {documents.rows.map((doc, index) => <Doc doc={Immutable(doc)} key={index} searchParams={this.props.search} />)}
+            {documents.rows.map((doc, index) =>
+              <Doc doc={Immutable(doc)} key={index} deleteConnection={this.props.deleteConnection} searchParams={this.props.search} />
+            )}
           </RowList>
           <div className="row">
             <div className="col-sm-12 text-center documents-counter">
@@ -74,10 +79,12 @@ export default class DocumentsList extends Component {
 
 DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
+  connections: PropTypes.object,
   filters: PropTypes.object,
   selectedDocument: PropTypes.object,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,
+  deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string
 };
