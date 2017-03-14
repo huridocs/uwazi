@@ -1,4 +1,3 @@
-// TEST!!!
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
@@ -7,14 +6,16 @@ import {createSelector} from 'reselect';
 
 import DocumentsList from 'app/Layout/DocumentsList';
 
-const selectDocuments = createSelector(s => s.entityView.searchResults, d => d.toJS());
+const selectDocuments = createSelector(e => e.searchResults, d => d.toJS());
 
-export function mapStateToProps(state) {
+export function mapStateToProps({entityView}) {
+  const documents = selectDocuments(entityView);
+
   return {
-    documents: selectDocuments(state),
+    documents,
+    connections: {totalRows: documents.rows.reduce((total, r) => total + r.connections.length, 0)},
     filters: Immutable({documentTypes: []}),
-    // selectedDocument: state.library.ui.get('selectedDocument'),
-    search: state.entityView.sort,
+    search: entityView.sort,
     sortButtonsStateProperty: 'entityView.sort'
   };
 }
