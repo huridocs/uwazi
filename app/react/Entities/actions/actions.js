@@ -42,7 +42,6 @@ export function deleteEntities(entities) {
   };
 }
 
-// TEST!!!
 export function searchReferences() {
   return function (dispatch, getState) {
     const entityView = getState().entityView;
@@ -59,10 +58,8 @@ export function searchReferences() {
     });
   };
 }
-// ---
 
-export function addReference() {
-  // TEST!!!!
+export function referencesChanged() {
   return function (dispatch, getState) {
     const entityView = getState().entityView;
     const entityId = entityView.entity.get('sharedId');
@@ -85,16 +82,15 @@ export function addReference() {
 }
 
 export function deleteReference(reference) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     return referencesAPI.delete(reference)
     .then(() => {
-      dispatch(actions.remove('entityView/references', reference));
       dispatch(notify('Connection deleted', 'success'));
+      return referencesChanged()(dispatch, getState);
     });
   };
 }
 
-// TEST!!!
 export function loadMoreReferences(limit) {
   return function (dispatch, getState) {
     const entityView = getState().entityView;
@@ -104,7 +100,6 @@ export function loadMoreReferences(limit) {
 }
 
 export function setFilter(groupFilterValues) {
-  // console.log('Group filter values: ', groupFilterValues);
   return function (dispatch, getState) {
     const entityView = getState().entityView;
     const currentFilter = entityView.filters.get('filter') || Immutable({});
@@ -121,5 +116,3 @@ export function resetSearch() {
     return searchReferences()(dispatch, getState);
   };
 }
-
-// END untested TEST!!
