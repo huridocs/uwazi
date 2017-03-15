@@ -34,7 +34,6 @@ export default class Entity extends RouteHandler {
           entity
         },
         connectionsList: {
-          // TEST!!!
           entityId: entity.sharedId,
           connectionsGroups,
           searchResults,
@@ -66,7 +65,7 @@ export default class Entity extends RouteHandler {
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
-    this.context.store.dispatch(actions.set('connectionsList/entityId', state.entityView.entity.sharedId));
+    this.context.store.dispatch(actions.set('connectionsList/entityId', state.connectionsList.entityId));
     this.context.store.dispatch(actions.set('connectionsList/connectionsGroups', state.connectionsList.connectionsGroups));
     this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
     this.context.store.dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));

@@ -10,7 +10,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('EntityView', () => {
   describe('requestState', () => {
-    let entities = [{_id: 1}];
+    let entities = [{_id: 1, sharedId: 'sid'}];
     let groupedByConnection = [{templates: [{_id: 't1'}]}, {templates: [{_id: 't2'}, {_id: 't3'}]}];
     let searchedReferences = [{_id: 'r1'}, {_id: 'r2'}];
     let relationTypes = [{_id: 1, name: 'against'}];
@@ -23,7 +23,7 @@ describe('EntityView', () => {
       spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'priorized'});
     });
 
-    it('should get the entity, references and the priority sort criteria', (done) => {
+    it('should get the entity, and all connectionsList items', (done) => {
       EntityView.requestState({entityId: '123', lang: 'es'}, null, {templates: 'templates'})
       .then((state) => {
         const expectedSortCall = {currentCriteria: {}, filteredTemplates: ['t1', 't2', 't3'], templates: 'templates'};
@@ -31,6 +31,7 @@ describe('EntityView', () => {
 
         expect(EntitiesAPI.get).toHaveBeenCalledWith('123');
         expect(state.entityView.entity).toEqual(entities[0]);
+        expect(state.connectionsList.entityId).toBe('sid');
         expect(state.connectionsList.connectionsGroups).toBe(groupedByConnection);
         expect(state.connectionsList.searchResults).toBe(searchedReferences);
         expect(state.connectionsList.sort).toEqual({sort: 'priorized'});
@@ -46,6 +47,7 @@ describe('EntityView', () => {
         const component = shallow(<EntityView params={{entityId: 123}} />, {context});
         component.instance().componentWillUnmount();
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/entity/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/entityId/UNSET'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/UNSET'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/UNSET'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/filters/UNSET'});
@@ -67,6 +69,7 @@ describe('EntityView', () => {
             entity: 'entityView/entity'
           },
           connectionsList: {
+            entityId: 'sid',
             connectionsGroups: 'connectionsList/connectionsGroups',
             searchResults: 'connectionsList/searchResults',
             filters: 'connectionsList/filters',
@@ -77,6 +80,7 @@ describe('EntityView', () => {
         component.instance().setReduxState(state);
 
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/entity/SET', value: 'entityView/entity'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/entityId/SET', value: 'sid'});
         expect(context.store.dispatch).toHaveBeenCalledWith(
           {type: 'connectionsList/connectionsGroups/SET', value: 'connectionsList/connectionsGroups'}
         );
