@@ -21,14 +21,18 @@ export class Doc extends Component {
       <div>
         {connections.map((connection, index) =>
           <div key={index} className="item-connection">
-            <i className="fa fa-exchange"></i>
-            <span>
-              {t(connection.context, connection.label)}
-              {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
-            </span>
+            <div>
+              <i className="fa fa-exchange"></i>
+              <span>
+                {t(connection.context, connection.label)}
+                {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
+              </span>
+            </div>
             <NeedAuthorization>
               <ShowIf if={connection.sourceType !== 'metadata'}>
-                <button onClick={e => this.deleteConnection(e, connection)}><i className="fa fa-unlink"></i></button>
+                <button className="btn btn-transparent btn-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
+                  <i className="fa fa-unlink"></i>
+                </button>
               </ShowIf>
             </NeedAuthorization>
           </div>

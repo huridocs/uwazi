@@ -74,13 +74,23 @@ $item-width: auto;
 $item-padding: 15px;
 
 .item-connection {
-  background-color: transparentize($c-primary, .5);
-  color: white;
-  padding: 3px 5px 3px 5px;
-  border-bottom: 1px solid white;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  align-items: center;
+  background-color: $c-grey-light;
+  color: $c-grey-dark;
+  padding: 5px 5px 5px $item-padding;
+  border-bottom: 1px solid $c-white;
 
-  & span {
+  span {
     padding-left: 5px;
+  }
+  
+  .btn {
+    padding: 0 5px;
   }
 }
 
