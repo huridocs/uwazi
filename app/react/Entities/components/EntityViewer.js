@@ -126,6 +126,7 @@ export class EntityViewer extends Component {
             </TabContent>
           </Tabs>
         </main>
+
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <MetadataFormButtons
             delete={this.deleteEntity.bind(this)}
@@ -137,11 +138,13 @@ export class EntityViewer extends Component {
         <aside className="side-panel entity-connections">
           <ShowIf if={selectedTab === 'info' || selectedTab === 'references'}>
             <div className="sidepanel-footer">
-              <button onClick={this.props.resetSearch}
-                      className="create-connection btn btn-primary">
-                <i className="fa fa-refresh"></i>
-                <span className="btn-label">{t('System', 'Reset')}</span>
-              </button>
+              <ShowIf if={Boolean(referenceGroups.size)}>
+                <button onClick={this.props.resetSearch}
+                        className="create-connection btn btn-primary">
+                  <i className="fa fa-refresh"></i>
+                  <span className="btn-label">{t('System', 'Reset')}</span>
+                </button>
+              </ShowIf>
               <NeedAuthorization>
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">
@@ -163,15 +166,19 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'references' ? selectedTab : 'none'}>
-                <SearchBar />
-                <div className="nested-selector">
-                  <ul className="multiselect is-active">
-                    {referenceGroups.map(group =>
-                      <ReferencesGroup key={group.get('key')}
-                                       group={group} />
-                    )}
-                  </ul>
-                </div>
+                <ShowIf if={Boolean(referenceGroups.size)}>
+                  <div>
+                    <SearchBar />
+                    <div className="nested-selector">
+                      <ul className="multiselect is-active">
+                        {referenceGroups.map(group =>
+                          <ReferencesGroup key={group.get('key')}
+                                           group={group} />
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </ShowIf>
               </TabContent>
               <TabContent for="attachments">
                 <AttachmentsList files={Immutable(attachments)}
