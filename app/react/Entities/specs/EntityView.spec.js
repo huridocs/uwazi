@@ -5,7 +5,6 @@ import {actions as formActions} from 'react-redux-form';
 import EntitiesAPI from '../EntitiesAPI';
 import ReferencesAPI from 'app/Viewer/referencesAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-// import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 
@@ -32,10 +31,10 @@ describe('EntityView', () => {
 
         expect(EntitiesAPI.get).toHaveBeenCalledWith('123');
         expect(state.entityView.entity).toEqual(entities[0]);
-        expect(state.entityView.referenceGroups).toBe(groupedByConnection);
-        expect(state.entityView.searchResults).toBe(searchedReferences);
-        expect(state.entityView.sort).toEqual({sort: 'priorized'});
-        expect(state.entityView.filters).toEqual({});
+        expect(state.connectionsList.connectionsGroups).toBe(groupedByConnection);
+        expect(state.connectionsList.searchResults).toBe(searchedReferences);
+        expect(state.connectionsList.sort).toEqual({sort: 'priorized'});
+        expect(state.connectionsList.filters).toEqual({});
         expect(state.relationTypes).toEqual(relationTypes);
         done();
       });
@@ -47,10 +46,10 @@ describe('EntityView', () => {
         const component = shallow(<EntityView params={{entityId: 123}} />, {context});
         component.instance().componentWillUnmount();
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/entity/UNSET'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/referenceGroups/UNSET'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/UNSET'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/filters/UNSET'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView.sort/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/filters/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList.sort/UNSET'});
       });
     });
 
@@ -65,21 +64,25 @@ describe('EntityView', () => {
         const state = {
           relationTypes: 'relationTypes',
           entityView: {
-            entity: 'entityView/entity',
-            referenceGroups: 'entityView/referenceGroups',
-            searchResults: 'entityView/searchResults',
-            filters: 'entityView/filters',
-            sort: 'entityView.sort'
+            entity: 'entityView/entity'
+          },
+          connectionsList: {
+            connectionsGroups: 'connectionsList/connectionsGroups',
+            searchResults: 'connectionsList/searchResults',
+            filters: 'connectionsList/filters',
+            sort: 'connectionsList.sort'
           }
         };
 
         component.instance().setReduxState(state);
 
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/entity/SET', value: 'entityView/entity'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/referenceGroups/SET', value: 'entityView/referenceGroups'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'entityView/searchResults'});
-        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'entityView/filters/SET', value: 'entityView/filters'});
-        expect(formActions.merge).toHaveBeenCalledWith('entityView.sort', 'entityView.sort');
+        expect(context.store.dispatch).toHaveBeenCalledWith(
+          {type: 'connectionsList/connectionsGroups/SET', value: 'connectionsList/connectionsGroups'}
+        );
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'connectionsList/searchResults'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/filters/SET', value: 'connectionsList/filters'});
+        expect(formActions.merge).toHaveBeenCalledWith('connectionsList.sort', 'connectionsList.sort');
         expect(context.store.dispatch).toHaveBeenCalledWith('fromActions/merge');
       });
     });

@@ -8,7 +8,7 @@ describe('ReferencesList', () => {
 
     beforeEach(() => {
       state = {
-        entityView: {
+        connectionsList: {
           searchResults: Immutable({rows: [{connections: ['a', 'b']}, {connections: ['c']}]}),
           sort: 'sort'
         }
@@ -18,13 +18,13 @@ describe('ReferencesList', () => {
     });
 
     it('should pass the documents and search from the state', () => {
-      expect(props.documents).toEqual(state.entityView.searchResults.toJS());
+      expect(props.documents).toEqual(state.connectionsList.searchResults.toJS());
       expect(props.search).toBe('sort');
     });
 
     it('should define the filters and sortButtonsStateProperty props', () => {
       expect(props.filters.toJS()).toEqual({documentTypes: []});
-      expect(props.sortButtonsStateProperty).toBe('entityView.sort');
+      expect(props.sortButtonsStateProperty).toBe('connectionsList.sort');
     });
 
     it('should calculate the number of connections', () => {

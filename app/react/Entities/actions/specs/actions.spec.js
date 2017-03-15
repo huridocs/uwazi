@@ -18,7 +18,8 @@ describe('Entities actions', () => {
     getState = () => {
       return {
         templates: 'templates',
-        entityView: {entity: Immutable({sharedId: 'sid'}), sort: {order: 'order'}, filters: Immutable({filter: 'filter'})}
+        entityView: {entity: Immutable({sharedId: 'sid'})},
+        connectionsList: {entityId: 'sid', sort: {order: 'order'}, filters: Immutable({filter: 'filter'})}
       };
     };
 
@@ -81,7 +82,7 @@ describe('Entities actions', () => {
       actions.searchReferences()(dispatch, getState)
       .then(() => {
         expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
         expect(dispatch).toHaveBeenCalledWith({type: 'SHOW_TAB', tab: 'references'});
         done();
       });
@@ -89,7 +90,7 @@ describe('Entities actions', () => {
 
     it('should fetch the references with custom text search', (done) => {
       getState = () => {
-        return {entityView: {entity: Immutable({sharedId: 'sid'}), sort: {}, filters: Immutable({}), search: {searchTerm: {value: 'term'}}}};
+        return {connectionsList: {entityId: 'sid', sort: {}, filters: Immutable({}), search: {searchTerm: {value: 'term'}}}};
       };
       actions.searchReferences()(dispatch, getState)
       .then(() => {
@@ -110,23 +111,23 @@ describe('Entities actions', () => {
           templates: 'templates'
         });
 
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/referenceGroups/SET', value: groupedConnections});
-        expect(dispatch).toHaveBeenCalledWith('merge: entityView.sort with: prioritySorting');
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/SET', value: groupedConnections});
+        expect(dispatch).toHaveBeenCalledWith('merge: connectionsList.sort with: prioritySorting');
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
         done();
       });
     });
   });
 
-  describe('deleteReference', () => {
+  describe('deleteConnection', () => {
     it('should delete the reference and triger a referencesChanged action', (done) => {
-      actions.deleteReference('data')(dispatch, getState)
+      actions.deleteConnection('data')(dispatch, getState)
       .then(() => {
         expect(refenrecesAPI.delete).toHaveBeenCalledWith('data');
         expect(Notifications.notify).toHaveBeenCalledWith('Connection deleted', 'success');
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/referenceGroups/SET', value: groupedConnections});
-        expect(dispatch).toHaveBeenCalledWith('merge: entityView.sort with: prioritySorting');
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/SET', value: groupedConnections});
+        expect(dispatch).toHaveBeenCalledWith('merge: connectionsList.sort with: prioritySorting');
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
         done();
       })
       .catch(done.fail);
@@ -137,11 +138,11 @@ describe('Entities actions', () => {
     it('should set the limit to the passed parameter', (done) => {
       actions.loadMoreReferences(60)(dispatch, getState)
       .then(() => {
-        expect(dispatch.calls.argsFor(0)[0].type).toBe('entityView/filters/SET');
+        expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: 'filter', limit: 60});
 
         expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
         done();
       });
     });
@@ -152,8 +153,8 @@ describe('Entities actions', () => {
       getState = () => {
         return {
           templates: 'templates',
-          entityView: {
-            entity: Immutable({sharedId: 'sid'}),
+          connectionsList: {
+            entityId: 'sid',
             sort: {order: 'order'},
             filters: Immutable({filter: Immutable({oldProperty: 'old', modifiedProperty: 'original'})})
           }
@@ -162,14 +163,14 @@ describe('Entities actions', () => {
 
       actions.setFilter({modifiedProperty: 'modified'})(dispatch, getState)
       .then(() => {
-        expect(dispatch.calls.argsFor(0)[0].type).toBe('entityView/filters/SET');
+        expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: {oldProperty: 'old', modifiedProperty: 'modified'}});
 
         expect(refenrecesAPI.search).toHaveBeenCalledWith(
           'sid',
-          {filter: getState().entityView.filters.get('filter').toJS(), order: 'order', searchTerm: ''}
+          {filter: getState().connectionsList.filters.get('filter').toJS(), order: 'order', searchTerm: ''}
         );
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
         done();
       });
     });
@@ -179,13 +180,13 @@ describe('Entities actions', () => {
     it('should set term and filters to blank state', (done) => {
       actions.resetSearch()(dispatch, getState)
       .then(() => {
-        expect(dispatch).toHaveBeenCalledWith('change: entityView/search.searchTerm with: empty');
+        expect(dispatch).toHaveBeenCalledWith('change: connectionsList/search.searchTerm with: empty');
 
-        expect(dispatch.calls.argsFor(1)[0].type).toBe('entityView/filters/SET');
+        expect(dispatch.calls.argsFor(1)[0].type).toBe('connectionsList/filters/SET');
         expect(dispatch.calls.argsFor(1)[0].value.toJS()).toEqual({});
 
         expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
 
         done();
       });

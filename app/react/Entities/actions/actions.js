@@ -44,16 +44,14 @@ export function deleteEntities(entities) {
 
 export function searchReferences() {
   return function (dispatch, getState) {
-    const entityView = getState().entityView;
-    const entityId = entityView.entity.get('sharedId');
-    const sort = entityView.sort;
-    const filters = entityView.filters;
-    const searchTerm = entityView.search && entityView.search.searchTerm ? entityView.search.searchTerm.value : '';
+    const connectionsList = getState().connectionsList;
+    const {entityId, sort, filters} = connectionsList;
+    const searchTerm = connectionsList.search && connectionsList.search.searchTerm ? connectionsList.search.searchTerm.value : '';
     const options = filters.merge(sort).merge({searchTerm});
 
     return referencesAPI.search(entityId, options.toJS())
     .then(results => {
-      dispatch(actions.set('entityView/searchResults', results));
+      dispatch(actions.set('connectionsList/searchResults', results));
       dispatch(uiActions.showTab('references'));
     });
   };
@@ -61,27 +59,27 @@ export function searchReferences() {
 
 export function referencesChanged() {
   return function (dispatch, getState) {
-    const entityView = getState().entityView;
-    const entityId = entityView.entity.get('sharedId');
+    const connectionsList = getState().connectionsList;
+    const {entityId} = connectionsList;
 
     return referencesAPI.getGroupedByConnection(entityId)
-    .then(referenceGroups => {
-      const filteredTemplates = referenceGroups.reduce((templateIds, group) => {
+    .then(connectionsGroups => {
+      const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
         return templateIds.concat(group.templates.map(t => t._id.toString()));
       }, []);
 
-      const sortOptions = prioritySortingCriteria({currentCriteria: entityView.sort, filteredTemplates, templates: getState().templates});
-      return Promise.all([referenceGroups, sortOptions]);
+      const sortOptions = prioritySortingCriteria({currentCriteria: connectionsList.sort, filteredTemplates, templates: getState().templates});
+      return Promise.all([connectionsGroups, sortOptions]);
     })
-    .then(([referenceGroups, sort]) => {
-      dispatch(actions.set('entityView/referenceGroups', referenceGroups));
-      dispatch(formActions.merge('entityView.sort', sort));
+    .then(([connectionsGroups, sort]) => {
+      dispatch(actions.set('connectionsList/connectionsGroups', connectionsGroups));
+      dispatch(formActions.merge('connectionsList.sort', sort));
       return searchReferences()(dispatch, getState);
     });
   };
 }
 
-export function deleteReference(reference) {
+export function deleteConnection(reference) {
   return function (dispatch, getState) {
     return referencesAPI.delete(reference)
     .then(() => {
@@ -93,26 +91,26 @@ export function deleteReference(reference) {
 
 export function loadMoreReferences(limit) {
   return function (dispatch, getState) {
-    const entityView = getState().entityView;
-    dispatch(actions.set('entityView/filters', entityView.filters.set('limit', limit)));
+    const connectionsList = getState().connectionsList;
+    dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('limit', limit)));
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function setFilter(groupFilterValues) {
   return function (dispatch, getState) {
-    const entityView = getState().entityView;
-    const currentFilter = entityView.filters.get('filter') || Immutable({});
+    const connectionsList = getState().connectionsList;
+    const currentFilter = connectionsList.filters.get('filter') || Immutable({});
     const newFilter = currentFilter.merge(groupFilterValues);
-    dispatch(actions.set('entityView/filters', entityView.filters.set('filter', newFilter)));
+    dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('filter', newFilter)));
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function resetSearch() {
   return function (dispatch, getState) {
-    dispatch(formActions.change('entityView/search.searchTerm', ''));
-    dispatch(actions.set('entityView/filters', Immutable({})));
+    dispatch(formActions.change('connectionsList/search.searchTerm', ''));
+    dispatch(actions.set('connectionsList/filters', Immutable({})));
     return searchReferences()(dispatch, getState);
   };
 }

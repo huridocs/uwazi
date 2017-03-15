@@ -136,8 +136,8 @@ ReferencesGroup.propTypes = {
   filters: PropTypes.object
 };
 
-export const mapStateToProps = ({entityView}) => {
-  return {filters: entityView.filters};
+export const mapStateToProps = ({connectionsList}) => {
+  return {filters: connectionsList.filters};
 };
 
 export const mapDispatchToProps = (dispatch) => {

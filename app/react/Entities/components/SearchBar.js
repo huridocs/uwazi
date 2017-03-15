@@ -11,7 +11,7 @@ import {searchReferences} from '../actions/actions';
 export class SearchBar extends Component {
 
   resetSearchTerm() {
-    this.props.change('entityView/search.searchTerm', '');
+    this.props.change('connectionsList/search.searchTerm', '');
   }
 
   resetSearch() {
@@ -39,9 +39,9 @@ export class SearchBar extends Component {
 
     return (
       <div className="search-box">
-        <Form model="entityView/search" onSubmit={this.props.searchReferences} autoComplete="off">
+        <Form model="connectionsList/search" onSubmit={this.props.searchReferences} autoComplete="off">
           <div className={'input-group' + (searchTerm ? ' is-active' : '')}>
-            <Field model="entityView/search.searchTerm">
+            <Field model="connectionsList/search.searchTerm">
               <i className="fa fa-search"></i>
               <input
                 type="text"
@@ -67,10 +67,11 @@ SearchBar.propTypes = {
   entityId: PropTypes.string
 };
 
-export function mapStateToProps({entityView}) {
+export function mapStateToProps({connectionsList}) {
+  const {entityId, search} = connectionsList;
   return {
-    entityId: entityView.entity.get('sharedId'),
-    search: entityView.search
+    entityId,
+    search
   };
 }
 

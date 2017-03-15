@@ -6,17 +6,17 @@ import {createSelector} from 'reselect';
 
 import DocumentsList from 'app/Layout/DocumentsList';
 
-const selectDocuments = createSelector(e => e.searchResults, d => d.toJS());
+const selectDocuments = createSelector(c => c.searchResults, d => d.toJS());
 
-export function mapStateToProps({entityView}) {
-  const documents = selectDocuments(entityView);
+export function mapStateToProps({connectionsList}) {
+  const documents = selectDocuments(connectionsList);
 
   return {
     documents,
     connections: {totalRows: documents.rows.reduce((total, r) => total + r.connections.length, 0)},
     filters: Immutable({documentTypes: []}),
-    search: entityView.sort,
-    sortButtonsStateProperty: 'entityView.sort'
+    search: connectionsList.sort,
+    sortButtonsStateProperty: 'connectionsList.sort'
   };
 }
 

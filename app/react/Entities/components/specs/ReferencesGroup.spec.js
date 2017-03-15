@@ -139,9 +139,9 @@ describe('ReferencesGroup', () => {
   });
 
   describe('mapStateToProps', () => {
-    it('should map entityViewer.filters', () => {
-      const state = {entityView: {filters: {a: 'b'}}};
-      expect(mapStateToProps(state).filters).toBe(state.entityView.filters);
+    it('should map connectionsList.filters', () => {
+      const state = {connectionsList: {filters: {a: 'b'}}};
+      expect(mapStateToProps(state).filters).toBe(state.connectionsList.filters);
     });
   });
 });

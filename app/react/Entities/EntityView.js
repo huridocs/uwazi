@@ -19,20 +19,24 @@ export default class Entity extends RouteHandler {
       referencesAPI.getGroupedByConnection(entityId),
       relationTypesAPI.get()
     ])
-    .then(([entities, referenceGroups, relationTypes]) => {
-      const filteredTemplates = referenceGroups.reduce((templateIds, group) => {
+    .then(([entities, connectionsGroups, relationTypes]) => {
+      const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
         return templateIds.concat(group.templates.map(t => t._id.toString()));
       }, []);
 
       const sortOptions = prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: globalResources.templates});
 
-      return Promise.all([entities[0], referenceGroups, referencesAPI.search(entityId, sortOptions), relationTypes, sortOptions]);
+      return Promise.all([entities[0], connectionsGroups, referencesAPI.search(entityId, sortOptions), relationTypes, sortOptions]);
     })
-    .then(([entity, referenceGroups, searchResults, relationTypes, sort]) => {
+    .then(([entity, connectionsGroups, searchResults, relationTypes, sort]) => {
       return {
         entityView: {
-          entity,
-          referenceGroups,
+          entity
+        },
+        connectionsList: {
+          // TEST!!!
+          entityId: entity.sharedId,
+          connectionsGroups,
           searchResults,
           sort,
           filters: {}
@@ -52,19 +56,21 @@ export default class Entity extends RouteHandler {
 
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
-    this.context.store.dispatch(actions.unset('entityView/referenceGroups'));
-    this.context.store.dispatch(actions.unset('entityView/searchResults'));
-    this.context.store.dispatch(actions.unset('entityView/filters'));
-    this.context.store.dispatch(actions.unset('entityView.sort'));
+    this.context.store.dispatch(actions.unset('connectionsList/entityId'));
+    this.context.store.dispatch(actions.unset('connectionsList/connectionsGroups'));
+    this.context.store.dispatch(actions.unset('connectionsList/searchResults'));
+    this.context.store.dispatch(actions.unset('connectionsList/filters'));
+    this.context.store.dispatch(actions.unset('connectionsList.sort'));
   }
 
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
-    this.context.store.dispatch(actions.set('entityView/referenceGroups', state.entityView.referenceGroups));
-    this.context.store.dispatch(actions.set('entityView/searchResults', state.entityView.searchResults));
-    this.context.store.dispatch(actions.set('entityView/filters', state.entityView.filters));
-    this.context.store.dispatch(formActions.merge('entityView.sort', state.entityView.sort));
+    this.context.store.dispatch(actions.set('connectionsList/entityId', state.entityView.entity.sharedId));
+    this.context.store.dispatch(actions.set('connectionsList/connectionsGroups', state.connectionsList.connectionsGroups));
+    this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
+    this.context.store.dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));
+    this.context.store.dispatch(formActions.merge('connectionsList.sort', state.connectionsList.sort));
   }
 
   render() {
