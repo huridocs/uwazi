@@ -21,6 +21,9 @@ let executeRoute = (method, routePath, req = {}, res, app) => {
       resolve(response);
     });
 
+    res.error = (error) => {
+      res.json({error});
+    };
 
     if (!args[1]) {
       return reject('route function has not been defined !');
