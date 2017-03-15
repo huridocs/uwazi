@@ -31,7 +31,7 @@ export class Doc extends Component {
             <NeedAuthorization>
               <ShowIf if={connection.sourceType !== 'metadata'}>
                 <button className="btn btn-transparent btn-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
-                  <i className="fa fa-unlink"></i>
+                  <i className="fa fa-trash"></i>
                 </button>
               </ShowIf>
             </NeedAuthorization>
