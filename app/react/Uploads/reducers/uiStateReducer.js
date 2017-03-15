@@ -26,5 +26,15 @@ export default function uiState(state = initialState, action = {}) {
     return state.set('selectedDocuments', action.entities);
   }
 
+  if (action.type === types.SELECT_DOCUMENTS) {
+    return action.docs.reduce((_state, doc) => {
+      const alreadtySelected = _state.get('selectedDocuments').filter((_doc) => _doc.get('_id') === doc._id).size;
+      if (!alreadtySelected) {
+        return _state.update('selectedDocuments', selectedDocuments => selectedDocuments.push(Immutable.fromJS(doc)));
+      }
+      return _state;
+    }, state);
+  }
+
   return Immutable.fromJS(state);
 }

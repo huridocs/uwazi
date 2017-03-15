@@ -256,26 +256,5 @@ describe('libraryActions', () => {
         .catch(done.fail);
       });
     });
-
-    describe('selectDocument', () => {
-      it('should select document and request for additional information needed', (done) => {
-        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve([{ref: 'ref'}]));
-        const doc = Immutable.fromJS({sharedId: 'sharedId', title: 'title'});
-
-        const expectedActions = [
-          {type: types.SELECT_DOCUMENT, doc: doc.toJS()},
-          {type: 'library.sidepanel.references/SET', value: [{ref: 'ref'}]}
-        ];
-        const store = mockStore({});
-
-        store.dispatch(actions.selectDocument(doc))
-        .then(() => {
-          expect(store.getActions()).toEqual(expectedActions);
-          expect(referencesAPI.get).toHaveBeenCalledWith('sharedId');
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
   });
 });

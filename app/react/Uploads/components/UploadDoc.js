@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {selectDocument, unselectAllDocuments, unselectDocument} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {actions} from 'app/Metadata';
 import {I18NLink} from 'app/I18N';
@@ -16,22 +15,10 @@ export class UploadDoc extends Component {
     }
   }
 
-  select(e) {
-    if (!(e.metaKey || e.ctrlKey) || !this.props.authorized) {
-      this.props.unselectAllDocuments();
+  onClick(e) {
+    if (this.props.onClick) {
+      this.props.onClick(e, this.props.doc, this.props.active);
     }
-
-    if (this.props.active && this.props.multipleSelected && !(e.metaKey || e.ctrlKey)) {
-      this.props.loadInReduxForm('uploads.metadata', this.props.doc, this.props.templates.toJS());
-      return this.props.selectDocument(this.props.doc);
-    }
-
-    if (this.props.active) {
-      return this.props.unselectDocument(this.props.doc.get('_id'));
-    }
-
-    this.props.selectDocument(this.props.doc);
-    this.props.loadInReduxForm('uploads.metadata', this.props.doc.toJS(), this.props.templates.toJS());
   }
 
   render() {
@@ -86,7 +73,7 @@ export class UploadDoc extends Component {
 =======
 >>>>>>> uploads working with multiple selection, missing the side panel WIP
     return (
-      <RowList.Item status={status} active={this.props.active} onClick={this.select.bind(this)}>
+      <RowList.Item status={status} active={this.props.active} onClick={this.onClick.bind(this)}>
       <div className="item-info">
         <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={doc.get('icon')} />
@@ -129,13 +116,9 @@ export class UploadDoc extends Component {
 UploadDoc.propTypes = {
   doc: PropTypes.object,
   progress: PropTypes.number,
-  selectDocument: PropTypes.func,
-  unselectDocument: PropTypes.func,
   active: PropTypes.bool,
-  authorized: PropTypes.bool,
-  multipleSelected: PropTypes.bool,
   loadInReduxForm: PropTypes.func,
-  unselectAllDocuments: PropTypes.func,
+  onClick: PropTypes.func,
   showModal: PropTypes.func,
   templates: PropTypes.object
 };
@@ -143,15 +126,13 @@ UploadDoc.propTypes = {
 export function mapStateToProps({uploads, templates, user}, props) {
   return {
     active: !!uploads.uiState.get('selectedDocuments').find((doc) => doc.get('_id') === props.doc.get('_id')),
-    multipleSelected: uploads.uiState.get('selectedDocuments').size > 1,
     progress: uploads.progress.get(props.doc.get('sharedId')),
-    templates,
-    authorized: !!user.get('_id')
+    templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({unselectAllDocuments, selectDocument, unselectDocument, loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
+  return bindActionCreators({loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

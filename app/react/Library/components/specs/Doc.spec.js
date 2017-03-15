@@ -49,14 +49,6 @@ describe('Doc', () => {
       render();
       expect(component.find(Item).props().active).toBe(false);
     });
-
-    describe('onClick', () => {
-      it('should selectDocument', () => {
-        render();
-        component.find(Item).simulate('click', {metaKey: false});
-        expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
-      });
-    });
   });
 
   describe('when doc is active', () => {
@@ -65,14 +57,14 @@ describe('Doc', () => {
       render();
       expect(component.find(Item).props().active).toBe(true);
     });
+  });
 
-    describe('onClick', () => {
-      it('should unselectDocument', () => {
-        props.active = true;
-        render();
-        component.find(Item).simulate('click', {metaKey: false});
-        expect(props.unselectDocument).toHaveBeenCalled();
-      });
+  describe('onClick', () => {
+    it('should call onClick', () => {
+      props.onClick = jasmine.createSpy('onClick');
+      render();
+      component.find(Item).simulate('click', {metaKey: false});
+      expect(props.onClick).toHaveBeenCalled();
     });
   });
 

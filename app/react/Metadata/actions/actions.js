@@ -54,6 +54,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
     let template = templates.find((t) => t._id === entity.template);
     resetMetadata(entity.metadata, template, {resetExisting: false});
 
+    dispatch(formActions.reset(form));
     dispatch(formActions.load(form, entity));
     dispatch(formActions.setInitial(form));
   };

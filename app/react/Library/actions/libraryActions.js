@@ -7,7 +7,6 @@ import documents from 'app/Documents';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 import referencesAPI from 'app/Viewer/referencesAPI';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import {api as entitiesAPI} from 'app/Entities';
 
 export function enterLibrary() {
@@ -19,13 +18,11 @@ export function selectDocument(doc) {
   if (doc.toJS) {
     document = doc.toJS();
   }
-  return (dispatch) => {
-    dispatch({type: types.SELECT_DOCUMENT, doc: document});
-    return referencesAPI.get(document.sharedId)
-    .then((references) => {
-      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, document.language)));
-    });
-  };
+  return {type: types.SELECT_DOCUMENT, doc: document};
+}
+
+export function selectDocuments(docs) {
+  return {type: types.SELECT_DOCUMENTS, docs};
 }
 
 export function unselectDocument(docId) {

@@ -91,10 +91,10 @@ export class SelectMultiplePanel extends Component {
   }
 
   comonTemplate() {
-    const comonTypes = this.props.entitiesSelected.map((entity) => entity.get('template'))
+    const selectedTemplates = this.props.entitiesSelected.map((entity) => entity.get('template'))
     .filter((type, index, _types) => _types.indexOf(type) === index);
-    const properties = comonProperties(this.props.templates.toJS(), comonTypes);
-    let _id = comonTypes.size === 1 ? comonTypes.first() : '';
+    const properties = comonProperties(this.props.templates.toJS(), selectedTemplates);
+    let _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
     return {_id, properties};
   }
 
@@ -114,7 +114,22 @@ export class SelectMultiplePanel extends Component {
     const {entitiesSelected, open, editing, templates} = this.props;
     const template = this.comonTemplate();
     const validation = this.validation(template);
-    const templateOptions = templates.toJS().map((tmpl) => {
+
+    const typesSelected = this.props.entitiesSelected.map((entity) => entity.get('type'))
+    .filter((type, index, _types) => _types.indexOf(type) === index);
+    const comonTypeSelected = typesSelected.size === 1 ? typesSelected.first() : null;
+
+    const templateOptions = templates.toJS()
+    .filter((_template) => {
+      if (!comonTypeSelected) {
+        return false;
+      }
+      if (comonTypeSelected === 'entity') {
+        return _template.isEntity;
+      }
+      return !_template.isEntity;
+    })
+    .map((tmpl) => {
       return {label: tmpl.name, value: tmpl._id};
     });
 
@@ -129,7 +144,8 @@ export class SelectMultiplePanel extends Component {
             <ul className="entities-list">
               {entitiesSelected.map((entity, index) => {
                 return <li key={index}>
-                  <TemplateLabel template={entity.get('template')}/> <span className="entity-title">{entity.get('title')}</span>
+                  <span className="entity-title">{entity.get('title')}</span>&nbsp;
+                  <TemplateLabel template={entity.get('template')}/>
                 </li>;
               })}
             </ul>
@@ -139,23 +155,24 @@ export class SelectMultiplePanel extends Component {
               <FormGroup>
                 <div className="alert alert-warning">
                   <i className="fa fa-warning"></i>
-                  Be careful, you are editing multiple files!
-                  We will update all the properties marked with <i className="fa fa-warning"></i> with the new values.
+                  Warning: you are editing multiple files. Fields marked with a <i className="fa fa-warning"></i> will be updated with the same value.
                 </div>
-                <FormGroup>
-                  <ul className="search__filter">
-                    <li><label>{t('System', 'Type')} <span className="required">*</span></label></li>
-                    <li className="wide">
-                      <SimpleSelect
-                        className="form-control template-selector"
-                        value={template._id}
-                        options={templateOptions}
-                        onChange={(e) => this.changeTemplate(e.target.value)}
-                      >
-                      </SimpleSelect>
-                    </li>
-                  </ul>
-                </FormGroup>
+                <ShowIf if={!!templateOptions.length}>
+                  <FormGroup>
+                    <ul className="search__filter">
+                      <li><label>{t('System', 'Type')} <span className="required">*</span></label></li>
+                      <li className="wide">
+                        <SimpleSelect
+                          className="form-control template-selector"
+                          value={template._id}
+                          options={templateOptions}
+                          onChange={(e) => this.changeTemplate(e.target.value)}
+                        >
+                        </SimpleSelect>
+                      </li>
+                    </ul>
+                  </FormGroup>
+                </ShowIf>
                 <ul className="search__filter">
                   <li>
                     <ShowIf if={this.props.formState.icon && !this.props.formState.icon.pristine}>

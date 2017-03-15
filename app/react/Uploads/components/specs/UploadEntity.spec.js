@@ -14,10 +14,8 @@ describe('UploadEntity', () => {
       entity: Immutable.fromJS({_id: 'entityId', title: 'title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
       edit: jasmine.createSpy('edit'),
-      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
-      unselectDocument: jasmine.createSpy('unselectDocument'),
-      selectDocument: jasmine.createSpy('selectDocument'),
-      loadInReduxForm: jasmine.createSpy('loadInReduxForm')
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
+      onClick: jasmine.createSpy('onClick')
     };
   });
 
@@ -35,23 +33,10 @@ describe('UploadEntity', () => {
   });
 
   describe('onClick', () => {
-    it('should edit', () => {
+    it('should call onClick prop', () => {
       render();
-
       component.find(RowList.Item).simulate('click', {metaKey: false, ctrlKey: false});
-      expect(props.selectDocument).toHaveBeenCalledWith(props.entity);
-      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.entity.toJS(), props.templates.toJS());
-    });
-
-    describe('when already selected', () => {
-      it('should unselect it', () => {
-        props.active = true;
-        render();
-
-        component.find(RowList.Item).simulate('click', {metaKey: false, ctrlKey: false});
-        expect(props.unselectAllDocuments).toHaveBeenCalled();
-        expect(props.loadInReduxForm).not.toHaveBeenCalled();
-      });
+      expect(props.onClick).toHaveBeenCalled();
     });
   });
 });

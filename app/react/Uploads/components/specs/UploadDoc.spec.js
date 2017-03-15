@@ -13,9 +13,7 @@ describe('UploadDoc', () => {
     props = {
       doc: Immutable.fromJS({_id: 'docId', title: 'doc title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
-      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
-      unselectDocument: jasmine.createSpy('unselectDocument'),
-      selectDocument: jasmine.createSpy('selectDocument'),
+      onClick: jasmine.createSpy('onClick'),
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       showModal: jasmine.createSpy('showModal')
     };
@@ -97,24 +95,10 @@ describe('UploadDoc', () => {
   });
 
   describe('onClick', () => {
-    it('should select the document', () => {
+    it('should call onClick prop', () => {
       render();
-
       component.find(RowList.Item).simulate('click', {metaKey: false, ctrlKey: false});
-      expect(props.selectDocument).toHaveBeenCalled();
-      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.doc.toJS(), props.templates.toJS());
-    });
-
-    describe('when clicking on the same document being edited', () => {
-      it('should unselectAllDocuments', () => {
-        props.active = true;
-        render();
-
-        component.find(RowList.Item).simulate('click', {metaKey: false, ctrlKey: false});
-        expect(props.unselectAllDocuments).toHaveBeenCalled();
-        expect(props.selectDocument).not.toHaveBeenCalled();
-        expect(props.loadInReduxForm).not.toHaveBeenCalled();
-      });
+      expect(props.onClick).toHaveBeenCalled();
     });
   });
 });

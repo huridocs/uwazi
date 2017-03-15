@@ -29,6 +29,12 @@ export class DocumentSidePanel extends Component {
     });
   }
 
+  componentWillReceiveProps(newProps) {
+    if (newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
+      this.props.getDocumentReferences(newProps.doc.get('sharedId'));
+    }
+  }
+
   close() {
     if (this.props.formDirty) {
       return this.props.showModal('ConfirmCloseForm', this.props.doc);
@@ -257,6 +263,7 @@ DocumentSidePanel.propTypes = {
   tocFormLength: PropTypes.number,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
+  getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
   isTargetDoc: PropTypes.bool,

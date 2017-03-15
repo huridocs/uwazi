@@ -31,7 +31,6 @@ export class MetadataForm extends Component {
   render() {
     let {metadata, state} = this.props;
     let templates = this.props.templates.toJS();
-
     templates = templates.filter((template) => {
       if (metadata.type === 'entity') {
         return template.isEntity;

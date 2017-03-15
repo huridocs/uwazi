@@ -19,6 +19,10 @@ export function selectDocument(doc) {
   return {type: types.SELECT_DOCUMENT, doc: document};
 }
 
+export function selectDocuments(docs) {
+  return {type: types.SELECT_DOCUMENTS, docs};
+}
+
 export function unselectDocument(docId) {
   return {type: types.UNSELECT_DOCUMENT, docId};
 }
