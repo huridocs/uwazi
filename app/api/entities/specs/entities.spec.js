@@ -369,6 +369,27 @@ describe('entities', () => {
       })
       .catch(catchErrors(done));
     });
+
+    describe('when entity is being used as thesauri', () => {
+      it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
+        entities.delete('shared')
+        .then(() => {
+          return Promise.all([
+            entities.get({sharedId: 'multiselect'}),
+            entities.get({sharedId: 'select'})
+          ]);
+        })
+        .then(([entitiesWithMultiselect, entitiesWithSelect]) => {
+          expect(entitiesWithSelect[0].metadata.select).toBe('');
+          expect(entitiesWithSelect[1].metadata.select2).toBe('');
+
+          expect(entitiesWithMultiselect[0].metadata.multiselect).toEqual(['value1']);
+          expect(entitiesWithMultiselect[1].metadata.multiselect2).toEqual(['value2']);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
   });
 
   describe('deleteMultiple()', () => {

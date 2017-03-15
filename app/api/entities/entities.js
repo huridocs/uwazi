@@ -159,7 +159,8 @@ export default {
       return Promise.all([
         model.delete({sharedId}),
         references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
-        this.deleteFiles(docs)
+        this.deleteFiles(docs),
+        this.deleteFromEntityFromMetadata(docs[0])
       ])
       .then(() => docs);
     })
@@ -168,6 +169,39 @@ export default {
         return search.delete(doc);
       }))
       .then(() => docs);
+    });
+  },
+
+  deleteFromEntityFromMetadata(entity) {
+    return templates.get({'properties.content': entity.template})
+    .then((allTemplates) => {
+      const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
+      const selectProperties = allProperties.filter(p => p.type === 'select');
+      const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
+      let selectQuery = {$or: []};
+      let selectChanges = {};
+      selectQuery.$or = selectProperties.filter(p => entity.template && p.content && entity.template.equals(p.content))
+      .map((property) => {
+        let p = {};
+        p[`metadata.${property.name}`] = entity.sharedId;
+        selectChanges[`metadata.${property.name}`] = '';
+        return p;
+      });
+
+      let multiSelectQuery = {$or: []};
+      let multiSelectChanges = {};
+      multiSelectQuery.$or = multiselectProperties.filter(p => entity.template && p.content && entity.template.equals(p.content))
+      .map((property) => {
+        let p = {};
+        p[`metadata.${property.name}`] = entity.sharedId;
+        multiSelectChanges[`metadata.${property.name}`] = entity.sharedId;
+        return p;
+      });
+
+      return Promise.all([
+        model.db.updateMany(selectQuery, {$set: selectChanges}),
+        model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
+      ]);
     });
   }
 };
