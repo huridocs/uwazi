@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {edit, finishEdit} from 'app/Uploads/actions/uploadsActions';
 import {showModal} from 'app/Modals/actions/modalActions';
 import {actions} from 'app/Metadata';
 import {I18NLink} from 'app/I18N';
@@ -16,12 +15,10 @@ export class UploadDoc extends Component {
     }
   }
 
-  edit(doc, active) {
-    if (active) {
-      return this.props.finishEdit();
+  onClick(e) {
+    if (this.props.onClick) {
+      this.props.onClick(e, this.props.doc, this.props.active);
     }
-    this.props.loadInReduxForm('uploads.metadata', doc.toJS(), this.props.templates.toJS());
-    this.props.edit(doc.toJS());
   }
 
   render() {
@@ -67,13 +64,8 @@ export class UploadDoc extends Component {
       progress = this.props.progress;
     }
 
-    let active;
-    if (this.props.metadataBeingEdited) {
-      active = this.props.metadataBeingEdited._id === doc.get('_id');
-    }
-
     return (
-      <RowList.Item status={status} active={active} onClick={this.edit.bind(this, doc, active)}>
+      <RowList.Item status={status} active={this.props.active} onClick={this.onClick.bind(this)}>
       <div className="item-info">
         <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={doc.get('icon')} />
@@ -116,24 +108,23 @@ export class UploadDoc extends Component {
 UploadDoc.propTypes = {
   doc: PropTypes.object,
   progress: PropTypes.number,
-  edit: PropTypes.func,
-  metadataBeingEdited: PropTypes.object,
+  active: PropTypes.bool,
   loadInReduxForm: PropTypes.func,
-  finishEdit: PropTypes.func,
+  onClick: PropTypes.func,
   showModal: PropTypes.func,
   templates: PropTypes.object
 };
 
-export function mapStateToProps({uploads, templates}, props) {
+export function mapStateToProps({uploads, templates, user}, props) {
   return {
+    active: !!uploads.uiState.get('selectedDocuments').find((doc) => doc.get('_id') === props.doc.get('_id')),
     progress: uploads.progress.get(props.doc.get('sharedId')),
-    metadataBeingEdited: uploads.uiState.get('metadataBeingEdited'),
     templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, edit, loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
+  return bindActionCreators({loadInReduxForm: actions.loadInReduxForm, showModal}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadDoc);

@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import {t, I18NLink} from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 
-import {deleteDocument, deleteEntity, moveToLibrary, publishEntity, finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {deleteDocument, deleteEntity, moveToLibrary, publishEntity, unselectAllDocuments} from 'app/Uploads/actions/uploadsActions';
 
 export class UploadsFormPanelButtons extends Component {
 
@@ -17,7 +17,7 @@ export class UploadsFormPanelButtons extends Component {
         }
 
         this.props.publishEntity(this.props.metadata);
-        this.props.finishEdit();
+        this.props.unselectAllDocuments();
       },
       title: 'Confirm publish',
       message: `Are you sure you want to make ${this.props.metadata.title} public?`,
@@ -28,7 +28,7 @@ export class UploadsFormPanelButtons extends Component {
   delete() {
     this.context.confirm({
       accept: () => {
-        this.props.finishEdit();
+        this.props.unselectAllDocuments();
         if (this.props.metadata.type === 'document') {
           this.props.deleteDocument(this.props.metadata);
           return;
@@ -82,7 +82,7 @@ UploadsFormPanelButtons.propTypes = {
   moveToLibrary: PropTypes.func,
   deleteEntity: PropTypes.func,
   publishEntity: PropTypes.func,
-  finishEdit: PropTypes.func
+  unselectAllDocuments: PropTypes.func
 };
 
 UploadsFormPanelButtons.contextTypes = {
@@ -96,6 +96,6 @@ const mapStateToProps = ({uploads}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({deleteDocument, deleteEntity, moveToLibrary, publishEntity, finishEdit}, dispatch);
+  return bindActionCreators({deleteDocument, deleteEntity, moveToLibrary, publishEntity, unselectAllDocuments}, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsFormPanelButtons);

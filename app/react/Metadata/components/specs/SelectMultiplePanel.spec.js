@@ -7,6 +7,7 @@ import Immutable from 'immutable';
 
 describe('SelectMultiplePanel', () => {
   let component;
+  let instance;
   let props;
   let context;
 
@@ -15,11 +16,15 @@ describe('SelectMultiplePanel', () => {
       entitiesSelected: Immutable.fromJS([{title: 'A rude awakening', template: '1'}, {title: 'A falling star', template: '2'}]),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       deleteEntities: jasmine.createSpy('deleteEntities'),
+      updateSelectedEntities: jasmine.createSpy('updateSelectedEntities'),
+      updateEntities: jasmine.createSpy('updateEntities'),
+      multipleUpdate: jasmine.createSpy('multipleUpdate').and.returnValue(Promise.resolve('updated entities')),
       resetForm: jasmine.createSpy('resetForm'),
       loadForm: jasmine.createSpy('resetForm'),
       templates: Immutable.fromJS([]),
       state: {metadata: {}},
       formState: {icon: {}, metadata: {}},
+      formKey: 'library.sidepanel.multipleEdit',
       thesauris: Immutable.fromJS([])
     };
     context = {confirm: jasmine.createSpy('confirm')};
@@ -27,6 +32,7 @@ describe('SelectMultiplePanel', () => {
 
   let render = () => {
     component = shallow(<SelectMultiplePanel {...props}/>, {context});
+    instance = component.instance();
   };
 
   it('should render a SidePanel', () => {
@@ -71,6 +77,38 @@ describe('SelectMultiplePanel', () => {
     });
   });
 
+  describe('changeTemplate()', () => {
+    it('should update the template in all the selectedEntities', () => {
+      render();
+      component.find('.template-selector').simulate('change', {target: {value: '3'}});
+      const expectedEntities = [{title: 'A rude awakening', template: '3'}, {title: 'A falling star', template: '3'}];
+      const entities = props.updateSelectedEntities.calls.mostRecent().args[0].toJS();
+      expect(entities).toEqual(expectedEntities);
+    });
+  });
+
+  describe('save()', () => {
+    it('should update the entities with the modified values and save', (done) => {
+      props.formState = {
+        icon: {pristine: false},
+        metadata: {
+          title: {pristine: false},
+          date: {pristine: true}
+        }
+      };
+      render();
+      spyOn(instance, 'comonTemplate').and.returnValue({_id: '4'});
+      instance.save({icon: 'doc-icon', metadata: {title: 'new title', date: ''}})
+      .then(() => {
+        expect(props.multipleUpdate).toHaveBeenCalledWith(props.entitiesSelected, {template: '4', metadata: {title: 'new title'}, icon: 'doc-icon'});
+        expect(props.updateEntities).toHaveBeenCalledWith('updated entities');
+        expect(props.unselectAllDocuments).toHaveBeenCalled();
+        expect(props.resetForm).toHaveBeenCalledWith(props.formKey);
+        done();
+      });
+    });
+  });
+
   describe('edit()', () => {
     it('should load the form with the comon properties for the selectedEntities', () => {
       props.templates = Immutable.fromJS([
@@ -89,7 +127,7 @@ describe('SelectMultiplePanel', () => {
       ]);
 
       let expectedTemplate = {
-        _id: '1',
+        _id: '',
         properties: [
           {name: 'powers', content: '1', type: 'multiselect'},
           {name: 'color', type: 'text', required: true}

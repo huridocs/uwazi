@@ -21,6 +21,16 @@ export default function documents(state = initialState, action = {}) {
     return state.update(state.findIndex(doc => doc.get('sharedId') === action.doc.sharedId), (doc) => doc.merge(Immutable.fromJS(action.doc)));
   }
 
+  if (action.type === types.UPDATE_DOCUMENTS) {
+    return action.docs.reduce((_state, doc) => {
+      const docIndex = state.findIndex(_doc => {
+        return _doc.get('_id') === doc._id;
+      });
+
+      return _state.set(docIndex, Immutable.fromJS(doc));
+    }, state);
+  }
+
   if (action.type === types.CONVERSION_COMPLETE) {
     const index = state.findIndex(doc => doc.get('sharedId') === action.doc);
     return index >= 0 ? state.update(index, (doc) => doc.set('processed', true)) : state;

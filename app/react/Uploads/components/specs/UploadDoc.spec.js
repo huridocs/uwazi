@@ -13,8 +13,7 @@ describe('UploadDoc', () => {
     props = {
       doc: Immutable.fromJS({_id: 'docId', title: 'doc title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
-      edit: jasmine.createSpy('edit'),
-      finishEdit: jasmine.createSpy('finishEdit'),
+      onClick: jasmine.createSpy('onClick'),
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       showModal: jasmine.createSpy('showModal')
     };
@@ -40,29 +39,6 @@ describe('UploadDoc', () => {
   it('should render success status by default', () => {
     expect(component.find(RowList.Item).props().status).toBe('success');
     expect(component.find(ItemFooter.Label).props().status).toBe('success');
-  });
-
-  it('should not pass active prop if not metadataBeingEdited', () => {
-    render();
-    expect(component.find(RowList.Item).props().active).toBeUndefined();
-  });
-
-  it('should pass active prop true if metadataBeingEdited its the same', () => {
-    props = {
-      doc: Immutable.fromJS({_id: 'docId', title: 'doc title'}),
-      metadataBeingEdited: {_id: 'docId'}
-    };
-    render();
-    expect(component.find(RowList.Item).props().active).toBe(true);
-  });
-
-  it('should pass active prop false if metadataBeingEdited its not the same', () => {
-    props = {
-      doc: Immutable.fromJS({_id: 'docId', title: 'doc title'}),
-      metadataBeingEdited: {_id: 'anotherId'}
-    };
-    render();
-    expect(component.find(RowList.Item).props().active).toBe(false);
   });
 
   describe('when document uploaded is false', () => {
@@ -119,24 +95,10 @@ describe('UploadDoc', () => {
   });
 
   describe('onClick', () => {
-    it('should edit', () => {
+    it('should call onClick prop', () => {
       render();
-
-      component.find(RowList.Item).simulate('click');
-      expect(props.edit).toHaveBeenCalledWith(props.doc.toJS());
-      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.doc.toJS(), props.templates.toJS());
-    });
-
-    describe('when clicking on the same document being edited', () => {
-      it('should finishEdit', () => {
-        props.metadataBeingEdited = {_id: 'docId'};
-        render();
-
-        component.find(RowList.Item).simulate('click');
-        expect(props.finishEdit).toHaveBeenCalled();
-        expect(props.edit).not.toHaveBeenCalled();
-        expect(props.loadInReduxForm).not.toHaveBeenCalled();
-      });
+      component.find(RowList.Item).simulate('click', {metaKey: false, ctrlKey: false});
+      expect(props.onClick).toHaveBeenCalled();
     });
   });
 });

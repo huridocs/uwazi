@@ -5,7 +5,7 @@ export default class MultiDate extends Component {
 
   constructor(props) {
     super(props);
-    let values = this.props.value.length ? this.props.value : [null];
+    let values = this.props.value && this.props.value.length ? this.props.value : [null];
     this.state = {values};
   }
 

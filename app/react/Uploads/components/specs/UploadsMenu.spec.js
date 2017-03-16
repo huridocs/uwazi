@@ -27,9 +27,9 @@ describe('UploadsMenu', () => {
     expect(props.newEntity).toHaveBeenCalledWith([{_id: 2, isEntity: true}]);
   });
 
-  describe('When metadataBeingEdited', () => {
+  describe('When props have hide', () => {
     it('should not show any contextual button', () => {
-      props.metadataBeingEdited = {};
+      props.hide = true;
       render();
       expect(component.children().length).toBe(0);
     });

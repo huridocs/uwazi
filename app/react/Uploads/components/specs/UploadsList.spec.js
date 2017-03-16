@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 import SocketMock from 'socket-io-mock';
-import {UploadsList, mapStateToProps} from 'app/Uploads/components/UploadsList';
+import {UploadsList} from 'app/Uploads/components/UploadsList';
 import UploadDoc from 'app/Uploads/components/UploadDoc';
 import UploadEntity from 'app/Uploads/components/UploadEntity';
 
@@ -17,9 +17,16 @@ describe('UploadsList', () => {
   ]);
 
   beforeEach(() => {
-    let conversionComplete = jasmine.createSpy('conversionComplete');
-    let updateDocument = jasmine.createSpy('updateDocument');
-    props = {documents, socket, conversionComplete, updateDocument};
+    props = {
+      documents,
+      socket,
+      conversionComplete: jasmine.createSpy('conversionComplete'),
+      updateDocument: jasmine.createSpy('updateDocument'),
+      selectDocument: jasmine.createSpy('selectDocument'),
+      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
+      unselectDocument: jasmine.createSpy('unselectDocument'),
+      selectDocuments: jasmine.createSpy('selectDocuments')
+    };
     component = shallow(<UploadsList {...props} />);
   });
 
@@ -46,18 +53,6 @@ describe('UploadsList', () => {
     it('should call updateDocument with the doc processed false', () => {
       socket.socketClient.emit('conversionFailed', 'doc_id_1');
       expect(props.updateDocument).toHaveBeenCalledWith({_id: 'doc_id_1', processed: false});
-    });
-  });
-
-  describe('maped state', () => {
-    it('should contain the documents', () => {
-      let store = {
-        uploads: {
-          documents
-        }
-      };
-      let state = mapStateToProps(store);
-      expect(state).toEqual({documents});
     });
   });
 });

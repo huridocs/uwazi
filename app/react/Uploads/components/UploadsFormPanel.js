@@ -4,7 +4,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {unselectAllDocuments} from 'app/Uploads/actions/uploadsActions';
 import SidePanel from 'app/Layout/SidePanel';
 import ShowIf from 'app/App/ShowIf';
 import DocumentForm from '../containers/DocumentForm';
@@ -20,13 +20,11 @@ export class UploadsFormPanel extends Component {
     if (this.props.dirty) {
       return this.context.confirm({
         accept: () => {
-          this.props.finishEdit();
+          this.props.unselectAllDocuments();
         },
         message: 'Are you sure you want to close the form? All the progress will be lost.'
       });
     }
-
-    this.props.finishEdit();
   }
 
   render() {
@@ -59,7 +57,7 @@ export class UploadsFormPanel extends Component {
 UploadsFormPanel.propTypes = {
   open: PropTypes.bool,
   saveDocument: PropTypes.func,
-  finishEdit: PropTypes.func,
+  unselectAllDocuments: PropTypes.func,
   metadataType: PropTypes.string,
   dirty: PropTypes.bool
 };
@@ -71,18 +69,20 @@ UploadsFormPanel.contextTypes = {
 const mapStateToProps = ({uploads}) => {
   let uiState = uploads.uiState;
   let metadataType = '';
-  if (uiState.get('metadataBeingEdited')) {
-    metadataType = uiState.get('metadataBeingEdited').type;
+  const selectedDocuments = uiState.get('selectedDocuments');
+  const open = selectedDocuments.size === 1;
+  if (open) {
+    metadataType = selectedDocuments.first().get('type');
   }
 
   return {
-    open: typeof uiState.get('metadataBeingEdited') === 'object',
+    open,
     metadataType,
     dirty: uploads.metadataForm.dirty
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit}, dispatch);
+  return bindActionCreators({unselectAllDocuments}, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsFormPanel);

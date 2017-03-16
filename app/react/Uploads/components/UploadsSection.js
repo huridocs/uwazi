@@ -10,6 +10,7 @@ import UploadBox from './UploadBox';
 import UploadsList from './UploadsList';
 import UploadsFormPanel from './UploadsFormPanel';
 import UploadFailedModal from './UploadFailedModal';
+import SelectMultiplePanelContainer from '../containers/SelectMultiplePanelContainer';
 import UploadsMenu from './UploadsMenu';
 import ReadyToPublishModal from './ReadyToPublishModal';
 import {t} from 'app/I18N';
@@ -43,6 +44,7 @@ export class UploadsSection extends Component {
           <UploadsList socket={this.socket}/>
         </main>
         <UploadsFormPanel />
+        <SelectMultiplePanelContainer />
         <UploadFailedModal />
         <ReadyToPublishModal />
 
@@ -64,9 +66,8 @@ UploadsSection.contextTypes = {
 };
 
 const mapStateToProps = (state) => {
-  let uiState = state.uploads.uiState.toJS();
   return {
-    panelIsOpen: !!uiState.metadataBeingEdited
+    panelIsOpen: !!state.uploads.uiState.get('selectedDocuments').size
   };
 };
 

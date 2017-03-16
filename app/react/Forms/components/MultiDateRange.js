@@ -5,7 +5,7 @@ export default class MultiDateRange extends Component {
 
   constructor(props) {
     super(props);
-    let values = this.props.value.length ? this.props.value : [{from: null, to: null}];
+    let values = this.props.value && this.props.value.length ? this.props.value : [{from: null, to: null}];
     this.state = {values};
   }
 

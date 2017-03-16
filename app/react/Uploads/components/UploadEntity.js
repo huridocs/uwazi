@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {RowList, ItemFooter, ItemName} from 'app/Layout/Lists';
-import {edit, finishEdit, publishEntity} from 'app/Uploads/actions/uploadsActions';
+import {publishEntity} from 'app/Uploads/actions/uploadsActions';
 import {I18NLink} from 'app/I18N';
 import {actions} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
@@ -20,24 +20,18 @@ export class UploadEntity extends Component {
     });
   }
 
-  edit(entity, active) {
-    if (active) {
-      return this.props.finishEdit();
+  onClick(e) {
+    if (this.props.onClick) {
+      this.props.onClick(e, this.props.entity, this.props.active);
     }
-
-    this.props.loadInReduxForm('uploads.metadata', entity, this.props.templates.toJS());
-    this.props.edit(entity);
   }
+
 
   render() {
     let entity = this.props.entity.toJS();
-    let active;
-    if (this.props.metadataBeingEdited) {
-      active = this.props.metadataBeingEdited._id === entity._id;
-    }
 
     return (
-      <RowList.Item status="success" active={active} onClick={this.edit.bind(this, entity, active)}>
+      <RowList.Item status="success" active={this.props.active} onClick={this.onClick.bind(this)}>
       <div className="item-info">
         <i className="item-private-icon fa fa-lock"></i>
         <Icon className="item-icon item-icon-center" data={entity.icon} />
@@ -66,11 +60,11 @@ export class UploadEntity extends Component {
 
 UploadEntity.propTypes = {
   entity: PropTypes.object,
-  metadataBeingEdited: PropTypes.object,
+  active: PropTypes.bool,
   loadInReduxForm: PropTypes.func,
   finishEdit: PropTypes.func,
   templates: PropTypes.object,
-  edit: PropTypes.func,
+  onClick: PropTypes.func,
   publishEntity: PropTypes.func
 };
 
@@ -78,15 +72,15 @@ UploadEntity.contextTypes = {
   confirm: PropTypes.func
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
-    templates: state.templates,
-    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited')
+    active: !!state.uploads.uiState.get('selectedDocuments').find((doc) => doc.get('_id') === props.entity.get('_id')),
+    templates: state.templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({finishEdit, edit, loadInReduxForm: actions.loadInReduxForm, publishEntity}, dispatch);
+  return bindActionCreators({loadInReduxForm: actions.loadInReduxForm, publishEntity}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadEntity);
