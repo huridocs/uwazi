@@ -16,19 +16,19 @@ export default class Entity extends RouteHandler {
   static requestState({entityId, lang}, query, globalResources) {
     return Promise.all([
       entitiesAPI.get(entityId),
-      referencesAPI.getGroupedByConnection(entityId),
-      relationTypesAPI.get()
+      relationTypesAPI.get(),
+      referencesAPI.getGroupedByConnection(entityId)
     ])
-    .then(([entities, connectionsGroups, relationTypes]) => {
+    .then(([entities, relationTypes, connectionsGroups]) => {
       const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
         return templateIds.concat(group.templates.map(t => t._id.toString()));
       }, []);
 
       const sortOptions = prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: globalResources.templates});
 
-      return Promise.all([entities[0], connectionsGroups, referencesAPI.search(entityId, sortOptions), relationTypes, sortOptions]);
+      return Promise.all([entities[0], relationTypes, connectionsGroups, referencesAPI.search(entityId, sortOptions), sortOptions]);
     })
-    .then(([entity, connectionsGroups, searchResults, relationTypes, sort]) => {
+    .then(([entity, relationTypes, connectionsGroups, searchResults, sort]) => {
       return {
         entityView: {
           entity
@@ -55,6 +55,7 @@ export default class Entity extends RouteHandler {
 
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
+
     this.context.store.dispatch(actions.unset('connectionsList/entityId'));
     this.context.store.dispatch(actions.unset('connectionsList/connectionsGroups'));
     this.context.store.dispatch(actions.unset('connectionsList/searchResults'));
@@ -65,6 +66,7 @@ export default class Entity extends RouteHandler {
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
+
     this.context.store.dispatch(actions.set('connectionsList/entityId', state.connectionsList.entityId));
     this.context.store.dispatch(actions.set('connectionsList/connectionsGroups', state.connectionsList.connectionsGroups));
     this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));

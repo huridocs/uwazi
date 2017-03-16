@@ -61,11 +61,10 @@ export class EntityViewer extends Component {
 
     const summary = connectionsGroups.reduce((summaryData, g) => {
       g.get('templates').forEach(template => {
-        summaryData.referencesTemplates.push(template.get('_id'));
-        summaryData.totalReferences += template.get('count');
+        summaryData.totalConnections += template.get('count');
       });
       return summaryData;
-    }, {referencesTemplates: [], totalReferences: 0});
+    }, {totalConnections: 0});
 
     return (
       <div className="row entity-content">
@@ -90,9 +89,9 @@ export class EntityViewer extends Component {
                 </TabLink>
               </li>
               <li>
-                <TabLink to="references">
+                <TabLink to="connections">
                   <i className="fa fa-exchange"></i>
-                  <span className="connectionsNumber">{summary.totalReferences}</span>
+                  <span className="connectionsNumber">{summary.totalConnections}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
@@ -120,7 +119,7 @@ export class EntityViewer extends Component {
                 })()}
               </div>
             </TabContent>
-            <TabContent for="references">
+            <TabContent for="connections">
               <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
             </TabContent>
           </Tabs>
@@ -135,7 +134,7 @@ export class EntityViewer extends Component {
         </ShowIf>
 
         <aside className="side-panel entity-connections">
-          <ShowIf if={selectedTab === 'info' || selectedTab === 'references'}>
+          <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
               <NeedAuthorization>
@@ -158,7 +157,7 @@ export class EntityViewer extends Component {
 
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
-              <TabContent for={selectedTab === 'info' || selectedTab === 'references' ? selectedTab : 'none'}>
+              <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
                 <ConnectionsGroups />
               </TabContent>
               <TabContent for="attachments">

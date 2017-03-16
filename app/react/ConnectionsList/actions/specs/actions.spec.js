@@ -4,7 +4,7 @@ import {actions as formActions} from 'react-redux-form';
 
 import {fromJS as Immutable} from 'immutable';
 
-import refenrecesAPI from 'app/Viewer/referencesAPI';
+import referencesAPI from 'app/Viewer/referencesAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('ConnectionsList actions', () => {
@@ -27,9 +27,9 @@ describe('ConnectionsList actions', () => {
       {templates: [{_id: 't2'}, {_id: 't3'}]}
     ];
 
-    spyOn(refenrecesAPI, 'search').and.returnValue(Promise.resolve('searchResults'));
-    spyOn(refenrecesAPI, 'delete').and.returnValue(Promise.resolve());
-    spyOn(refenrecesAPI, 'getGroupedByConnection').and.returnValue(Promise.resolve(groupedConnections));
+    spyOn(referencesAPI, 'search').and.returnValue(Promise.resolve('searchResults'));
+    spyOn(referencesAPI, 'delete').and.returnValue(Promise.resolve());
+    spyOn(referencesAPI, 'getGroupedByConnection').and.returnValue(Promise.resolve(groupedConnections));
     spyOn(prioritySortingCriteria, 'get').and.returnValue(Promise.resolve('prioritySorting'));
     spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
     spyOn(formActions, 'merge').and.callFake((scope, sort) => 'merge: ' + scope + ' with: ' + sort);
@@ -37,33 +37,33 @@ describe('ConnectionsList actions', () => {
   });
 
   describe('searchReferences', () => {
-    it('should fetch the references with the current state filters, sorting and empty text by default', (done) => {
+    it('should fetch the connections with the current state filters, sorting and empty text by default', (done) => {
       actions.searchReferences()(dispatch, getState)
       .then(() => {
-        expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
+        expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
         expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
-        expect(dispatch).toHaveBeenCalledWith({type: 'SHOW_TAB', tab: 'references'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'SHOW_TAB', tab: 'connections'});
         done();
       });
     });
 
-    it('should fetch the references with custom text search', (done) => {
+    it('should fetch the connections with custom text search', (done) => {
       getState = () => {
         return {connectionsList: {entityId: 'sid', sort: {}, filters: Immutable({}), search: {searchTerm: {value: 'term'}}}};
       };
       actions.searchReferences()(dispatch, getState)
       .then(() => {
-        expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {searchTerm: 'term'});
+        expect(referencesAPI.search).toHaveBeenCalledWith('sid', {searchTerm: 'term'});
         done();
       });
     });
   });
 
   describe('connectionsChanged', () => {
-    it('should reasssign referencesGroup, sorting criteria, and call on search again', (done) => {
+    it('should reasssign connectionsGroup, sorting criteria, and call on search again', (done) => {
       actions.connectionsChanged()(dispatch, getState)
       .then(() => {
-        expect(refenrecesAPI.getGroupedByConnection).toHaveBeenCalledWith('sid');
+        expect(referencesAPI.getGroupedByConnection).toHaveBeenCalledWith('sid');
         expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
           currentCriteria: {order: 'order'},
           filteredTemplates: ['t1', 't2', 't3' ],
@@ -79,10 +79,10 @@ describe('ConnectionsList actions', () => {
   });
 
   describe('deleteConnection', () => {
-    it('should delete the reference and triger a connectionsChanged action', (done) => {
+    it('should delete the connection and triger a connectionsChanged action', (done) => {
       actions.deleteConnection('data')(dispatch, getState)
       .then(() => {
-        expect(refenrecesAPI.delete).toHaveBeenCalledWith('data');
+        expect(referencesAPI.delete).toHaveBeenCalledWith('data');
         expect(Notifications.notify).toHaveBeenCalledWith('Connection deleted', 'success');
         expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/SET', value: groupedConnections});
         expect(dispatch).toHaveBeenCalledWith('merge: connectionsList.sort with: prioritySorting');
@@ -100,7 +100,7 @@ describe('ConnectionsList actions', () => {
         expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: 'filter', limit: 60});
 
-        expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
+        expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
         expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
         done();
       });
@@ -125,7 +125,7 @@ describe('ConnectionsList actions', () => {
         expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: {oldProperty: 'old', modifiedProperty: 'modified'}});
 
-        expect(refenrecesAPI.search).toHaveBeenCalledWith(
+        expect(referencesAPI.search).toHaveBeenCalledWith(
           'sid',
           {filter: getState().connectionsList.filters.get('filter').toJS(), order: 'order', searchTerm: ''}
         );
@@ -144,7 +144,7 @@ describe('ConnectionsList actions', () => {
         expect(dispatch.calls.argsFor(1)[0].type).toBe('connectionsList/filters/SET');
         expect(dispatch.calls.argsFor(1)[0].value.toJS()).toEqual({});
 
-        expect(refenrecesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
+        expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
         expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
 
         done();

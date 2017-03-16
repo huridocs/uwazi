@@ -18,7 +18,7 @@ export function searchReferences() {
     return referencesAPI.search(entityId, options.toJS())
     .then(results => {
       dispatch(actions.set('connectionsList/searchResults', results));
-      dispatch(uiActions.showTab('references'));
+      dispatch(uiActions.showTab('connections'));
     });
   };
 }
