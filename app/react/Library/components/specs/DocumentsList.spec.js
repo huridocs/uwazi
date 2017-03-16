@@ -10,7 +10,11 @@ describe('DocumentsList', () => {
   let component;
   let instance;
   let props;
-  let documents = Immutable.fromJS({rows: [{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}, {title: 'Document three', _id: '3'}], totalRows: 3});
+  let documents = Immutable.fromJS({rows: [
+    {title: 'Document one', _id: '1'},
+    {title: 'Document two', _id: '2'},
+    {title: 'Document three', _id: '3'}
+  ], totalRows: 3});
 
   beforeEach(() => {
     props = {
