@@ -10,7 +10,7 @@ import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import connections from 'app/Connections';
-import connectionsList from 'app/Connections/reducers/connectionsListReducer';
+import ConnectionsList from 'app/ConnectionsList';
 import {reducer as attachments} from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';
@@ -50,7 +50,7 @@ export default combineReducers({
   documentViewer,
   contextMenu,
   connections: connections.reducer,
-  connectionsList,
+  connectionsList: ConnectionsList.reducer,
   attachments,
   modals,
   uploads,

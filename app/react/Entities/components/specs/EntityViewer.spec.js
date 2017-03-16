@@ -4,8 +4,7 @@ import {fromJS as Immutable} from 'immutable';
 
 import {EntityViewer} from '../EntityViewer';
 
-import ReferencesGroup from '../ReferencesGroup';
-import ReferencesList from '../ReferencesList';
+import {ConnectionsGroups, ConnectionsList} from 'app/ConnectionsList';
 
 describe('EntityViewer', () => {
   let component;
@@ -36,22 +35,16 @@ describe('EntityViewer', () => {
     instance = component.instance();
   };
 
-  it('should render the ReferencesGroup', () => {
+  it('should render the ConnectionsGroups', () => {
     render();
 
-    const ref1 = component.find(ReferencesGroup).at(0);
-    const ref2 = component.find(ReferencesGroup).at(1);
-
-    expect(ref1.props().group).toBe(props.connectionsGroups.get(0));
-    expect(ref2.props().group).toBe(props.connectionsGroups.get(1));
+    expect(component.find(ConnectionsGroups).length).toBe(1);
   });
 
-  it('should render the ReferencesList passing enitity and deleteConnection as props', () => {
+  it('should render the ConnectionsList passing deleteConnection as prop', () => {
     render();
 
-    expect(component.find(ReferencesList).props().entity).toBe(props.entity);
-
-    component.find(ReferencesList).props().deleteConnection({sourceType: 'not metadata'});
+    component.find(ConnectionsList).props().deleteConnection({sourceType: 'not metadata'});
     expect(context.confirm).toHaveBeenCalled();
   });
 

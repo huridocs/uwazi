@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
-import {searchReferences, loadMoreReferences} from 'app/Entities/actions/actions';
+import {searchReferences, loadMoreReferences} from '../actions/actions';
 import {createSelector} from 'reselect';
 
 import DocumentsList from 'app/Layout/DocumentsList';
@@ -20,10 +20,10 @@ export function mapStateToProps({connectionsList}) {
   };
 }
 
-function mapDispatchToProps(dispatch, ownProps) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     loadMoreDocuments: loadMoreReferences,
-    searchDocuments: searchReferences.bind(null, ownProps.entity.sharedId)
+    searchDocuments: searchReferences
   }, dispatch);
 }
 

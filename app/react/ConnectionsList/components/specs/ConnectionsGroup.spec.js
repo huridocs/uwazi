@@ -2,10 +2,10 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS as Immutable} from 'immutable';
 
-import {ReferencesGroup, mapStateToProps} from '../ReferencesGroup';
+import {ConnectionsGroup, mapStateToProps} from '../ConnectionsGroup';
 import ShowIf from 'app/App/ShowIf';
 
-describe('ReferencesGroup', () => {
+describe('ConnectionsGroup', () => {
   let component;
   let instance;
   let props;
@@ -27,7 +27,7 @@ describe('ReferencesGroup', () => {
   });
 
   let render = () => {
-    component = shallow(<ReferencesGroup {...props} />);
+    component = shallow(<ConnectionsGroup {...props} />);
     instance = component.instance();
   };
 

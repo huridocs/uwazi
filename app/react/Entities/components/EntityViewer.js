@@ -11,16 +11,15 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, referencesChanged, deleteConnection, resetSearch} from '../actions/actions';
+import {deleteEntity} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
 import {actions as connectionsActions} from 'app/Connections';
+import {ConnectionsGroups, ConnectionsList, ResetSearch} from 'app/ConnectionsList';
+import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/actions';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
-import SearchBar from './SearchBar';
-import ReferencesGroup from './ReferencesGroup';
-import ReferencesList from './ReferencesList';
 
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
@@ -122,7 +121,7 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="references">
-              <ReferencesList entity={this.props.entity} deleteConnection={this.deleteConnection.bind(this)} />
+              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
             </TabContent>
           </Tabs>
         </main>
@@ -138,13 +137,7 @@ export class EntityViewer extends Component {
         <aside className="side-panel entity-connections">
           <ShowIf if={selectedTab === 'info' || selectedTab === 'references'}>
             <div className="sidepanel-footer">
-              <ShowIf if={Boolean(connectionsGroups.size)}>
-                <button onClick={this.props.resetSearch}
-                        className="create-connection btn btn-primary">
-                  <i className="fa fa-refresh"></i>
-                  <span className="btn-label">{t('System', 'Reset')}</span>
-                </button>
-              </ShowIf>
+              <ResetSearch />
               <NeedAuthorization>
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">
@@ -166,19 +159,7 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'references' ? selectedTab : 'none'}>
-                <ShowIf if={Boolean(connectionsGroups.size)}>
-                  <div>
-                    <SearchBar />
-                    <div className="nested-selector">
-                      <ul className="multiselect is-active">
-                        {connectionsGroups.map(group =>
-                          <ReferencesGroup key={group.get('key')}
-                                           group={group} />
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-                </ShowIf>
+                <ConnectionsGroups />
               </TabContent>
               <TabContent for="attachments">
                 <AttachmentsList files={Immutable(attachments)}
@@ -189,7 +170,7 @@ export class EntityViewer extends Component {
 
         </aside>
 
-        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.referencesChanged}/>
+        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
 
       </div>
     );
@@ -204,10 +185,9 @@ EntityViewer.propTypes = {
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
-  referencesChanged: PropTypes.func,
+  connectionsChanged: PropTypes.func,
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
-  resetSearch: PropTypes.func,
   tab: PropTypes.string,
   showTab: PropTypes.func
 };
@@ -246,10 +226,9 @@ const mapStateToProps = (state) => {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     deleteEntity,
-    referencesChanged,
+    connectionsChanged,
     deleteConnection,
     showTab,
-    resetSearch,
     startNewConnection: connectionsActions.startNewConnection
   }, dispatch);
 }

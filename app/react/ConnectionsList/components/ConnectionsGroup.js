@@ -8,7 +8,7 @@ import {t} from 'app/I18N';
 
 import {setFilter} from '../actions/actions';
 
-export class ReferencesGroup extends Component {
+export class ConnectionsGroup extends Component {
 
   toggleExpandGroup() {
     this.setState({expanded: !this.state.expanded});
@@ -130,7 +130,7 @@ export class ReferencesGroup extends Component {
   }
 }
 
-ReferencesGroup.propTypes = {
+ConnectionsGroup.propTypes = {
   group: PropTypes.object,
   setFilter: PropTypes.func,
   filters: PropTypes.object
@@ -146,4 +146,4 @@ export const mapDispatchToProps = (dispatch) => {
   }, dispatch);
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReferencesGroup);
+export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsGroup);

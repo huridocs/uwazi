@@ -1,7 +1,7 @@
 import {fromJS as Immutable} from 'immutable';
-import {mapStateToProps} from '../ReferencesList';
+import {mapStateToProps} from '../ConnectionsList';
 
-describe('ReferencesList', () => {
+describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
     let state;
     let props;

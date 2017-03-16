@@ -1,6 +1,5 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
 import {Field, Form, actions as formActions} from 'react-redux-form';
 
 import {SearchBar, mapStateToProps} from '../SearchBar';
