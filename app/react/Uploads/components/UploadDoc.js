@@ -64,14 +64,6 @@ export class UploadDoc extends Component {
       progress = this.props.progress;
     }
 
-<<<<<<< HEAD
-    let active;
-    if (this.props.metadataBeingEdited) {
-      active = this.props.metadataBeingEdited._id === doc.get('_id');
-    }
-
-=======
->>>>>>> uploads working with multiple selection, missing the side panel WIP
     return (
       <RowList.Item status={status} active={this.props.active} onClick={this.onClick.bind(this)}>
       <div className="item-info">
