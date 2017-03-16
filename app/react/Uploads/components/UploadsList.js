@@ -114,7 +114,15 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({conversionComplete, updateDocument, selectDocument, selectDocuments, unselectAllDocuments, unselectDocument, loadInReduxForm: actions.loadInReduxForm}, dispatch);
+  return bindActionCreators({
+    conversionComplete,
+    updateDocument,
+    selectDocument,
+    selectDocuments,
+    unselectAllDocuments,
+    unselectDocument,
+    loadInReduxForm: actions.loadInReduxForm
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsList);
