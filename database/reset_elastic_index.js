@@ -7,13 +7,8 @@ import indexConfig from '../app/api/config/elasticIndexes';
 import entities from '../app/api/entities/entitiesModel';
 import mongoose from 'mongoose';
 
-const limit = 50;
+const limit = 200;
 let docsIndexed = 0;
-function migrateDoc(doc) {
-  docsIndexed += 1;
-  return search.index(doc);
-}
-
 let pos = 0;
 let spinner = ['|', '/', '-', '\\'];
 
@@ -24,13 +19,12 @@ function migrate(offset, totalRows) {
       return;
     }
 
-    return P.resolve(docsResponse).map((doc) => {
+    return search.bulkIndex(docsResponse)
+    .then(() => {
       process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
-      return migrateDoc(doc).catch(console.log);
-    }, {concurrency: 10})
-    .then(function() {
       pos += 1;
-      if(pos > 3) {pos = 0;}
+      if (pos > 3) {pos = 0;}
+      docsIndexed += docsResponse.length;
       return migrate(offset + limit, totalRows);
     });
   });
