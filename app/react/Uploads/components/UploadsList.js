@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {actions} from 'app/Metadata';
 
 import {RowList} from 'app/Layout/Lists';
 import UploadDoc from 'app/Uploads/components/UploadDoc';
@@ -68,6 +69,7 @@ export class UploadsList extends Component {
     }
 
     this.props.selectDocument(doc);
+    this.props.loadInReduxForm('uploads.metadata', doc.toJS(), this.props.templates.toJS());
   }
 
   render() {
@@ -90,13 +92,15 @@ UploadsList.propTypes = {
   progress: PropTypes.object,
   socket: PropTypes.object,
   selectedDocuments: PropTypes.object,
+  templates: PropTypes.object,
   authorized: PropTypes.bool,
   conversionComplete: PropTypes.func,
   updateDocument: PropTypes.func,
   selectDocument: PropTypes.func,
   selectDocuments: PropTypes.func,
   unselectDocument: PropTypes.func,
-  unselectAllDocuments: PropTypes.func
+  unselectAllDocuments: PropTypes.func,
+  loadInReduxForm: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -104,12 +108,13 @@ export function mapStateToProps(state) {
     documents: state.uploads.documents.sort((a, b) => b.get('creationDate') - a.get('creationDate')),
     selectedDocuments: state.uploads.uiState.get('selectedDocuments'),
     authorized: !!state.user.get('_id'),
-    multipleSelected: state.uploads.uiState.get('selectedDocuments').size > 1
+    multipleSelected: state.uploads.uiState.get('selectedDocuments').size > 1,
+    templates: state.templates
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({conversionComplete, updateDocument, selectDocument, selectDocuments, unselectAllDocuments, unselectDocument}, dispatch);
+  return bindActionCreators({conversionComplete, updateDocument, selectDocument, selectDocuments, unselectAllDocuments, unselectDocument, loadInReduxForm: actions.loadInReduxForm}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadsList);
