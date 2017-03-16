@@ -32,7 +32,7 @@ export default class DocumentsList extends Component {
 
     let counter = <span><b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
     if (connections) {
-      counter = <span><b>{documents.totalRows}</b> {t('System', 'documents')}, <b>{connections.totalRows}</b> {t('System', 'connections')}</span>;
+      counter = <span><b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
     }
 
     return (
