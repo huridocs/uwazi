@@ -77,8 +77,20 @@ export default {
     delete entity._id;
     delete entity._rev;
     const body = entity;
-    return elastic.index({index: elasticIndex, type: 'entity', id, body})
-    .catch(console.log);
+    return elastic.index({index: elasticIndex, type: 'entity', id, body});
+  },
+
+  bulkIndex(docs, type = 'entity') {
+    let body = [];
+    docs.forEach((doc) => {
+      const id = doc._id.toString();
+      delete doc._id;
+      delete doc._rev;
+      body.push({index: {_index: elasticIndex, _type: type, _id: id}});
+      body.push(doc);
+    });
+
+    return elastic.bulk({body});
   },
 
   delete(entity) {
