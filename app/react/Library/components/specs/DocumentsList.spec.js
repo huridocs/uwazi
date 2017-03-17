@@ -1,18 +1,63 @@
-import Immutable from 'immutable';
+import React from 'react';
+import {shallow} from 'enzyme';
+import Immutable, {fromJS} from 'immutable';
 
-import {mapStateToProps} from 'app/Library/components/DocumentsList';
+import {clickOnDocument, mapStateToProps} from '../DocumentsList';
+import DocumentsList from 'app/Layout/DocumentsList';
 
-describe('DocumentsList', () => {
-  let documents = Immutable.fromJS({rows: [{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}], totalRows: 2});
+describe('Library DocumentsList container', () => {
+  let component;
+  let instance;
+  let props;
+  let documents = Immutable.fromJS({rows: [
+    {title: 'Document one', _id: '1'},
+    {title: 'Document two', _id: '2'},
+    {title: 'Document three', _id: '3'}
+  ], totalRows: 3});
 
-  describe('maped state', () => {
-    it('should contain the documents, library filters and search options', () => {
-      const filters = Immutable.fromJS({documentTypes: []});
+  beforeEach(() => {
+    props = {
+      documents: documents.toJS(),
+      selectedDocuments: Immutable.fromJS([]),
+      search: {sort: 'sort'},
+      filters: Immutable.fromJS({documentTypes: []}),
+      searchDocuments: () => {},
+      user: Immutable.fromJS({}),
+      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
+      selectDocument: jasmine.createSpy('selectDocument'),
+      selectDocuments: jasmine.createSpy('selectDocuments'),
+      unselectDocument: jasmine.createSpy('unselectDocument'),
+      authorized: true
+    };
+  });
 
-      let store = {
-        library: {
-          documents,
-          filters,
+  let render = () => {
+    component = shallow(<DocumentsList {...props} />);
+    instance = component.instance();
+  };
+
+  describe('clickOnDocument()', () => {
+    it('should select the document', () => {
+      render();
+      const e = {};
+      const doc = Immutable.fromJS({_id: '1'});
+      const active = false;
+      clickOnDocument.call(instance, e, doc, active);
+      expect(props.unselectAllDocuments).toHaveBeenCalled();
+      expect(props.selectDocument).toHaveBeenCalledWith(doc);
+    });
+
+    describe('when holding cmd or ctrl', () => {
+      it('should add the document to the selected documents', () => {
+        render();
+        const e = {metaKey: true};
+        const doc = Immutable.fromJS({_id: '1'});
+        const active = false;
+        clickOnDocument.call(instance, e, doc, active);
+        expect(props.unselectAllDocuments).not.toHaveBeenCalled();
+        expect(props.selectDocument).toHaveBeenCalledWith(doc);
+      });
+    });
 
     describe('when holding shift', () => {
       it('should select all the documents from the last selected document to the one clicked', () => {
@@ -21,9 +66,37 @@ describe('DocumentsList', () => {
         const e = {shiftKey: true};
         const doc = Immutable.fromJS({_id: '3'});
         const active = false;
-        instance.clickOnDocument(e, doc, active);
+        clickOnDocument.call(instance, e, doc, active);
         expect(props.unselectAllDocuments).not.toHaveBeenCalled();
         expect(props.selectDocuments).toHaveBeenCalledWith(documents.toJS().rows);
+      });
+    });
+  });
+
+  describe('maped state', () => {
+    it('should contain the documents, library filters and search options', () => {
+      const filters = fromJS({documentTypes: []});
+
+      let store = {
+        library: {
+          documents,
+          filters,
+          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']})
+        },
+        search: {sort: 'sortProperty'},
+        user: fromJS({_id: 'uid'})
+      };
+
+      let state = mapStateToProps(store);
+      expect(state).toEqual({
+        documents: documents.toJS(),
+        filters,
+        filtersPanel: 'panel',
+        search: {sort: 'sortProperty'},
+        selectedDocuments: store.library.ui.get('selectedDocuments'),
+        multipleSelected: false,
+        authorized: true,
+        clickOnDocument
       });
     });
   });

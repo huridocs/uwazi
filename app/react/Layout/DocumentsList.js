@@ -27,6 +27,12 @@ export default class DocumentsList extends Component {
     this.setState({loading: false});
   }
 
+  clickOnDocument() {
+    if (this.props.clickOnDocument) {
+      this.props.clickOnDocument.apply(this, arguments);
+    }
+  }
+
   render() {
     const {documents, connections} = this.props;
 
@@ -47,7 +53,11 @@ export default class DocumentsList extends Component {
           </div>
           <RowList>
             {documents.rows.map((doc, index) =>
-              <Doc doc={Immutable(doc)} key={index} deleteConnection={this.props.deleteConnection} searchParams={this.props.search} />
+              <Doc doc={Immutable(doc)}
+                   key={index}
+                   onClick={this.clickOnDocument.bind(this)}
+                   deleteConnection={this.props.deleteConnection}
+                   searchParams={this.props.search} />
             )}
           </RowList>
           <div className="row">
@@ -86,5 +96,6 @@ DocumentsList.propTypes = {
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,
   deleteConnection: PropTypes.func,
-  sortButtonsStateProperty: PropTypes.string
+  sortButtonsStateProperty: PropTypes.string,
+  clickOnDocument: PropTypes.func
 };
