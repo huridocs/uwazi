@@ -1,12 +1,11 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import Immutable from 'immutable';
+import Immutable, {fromJS} from 'immutable';
 
-import {DocumentsList} from 'app/Library/components/DocumentsList';
-import Doc from 'app/Library/components/Doc';
-import SortButtons from 'app/Library/components/SortButtons';
+import {clickOnDocument, mapStateToProps} from '../DocumentsList';
+import DocumentsList from 'app/Layout/DocumentsList';
 
-describe('DocumentsList', () => {
+describe('Library DocumentsList container', () => {
   let component;
   let instance;
   let props;
@@ -37,32 +36,13 @@ describe('DocumentsList', () => {
     instance = component.instance();
   };
 
-  it('should have with-panel class', () => {
-    render();
-    expect(component.find('main').hasClass('with-panel')).toBe(true);
-  });
-
-  it('should render a Doc element for each document, passing the search options', () => {
-    render();
-    let docs = component.find(Doc);
-    expect(docs.length).toBe(3);
-    expect(docs.first().props().doc.get('title')).toBe('Document one');
-    expect(docs.first().props().searchParams).toEqual({sort: 'sort'});
-  });
-
-  it('should hold sortButtons with search callback and selectedTemplates', () => {
-    render();
-    expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
-    expect(component.find(SortButtons).props().selectedTemplates).toBe(props.filters.get('documentTypes'));
-  });
-
   describe('clickOnDocument()', () => {
     it('should select the document', () => {
       render();
       const e = {};
       const doc = Immutable.fromJS({_id: '1'});
       const active = false;
-      instance.clickOnDocument(e, doc, active);
+      clickOnDocument.call(instance, e, doc, active);
       expect(props.unselectAllDocuments).toHaveBeenCalled();
       expect(props.selectDocument).toHaveBeenCalledWith(doc);
     });
@@ -73,7 +53,7 @@ describe('DocumentsList', () => {
         const e = {metaKey: true};
         const doc = Immutable.fromJS({_id: '1'});
         const active = false;
-        instance.clickOnDocument(e, doc, active);
+        clickOnDocument.call(instance, e, doc, active);
         expect(props.unselectAllDocuments).not.toHaveBeenCalled();
         expect(props.selectDocument).toHaveBeenCalledWith(doc);
       });
@@ -86,9 +66,37 @@ describe('DocumentsList', () => {
         const e = {shiftKey: true};
         const doc = Immutable.fromJS({_id: '3'});
         const active = false;
-        instance.clickOnDocument(e, doc, active);
+        clickOnDocument.call(instance, e, doc, active);
         expect(props.unselectAllDocuments).not.toHaveBeenCalled();
         expect(props.selectDocuments).toHaveBeenCalledWith(documents.toJS().rows);
+      });
+    });
+  });
+
+  describe('maped state', () => {
+    it('should contain the documents, library filters and search options', () => {
+      const filters = fromJS({documentTypes: []});
+
+      let store = {
+        library: {
+          documents,
+          filters,
+          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']})
+        },
+        search: {sort: 'sortProperty'},
+        user: fromJS({_id: 'uid'})
+      };
+
+      let state = mapStateToProps(store);
+      expect(state).toEqual({
+        documents: documents.toJS(),
+        filters,
+        filtersPanel: 'panel',
+        search: {sort: 'sortProperty'},
+        selectedDocuments: store.library.ui.get('selectedDocuments'),
+        multipleSelected: false,
+        authorized: true,
+        clickOnDocument
       });
     });
   });

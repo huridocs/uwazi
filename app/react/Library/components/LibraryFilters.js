@@ -30,7 +30,7 @@ export class LibraryFilters extends Component {
         </div>
         <div className="sidepanel-body">
           <SearchBar />
-          <div className="documentTypes-selector">
+          <div className="documentTypes-selector nested-selector">
             <DocumentTypesList />
           </div>
           <FiltersForm />

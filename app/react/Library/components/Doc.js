@@ -1,12 +1,44 @@
 import React, {Component, PropTypes} from 'react';
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {I18NLink} from 'app/I18N';
+import {NeedAuthorization} from 'app/Auth';
+import ShowIf from 'app/App/ShowIf';
+import {t, I18NLink} from 'app/I18N';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
 
 export class Doc extends Component {
+
+  deleteConnection(e, connection) {
+    e.stopPropagation();
+    const {_id, sourceType} = connection;
+    this.props.deleteConnection({_id, sourceType});
+  }
+
+  getConnections(connections) {
+    return (
+      <div>
+        {connections.map((connection, index) =>
+          <div key={index} className="item-connection">
+            <div>
+              <i className="fa fa-exchange"></i>
+              <span>
+                {t(connection.context, connection.label)}
+                {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
+              </span>
+            </div>
+            <NeedAuthorization>
+              <ShowIf if={connection.sourceType !== 'metadata'}>
+                <button className="btn btn-transparent btn-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
+                  <i className="fa fa-trash"></i>
+                </button>
+              </ShowIf>
+            </NeedAuthorization>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   shouldComponentUpdate(nextProps) {
     return !is(this.props.doc, nextProps.doc) ||
@@ -21,18 +53,28 @@ export class Doc extends Component {
   }
 
   render() {
-    const {sharedId, type} = this.props.doc.toJS();
+    const doc = this.props.doc.toJS();
+    const {sharedId, type} = doc;
     let documentViewUrl = `/${type}/${sharedId}`;
+
+    let itemConnections = null;
+    if (doc.connections && doc.connections.length) {
+      itemConnections = this.getConnections(doc.connections);
+    }
+
+    const buttons = <I18NLink to={documentViewUrl} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+                      <span className="itemShortcut-arrow">
+                        <i className="fa fa-file-text-o"></i>
+                       </span>
+                    </I18NLink>;
 
     return <Item onClick={this.onClick.bind(this)}
                  active={this.props.active}
                  doc={this.props.doc}
                  searchParams={this.props.searchParams}
-                 buttons={<I18NLink to={documentViewUrl} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-                            <span className="itemShortcut-arrow">
-                              <i className="fa fa-file-text-o"></i>
-                             </span>
-                          </I18NLink>}/>;
+                 deleteConnection={this.props.deleteConnection}
+                 itemHeader={itemConnections}
+                 buttons={buttons}/>;
   }
 }
 
@@ -41,9 +83,9 @@ Doc.propTypes = {
   searchParams: PropTypes.object,
   active: PropTypes.bool,
   authorized: PropTypes.bool,
+  deleteConnection: PropTypes.func,
   onClick: PropTypes.func
 };
-
 
 export function mapStateToProps({library, user}, ownProps) {
   return {
@@ -51,8 +93,4 @@ export function mapStateToProps({library, user}, ownProps) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Doc);
+export default connect(mapStateToProps)(Doc);

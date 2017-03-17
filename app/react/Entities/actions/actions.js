@@ -2,7 +2,6 @@ import api from '../EntitiesAPI';
 import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
-import refenrecesAPI from 'app/Viewer/referencesAPI';
 import {removeDocument, removeDocuments, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
 
 export function saveEntity(entity) {
@@ -34,20 +33,6 @@ export function deleteEntities(entities) {
       dispatch(notify('Deletion success', 'success'));
       dispatch(removeDocuments(entities));
       dispatch(unselectAllDocuments());
-    });
-  };
-}
-
-export function addReference(reference) {
-  return actions.push('entityView/references', reference);
-}
-
-export function deleteReference(reference) {
-  return function (dispatch) {
-    return refenrecesAPI.delete(reference)
-    .then(() => {
-      dispatch(actions.remove('entityView/references', reference));
-      dispatch(notify('Connection deleted', 'success'));
     });
   };
 }

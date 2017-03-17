@@ -6,8 +6,8 @@ import {actions} from 'app/BasicReducer';
 import EntityViewer from './components/EntityViewer';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import {actions as formActions} from 'react-redux-form';
+import * as uiActions from './actions/uiActions';
 
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
@@ -16,27 +16,37 @@ export default class Entity extends RouteHandler {
   static requestState({entityId, lang}, query, globalResources) {
     return Promise.all([
       entitiesAPI.get(entityId),
-      referencesAPI.get(entityId),
-      relationTypesAPI.get()
+      relationTypesAPI.get(),
+      referencesAPI.getGroupedByConnection(entityId)
     ])
-    .then(([entities, references, relationTypes]) => {
-      const relevantReferences = referencesUtils.filterRelevant(references, lang);
+    .then(([entities, relationTypes, connectionsGroups]) => {
+      const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
+        return templateIds.concat(group.templates.map(t => t._id.toString()));
+      }, []);
 
+      const sortOptions = prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: globalResources.templates});
+
+      return Promise.all([entities[0], relationTypes, connectionsGroups, referencesAPI.search(entityId, sortOptions), sortOptions]);
+    })
+    .then(([entity, relationTypes, connectionsGroups, searchResults, sort]) => {
       return {
         entityView: {
-          entity: entities[0],
-          references: relevantReferences,
-          sort: prioritySortingCriteria(
-            {
-              currentCriteria: {},
-              filteredTemplates: relevantReferences.map(r => r.connectedDocumentTemplate),
-              templates: globalResources.templates
-            }
-          )
+          entity
+        },
+        connectionsList: {
+          entityId: entity.sharedId,
+          connectionsGroups,
+          searchResults,
+          sort,
+          filters: {}
         },
         relationTypes
       };
     });
+  }
+
+  componentWillMount() {
+    this.context.store.dispatch(uiActions.showTab('info'));
   }
 
   componentWillUnmount() {
@@ -45,17 +55,24 @@ export default class Entity extends RouteHandler {
 
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
-    this.context.store.dispatch(actions.unset('entityView/references'));
+
+    this.context.store.dispatch(actions.unset('connectionsList/entityId'));
+    this.context.store.dispatch(actions.unset('connectionsList/connectionsGroups'));
+    this.context.store.dispatch(actions.unset('connectionsList/searchResults'));
+    this.context.store.dispatch(actions.unset('connectionsList/filters'));
+    this.context.store.dispatch(actions.unset('connectionsList.sort'));
   }
 
-  // TEST!
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
-    this.context.store.dispatch(actions.set('entityView/references', state.entityView.references));
-    this.context.store.dispatch(formActions.merge('entityView.sort', state.entityView.sort));
+
+    this.context.store.dispatch(actions.set('connectionsList/entityId', state.connectionsList.entityId));
+    this.context.store.dispatch(actions.set('connectionsList/connectionsGroups', state.connectionsList.connectionsGroups));
+    this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
+    this.context.store.dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));
+    this.context.store.dispatch(formActions.merge('connectionsList.sort', state.connectionsList.sort));
   }
-  // ---
 
   render() {
     return <EntityViewer/>;

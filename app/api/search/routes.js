@@ -21,6 +21,7 @@ export default (app) => {
     if (req.query.aggregations) {
       req.query.aggregations = JSON.parse(req.query.aggregations);
     }
+
     return search.search(req.query, req.language)
     .then(results => res.json(results))
     .catch(error => res.json({error}));

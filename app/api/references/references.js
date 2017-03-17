@@ -1,7 +1,10 @@
-import templates from 'api/templates';
+import templatesAPI from 'api/templates';
+import relationTypesAPI from 'api/relationtypes/relationtypes';
 import entities from 'api/entities';
 
 import model from './connectionsModel.js';
+
+import {filterRelevantReferences, groupReferences} from './groupByConnection';
 
 let normalizeConnection = (connection, docId) => {
   connection.targetRange = connection.targetRange || {text: ''};
@@ -23,6 +26,11 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentCreationDate = connectedDocument.creationDate;
   return connection;
 };
+
+function excludeRefs(template) {
+  delete template.refs;
+  return template;
+}
 
 export default {
   get() {
@@ -53,6 +61,26 @@ export default {
     });
   },
 
+  getGroupsByConnection(id, language, options = {}) {
+    return Promise.all([
+      this.getByDocument(id, language),
+      templatesAPI.get(),
+      relationTypesAPI.get()
+    ])
+    .then(([references, templates, relationTypes]) => {
+      const relevantReferences = filterRelevantReferences(references, language, options.user);
+      const groupedReferences = groupReferences(relevantReferences, templates, relationTypes);
+
+      if (options.excludeRefs) {
+        groupedReferences.forEach(g => {
+          g.templates = g.templates.map(excludeRefs);
+        });
+      }
+
+      return groupedReferences;
+    });
+  },
+
   getByTarget(docId) {
     return model.get({targetDocument: docId});
   },
@@ -79,12 +107,12 @@ export default {
       return Promise.resolve([]);
     }
 
-    return templates.getById(entity.template)
+    return templatesAPI.getById(entity.template)
     .then((template) => {
       const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
       const entitySelects = [];
       return Promise.all(selects.map((select) => {
-        return templates.getById(select.content)
+        return templatesAPI.getById(select.content)
         .then((result) => {
           if (result) {
             entitySelects.push(select.name);

@@ -27,7 +27,17 @@ describe('documentQueryBuilder', () => {
       expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'es'}});
 
       baseQuery = queryBuilder().language('en').query();
-      expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'en'}});
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {language: 'en'}});
+    });
+  });
+
+  describe('includeUnpublished', () => {
+    it('should allow including unpulbished documents', () => {
+      let baseQuery = queryBuilder().includeUnpublished().query();
+      expect(baseQuery.query.bool.must.length).toBe(0);
+
+      baseQuery = queryBuilder().language('es').includeUnpublished().query();
+      expect(baseQuery.query.bool.must[0]).toEqual({match: {language: 'es'}});
     });
   });
 
@@ -60,8 +70,15 @@ describe('documentQueryBuilder', () => {
     });
   });
 
-  describe('aggregations', () => {
+  describe('filterById', () => {
+    it('should add a match to get only documents that match with the passed ids', () => {
+      let baseQuery = queryBuilder().filterById(['id1', 'id2']).query();
+      let expectedMatcher = {terms: {'sharedId.raw': ['id1', 'id2']}};
+      expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+    });
+  });
 
+  describe('aggregations', () => {
     it('default aggregations should contain types', () => {
       let baseQuery = queryBuilder().query();
       let typesAggregation = {

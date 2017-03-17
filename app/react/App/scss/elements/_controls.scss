@@ -14,6 +14,22 @@
   }
 }
 
+.btn-transparent {
+  background: transparent;
+  border: 1px solid $c-grey;
+  color: $c-black;
+  
+  &:hover {
+    border-color: $c-black;
+  }
+  
+  &.btn-danger:hover {
+    background: $c-danger;
+    border-color: $c-danger-dark;
+    color: $c-white;
+  }
+}
+
 .form-control {
   height: 32px;
 }

@@ -103,6 +103,7 @@ export class Item extends Component {
         onMouseEnter={onMouseEnter || function () {}}
         onMouseLeave={onMouseLeave || function () {}}
         active={active}>
+        {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
             <ShowIf if={evalPublished && !doc.published}>
@@ -140,6 +141,7 @@ Item.propTypes = {
   additionalText: PropTypes.string,
   additionalMetadata: PropTypes.array,
   doc: PropTypes.object,
+  itemHeader: PropTypes.object,
   buttons: PropTypes.object,
   className: PropTypes.string,
   templateClassName: PropTypes.string,
