@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
@@ -87,7 +86,6 @@ Doc.propTypes = {
   deleteConnection: PropTypes.func,
   onClick: PropTypes.func
 };
-
 
 export function mapStateToProps({library, user}, ownProps) {
   return {
