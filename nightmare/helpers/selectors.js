@@ -44,13 +44,13 @@ export default {
     translationsSaveButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div > button'
   },
   libraryView: {
-    libraryFirstDocument: '#app > div.content > div > div > main > div > div.item-group > div',
-    librarySecondDocument: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2)',
-    librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(2) > div.item-info > div',
+    libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div',
+    librarySecondDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2)',
+    librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div',
     searchInLibrary: '#app > div.content > header > div > a',
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
-    firstDocumentViewButton: '#app > div.content > div > div > main > div > div.item-group > div:nth-child(1) > div.item-actions > a',
+    firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > a',
     documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span'
   },
   documentView: {
