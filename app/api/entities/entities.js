@@ -42,8 +42,14 @@ export default {
             toSyncProperties.forEach((p) => {
               d.metadata[p] = doc.metadata[p];
             });
-            d.published = doc.published;
-            d.template = doc.template;
+
+            if (typeof doc.published !== 'undefined') {
+              d.published = doc.published;
+            }
+
+            if (typeof doc.template !== 'undefined') {
+              d.template = doc.template;
+            }
             return d;
           });
 
