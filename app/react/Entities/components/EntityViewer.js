@@ -11,15 +11,16 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity, addReference, deleteReference} from '../actions/actions';
+import {deleteEntity} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
 import {actions as connectionsActions} from 'app/Connections';
+import {ConnectionsGroups, ConnectionsList, ResetSearch} from 'app/ConnectionsList';
+import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/actions';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
-import SortButtons from 'app/Library/components/SortButtons';
-import ReferencesGroup from './ReferencesGroup';
+
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import {AttachmentsList, UploadAttachment} from 'app/Attachments';
@@ -40,144 +41,111 @@ export class EntityViewer extends Component {
   }
 
   // TESTED -----
-  deleteReference(reference) {
+  deleteConnection(reference) {
     if (reference.sourceType !== 'metadata') {
       this.context.confirm({
         accept: () => {
-          this.props.deleteReference(reference);
+          this.props.deleteConnection(reference);
         },
         title: 'Confirm delete connection',
         message: 'Are you sure you want to delete this connection?'
       });
     }
   }
-
-  conformGroupData(connectionType, groupedReferences, options) {
-    let {key, connectionLabel, templateLabel, context, templateContext} = options;
-    let groupData = groupedReferences.find(ref => ref.key === key);
-
-    if (!groupData) {
-      groupData = {key, connectionType, connectionLabel, templateLabel, refs: [], context, templateContext};
-      groupedReferences.push(groupData);
-    }
-
-    return groupData;
-  }
-
-  getGroupData(reference, groupedReferences) {
-    const referenceTemplate = this.props.templates
-                              .find(template => template._id === reference.connectedDocumentTemplate);
-
-
-    if (reference.sourceType === 'metadata') {
-      return this.conformGroupData('metadata', groupedReferences, {
-        key: reference.sourceProperty + '-' + reference.connectedDocumentTemplate,
-        context: reference.connectedDocumentTemplate,
-        connectionLabel: referenceTemplate
-                         .properties
-                         .find(p => p.name === reference.sourceProperty)
-                         .label,
-        templateLabel: referenceTemplate.name,
-        templateContext: referenceTemplate._id
-      });
-    }
-
-    if (reference.sourceType !== 'metadata') {
-      return this.conformGroupData('connection', groupedReferences, {
-        key: reference.relationType,
-        context: reference.relationType,
-        connectionLabel: this.props.relationTypes.find(r => r._id === reference.relationType).name
-      });
-    }
-  }
-
-  groupReferences() {
-    const references = this.props.references.toJS();
-
-    const groupedReferences = [];
-    references.forEach((reference) => {
-      const groupData = this.getGroupData(reference, groupedReferences);
-      groupData.refs.push(reference);
-    });
-
-    return groupedReferences;
-  }
   // --
 
   render() {
-    const {entity, entityBeingEdited, tab} = this.props;
-    const selectedTab = tab || 'references';
-    const references = this.props.references.toJS();
+    const {entity, entityBeingEdited, tab, connectionsGroups} = this.props;
+    const selectedTab = tab || 'info';
     const attachments = entity.attachments ? entity.attachments : [];
 
-    const referencesTemplates = references.map(r => r.connectedDocumentTemplate);
+    const summary = connectionsGroups.reduce((summaryData, g) => {
+      g.get('templates').forEach(template => {
+        summaryData.totalConnections += template.get('count');
+      });
+      return summaryData;
+    }, {totalConnections: 0});
 
     return (
       <div className="row entity-content">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
-        <aside className="side-panel entity-metadata">
+
+        <div className="content-header content-header-entity">
+          <div className="content-header-title">
+            <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+            <h1 className="item-name">{entity.title}</h1>
+            <TemplateLabel template={entity.template}/>
+          </div>
+
+          <Tabs className="content-header-tabs" selectedTab={selectedTab}
+                handleSelect={tabName => {
+                  this.props.showTab(tabName);
+                }}>
+            <ul className="nav nav-tabs">
+              <li>
+                <TabLink to="info">
+                  <i className="fa fa-info-circle"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                </TabLink>
+              </li>
+              <li>
+                <TabLink to="connections">
+                  <i className="fa fa-exchange"></i>
+                  <span className="connectionsNumber">{summary.totalConnections}</span>
+                  <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                </TabLink>
+              </li>
+              <li>
+                <TabLink to="attachments">
+                  <i className="fa fa-download"></i>
+                  <span className="connectionsNumber">{attachments.length}</span>
+                  <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
+                </TabLink>
+              </li>
+            </ul>
+          </Tabs>
+        </div>
+
+        <main className="entity-viewer">
+
+          <Tabs selectedTab={selectedTab}>
+            <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
+              <div className="document">
+                {(() => {
+                  if (entityBeingEdited) {
+                    return <EntityForm/>;
+                  }
+                  return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
+                })()}
+              </div>
+            </TabContent>
+            <TabContent for="connections">
+              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
+            </TabContent>
+          </Tabs>
+        </main>
+
+        <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <MetadataFormButtons
             delete={this.deleteEntity.bind(this)}
             data={this.props.rawEntity}
             formStatePath='entityView.entityForm'
-            entityBeingEdited={entityBeingEdited}/>
+            entityBeingEdited={entityBeingEdited} />
+        </ShowIf>
 
-          <div className="sidepanel-body">
-            <div className="document">
-              <ShowIf if={!entityBeingEdited}>
-                <div className="item-info">
-                  <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
-                  <h1 className="item-name">{entity.title}</h1>
-                  <TemplateLabel template={entity.template}/>
-                </div>
-              </ShowIf>
-              {(() => {
-                if (entityBeingEdited) {
-                  return <EntityForm/>;
-                }
-                return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
-              })()}
-            </div>
-          </div>
-        </aside>
         <aside className="side-panel entity-connections">
-
-          <div className="sidepanel-header">
-            <Tabs selectedTab={selectedTab}
-                  handleSelect={tabName => {
-                    this.props.showTab(tabName);
-                  }}>
-              <ul className="nav nav-tabs">
-                <li>
-                  <TabLink to="references">
-                    <i className="fa fa-exchange"></i>
-                    <span className="connectionsNumber">{references.length}</span>
-                    <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                  </TabLink>
-                </li>
-                <li>
-                  <TabLink to="attachments">
-                    <i className="fa fa-download"></i>
-                    <span className="connectionsNumber">{attachments.length}</span>
-                    <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
-                  </TabLink>
-                </li>
-              </ul>
-            </Tabs>
-            &nbsp;
-          </div>
-
-          <NeedAuthorization>
-            <ShowIf if={selectedTab === 'references'}>
-              <div className="sidepanel-footer">
+          <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
+            <div className="sidepanel-footer">
+              <ResetSearch />
+              <NeedAuthorization>
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">
                   <i className="fa fa-plus"></i>
                   <span className="btn-label">New</span>
                 </button>
-              </div>
-            </ShowIf>
-          </NeedAuthorization>
+              </NeedAuthorization>
+            </div>
+          </ShowIf>
 
           <NeedAuthorization>
             <ShowIf if={this.props.tab === 'attachments'}>
@@ -189,16 +157,8 @@ export class EntityViewer extends Component {
 
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
-              <TabContent for="references">
-                <div className="sort-by">
-                  <SortButtons stateProperty="entityView.sort"
-                               selectedTemplates={Immutable(referencesTemplates)} />
-                </div>
-                {this.groupReferences(references).map(group =>
-                  <ReferencesGroup key={group.key}
-                                   group={Immutable(group)}
-                                   deleteReference={this.deleteReference.bind(this)} />
-                )}
+              <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
+                <ConnectionsGroups />
               </TabContent>
               <TabContent for="attachments">
                 <AttachmentsList files={Immutable(attachments)}
@@ -209,7 +169,7 @@ export class EntityViewer extends Component {
 
         </aside>
 
-        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.addReference}/>
+        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
 
       </div>
     );
@@ -220,12 +180,12 @@ EntityViewer.propTypes = {
   entity: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
-  references: PropTypes.object,
+  connectionsGroups: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
-  addReference: PropTypes.func,
-  deleteReference: PropTypes.func,
+  connectionsChanged: PropTypes.func,
+  deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
   showTab: PropTypes.func
@@ -249,11 +209,6 @@ const prepareMetadata = createSelector(
   selectThesauris,
   (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
 );
-const selectReferences = createSelector(
-  s => !!s.user.get('_id'),
-  s => s.entityView.references,
-  (loged, references) => references.filter(ref => loged || ref.get('connectedDocumentPublished'))
-);
 
 const mapStateToProps = (state) => {
   return {
@@ -261,7 +216,7 @@ const mapStateToProps = (state) => {
     templates: selectTemplates(state),
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
-    references: selectReferences(state),
+    connectionsGroups: state.connectionsList.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab')
   };
@@ -270,8 +225,8 @@ const mapStateToProps = (state) => {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     deleteEntity,
-    addReference,
-    deleteReference,
+    connectionsChanged,
+    deleteConnection,
     showTab,
     startNewConnection: connectionsActions.startNewConnection
   }, dispatch);

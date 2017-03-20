@@ -4,7 +4,6 @@ import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
-import request from 'shared/JSONRequest';
 
 export default {
   search(query, language) {
@@ -12,6 +11,7 @@ export default {
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)
     .filterByTemplate(query.types)
+    .filterById(query.ids)
     .language(language);
 
     if (query.sort) {
@@ -30,6 +30,10 @@ export default {
       documentsQuery.aggregations(query.aggregations);
     }
 
+    if (query.includeUnpublished) {
+      documentsQuery.includeUnpublished();
+    }
+
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})
     .then((response) => {
       let rows = response.hits.hits.map((hit) => {
@@ -39,7 +43,7 @@ export default {
       });
 
       return {rows, totalRows: response.hits.total, aggregations: response.aggregations};
-    })
+    });
   },
 
   getUploadsByUser(user, language) {

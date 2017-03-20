@@ -1,7 +1,5 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import fs from 'fs';
 import entities from '../entities.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
@@ -99,6 +97,10 @@ describe('entities', () => {
           ]);
         })
         .then(([docES, docEN, docPT]) => {
+          expect(docEN.published).toBe(true);
+          expect(docES.published).toBe(true);
+          expect(docPT.published).toBe(true);
+
           expect(docEN.metadata.text).toBe('newMetadata');
           expect(docES.metadata.text).toBe('newMetadata');
           expect(docPT.metadata.text).toBe('test');
@@ -121,6 +123,9 @@ describe('entities', () => {
           ]);
         })
         .then(([docES, docEN]) => {
+          expect(docEN.template).toBeDefined();
+          expect(docES.template).toBeDefined();
+
           expect(docES.published).toBe(false);
           expect(docES.template.equals(templateId)).toBe(true);
           expect(docEN.published).toBe(false);

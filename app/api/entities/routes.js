@@ -16,9 +16,7 @@ export default (app) => {
     .then((templateTransformed) => {
       req.io.sockets.emit('thesauriChange', templateTransformed);
     })
-    .catch(error => {
-      res.json({error});
-    });
+    .catch(res.error);
   });
 
   app.post('/api/entities/multipleupdate', needsAuthorization, (req, res) => {
@@ -26,38 +24,36 @@ export default (app) => {
     .then(docs => {
       res.json(docs.map((doc) => doc.sharedId));
     })
-    .catch(error => {
-      res.json({error});
-    });
+    .catch(res.error);
   });
 
   app.get('/api/entities/count_by_template', (req, res) => {
     return entities.countByTemplate(req.query.templateId)
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.get('/api/entities/uploads', needsAuthorization, (req, res) => {
     entities.getUploadsByUser(req.user)
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.get('/api/entities', (req, res) => {
     entities.getById(req.query._id, req.language)
     .then(response => res.json({rows: [response]}))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.delete('/api/entities', needsAuthorization, (req, res) => {
     entities.delete(req.query.sharedId)
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.delete('/api/entities/multiple', needsAuthorization, (req, res) => {
     entities.deleteMultiple(JSON.parse(req.query.sharedIds))
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 };

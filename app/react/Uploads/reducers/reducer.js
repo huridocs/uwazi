@@ -15,6 +15,8 @@ export default combineReducers({
   uiState,
   metadata: modelReducer('uploads.metadata'),
   metadataForm: formReducer('uploads.metadata'),
+  multipleEdit: modelReducer('uploads.multipleEdit'),
+  multipleEditForm: formReducer('uploads.multipleEdit'),
   entity: modelReducer('uploads.entity'),
   entityForm: formReducer('uploads.entity')
 });

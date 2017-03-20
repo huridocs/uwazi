@@ -4,11 +4,9 @@ import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
 import documents from 'app/Documents';
-import entities from 'app/Entities';
 import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 import referencesAPI from 'app/Viewer/referencesAPI';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import {api as entitiesAPI} from 'app/Entities';
 
 export function enterLibrary() {
@@ -20,13 +18,11 @@ export function selectDocument(doc) {
   if (doc.toJS) {
     document = doc.toJS();
   }
-  return (dispatch) => {
-    dispatch({type: types.SELECT_DOCUMENT, doc: document});
-    return referencesAPI.get(document.sharedId)
-    .then((references) => {
-      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, document.language)));
-    });
-  };
+  return {type: types.SELECT_DOCUMENT, doc: document};
+}
+
+export function selectDocuments(docs) {
+  return {type: types.SELECT_DOCUMENTS, docs};
 }
 
 export function unselectDocument(docId) {
@@ -35,6 +31,10 @@ export function unselectDocument(docId) {
 
 export function unselectAllDocuments() {
   return {type: types.UNSELECT_ALL_DOCUMENTS};
+}
+
+export function updateSelectedEntities(entities) {
+  return {type: types.UPDATE_SELECTED_ENTITIES, entities};
 }
 
 export function showFilters() {
@@ -140,9 +140,9 @@ export function saveDocument(doc) {
   };
 }
 
-export function multipleUpdate(_entities, values) {
+export function multipleUpdate(entities, values) {
   return function (dispatch) {
-    const updatedEntities = _entities.toJS().map((entity) => {
+    const updatedEntities = entities.toJS().map((entity) => {
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
         entity.icon = values.icon;
@@ -161,7 +161,7 @@ export function multipleUpdate(_entities, values) {
 
 export function saveEntity(entity) {
   return function (dispatch) {
-    return entities.api.save(entity)
+    return entitiesAPI.save(entity)
     .then((updatedDoc) => {
       dispatch(notify('Entity updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
@@ -192,7 +192,7 @@ export function deleteDocument(doc) {
 
 export function deleteEntity(entity) {
   return function (dispatch) {
-    return entities.api.delete(entity)
+    return entitiesAPI.delete(entity)
     .then(() => {
       dispatch(notify('Entity deleted', 'success'));
       dispatch(unselectDocument(entity._id));

@@ -82,6 +82,26 @@ describe('search', () => {
       });
     });
 
+    it('should allow searching only within specific Ids', (done) => {
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+      search.search({
+        searchTerm: 'searchTerm',
+        ids: ['1', '3']
+      }, 'es')
+      .then((results) => {
+        const expectedQuery = queryBuilder()
+        .fullTextSearch('searchTerm')
+        .filterById(['1', '3'])
+        .language('es')
+        .query();
+
+        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
+        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        expect(results.totalRows).toEqual(10);
+        done();
+      });
+    });
+
     it('should sort if sort is present', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
       search.search({
@@ -97,7 +117,27 @@ describe('search', () => {
         .filterMetadata({property1: 'value1', property2: 'value2'})
         .filterByTemplate(['ruling'])
         .language('es')
-        .sort('title', 'asc').query();
+        .sort('title', 'asc')
+        .query();
+
+        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
+        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        done();
+      });
+    });
+
+    it('should allow including unpublished documents', (done) => {
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+      search.search({
+        searchTerm: 'searchTerm',
+        includeUnpublished: true
+      }, 'es')
+      .then((results) => {
+        let expectedQuery = queryBuilder()
+        .fullTextSearch('searchTerm')
+        .includeUnpublished()
+        .language('es')
+        .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
         expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
@@ -112,7 +152,7 @@ describe('search', () => {
         {title: 'doc1', _id: 'id1'},
         {title: 'doc2', _id: 'id2'}
       ])
-      .withHighlights([{'title': ['doc1 highlighted']}, {'title': ['doc2 highlighted']}])
+      .withHighlights([{title: ['doc1 highlighted']}, {title: ['doc2 highlighted']}])
       .toObject();
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
 
@@ -142,8 +182,8 @@ describe('search', () => {
       .then(() => {
         expect(elastic.index)
         .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1', body: {
-            type: 'document',
-            title: 'Batman indexes'
+          type: 'document',
+          title: 'Batman indexes'
         }});
         done();
       })

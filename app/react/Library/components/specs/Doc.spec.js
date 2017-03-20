@@ -6,16 +6,28 @@ import {mapStateToProps} from '../Doc';
 import {Doc} from '../Doc';
 import {Item} from 'app/Layout';
 
+import {NeedAuthorization} from 'app/Auth';
+
 describe('Doc', () => {
   let component;
   let props = {};
 
   beforeEach(() => {
+    const doc = {
+      _id: 'idOne',
+      template: 'templateId',
+      creationDate: 1234,
+      type: 'document',
+      sharedId: 'id',
+      connections: [{sourceType: 'metadata'}, {_id: 'c1', sourceType: 'other', nonRelevant: true}]
+    };
+
     props = {
-      doc: Immutable({_id: 'idOne', template: 'templateId', creationDate: 1234, type: 'document', sharedId: 'id'}),
+      doc: Immutable(doc),
       user: Immutable({_id: 'batId'}),
       active: false,
       selectDocument: jasmine.createSpy('selectDocument'),
+      deleteConnection: jasmine.createSpy('deleteConnection'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       searchParams: {sort: 'sortProperty'}
@@ -30,6 +42,32 @@ describe('Doc', () => {
     it('should hold the entire Doc as Immutable', () => {
       render();
       expect(component.find(Item).props().doc).toEqual(Immutable(props.doc));
+    });
+
+    describe('Connections header', () => {
+      let header;
+
+      beforeEach(() => {
+        render();
+        header = shallow(component.find(Item).props().itemHeader);
+      });
+
+      it('should pass the connections and include delete button for only non-metadata properties', () => {
+        expect(header.find('.item-connection').length).toBe(2);
+        expect(header.find('button').at(0).parent().parent().is(NeedAuthorization)).toBe(true);
+        expect(header.find('button').at(0).parent().props().if).toBe(false);
+        expect(header.find('button').at(1).parent().props().if).toBe(true);
+      });
+
+      it('should alow deleting non-metadata connections', () => {
+        const eMock = {stopPropagation: jasmine.createSpy('stopPropagation')};
+        expect(props.deleteConnection).not.toHaveBeenCalled();
+
+        header.find('button').at(1).simulate('click', eMock);
+
+        expect(eMock.stopPropagation).toHaveBeenCalled();
+        expect(props.deleteConnection).toHaveBeenCalledWith({_id: 'c1', sourceType: 'other'});
+      });
     });
 
     it('should hold a link to the document', () => {
@@ -49,14 +87,6 @@ describe('Doc', () => {
       render();
       expect(component.find(Item).props().active).toBe(false);
     });
-
-    describe('onClick', () => {
-      it('should selectDocument', () => {
-        render();
-        component.find(Item).simulate('click', {metaKey: false});
-        expect(props.selectDocument).toHaveBeenCalledWith(props.doc);
-      });
-    });
   });
 
   describe('when doc is active', () => {
@@ -65,14 +95,14 @@ describe('Doc', () => {
       render();
       expect(component.find(Item).props().active).toBe(true);
     });
+  });
 
-    describe('onClick', () => {
-      it('should unselectDocument', () => {
-        props.active = true;
-        render();
-        component.find(Item).simulate('click', {metaKey: false});
-        expect(props.unselectDocument).toHaveBeenCalled();
-      });
+  describe('onClick', () => {
+    it('should call onClick', () => {
+      props.onClick = jasmine.createSpy('onClick');
+      render();
+      component.find(Item).simulate('click', {metaKey: false});
+      expect(props.onClick).toHaveBeenCalled();
     });
   });
 

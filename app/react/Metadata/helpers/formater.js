@@ -92,6 +92,10 @@ export default {
       return Object.assign({}, doc, {metadata: [], documentType: ''});
     }
 
+    if (!doc.metadata) {
+      doc.metadata = {};
+    }
+
     let metadata = template.properties.map((property) => {
       let value = doc.metadata[property.name];
       let showInCard = property.showInCard;

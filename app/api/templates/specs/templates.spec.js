@@ -1,7 +1,6 @@
 import templates from 'api/templates/templates.js';
 import entities from 'api/entities/entities.js';
 import documents from 'api/documents/documents.js';
-//import database from 'api/utils/database.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 import {db} from 'api/utils';
@@ -10,7 +9,7 @@ import fixtures, {templateToBeEditedId, templateToBeDeleted} from './fixtures.js
 describe('templates', () => {
   beforeEach((done) => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-    db.clearAndLoad(fixtures, (err) => {
+    db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
         done.fail(err);
       }
@@ -35,7 +34,7 @@ describe('templates', () => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
 
       templates.save(newTemplate)
-      .then(templates.get)
+      .then(() => templates.get())
       .then((allTemplates) => {
         let newDoc = allTemplates.find((template) => {
           return template.name === 'created_template';
@@ -115,7 +114,7 @@ describe('templates', () => {
       ]};
 
       templates.save(newTemplate)
-      .then(templates.get)
+      .then(() => templates.get())
       .then((allTemplates) => {
         let newDoc = allTemplates.find((template) => {
           return template.name === 'created_template';
@@ -142,7 +141,7 @@ describe('templates', () => {
       ]};
 
       templates.save(newTemplate)
-      .then(templates.get)
+      .then(() => templates.get())
       .then((allTemplates) => {
         let newDoc = allTemplates.find((template) => {
           return template.name === 'created_template';

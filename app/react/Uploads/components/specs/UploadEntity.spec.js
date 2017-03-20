@@ -14,8 +14,8 @@ describe('UploadEntity', () => {
       entity: Immutable.fromJS({_id: 'entityId', title: 'title', template: 'templateId'}),
       templates: Immutable.fromJS([{templates: 'templates'}]),
       edit: jasmine.createSpy('edit'),
-      finishEdit: jasmine.createSpy('finishEdit'),
-      loadInReduxForm: jasmine.createSpy('loadInReduxForm')
+      loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
+      onClick: jasmine.createSpy('onClick')
     };
   });
 
@@ -32,48 +32,11 @@ describe('UploadEntity', () => {
     expect(component.find(RowList.Item).props().status).toBe('success');
   });
 
-  it('should not pass active prop if not metadataBeingEdited', () => {
-    render();
-    expect(component.find(RowList.Item).props().active).toBeUndefined();
-  });
-
-  it('should pass active prop true if metadataBeingEdited its the same', () => {
-    props = {
-      entity: Immutable.fromJS({_id: 'entityId', title: 'title'}),
-      metadataBeingEdited: {_id: 'entityId'}
-    };
-    render();
-    expect(component.find(RowList.Item).props().active).toBe(true);
-  });
-
-  it('should pass active prop false if metadataBeingEdited its not the same', () => {
-    props = {
-      entity: Immutable.fromJS({_id: 'entityId', title: 'title'}),
-      metadataBeingEdited: {_id: 'anotherId'}
-    };
-    render();
-    expect(component.find(RowList.Item).props().active).toBe(false);
-  });
-
   describe('onClick', () => {
-    it('should edit', () => {
+    it('should call onClick prop', () => {
       render();
-
-      component.find(RowList.Item).simulate('click');
-      expect(props.edit).toHaveBeenCalledWith(props.entity.toJS());
-      expect(props.loadInReduxForm).toHaveBeenCalledWith('uploads.metadata', props.entity.toJS(), props.templates.toJS());
-    });
-
-    describe('when clicking on the same document being edited', () => {
-      it('should finishEdit', () => {
-        props.metadataBeingEdited = {_id: 'entityId'};
-        render();
-
-        component.find(RowList.Item).simulate('click');
-        expect(props.finishEdit).toHaveBeenCalled();
-        expect(props.edit).not.toHaveBeenCalled();
-        expect(props.loadInReduxForm).not.toHaveBeenCalled();
-      });
+      component.find(RowList.Item).simulate('click', {metaKey: false, ctrlKey: false});
+      expect(props.onClick).toHaveBeenCalled();
     });
   });
 });

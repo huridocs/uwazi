@@ -67,6 +67,9 @@ $c-sidebar: $c-white;
   }
   .form-group {
     margin: 0;
+    .fa-warning {
+      color: $c-warning;
+    }
   }
 
   .sort-by {
@@ -178,7 +181,7 @@ $c-sidebar: $c-white;
   flex: 1;
   overflow-y: scroll;
   overflow-x: hidden;
-  
+
   & > *:last-child { // firefox hack (related issue #378)
     padding-bottom: $header-height * 2;
   }
@@ -209,18 +212,9 @@ $c-sidebar: $c-white;
     position: absolute;
     left: 0;
     bottom: 0;
-    height: $header-height;
     right: $header-height;
-    border: 0;
   }
-  .connectionsNumber {
-    position: relative;
-    top: 2px;
-    font-size: 11px;
-    line-height: 1em;
-    margin-left: 5px;
-  }
-  
+
   .fa {
     font-size: $f-size-lg;
     color: $c-grey-dark;

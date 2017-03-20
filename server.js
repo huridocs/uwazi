@@ -11,7 +11,9 @@ var path = require('path');
 var compression = require('compression');
 const app = express();
 var http = require('http').Server(app);
+var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 
+app.use(error_handling_middleware);
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, 'dist')));
 app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));

@@ -18,7 +18,7 @@ export class UploadsMenu extends Component {
   }
 
   render() {
-    if (this.props.metadataBeingEdited) {
+    if (this.props.hide) {
       return null;
     }
 
@@ -27,14 +27,14 @@ export class UploadsMenu extends Component {
 }
 
 UploadsMenu.propTypes = {
-  metadataBeingEdited: PropTypes.object,
+  hide: PropTypes.bool,
   newEntity: PropTypes.func,
   templates: PropTypes.object
 };
 
 function mapStateToProps(state) {
   return {
-    metadataBeingEdited: state.uploads.uiState.get('metadataBeingEdited'),
+    hide: !!state.uploads.uiState.get('selectedDocuments').size,
     templates: state.templates
   };
 }

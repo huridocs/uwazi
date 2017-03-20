@@ -11,16 +11,28 @@ export function enterUploads() {
   };
 }
 
-export function finishEdit() {
-  return {
-    type: types.FINISH_EDIT_METADATA
-  };
+export function selectDocument(doc) {
+  let document = doc;
+  if (doc.toJS) {
+    document = doc.toJS();
+  }
+  return {type: types.SELECT_DOCUMENT, doc: document};
 }
 
-export function edit(doc) {
-  return function (dispatch) {
-    dispatch({type: types.EDIT_METADATA, doc});
-  };
+export function selectDocuments(docs) {
+  return {type: types.SELECT_DOCUMENTS, docs};
+}
+
+export function unselectDocument(docId) {
+  return {type: types.UNSELECT_DOCUMENT, docId};
+}
+
+export function unselectAllDocuments() {
+  return {type: types.UNSELECT_ALL_DOCUMENTS};
+}
+
+export function updateSelectedEntities(entities) {
+  return {type: types.UPDATE_SELECTED_ENTITIES, entities};
 }
 
 export function updateDocument(doc) {
@@ -29,6 +41,11 @@ export function updateDocument(doc) {
     doc
   };
 }
+
+export function updateEntities(updatedDocs) {
+  return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
+}
+
 
 export function setUploads(documents) {
   return {
@@ -55,7 +72,7 @@ export function newEntity(templates) {
   return function (dispatch) {
     let newEntityMetadata = {title: '', type: 'entity'};
     dispatch(metadata.actions.loadInReduxForm('uploads.metadata', newEntityMetadata, templates));
-    dispatch(edit(newEntityMetadata));
+    dispatch(selectDocument(newEntityMetadata));
   };
 }
 
@@ -64,7 +81,7 @@ export function saveEntity(entity) {
     return api.post('entities', entity)
     .then((response) => {
       dispatch(notify('Entity saved', 'success'));
-      dispatch({type: types.FINISH_EDIT_METADATA});
+      dispatch(unselectAllDocuments());
       if (!entity._id) {
         return dispatch({type: types.ELEMENT_CREATED, doc: response.json});
       }
@@ -119,7 +136,7 @@ export function saveDocument(doc) {
     .then(() => {
       dispatch(notify('Document updated', 'success'));
       dispatch(updateDocument(doc));
-      dispatch({type: types.FINISH_EDIT_METADATA});
+      dispatch(unselectAllDocuments());
     });
   };
 }

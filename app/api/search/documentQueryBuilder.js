@@ -8,9 +8,7 @@ export default function () {
     size: 30,
     query: {
       bool: {
-        must: [
-          {match: {'published': true}}
-        ]
+        must: [{match: {published: true}}]
       }
     },
     filter: {
@@ -43,6 +41,14 @@ export default function () {
       return baseQuery;
     },
 
+    includeUnpublished() {
+      const matchPulished = baseQuery.query.bool.must.find(i => i.match && i.match.published);
+      if (matchPulished) {
+        baseQuery.query.bool.must.splice(baseQuery.query.bool.must.indexOf(matchPulished), 1);
+      }
+      return this;
+    },
+
     fullTextSearch(term, fieldsToSearch = ['fullText', 'title']) {
       if (term) {
         baseQuery.query.bool.must.push({
@@ -57,14 +63,14 @@ export default function () {
     },
 
     language(language) {
-      let match = {match: {'language': language}};
+      let match = {match: {language: language}};
       baseQuery.query.bool.must.push(match);
       return this;
     },
 
     sort(property, order = 'desc') {
       let sort = {};
-      sort[`${property}.raw`] = {order, 'ignore_unmapped': true};
+      sort[`${property}.raw`] = {order, ignore_unmapped: true};
       baseQuery.sort.push(sort);
       return this;
     },
@@ -320,6 +326,14 @@ export default function () {
     filterByTemplate(templates = []) {
       if (templates.length) {
         let match = {terms: {'template.raw': templates}};
+        baseQuery.filter.bool.must.push(match);
+      }
+      return this;
+    },
+
+    filterById(ids = []) {
+      if (ids.length) {
+        let match = {terms: {'sharedId.raw': ids}};
         baseQuery.filter.bool.must.push(match);
       }
       return this;

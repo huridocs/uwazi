@@ -73,11 +73,8 @@ export default {
 
     return save(template)
     .then((newTemplate) => {
-      //maybe this is not a good idea (having an unhandled async process)
       return addTemplateTranslation(newTemplate)
       .then(() => newTemplate);
-      //
-      //return newTemplate;
     });
   },
 
