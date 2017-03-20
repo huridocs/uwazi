@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
-import marked from 'marked';
+import marked from 'app/utils/marked';
 import {Icon} from 'app/Layout/Icon';
 import {TemplateLabel} from 'app/Layout';
 
@@ -37,7 +37,7 @@ export class ShowMetadata extends Component {
     }
 
     if (property.markdown) {
-      return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
+      return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
     }
 
     if (property.value) {

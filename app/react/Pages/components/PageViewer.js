@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
 import marked from 'marked';
+import extendedMarked from 'app/utils/marked';
 
 import {ItemList} from './ItemList';
 
@@ -25,7 +26,7 @@ export class PageViewer extends Component {
       return memo;
     }, []);
 
-    const html = marked(content, {sanitize: true});
+    const html = extendedMarked(content);
     const htmlSplits = html.split(`<p>${listPlaceholder}</p>\n`).filter(i => i.length);
 
     const pageHtml = sections.map((type, index) => {
