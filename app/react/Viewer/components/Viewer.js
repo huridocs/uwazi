@@ -17,6 +17,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
+import {TemplateLabel, Icon} from 'app/Layout';
 
 export class Viewer extends Component {
 
@@ -25,6 +26,8 @@ export class Viewer extends Component {
   }
 
   render() {
+    const {doc} = this.props;
+
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
       className += ' with-panel is-active';
@@ -36,16 +39,19 @@ export class Viewer extends Component {
       className += ' connections';
     }
 
+
     return (
       <div className="row">
-        <Helmet title={this.props.doc.get('title') ? this.props.doc.get('title') : 'Document'} />
-        <div className="content-header content-header-document">
-          <div className="content-header-title">
-            <span className="item-icon item-icon-center"><i className="fa fa-adn fa-lg"></i></span>
-            <h1 className="item-name">Test entity</h1>
-            <span className="item-type item-type-0"><span className="item-type__name">Test</span></span>
+        <Helmet title={doc.get('title') ? doc.get('title') : 'Document'} />
+        <ShowIf if={!this.props.targetDoc}>
+          <div className="content-header content-header-document">
+            <div className="content-header-title">
+              <Icon className="item-icon item-icon-center" data={doc.get('icon').toJS()} size="sm"/>
+              <h1 className="item-name">{doc.get('title')}</h1>
+              <TemplateLabel template={doc.get('template')}/>
+            </div>
           </div>
-        </div>
+        </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={!this.props.targetDoc}>
@@ -58,7 +64,7 @@ export class Viewer extends Component {
 
         <ConfirmCloseForm />
         <ViewMetadataPanel />
-        <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : this.props.doc.get('sharedId')}
+        <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
 
