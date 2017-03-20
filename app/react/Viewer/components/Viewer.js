@@ -46,7 +46,7 @@ export class Viewer extends Component {
         <ShowIf if={!this.props.targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
-              <Icon className="item-icon item-icon-center" data={doc.get('icon').toJS()} size="sm"/>
+              <Icon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
               <h1 className="item-name">{doc.get('title')}</h1>
               <TemplateLabel template={doc.get('template')}/>
             </div>
