@@ -4,7 +4,7 @@ import elasticResult from './elasticResult';
 import queryBuilder from 'api/search/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import fixtures, {templateId, userId, unpublishedId} from './fixtures.js';
+import fixtures, {templateId, userId} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('search', () => {
@@ -204,6 +204,23 @@ describe('search', () => {
         done();
       })
       .catch(done.fail);
+    });
+  });
+
+  describe('indexEntities', () => {
+    it('should index entities based on query params passed', (done) => {
+      spyOn(search, 'bulkIndex');
+      search.indexEntities({sharedId: 'shared'}, {title: 1})
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex[0].title).toBeDefined();
+        expect(documentsToIndex[0].metadata).not.toBeDefined();
+        expect(documentsToIndex[1].title).toBeDefined();
+        expect(documentsToIndex[1].metadata).not.toBeDefined();
+        expect(documentsToIndex[2].title).toBeDefined();
+        expect(documentsToIndex[2].metadata).not.toBeDefined();
+        done();
+      });
     });
   });
 

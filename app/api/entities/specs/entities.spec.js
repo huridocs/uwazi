@@ -372,6 +372,7 @@ describe('entities', () => {
 
     describe('when entity is being used as thesauri', () => {
       it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
+        spyOn(search, 'bulkIndex');
         entities.delete('shared')
         .then(() => {
           return Promise.all([
@@ -380,11 +381,11 @@ describe('entities', () => {
           ]);
         })
         .then(([entitiesWithMultiselect, entitiesWithSelect]) => {
-          expect(entitiesWithSelect[0].metadata.select).toBe('');
-          expect(entitiesWithSelect[1].metadata.select2).toBe('');
-
-          expect(entitiesWithMultiselect[0].metadata.multiselect).toEqual(['value1']);
-          expect(entitiesWithMultiselect[1].metadata.multiselect2).toEqual(['value2']);
+          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+          expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
+          expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
+          expect(documentsToIndex[2].metadata.select).toBe('');
+          expect(documentsToIndex[3].metadata.select2).toBe('');
           done();
         })
         .catch(catchErrors(done));

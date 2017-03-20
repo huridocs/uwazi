@@ -80,17 +80,42 @@ export default {
     return elastic.index({index: elasticIndex, type: 'entity', id, body});
   },
 
-  bulkIndex(docs, type = 'entity') {
+  bulkIndex(docs, type = 'entity', _action = 'update') {
     let body = [];
     docs.forEach((doc) => {
+      let _doc = doc;
       const id = doc._id.toString();
       delete doc._id;
       delete doc._rev;
-      body.push({index: {_index: elasticIndex, _type: type, _id: id}});
-      body.push(doc);
+      let action = {};
+      action[_action] = {_index: elasticIndex, _type: type, _id: id};
+      if (_action === 'update') {
+        _doc = {doc: _doc};
+      }
+      body.push(action);
+      body.push(_doc);
     });
 
     return elastic.bulk({body});
+  },
+
+  indexEntities(query, select, limit = 1000) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return;
+      }
+
+      return entities.get(query, select, {skip: offset, limit})
+      .then((docs) => {
+        return docs;
+      })
+      .then((docs) => this.bulkIndex(docs))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return entities.count(query)
+    .then((totalRows) => {
+      return index(0, totalRows);
+    });
   },
 
   delete(entity) {

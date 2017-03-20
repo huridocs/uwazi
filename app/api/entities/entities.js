@@ -160,7 +160,7 @@ export default {
         model.delete({sharedId}),
         references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
         this.deleteFiles(docs),
-        this.deleteFromEntityFromMetadata(docs[0])
+        this.deleteEntityFromMetadata(docs[0])
       ])
       .then(() => docs);
     })
@@ -172,7 +172,7 @@ export default {
     });
   },
 
-  deleteFromEntityFromMetadata(entity) {
+  deleteEntityFromMetadata(entity) {
     return templates.get({'properties.content': entity.template})
     .then((allTemplates) => {
       const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
@@ -198,10 +198,19 @@ export default {
         return p;
       });
 
+      if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
+        return;
+      }
+
       return Promise.all([
         model.db.updateMany(selectQuery, {$set: selectChanges}),
         model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
-      ]);
+      ])
+      .then(() => {
+        return search.indexEntities({template: {$in: allTemplates.map(t => t._id.toString())}}, {metadata: 1});
+      });
     });
-  }
+  },
+
+  count: model.count
 };
