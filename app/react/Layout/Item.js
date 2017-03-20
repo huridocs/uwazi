@@ -27,12 +27,15 @@ export class Item extends Component {
       }
 
       if (property.value && property.value !== '' || property.markdown) {
+        let dlClassName = '';
+
         let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
         if (property.markdown) {
+          dlClassName = 'full-width';
           value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
         }
         return (
-          <dl key={index}>
+          <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
             <dd className={isSortingProperty ? 'item-current-sort' : ''}>
               <Icon className="item-icon item-icon-center" data={property.icon} />{value}
