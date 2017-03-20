@@ -89,8 +89,9 @@
     position: fixed;
     z-index: 1;
     background: linear-gradient($c-background 0%, $c-background 70%, transparent 100%);
-    top: 54px;
+    top: $header-height;
     width: 100%;
+    max-width: 900px;
     left: 0;
     padding: 15px;
     @media(min-width: 1024px) {
