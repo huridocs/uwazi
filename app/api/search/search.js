@@ -76,17 +76,24 @@ export default {
     const id = entity._id.toString();
     delete entity._id;
     delete entity._rev;
+    let fullTextIndex = Promise.resolve();
+    if (entity.fullText) {
+      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: {fullText: entity.fullText}});
+      delete entity.fullText;
+    }
     const body = entity;
-    return elastic.index({index: elasticIndex, type: 'entity', id, body});
+    return Promise.all([
+      elastic.index({index: elasticIndex, type: 'entity', id, body}),
+      fullTextIndex
+    ]);
   },
 
-  bulkIndex(docs, type = 'entity', _action = 'update') {
+  bulkIndex(docs, _action = 'update', type = 'entity') {
     let body = [];
     docs.forEach((doc) => {
       let _doc = doc;
       const id = doc._id.toString();
       delete doc._id;
-      delete doc._rev;
       let action = {};
       action[_action] = {_index: elasticIndex, _type: type, _id: id};
       if (_action === 'update') {
@@ -94,6 +101,15 @@ export default {
       }
       body.push(action);
       body.push(_doc);
+
+      if (doc.fullText) {
+        action = {};
+        action['index'] = {_index: elasticIndex, _type: 'fullText', parent: id};
+        _doc = {fullText: doc.fullText};
+        delete doc.fullText;
+        body.push(action);
+        body.push(_doc);
+      }
     });
 
     return elastic.bulk({body});

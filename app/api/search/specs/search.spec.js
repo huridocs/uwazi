@@ -1,3 +1,4 @@
+import {index as elasticIndex} from 'api/config/elasticIndexes';
 import search from '../search.js';
 import elastic from '../elastic';
 import elasticResult from './elasticResult';
@@ -189,7 +190,6 @@ describe('search', () => {
 
       const entity = {
         _id: 'asd1',
-        _rev: '1-a3fs',
         type: 'document',
         title: 'Batman indexes'
       };
@@ -204,6 +204,101 @@ describe('search', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('when document has fullText', () => {
+      it('should index the fullText as child', (done) => {
+        spyOn(elastic, 'index').and.returnValue(Promise.resolve());
+
+        const entity = {
+          _id: 'asd1',
+          type: 'document',
+          title: 'Batman indexes',
+          fullText: 'text'
+        };
+
+        search.index(entity)
+        .then(() => {
+          expect(elastic.index)
+          .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1', body: {
+            type: 'document',
+            title: 'Batman indexes'
+          }});
+          expect(elastic.index)
+          .toHaveBeenCalledWith({index: 'uwazi', type: 'fullText', parent: 'asd1', body: {
+            fullText: 'text'
+          }});
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+  });
+
+  describe('bulkIndex', () => {
+    it('should update docs using es bulk functionality', (done) => {
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+      const toIndexDocs = [
+        {_id: 'id1', title: 'test1'},
+        {_id: 'id2', title: 'test2'}
+      ];
+
+      search.bulkIndex(toIndexDocs)
+      .then(() => {
+        expect(elastic.bulk).toHaveBeenCalledWith({body: [
+          {update: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
+          {doc: {title: 'test1'}},
+          {update: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
+          {doc: {title: 'test2'}}
+        ]});
+        done();
+      });
+    });
+
+    describe('when action is not update', () => {
+      it('should index instead of update', (done) => {
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+        const toIndexDocs = [
+          {_id: 'id1', title: 'test1'},
+          {_id: 'id2', title: 'test2'}
+        ];
+
+        search.bulkIndex(toIndexDocs, 'index')
+        .then(() => {
+          expect(elastic.bulk).toHaveBeenCalledWith({body: [
+            {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
+            {title: 'test1'},
+            {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
+            {title: 'test2'}
+          ]});
+          done();
+        });
+      });
+    });
+
+    describe('when docs have fullText', () => {
+      it('should be indexed separatedly as a child of the doc', (done) => {
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+        const toIndexDocs = [
+          {_id: 'id1', title: 'test1', fullText: 'text1'},
+          {_id: 'id2', title: 'test2', fullText: 'text2'}
+        ];
+
+        search.bulkIndex(toIndexDocs, 'index')
+        .then(() => {
+          expect(elastic.bulk).toHaveBeenCalledWith({body: [
+            {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
+            {title: 'test1'},
+            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
+            {fullText: 'text1'},
+            {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
+            {title: 'test2'},
+            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
+            {fullText: 'text2'}
+          ]});
+          done();
+        });
+      });
     });
   });
 

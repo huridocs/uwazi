@@ -19,7 +19,7 @@ function migrate(offset, totalRows) {
       return;
     }
 
-    return search.bulkIndex(docsResponse, 'entity', 'index')
+    return search.bulkIndex(docsResponse, 'index')
     .then(() => {
       process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
       pos += 1;
