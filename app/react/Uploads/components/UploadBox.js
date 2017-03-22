@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
 
-import {uploadDocument, finishEdit, createDocument} from 'app/Uploads/actions/uploadsActions';
+import {uploadDocument, unselectAllDocuments, createDocument} from 'app/Uploads/actions/uploadsActions';
 
 export class UploadBox extends Component {
   onDrop(files) {
@@ -14,7 +14,7 @@ export class UploadBox extends Component {
         this.props.uploadDocument(newDoc.sharedId, file);
       });
     });
-    this.props.finishEdit();
+    this.props.unselectAllDocuments();
   }
 
   extractTitle(file) {
@@ -51,12 +51,12 @@ export class UploadBox extends Component {
 UploadBox.propTypes = {
   uploadDocument: PropTypes.func,
   createDocument: PropTypes.func,
-  finishEdit: PropTypes.func
+  unselectAllDocuments: PropTypes.func
 };
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument, finishEdit, createDocument}, dispatch);
+  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument}, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(UploadBox);

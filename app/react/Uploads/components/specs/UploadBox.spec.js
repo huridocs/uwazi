@@ -20,7 +20,7 @@ describe('UploadBox', () => {
   let props = {
     createDocument: jasmine.createSpy('createDocument').and.returnValue(documentCreation),
     uploadDocument: jasmine.createSpy('uploadDocument'),
-    finishEdit: jasmine.createSpy('finishEdit')
+    unselectAllDocuments: jasmine.createSpy('unselectAllDocuments')
   };
 
   let render = () => {
@@ -40,10 +40,10 @@ describe('UploadBox', () => {
       }).catch(done.fail);
     });
 
-    it('should should call finishEdit to close the document form being edited', () => {
+    it('should should call unselectAllDocuments to close the document form being edited', () => {
       render();
       instance.onDrop([]);
-      expect(props.finishEdit).toHaveBeenCalled();
+      expect(props.unselectAllDocuments).toHaveBeenCalled();
     });
   });
 });
