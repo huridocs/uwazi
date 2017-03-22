@@ -11,8 +11,10 @@ import SearchButton from './components/SearchButton';
 import ViewMetadataPanel from './components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from './containers/SelectMultiplePanelContainer';
 import ConfirmCloseForm from './components/ConfirmCloseForm';
+import UploadBox from 'app/uploads/components/UploadBox';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
+import {NeedAuthorization} from 'app/Auth';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
 
@@ -68,6 +70,9 @@ export default class Library extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="document-viewer with-panel">
+          <NeedAuthorization>
+            <UploadBox />
+          </NeedAuthorization>
           <DocumentsList />
         </main>
         <ConfirmCloseForm />

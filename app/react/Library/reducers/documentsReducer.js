@@ -27,6 +27,10 @@ export default function documents(state = initialState, action = {}) {
     }, state);
   }
 
+  if (action.type === types.ELEMENT_CREATED) {
+    return state.update('rows', (rows) => rows.push(Immutable.fromJS(action.doc)));
+  }
+
   if (action.type === types.REMOVE_DOCUMENT) {
     const docIndex = state.get('rows').findIndex(doc => {
       return doc.get('_id') === action.doc._id;
