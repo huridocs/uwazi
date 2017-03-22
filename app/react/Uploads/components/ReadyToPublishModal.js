@@ -4,12 +4,12 @@ import {bindActionCreators} from 'redux';
 import Modal from 'app/Layout/Modal';
 
 import {hideModal} from 'app/Modals/actions/modalActions';
-import {moveToLibrary, finishEdit} from 'app/Uploads/actions/uploadsActions';
+import {moveToLibrary, unselectAllDocuments} from 'app/Uploads/actions/uploadsActions';
 
 export class ReadyToPublishModal extends Component {
 
   confirm() {
-    this.props.finishEdit();
+    this.props.unselectAllDocuments();
     this.props.hideModal('readyToPublish');
     this.props.moveToLibrary(this.props.doc.toJS());
   }
@@ -50,7 +50,7 @@ export class ReadyToPublishModal extends Component {
 ReadyToPublishModal.propTypes = {
   hideModal: PropTypes.func,
   moveToLibrary: PropTypes.func,
-  finishEdit: PropTypes.func,
+  unselectAllDocuments: PropTypes.func,
   doc: PropTypes.object
 };
 
@@ -59,7 +59,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({hideModal, moveToLibrary, finishEdit}, dispatch);
+  return bindActionCreators({hideModal, moveToLibrary, unselectAllDocuments}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReadyToPublishModal);

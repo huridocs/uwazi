@@ -51,6 +51,7 @@
     "extract-text-webpack-plugin": "^2.0.0-rc.2",
     "filesize": "^3.3.0",
     "font-awesome": "^4.5.0",
+    "get-youtube-id": "^1.0.0",
     "history": "^1.17.0",
     "immutable": "^3.7.6",
     "isomorphic-fetch": "2.2.1",

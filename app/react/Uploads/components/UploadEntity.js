@@ -62,7 +62,6 @@ UploadEntity.propTypes = {
   entity: PropTypes.object,
   active: PropTypes.bool,
   loadInReduxForm: PropTypes.func,
-  finishEdit: PropTypes.func,
   templates: PropTypes.object,
   onClick: PropTypes.func,
   publishEntity: PropTypes.func
