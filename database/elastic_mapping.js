@@ -46,7 +46,10 @@ export default {
             index: 'analyzed',
             omit_norms: true,
             analyzer: 'tokenizer',
-            fielddata: {format: 'enabled'}
+            fielddata: {format: 'enabled'},
+            fields: {
+              raw: {type: 'string', analyzer: 'folding'}
+            }
           }
         }
       }, {
