@@ -1,7 +1,7 @@
+/* eslint-disable camelcase, no-console */
 import request from '../app/shared/JSONRequest';
-import P from 'bluebird';
 import search from '../app/api/search/search';
-import elastic_mapping from './elastic_mapping';
+import elasticMapping from './elastic_mapping';
 
 import indexConfig from '../app/api/config/elasticIndexes';
 import entities from '../app/api/entities/entitiesModel';
@@ -14,7 +14,7 @@ let spinner = ['|', '/', '-', '\\'];
 
 function migrate(offset, totalRows) {
   return entities.get({}, '+fullText', {skip: offset, limit})
-  .then(function(docsResponse) {
+  .then((docsResponse) => {
     if (offset >= totalRows) {
       return;
     }
@@ -23,7 +23,9 @@ function migrate(offset, totalRows) {
     .then(() => {
       process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
       pos += 1;
-      if (pos > 3) {pos = 0;}
+      if (pos > 3) {
+        pos = 0;
+      }
       docsIndexed += docsResponse.length;
       return migrate(offset + limit, totalRows);
     });
@@ -37,13 +39,13 @@ request.delete(indexUrl)
 .catch(console.log)
 .then(() => {
   process.stdout.write(`Creating index... ${indexConfig.index}\n`);
-  request.put(indexUrl, elastic_mapping).catch(console.log);
+  request.put(indexUrl, elasticMapping).catch(console.log);
 })
 .then(() => {
   return entities.count()
   .then((total_rows) => {
     return migrate(0, total_rows)
-    .catch(function(error) {
+    .catch((error) => {
       console.log('Migration error: ', error);
     });
   });
