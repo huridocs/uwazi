@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import formater from '../Metadata/helpers/formater';
-import marked from 'marked';
+import marked from 'app/utils/marked';
 
 import t from '../I18N/t';
 import ShowIf from 'app/App/ShowIf';
@@ -27,12 +27,15 @@ export class Item extends Component {
       }
 
       if (property.value && property.value !== '' || property.markdown) {
+        let dlClassName = '';
+
         let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
         if (property.markdown) {
-          value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown, {sanitize: true})}}/>;
+          dlClassName = 'full-width';
+          value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
         }
         return (
-          <dl key={index}>
+          <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
             <dd className={isSortingProperty ? 'item-current-sort' : ''}>
               <Icon className="item-icon item-icon-center" data={property.icon} />{value}
