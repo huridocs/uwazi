@@ -90,7 +90,8 @@ export default (app) => {
 
   app.post('/api/reupload', needsAuthorization, upload.any(), (req, res) => {
     return entities.getById(req.body.document)
-    .then(doc => references.deleteTextReferences(doc.sharedId, doc.language))
+    .then(doc => Promise.all([doc, references.deleteTextReferences(doc.sharedId, doc.language)]))
+    .then(([doc]) => entities.saveMultiple([{_id: doc._id, toc: []}]))
     .then(() => uploadProcess(req, res, false));
   });
 };
