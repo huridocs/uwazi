@@ -29,27 +29,26 @@ export class MetadataForm extends Component {
   }
 
   render() {
-    let {metadata, state} = this.props;
-    let templates = this.props.templates.toJS();
+    let {metadata, state, templates} = this.props;
     templates = templates.filter((template) => {
       if (metadata.type === 'entity') {
-        return template.isEntity;
+        return template.get('isEntity');
       }
-      return !template.isEntity;
+      return !template.get('isEntity');
     });
 
-    let template = templates.find((tmpl) => tmpl._id === metadata.template);
+    let template = templates.find((tmpl) => tmpl.get('_id') === metadata.template);
     const {model} = this.props;
     if (!template) {
       return <div />;
     }
 
     const templateOptions = templates.map((tmpl) => {
-      return {label: tmpl.name, value: tmpl._id};
+      return {label: tmpl.get('name'), value: tmpl.get('_id')};
     });
 
     return (
-      <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template)}>
+      <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template.toJS())}>
 
         <FormGroup {...state.title}>
           <ul className="search__filter">
@@ -68,10 +67,10 @@ export class MetadataForm extends Component {
             <li className="wide">
               <SimpleSelect
                 className="form-control"
-                value={template._id}
-                options={templateOptions}
+                value={template.get('_id')}
+                options={templateOptions.toJS()}
                 onChange={(e) => {
-                  this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl._id === e.target.value));
+                  this.props.changeTemplate(model, this.props.metadata, templates.find((tmpl) => tmpl.get('_id') === e.target.value).toJS());
                 }}
               >
               </SimpleSelect>
@@ -88,7 +87,7 @@ export class MetadataForm extends Component {
           </ul>
         </FormGroup>
 
-        <MetadataFormFields thesauris={this.props.thesauris.toJS()} state={state} template={template} />
+        <MetadataFormFields thesauris={this.props.thesauris} state={state} template={template} />
       </Form>
     );
   }

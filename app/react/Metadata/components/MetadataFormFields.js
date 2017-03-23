@@ -3,6 +3,7 @@ import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate,
 import {Field} from 'react-redux-form';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
+import {connect} from 'react-redux';
 
 export class MetadataFormFields extends Component {
 
@@ -14,38 +15,39 @@ export class MetadataFormFields extends Component {
   }
 
   isPristine(field) {
-    return field.pristine || (field.$form && field.$form.pristine);
+    return field.pristine || field.$form && field.$form.pristine;
   }
 
   render() {
-    let {template, state, thesauris} = this.props;
-
+    let {state} = this.props;
+    const thesauris = this.props.thesauris.toJS();
+    const template = this.props.template.toJS();
     return (
       <div>
         {template.properties.map((property) => {
           const getField = (propertyType, _model) => {
             let thesauri;
             switch (propertyType) {
-            case 'select':
-              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-              return <Select model={_model} optionsValue='id' options={this.translateOptions(thesauri)}/>;
-            case 'multiselect':
-              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-              return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
-            case 'date':
-              return <DatePicker model={_model}/>;
-            case 'numeric':
-              return <Numeric model={_model}/>;
-            case 'markdown':
-              return <MarkDown model={_model}/>;
-            case 'nested':
-              return <Nested model={_model}/>;
-            case 'multidate':
-              return <MultiDate model={_model}/>;
-            case 'multidaterange':
-              return <MultiDateRange model={_model}/>;
-            default:
-              return <Field model={_model}><input className="form-control"/></Field>;
+              case 'select':
+                thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+                return <Select model={_model} optionsValue='id' options={this.translateOptions(thesauri)}/>;
+              case 'multiselect':
+                thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+                return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
+              case 'date':
+                return <DatePicker model={_model}/>;
+              case 'numeric':
+                return <Numeric model={_model}/>;
+              case 'markdown':
+                return <MarkDown model={_model}/>;
+              case 'nested':
+                return <Nested model={_model}/>;
+              case 'multidate':
+                return <MultiDate model={_model}/>;
+              case 'multidaterange':
+                return <MultiDateRange model={_model}/>;
+              default:
+                return <Field model={_model}><input className="form-control"/></Field>;
             }
           };
 
@@ -65,7 +67,7 @@ export class MetadataFormFields extends Component {
                 <li className="wide">{getField(property.type, `.metadata.${property.name}`)}</li>
               </ul>
             </FormGroup>
-            );
+          );
         })}
       </div>
     );
@@ -80,4 +82,4 @@ MetadataFormFields.propTypes = {
   multipleEdition: PropTypes.bool
 };
 
-export default MetadataFormFields;
+export default connect()(MetadataFormFields);

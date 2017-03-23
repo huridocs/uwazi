@@ -3,6 +3,7 @@ import {shallow} from 'enzyme';
 import Immutable from 'immutable';
 
 import {MetadataForm} from '../MetadataForm';
+import MetadataFormFields from '../MetadataFormFields';
 import {Form, Field} from 'react-redux-form';
 import {Select as SimpleSelect} from 'app/Forms';
 import {IconSelector} from 'app/ReactReduxForms';
@@ -44,6 +45,15 @@ describe('MetadataForm', () => {
     render();
     let form = component.find(Form);
     expect(form.props().model).toEqual('metadata');
+  });
+
+  it('should render MetadataFormFields passing thesauris state and template', () => {
+    render();
+    let formFields = component.find(MetadataFormFields)
+
+    expect(formFields.props().thesauris).toBe(props.thesauris);
+    expect(formFields.props().state).toBe(props.state);
+    expect(formFields.props().template).toBe(props.templates.get(0));
   });
 
   it('should pass the field state to every fields', () => {
