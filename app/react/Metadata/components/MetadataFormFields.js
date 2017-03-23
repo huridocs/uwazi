@@ -78,7 +78,7 @@ MetadataFormFields.propTypes = {
   template: PropTypes.object,
   model: PropTypes.string,
   state: PropTypes.object,
-  thesauris: PropTypes.array,
+  thesauris: PropTypes.object,
   multipleEdition: PropTypes.bool
 };
 
