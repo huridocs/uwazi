@@ -49,7 +49,7 @@ describe('MetadataForm', () => {
 
   it('should render MetadataFormFields passing thesauris state and template', () => {
     render();
-    let formFields = component.find(MetadataFormFields)
+    let formFields = component.find(MetadataFormFields);
 
     expect(formFields.props().thesauris).toBe(props.thesauris);
     expect(formFields.props().state).toBe(props.state);

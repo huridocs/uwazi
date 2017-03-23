@@ -28,26 +28,26 @@ export class MetadataFormFields extends Component {
           const getField = (propertyType, _model) => {
             let thesauri;
             switch (propertyType) {
-              case 'select':
-                thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-                return <Select model={_model} optionsValue='id' options={this.translateOptions(thesauri)}/>;
-              case 'multiselect':
-                thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-                return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
-              case 'date':
-                return <DatePicker model={_model}/>;
-              case 'numeric':
-                return <Numeric model={_model}/>;
-              case 'markdown':
-                return <MarkDown model={_model}/>;
-              case 'nested':
-                return <Nested model={_model}/>;
-              case 'multidate':
-                return <MultiDate model={_model}/>;
-              case 'multidaterange':
-                return <MultiDateRange model={_model}/>;
-              default:
-                return <Field model={_model}><input className="form-control"/></Field>;
+            case 'select':
+              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+              return <Select model={_model} optionsValue='id' options={this.translateOptions(thesauri)}/>;
+            case 'multiselect':
+              thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+              return <MultiSelect model={_model} optionsValue='id' options={this.translateOptions(thesauri)} />;
+            case 'date':
+              return <DatePicker model={_model}/>;
+            case 'numeric':
+              return <Numeric model={_model}/>;
+            case 'markdown':
+              return <MarkDown model={_model}/>;
+            case 'nested':
+              return <Nested model={_model}/>;
+            case 'multidate':
+              return <MultiDate model={_model}/>;
+            case 'multidaterange':
+              return <MultiDateRange model={_model}/>;
+            default:
+              return <Field model={_model}><input className="form-control"/></Field>;
             }
           };
 
