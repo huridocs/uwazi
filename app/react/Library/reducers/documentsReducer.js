@@ -28,7 +28,7 @@ export default function documents(state = initialState, action = {}) {
   }
 
   if (action.type === types.ELEMENT_CREATED) {
-    return state.update('rows', (rows) => rows.push(Immutable.fromJS(action.doc)));
+    return state.update('rows', (rows) => rows.insert(0, Immutable.fromJS(action.doc)));
   }
 
   if (action.type === types.REMOVE_DOCUMENT) {

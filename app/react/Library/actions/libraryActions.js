@@ -117,8 +117,14 @@ export function searchDocuments(readOnlySearch, limit) {
     const filters = getState().library.filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
-    browserHistory.push(`/library/${toUrlParams(search)}`);
+    const pathname = browserHistory.getCurrentLocation().pathname;
+    const path = (pathname + '/').replace(/\/\//g, '/');
+    browserHistory.push(path + toUrlParams(search));
   };
+}
+
+export function elementCreated(doc) {
+  return {type: types.ELEMENT_CREATED, doc};
 }
 
 export function updateEntity(updatedDoc) {
@@ -164,9 +170,15 @@ export function saveEntity(entity) {
   return function (dispatch) {
     return entitiesAPI.save(entity)
     .then((updatedDoc) => {
-      dispatch(notify('Entity updated', 'success'));
       dispatch(formActions.reset('library.sidepanel.metadata'));
-      dispatch(dispatch(updateEntity(updatedDoc)));
+      if (entity._id) {
+        dispatch(notify('Entity updated', 'success'));
+        dispatch(updateEntity(updatedDoc));
+      } else {
+        dispatch(notify('Entity created', 'success'));
+        dispatch(elementCreated(updatedDoc));
+      }
+
       dispatch(selectDocument(updatedDoc));
     });
   };

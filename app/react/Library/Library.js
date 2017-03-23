@@ -1,20 +1,19 @@
 import React from 'react';
 import Helmet from 'react-helmet';
+import Immutable from 'immutable';
 
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
-import DocumentsList from './components/DocumentsList';
-import LibraryFilters from './components/LibraryFilters';
-import {enterLibrary, setDocuments} from './actions/libraryActions';
-import libraryHelpers from './helpers/libraryFilters';
-import SearchButton from './components/SearchButton';
-import ViewMetadataPanel from './components/ViewMetadataPanel';
-import SelectMultiplePanelContainer from './containers/SelectMultiplePanelContainer';
-import ConfirmCloseForm from './components/ConfirmCloseForm';
-import UploadBox from 'app/uploads/components/UploadBox';
+import DocumentsList from 'app/Library/components/DocumentsList';
+import LibraryFilters from 'app/Library/components/LibraryFilters';
+import {enterLibrary, setDocuments, unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import SearchButton from 'app/Library/components/SearchButton';
+import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
+import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
+import ConfirmCloseForm from 'app/Library/components/ConfirmCloseForm';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
-import {NeedAuthorization} from 'app/Auth';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
 
@@ -65,14 +64,16 @@ export default class Library extends RouteHandler {
     this.context.store.dispatch(enterLibrary());
   }
 
+  componentWillUnmount() {
+    this.context.store.dispatch(setDocuments(Immutable.fromJS({rows: []})));
+    this.context.store.dispatch(unselectAllDocuments());
+  }
+
   render() {
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="document-viewer with-panel">
-          <NeedAuthorization>
-            <UploadBox />
-          </NeedAuthorization>
           <DocumentsList />
         </main>
         <ConfirmCloseForm />

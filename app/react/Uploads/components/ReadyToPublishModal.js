@@ -30,7 +30,7 @@ export class ReadyToPublishModal extends Component {
       <Modal isOpen={!!doc} type="success">
 
         <Modal.Body>
-          <p>Congratulations! The selected document is ready to be public:</p>
+          <p>The selected document is ready to be public:</p>
           <p><strong>{doc.title}</strong></p>
         </Modal.Body>
 

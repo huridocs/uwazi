@@ -89,6 +89,17 @@ export default function () {
       return this;
     },
 
+    unpublished() {
+      baseQuery.query.bool.must[0].match.published = false;
+      return this;
+    },
+
+    owner(user) {
+      let match = {match: {user: user._id}};
+      baseQuery.query.bool.must.push(match);
+      return this;
+    },
+
     sort(property, order = 'desc') {
       let sort = {};
       sort[`${property}.raw`] = {order, ignore_unmapped: true};

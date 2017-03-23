@@ -36,7 +36,7 @@ const mapStateToProps = (state) => {
     metadata: formatMetadata(state),
     references: library.sidepanel.references,
     tab: library.sidepanel.tab,
-    docBeingEdited: !!library.sidepanel.metadata._id,
+    docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
     formDirty: !library.sidepanel.metadataForm.$form.pristine,
     templates: getTemplates(state),
     formPath: 'library.sidepanel.metadata',

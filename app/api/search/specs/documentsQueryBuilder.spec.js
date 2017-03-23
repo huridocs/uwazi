@@ -10,6 +10,19 @@ describe('documentQueryBuilder', () => {
     });
   });
 
+  describe('unpublished', () => {
+    it('should do a match all on published documents', () => {
+      expect(queryBuilder().unpublished().query().query.bool.must[0]).toEqual({match: {published: false}});
+    });
+  });
+
+  describe('owner', () => {
+    it('should do a match all documents uploaded by a specific user', () => {
+      const user = {_id: '123'};
+      expect(queryBuilder().owner(user).query().query.bool.must[1]).toEqual({match: {user: '123'}});
+    });
+  });
+
   describe('from', () => {
     it('should set from', () => {
       expect(queryBuilder().from(5).query().from).toEqual(5);
