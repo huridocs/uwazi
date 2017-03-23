@@ -9,6 +9,7 @@ import {Icon} from 'app/Layout/Icon';
 import {TemplateLabel} from 'app/Layout';
 
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
+import {caseTemplate, matterTemplate} from 'app/Timeline/utils/timelineFixedData';
 
 export class ShowMetadata extends Component {
   getValue(property) {
@@ -64,7 +65,7 @@ export class ShowMetadata extends Component {
       <div className="view">
         {header}
 
-        <ShowIf if={entity.template === '58b2f3a35d59f31e1345b48a' || entity.template === '58b2f3a35d59f31e1345b4a4'}>
+        <ShowIf if={entity.template === caseTemplate || entity.template === matterTemplate}>
           <dl>
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
