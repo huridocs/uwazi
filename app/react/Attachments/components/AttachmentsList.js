@@ -69,7 +69,18 @@ export class AttachmentsList extends Component {
         <div key={index}
              className={`item highlight-hover ${item.itemClassName}`}>
           <div className="item-info">
-            <div className="item-name">{file.originalname}</div>
+            <div className="item-name">
+              {file.originalname}
+              <NeedAuthorization>
+                <ShowIf if={item.replaceable && !this.props.readOnly}>
+                  <i className="property-help fa fa-question-circle">
+                    <div className="property-description-bottom">
+                      This file name is derived from the main Document Title.  To change the name, edit the Title property in the Info tab.
+                    </div>
+                  </i>
+                </ShowIf>
+              </NeedAuthorization>
+            </div>
           </div>
           <ShowIf if={Boolean(sizeString)}>
             <div className="item-metadata">
