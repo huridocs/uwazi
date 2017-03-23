@@ -62,6 +62,7 @@ export default (app) => {
       const docs = _docs.map((doc) => {
         doc.processed = true;
         doc.fullText = conversion.fullText;
+        doc.toc = [];
         return doc;
       });
 

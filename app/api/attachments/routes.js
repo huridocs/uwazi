@@ -2,7 +2,6 @@ import {db_url as dbUrl} from '../config/database';
 import needsAuthorization from '../auth/authMiddleware';
 import multer from 'multer';
 import ID from 'shared/uniqueID';
-import request from '../../shared/JSONRequest';
 import fs from 'fs';
 
 import path from 'path';

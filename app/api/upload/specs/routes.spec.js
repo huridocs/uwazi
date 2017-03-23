@@ -112,13 +112,20 @@ describe('upload routes', () => {
       spyOn(references, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
-    it('should reupload a document', (done) => {
+    fit('should reupload a document', (done) => {
       req.body.document = entityId;
       routes.post('/api/reupload', req)
       .then(response => {
         expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
         expect(response).toEqual(file);
-        done();
+
+        setTimeout(() => {
+          documents.getById('id', 'es')
+          .then(modifiedDoc => {
+            expect(modifiedDoc.toc.length).toBe(0);
+            done();
+          });
+        }, 1000);
       })
       .catch(done.fail);
     });
