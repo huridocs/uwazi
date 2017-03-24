@@ -165,6 +165,22 @@ describe('search', () => {
       })
       .catch(done.fail);
     });
+
+    it('should return empty array if searchTerm is empty and not an error', (done) => {
+      result = elasticResult().withDocs([
+        {title: 'doc1', _id: 'id1'},
+        {title: 'doc2', _id: 'id2'}
+      ])
+      .toObject();
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+
+      search.matchTitle('', 'es')
+      .then((results) => {
+        expect(results).toEqual([]);
+        done();
+      })
+      .catch(done.fail);
+    });
   });
 
   describe('index', () => {

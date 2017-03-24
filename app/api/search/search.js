@@ -1,4 +1,3 @@
-import {db_url as dbURL} from 'api/config/database';
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
@@ -60,7 +59,7 @@ export default {
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
-      return response.hits.hits.map((hit) => {
+      return searchTerm === '' ? [] : response.hits.hits.map((hit) => {
         let result = hit._source;
         result._id = hit._id;
         result.title = hit.highlight.title[0];
