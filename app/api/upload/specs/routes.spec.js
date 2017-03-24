@@ -118,6 +118,11 @@ describe('upload routes', () => {
       .then(response => {
         expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
         expect(response).toEqual(file);
+
+        return documents.getById('id', 'es');
+      })
+      .then(modifiedDoc => {
+        expect(modifiedDoc.toc.length).toBe(0);
         done();
       })
       .catch(done.fail);
