@@ -30,6 +30,12 @@ export default {
           templates.getById(doc.template)
         ])
         .then(([docLanguages, templateResult]) => {
+          if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
+            return this.deleteEntityFromMetadata(doc).then(() => [docLanguages, templateResult]);
+          }
+          return [docLanguages, templateResult];
+        })
+        .then(([docLanguages, templateResult]) => {
           const template = templateResult || {properties: []};
           const toSyncProperties = template.properties.filter(p => p.type.match('select|multiselect|date|multidate|multidaterange')).map(p => p.name);
           const docs = docLanguages.map((d) => {
@@ -180,7 +186,7 @@ export default {
       const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
       let selectQuery = {$or: []};
       let selectChanges = {};
-      selectQuery.$or = selectProperties.filter(p => entity.template && p.content && entity.template.equals(p.content))
+      selectQuery.$or = selectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
       .map((property) => {
         let p = {};
         p[`metadata.${property.name}`] = entity.sharedId;
@@ -190,7 +196,7 @@ export default {
 
       let multiSelectQuery = {$or: []};
       let multiSelectChanges = {};
-      multiSelectQuery.$or = multiselectProperties.filter(p => entity.template && p.content && entity.template.equals(p.content))
+      multiSelectQuery.$or = multiselectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
       .map((property) => {
         let p = {};
         p[`metadata.${property.name}`] = entity.sharedId;

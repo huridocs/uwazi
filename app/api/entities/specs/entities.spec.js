@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import fs from 'fs';
 import entities from '../entities.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -133,6 +134,32 @@ describe('entities', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+
+      describe('when entity its being used as thesauri', () => {
+        it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
+          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateChangingNames};
+          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
+          entities.save(doc, {language: 'en'})
+          .then(() => {
+            expect(entities.deleteEntityFromMetadata).toHaveBeenCalledWith(doc);
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+      });
+
+      describe('when entity its being used as thesauri and template do not change', () => {
+        it('should not deleteEntityFromMetadata', (done) => {
+          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateId};
+          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
+          entities.save(doc, {language: 'en'})
+          .then(() => {
+            expect(entities.deleteEntityFromMetadata).not.toHaveBeenCalled();
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
     });
 
