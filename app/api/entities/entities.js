@@ -31,7 +31,7 @@ export default {
         ])
         .then(([docLanguages, templateResult]) => {
           if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
-            return this.deleteEntityFromMetadata(doc).then(() => [docLanguages, templateResult]);
+            return this.deleteEntityFromMetadata(docLanguages[0]).then(() => [docLanguages, templateResult]);
           }
           return [docLanguages, templateResult];
         })

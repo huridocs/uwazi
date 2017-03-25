@@ -142,7 +142,8 @@ describe('entities', () => {
           spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
           entities.save(doc, {language: 'en'})
           .then(() => {
-            expect(entities.deleteEntityFromMetadata).toHaveBeenCalledWith(doc);
+            const docToDeleteFromMetadata = entities.deleteEntityFromMetadata.calls.argsFor(0)[0];
+            expect(docToDeleteFromMetadata.template.toString()).toBe(templateId.toString());
             done();
           })
           .catch(catchErrors(done));
