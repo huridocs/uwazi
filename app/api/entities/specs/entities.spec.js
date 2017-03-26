@@ -5,6 +5,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import references from 'api/references';
+import entitiesModel from 'api/entities/entitiesModel';
 
 import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId} from './fixtures.js';
 import {db} from 'api/utils';
@@ -305,11 +306,32 @@ describe('entities', () => {
     });
   });
 
-  /// not used right now but it needs to be improved and used
   describe('updateMetadataProperties', () => {
-    it('should update metadata property names on the entities matching the template', (done) => {
-      let nameChanges = {'metadata.property1': 'metadata.new_name1', 'metadata.property2': 'metadata.new_name2'};
-      entities.updateMetadataProperties(templateChangingNames, nameChanges)
+    it('should do nothing when there is no changed or deleted properties', (done) => {
+      spyOn(entitiesModel.db, 'updateMany');
+      const template = {_id: templateChangingNames, properties: [
+        {id: '1', type: 'text', name: 'property1'},
+        {id: '2', type: 'text', name: 'property2'},
+        {id: '3', type: 'text', name: 'property3'}
+      ]};
+
+      entities.updateMetadataProperties(template)
+      .then(() => {
+        expect(entitiesModel.db.updateMany).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('should update property names on entities based on the changes to the template', (done) => {
+      const template = {_id: templateChangingNames, properties: [
+        {id: '1', type: 'text', name: 'property1', label: 'new name1'},
+        {id: '2', type: 'text', name: 'property2', label: 'new name2'},
+        {id: '3', type: 'text', name: 'property3', label: 'property3'}
+      ]};
+
+      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+
+      entities.updateMetadataProperties(template)
       .then(() => Promise.all([
         entities.get({template: templateChangingNames}),
         entities.getById('shared', 'en')
@@ -324,15 +346,18 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).toBe('value3');
 
         expect(docDiferentTemplate.metadata.property1).toBe('value1');
+        expect(search.indexEntities).toHaveBeenCalledWith({template: template._id}, {metadata: 1});
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     it('should delete properties passed', (done) => {
-      let nameChanges = {'metadata.property2': 'metadata.new_name'};
-      let deleteProperties = ['metadata.property1', 'metadata.property3'];
-      entities.updateMetadataProperties(templateChangingNames, nameChanges, deleteProperties)
+      const template = {_id: templateChangingNames, properties: [
+        {id: '2', type: 'text', name: 'property2', label: 'new name'}
+      ]};
+
+      entities.updateMetadataProperties(template)
       .then(() => entities.get({template: templateChangingNames}))
       .then((docs) => {
         expect(docs[0].metadata.property1).not.toBeDefined();
@@ -346,7 +371,7 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).not.toBeDefined();
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 

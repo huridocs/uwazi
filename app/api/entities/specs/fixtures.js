@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {db} from 'api/utils';
 
 const batmanFinishesId = db.id();
@@ -49,9 +50,9 @@ export default {
       {type: 'multiselect', name: 'multiselect2', content: templateId.toString()}
     ]},
     {_id: templateChangingNames, name: 'template_changing_names', properties: [
-      {type: 'text', name: 'property1'},
-      {type: 'text', name: 'property2'},
-      {type: 'text', name: 'property3'}
+      {id: '1', type: 'text', name: 'property1'},
+      {id: '2', type: 'text', name: 'property2'},
+      {id: '3', type: 'text', name: 'property3'}
     ]}
   ],
   connections: [

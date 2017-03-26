@@ -1,4 +1,4 @@
-//import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
+import {generateNamesAndIds} from 'api/templates/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
@@ -134,15 +134,35 @@ export default {
     return model.get({template, language});
   },
 
-  updateMetadataProperties(template, nameMatches, deleteProperties) {
+  updateMetadataProperties(template) {
     let actions = {};
-    actions.$rename = nameMatches;
-    if (deleteProperties) {
-      let toUnset = {};
-      deleteProperties.forEach(p => toUnset[p] = '');
-      actions.$unset = toUnset;
-    }
-    return model.db.updateMany({template}, actions);
+    actions.$rename = {};
+    actions.$unset = {};
+    return templates.getById(template._id)
+    .then((currentTemplate) => {
+      template.properties = generateNamesAndIds(template.properties);
+      template.properties.forEach((property) => {
+        let currentName = currentTemplate.properties.find(p => p.id === property.id).name;
+        if (currentName !== property.name) {
+          actions.$rename['metadata.' + currentName] = 'metadata.' + property.name;
+        }
+      });
+      currentTemplate.properties.forEach((property) => {
+        if (!template.properties.find(p => p.id === property.id)) {
+          actions.$unset['metadata.' + property.name] = '';
+        }
+      });
+
+      if (!Object.keys(actions.$unset).length) {
+        delete actions.$unset;
+        if (!Object.keys(actions.$rename).length) {
+          return Promise.resolve();
+        }
+      }
+
+      return model.db.updateMany({template}, actions)
+      .then(() => search.indexEntities({template: template._id}, {metadata: 1}));
+    });
   },
 
   deleteFiles(deletedDocs) {

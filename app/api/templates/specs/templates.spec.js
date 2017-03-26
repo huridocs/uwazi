@@ -105,7 +105,7 @@ describe('templates', () => {
       });
     });
 
-    it('should assign a safe property name based on the label to each only when name not already set', (done) => {
+    it('should assign a safe property name based on the label ', (done) => {
       let newTemplate = {name: 'created_template', properties: [
         {label: 'label 1'},
         {label: 'label 2'},
@@ -123,37 +123,7 @@ describe('templates', () => {
         expect(newDoc.properties[0].name).toEqual('label_1');
         expect(newDoc.properties[1].name).toEqual('label_2');
         expect(newDoc.properties[2].name).toEqual('label_3');
-        expect(newDoc.properties[3].name).toEqual('name');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    it('should not repeat names', (done) => {
-      let newTemplate = {name: 'created_template', properties: [
-        {label: 'label 1'},
-        {label: 'label 2'},
-        {label: 'label 3'},
-        {label: 'name'},
-        {label: 'test2', name: 'name--1'},
-        {label: 'label 4', name: 'name'},
-        {label: 'test', name: 'label_1'}
-      ]};
-
-      templates.save(newTemplate)
-      .then(() => templates.get())
-      .then((allTemplates) => {
-        let newDoc = allTemplates.find((template) => {
-          return template.name === 'created_template';
-        });
-
-        expect(newDoc.properties[0].name).toEqual('label_1--1');
-        expect(newDoc.properties[1].name).toEqual('label_2');
-        expect(newDoc.properties[2].name).toEqual('label_3');
-        expect(newDoc.properties[3].name).toEqual('name--2');
-        expect(newDoc.properties[4].name).toEqual('name--1');
-        expect(newDoc.properties[5].name).toEqual('name');
-        expect(newDoc.properties[6].name).toEqual('label_1');
+        expect(newDoc.properties[3].name).toEqual('label_4');
         done();
       })
       .catch(catchErrors(done));
