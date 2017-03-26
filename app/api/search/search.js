@@ -88,7 +88,7 @@ export default {
     ]);
   },
 
-  bulkIndex(docs, _action = 'update') {
+  bulkIndex(docs, _action = 'index') {
     const type = 'entity';
     let body = [];
     docs.forEach((doc) => {
@@ -124,9 +124,9 @@ export default {
       }
 
       return entities.get(query, select, {skip: offset, limit})
-      .then((docs) => {
-        return docs;
-      })
+      //.then((docs) => {
+        //return docs;
+      //})
       .then((docs) => this.bulkIndex(docs))
       .then(() => index(offset + limit, totalRows));
     };

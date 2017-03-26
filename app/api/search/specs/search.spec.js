@@ -246,33 +246,12 @@ describe('search', () => {
       search.bulkIndex(toIndexDocs)
       .then(() => {
         expect(elastic.bulk).toHaveBeenCalledWith({body: [
-          {update: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
-          {doc: {title: 'test1'}},
-          {update: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
-          {doc: {title: 'test2'}}
+          {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
+          {title: 'test1'},
+          {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
+          {title: 'test2'}
         ]});
         done();
-      });
-    });
-
-    describe('when action is not update', () => {
-      it('should index instead of update', (done) => {
-        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
-        const toIndexDocs = [
-          {_id: 'id1', title: 'test1'},
-          {_id: 'id2', title: 'test2'}
-        ];
-
-        search.bulkIndex(toIndexDocs, 'index')
-        .then(() => {
-          expect(elastic.bulk).toHaveBeenCalledWith({body: [
-            {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
-            {title: 'test1'},
-            {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
-            {title: 'test2'}
-          ]});
-          done();
-        });
       });
     });
 

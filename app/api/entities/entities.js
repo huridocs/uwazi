@@ -161,7 +161,7 @@ export default {
       }
 
       return model.db.updateMany({template}, actions)
-      .then(() => search.indexEntities({template: template._id}, {metadata: 1}));
+      .then(() => search.indexEntities({template: template._id}));
     });
   },
 
@@ -233,7 +233,7 @@ export default {
         model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
       ])
       .then(() => {
-        return search.indexEntities({template: {$in: allTemplates.map(t => t._id.toString())}}, {metadata: 1});
+        return search.indexEntities({template: {$in: allTemplates.map(t => t._id.toString())}});
       });
     });
   },
