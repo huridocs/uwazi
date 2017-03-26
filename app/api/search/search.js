@@ -10,6 +10,7 @@ export default {
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)
     .filterByTemplate(query.types)
+    .filterById(query.ids)
     .language(language);
 
     if (query.sort) {
@@ -26,6 +27,10 @@ export default {
 
     if (query.aggregations) {
       documentsQuery.aggregations(query.aggregations);
+    }
+
+    if (query.includeUnpublished) {
+      documentsQuery.includeUnpublished();
     }
 
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})
@@ -54,7 +59,7 @@ export default {
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
-      return response.hits.hits.map((hit) => {
+      return searchTerm === '' ? [] : response.hits.hits.map((hit) => {
         let result = hit._source;
         result._id = hit._id;
         result.title = hit.highlight.title[0];
@@ -72,10 +77,18 @@ export default {
     delete entity._id;
     delete entity._rev;
     const body = entity;
-    return elastic.index({index: elasticIndex, type: 'entity', id, body});
+    let fullTextIndex = Promise.resolve();
+    if (entity.fullText) {
+      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: {fullText: entity.fullText}});
+      delete entity.fullText;
+    }
+    return Promise.all([
+      elastic.index({index: elasticIndex, type: 'entity', id, body}),
+      fullTextIndex
+    ]);
   },
 
-  bulkIndex(docs, _action = 'index') {
+  bulkIndex(docs, _action = 'update') {
     const type = 'entity';
     let body = [];
     docs.forEach((doc) => {
@@ -88,8 +101,17 @@ export default {
       if (_action === 'update') {
         _doc = {doc: _doc};
       }
+
       body.push(action);
       body.push(_doc);
+
+      if (doc.fullText) {
+        action = {};
+        action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id};
+        body.push(action);
+        body.push({fullText: doc.fullText});
+        delete doc.fullText;
+      }
     });
 
     return elastic.bulk({body});

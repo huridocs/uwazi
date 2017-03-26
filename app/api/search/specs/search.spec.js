@@ -236,7 +236,7 @@ describe('search', () => {
   });
 
   describe('bulkIndex', () => {
-    it('should update docs using es bulk functionality', (done) => {
+    it('should update docs using the bulk functionality', (done) => {
       spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
       const toIndexDocs = [
         {_id: 'id1', title: 'test1'},
