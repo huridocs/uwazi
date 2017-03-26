@@ -312,14 +312,16 @@ describe('entities', () => {
       const template = {_id: templateChangingNames, properties: [
         {id: '1', type: 'text', name: 'property1'},
         {id: '2', type: 'text', name: 'property2'},
-        {id: '3', type: 'text', name: 'property3'}
+        {id: '3', type: 'text', name: 'property3'},
+        {type: 'text', label: 'new property'}
       ]};
 
       entities.updateMetadataProperties(template)
       .then(() => {
         expect(entitiesModel.db.updateMany).not.toHaveBeenCalled();
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
     it('should update property names on entities based on the changes to the template', (done) => {

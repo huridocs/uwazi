@@ -8,13 +8,13 @@ export default app => {
       res.json(response);
       req.io.sockets.emit('templateChange', response);
     })
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.get('/api/templates', (req, res) => {
     templates.get()
     .then(response => res.json({rows: response}))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.delete('/api/templates', needsAuthorization, (req, res) => {
@@ -23,11 +23,12 @@ export default app => {
       res.json(response);
       req.io.sockets.emit('templateDelete', response);
     })
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.get('/api/templates/count_by_thesauri', (req, res) => {
     templates.countByThesauri(req.query._id)
-    .then(response => res.json(response));
+    .then(response => res.json(response))
+    .catch(res.error);
   });
 };

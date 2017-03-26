@@ -142,9 +142,9 @@ export default {
     .then((currentTemplate) => {
       template.properties = generateNamesAndIds(template.properties);
       template.properties.forEach((property) => {
-        let currentName = currentTemplate.properties.find(p => p.id === property.id).name;
-        if (currentName !== property.name) {
-          actions.$rename['metadata.' + currentName] = 'metadata.' + property.name;
+        let currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+        if (currentProperty && currentProperty.name !== property.name) {
+          actions.$rename['metadata.' + currentProperty.name] = 'metadata.' + property.name;
         }
       });
       currentTemplate.properties.forEach((property) => {

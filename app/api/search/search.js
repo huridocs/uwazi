@@ -10,7 +10,6 @@ export default {
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)
     .filterByTemplate(query.types)
-    .filterById(query.ids)
     .language(language);
 
     if (query.sort) {
@@ -27,10 +26,6 @@ export default {
 
     if (query.aggregations) {
       documentsQuery.aggregations(query.aggregations);
-    }
-
-    if (query.includeUnpublished) {
-      documentsQuery.includeUnpublished();
     }
 
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})
@@ -59,7 +54,7 @@ export default {
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
-      return searchTerm === '' ? [] : response.hits.hits.map((hit) => {
+      return response.hits.hits.map((hit) => {
         let result = hit._source;
         result._id = hit._id;
         result.title = hit.highlight.title[0];
@@ -76,24 +71,18 @@ export default {
     const id = entity._id.toString();
     delete entity._id;
     delete entity._rev;
-    let fullTextIndex = Promise.resolve();
-    if (entity.fullText) {
-      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: {fullText: entity.fullText}});
-      delete entity.fullText;
-    }
     const body = entity;
-    return Promise.all([
-      elastic.index({index: elasticIndex, type: 'entity', id, body}),
-      fullTextIndex
-    ]);
+    return elastic.index({index: elasticIndex, type: 'entity', id, body});
   },
 
-  bulkIndex(docs, _action = 'update', type = 'entity') {
+  bulkIndex(docs, _action = 'index') {
+    const type = 'entity';
     let body = [];
     docs.forEach((doc) => {
       let _doc = doc;
       const id = doc._id.toString();
       delete doc._id;
+      delete doc._rev;
       let action = {};
       action[_action] = {_index: elasticIndex, _type: type, _id: id};
       if (_action === 'update') {
@@ -101,21 +90,12 @@ export default {
       }
       body.push(action);
       body.push(_doc);
-
-      if (doc.fullText) {
-        action = {};
-        action['index'] = {_index: elasticIndex, _type: 'fullText', parent: id};
-        _doc = {fullText: doc.fullText};
-        delete doc.fullText;
-        body.push(action);
-        body.push(_doc);
-      }
     });
 
     return elastic.bulk({body});
   },
 
-  indexEntities(query, select, limit = 1000) {
+  indexEntities(query, select, limit = 200) {
     const index = (offset, totalRows) => {
       if (offset >= totalRows) {
         return;

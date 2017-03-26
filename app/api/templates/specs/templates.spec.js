@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import templates from 'api/templates/templates.js';
 import entities from 'api/entities/entities.js';
 import documents from 'api/documents/documents.js';
@@ -145,6 +146,21 @@ describe('templates', () => {
     });
 
     describe('when passing _id', () => {
+      beforeEach(() => {
+        spyOn(entities, 'updateMetadataProperties');
+      });
+
+      it('should updateMetadataProperties', (done) => {
+        spyOn(translations, 'updateContext');
+        let toSave = {_id: templateToBeEditedId, name: 'changed name'};
+        templates.save(toSave)
+        .then(() => {
+          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
       it('should edit an existing one', (done) => {
         spyOn(translations, 'updateContext');
         let toSave = {_id: templateToBeEditedId, name: 'changed name'};

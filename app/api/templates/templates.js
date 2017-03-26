@@ -5,6 +5,7 @@ import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
 import instanceModel from 'api/odm';
 import templatesModel from './templatesModel.js';
+import entities from 'api/entities';
 
 const model = instanceModel(templatesModel);
 
@@ -68,6 +69,7 @@ export default {
     if (template._id) {
       return this.getById(template._id)
       .then((currentTemplate) => updateTranslation(currentTemplate, template))
+      .then(() => entities.updateMetadataProperties(template))
       .then(() => save(template));
     }
 
