@@ -1,11 +1,13 @@
+/* eslint-disable max-nested-callbacks */
 import fs from 'fs';
 import entities from '../entities.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import references from 'api/references';
+import entitiesModel from 'api/entities/entitiesModel';
 
-import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId} from './fixtures.js';
+import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('entities', () => {
@@ -133,6 +135,33 @@ describe('entities', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+
+      describe('when entity its being used as thesauri', () => {
+        it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
+          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateChangingNames};
+          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
+          entities.save(doc, {language: 'en'})
+          .then(() => {
+            const docToDeleteFromMetadata = entities.deleteEntityFromMetadata.calls.argsFor(0)[0];
+            expect(docToDeleteFromMetadata.template.toString()).toBe(templateId.toString());
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+      });
+
+      describe('when entity its being used as thesauri and template do not change', () => {
+        it('should not deleteEntityFromMetadata', (done) => {
+          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateId};
+          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
+          entities.save(doc, {language: 'en'})
+          .then(() => {
+            expect(entities.deleteEntityFromMetadata).not.toHaveBeenCalled();
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
     });
 
@@ -277,11 +306,34 @@ describe('entities', () => {
     });
   });
 
-  /// not used right now but it needs to be improved and used
   describe('updateMetadataProperties', () => {
-    it('should update metadata property names on the entities matching the template', (done) => {
-      let nameChanges = {'metadata.property1': 'metadata.new_name1', 'metadata.property2': 'metadata.new_name2'};
-      entities.updateMetadataProperties(templateChangingNames, nameChanges)
+    it('should do nothing when there is no changed or deleted properties', (done) => {
+      spyOn(entitiesModel.db, 'updateMany');
+      const template = {_id: templateChangingNames, properties: [
+        {id: '1', type: 'text', name: 'property1'},
+        {id: '2', type: 'text', name: 'property2'},
+        {id: '3', type: 'text', name: 'property3'},
+        {type: 'text', label: 'new property'}
+      ]};
+
+      entities.updateMetadataProperties(template)
+      .then(() => {
+        expect(entitiesModel.db.updateMany).not.toHaveBeenCalled();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should update property names on entities based on the changes to the template', (done) => {
+      const template = {_id: templateChangingNames, properties: [
+        {id: '1', type: 'text', name: 'property1', label: 'new name1'},
+        {id: '2', type: 'text', name: 'property2', label: 'new name2'},
+        {id: '3', type: 'text', name: 'property3', label: 'property3'}
+      ]};
+
+      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+
+      entities.updateMetadataProperties(template)
       .then(() => Promise.all([
         entities.get({template: templateChangingNames}),
         entities.getById('shared', 'en')
@@ -296,15 +348,18 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).toBe('value3');
 
         expect(docDiferentTemplate.metadata.property1).toBe('value1');
+        expect(search.indexEntities).toHaveBeenCalledWith({template: template._id});
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
 
     it('should delete properties passed', (done) => {
-      let nameChanges = {'metadata.property2': 'metadata.new_name'};
-      let deleteProperties = ['metadata.property1', 'metadata.property3'];
-      entities.updateMetadataProperties(templateChangingNames, nameChanges, deleteProperties)
+      const template = {_id: templateChangingNames, properties: [
+        {id: '2', type: 'text', name: 'property2', label: 'new name'}
+      ]};
+
+      entities.updateMetadataProperties(template)
       .then(() => entities.get({template: templateChangingNames}))
       .then((docs) => {
         expect(docs[0].metadata.property1).not.toBeDefined();
@@ -318,7 +373,22 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).not.toBeDefined();
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('removeValuesFromEntities', () => {
+    it('should remove values of properties passed on all entities having that property', (done) => {
+      spyOn(search, 'bulkIndex');
+      entities.removeValuesFromEntities({multiselect: []}, templateWithEntityAsThesauri)
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex.length).toBe(1);
+        expect(documentsToIndex[0].metadata.multiselect).toEqual([]);
+        //expect(documentsToIndex[1].metadata.select2).toBe('');
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 
@@ -368,6 +438,22 @@ describe('entities', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    describe('when entity is being used as thesauri', () => {
+      it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
+        spyOn(search, 'bulkIndex');
+        entities.delete('shared')
+        .then(() => {
+          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+          expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
+          expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
+          expect(documentsToIndex[2].metadata.select).toBe('');
+          expect(documentsToIndex[3].metadata.select2).toBe('');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 

@@ -1,4 +1,4 @@
-//import {updateMetadataNames, deleteMetadataProperties} from 'api/entities/utils';
+import {generateNamesAndIds} from 'api/templates/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
@@ -29,6 +29,12 @@ export default {
           this.getAllLanguages(doc.sharedId),
           templates.getById(doc.template)
         ])
+        .then(([docLanguages, templateResult]) => {
+          if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
+            return this.deleteEntityFromMetadata(docLanguages[0]).then(() => [docLanguages, templateResult]);
+          }
+          return [docLanguages, templateResult];
+        })
         .then(([docLanguages, templateResult]) => {
           const template = templateResult || {properties: []};
           const toSyncProperties = template.properties.filter(p => p.type.match('select|multiselect|date|multidate|multidaterange')).map(p => p.name);
@@ -128,15 +134,35 @@ export default {
     return model.get({template, language});
   },
 
-  updateMetadataProperties(template, nameMatches, deleteProperties) {
+  updateMetadataProperties(template) {
     let actions = {};
-    actions.$rename = nameMatches;
-    if (deleteProperties) {
-      let toUnset = {};
-      deleteProperties.forEach(p => toUnset[p] = '');
-      actions.$unset = toUnset;
-    }
-    return model.db.updateMany({template}, actions);
+    actions.$rename = {};
+    actions.$unset = {};
+    return templates.getById(template._id)
+    .then((currentTemplate) => {
+      template.properties = generateNamesAndIds(template.properties);
+      template.properties.forEach((property) => {
+        let currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+        if (currentProperty && currentProperty.name !== property.name) {
+          actions.$rename['metadata.' + currentProperty.name] = 'metadata.' + property.name;
+        }
+      });
+      currentTemplate.properties.forEach((property) => {
+        if (!template.properties.find(p => p.id === property.id)) {
+          actions.$unset['metadata.' + property.name] = '';
+        }
+      });
+
+      if (!Object.keys(actions.$unset).length) {
+        delete actions.$unset;
+        if (!Object.keys(actions.$rename).length) {
+          return Promise.resolve();
+        }
+      }
+
+      return model.db.updateMany({template}, actions)
+      .then(() => search.indexEntities({template: template._id}));
+    });
   },
 
   deleteFiles(deletedDocs) {
@@ -159,7 +185,8 @@ export default {
       return Promise.all([
         model.delete({sharedId}),
         references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
-        this.deleteFiles(docs)
+        this.deleteFiles(docs),
+        this.deleteEntityFromMetadata(docs[0])
       ])
       .then(() => docs);
     })
@@ -169,5 +196,70 @@ export default {
       }))
       .then(() => docs);
     });
-  }
+  },
+
+  removeValuesFromEntities(properties, template) {
+    let query = {template, $or: []};
+    let changes = {};
+
+    Object.keys(properties).forEach((prop) => {
+      let propQuery = {};
+      propQuery['metadata.' + prop] = {$exists: true};
+      query.$or.push(propQuery);
+      changes['metadata.' + prop] = properties[prop];
+    });
+
+    return Promise.all([
+      this.get(query, {_id: 1}),
+      model.db.updateMany(query, {$set: changes})
+    ])
+    .then(([entitiesToReindex]) => {
+      return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+    });
+  },
+
+  deleteEntityFromMetadata(entity) {
+    return templates.get({'properties.content': entity.template})
+    .then((allTemplates) => {
+      const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
+      const selectProperties = allProperties.filter(p => p.type === 'select');
+      const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
+      let selectQuery = {$or: []};
+      let selectChanges = {};
+      selectQuery.$or = selectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
+      .map((property) => {
+        let p = {};
+        p[`metadata.${property.name}`] = entity.sharedId;
+        selectChanges[`metadata.${property.name}`] = '';
+        return p;
+      });
+
+      let multiSelectQuery = {$or: []};
+      let multiSelectChanges = {};
+      multiSelectQuery.$or = multiselectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
+      .map((property) => {
+        let p = {};
+        p[`metadata.${property.name}`] = entity.sharedId;
+        multiSelectChanges[`metadata.${property.name}`] = entity.sharedId;
+        return p;
+      });
+
+      if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
+        return;
+      }
+
+      return Promise.all([
+        this.get(selectQuery, {_id: 1}),
+        this.get(multiSelectQuery, {_id: 1}),
+        model.db.updateMany(selectQuery, {$set: selectChanges}),
+        model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
+      ])
+      .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
+        let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
+        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+      });
+    });
+  },
+
+  count: model.count
 };
