@@ -229,11 +229,14 @@ export default {
       }
 
       return Promise.all([
+        this.get(selectQuery, {_id: 1}),
+        this.get(multiSelectQuery, {_id: 1}),
         model.db.updateMany(selectQuery, {$set: selectChanges}),
         model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
       ])
-      .then(() => {
-        return search.indexEntities({template: {$in: allTemplates.map(t => t._id.toString())}});
+      .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
+        let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
+        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
       });
     });
   },

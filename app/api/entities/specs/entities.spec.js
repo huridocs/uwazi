@@ -430,12 +430,6 @@ describe('entities', () => {
         spyOn(search, 'bulkIndex');
         entities.delete('shared')
         .then(() => {
-          return Promise.all([
-            entities.get({sharedId: 'multiselect'}),
-            entities.get({sharedId: 'select'})
-          ]);
-        })
-        .then(([entitiesWithMultiselect, entitiesWithSelect]) => {
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
           expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
           expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
