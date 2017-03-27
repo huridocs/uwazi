@@ -50,8 +50,12 @@ export default {
   },
 
   matchTitle(searchTerm, language) {
+    if (searchTerm === '') {
+      return Promise.resolve([]);
+    }
+
     let query = queryBuilder()
-    .fullTextSearch(searchTerm, ['title'])
+    .fullTextSearch(searchTerm, ['title'], false)
     .highlight(['title'])
     .language(language)
     .limit(5)
@@ -59,7 +63,7 @@ export default {
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
-      return searchTerm === '' ? [] : response.hits.hits.map((hit) => {
+      return response.hits.hits.map((hit) => {
         let result = hit._source;
         result._id = hit._id;
         result.title = hit.highlight.title[0];

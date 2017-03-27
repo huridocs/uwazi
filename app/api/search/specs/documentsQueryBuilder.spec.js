@@ -155,6 +155,27 @@ describe('documentQueryBuilder', () => {
       );
     });
 
+    describe('when includeFullText = false', () => {
+      it('should only search on the document by fieldsToSearch', () => {
+        let baseQuery = queryBuilder().fullTextSearch('term', ['field1', 'field2'], false).query();
+        expect(baseQuery.query.bool.must[1]).toEqual(
+          {
+            bool: {
+              should: [
+                {
+                  multi_match: {
+                    query: 'term',
+                    type: 'phrase_prefix',
+                    fields: ['field1', 'field2']
+                  }
+                }
+              ]
+            }
+          }
+        );
+      });
+    });
+
     describe('sort', () => {
       it('should add a sort property desc by default', () => {
         let baseQuery = queryBuilder().sort('title').query();

@@ -49,34 +49,36 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title']) {
+    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true) {
       if (term) {
-        baseQuery.query.bool.must.push({
-          bool: {
-            should: [
-              {
-                has_child: {
-                  type: 'fullText',
-                  score_mode: 'max',
-                  query: {
-                    multi_match: {
-                      query: term,
-                      type: 'phrase_prefix',
-                      fields: 'fullText'
-                    }
+        let should = [
+          {
+            multi_match: {
+              query: term,
+              type: 'phrase_prefix',
+              fields: fieldsToSearch
+            }
+          }
+        ];
+        if (includeFullText) {
+          should.unshift(
+            {
+              has_child: {
+                type: 'fullText',
+                score_mode: 'max',
+                query: {
+                  multi_match: {
+                    query: term,
+                    type: 'phrase_prefix',
+                    fields: 'fullText'
                   }
                 }
-              },
-              {
-                multi_match: {
-                  query: term,
-                  type: 'phrase_prefix',
-                  fields: fieldsToSearch
-                }
               }
-            ]
-          }
-        });
+            }
+          );
+        }
+
+        baseQuery.query.bool.must.push({bool: {should}});
       }
       return this;
     },

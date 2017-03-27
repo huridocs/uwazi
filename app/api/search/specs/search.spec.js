@@ -159,7 +159,7 @@ describe('search', () => {
 
       search.matchTitle('term', 'es')
       .then((results) => {
-        let query = queryBuilder().fullTextSearch('term', ['title']).highlight(['title']).language('es').limit(5).query();
+        let query = queryBuilder().fullTextSearch('term', ['title'], false).highlight(['title']).language('es').limit(5).query();
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
         done();
