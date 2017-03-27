@@ -68,7 +68,23 @@ export default {
 
     if (template._id) {
       return this.getById(template._id)
-      .then((currentTemplate) => updateTranslation(currentTemplate, template))
+      .then((currentTemplate) => Promise.all([currentTemplate, updateTranslation(currentTemplate, template)]))
+      .then(([currentTemplate]) => {
+        currentTemplate.properties = currentTemplate.properties || [];
+        const currentTemplateContentProperties = currentTemplate.properties.filter(p => p.content);
+        const templateContentProperties = template.properties.filter(p => p.content);
+        const toRemoveValues = {};
+        currentTemplateContentProperties.forEach((prop) => {
+          let sameProperty = templateContentProperties.find(p => p.id === prop.id);
+          if (sameProperty && sameProperty.content !== prop.content) {
+            toRemoveValues[sameProperty.name] = prop.type === 'multiselect' ? [] : '';
+          }
+        });
+        if (Object.keys(toRemoveValues).length === 0) {
+          return;
+        }
+        return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
+      })
       .then(() => entities.updateMetadataProperties(template))
       .then(() => save(template));
     }
@@ -109,10 +125,10 @@ export default {
     return Promise.resolve(0);
     //return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
     //.then((response) => {
-      //if (!response.json.rows.length) {
-        //return 0;
-      //}
-      //return response.json.rows[0].value;
+    //if (!response.json.rows.length) {
+    //return 0;
+    //}
+    //return response.json.rows[0].value;
     //});
   },
 

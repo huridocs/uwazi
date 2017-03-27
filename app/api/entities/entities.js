@@ -198,6 +198,26 @@ export default {
     });
   },
 
+  removeValuesFromEntities(properties, template) {
+    let query = {template, $or: []};
+    let changes = {};
+
+    Object.keys(properties).forEach((prop) => {
+      let propQuery = {};
+      propQuery['metadata.' + prop] = {$exists: true};
+      query.$or.push(propQuery);
+      changes['metadata.' + prop] = properties[prop];
+    });
+
+    return Promise.all([
+      this.get(query, {_id: 1}),
+      model.db.updateMany(query, {$set: changes})
+    ])
+    .then(([entitiesToReindex]) => {
+      return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+    });
+  },
+
   deleteEntityFromMetadata(entity) {
     return templates.get({'properties.content': entity.template})
     .then((allTemplates) => {

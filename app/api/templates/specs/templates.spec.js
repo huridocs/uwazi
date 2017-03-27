@@ -5,7 +5,7 @@ import documents from 'api/documents/documents.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 import {db} from 'api/utils';
-import fixtures, {templateToBeEditedId, templateToBeDeleted} from './fixtures.js';
+import fixtures, {templateToBeEditedId, templateToBeDeleted, templateWithContents} from './fixtures.js';
 
 describe('templates', () => {
   beforeEach((done) => {
@@ -46,6 +46,24 @@ describe('templates', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('when property content changes', () => {
+      it('should removeValuesFromEntities', (done) => {
+        spyOn(translations, 'updateContext');
+        spyOn(entities, 'removeValuesFromEntities');
+        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
+        let changedTemplate = {_id: templateWithContents, name: 'changed', properties:
+          [{id: '1', type: 'select', content: 'new_thesauri', label: 'select'},
+          {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect'}]};
+
+        templates.save(changedTemplate)
+        .then(() => {
+          expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({select: '', multiselect: []}, templateWithContents);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
 
     it('should validate properties not having repeated names and return an error', (done) => {
@@ -232,40 +250,40 @@ describe('templates', () => {
     });
 
     //describe('when there is a db error', () => {
-      //it('should return the error', (done) => {
-        //spyOn(translations, 'updateContext');
-        //spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-        //let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''};
-        //templates.save(badTemplate)
-          //.then(() => {
-            //done.fail('should return an error');
-          //})
-          //.catch((error) => {
-            //expect(error.json.error).toBe('bad_request');
-            //done();
-          //});
-      //});
+    //it('should return the error', (done) => {
+    //spyOn(translations, 'updateContext');
+    //spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
+    //let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''};
+    //templates.save(badTemplate)
+    //.then(() => {
+    //done.fail('should return an error');
+    //})
+    //.catch((error) => {
+    //expect(error.json.error).toBe('bad_request');
+    //done();
+    //});
+    //});
     //});
   });
 
   //describe('countByTemplate', () => {
-    //it('should return how many documents using the template passed', (done) => {
-      //templates.countByTemplate('template1')
-      //.then((count) => {
-        //expect(count).toBe(2);
-        //done();
-      //})
-      //.catch(done.fail);
-    //});
+  //it('should return how many documents using the template passed', (done) => {
+  //templates.countByTemplate('template1')
+  //.then((count) => {
+  //expect(count).toBe(2);
+  //done();
+  //})
+  //.catch(done.fail);
+  //});
 
-    //it('should return 0 when no count found', (done) => {
-      //templates.countByTemplate('newTemplate')
-        //.then((count) => {
-          //expect(count).toBe(0);
-          //done();
-        //})
-        //.catch(done.fail);
-    //});
+  //it('should return 0 when no count found', (done) => {
+  //templates.countByTemplate('newTemplate')
+  //.then((count) => {
+  //expect(count).toBe(0);
+  //done();
+  //})
+  //.catch(done.fail);
+  //});
   //});
 
   describe('delete', () => {
@@ -314,7 +332,7 @@ describe('templates', () => {
     it('should return number of templates using a thesauri', (done) => {
       templates.countByThesauri('thesauri1')
       .then((result) => {
-        expect(result).toBe(2);
+        expect(result).toBe(3);
         done();
       })
       .catch(catchErrors(done));

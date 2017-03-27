@@ -7,7 +7,7 @@ import search from 'api/search/search';
 import references from 'api/references';
 import entitiesModel from 'api/entities/entitiesModel';
 
-import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId} from './fixtures.js';
+import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('entities', () => {
@@ -371,6 +371,21 @@ describe('entities', () => {
         expect(docs[1].metadata.new_name).toBe('value2');
         expect(docs[1].metadata.property2).not.toBeDefined();
         expect(docs[1].metadata.property3).not.toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('removeValuesFromEntities', () => {
+    it('should remove values of properties passed on all entities having that property', (done) => {
+      spyOn(search, 'bulkIndex');
+      entities.removeValuesFromEntities({multiselect: []}, templateWithEntityAsThesauri)
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex.length).toBe(1);
+        expect(documentsToIndex[0].metadata.multiselect).toEqual([]);
+        //expect(documentsToIndex[1].metadata.select2).toBe('');
         done();
       })
       .catch(catchErrors(done));

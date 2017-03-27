@@ -27,7 +27,8 @@ export default {
     {_id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'multiselect', type: 'entity', language: 'en', metadata: {multiselect: ['shared', 'value1']}},
     {_id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'multiselect', type: 'entity', language: 'es', metadata: {multiselect2: ['shared', 'value2']}},
     {_id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'select', type: 'entity', language: 'en', metadata: {select: 'shared'}},
-    {_id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: {select2: 'shared'}}
+    {_id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: {select2: 'shared'}},
+    {_id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: {select2: 'value'}}
   ],
   settings: [
     {_id: db.id(), languages: [{key: 'es'}, {key: 'pt'}, {key: 'en'}]}
@@ -66,5 +67,6 @@ export {
   batmanFinishesId,
   syncPropertiesEntityId,
   templateId,
-  templateChangingNames
+  templateChangingNames,
+  templateWithEntityAsThesauri
 };
