@@ -172,7 +172,14 @@ export default {
       return `./uploaded_documents/${doc.file.filename}`;
     });
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
-    return deleteFiles(filesToDelete);
+    return deleteFiles(filesToDelete)
+    .catch((error) => {
+      if (error.errno === -2) {
+        return Promise.resolve();
+      }
+
+      return Promise.reject(error);
+    });
   },
 
   deleteMultiple(sharedIds) {

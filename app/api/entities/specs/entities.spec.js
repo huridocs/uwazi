@@ -398,6 +398,18 @@ describe('entities', () => {
       fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
     });
 
+    describe('when the original file does not exist', () => {
+      it('should delete the entiti and not throw an error', (done) => {
+        entities.delete('shared1')
+        .then(() => entities.get({sharedId: 'shared1'}))
+        .then((response) => {
+          expect(response.length).toBe(0);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     it('should delete the document in the database', (done) => {
       entities.delete('shared')
       .then(() => entities.get({sharedId: 'shared'}))
