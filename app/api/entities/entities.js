@@ -174,7 +174,8 @@ export default {
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
     return deleteFiles(filesToDelete)
     .catch((error) => {
-      if (error.errno === -2) {
+      const fileNotExist = -2;
+      if (error.errno === fileNotExist) {
         return Promise.resolve();
       }
 
