@@ -9,7 +9,13 @@ export default function (req, res, next) {
       result = error.message;
     }
 
-    res.status(error.code || 500);
+    let code = error.code || 500;
+
+    if (error.name === 'MongoError') {
+      code = 500;
+    }
+
+    res.status(code);
     res.json({error: result});
   };
   next();
