@@ -176,7 +176,15 @@ export default {
       return `./uploaded_documents/${doc.file.filename}`;
     });
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
-    return deleteFiles(filesToDelete);
+    return deleteFiles(filesToDelete)
+    .catch((error) => {
+      const fileNotExist = -2;
+      if (error.errno === fileNotExist) {
+        return Promise.resolve();
+      }
+
+      return Promise.reject(error);
+    });
   },
 
   deleteMultiple(sharedIds) {
