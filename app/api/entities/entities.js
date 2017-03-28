@@ -31,7 +31,11 @@ export default {
         ])
         .then(([docLanguages, templateResult]) => {
           if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
-            return this.deleteEntityFromMetadata(docLanguages[0]).then(() => [docLanguages, templateResult]);
+            return Promise.all([
+              this.deleteEntityFromMetadata(docLanguages[0]),
+              references.delete({sourceType: 'metadata', $or: [{targetDocument: doc.sharedId}, {sourceDocument: doc.sharedId}]})
+            ])
+            .then(() => [docLanguages, templateResult]);
           }
           return [docLanguages, templateResult];
         })
@@ -249,8 +253,8 @@ export default {
       }
 
       return Promise.all([
-        this.get(selectQuery, {_id: 1}),
-        this.get(multiSelectQuery, {_id: 1}),
+        selectQuery.$or.length ? this.get(selectQuery, {_id: 1}) : [],
+        multiSelectQuery.$or.length ? this.get(multiSelectQuery, {_id: 1}) : [],
         model.db.updateMany(selectQuery, {$set: selectChanges}),
         model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
       ])

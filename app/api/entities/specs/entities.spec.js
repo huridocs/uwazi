@@ -149,6 +149,23 @@ describe('entities', () => {
           })
           .catch(catchErrors(done));
         });
+
+        it('should delete all metadata connections created automatically', (done) => {
+          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateChangingNames};
+          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
+          entities.save(doc, {language: 'en'})
+          .then(() => {
+            return references.get();
+          })
+          .then((connections) => {
+            let batmanFinishesConnections = connections.filter(c => c.targetDocument === 'shared' || c.sourceDocument === 'shared');
+            expect(batmanFinishesConnections.length).toBe(2);
+            expect(batmanFinishesConnections[0].title).toBe('reference1');
+            expect(batmanFinishesConnections[1].title).toBe('reference2');
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
 
       describe('when entity its being used as thesauri and template do not change', () => {
@@ -453,6 +470,32 @@ describe('entities', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+
+      describe('when there is no multiselects but there is selects', () => {
+        it('should only delete selects and not throw an error', (done) => {
+          spyOn(search, 'bulkIndex');
+          entities.delete('shared10')
+          .then(() => {
+            const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+            expect(documentsToIndex[0].metadata.select).toBe('');
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+      });
+
+      describe('when there is no selects but there is multiselects', () => {
+        it('should only delete multiselects and not throw an error', (done) => {
+          spyOn(search, 'bulkIndex');
+          entities.delete('multiselect')
+          .then(() => {
+            const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+            expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
     });
   });

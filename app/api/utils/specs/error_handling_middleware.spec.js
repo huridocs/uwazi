@@ -34,4 +34,14 @@ describe('Error handling middleware', function () {
       expect(res.json).toHaveBeenCalledWith({error: 'error'});
     });
   });
+
+  describe('when error is a MongoError', () => {
+    it('should respond the error message with the status 500', () => {
+      middleware(req, res, next);
+      const error = {name: 'MongoError', message: 'error', code: 'code'};
+      res.error(error);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({error: 'error'});
+    });
+  });
 });
