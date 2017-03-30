@@ -6128,14 +6128,15 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-redux-form@1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/react-redux-form/-/react-redux-form-1.5.3.tgz#776e731c72396a189a9e2599a8e236badcf7b247"
+react-redux-form@1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/react-redux-form/-/react-redux-form-1.8.2.tgz#70237f6defb2da5f818a1f7f7ee90133df1dd478"
   dependencies:
     icepick "^1.1.0"
     invariant "~2.2.1"
     lodash.get "~4.4.2"
     lodash.topath "~4.5.2"
+    shallow-compare "1.2.0"
 
 react-redux@^4.0.0:
   version "4.4.6"
@@ -6640,6 +6641,10 @@ sha.js@^2.3.6:
   resolved "https://registry.yarnpkg.com/sha.js/-/sha.js-2.4.8.tgz#37068c2c476b6baf402d14a49c67f597921f634f"
   dependencies:
     inherits "^2.0.1"
+
+shallow-compare@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/shallow-compare/-/shallow-compare-1.2.0.tgz#b58dbb0ef5c21814946354760bf06e5aac085055"
 
 shallowequal@0.2.2:
   version "0.2.2"
