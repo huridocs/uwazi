@@ -371,7 +371,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    it('should delete properties passed', (done) => {
+    it('should delete and rename properties passed', (done) => {
       const template = {_id: templateChangingNames, properties: [
         {id: '2', type: 'text', name: 'property2', label: 'new name'}
       ]};
@@ -387,6 +387,26 @@ describe('entities', () => {
         expect(docs[1].metadata.property1).not.toBeDefined();
         expect(docs[1].metadata.new_name).toBe('value2');
         expect(docs[1].metadata.property2).not.toBeDefined();
+        expect(docs[1].metadata.property3).not.toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should delete missing properties', (done) => {
+      const template = {_id: templateChangingNames, properties: [
+        {id: '2', type: 'text', name: 'property2', label: 'property2'}
+      ]};
+
+      entities.updateMetadataProperties(template)
+      .then(() => entities.get({template: templateChangingNames}))
+      .then((docs) => {
+        expect(docs[0].metadata.property1).not.toBeDefined();
+        expect(docs[0].metadata.property2).toBeDefined();
+        expect(docs[0].metadata.property3).not.toBeDefined();
+
+        expect(docs[1].metadata.property1).not.toBeDefined();
+        expect(docs[1].metadata.property2).toBeDefined();
         expect(docs[1].metadata.property3).not.toBeDefined();
         done();
       })
