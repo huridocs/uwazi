@@ -15,7 +15,8 @@ let prepareTemplate = (template) => {
     return property;
   });
 
-  template.commonProperties = template.commonProperties || templateCommonProperties.get();
+  const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
+  template.commonProperties = commonPropertiesExists ? template.commonProperties : templateCommonProperties.get();
 
   return template;
 };
