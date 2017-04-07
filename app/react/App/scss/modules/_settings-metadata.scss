@@ -40,7 +40,7 @@
     display: none;
     color: $c-warning;
   }
-  
+
   .row {
     margin-bottom: 8px;
   }
@@ -100,14 +100,24 @@
   position: relative;
   color: $c-grey-dark;
 }
+
 .property-description {
   @include tooltip('top');
+}
+.property-description-bottom {
+  @include tooltip('bottom');
+  z-index: 9999;
+}
+.property-description,
+.property-description-bottom {
   width: 200px;
   white-space: normal;
 
   .property-help:hover &{
     display: block;
   }
+
+
 }
 
 .nested-properties {

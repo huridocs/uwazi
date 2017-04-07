@@ -1,4 +1,3 @@
-import {db_url as dbURL} from 'api/config/database';
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
@@ -51,8 +50,12 @@ export default {
   },
 
   matchTitle(searchTerm, language) {
+    if (searchTerm === '') {
+      return Promise.resolve([]);
+    }
+
     let query = queryBuilder()
-    .fullTextSearch(searchTerm, ['title'])
+    .fullTextSearch(searchTerm, ['title'], false)
     .highlight(['title'])
     .language(language)
     .limit(5)
@@ -78,8 +81,63 @@ export default {
     delete entity._id;
     delete entity._rev;
     const body = entity;
-    return elastic.index({index: elasticIndex, type: 'entity', id, body})
-    .catch(console.log);
+    let fullTextIndex = Promise.resolve();
+    if (entity.fullText) {
+      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: {fullText: entity.fullText}});
+      delete entity.fullText;
+    }
+    return Promise.all([
+      elastic.index({index: elasticIndex, type: 'entity', id, body}),
+      fullTextIndex
+    ]);
+  },
+
+  bulkIndex(docs, _action = 'index') {
+    const type = 'entity';
+    let body = [];
+    docs.forEach((doc) => {
+      let _doc = doc;
+      const id = doc._id.toString();
+      delete doc._id;
+      delete doc._rev;
+      let action = {};
+      action[_action] = {_index: elasticIndex, _type: type, _id: id};
+      if (_action === 'update') {
+        _doc = {doc: _doc};
+      }
+
+      body.push(action);
+      body.push(_doc);
+
+      if (doc.fullText) {
+        action = {};
+        action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id};
+        body.push(action);
+        body.push({fullText: doc.fullText});
+        delete doc.fullText;
+      }
+    });
+
+    return elastic.bulk({body});
+  },
+
+  indexEntities(query, select, limit = 200) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return;
+      }
+
+      return entities.get(query, select, {skip: offset, limit})
+      //.then((docs) => {
+        //return docs;
+      //})
+      .then((docs) => this.bulkIndex(docs))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return entities.count(query)
+    .then((totalRows) => {
+      return index(0, totalRows);
+    });
   },
 
   delete(entity) {

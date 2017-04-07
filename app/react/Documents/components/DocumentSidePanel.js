@@ -14,6 +14,25 @@ import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
 
 import {fromJS} from 'immutable';
+import {createSelector} from 'reselect';
+
+const selectReferences = createSelector(
+  s => s.references,
+  (refs) => {
+    return refs.filter(r => {
+      return typeof r.get('range').get('start') !== 'undefined';
+    });
+  }
+);
+
+const selectConnections = createSelector(
+  s => s.references,
+  (refs) => {
+    return refs.filter(r => {
+      return typeof r.get('range').get('start') === 'undefined';
+    });
+  }
+);
 
 export class DocumentSidePanel extends Component {
   deleteDocument() {
@@ -53,12 +72,8 @@ export class DocumentSidePanel extends Component {
     const TocForm = this.props.tocFormComponent || (() => false);
     const EntityForm = this.props.EntityForm || (() => false);
 
-    const references = this.props.references.filter(r => {
-      return typeof r.get('range').get('start') !== 'undefined';
-    });
-    const connections = this.props.references.filter(r => {
-      return typeof r.get('range').get('start') === 'undefined';
-    });
+    const references = selectReferences(this.props);
+    const connections = selectConnections(this.props);
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
     const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {}, {originalname: doc.get('title') + '.pdf'});

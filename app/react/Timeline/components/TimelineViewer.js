@@ -11,23 +11,9 @@ import ReferencesAPI from 'app/Viewer/referencesAPI';
 
 import moment from 'moment';
 
-const caseTemplate = '58b2f3a35d59f31e1345b48a';
-const matterTemplate = '58b2f3a35d59f31e1345b4a4';
-
-const renderableTemplates = {
-  judgement: '58b2f3a35d59f31e1345b4ac',
-  admissibilityReport: '58b2f3a35d59f31e1345b479',
-  orderOfThePresident: '58b2f3a35d59f31e1345b482',
-  orderOfTheCourt: '58b2f3a35d59f31e1345b471'
-};
+import {caseTemplate, matterTemplate, renderableTemplates} from '../utils/timelineFixedData';
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
-
-const caseDatesLabels = [
-  'Envío a la corte',
-  'Presentación ante la comisión',
-  'Presentación ante la corte'
-];
 
 export class TimelineViewer extends Component {
 
@@ -96,8 +82,17 @@ export class TimelineViewer extends Component {
   }
 
   getCaseDates(entity) {
+    const caseDatesNames = this.props.templates.reduce((names, t) => {
+      t.get('properties').forEach(p => {
+        if (p.get('type') === 'multidate') {
+          names.push(p.get('name'));
+        }
+      });
+      return names;
+    }, []);
+
     return entity.metadata.reduce((dates, metadata) => {
-      if (caseDatesLabels.indexOf(metadata.label) !== -1) {
+      if (caseDatesNames.indexOf(metadata.name) !== -1) {
         metadata.value.forEach(date => {
           dates.push({label: metadata.label, timestamp: date.timestamp});
         });

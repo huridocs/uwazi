@@ -1,4 +1,4 @@
-
+/* eslint-disable camelcase */
 export default function () {
   let baseQuery = {
     _source: {
@@ -49,15 +49,36 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['fullText', 'title']) {
+    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true) {
       if (term) {
-        baseQuery.query.bool.must.push({
-          multi_match: {
-            query: term,
-            type: 'phrase_prefix',
-            fields: fieldsToSearch
+        let should = [
+          {
+            multi_match: {
+              query: term,
+              type: 'phrase_prefix',
+              fields: fieldsToSearch
+            }
           }
-        });
+        ];
+        if (includeFullText) {
+          should.unshift(
+            {
+              has_child: {
+                type: 'fullText',
+                score_mode: 'max',
+                query: {
+                  multi_match: {
+                    query: term,
+                    type: 'phrase_prefix',
+                    fields: 'fullText'
+                  }
+                }
+              }
+            }
+          );
+        }
+
+        baseQuery.query.bool.must.push({bool: {should}});
       }
       return this;
     },
@@ -131,7 +152,7 @@ export default function () {
       let properties = value.properties;
       let keys = Object.keys(properties).filter((key) => {
         return properties[key].any ||
-               properties[key].values;
+          properties[key].values;
       });
 
       keys.forEach((key) => {
@@ -161,7 +182,7 @@ export default function () {
 
       let keys = Object.keys(properties).filter((key) => {
         return properties[key].any ||
-               properties[key].values && properties[key].values.length;
+          properties[key].values && properties[key].values.length;
       });
 
       match.bool.must = keys.map((key) => {
@@ -311,7 +332,7 @@ export default function () {
         let path = `metadata.${property.name}.raw`;
         let filters = baseQuery.filter.bool.must.filter((match) => {
           return !match.terms ||
-                 match.terms && !match.terms[path];
+            match.terms && !match.terms[path];
         });
 
         if (property.nested) {

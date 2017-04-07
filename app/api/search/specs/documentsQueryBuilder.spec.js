@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import queryBuilder from 'api/search/documentQueryBuilder';
 
 describe('documentQueryBuilder', () => {
@@ -5,7 +6,7 @@ describe('documentQueryBuilder', () => {
 
   describe('default query', () => {
     it('should do a match all on published documents', () => {
-      expect(queryBuilder().query().query.bool.must[0]).toEqual({match: {'published': true}});
+      expect(queryBuilder().query().query.bool.must[0]).toEqual({match: {published: true}});
     });
   });
 
@@ -24,7 +25,7 @@ describe('documentQueryBuilder', () => {
   describe('language', () => {
     it('should set language', () => {
       let baseQuery = queryBuilder().language('es').query();
-      expect(baseQuery.query.bool.must[1]).toEqual({match: {'language': 'es'}});
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {language: 'es'}});
 
       baseQuery = queryBuilder().language('en').query();
       expect(baseQuery.query.bool.must[1]).toEqual({match: {language: 'en'}});
@@ -126,13 +127,53 @@ describe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().fullTextSearch('term').query();
       expect(baseQuery.query.bool.must[1]).toEqual(
         {
-          multi_match: {
-            query: 'term',
-            type: 'phrase_prefix',
-            fields: ['fullText', 'title']
+          bool: {
+            should: [
+              {
+                has_child: {
+                  type: 'fullText',
+                  score_mode: 'max',
+                  query: {
+                    multi_match: {
+                      query: 'term',
+                      type: 'phrase_prefix',
+                      fields: 'fullText'
+                    }
+                  }
+                }
+              },
+              {
+                multi_match: {
+                  query: 'term',
+                  type: 'phrase_prefix',
+                  fields: ['title']
+                }
+              }
+            ]
           }
         }
       );
+    });
+
+    describe('when includeFullText = false', () => {
+      it('should only search on the document by fieldsToSearch', () => {
+        let baseQuery = queryBuilder().fullTextSearch('term', ['field1', 'field2'], false).query();
+        expect(baseQuery.query.bool.must[1]).toEqual(
+          {
+            bool: {
+              should: [
+                {
+                  multi_match: {
+                    query: 'term',
+                    type: 'phrase_prefix',
+                    fields: ['field1', 'field2']
+                  }
+                }
+              ]
+            }
+          }
+        );
+      });
     });
 
     describe('sort', () => {
@@ -143,19 +184,6 @@ describe('documentQueryBuilder', () => {
       it('should sort by order passed', () => {
         let baseQuery = queryBuilder().sort('title', 'asc').query();
         expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'asc', ignore_unmapped: true}});
-      });
-    });
-
-    describe('when passing fields', () => {
-      it('should use them instead of the default ones', () => {
-        let baseQuery = queryBuilder().fullTextSearch('term', ['another.field']).query();
-        expect(baseQuery.query.bool.must[1]).toEqual({
-          multi_match: {
-            query: 'term',
-            type: 'phrase_prefix',
-            fields: ['another.field']
-          }
-        });
       });
     });
   });

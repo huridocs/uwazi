@@ -1,10 +1,11 @@
+import {index as elasticIndex} from 'api/config/elasticIndexes';
 import search from '../search.js';
 import elastic from '../elastic';
 import elasticResult from './elasticResult';
 import queryBuilder from 'api/search/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import fixtures, {templateId, userId, unpublishedId} from './fixtures.js';
+import fixtures, {templateId, userId} from './fixtures.js';
 import {db} from 'api/utils';
 
 describe('search', () => {
@@ -158,9 +159,25 @@ describe('search', () => {
 
       search.matchTitle('term', 'es')
       .then((results) => {
-        let query = queryBuilder().fullTextSearch('term', ['title']).highlight(['title']).language('es').limit(5).query();
+        let query = queryBuilder().fullTextSearch('term', ['title'], false).highlight(['title']).language('es').limit(5).query();
         expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should return empty array if searchTerm is empty and not an error', (done) => {
+      result = elasticResult().withDocs([
+        {title: 'doc1', _id: 'id1'},
+        {title: 'doc2', _id: 'id2'}
+      ])
+      .toObject();
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+
+      search.matchTitle('', 'es')
+      .then((results) => {
+        expect(results).toEqual([]);
         done();
       })
       .catch(done.fail);
@@ -173,7 +190,6 @@ describe('search', () => {
 
       const entity = {
         _id: 'asd1',
-        _rev: '1-a3fs',
         type: 'document',
         title: 'Batman indexes'
       };
@@ -188,6 +204,97 @@ describe('search', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    describe('when document has fullText', () => {
+      it('should index the fullText as child', (done) => {
+        spyOn(elastic, 'index').and.returnValue(Promise.resolve());
+
+        const entity = {
+          _id: 'asd1',
+          type: 'document',
+          title: 'Batman indexes',
+          fullText: 'text'
+        };
+
+        search.index(entity)
+        .then(() => {
+          expect(elastic.index)
+          .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1', body: {
+            type: 'document',
+            title: 'Batman indexes'
+          }});
+          expect(elastic.index)
+          .toHaveBeenCalledWith({index: 'uwazi', type: 'fullText', parent: 'asd1', body: {
+            fullText: 'text'
+          }});
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+  });
+
+  describe('bulkIndex', () => {
+    it('should update docs using the bulk functionality', (done) => {
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+      const toIndexDocs = [
+        {_id: 'id1', title: 'test1'},
+        {_id: 'id2', title: 'test2'}
+      ];
+
+      search.bulkIndex(toIndexDocs)
+      .then(() => {
+        expect(elastic.bulk).toHaveBeenCalledWith({body: [
+          {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
+          {title: 'test1'},
+          {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
+          {title: 'test2'}
+        ]});
+        done();
+      });
+    });
+
+    describe('when docs have fullText', () => {
+      it('should be indexed separatedly as a child of the doc', (done) => {
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+        const toIndexDocs = [
+          {_id: 'id1', title: 'test1', fullText: 'text1'},
+          {_id: 'id2', title: 'test2', fullText: 'text2'}
+        ];
+
+        search.bulkIndex(toIndexDocs, 'index')
+        .then(() => {
+          expect(elastic.bulk).toHaveBeenCalledWith({body: [
+            {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
+            {title: 'test1'},
+            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
+            {fullText: 'text1'},
+            {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
+            {title: 'test2'},
+            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
+            {fullText: 'text2'}
+          ]});
+          done();
+        });
+      });
+    });
+  });
+
+  describe('indexEntities', () => {
+    it('should index entities based on query params passed', (done) => {
+      spyOn(search, 'bulkIndex');
+      search.indexEntities({sharedId: 'shared'}, {title: 1})
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex[0].title).toBeDefined();
+        expect(documentsToIndex[0].metadata).not.toBeDefined();
+        expect(documentsToIndex[1].title).toBeDefined();
+        expect(documentsToIndex[1].metadata).not.toBeDefined();
+        expect(documentsToIndex[2].title).toBeDefined();
+        expect(documentsToIndex[2].metadata).not.toBeDefined();
+        done();
+      });
     });
   });
 

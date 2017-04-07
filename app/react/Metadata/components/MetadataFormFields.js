@@ -3,6 +3,7 @@ import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate,
 import {Field} from 'react-redux-form';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
+import {connect} from 'react-redux';
 
 export class MetadataFormFields extends Component {
 
@@ -14,12 +15,13 @@ export class MetadataFormFields extends Component {
   }
 
   isPristine(field) {
-    return field.pristine || (field.$form && field.$form.pristine);
+    return field.pristine || field.$form && field.$form.pristine;
   }
 
   render() {
-    let {template, state, thesauris} = this.props;
-
+    let {state} = this.props;
+    const thesauris = this.props.thesauris.toJS();
+    const template = this.props.template.toJS();
     return (
       <div>
         {template.properties.map((property) => {
@@ -65,7 +67,7 @@ export class MetadataFormFields extends Component {
                 <li className="wide">{getField(property.type, `.metadata.${property.name}`)}</li>
               </ul>
             </FormGroup>
-            );
+          );
         })}
       </div>
     );
@@ -76,8 +78,8 @@ MetadataFormFields.propTypes = {
   template: PropTypes.object,
   model: PropTypes.string,
   state: PropTypes.object,
-  thesauris: PropTypes.array,
+  thesauris: PropTypes.object,
   multipleEdition: PropTypes.bool
 };
 
-export default MetadataFormFields;
+export default connect()(MetadataFormFields);

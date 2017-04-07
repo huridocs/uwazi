@@ -11,6 +11,7 @@ import * as metadataActions from 'app/Metadata/actions/actions';
 import validator from 'app/Metadata/helpers/validator';
 import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import {Select as SimpleSelect} from 'app/Forms';
+import {fromJS} from 'immutable';
 
 import {TemplateLabel, SidePanel} from 'app/Layout';
 
@@ -186,8 +187,8 @@ export class SelectMultiplePanel extends Component {
                 </ul>
               </FormGroup>
               <MetadataFormFields
-                template={template}
-                thesauris={this.props.thesauris.toJS()}
+                template={fromJS(template)}
+                thesauris={this.props.thesauris}
                 state={this.props.formState}
                 multipleEdition={true}
               />

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {db} from 'api/utils';
 
 const batmanFinishesId = db.id();
@@ -5,6 +6,10 @@ const syncPropertiesEntityId = db.id();
 const templateId = db.id();
 const templateChangingNames = db.id();
 const referenceId = db.id();
+const templateWithEntityAsThesauri = db.id();
+const templateWithEntityAsThesauri2 = db.id();
+const templateWithOnlySelect = db.id();
+const templateWithOnlyMultiselect = db.id();
 
 export default {
   entities: [
@@ -14,12 +19,20 @@ export default {
       _id: db.id(), sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'}
     },
     //select/multiselect/date sync
-    {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: {property1: 'text'}},
+    {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: {property1: 'text'}, file: {filename: 'nonexistent.pdf'}},
     {_id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: {property1: 'text'}},
     {_id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {property1: 'text'}},
     //docs to change metadata property names
     {_id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {property1: 'value1', property2: 'value2', property3: 'value3'}},
-    {_id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {property1: 'value1', property2: 'value2', property3: 'value3'}}
+    {_id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: {property1: 'value1', property2: 'value2', property3: 'value3'}},
+    //docs using entity as thesauri
+    {_id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'multiselect', type: 'entity', language: 'en', metadata: {multiselect: ['shared', 'value1']}},
+    {_id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'multiselect', type: 'entity', language: 'es', metadata: {multiselect2: ['shared', 'value2']}},
+    {_id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'select', type: 'entity', language: 'en', metadata: {select: 'shared'}},
+    {_id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: {select2: 'shared'}},
+    {_id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: {select2: 'value'}},
+    {_id: db.id(), template: templateWithOnlySelect, sharedId: 'otherTemplateWithSelect', type: 'entity', language: 'es', metadata: {select: 'shared10'}},
+    {_id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: {multiselect: ['value1', 'multiselect']}}
   ],
   settings: [
     {_id: db.id(), languages: [{key: 'es'}, {key: 'pt'}, {key: 'en'}]}
@@ -33,16 +46,32 @@ export default {
       {type: 'multidate', name: 'multidate'},
       {type: 'multidaterange', name: 'multidaterange'}
     ]},
+    {_id: templateWithOnlyMultiselect, name: 'templateWithOnlyMultiSelectSelect', properties: [
+      {type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString()}
+    ]},
+    {_id: templateWithOnlySelect, name: 'templateWithOnlySelect', properties: [
+      {type: 'select', name: 'select', content: templateChangingNames.toString()}
+    ]},
+    {_id: templateWithEntityAsThesauri, name: 'template_with_thesauri_as_template', properties: [
+      {type: 'select', name: 'select', content: templateId.toString()},
+      {type: 'multiselect', name: 'multiselect', content: templateId.toString()}
+    ]},
+    {_id: templateWithEntityAsThesauri2, name: 'template_with_thesauri_as_template', properties: [
+      {type: 'select', name: 'select2', content: templateId.toString()},
+      {type: 'multiselect', name: 'multiselect2', content: templateId.toString()}
+    ]},
     {_id: templateChangingNames, name: 'template_changing_names', properties: [
-      {type: 'text', name: 'property1'},
-      {type: 'text', name: 'property2'},
-      {type: 'text', name: 'property3'}
+      {id: '1', type: 'text', name: 'property1'},
+      {id: '2', type: 'text', name: 'property2'},
+      {id: '3', type: 'text', name: 'property3'}
     ]}
   ],
   connections: [
     {_id: referenceId, title: 'reference1', sourceDocument: 'shared', relationtype: 'relation1'},
     {_id: db.id(), title: 'reference2', sourceDocument: 'source2', relationtype: 'relation2', targetDocument: 'shared'},
-    {_id: db.id(), title: 'reference3', sourceDocument: 'another', relationtype: 'relation3', targetDocument: 'document'}
+    {_id: db.id(), title: 'reference3', sourceDocument: 'another', relationtype: 'relation3', targetDocument: 'document'},
+    {_id: db.id(), title: 'reference4', sourceDocument: 'shared', relationtype: 'relation2', targetDocument: 'shared1', sourceType: 'metadata'},
+    {_id: db.id(), title: 'reference5', sourceDocument: 'shared1', relationtype: 'relation2', targetDocument: 'shared', sourceType: 'metadata'}
   ]
 };
 
@@ -50,5 +79,6 @@ export {
   batmanFinishesId,
   syncPropertiesEntityId,
   templateId,
-  templateChangingNames
+  templateChangingNames,
+  templateWithEntityAsThesauri
 };
