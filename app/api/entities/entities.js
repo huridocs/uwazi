@@ -157,11 +157,18 @@ export default {
         }
       });
 
-      if (!Object.keys(actions.$unset).length) {
+      let noneToUnset = !Object.keys(actions.$unset).length;
+      let noneToRename = !Object.keys(actions.$rename).length;
+
+      if (noneToUnset) {
         delete actions.$unset;
-        if (!Object.keys(actions.$rename).length) {
-          return Promise.resolve();
-        }
+      }
+      if (noneToRename) {
+        delete actions.$rename;
+      }
+
+      if (noneToRename && noneToUnset) {
+        return Promise.resolve();
       }
 
       return model.db.updateMany({template}, actions)
