@@ -11,8 +11,10 @@ function validateName(templates, id) {
 
 export function validateDuplicatedLabel(property, properties) {
   return properties.reduce((validity, prop) => {
-    let differentLabel = prop.localID === property.localID || prop.label.trim().toLowerCase() !== property.label.trim().toLowerCase();
-    return validity && differentLabel;
+    const sameProperty = (prop._id || prop.localID) === (property._id || property.localID);
+    const differentLabel = prop.label.trim().toLowerCase() !== property.label.trim().toLowerCase();
+
+    return validity && (sameProperty || differentLabel);
   }, true);
 }
 

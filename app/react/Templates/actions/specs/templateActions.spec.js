@@ -121,7 +121,7 @@ describe('templateActions', () => {
       spyOn(notifications, 'notify');
       backend.restore();
       backend
-      .post(APIURL + 'templates', {body: JSON.stringify({testBackendResult: 'ok', _id: 'id', _rev: 'rev'})});
+      .post(APIURL + 'templates', {body: JSON.stringify({name: 'saved_template'})});
     });
 
     afterEach(() => backend.restore());
@@ -135,9 +135,9 @@ describe('templateActions', () => {
 
         const expectedActions = [
           {type: types.SAVING_TEMPLATE},
-          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
-          {type: 'templates/UPDATE', value: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
-          {type: 'rrf/change', model: 'template.data', value: {_id: 'id', _rev: 'rev'}, silent: false, multi: false},
+          {type: types.TEMPLATE_SAVED, data: {name: 'saved_template'}},
+          {type: 'templates/UPDATE', value:  {name: 'saved_template'}},
+          {type: 'rrf/change', model: 'template.data', value: {name: 'saved_template'}, silent: false, multi: false},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Saved successfully.', type: 'success', id: 'unique_id'}}
         ];
         const store = mockStore({});
