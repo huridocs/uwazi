@@ -10,6 +10,7 @@ import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
+import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 export class Item extends Component {
 
@@ -151,8 +152,12 @@ Item.propTypes = {
   evalPublished: PropTypes.bool
 };
 
+Item.defaultProps = {
+  search: prioritySortingCriteria()
+};
+
 export const mapStateToProps = ({templates, thesauris}, ownProps) => {
-  const search = ownProps.searchParams || {sort: 'title'};
+  const search = ownProps.searchParams;
   return {templates, thesauris, search};
 };
 
