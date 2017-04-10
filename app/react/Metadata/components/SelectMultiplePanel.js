@@ -209,17 +209,17 @@ export class SelectMultiplePanel extends Component {
             </button>
           </ShowIf>
           <ShowIf if={editing}>
-            <button type="submit" form='multiEdit' className="btn btn-success">
-              <i className="fa fa-save"></i>
-              <span className="btn-label">{t('System', 'Save')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={editing}>
             <button
               onClick={this.cancel.bind(this)}
               className="cancel-edit-metadata btn btn-primary">
               <i className="fa fa-close"></i>
               <span className="btn-label">{t('System', 'Cancel')}</span>
+            </button>
+          </ShowIf>
+          <ShowIf if={editing}>
+            <button type="submit" form='multiEdit' className="btn btn-success">
+              <i className="fa fa-save"></i>
+              <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>
         </div>
