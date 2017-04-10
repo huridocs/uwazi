@@ -136,8 +136,8 @@ describe('templateActions', () => {
 
         const expectedActions = [
           {type: types.SAVING_TEMPLATE},
-          {type: types.TEMPLATE_SAVED, data: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
-          {type: 'templates/UPDATE', value: {testBackendResult: 'ok', _id: 'id', _rev: 'rev'}},
+          {type: types.TEMPLATE_SAVED, data: {name: 'saved_template'}},
+          {type: 'templates/UPDATE', value: {name: 'saved_template'}},
           {type: 'mergeAction'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Saved successfully.', type: 'success', id: 'unique_id'}}
         ];
@@ -148,7 +148,7 @@ describe('templateActions', () => {
           expect(store.getActions()).toEqual(expectedActions);
 
           expect(originalTemplateData.properties[0].localID).toBe('a1b2');
-          expect(formActions.merge).toHaveBeenCalledWith('template.data', {_id: 'id', _rev: 'rev'});
+          expect(formActions.merge).toHaveBeenCalledWith('template.data', {name: 'saved_template'});
         })
         .then(done)
         .catch(done.fail);
