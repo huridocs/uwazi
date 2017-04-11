@@ -67,18 +67,12 @@ export class DocumentSidePanel extends Component {
   }
 
   render() {
-    const {doc, docBeingEdited, DocumentForm} = this.props;
-
-    const TocForm = this.props.tocFormComponent || (() => false);
-    const EntityForm = this.props.EntityForm || (() => false);
-
-    const references = selectReferences(this.props);
-    const connections = selectConnections(this.props);
+    const {doc, docBeingEdited, DocumentForm, readOnly, references, connections, EntityForm} = this.props;
+    const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
     const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {}, {originalname: doc.get('title') + '.pdf'});
     const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
-    const readOnly = this.props.readOnly;
     const startNewConnection = readOnly ? () => {} : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'));
 
     const docType = this.props.doc.get('type');
@@ -258,7 +252,6 @@ DocumentSidePanel.propTypes = {
   DocumentForm: PropTypes.func,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string,
-  templates: PropTypes.object,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   tocBeingEdited: PropTypes.bool,
@@ -266,16 +259,14 @@ DocumentSidePanel.propTypes = {
   tab: PropTypes.string,
   saveDocument: PropTypes.func,
   startNewConnection: PropTypes.func,
-  closeConnectionsPanel: PropTypes.func,
   closePanel: PropTypes.func,
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
-  loadInReduxForm: PropTypes.func,
   references: PropTypes.object,
+  connections: PropTypes.object,
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
-  tocFormLength: PropTypes.number,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
   getDocumentReferences: PropTypes.func,
@@ -287,6 +278,11 @@ DocumentSidePanel.propTypes = {
 
 DocumentSidePanel.contextTypes = {
   confirm: PropTypes.func
+};
+
+DocumentSidePanel.defaultProps = {
+  tocFormComponent: () => false,
+  EntityForm: () => false
 };
 
 export default DocumentSidePanel;

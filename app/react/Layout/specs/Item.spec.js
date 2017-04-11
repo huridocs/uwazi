@@ -9,7 +9,7 @@ import PrintDate from '../PrintDate';
 import * as Icon from '../Icon';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
-fdescribe('Item', () => {
+describe('Item', () => {
   let component;
   let props;
 
@@ -39,7 +39,7 @@ fdescribe('Item', () => {
     component = shallow(<Item {...props} />);
   };
 
-  it('should have search prop default value configured', () => {
+  it('should have default props values assigned', () => {
     render();
     expect(component.instance().props.search).toEqual(prioritySortingCriteria());
   });

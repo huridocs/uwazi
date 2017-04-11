@@ -20,13 +20,13 @@ export class MetadataForm extends Component {
     });
   }
 
-  shouldComponentUpdate(nextProps) {
-    const templateChanged = !this.props.metadata.template || this.props.metadata.template !== nextProps.metadata.template;
-    const validityChanged = this.props.state.$form.valid !== nextProps.state.$form.valid;
-    const touchedChanged = this.props.state.$form.touched !== nextProps.state.$form.touched;
+  //shouldComponentUpdate(nextProps) {
+    //const templateChanged = !this.props.metadata.template || this.props.metadata.template !== nextProps.metadata.template;
+    //const validityChanged = this.props.state.$form.valid !== nextProps.state.$form.valid;
+    //const touchedChanged = this.props.state.$form.touched !== nextProps.state.$form.touched;
 
-    return templateChanged || validityChanged || touchedChanged;
-  }
+    //return templateChanged || validityChanged || touchedChanged;
+  //}
 
   render() {
     let {metadata, state, templates} = this.props;

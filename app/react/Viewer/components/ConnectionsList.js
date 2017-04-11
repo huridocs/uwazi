@@ -94,6 +94,7 @@ export class ConnectionsList extends Component {
               published: reference.connectedDocumentPublished
             });
 
+
             return (
               <Item
                 key={index}
