@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS} from 'immutable';
 
-import DocumentSidePanel from '../DocumentSidePanel';
+import {DocumentSidePanel, mapStateToProps} from '../DocumentSidePanel';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import {Tabs} from 'react-tabs-redux';
@@ -125,6 +125,27 @@ describe('DocumentSidePanel', () => {
       component.find(DocumentForm).simulate('submit', doc);
 
       expect(props.saveDocument).toHaveBeenCalledWith(doc);
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    it('should add filter selectors splitting references and connections', () => {
+      const ownProps = {
+        references: Immutable.fromJS([
+          {_id: 1, range: {start: 5}},
+          {_id: 2, range: {}},
+          {_id: 3, range: {}},
+          {_id: 4, range: {start: 10}}
+        ])
+      };
+
+      const references = mapStateToProps(null, ownProps).references;
+      const connections = mapStateToProps(null, ownProps).connections;
+
+      expect(references.toJS()).toEqual([{_id: 1, range: {start: 5}}, {_id: 4, range: {start: 10}}]);
+      expect(mapStateToProps(null, ownProps).references).toBe(references);
+      expect(connections.toJS()).toEqual([{_id: 2, range: {}}, {_id: 3, range: {}}]);
+      expect(mapStateToProps(null, ownProps).connections).toBe(connections);
     });
   });
 });

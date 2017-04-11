@@ -14,6 +14,7 @@ import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
+import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -250,6 +251,28 @@ describe('libraryActions', () => {
         store.dispatch(actions.deleteDocument(doc))
         .then(() => {
           expect(documents.api.delete).toHaveBeenCalledWith(doc);
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('getDocumentReferences', () => {
+      it('should set the library sidepanel references', (done) => {
+        mockID();
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
+        spyOn(referencesUtils, 'filterRelevant').and.callFake((references, locale) => 'relevantReferences for ' + references + ', ' + locale);
+
+        const expectedActions = [
+          {type: 'library.sidepanel.references/SET', value: 'relevantReferences for response, es'}
+        ];
+
+        const store = mockStore({locale: 'es'});
+
+        store.dispatch(actions.getDocumentReferences('id'))
+        .then(() => {
+          expect(referencesAPI.get).toHaveBeenCalledWith('id');
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

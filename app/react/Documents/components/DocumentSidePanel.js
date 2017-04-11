@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {ShowMetadata} from 'app/Metadata';
 import {t} from 'app/I18N';
@@ -285,4 +286,11 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false
 };
 
-export default DocumentSidePanel;
+export const mapStateToProps = (state, ownProps) => {
+  return {
+    references: selectReferences(ownProps),
+    connections: selectConnections(ownProps)
+  };
+};
+
+export default connect(mapStateToProps)(DocumentSidePanel);
