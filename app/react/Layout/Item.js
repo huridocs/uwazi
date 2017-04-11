@@ -120,6 +120,9 @@ export class Item extends Component {
             <span>{doc.title}</span>
             {snippet}
           </div>
+          <div className="item-snippet">
+            CASO <b>ARTAVIA</b> MURILLO Y OTROS (“FECUNDACIÓN IN VITRO”) VS. COSTA RICA. SUPERVISIÓN DE ...
+          </div>
         </div>
         <div className="item-metadata">
           {metadata}
