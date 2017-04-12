@@ -87,13 +87,13 @@ export class UploadDoc extends Component {
           })()}
         </div>
         <div className="item-shortcut-group">
-          <a className="item-shortcut item-shortcut--success" onClick={this.showModal.bind(this, modal)}>
+          <a className="item-shortcut btn btn-default btn-hover-success" onClick={this.showModal.bind(this, modal)}>
             <span className="itemShortcut-arrow">
               <i className="fa fa-send"></i>
             </span>
           </a>
           &nbsp;
-          <I18NLink to={`/document/${doc.get('sharedId')}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+          <I18NLink to={`/document/${doc.get('sharedId')}`} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
             <span className="itemShortcut-arrow">
               <i className="fa fa-file-text-o"></i>
             </span>

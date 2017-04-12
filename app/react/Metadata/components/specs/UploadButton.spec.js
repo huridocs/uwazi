@@ -38,7 +38,7 @@ describe('UploadButton', () => {
       it('should render the progress instead of the input', () => {
         const input = component.find('input');
         expect(input.length).toBe(0);
-        const span = component.find('.item-shortcut__text');
+        const span = component.find('span');
         expect(span.text()).toBe('50%');
       });
     });

@@ -14,20 +14,16 @@
   }
 }
 
-.btn-transparent {
-  background: transparent;
-  border: 1px solid $c-grey;
-  color: $c-black;
-  
-  &:hover {
-    border-color: $c-black;
-  }
-  
-  &.btn-danger:hover {
-    background: $c-danger;
-    border-color: $c-danger-dark;
-    color: $c-white;
-  }
+.btn-hover-success:hover {
+  background-color: $c-success;
+  border-color: $c-success-dark;
+  color: $c-white;
+}
+
+.btn-hover-danger:hover {
+  background-color: $c-danger;
+  border-color: $c-danger-dark;
+  color: $c-white;
 }
 
 .form-control {

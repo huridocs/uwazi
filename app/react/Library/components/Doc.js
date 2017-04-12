@@ -29,7 +29,7 @@ export class Doc extends Component {
             </div>
             <NeedAuthorization>
               <ShowIf if={connection.sourceType !== 'metadata'}>
-                <button className="btn btn-transparent btn-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
+                <button className="btn btn-default btn-hover-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
                   <i className="fa fa-trash"></i>
                 </button>
               </ShowIf>
@@ -62,10 +62,8 @@ export class Doc extends Component {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = <I18NLink to={documentViewUrl} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
-                      <span className="itemShortcut-arrow">
-                        <i className="fa fa-file-text-o"></i>
-                       </span>
+    const buttons = <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
+                      <i className="fa fa-file-text-o"></i>
                     </I18NLink>;
 
     return <Item onClick={this.onClick.bind(this)}
