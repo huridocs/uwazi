@@ -13,7 +13,10 @@ const selectTemplateOptions = createSelector(
   [s => s.templates, (s, isEntity) => isEntity],
   (templates, isEntity) => {
     return templates.filter(template => {
-      return template.get('isEntity') === isEntity;
+      if (isEntity) {
+        return template.get('isEntity');
+      }
+      return !template.get('isEntity');
     })
     .map((tmpl) => {
       return {label: tmpl.get('name'), value: tmpl.get('_id')};

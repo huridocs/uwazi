@@ -25,7 +25,7 @@ describe('MetadataForm', () => {
 
     templates = Immutable.fromJS([
       {name: 'template1', _id: 'templateId', properties: fieldsTemplate},
-      {name: 'template2', _id: '2', properties: [{name: 'field3'}]},
+      {name: 'template2', _id: '2', properties: [{name: 'field3'}], isEntity: false},
       {name: 'template3', _id: '3', properties: [{name: 'field4'}], isEntity: true}
     ]);
 
