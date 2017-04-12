@@ -17,7 +17,7 @@ describe('Library DocumentsList container', () => {
 
   beforeEach(() => {
     props = {
-      documents: documents.toJS(),
+      documents: documents,
       selectedDocuments: Immutable.fromJS([]),
       search: {sort: 'sort'},
       filters: Immutable.fromJS({documentTypes: []}),
@@ -89,7 +89,7 @@ describe('Library DocumentsList container', () => {
 
       let state = mapStateToProps(store);
       expect(state).toEqual({
-        documents: documents.toJS(),
+        documents: documents,
         filters,
         filtersPanel: 'panel',
         search: {sort: 'sortProperty'},

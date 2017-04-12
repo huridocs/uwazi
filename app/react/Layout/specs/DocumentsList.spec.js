@@ -14,7 +14,7 @@ describe('DocumentsList', () => {
 
   beforeEach(() => {
     props = {
-      documents: documents.toJS(),
+      documents: documents,
       search: {sort: 'sort'},
       filters: Immutable.fromJS({documentTypes: []}),
       clickOnDocument: {apply: jasmine.createSpy('clickOnDocumentApply')},

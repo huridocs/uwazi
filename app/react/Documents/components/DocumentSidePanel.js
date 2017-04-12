@@ -60,7 +60,15 @@ export class DocumentSidePanel extends Component {
 
   close() {
     if (this.props.formDirty) {
-      return this.props.showModal('ConfirmCloseForm', this.props.doc);
+      this.context.confirm({
+        accept: () => {
+          this.props.resetForm(this.props.formPath);
+          this.props.closePanel();
+        },
+        title: 'Confirm',
+        message: 'All changes will be lost, are you sure you want to proceed?'
+      });
+      return;
     }
     this.props.resetForm(this.props.formPath);
     this.props.closePanel();

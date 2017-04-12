@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Helmet from 'react-helmet';
 import Immutable from 'immutable';
 
@@ -11,7 +11,6 @@ import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import ConfirmCloseForm from 'app/Library/components/ConfirmCloseForm';
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
@@ -23,6 +22,12 @@ import UploadsHeader from 'app/Uploads/components/UploadsHeader';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Uploads extends RouteHandler {
+
+  getChildContext() {
+    return {
+      storeKey: 'uploads'
+    };
+  }
 
   static renderTools() {
     return (
@@ -82,7 +87,6 @@ export default class Uploads extends RouteHandler {
           <UploadBox />
           <DocumentsList />
         </main>
-        <ConfirmCloseForm />
         <LibraryFilters uploadsSection={true}/>
         <ViewMetadataPanel />
         <SelectMultiplePanelContainer />
@@ -90,3 +94,7 @@ export default class Uploads extends RouteHandler {
     );
   }
 }
+
+Uploads.childContextTypes = {
+  storeKey: PropTypes.string
+};

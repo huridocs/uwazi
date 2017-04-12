@@ -11,7 +11,6 @@ export default function documents(state = initialState, action = {}) {
   }
 
   if (action.type === types.UPDATE_DOCUMENT) {
-    console.log(action.doc);
     const docIndex = state.get('rows').findIndex(doc => {
       return doc.get('_id') === action.doc._id;
     });
@@ -48,7 +47,6 @@ export default function documents(state = initialState, action = {}) {
     });
 
     let doc = state.get('rows').get(docIndex).toJS();
-    console.log(action.doc);
     doc.processed = true;
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
