@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import {actions as formActions} from 'react-redux-form';
+import {actions as formActions, getModel} from 'react-redux-form';
 import {requestViewerState, setViewerState} from 'app/Viewer/actions/routeActions';
 import {APIURL} from 'app/config.js';
 import * as types from './actionTypes';
@@ -60,15 +60,15 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
   };
 }
 
-export function changeTemplate(form, onlyReadEntity, template) {
-  return function (dispatch) {
-    //test
-    let entity = Object.assign({}, onlyReadEntity);
-    //
-
+export function changeTemplate(form, templateId) {
+  return function (dispatch, getState) {
+    const entity = Object.assign({}, getModel(getState(), form));
     entity.metadata = {};
-    resetMetadata(entity.metadata, template, {resetExisting: true});
-    entity.template = template._id;
+
+    const template = getState().templates.find(t => t.get('_id') === templateId);
+
+    resetMetadata(entity.metadata, template.toJS(), {resetExisting: true});
+    entity.template = template.get('_id');
 
     dispatch(formActions.reset(form));
     setTimeout(() => {
