@@ -17,8 +17,8 @@ import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
 
-import UploadBox from 'app/uploads/components/UploadBox';
-import UploadsHeader from 'app/uploads/components/UploadsHeader';
+import UploadBox from 'app/Uploads/components/UploadBox';
+import UploadsHeader from 'app/Uploads/components/UploadsHeader';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
@@ -83,7 +83,7 @@ export default class Uploads extends RouteHandler {
           <DocumentsList />
         </main>
         <ConfirmCloseForm />
-        <LibraryFilters />
+        <LibraryFilters uploadsSection={true}/>
         <ViewMetadataPanel />
         <SelectMultiplePanelContainer />
       </div>

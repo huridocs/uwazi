@@ -19,6 +19,7 @@ describe('Doc', () => {
       creationDate: 1234,
       type: 'document',
       sharedId: 'id',
+      processed: true,
       connections: [{sourceType: 'metadata'}, {_id: 'c1', sourceType: 'other', nonRelevant: true}]
     };
 
@@ -70,12 +71,6 @@ describe('Doc', () => {
       });
     });
 
-    it('should hold a link to the document', () => {
-      render();
-      const button = component.find(Item).props().buttons;
-      expect(button.props.to).toBe('/document/id');
-    });
-
     it('should pass the searchParams to the item', () => {
       render();
       expect(component.find(Item).props().searchParams.sort).toBe('sortProperty');
@@ -113,6 +108,9 @@ describe('Doc', () => {
       store = {
         library: {
           ui: Immutable({selectedDocuments: [{_id: 'docId'}]})
+        },
+        uploads: {
+          progress: Immutable({})
         },
         user: Immutable({_id: 'batId'})
       };

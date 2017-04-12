@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import {t, I18NLink} from 'app/I18N';
+import {publish} from 'app/Uploads/actions/uploadsActions';
+import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
@@ -53,9 +56,16 @@ export class Doc extends Component {
     }
   }
 
+  publish(e) {
+    e.stopPropagation();
+    this.props.publish(this.props.doc.toJS());
+  }
+
   render() {
     const doc = this.props.doc.toJS();
-    const {sharedId, type} = doc;
+    const {sharedId, type, template} = doc;
+    const isEntity = type === 'entity';
+    const hasTemplate = !!template;
     let documentViewUrl = `/${type}/${sharedId}`;
 
     let itemConnections = null;
@@ -63,9 +73,22 @@ export class Doc extends Component {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
-                      <i className="fa fa-file-text-o"></i>
-                    </I18NLink>;
+    const buttons = <div>
+                      <UploadEntityStatus doc={this.props.doc} />
+                      <ShowIf if={doc.processed || isEntity}>
+                        <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
+                          <i className="fa fa-file-text-o"></i>
+                        </I18NLink>
+                      </ShowIf>
+                      <ShowIf if={(doc.processed || isEntity) && !doc.published && hasTemplate}>
+                        <button className="item-shortcut" onClick={this.publish.bind(this)}>
+                          <span className="itemShortcut-arrow">
+                            <i className="fa fa-paper-plane"></i>
+                           </span>
+                        </button>
+                      </ShowIf>
+                    </div>;
+>>>>>>> Uploads progress bar while uploading documents
 
     return <Item onClick={this.onClick.bind(this)}
                  active={this.props.active}
@@ -83,13 +106,18 @@ Doc.propTypes = {
   active: PropTypes.bool,
   authorized: PropTypes.bool,
   deleteConnection: PropTypes.func,
+  publish: PropTypes.func,
   onClick: PropTypes.func
 };
 
-export function mapStateToProps({library, user}, ownProps) {
+export function mapStateToProps({library, user, uploads}, ownProps) {
   return {
     active: !!library.ui.get('selectedDocuments').find((doc) => doc.get('_id') === ownProps.doc.get('_id'))
   };
 }
 
-export default connect(mapStateToProps)(Doc);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({publish}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Doc);

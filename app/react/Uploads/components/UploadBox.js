@@ -4,7 +4,9 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
 
-import {uploadDocument, unselectAllDocuments, createDocument} from 'app/Uploads/actions/uploadsActions';
+import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
+import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import io from 'socket.io-client';
 
 export class UploadBox extends Component {
   onDrop(files) {
@@ -16,6 +18,21 @@ export class UploadBox extends Component {
       });
     });
     this.props.unselectAllDocuments();
+  }
+
+  componentWillMount() {
+    this.socket = io();
+    this.socket.on('documentProcessed', (sharedId) => {
+      this.props.documentProcessed(sharedId);
+    });
+
+    this.socket.on('conversionFailed', (sharedId) => {
+      this.props.documentProcessError(sharedId);
+    });
+  }
+
+  componentWillUnmount() {
+    this.socket.disconnect();
   }
 
   extractTitle(file) {
@@ -50,14 +67,23 @@ export class UploadBox extends Component {
 }
 
 UploadBox.propTypes = {
+  documentProcessed: PropTypes.func,
+  documentProcessError: PropTypes.func,
   uploadDocument: PropTypes.func,
   createDocument: PropTypes.func,
-  unselectAllDocuments: PropTypes.func
+  unselectAllDocuments: PropTypes.func,
+  documents: PropTypes.object
 };
+
+export function mapStateToProps({library}) {
+  return {
+    documents: library.documents
+  };
+}
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument}, dispatch);
+  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError}, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(UploadBox);
+export default connect(mapStateToProps, mapDispatchToProps)(UploadBox);

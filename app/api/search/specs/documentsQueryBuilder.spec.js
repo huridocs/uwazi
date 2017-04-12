@@ -98,6 +98,7 @@ describe('documentQueryBuilder', () => {
       let typesAggregation = {
         terms: {
           field: 'template.raw',
+          missing: 'missing',
           size: 0
         },
         aggregations: {

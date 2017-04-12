@@ -42,7 +42,9 @@ export class DocumentSidePanel extends Component {
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS())
         .then(() => {
-          browserHistory.push('/');
+          const pathname = browserHistory.getCurrentLocation().pathname;
+          const path = (pathname + '/').replace(/\/\//g, '/');
+          browserHistory.push(path);
         });
       },
       title: 'Confirm delete document',

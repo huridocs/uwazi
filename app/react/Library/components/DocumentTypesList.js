@@ -13,10 +13,14 @@ export class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
     let items = this.props.settings.collection.toJS().filters || [];
-    if (!items.length) {
+    if (!items.length || this.props.uploadsSection) {
       items = props.templates.toJS().map((tpl) => {
         return {id: tpl._id, name: tpl.name};
       });
+    }
+
+    if (this.props.uploadsSection) {
+      items.push({id: 'missing', name: t('System', 'No template')});
     }
     this.state = {
       items,
@@ -192,7 +196,8 @@ DocumentTypesList.propTypes = {
   settings: PropTypes.object,
   templates: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
-  aggregations: PropTypes.object
+  aggregations: PropTypes.object,
+  uploadsSection: PropTypes.bool
 };
 
 

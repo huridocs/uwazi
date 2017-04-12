@@ -32,7 +32,7 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <SearchBar />
           <div className="documentTypes-selector nested-selector">
-            <DocumentTypesList />
+            <DocumentTypesList uploadsSection={this.props.uploadsSection}/>
           </div>
           <FiltersForm />
         </div>
@@ -43,7 +43,8 @@ export class LibraryFilters extends Component {
 
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  uploadsSection: PropTypes.bool
 };
 
 export function mapStateToProps({library}) {

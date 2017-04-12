@@ -142,6 +142,7 @@ describe('libraryActions', () => {
         };
         const limit = 'limit';
         spyOn(browserHistory, 'push');
+        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library'});
         actions.searchDocuments(query, limit)(dispatch, getState);
         const expected = Object.assign({}, query);
         expected.aggregations = [

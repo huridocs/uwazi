@@ -1,12 +1,9 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
-import {createSelector} from 'reselect';
 
 import DocumentsList from 'app/Layout/DocumentsList';
 import {loadMoreDocuments, selectDocument, unselectDocument, unselectAllDocuments, selectDocuments} from 'app/Library/actions/libraryActions';
-
-const documentsSelector = createSelector(s => s.library.documents, d => d.toJS());
 
 export function clickOnDocument(e, doc, active) {
   const canSelectMultiple = this.props.authorized;
@@ -26,16 +23,16 @@ export function clickOnDocument(e, doc, active) {
 
   if (!active & e.shiftKey & canSelectMultiple) {
     const lastSelectedDocument = this.props.selectedDocuments.last();
-    const docs = this.props.documents.rows;
+    const docs = this.props.documents.get('rows');
     const startIndex = docs.reduce((result, _doc, index) => {
-      if (_doc._id === lastSelectedDocument.get('_id')) {
+      if (_doc.get('_id') === lastSelectedDocument.get('_id')) {
         return index;
       }
       return result;
     }, -1);
 
     const endIndex = docs.reduce((result, _doc, index) => {
-      if (_doc._id === doc.get('_id')) {
+      if (_doc.get('_id') === doc.get('_id')) {
         return index;
       }
       return result;
@@ -45,7 +42,7 @@ export function clickOnDocument(e, doc, active) {
     if (endIndex < startIndex) {
       docsToSelect = docs.slice(endIndex, startIndex + 1);
     }
-    return this.props.selectDocuments(docsToSelect);
+    return this.props.selectDocuments(docsToSelect.toJS());
   }
 
   this.props.selectDocument(doc);
@@ -53,7 +50,7 @@ export function clickOnDocument(e, doc, active) {
 
 export function mapStateToProps(state) {
   return {
-    documents: documentsSelector(state),
+    documents: state.library.documents,
     filters: state.library.filters,
     filtersPanel: state.library.ui.get('filtersPanel'),
     search: state.search,

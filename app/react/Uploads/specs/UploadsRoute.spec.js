@@ -5,7 +5,7 @@ import {shallow} from 'enzyme';
 import {APIURL} from 'app/config';
 import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/App/RouteHandler';
-import * as actionTypes from 'app/Uploads/actions/actionTypes.js';
+import * as actionTypes from 'app/Library/actions/actionTypes.js';
 
 describe('UploadsRoute', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
@@ -22,7 +22,7 @@ describe('UploadsRoute', () => {
 
     backend.restore();
     backend
-    .get(APIURL + 'search/unpublished', {body: JSON.stringify({rows: documents})});
+    .get(APIURL + 'search?filters=%7B%7D&types=%5B%5D&order=desc&sort=creationDate&unpublished=true', {body: JSON.stringify({rows: documents})});
   });
 
   afterEach(() => backend.restore());
@@ -31,7 +31,7 @@ describe('UploadsRoute', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {
       UploadsRoute.requestState()
       .then((state) => {
-        expect(state.uploads.documents).toEqual(documents);
+        expect(state.library.documents).toEqual({rows: documents});
         done();
       })
       .catch(done.fail);
@@ -40,11 +40,11 @@ describe('UploadsRoute', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({uploads: {documents}});
+      instance.setReduxState({library: {documents, filters: {}}});
     });
 
     it('should call setDocuments with the documents', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_UPLOADS, documents});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
     });
   });
 });
