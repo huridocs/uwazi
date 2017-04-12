@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {getField} from 'react-redux-form';
 
 export class FormGroup extends Component {
 
@@ -28,10 +29,14 @@ FormGroup.propTypes = {
   children: childrenType
 };
 
-export const mapStateToProps = ({}, props) => {
-  const touched = !props.pristine || props.$form && !props.$form.pristine;
-  const invalid = props.valid === false || !!props.$form && props.$form.valid === false;
-  return {hasError: (touched || props.submitFailed) && invalid};
+export const mapStateToProps = (state, props) => {
+  if (props.field === 'title' || props.field === 'metadata.requerido') {
+    const fieldSatate = getField(state, props.model + '.' + props.field);
+    const touched = !fieldSatate.pristine || fieldSatate.$form && !fieldSatate.$form.pristine;
+    const invalid = fieldSatate.valid === false || !!fieldSatate.$form && fieldSatate.$form.valid === false;
+    return {hasError: (touched || fieldSatate.submitFailed) && invalid};
+  }
+  return {hasError: false};
 };
 
 export default connect(mapStateToProps)(FormGroup);

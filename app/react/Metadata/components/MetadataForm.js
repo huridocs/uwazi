@@ -56,7 +56,7 @@ export class MetadataForm extends Component {
   // }
 
   render() {
-    const {state, model, template, templateOptions} = this.props;
+    const {model, template, templateOptions} = this.props;
     if (!template) {
       return <div />;
     }
@@ -64,7 +64,7 @@ export class MetadataForm extends Component {
     return (
       <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template.toJS())}>
 
-        <FormGroup {...state.title}>
+        <FormGroup model={model} field="title">
           <ul className="search__filter">
             <li><label>{t('System', 'Title')} <span className="required">*</span></label></li>
             <li className="wide">
@@ -101,7 +101,7 @@ export class MetadataForm extends Component {
           </ul>
         </FormGroup>
 
-        <MetadataFormFields thesauris={this.props.thesauris} state={state} template={template} />
+        <MetadataFormFields thesauris={this.props.thesauris} model={model} template={template} />
       </Form>
     );
   }
@@ -109,7 +109,6 @@ export class MetadataForm extends Component {
 
 MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
-  state: PropTypes.object,
   template: PropTypes.object,
   templateOptions: PropTypes.object,
   thesauris: PropTypes.object,

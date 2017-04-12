@@ -51,15 +51,12 @@ export class MetadataFormFields extends Component {
             }
           };
 
-          const field = state.metadata[`${property.name}`] || {pristine: true};
+          // const field = state.metadata[`${property.name}`] || {pristine: true};
           return (
-            <FormGroup key={property.name} {...field} submitFailed={state.submitFailed}>
+            <FormGroup key={property.name} model={this.props.model} field={'metadata.' + property.name}>
               <ul className="search__filter is-active">
                 <li>
                   <label>
-                    <ShowIf if={this.props.multipleEdition && !this.isPristine(field)}>
-                      <span><i className="fa fa-warning"></i>&nbsp;</span>
-                    </ShowIf>
                     {t(template._id, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
