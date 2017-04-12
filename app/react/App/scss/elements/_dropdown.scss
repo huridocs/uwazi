@@ -35,11 +35,12 @@
 
 .Dropdown.is-active {
   align-items: flex-start;
-  padding: 15px 20px;
-  margin-top: -15px;
+  padding: 10px 15px;
+  margin-top: -10px;
+  margin-right: -15px;
   border-radius: $border-radius;
   background: $c-white;
-  box-shadow: $box-shadow;
+  box-shadow: $box-shadow, inset 0 0 0 1px $c-grey-light;
   
   .Dropdown-option,
   .Dropdown-option__item {
