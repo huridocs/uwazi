@@ -23,7 +23,7 @@ describe('MetadataFormFields', () => {
       metadata: {_id: 'docId', template: 'templateId', title: 'testTitle', metadata: {field1: 'field1value', field2: 'field2value'}},
       template: fromJS({name: 'template1', _id: 'templateId', properties: fieldsTemplate}),
       thesauris: fromJS([{_id: 2, name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
-      state: {title: {titleProp: 'prop'}, metadata: {field1: {field1Prop: 'prop'}}}
+      model: 'metadata'
     };
   });
 
@@ -34,7 +34,10 @@ describe('MetadataFormFields', () => {
   it('should pass the field state to every fields', () => {
     render();
 
-    let FormGroup = component.findWhere((node) => node.props().field1Prop === 'prop');
+    let FormGroup = component.findWhere((node) => node.props().model === 'metadata');
+    expect(FormGroup.length).toBe(4);
+
+    FormGroup = component.findWhere((node) => node.props().field === 'metadata.field1');
     expect(FormGroup.length).toBe(1);
   });
 

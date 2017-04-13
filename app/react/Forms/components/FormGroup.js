@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {getField} from 'react-redux-form';
 
 export class FormGroup extends Component {
-
   render() {
     let className = 'form-group';
     if (this.props.hasError) {
@@ -26,17 +25,25 @@ let childrenType = PropTypes.oneOfType([
 
 FormGroup.propTypes = {
   hasError: PropTypes.bool,
+  model: PropTypes.any,
   children: childrenType
 };
 
 export const mapStateToProps = (state, props) => {
-  if (props.field === 'title' || props.field === 'metadata.requerido') {
-    const fieldSatate = getField(state, props.model + '.' + props.field);
-    const touched = !fieldSatate.pristine || fieldSatate.$form && !fieldSatate.$form.pristine;
-    const invalid = fieldSatate.valid === false || !!fieldSatate.$form && fieldSatate.$form.valid === false;
-    return {hasError: (touched || fieldSatate.submitFailed) && invalid};
+  if (props.model) {
+    const fieldState = getField(state, props.model + '.' + props.field);
+    if (!fieldState) {
+      return {hasError: false};
+    }
+
+    const touched = !fieldState.pristine || fieldState.$form && !fieldState.$form.pristine;
+    const invalid = fieldState.valid === false || !!fieldState.$form && fieldState.$form.valid === false;
+    return {hasError: (touched || fieldState.submitFailed) && invalid};
   }
-  return {hasError: false};
+
+  const touched = !props.pristine || props.$form && !props.$form.pristine;
+  const invalid = props.valid === false || !!props.$form && props.$form.valid === false;
+  return {hasError: (touched || props.submitFailed) && invalid};
 };
 
 export default connect(mapStateToProps)(FormGroup);
