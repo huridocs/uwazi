@@ -32,8 +32,8 @@ module.exports = {
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
+          fallback: 'style-loader',
+          use: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
         }),
         include: [
           path.join(__dirname, 'app'),
@@ -43,8 +43,8 @@ module.exports = {
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?sourceMap'
+          fallback: 'style-loader',
+          use: 'css-loader?sourceMap'
         }),
         include: [
           path.join(__dirname, 'app'),
