@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
 import {Field} from 'react-redux-form';
 import t from 'app/I18N/t';
-import ShowIf from 'app/App/ShowIf';
 import {connect} from 'react-redux';
 
 export class MetadataFormFields extends Component {
@@ -20,7 +19,6 @@ export class MetadataFormFields extends Component {
   }
 
   render() {
-    let {state} = this.props;
     const thesauris = this.props.thesauris.toJS();
     const template = this.props.template.toJS();
     return (
