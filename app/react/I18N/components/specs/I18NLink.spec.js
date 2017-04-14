@@ -41,7 +41,6 @@ describe('I18NLink', () => {
     it('should pass other props', () => {
       render();
       let link = component.find(Link);
-      expect(link.props().activeClass).toBe('is-active');
       expect(link.props().onClick).toBe(clickAction);
     });
   });
