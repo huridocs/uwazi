@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {Form, Field} from 'react-redux-form';
 
 export class TocForm extends Component {

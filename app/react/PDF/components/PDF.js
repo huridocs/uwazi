@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
 import PDFPage from './PDFPage.js';
 import '../../../../node_modules/pdfjs-dist/web/pdf_viewer.css';

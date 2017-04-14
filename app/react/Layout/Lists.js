@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 let List = ({children}) => {
   return <div className="item-group">{children}</div>;

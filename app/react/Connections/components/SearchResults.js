@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {TemplateLabel, Icon} from 'app/Layout';
 import Loader from 'app/components/Elements/Loader';
 

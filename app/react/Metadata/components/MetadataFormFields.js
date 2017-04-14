@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
 import {Field} from 'react-redux-form';
 import t from 'app/I18N/t';

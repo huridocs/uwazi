@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {ShowMetadata} from 'app/Metadata';

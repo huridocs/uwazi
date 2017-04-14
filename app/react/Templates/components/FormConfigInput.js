@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {Field} from 'react-redux-form';
 import {connect} from 'react-redux';
