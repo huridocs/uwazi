@@ -35,7 +35,7 @@ describe('Metadata Actions', () => {
 
       beforeEach(() => {
         spyOn(formActions, 'load').and.returnValue('formload');
-        spyOn(formActions, 'setInitial').and.returnValue('forminitial');
+        spyOn(formActions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
         doc = {title: 'test'};
         templates = [{
@@ -62,10 +62,10 @@ describe('Metadata Actions', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId1'};
+        expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
-        expect(dispatch).toHaveBeenCalledWith('forminitial');
+        expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-        expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
       });
 
       it('should should set the first document template if document has type document', () => {
