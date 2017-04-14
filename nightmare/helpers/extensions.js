@@ -94,3 +94,34 @@ Nightmare.action('selectText', function (selector, done) {
   .mouseup(selector)
   .then(done);
 });
+
+Nightmare.action('openEntityFromLibrary', function (itemName, done) {
+  this.type(selectors.libraryView.searchInput, itemName)
+  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  .wait(elementToSelect => {
+    return document.querySelector(elementToSelect).innerText;
+  }, selectors.entityView.contentHeaderTitle)
+  .then(done);
+});
+
+Nightmare.action('editEntityFromEntityViewer', function (done) {
+  this.waitToClick(selectors.entityView.editButton)
+  .wait(selectors.entityView.metadataForm)
+  .then(done);
+});
+
+Nightmare.action('saveEntityFromEntityViewer', function (done) {
+  this.waitToClick(selectors.entityView.saveButton)
+  .wait(selectors.entityView.editButton)
+  .then(done);
+});
+
+Nightmare.action('pickToday', function (input, done) {
+  this.waitToClick(input)
+  .wait(selectors.datePicker.today)
+  .click(selectors.datePicker.today)
+  .wait(elementToSelect => {
+    return document.querySelector(elementToSelect).value;
+  }, input)
+  .then(done);
+});

@@ -70,6 +70,15 @@ export default {
     unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--danger'
 
   },
+  entityView: {
+    contentHeader: '#app > div.content > div > div > div.content-header.content-header-entity',
+    contentHeaderTitle: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-title > h1',
+    editButton: '#app > div.content > div > div > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
+    saveButton: '#app > div.content > div > div > div.sidepanel-footer > button.btn.btn-success',
+    metadataForm: '#metadataForm',
+    metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
+    metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select'
+  },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
     firstDocument: '#app > div.content > div > div > main > div.item-group > div'
@@ -81,5 +90,8 @@ export default {
     settingsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a',
     spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(1) > a',
     english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a'
+  },
+  datePicker: {
+    today: 'body div.react-datepicker__month div.react-datepicker__day.react-datepicker__day--today'
   }
 };
