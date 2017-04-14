@@ -10,9 +10,8 @@ export class I18NLink extends Component {
 
   render() {
     let locale = this.props.locale || '';
-    let props = Object.assign({}, this.props);
-    props.to = this.sanitize(`/${locale}/${this.props.to}`);
-    return <Link {...props}>{this.props.children}</Link>;
+    let to = this.sanitize(`/${locale}/${this.props.to}`);
+    return <Link to={to} className={this.props.className}>{this.props.children}</Link>;
   }
 }
 
