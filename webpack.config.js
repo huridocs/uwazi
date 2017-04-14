@@ -8,9 +8,6 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
   context: __dirname,
   devtool: '#source-map',
-  //entry: [
-  //path.join(__dirname, 'app/react/index.js')
-  //],
   entry: {
     main: path.join(__dirname, 'app/react/index.js'),
     'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
@@ -21,7 +18,6 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   module: {
-    //noParse: /node_modules/,
     rules: [
       {
         test: /\.js$/,
