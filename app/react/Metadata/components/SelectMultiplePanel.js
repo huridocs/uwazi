@@ -191,7 +191,6 @@ export class SelectMultiplePanel extends Component {
                 model={this.props.formKey}
                 template={fromJS(template)}
                 thesauris={this.props.thesauris}
-                state={this.props.formState}
                 multipleEdition={true}
               />
             </Form>
