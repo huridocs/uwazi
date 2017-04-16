@@ -5,7 +5,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-describe('Entity zone', () => {
+fdescribe('Entity zone', () => {
   describe('metadata editing', () => {
     it('should log in as admin and go into the entity viewer for the desired entity', (done) => {
       const entityTitle = 'Man-bat';
@@ -54,7 +54,11 @@ describe('Entity zone', () => {
         viewer: {
           realName: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(1) > dd',
           age: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(2) > dd',
-          knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(3) > dd > a'
+          knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(3) > dd > a',
+          mainSuperpower: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(4) > dd',
+          superpowers: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(5) > dd > ul',
+          firstSight: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(6) > dd',
+          whoIsHe: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(7) > dd > div > p'
         }
       };
 
@@ -76,6 +80,7 @@ describe('Entity zone', () => {
                                                  'to the minus column: the mutating serum is highly addictive, guaranteeing ' +
                                                  'that Man-Bat will rear his ugly head over and over.')
       .saveEntityFromEntityViewer()
+      .refresh()
       .getInnerText(selectors.manBatEntity.viewer.realName)
       .then(text => {
         expect(text).toBe('Dr. Kirk Langstrom');
@@ -87,6 +92,22 @@ describe('Entity zone', () => {
       })
       .then(text => {
         expect(text).toBe('Joker');
+        return nightmare.getInnerText(selectors.manBatEntity.viewer.mainSuperpower);
+      })
+      .then(text => {
+        expect(text).toBe('fly');
+        return nightmare.getInnerText(selectors.manBatEntity.viewer.superpowers);
+      })
+      .then(text => {
+        expect(text).toBe('flylaser beam');
+        return nightmare.getInnerText(selectors.manBatEntity.viewer.firstSight);
+      })
+      .then(text => {
+        expect(text).toBe('Apr 16, 2017');
+        return nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
+      })
+      .then(text => {
+        expect(text.match('Jekyll and Hyde story')).not.toBe(null);
       })
       .then(done);
     }, 20000);
