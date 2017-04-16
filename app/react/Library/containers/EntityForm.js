@@ -9,7 +9,6 @@ function mapStateToProps({library, templates, thesauris}) {
     model: 'library.sidepanel.metadata',
     isEntity: library.sidepanel.metadata.type === 'entity',
     templateId: library.sidepanel.metadata.template,
-    // state: library.sidepanel.metadataForm,
     templates: templates,
     thesauris: thesauris
   };

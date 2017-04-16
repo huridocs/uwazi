@@ -7,8 +7,8 @@ import {actions, MetadataForm} from 'app/Metadata';
 function mapStateToProps({uploads, templates, thesauris}) {
   return {
     model: 'uploads.metadata',
-    metadata: uploads.metadata,
-    state: uploads.metadataForm,
+    isEntity: uploads.metadata.type === 'entity',
+    templateId: uploads.metadata.template,
     templates: templates,
     thesauris: thesauris
   };
