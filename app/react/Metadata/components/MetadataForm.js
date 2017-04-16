@@ -26,16 +26,6 @@ const selectTemplateOptions = createSelector(
 );
 
 export class MetadataForm extends Component {
-  // componentWillReceiveProps(nextProps) {
-  //   console.log('--------------------------');
-  //   Object.keys(nextProps).forEach(key => {
-  //     if (this.props[key] !== nextProps[key]) {
-  //       console.log('K:', key, ', prop:', nextProps[key]);
-  //     }
-  //   });
-  //   console.log('--------------------------');
-  // }
-
   render() {
     const {model, template, templateOptions} = this.props;
     if (!template) {

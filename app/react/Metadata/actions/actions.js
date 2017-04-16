@@ -81,7 +81,6 @@ export function loadTemplate(form, template) {
     let data = {metadata: {}};
     resetMetadata(data.metadata, template, {resetExisting: true});
     dispatch(formActions.load(form, data));
-    dispatch(formActions.setInitial(form));
   };
 }
 

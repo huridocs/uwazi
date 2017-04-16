@@ -16,7 +16,6 @@ export class FormGroup extends Component {
       </div>
     );
   }
-
 }
 
 let childrenType = PropTypes.oneOfType([
@@ -37,14 +36,27 @@ export const mapStateToProps = (state, props) => {
       return {hasError: false};
     }
 
-    const touched = !fieldState.pristine || fieldState.$form && !fieldState.$form.pristine;
+    let touched = !fieldState.pristine;
+    if (fieldState.$form) {
+      touched = !fieldState.$form.pristine;
+    }
     const invalid = fieldState.valid === false || !!fieldState.$form && fieldState.$form.valid === false;
-    return {hasError: (touched || fieldState.submitFailed) && invalid};
+    return {
+      hasError: (touched || props.submitFailed) && invalid,
+      touched: touched
+    };
   }
 
-  const touched = !props.pristine || props.$form && !props.$form.pristine;
+  let touched = !props.pristine;
+  if (props.$form) {
+    touched = !props.$form.pristine;
+  }
+
   const invalid = props.valid === false || !!props.$form && props.$form.valid === false;
-  return {hasError: (touched || props.submitFailed) && invalid};
+  return {
+    hasError: (touched || props.submitFailed) && invalid,
+    touched: touched
+  };
 };
 
 export default connect(mapStateToProps)(FormGroup);

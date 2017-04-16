@@ -31,14 +31,14 @@ describe('MetadataFormFields', () => {
     component = shallow(<MetadataFormFields {...props}/>);
   };
 
-  it('should pass the field state to every fields', () => {
+  it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
     render();
 
     let FormGroup = component.findWhere((node) => node.props().model === 'metadata');
-    expect(FormGroup.length).toBe(4);
+    expect(FormGroup.length).toBe(8);
 
     FormGroup = component.findWhere((node) => node.props().field === 'metadata.field1');
-    expect(FormGroup.length).toBe(1);
+    expect(FormGroup.length).toBe(2);
   });
 
   it('should render dynamic fields based on the template selected', () => {

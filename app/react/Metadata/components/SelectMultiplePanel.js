@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Form} from 'react-redux-form';
@@ -188,6 +188,7 @@ export class SelectMultiplePanel extends Component {
                 </ul>
               </FormGroup>
               <MetadataFormFields
+                model={this.props.formKey}
                 template={fromJS(template)}
                 thesauris={this.props.thesauris}
                 state={this.props.formState}
