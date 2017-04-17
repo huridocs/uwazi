@@ -24,6 +24,11 @@ Nightmare.action('login', function (name, password, done) {
   .then(done);
 });
 
+Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
+  this.wait(1000)
+  .then(done);
+});
+
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
   .click(selector)

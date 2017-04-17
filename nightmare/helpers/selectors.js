@@ -51,7 +51,11 @@ export default {
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > a',
-    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span'
+    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span',
+    editEntityButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
+    saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
+    deleteButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.delete-metadata.btn.btn-danger',
+    deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger'
   },
   documentView: {
     viewer: '#app > div.content > div > div > main',
@@ -81,7 +85,11 @@ export default {
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
-    firstDocument: '#app > div.content > div > div > main > div.item-group > div'
+    firstDocument: '#app > div.content > div > div > main > div.item-group > div',
+    newEntityButtom: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
+    saveButton: '#app > div.content > div > div > aside.side-panel.is-active > div.sidepanel-footer > button',
+    firstPublishButton: '#app > div.content > div > div > main > div.item-group > div.undefined.item.item-status.item-success.is-disabled > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--success',
+    acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
   },
   navigation: {
     loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',

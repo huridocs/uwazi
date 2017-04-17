@@ -5,7 +5,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-fdescribe('Entity zone', () => {
+describe('Entity zone', () => {
   describe('metadata editing', () => {
     it('should log in as admin and go into the entity viewer for the desired entity', (done) => {
       const entityTitle = 'Man-bat';
@@ -100,10 +100,6 @@ fdescribe('Entity zone', () => {
       })
       .then(text => {
         expect(text).toBe('flylaser beam');
-        return nightmare.getInnerText(selectors.manBatEntity.viewer.firstSight);
-      })
-      .then(text => {
-        expect(text).toBe('Apr 16, 2017');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
       })
       .then(text => {
