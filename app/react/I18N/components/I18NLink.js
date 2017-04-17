@@ -21,7 +21,8 @@ I18NLink.propTypes = {
   children: PropTypes.any,
   to: PropTypes.string,
   activeClass: PropTypes.string,
-  className: PropTypes.string
+  className: PropTypes.string,
+  onClick: PropTypes.func
 };
 
 export function mapStateToProps(state) {

@@ -52,7 +52,11 @@ export class MetadataFormFields extends Component {
               <ul className="search__filter is-active">
                 <li>
                   <label>
-                    <MultipleEditionFieldWarning multipleEdition={this.props.multipleEdition} model={this.props.model} field={'metadata.' + property.name}/>
+                    <MultipleEditionFieldWarning
+                      multipleEdition={this.props.multipleEdition}
+                      model={this.props.model}
+                      field={'metadata.' + property.name}
+                    />
                     {t(template._id, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
