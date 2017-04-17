@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {SelectMultiplePanel} from '../SelectMultiplePanel';
+import {SelectMultiplePanel, mapStateToProps} from '../SelectMultiplePanel';
 import {TemplateLabel, SidePanel} from 'app/Layout';
 import Immutable from 'immutable';
 
@@ -25,7 +25,8 @@ describe('SelectMultiplePanel', () => {
       state: {metadata: {}},
       formState: {icon: {}, metadata: {}},
       formKey: 'library.sidepanel.multipleEdit',
-      thesauris: Immutable.fromJS([])
+      thesauris: Immutable.fromJS([]),
+      template: Immutable.fromJS({properties: []})
     };
     context = {confirm: jasmine.createSpy('confirm')};
   });
@@ -89,6 +90,7 @@ describe('SelectMultiplePanel', () => {
 
   describe('save()', () => {
     it('should update the entities with the modified values and save', (done) => {
+      props.template = Immutable.fromJS({_id: '4', properties: []});
       props.formState = {
         icon: {pristine: false},
         metadata: {
@@ -97,7 +99,6 @@ describe('SelectMultiplePanel', () => {
         }
       };
       render();
-      spyOn(instance, 'comonTemplate').and.returnValue({_id: '4'});
       instance.save({icon: 'doc-icon', metadata: {title: 'new title', date: ''}})
       .then(() => {
         expect(props.multipleUpdate).toHaveBeenCalledWith(props.entitiesSelected, {template: '4', metadata: {title: 'new title'}, icon: 'doc-icon'});
@@ -111,7 +112,22 @@ describe('SelectMultiplePanel', () => {
 
   describe('edit()', () => {
     it('should load the form with the comon properties for the selectedEntities', () => {
-      props.templates = Immutable.fromJS([
+
+
+      render();
+      component.find('.edit').simulate('click');
+      expect(props.loadForm).toHaveBeenCalledWith('library.sidepanel.multipleEdit', props.template.toJS());
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    let state;
+    let ownProps;
+
+    beforeEach(() => {
+      state = {};
+      ownProps = {state: {}};
+      ownProps.templates = Immutable.fromJS([
         {_id: '1', properties: [
           {name: 'year', type: 'numeric'},
           {name: 'powers', content: '1', type: 'multiselect'},
@@ -125,7 +141,10 @@ describe('SelectMultiplePanel', () => {
           {name: 'color', type: 'text', required: false}
         ]}
       ]);
+      ownProps.entitiesSelected = Immutable.fromJS([{title: 'A rude awakening', template: '1'}, {title: 'A falling star', template: '2'}]);
+    });
 
+    it('should select templateOptions according to entity type', () => {
       let expectedTemplate = {
         _id: '',
         properties: [
@@ -133,10 +152,7 @@ describe('SelectMultiplePanel', () => {
           {name: 'color', type: 'text', required: true}
         ]
       };
-
-      render();
-      component.find('.edit').simulate('click');
-      expect(props.loadForm).toHaveBeenCalledWith('library.sidepanel.multipleEdit', expectedTemplate);
+      expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
     });
   });
 });
