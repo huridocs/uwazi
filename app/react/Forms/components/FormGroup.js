@@ -42,7 +42,7 @@ export const mapStateToProps = (state, props) => {
     }
     const invalid = fieldState.valid === false || !!fieldState.$form && fieldState.$form.valid === false;
     return {
-      hasError: (touched || props.submitFailed) && invalid,
+      hasError: (touched || fieldState.submitFailed) && invalid,
       touched: touched
     };
   }

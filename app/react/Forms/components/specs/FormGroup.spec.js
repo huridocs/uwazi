@@ -46,11 +46,8 @@ describe('FormGroup', () => {
       expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
     });
 
-    it('should return hasError true when submitFailed and valid false', () => {
-      let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true, valid: false}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-
-      state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true, $form: {valid: false}}}};
+    it('should return hasError true when submitFailed and valid false and has not been touched', () => {
+      let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true, valid: false, pristine: true}}};
       expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
     });
 
