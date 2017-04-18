@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
-
-import ContextMenu from 'app/ContextMenu';
 
 import {enterUploads} from '../actions/uploadsActions';
 
