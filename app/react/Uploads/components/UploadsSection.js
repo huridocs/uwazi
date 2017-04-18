@@ -49,9 +49,7 @@ export class UploadsSection extends Component {
         <UploadFailedModal />
         <ReadyToPublishModal />
 
-        <ContextMenu>
-          <UploadsMenu />
-        </ContextMenu>
+        <UploadsMenu />
       </div>
     );
   }
