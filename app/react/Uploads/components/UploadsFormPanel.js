@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types';
 // Entire component is UNTESTED!
 // TEST
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 

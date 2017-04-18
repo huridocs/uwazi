@@ -5,8 +5,8 @@ import {actions, MetadataForm} from 'app/Metadata';
 function mapStateToProps({documentViewer, templates, thesauris}) {
   return {
     model: 'documentViewer.sidepanel.metadata',
-    metadata: documentViewer.sidepanel.metadata,
-    state: documentViewer.sidepanel.metadataForm,
+    isEntity: documentViewer.sidepanel.metadata.type === 'entity',
+    templateId: documentViewer.sidepanel.metadata.template,
     templates,
     thesauris
   };

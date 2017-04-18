@@ -47,14 +47,21 @@ export default {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div',
     librarySecondDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div',
+    libraryThirdDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(3)',
     searchInLibrary: '#app > div.content > header > div > a',
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
-    firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > a',
-    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span'
+    firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > a',
+    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span',
+    editEntityButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
+    saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
+    deleteButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.delete-metadata.btn.btn-danger',
+    deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > span > span'
   },
   documentView: {
     viewer: '#app > div.content > div > div > main',
+    contentHeader: '#app > div.content > div > div > div.content-header.content-header-document > div > h1',
     documentPage: '.page',
     documentPageFirstParagraph: '#pageContainer1 > div.textLayer > div:nth-child(1)',
     createParagraphLinkButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(1)',
@@ -67,12 +74,30 @@ export default {
     targetDocument: '.document-viewer.show-target-document',
     saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div:nth-child(1) > div.ContextMenu.ContextMenu-center > button',
     activeConnection: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div',
+    editButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
+    saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
+    openSidePanelButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
+    sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
+    metadataForm: '#metadataForm',
     unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--danger'
 
   },
+  entityView: {
+    contentHeader: '#app > div.content > div > div > div.content-header.content-header-entity',
+    contentHeaderTitle: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-title > h1',
+    editButton: '#app > div.content > div > div > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
+    saveButton: '#app > div.content > div > div > div.sidepanel-footer > button.btn.btn-success',
+    metadataForm: '#metadataForm',
+    metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
+    metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select'
+  },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
-    firstDocument: '#app > div.content > div > div > main > div.item-group > div'
+    firstDocument: '#app > div.content > div > div > main > div.item-group > div',
+    newEntityButtom: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
+    saveButton: '#app > div.content > div > div > aside.side-panel.is-active > div.sidepanel-footer > button',
+    firstPublishButton: '#app > div.content > div > div > main > div.item-group > div.undefined.item.item-status.item-success.is-disabled > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--success',
+    acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
   },
   navigation: {
     loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
@@ -81,5 +106,8 @@ export default {
     settingsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a',
     spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(1) > a',
     english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a'
+  },
+  datePicker: {
+    today: 'body div.react-datepicker__month div.react-datepicker__day.react-datepicker__day--today'
   }
 };

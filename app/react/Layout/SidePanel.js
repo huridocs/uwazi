@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import './scss/sidepanel.scss';
 
 export class SidePanel extends Component {
@@ -14,8 +15,8 @@ export class SidePanel extends Component {
 
 SidePanel.propTypes = {
   children: PropTypes.oneOfType([
-    React.PropTypes.object,
-    React.PropTypes.array
+    PropTypes.object,
+    PropTypes.array
   ]),
   className: PropTypes.string,
   open: PropTypes.bool

@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 // TEST!!! Very sparsely tested, all the 'load more' functionality is not tested
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
 import {fromJS as Immutable} from 'immutable';
 
 import Doc from 'app/Library/components/Doc';

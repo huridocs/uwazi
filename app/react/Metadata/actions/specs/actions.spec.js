@@ -1,4 +1,5 @@
 import * as actions from '../actions';
+import * as reactReduxForm from 'react-redux-form';
 import {actions as formActions} from 'react-redux-form';
 import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
@@ -6,6 +7,8 @@ import thunk from 'redux-thunk';
 import {APIURL} from 'app/config.js';
 import * as types from '../actionTypes';
 import * as routeActions from 'app/Viewer/actions/routeActions';
+
+import Immutable from 'immutable';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -32,7 +35,7 @@ describe('Metadata Actions', () => {
 
       beforeEach(() => {
         spyOn(formActions, 'load').and.returnValue('formload');
-        spyOn(formActions, 'setInitial').and.returnValue('forminitial');
+        spyOn(formActions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
         doc = {title: 'test'};
         templates = [{
@@ -59,10 +62,10 @@ describe('Metadata Actions', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId1'};
+        expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
-        expect(dispatch).toHaveBeenCalledWith('forminitial');
+        expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-        expect(formActions.setInitial).toHaveBeenCalledWith('formNamespace');
       });
 
       it('should should set the first document template if document has type document', () => {
@@ -88,17 +91,34 @@ describe('Metadata Actions', () => {
   });
 
   describe('changeTemplate', () => {
+    beforeEach(() => {
+      const doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
+      spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
+      jasmine.clock().install();
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
     it('should change the document template and reset metadata properties (preserving types)', () => {
       spyOn(formActions, 'reset').and.returnValue('formReset');
       spyOn(formActions, 'load').and.returnValue('formLoad');
-      let dispatch = jasmine.createSpy('dispatch');
 
-      let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
-      let template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp', type: 'nested'}]};
+      const dispatch = jasmine.createSpy('dispatch');
 
-      jasmine.clock().install();
+      const template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp', type: 'nested'}]};
+      const state = {
+        templates: Immutable.fromJS([
+          template,
+          {_id: 'anotherTemplate'}
+        ])
+      };
 
-      actions.changeTemplate('formNamespace', doc, template)(dispatch);
+      const getState = () => state;
+
+      actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
+      expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
 
       let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: '', newProp: []}};
       expect(dispatch).toHaveBeenCalledWith('formReset');
@@ -108,7 +128,6 @@ describe('Metadata Actions', () => {
 
       expect(dispatch).toHaveBeenCalledWith('formLoad');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-      jasmine.clock().uninstall();
     });
   });
 

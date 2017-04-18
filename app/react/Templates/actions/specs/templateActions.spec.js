@@ -128,6 +128,7 @@ describe('templateActions', () => {
 
     describe('saveTemplate', () => {
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
+        spyOn(formActions, 'merge').and.returnValue({type: 'mergeAction'});
         let originalTemplateData = {name: 'my template', properties: [
           {localID: 'a1b2', label: 'my property'},
           {localID: 'a1b3', label: 'my property'}
@@ -136,8 +137,8 @@ describe('templateActions', () => {
         const expectedActions = [
           {type: types.SAVING_TEMPLATE},
           {type: types.TEMPLATE_SAVED, data: {name: 'saved_template'}},
-          {type: 'templates/UPDATE', value:  {name: 'saved_template'}},
-          {type: 'rrf/change', model: 'template.data', value: {name: 'saved_template'}, silent: false, multi: false},
+          {type: 'templates/UPDATE', value: {name: 'saved_template'}},
+          {type: 'mergeAction'},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Saved successfully.', type: 'success', id: 'unique_id'}}
         ];
         const store = mockStore({});
@@ -145,7 +146,9 @@ describe('templateActions', () => {
         store.dispatch(actions.saveTemplate(originalTemplateData))
         .then(() => {
           expect(store.getActions()).toEqual(expectedActions);
+
           expect(originalTemplateData.properties[0].localID).toBe('a1b2');
+          expect(formActions.merge).toHaveBeenCalledWith('template.data', {name: 'saved_template'});
         })
         .then(done)
         .catch(done.fail);

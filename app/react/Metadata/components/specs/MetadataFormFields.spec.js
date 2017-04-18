@@ -23,7 +23,7 @@ describe('MetadataFormFields', () => {
       metadata: {_id: 'docId', template: 'templateId', title: 'testTitle', metadata: {field1: 'field1value', field2: 'field2value'}},
       template: fromJS({name: 'template1', _id: 'templateId', properties: fieldsTemplate}),
       thesauris: fromJS([{_id: 2, name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
-      state: {title: {titleProp: 'prop'}, metadata: {field1: {field1Prop: 'prop'}}}
+      model: 'metadata'
     };
   });
 
@@ -31,11 +31,14 @@ describe('MetadataFormFields', () => {
     component = shallow(<MetadataFormFields {...props}/>);
   };
 
-  it('should pass the field state to every fields', () => {
+  it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
     render();
 
-    let FormGroup = component.findWhere((node) => node.props().field1Prop === 'prop');
-    expect(FormGroup.length).toBe(1);
+    let FormGroup = component.findWhere((node) => node.props().model === 'metadata');
+    expect(FormGroup.length).toBe(8);
+
+    FormGroup = component.findWhere((node) => node.props().field === 'metadata.field1');
+    expect(FormGroup.length).toBe(2);
   });
 
   it('should render dynamic fields based on the template selected', () => {

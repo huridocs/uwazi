@@ -5,6 +5,7 @@ import TemplatesAPI from 'app/Templates/TemplatesAPI';
 
 export function editThesauri(thesauri) {
   return function (dispatch) {
+    dispatch(formActions.reset('thesauri.data'));
     dispatch(formActions.load('thesauri.data', thesauri));
   };
 }

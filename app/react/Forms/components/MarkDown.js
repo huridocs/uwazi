@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import marked from 'app/utils/marked';
 

@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router';
 
@@ -10,9 +11,8 @@ export class I18NLink extends Component {
 
   render() {
     let locale = this.props.locale || '';
-    let props = Object.assign({}, this.props);
-    props.to = this.sanitize(`/${locale}/${this.props.to}`);
-    return <Link {...props}>{this.props.children}</Link>;
+    let to = this.sanitize(`/${locale}/${this.props.to}`);
+    return <Link to={to} className={this.props.className} onClick={this.props.onClick}>{this.props.children}</Link>;
   }
 }
 
@@ -21,7 +21,8 @@ I18NLink.propTypes = {
   children: PropTypes.any,
   to: PropTypes.string,
   activeClass: PropTypes.string,
-  className: PropTypes.string
+  className: PropTypes.string,
+  onClick: PropTypes.func
 };
 
 export function mapStateToProps(state) {

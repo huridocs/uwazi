@@ -12,6 +12,7 @@ import referencesUtils from '../../utils/referencesUtils';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
+import {actions as formActions} from 'react-redux-form';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -44,13 +45,14 @@ describe('documentActions', () => {
 
   describe('addToToc', () => {
     it('should populate doc form, and add the selected text to its correct place', () => {
+      spyOn(formActions, 'load').and.returnValue({type: 'loadAction'});
       let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Chapter 1'}};
       let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0};
       let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0};
 
       const expectedActions = [
         {type: 'documentViewer/tocBeingEdited/SET', value: true},
-        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
+        {type: 'loadAction'},
         {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
         {type: 'viewer.sidepanel.tab/SET', value: 'toc'}
       ];
@@ -65,17 +67,20 @@ describe('documentActions', () => {
       });
 
       store.dispatch(actions.addToToc(reference));
+
       expect(store.getActions()).toEqual(expectedActions);
+      expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1, chapter2]);
     });
 
     describe('if document is already loaded', () => {
       it('should not reload the form', () => {
+        spyOn(formActions, 'load').and.returnValue({type: 'loadAction'});
         let reference = {sourceDocument: '123', sourceRange: {start: 12, end: 23, text: 'Chapter 1'}};
         let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0};
         let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0};
         const expectedActions = [
           {type: 'documentViewer/tocBeingEdited/SET', value: true},
-          {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1, chapter2], silent: true, multi: false, load: true},
+          {type: 'loadAction'},
           {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
           {type: 'viewer.sidepanel.tab/SET', value: 'toc'}
         ];
@@ -88,17 +93,19 @@ describe('documentActions', () => {
 
         store.dispatch(actions.addToToc(reference));
         expect(store.getActions()).toEqual(expectedActions);
+        expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1, chapter2]);
       });
     });
   });
 
   describe('removeFromToc', () => {
     it('should remove the toc entry from the form', () => {
+      spyOn(formActions, 'load').and.returnValue({type: 'loadAction'});
       let chapter1 = {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0, _id: 1};
       let chapter2 = {range: {start: 22, end: 43}, label: 'Chapter 2', indentation: 0, _id: 2};
 
       const expectedActions = [
-        {type: 'rrf/change', model: 'documentViewer.tocForm', value: [chapter1], silent: true, multi: false, load: true}
+        {type: 'loadAction'}
       ];
 
       const store = mockStore({
@@ -111,6 +118,8 @@ describe('documentActions', () => {
       });
 
       store.dispatch(actions.removeFromToc(chapter2));
+
+      expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1]);
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

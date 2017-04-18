@@ -1,3 +1,4 @@
+/* eslint-disable */
 require('es6-promise').polyfill(); // Required in some browsers
 
 //babel polyfill ES6

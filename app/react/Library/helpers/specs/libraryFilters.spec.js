@@ -23,6 +23,13 @@ describe('library helper', () => {
   let thesauris = [{_id: 'abc1', values: [{id: 1, value: 'value1'}, {id: 2, value: 'value2'}]}];
 
   describe('URLQueryToState', () => {
+    it('should set default searchTerm to blank', () => {
+      const query = {};
+
+      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      expect(state.search.searchTerm).toBe('');
+    });
+
     it('should return default values when not set', () => {
       const query = {
         searchTerm: 'searchTerm',

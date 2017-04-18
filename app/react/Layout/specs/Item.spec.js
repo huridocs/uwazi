@@ -7,6 +7,7 @@ import {RowList, ItemFooter} from '../Lists';
 import TemplateLabel from '../TemplateLabel';
 import PrintDate from '../PrintDate';
 import * as Icon from '../Icon';
+import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 describe('Item', () => {
   let component;
@@ -30,14 +31,18 @@ describe('Item', () => {
       additionalIcon: <div>additionalIcon</div>,
       buttons: <div>Buttons</div>,
       templates: Immutable([]),
-      thesauris: Immutable([]),
-      search: {sort: 'property_name'}
+      thesauris: Immutable([])
     };
   });
 
   let render = () => {
     component = shallow(<Item {...props} />);
   };
+
+  it('should have default props values assigned', () => {
+    render();
+    expect(component.instance().props.search).toEqual(prioritySortingCriteria());
+  });
 
   it('should extend RowList.Item and append active, type and classNames correctly', () => {
     render();
@@ -154,6 +159,7 @@ describe('Item', () => {
   describe('mapStateToProps', () => {
     let templates;
     let thesauris;
+    let search;
 
     beforeEach(() => {
       templates = 'templates';
@@ -161,7 +167,7 @@ describe('Item', () => {
     });
 
     it('should include templates, thesauris and default sort', () => {
-      expect(mapStateToProps({templates, thesauris}, {})).toEqual({templates, thesauris, search: {sort: 'title'}});
+      expect(mapStateToProps({templates, thesauris}, {})).toEqual({templates, thesauris, search});
     });
 
     it('should allow overriding the default sort', () => {

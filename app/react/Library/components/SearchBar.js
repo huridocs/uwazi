@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
@@ -48,7 +49,7 @@ export class SearchBar extends Component {
       <div className={'search-box' + (this.props.open ? ' is-active' : '')}>
         <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
           <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
-            <Field model="search.searchTerm">
+            <Field model={'.searchTerm'}>
               <i className="fa fa-search"></i>
               <input
                 type="text"
