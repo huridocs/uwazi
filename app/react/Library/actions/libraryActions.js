@@ -8,6 +8,7 @@ import {browserHistory} from 'react-router';
 import {toUrlParams} from 'shared/JSONRequest';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import {api as entitiesAPI} from 'app/Entities';
+import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -218,10 +219,10 @@ export function getSuggestions(searchTerm) {
 }
 
 export function getDocumentReferences(documentId) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     return referencesAPI.get(documentId)
     .then((references) => {
-      dispatch(actions.set('library.sidepanel.references', references));
+      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };
 }

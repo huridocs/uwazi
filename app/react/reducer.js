@@ -59,5 +59,5 @@ export default combineReducers({
   settings,
   metadata,
   search: modelReducer('search', defaultSearch),
-  searchForm: formReducer('search', defaultSearch)
+  searchForm: formReducer('search')
 });

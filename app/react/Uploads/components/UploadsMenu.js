@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
@@ -7,11 +8,13 @@ import {newEntity} from 'app/Uploads/actions/uploadsActions';
 export class UploadsMenu extends Component {
   renderNormalMenu() {
     return (
-      <div>
-        <div className="btn btn-success"
-             onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
-          <i className="fa fa-plus"></i>
-          <span className="btn-label">Entity</span>
+      <div className="ContextMenu ContextMenu-bottom">
+        <div>
+          <div className="btn btn-success"
+            onClick={this.props.newEntity.bind(null, this.props.templates.toJS().filter((template) => template.isEntity))}>
+            <i className="fa fa-plus"></i>
+            <span className="btn-label">Entity</span>
+          </div>
         </div>
       </div>
     );

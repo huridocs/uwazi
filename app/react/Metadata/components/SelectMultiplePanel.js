@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Form} from 'react-redux-form';
@@ -12,8 +13,21 @@ import validator from 'app/Metadata/helpers/validator';
 import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import {Select as SimpleSelect} from 'app/Forms';
 import {fromJS} from 'immutable';
+import {createSelector} from 'reselect';
 
 import {TemplateLabel, SidePanel} from 'app/Layout';
+
+const commonTemplate = createSelector(
+  s => s.templates,
+  s => s.entitiesSelected,
+  (templates, entitiesSelected) => {
+    const selectedTemplates = entitiesSelected.map((entity) => entity.get('template'))
+    .filter((type, index, _types) => _types.indexOf(type) === index);
+    const properties = comonProperties(templates.toJS(), selectedTemplates);
+    let _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
+    return fromJS({_id, properties});
+  }
+);
 
 export class SelectMultiplePanel extends Component {
 
@@ -49,7 +63,7 @@ export class SelectMultiplePanel extends Component {
 
   save(formValues) {
     let modifiedValues = {metadata: {}};
-    const comonTemplate = this.comonTemplate();
+    const comonTemplate = this.props.template.toJS();
     Object.keys(formValues.metadata).forEach((key) => {
       if (this.metadataFieldModified(key)) {
         modifiedValues.metadata[key] = formValues.metadata[key];
@@ -88,19 +102,11 @@ export class SelectMultiplePanel extends Component {
   }
 
   edit() {
-    this.props.loadForm(this.props.formKey, this.comonTemplate());
-  }
-
-  comonTemplate() {
-    const selectedTemplates = this.props.entitiesSelected.map((entity) => entity.get('template'))
-    .filter((type, index, _types) => _types.indexOf(type) === index);
-    const properties = comonProperties(this.props.templates.toJS(), selectedTemplates);
-    let _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
-    return {_id, properties};
+    this.props.loadForm(this.props.formKey, this.props.template.toJS());
   }
 
   validation(template) {
-    let validation = validator.generate(template);
+    let validation = validator.generate(template.toJS());
     delete validation.title;
     Object.keys(this.props.state.metadata || {}).forEach((key) => {
       if (!this.metadataFieldModified(key)) {
@@ -112,8 +118,7 @@ export class SelectMultiplePanel extends Component {
   }
 
   render() {
-    const {entitiesSelected, open, editing, templates} = this.props;
-    const template = this.comonTemplate();
+    const {entitiesSelected, open, editing, templates, template} = this.props;
     const validation = this.validation(template);
 
     const typesSelected = this.props.entitiesSelected.map((entity) => entity.get('type'))
@@ -165,7 +170,7 @@ export class SelectMultiplePanel extends Component {
                       <li className="wide">
                         <SimpleSelect
                           className="form-control template-selector"
-                          value={template._id}
+                          value={template.get('_id')}
                           options={templateOptions}
                           onChange={(e) => this.changeTemplate(e.target.value)}
                         >
@@ -187,9 +192,9 @@ export class SelectMultiplePanel extends Component {
                 </ul>
               </FormGroup>
               <MetadataFormFields
-                template={fromJS(template)}
+                model={this.props.formKey}
+                template={template}
                 thesauris={this.props.thesauris}
-                state={this.props.formState}
                 multipleEdition={true}
               />
             </Form>
@@ -209,17 +214,17 @@ export class SelectMultiplePanel extends Component {
             </button>
           </ShowIf>
           <ShowIf if={editing}>
-            <button type="submit" form='multiEdit' className="btn btn-success">
-              <i className="fa fa-save"></i>
-              <span className="btn-label">{t('System', 'Save')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={editing}>
             <button
               onClick={this.cancel.bind(this)}
               className="cancel-edit-metadata btn btn-primary">
               <i className="fa fa-close"></i>
               <span className="btn-label">{t('System', 'Cancel')}</span>
+            </button>
+          </ShowIf>
+          <ShowIf if={editing}>
+            <button type="submit" form='multiEdit' className="btn btn-success">
+              <i className="fa fa-save"></i>
+              <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>
         </div>
@@ -230,6 +235,7 @@ export class SelectMultiplePanel extends Component {
 
 SelectMultiplePanel.propTypes = {
   entitiesSelected: PropTypes.object,
+  template: PropTypes.object,
   open: PropTypes.bool,
   editing: PropTypes.bool,
   unselectAllDocuments: PropTypes.func,
@@ -250,8 +256,9 @@ SelectMultiplePanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = (state, props) => {
+export const mapStateToProps = (state, props) => {
   return {
+    template: commonTemplate(props),
     open: props.entitiesSelected.size > 1,
     editing: Object.keys(props.state).length > 0
   };

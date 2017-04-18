@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {remove as removeAccents} from 'diacritics';
 
 import ShowIf from 'app/App/ShowIf';

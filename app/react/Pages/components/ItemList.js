@@ -1,6 +1,7 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {fromJS as Immutable} from 'immutable';
+import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
 import {RowList} from 'app/Layout/Lists';

@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS} from 'immutable';
 
-import DocumentSidePanel from '../DocumentSidePanel';
+import {DocumentSidePanel, mapStateToProps} from '../DocumentSidePanel';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import {Tabs} from 'react-tabs-redux';
@@ -14,23 +14,25 @@ describe('DocumentSidePanel', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({metadata: [], attachmenas: [], type: 'document', file: {}}),
+      doc: Immutable.fromJS({metadata: [], attachments: [], type: 'document', file: {}}),
       rawDoc: fromJS({}),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
-      references: fromJS([
-        {_id: 'reference1', range: {start: 0}},
-        {_id: 'reference2', range: {}},
-        {_id: 'reference3', range: {}},
-        {_id: 'reference4', range: {start: 0}}
-      ])
+      references: ['reference'],
+      connections: ['connection']
     };
   });
 
   let render = () => {
     component = shallow(<DocumentSidePanel {...props}/>);
   };
+
+  it('should have default props values assigned', () => {
+    render();
+    expect(component.instance().props.tocFormComponent()).toBe(false);
+    expect(component.instance().props.EntityForm()).toBe(false);
+  });
 
   it('should render a SidePanel', () => {
     render();
@@ -39,21 +41,19 @@ describe('DocumentSidePanel', () => {
     expect(component.find(SidePanel).props().open).toBeUndefined();
   });
 
-  it('should split references acording to their type', () => {
-    render();
-    expect(component.find(Connections).first().parent().props().for).toBe('references');
-    expect(component.find(Connections).first().props().references.toJS()).toEqual([props.references.get(0).toJS(), props.references.get(3).toJS()]);
-    expect(component.find(Connections).last().parent().props().for).toBe('connections');
-    expect(component.find(Connections).last().props().references.toJS()).toEqual([props.references.get(1).toJS(), props.references.get(2).toJS()]);
-    expect(component.find(Connections).last().props().referencesSection).toBe('connections');
-  });
-
   describe('when props.open', () => {
     it('should open SidePanel', () => {
       props.open = true;
       render();
 
       expect(component.find(SidePanel).props().open).toBe(true);
+    });
+  });
+
+  describe('connections', () => {
+    it('should render 2 connections list, for connections and references', () => {
+      expect(component.find(Connections).at(0).props().references).toEqual(props.references);
+      expect(component.find(Connections).at(1).props().references).toEqual(props.connections);
     });
   });
 
@@ -72,13 +72,13 @@ describe('DocumentSidePanel', () => {
 
     describe('when doc passed is an entity', () => {
       it('should set metadata as selected if tab is toc', () => {
-        props.doc = Immutable.fromJS({metadata: [], attachmenas: [], type: 'entity'});
+        props.doc = Immutable.fromJS({metadata: [], attachments: [], type: 'entity'});
         props.tab = 'toc';
         render();
         expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
       });
       it('should set metadata as selected if tab is references', () => {
-        props.doc = Immutable.fromJS({metadata: [], attachmenas: [], type: 'entity'});
+        props.doc = Immutable.fromJS({metadata: [], attachments: [], type: 'entity'});
         props.tab = 'references';
         render();
         expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
@@ -125,6 +125,27 @@ describe('DocumentSidePanel', () => {
       component.find(DocumentForm).simulate('submit', doc);
 
       expect(props.saveDocument).toHaveBeenCalledWith(doc);
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    it('should add filter selectors splitting references and connections', () => {
+      const ownProps = {
+        references: Immutable.fromJS([
+          {_id: 1, range: {start: 5}},
+          {_id: 2, range: {}},
+          {_id: 3, range: {}},
+          {_id: 4, range: {start: 10}}
+        ])
+      };
+
+      const references = mapStateToProps(null, ownProps).references;
+      const connections = mapStateToProps(null, ownProps).connections;
+
+      expect(references.toJS()).toEqual([{_id: 1, range: {start: 5}}, {_id: 4, range: {start: 10}}]);
+      expect(mapStateToProps(null, ownProps).references).toBe(references);
+      expect(connections.toJS()).toEqual([{_id: 2, range: {}}, {_id: 3, range: {}}]);
+      expect(mapStateToProps(null, ownProps).connections).toBe(connections);
     });
   });
 });

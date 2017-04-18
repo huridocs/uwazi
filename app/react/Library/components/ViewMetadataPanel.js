@@ -28,7 +28,6 @@ const formatMetadata = createSelector(
   }
 );
 
-
 const mapStateToProps = (state) => {
   const library = state.library;
   return {

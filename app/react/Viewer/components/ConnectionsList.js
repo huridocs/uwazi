@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
@@ -93,6 +94,7 @@ export class ConnectionsList extends Component {
               creationDate: reference.connectedDocumentCreationDate,
               published: reference.connectedDocumentPublished
             });
+
 
             return (
               <Item

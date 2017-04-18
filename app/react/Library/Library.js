@@ -54,9 +54,9 @@ export default class Library extends RouteHandler {
     this.context.store.dispatch(actions.set('library/aggregations', state.library.aggregations));
     this.context.store.dispatch(formActions.load('search', state.search));
     this.context.store.dispatch({type: 'SET_LIBRARY_FILTERS',
-                                documentTypes: state.library.filters.documentTypes,
-                                libraryFilters: state.library.filters.properties}
-                               );
+      documentTypes: state.library.filters.documentTypes,
+      libraryFilters: state.library.filters.properties}
+    );
   }
 
   componentDidMount() {

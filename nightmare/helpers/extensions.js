@@ -24,6 +24,11 @@ Nightmare.action('login', function (name, password, done) {
   .then(done);
 });
 
+Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
+  this.wait(1000)
+  .then(done);
+});
+
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
   .click(selector)
@@ -92,5 +97,63 @@ Nightmare.action('selectText', function (selector, done) {
     sel.addRange(range);
   }, selector)
   .mouseup(selector)
+  .then(done);
+});
+
+Nightmare.action('openEntityFromLibrary', function (itemName, done) {
+  this.type(selectors.libraryView.searchInput, itemName)
+  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  .wait(elementToSelect => {
+    return document.querySelector(elementToSelect).innerText;
+  }, selectors.entityView.contentHeaderTitle)
+  .then(done);
+});
+
+Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
+  this.type(selectors.libraryView.searchInput, itemName)
+  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  .wait(elementToSelect => {
+    return document.querySelector(elementToSelect).innerText;
+  }, selectors.documentView.contentHeader)
+  .then(done);
+});
+
+Nightmare.action('editEntityFromEntityViewer', function (done) {
+  this.waitToClick(selectors.entityView.editButton)
+  .wait(selectors.entityView.metadataForm)
+  .then(done);
+});
+
+Nightmare.action('editDocumentFromDocumentViewer', function (done) {
+  this.waitToClick(selectors.documentView.editButton)
+  .wait(selectors.documentView.metadataForm)
+  .then(done);
+});
+
+Nightmare.action('saveEntityFromEntityViewer', function (done) {
+  this.waitToClick(selectors.entityView.saveButton)
+  .wait(selectors.entityView.editButton)
+  .then(done);
+});
+
+Nightmare.action('saveFromDocumentViewer', function (done) {
+  this.waitToClick(selectors.documentView.saveButton)
+  .wait(selectors.documentView.editButton)
+  .then(done);
+});
+
+Nightmare.action('openSidePanelOnDocumentViewer', function (done) {
+  this.waitToClick(selectors.documentView.openSidePanelButton)
+  .wait(selectors.documentView.sidePanelTitle)
+  .then(done);
+});
+
+Nightmare.action('pickToday', function (input, done) {
+  this.waitToClick(input)
+  .wait(selectors.datePicker.today)
+  .click(selectors.datePicker.today)
+  .wait(elementToSelect => {
+    return document.querySelector(elementToSelect).value;
+  }, input)
   .then(done);
 });

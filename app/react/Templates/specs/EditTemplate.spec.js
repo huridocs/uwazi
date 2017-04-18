@@ -12,7 +12,8 @@ import {mockID} from 'shared/uniqueID';
 describe('EditTemplate', () => {
   let templates = [
     {_id: 'abc1', properties: [{label: 'label1'}, {label: 'label2'}], commonProperties: [{label: 'existingProperty'}]},
-    {_id: 'abc2', properties: [{label: 'label3'}, {label: 'label4'}]}
+    {_id: 'abc2', properties: [{label: 'label3'}, {label: 'label4'}]},
+    {_id: 'abc3', properties: [{label: 'label3'}, {label: 'label4'}], commonProperties: []}
   ];
   let thesauris = [{label: '1'}, {label: '2'}];
   let component;
@@ -45,7 +46,7 @@ describe('EditTemplate', () => {
       .then((response) => {
         expect(response.template.data._id).toEqual('abc2');
         expect(response.thesauris).toEqual(thesauris);
-        expect(response.templates.length).toBe(2);
+        expect(response.templates.length).toBe(3);
         done();
       })
       .catch(done.fail);
@@ -70,7 +71,17 @@ describe('EditTemplate', () => {
       .catch(done.fail);
     });
 
-    it('should append keep existing commonProperties if they already have values', (done) => {
+    it('should append new commonProperties if empty', (done) => {
+      EditTemplate.requestState({templateId: 'abc3'})
+      .then((response) => {
+        expect(response.template.data.commonProperties.length).toBe(2);
+        expect(response.template.data.commonProperties[0].label).toBe('Title');
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should keep existing commonProperties if they already have values', (done) => {
       EditTemplate.requestState({templateId: 'abc1'})
       .then((response) => {
         expect(response.template.data.commonProperties.length).toBe(1);

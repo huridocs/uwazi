@@ -8,9 +8,6 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
   context: __dirname,
   devtool: '#source-map',
-  //entry: [
-  //path.join(__dirname, 'app/react/index.js')
-  //],
   entry: {
     main: path.join(__dirname, 'app/react/index.js'),
     'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
@@ -21,7 +18,6 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   module: {
-    //noParse: /node_modules/,
     rules: [
       {
         test: /\.js$/,
@@ -32,8 +28,8 @@ module.exports = {
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
+          fallback: 'style-loader',
+          use: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
         }),
         include: [
           path.join(__dirname, 'app'),
@@ -43,8 +39,8 @@ module.exports = {
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style-loader',
-          loader: 'css-loader?sourceMap'
+          fallback: 'style-loader',
+          use: 'css-loader?sourceMap'
         }),
         include: [
           path.join(__dirname, 'app'),
