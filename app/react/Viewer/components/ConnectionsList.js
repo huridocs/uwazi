@@ -117,7 +117,7 @@ export class ConnectionsList extends Component {
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
                       <NeedAuthorization>
-                        <a className="item-shortcut item-shortcut--danger" onClick={this.deleteReference.bind(this, reference)}>
+                        <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteReference.bind(this, reference)}>
                           <i className="fa fa-trash"></i>
                         </a>
                       </NeedAuthorization>
@@ -126,10 +126,8 @@ export class ConnectionsList extends Component {
                     <ShowIf if={!this.props.targetDoc}>
                       <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
                             onClick={e => e.stopPropagation()}
-                            className="item-shortcut">
-                        <span className="itemShortcut-arrow">
-                          <i className="fa fa-file-text-o"></i>
-                        </span>
+                            className="item-shortcut btn btn-default">
+                        <i className="fa fa-file-text-o"></i>
                       </I18NLink>
                     </ShowIf>
                   </div>

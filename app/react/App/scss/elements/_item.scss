@@ -269,8 +269,7 @@ $item-padding: 15px;
 .item-shortcut {
   position: relative;
   bottom: 5px;
-  margin: 0 -5px;
-  padding: 0 5px;
+  padding: 0;
   border-radius: 15px;
   min-width: 30px;
   height: 30px;
@@ -278,12 +277,6 @@ $item-padding: 15px;
   text-align: center;
   display: inline-block;
   box-shadow: $box-shadow;
-  color: $c-white;
-  background: $c-bootstrap-primary;
-  border: 1px solid $c-bootstrap-primary;
-  color: $c-grey-dark;
-  background: $c-white;
-  border: 1px solid $c-grey;
 
   @media(min-width: 1024px) {
     opacity: 0;
@@ -291,58 +284,6 @@ $item-padding: 15px;
     .item:hover & {
       opacity: 1;
     }
-  }
-
-  &:hover,
-  &:focus,
-  &:active {
-    text-decoration: none;
-  }
-
-  .item.is-active & {
-    color: $c-primary-dark;
-    border-color: $c-primary;
-  }
-
-  &:hover {
-    cursor: pointer;
-    color: $c-white !important;
-    background: $c-bootstrap-primary !important;
-    border-color: $c-bootstrap-primary-dark !important;
-  }
-
-  &--success:hover {
-    color: $c-white !important;
-    border-color: $c-success !important;
-    background-color: $c-success !important;
-  }
-
-  &--disabled,
-  &--disabled:hover {
-    color: $c-grey-dark !important;
-    border-color: $c-grey !important;
-    background-color: $c-white !important;
-    cursor: default;
-  }
-
-  &--warning:hover {
-    color: $c-white !important;
-    border-color: $c-warning !important;
-    background-color: $c-warning !important;
-  }
-
-  &--danger:hover {
-    color: $c-white !important;
-    border-color: $c-danger !important;
-    background-color: $c-danger !important;
-  }
-
-  &__text {
-    position: relative;
-    top: -1px;
-    margin: 0 -5px;
-    font-size: $f-size-sm;
-    border-color: $c-primary;
   }
 }
 
