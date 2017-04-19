@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Form, Field} from 'react-redux-form';
+import {wrapDispatch} from 'app/Multireducer';
 
 import validator from '../helpers/validator';
 import {Select as SimpleSelect} from 'app/Forms';
@@ -33,7 +34,7 @@ export class MetadataForm extends Component {
     }
 
     return (
-      <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template.toJS())}>
+      <Form dispatch={this.props.dispatch} id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template.toJS())}>
 
         <FormGroup model={model} field={'title'}>
           <ul className="search__filter">

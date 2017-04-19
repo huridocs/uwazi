@@ -75,9 +75,9 @@ UploadBox.propTypes = {
   documents: PropTypes.object
 };
 
-export function mapStateToProps({library}) {
+export function mapStateToProps({uploads}) {
   return {
-    documents: library.documents
+    documents: uploads.documents
   };
 }
 

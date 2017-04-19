@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
@@ -110,14 +111,14 @@ Doc.propTypes = {
   onClick: PropTypes.func
 };
 
-export function mapStateToProps({library, user, uploads}, ownProps) {
+export function mapStateToProps(state, ownProps) {
   return {
-    active: !!library.ui.get('selectedDocuments').find((doc) => doc.get('_id') === ownProps.doc.get('_id'))
+    active: !!state[ownProps.storeKey].ui.get('selectedDocuments').find((doc) => doc.get('_id') === ownProps.doc.get('_id'))
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({publish}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({publish}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Doc);

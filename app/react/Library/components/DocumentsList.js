@@ -1,5 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 
 import DocumentsList from 'app/Layout/DocumentsList';
@@ -48,21 +49,21 @@ export function clickOnDocument(e, doc, active) {
   this.props.selectDocument(doc);
 }
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
-    documents: state.library.documents,
-    filters: state.library.filters,
-    filtersPanel: state.library.ui.get('filtersPanel'),
+    documents: state[props.storeKey].documents,
+    filters: state[props.storeKey].filters,
+    filtersPanel: state[props.storeKey].ui.get('filtersPanel'),
     search: state.search,
     authorized: !!state.user.get('_id'),
-    selectedDocuments: state.library.ui.get('selectedDocuments'),
-    multipleSelected: state.library.ui.get('selectedDocuments').size > 1,
+    selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
+    multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,
     clickOnDocument
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadMoreDocuments, searchDocuments, selectDocument, selectDocuments, unselectDocument, unselectAllDocuments}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({loadMoreDocuments, searchDocuments, selectDocument, selectDocuments, unselectDocument, unselectAllDocuments},wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);

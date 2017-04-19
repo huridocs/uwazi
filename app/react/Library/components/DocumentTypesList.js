@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {connect} from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import {is} from 'immutable';
@@ -13,13 +14,13 @@ export class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
     let items = this.props.settings.collection.toJS().filters || [];
-    if (!items.length || this.props.uploadsSection) {
+    if (!items.length || this.props.storeKey === 'uploads') {
       items = props.templates.toJS().map((tpl) => {
         return {id: tpl._id, name: tpl.name};
       });
     }
 
-    if (this.props.uploadsSection) {
+    if (this.props.storeKey === 'uploads') {
       items.push({id: 'missing', name: t('System', 'No template')});
     }
     this.state = {
@@ -197,21 +198,20 @@ DocumentTypesList.propTypes = {
   templates: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.object,
-  uploadsSection: PropTypes.bool
+  storeKey: PropTypes.string
 };
 
-
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
-    libraryFilters: state.library.filters,
+    libraryFilters: state[props.storeKey].filters,
     settings: state.settings,
     templates: state.templates,
-    aggregations: state.library.aggregations
+    aggregations: state[props.storeKey].aggregations
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({filterDocumentTypes}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({filterDocumentTypes}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);

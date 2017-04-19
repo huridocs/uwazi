@@ -15,21 +15,16 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
+import {wrapDispatch} from 'app/Multireducer'
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Library extends RouteHandler {
 
-  getChildContext() {
-    return {
-      storeKey: 'library'
-    };
-  }
-
   static renderTools() {
     return (
       <div className="searchBox">
-        <SearchButton/>
+        <SearchButton storeKey="library"/>
       </div>
     );
   }
@@ -56,22 +51,18 @@ export default class Library extends RouteHandler {
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(setDocuments(state.library.documents));
-    this.context.store.dispatch(actions.set('library/aggregations', state.library.aggregations));
-    this.context.store.dispatch(formActions.load('search', state.search));
-    this.context.store.dispatch({type: 'SET_LIBRARY_FILTERS',
+    const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
+    dispatch(setDocuments(state.library.documents));
+    dispatch(actions.set('aggregations', state.library.aggregations));
+    dispatch(formActions.load('search', state.search));
+    dispatch({type: 'SET_LIBRARY_FILTERS',
       documentTypes: state.library.filters.documentTypes,
       libraryFilters: state.library.filters.properties}
     );
   }
 
-  componentDidMount() {
-    this.context.store.dispatch(enterLibrary());
-  }
-
-  componentWillUnmount() {
-    this.context.store.dispatch(setDocuments(Immutable.fromJS({rows: []})));
-    this.context.store.dispatch(unselectAllDocuments());
+  componentWillMount() {
+    wrapDispatch(this.context.store.dispatch, 'library')(enterLibrary());
   }
 
   render() {
@@ -79,16 +70,12 @@ export default class Library extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="document-viewer with-panel">
-          <DocumentsList />
+          <DocumentsList storeKey="library"/>
         </main>
-        <LibraryFilters />
-        <ViewMetadataPanel />
-        <SelectMultiplePanelContainer />
+        <LibraryFilters storeKey="library"/>
+        <ViewMetadataPanel storeKey="library"/>
+        <SelectMultiplePanelContainer storeKey="library"/>
       </div>
     );
   }
 }
-
-Library.childContextTypes = {
-  storeKey: PropTypes.string
-};

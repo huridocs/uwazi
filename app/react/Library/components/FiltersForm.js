@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {Field, Form} from 'react-redux-form';
 import {is} from 'immutable';
 
@@ -88,7 +89,7 @@ export class FiltersForm extends Component {
                         options={this.translatedOptions(property)}
                         optionsValue="id" onChange={(options) => {
                           this.autoSearch = true;
-                          this.props.activateFilter(property.name, !!options.length);
+                          this.props.activateFilter(property.name, !!options.length, fields);
                         }}
                       />
                     </li>
@@ -120,7 +121,7 @@ export class FiltersForm extends Component {
                         onChange={(options) => {
                           this.autoSearch = true;
                           let active = Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false);
-                          this.props.activateFilter(property.name, active);
+                          this.props.activateFilter(property.name, active, fields);
                         }}
                       />
                     </li>
@@ -142,7 +143,7 @@ export class FiltersForm extends Component {
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
                         this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to));
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to, fields));
                       }}
                     />
                   </li>
@@ -164,7 +165,7 @@ export class FiltersForm extends Component {
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
                         this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to));
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to, fields));
                       }}
                     />
                   </li>
@@ -186,7 +187,7 @@ export class FiltersForm extends Component {
                   <li className="wide">
                     <input className="form-control" onChange={(e) => {
                       this.autoSearch = true;
-                      this.props.activateFilter(property.name, !!e.target.value);
+                      this.props.activateFilter(property.name, !!e.target.value, fields);
                     }} />
                   </li>
                 </ul>
@@ -211,18 +212,18 @@ FiltersForm.propTypes = {
   documentTypes: PropTypes.object
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
-    fields: state.library.filters.get('properties'),
-    aggregations: state.library.aggregations,
+    fields: state[props.storeKey].filters.get('properties'),
+    aggregations: state[props.storeKey].aggregations,
     templates: state.templates,
     search: state.search,
-    documentTypes: state.library.filters.get('documentTypes')
+    documentTypes: state[props.storeKey].filters.get('documentTypes')
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchDocuments: searchDocuments, toggleFilter, activateFilter}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({searchDocuments: searchDocuments, toggleFilter, activateFilter}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

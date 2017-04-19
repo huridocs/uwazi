@@ -155,6 +155,7 @@ export class DocumentSidePanel extends Component {
             formStatePath={this.props.formPath}
             entityBeingEdited={docBeingEdited}
             includeViewButton={!docBeingEdited && readOnly}
+            storeKey={this.props.storeKey}
           />
         </ShowIf>
 
@@ -220,10 +221,10 @@ export class DocumentSidePanel extends Component {
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited && this.props.doc.get('type') === 'document') {
-                  return <DocumentForm onSubmit={this.submit.bind(this)} />;
+                  return <DocumentForm storeKey={this.props.storeKey} onSubmit={this.submit.bind(this)} />;
                 }
                 if (docBeingEdited && this.props.doc.get('type') === 'entity') {
-                  return <EntityForm/>;
+                  return <EntityForm storeKey={this.props.storeKey} />;
                 }
 
                 return <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />;
@@ -285,7 +286,8 @@ DocumentSidePanel.propTypes = {
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
   isTargetDoc: PropTypes.bool,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  storeKey: PropTypes.string
 };
 
 DocumentSidePanel.contextTypes = {

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {actions} from 'react-redux-form';
 import {t} from 'app/I18N';
 
@@ -132,8 +133,8 @@ export function mapStateToProps(state, ownProps) {
   return {stateProperty, search, templates};
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({merge: actions.merge}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({merge: actions.merge},wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);

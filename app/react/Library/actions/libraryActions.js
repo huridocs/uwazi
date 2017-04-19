@@ -136,6 +136,7 @@ export function updateEntities(updatedDocs) {
 }
 
 export function saveDocument(doc) {
+  console.log(doc);
   return function (dispatch) {
     return documents.api.save(doc)
     .then((updatedDoc) => {

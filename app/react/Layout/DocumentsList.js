@@ -54,6 +54,7 @@ export default class DocumentsList extends Component {
           <RowList>
             {documents.get('rows').map((doc, index) =>
               <Doc doc={doc}
+                   storeKey={this.props.storeKey}
                    key={index}
                    onClick={this.clickOnDocument.bind(this)}
                    deleteConnection={this.props.deleteConnection}
@@ -97,5 +98,6 @@ DocumentsList.propTypes = {
   searchDocuments: PropTypes.func,
   deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string,
+  storeKey: PropTypes.string,
   clickOnDocument: PropTypes.func
 };

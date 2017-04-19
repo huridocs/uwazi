@@ -8,7 +8,7 @@ import createReducer from 'app/BasicReducer';
 import {modelReducer, formReducer} from 'react-redux-form';
 
 export default combineReducers({
-  aggregations: createReducer('library/aggregations', {}),
+  aggregations: createReducer('aggregations', {}),
   documents: documents,
   ui: libraryUI,
   filters: libraryFilters,

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
@@ -77,11 +78,11 @@ const mapStateToProps = ({templates}) => {
   return {templates};
 };
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     resetForm: actions.resetReduxForm
-  }, dispatch);
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormButtons);

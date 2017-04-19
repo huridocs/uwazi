@@ -101,13 +101,13 @@ SearchBar.propTypes = {
   overSuggestions: PropTypes.bool
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
     search: state.search,
-    suggestions: state.library.ui.get('suggestions'),
-    showSuggestions: state.library.ui.get('showSuggestions'),
-    overSuggestions: state.library.ui.get('overSuggestions'),
-    open: state.library.ui.get('filtersPanel') && !state.library.ui.get('selectedDocument')
+    suggestions: state[props.storeKey].ui.get('suggestions'),
+    showSuggestions: state[props.storeKey].ui.get('showSuggestions'),
+    overSuggestions: state[props.storeKey].ui.get('overSuggestions'),
+    open: state[props.storeKey].ui.get('filtersPanel') && !state.library.ui.get('selectedDocument')
   };
 }
 

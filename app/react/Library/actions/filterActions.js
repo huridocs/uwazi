@@ -28,6 +28,7 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
 }
 
 export function filterDocumentTypes(documentTypes) {
+  console.log('action', documentTypes);
   return function (dispatch, getState) {
     const state = getState();
 
@@ -47,6 +48,7 @@ export function filterDocumentTypes(documentTypes) {
     });
 
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
+    console.log('action antes del dispatch', documentTypes);
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
     updateModelFilters(dispatch, getState, libraryFilters);
 
@@ -85,10 +87,9 @@ export function toggleFilter(propertyName) {
   };
 }
 
-export function activateFilter(propertyName, activate) {
-  return function (dispatch, getState) {
-    let state = getState().library.filters.toJS();
-    let updatedProperties = state.properties.map((property) => {
+export function activateFilter(propertyName, activate, filters) {
+  return function (dispatch) {
+    let updatedProperties = filters.map((property) => {
       if (property.name === propertyName) {
         property.active = activate;
       }

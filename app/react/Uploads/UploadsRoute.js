@@ -15,6 +15,7 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
+import {wrapDispatch} from 'app/Multireducer'
 
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
@@ -23,16 +24,10 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Uploads extends RouteHandler {
 
-  getChildContext() {
-    return {
-      storeKey: 'uploads'
-    };
-  }
-
   static renderTools() {
     return (
       <div className="searchBox">
-        <SearchButton/>
+        <SearchButton storeKey="library"/>
       </div>
     );
   }
@@ -49,7 +44,7 @@ export default class Uploads extends RouteHandler {
       const state = store.getState();
       const filterState = libraryHelpers.URLQueryToState(query, state.templates.toJS(), state.thesauris.toJS());
       return {
-        library: {
+        uploads: {
           documents,
           filters: {documentTypes: query.types || [], properties: filterState.properties},
           aggregations: documents.aggregations
@@ -60,22 +55,19 @@ export default class Uploads extends RouteHandler {
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(setDocuments(state.library.documents));
-    this.context.store.dispatch(actions.set('library/aggregations', state.library.aggregations));
-    this.context.store.dispatch(formActions.load('search', state.search));
-    this.context.store.dispatch({type: 'SET_LIBRARY_FILTERS',
-                                documentTypes: state.library.filters.documentTypes,
-                                libraryFilters: state.library.filters.properties}
+    const dispatch = wrapDispatch(this.context.store.dispatch, 'uploads');
+    dispatch(setDocuments(state.uploads.documents));
+    dispatch(actions.set('aggregations', state.uploads.aggregations));
+    dispatch(formActions.load('search', state.search));
+    dispatch({type: 'SET_LIBRARY_FILTERS',
+                                documentTypes: state.uploads.filters.documentTypes,
+                                libraryFilters: state.uploads.filters.properties}
                                );
   }
 
   componentDidMount() {
-    this.context.store.dispatch(enterLibrary());
-  }
-
-  componentWillUnmount() {
-    this.context.store.dispatch(setDocuments(Immutable.fromJS({rows: []})));
-    this.context.store.dispatch(unselectAllDocuments());
+    const dispatch = wrapDispatch(this.context.store.dispatch, 'uploads');
+    dispatch(enterLibrary());
   }
 
   render() {
@@ -85,16 +77,12 @@ export default class Uploads extends RouteHandler {
         <UploadsHeader/>
         <main className="document-viewer with-panel">
           <UploadBox />
-          <DocumentsList />
+          <DocumentsList storeKey="uploads"/>
         </main>
-        <LibraryFilters uploadsSection={true}/>
-        <ViewMetadataPanel />
-        <SelectMultiplePanelContainer />
+        <LibraryFilters uploadsSection={true} storeKey="uploads"/>
+        <ViewMetadataPanel storeKey="uploads"/>
+        <SelectMultiplePanelContainer storeKey="uploads"/>
       </div>
     );
   }
 }
-
-Uploads.childContextTypes = {
-  storeKey: PropTypes.string
-};

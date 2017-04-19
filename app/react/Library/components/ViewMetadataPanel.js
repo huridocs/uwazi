@@ -1,5 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {getDocumentReferences, unselectAllDocuments, saveDocument} from '../actions/libraryActions';
 
 import Immutable from 'immutable';
@@ -16,7 +17,7 @@ import EntityForm from '../containers/EntityForm';
 import {actions as actionCreators} from 'app/BasicReducer';
 import {DocumentSidePanel} from 'app/Documents';
 
-const selectedDocument = state => state.library.ui.get('selectedDocuments').first() || Immutable.fromJS({});
+const selectedDocument = (state, props) => state[props.storeKey].ui.get('selectedDocuments').first() || Immutable.fromJS({});
 const getTemplates = state => state.templates;
 const selectThesauris = state => state.thesauris;
 const formatMetadata = createSelector(
@@ -28,12 +29,12 @@ const formatMetadata = createSelector(
   }
 );
 
-const mapStateToProps = (state) => {
-  const library = state.library;
+const mapStateToProps = (state, props) => {
+  const library = state[props.storeKey];
   return {
     open: library.ui.get('selectedDocuments').size === 1,
     doc: library.ui.get('selectedDocuments').first() || Immutable.fromJS({}),
-    metadata: formatMetadata(state),
+    metadata: formatMetadata(state, props),
     references: library.sidepanel.references,
     tab: library.sidepanel.tab,
     docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
@@ -46,7 +47,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     getDocumentReferences,
@@ -62,7 +63,7 @@ function mapDispatchToProps(dispatch) {
     deleteEntity,
     showModal: modals.actions.showModal,
     showTab: (tab) => actionCreators.set('library.sidepanel.tab', tab)
-  }, dispatch);
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
