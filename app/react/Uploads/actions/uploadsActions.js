@@ -15,7 +15,7 @@ export function enterUploads() {
 export function newEntity() {
   return function (dispatch, getState) {
     let newEntityMetadata = {title: '', type: 'entity'};
-    dispatch(metadata.actions.loadInReduxForm('library.sidepanel.metadata', newEntityMetadata, getState().templates.toJS()));
+    dispatch(metadata.actions.loadInReduxForm('uploads.sidepanel.metadata', newEntityMetadata, getState().templates.toJS()));
     dispatch(selectDocument(newEntityMetadata));
   };
 }

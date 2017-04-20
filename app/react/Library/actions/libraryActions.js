@@ -135,13 +135,12 @@ export function updateEntities(updatedDocs) {
   return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
 }
 
-export function saveDocument(doc) {
-  console.log(doc);
+export function saveDocument(doc, formKey) {
   return function (dispatch) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch(formActions.reset('library.sidepanel.metadata'));
+      dispatch(formActions.reset(formKey));
       dispatch(updateEntity(updatedDoc));
       dispatch(selectDocument(updatedDoc));
     });

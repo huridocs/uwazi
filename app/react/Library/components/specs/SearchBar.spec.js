@@ -81,7 +81,7 @@ describe('SearchBar', () => {
           ui: Immutable.fromJS({filtersPanel: true, suggestions: 'suggestions', showSuggestions: true, overSuggestions: true})
         }
       };
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {storeKey: 'library'});
       expect(state).toEqual({open: true, search: 'search', suggestions: 'suggestions', showSuggestions: true, overSuggestions: true});
     });
   });

@@ -31,7 +31,8 @@ describe('Doc', () => {
       deleteConnection: jasmine.createSpy('deleteConnection'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
-      searchParams: {sort: 'sortProperty'}
+      searchParams: {sort: 'sortProperty'},
+      storeKey: 'library'
     };
   });
 
@@ -117,12 +118,12 @@ describe('Doc', () => {
     });
 
     it('should set active as true if ownProps match selected ID', () => {
-      const state = mapStateToProps(store, {doc: Immutable({_id: 'docId'})});
+      const state = mapStateToProps(store, {doc: Immutable({_id: 'docId'}), storeKey: 'library'});
       expect(state.active).toBe(true);
     });
 
     it('should set active as false if ownProps holds unselected document', () => {
-      const state = mapStateToProps(store, {doc: Immutable({_id: 'anotherId'})});
+      const state = mapStateToProps(store, {doc: Immutable({_id: 'anotherId'}), storeKey: 'library'});
       expect(state.active).toBe(false);
     });
   });

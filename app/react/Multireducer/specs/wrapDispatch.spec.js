@@ -1,6 +1,6 @@
 import wrapDispatch from '../wrapDispatch';
 
-fdescribe('warpDispatch', () => {
+describe('warpDispatch', () => {
   const reducerKey = 'customKey';
   const dispatch = jasmine.createSpy('dispatch');
 

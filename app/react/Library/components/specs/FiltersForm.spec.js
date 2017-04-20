@@ -40,7 +40,7 @@ describe('FiltersForm', () => {
         },
         templates: Immutable([])
       };
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {storeKey: 'library'});
       expect(state.fields.toJS()).toEqual([{name: 'author'}]);
       expect(state.documentTypes.toJS()).toEqual({a: true});
     });

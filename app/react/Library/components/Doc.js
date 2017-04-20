@@ -89,7 +89,6 @@ export class Doc extends Component {
                         </button>
                       </ShowIf>
                     </div>;
->>>>>>> Uploads progress bar while uploading documents
 
     return <Item onClick={this.onClick.bind(this)}
                  active={this.props.active}

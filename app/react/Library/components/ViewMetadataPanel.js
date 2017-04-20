@@ -40,7 +40,7 @@ const mapStateToProps = (state, props) => {
     docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
     formDirty: !library.sidepanel.metadataForm.$form.pristine,
     templates: getTemplates(state),
-    formPath: 'library.sidepanel.metadata',
+    formPath: props.storeKey + '.sidepanel.metadata',
     readOnly: true,
     DocumentForm,
     EntityForm
@@ -54,15 +54,15 @@ function mapDispatchToProps(dispatch, props) {
     closePanel: unselectAllDocuments,
     resetForm: () => {
       return (_dispatch) => {
-        _dispatch(formActions.setInitial('library.sidepanel.metadata'));
-        _dispatch(formActions.reset('library.sidepanel.metadata'));
+        _dispatch(formActions.setInitial(props.storeKey + '.sidepanel.metadata'));
+        _dispatch(formActions.reset(props.storeKey + '.sidepanel.metadata'));
       };
     },
     saveDocument,
     deleteDocument,
     deleteEntity,
     showModal: modals.actions.showModal,
-    showTab: (tab) => actionCreators.set('library.sidepanel.tab', tab)
+    showTab: (tab) => actionCreators.set(props.storeKey + '.sidepanel.tab', tab)
   }, wrapDispatch(dispatch, props.storeKey));
 }
 

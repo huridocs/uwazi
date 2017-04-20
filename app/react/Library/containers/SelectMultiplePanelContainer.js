@@ -7,7 +7,7 @@ import {SelectMultiplePanel} from 'app/Metadata';
 
 function mapStateToProps(state, props) {
   return {
-    formKey: 'sidepanel.multipleEdit',
+    formKey: props.storeKey + '.sidepanel.multipleEdit',
     state: state[props.storeKey].sidepanel.multipleEdit,
     formState: state[props.storeKey].sidepanel.multipleEditForm,
     templates: state.templates,

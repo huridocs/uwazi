@@ -21,7 +21,8 @@ describe('DocumentSidePanel', () => {
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
       references: ['reference'],
-      connections: ['connection']
+      connections: ['connection'],
+      formPath: 'formPath'
     };
   });
 
@@ -129,7 +130,7 @@ describe('DocumentSidePanel', () => {
       let doc = 'doc';
       component.find(DocumentForm).simulate('submit', doc);
 
-      expect(props.saveDocument).toHaveBeenCalledWith(doc);
+      expect(props.saveDocument).toHaveBeenCalledWith(doc, props.formPath);
     });
   });
 

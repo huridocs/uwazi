@@ -34,7 +34,7 @@ describe('LibraryFilters', () => {
         templates: Immutable.fromJS([])
       };
 
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {storeKey: 'library'});
 
       expect(state).toEqual({open: true});
     });

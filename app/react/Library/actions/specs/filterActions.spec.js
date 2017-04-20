@@ -141,7 +141,7 @@ describe('filterActions', () => {
 
   describe('activateFilter', () => {
     it('should activate the filter', () => {
-      actions.activateFilter('author', true)(dispatch, getState);
+      actions.activateFilter('author', true, libraryFilters)(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.UPDATE_LIBRARY_FILTERS,
         libraryFilters: [{name: 'author', filter: true, active: true},

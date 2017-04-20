@@ -36,13 +36,6 @@ describe('Library', () => {
     expect(component.find(DocumentsList).length).toBe(1);
   });
 
-  describe('on mount', () => {
-    it('should enterLirabry()', () => {
-      component.instance().componentDidMount();
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'ENTER_LIBRARY'});
-    });
-  });
-
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {
       const query = {filters: {}, types: []};
@@ -95,8 +88,8 @@ describe('Library', () => {
     });
 
     it('should call set the documents and aggregations', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'library/aggregations/SET', value: aggregations});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'aggregations/SET', value: aggregations, __reducerKey: 'library'});
     });
   });
 });

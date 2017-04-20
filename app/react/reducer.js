@@ -21,7 +21,6 @@ import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducer';
 import {reducer as metadata} from 'app/Metadata';
 import locale from 'app/I18N/reducer';
-import {multireducer} from 'app/Multireducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
@@ -32,8 +31,8 @@ defaultSearch.filters = {};
 
 export default combineReducers({
   notifications: notificationsReducer,
-  library: multireducer(library, 'library'),
-  uploads: multireducer(library, 'uploads'),
+  library: library('library'),
+  uploads: library('uploads'),
   progress,
   locale,
   template,

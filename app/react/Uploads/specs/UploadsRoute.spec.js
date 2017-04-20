@@ -9,6 +9,7 @@ import * as actionTypes from 'app/Library/actions/actionTypes.js';
 
 describe('UploadsRoute', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
+  let aggregations = [{1: '23'}, {2: '123'}];
   let component;
   let instance;
   let context;
@@ -31,7 +32,7 @@ describe('UploadsRoute', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {
       UploadsRoute.requestState()
       .then((state) => {
-        expect(state.library.documents).toEqual({rows: documents});
+        expect(state.uploads.documents).toEqual({rows: documents});
         done();
       })
       .catch(done.fail);
@@ -40,11 +41,11 @@ describe('UploadsRoute', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({library: {documents, filters: {}}});
+      instance.setReduxState({uploads: {documents, filters: {}, aggregations}});
     });
 
     it('should call setDocuments with the documents', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'uploads'});
     });
   });
 });

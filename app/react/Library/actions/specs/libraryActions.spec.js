@@ -204,7 +204,7 @@ describe('libraryActions', () => {
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.saveDocument(doc))
+        store.dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
         .then(() => {
           expect(documents.api.save).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);

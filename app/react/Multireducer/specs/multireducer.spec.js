@@ -1,7 +1,7 @@
 import multireducer from '../multireducer';
 import {fromJS as Immutable} from 'immutable';
 
-fdescribe('multireducer', () => {
+describe('multireducer', () => {
   const reducerKey = 'customKey';
   const testReducer = (state = [], action) => {
     if (action.type === 'PUSH') {

@@ -33,7 +33,6 @@ const resetMetadata = (metadata, template, options) => {
 
 export function loadInReduxForm(form, onlyReadEntity, templates) {
   return function (dispatch) {
-    console.log(dispatch);
     //test
     let entity = Object.assign({}, onlyReadEntity);
     //

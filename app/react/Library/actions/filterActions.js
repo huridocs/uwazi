@@ -28,7 +28,6 @@ function updateModelFilters(dispatch, getState, libraryFilters) {
 }
 
 export function filterDocumentTypes(documentTypes) {
-  console.log('action', documentTypes);
   return function (dispatch, getState) {
     const state = getState();
 
@@ -48,7 +47,6 @@ export function filterDocumentTypes(documentTypes) {
     });
 
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
-    console.log('action antes del dispatch', documentTypes);
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
     updateModelFilters(dispatch, getState, libraryFilters);
 

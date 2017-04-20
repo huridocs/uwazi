@@ -6,7 +6,7 @@ import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import {enterLibrary, setDocuments, unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
@@ -15,7 +15,7 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {store} from 'app/store';
-import {wrapDispatch} from 'app/Multireducer'
+import {wrapDispatch} from 'app/Multireducer';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';

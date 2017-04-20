@@ -9,9 +9,7 @@ describe('UploadEntityStatus', () => {
 
     beforeEach(() => {
       store = {
-        uploads: {
-          progress: Immutable({docId: 30})
-        },
+        progress: Immutable({docId: 30}),
         user: Immutable({_id: 'batId'})
       };
 

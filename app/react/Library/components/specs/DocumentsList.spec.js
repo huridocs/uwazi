@@ -27,7 +27,8 @@ describe('Library DocumentsList container', () => {
       selectDocument: jasmine.createSpy('selectDocument'),
       selectDocuments: jasmine.createSpy('selectDocuments'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
-      authorized: true
+      authorized: true,
+      storeKey: 'library'
     };
   });
 
@@ -87,7 +88,7 @@ describe('Library DocumentsList container', () => {
         user: fromJS({_id: 'uid'})
       };
 
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {storeKey: 'library'});
       expect(state).toEqual({
         documents: documents,
         filters,

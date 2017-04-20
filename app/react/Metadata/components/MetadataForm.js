@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Form, Field} from 'react-redux-form';
-import {wrapDispatch} from 'app/Multireducer';
 
 import validator from '../helpers/validator';
 import {Select as SimpleSelect} from 'app/Forms';
@@ -27,6 +26,11 @@ const selectTemplateOptions = createSelector(
 );
 
 export class MetadataForm extends Component {
+
+  onSubmit(metadata) {
+    this.props.onSubmit(metadata, this.props.model);
+  }
+
   render() {
     const {model, template, templateOptions} = this.props;
     if (!template) {
@@ -34,7 +38,7 @@ export class MetadataForm extends Component {
     }
 
     return (
-      <Form dispatch={this.props.dispatch} id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template.toJS())}>
+      <Form id='metadataForm' model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
 
         <FormGroup model={model} field={'title'}>
           <ul className="search__filter">
