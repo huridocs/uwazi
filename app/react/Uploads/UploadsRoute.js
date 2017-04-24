@@ -1,6 +1,5 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import Immutable from 'immutable';
 
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
@@ -14,7 +13,6 @@ import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultipleP
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
-import {store} from 'app/store';
 import {wrapDispatch} from 'app/Multireducer';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
@@ -32,7 +30,7 @@ export default class Uploads extends RouteHandler {
     );
   }
 
-  static requestState(params, query = {filters: {}, types: []}) {
+  static requestState(params, query = {filters: {}, types: []}, globalResources) {
     const defaultSearch = prioritySortingCriteria.get();
 
     query.order = query.order || defaultSearch.order;
@@ -41,15 +39,14 @@ export default class Uploads extends RouteHandler {
 
     return api.search(query)
     .then((documents) => {
-      const state = store.getState();
-      const filterState = libraryHelpers.URLQueryToState(query, state.templates.toJS(), state.thesauris.toJS());
+      const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS(), globalResources.thesauris.toJS());
       return {
         uploads: {
           documents,
           filters: {documentTypes: query.types || [], properties: filterState.properties},
-          aggregations: documents.aggregations
-        },
-        search: filterState.search
+          aggregations: documents.aggregations,
+          search: filterState.search
+        }
       };
     });
   }
@@ -58,7 +55,7 @@ export default class Uploads extends RouteHandler {
     const dispatch = wrapDispatch(this.context.store.dispatch, 'uploads');
     dispatch(setDocuments(state.uploads.documents));
     dispatch(actions.set('aggregations', state.uploads.aggregations));
-    dispatch(formActions.load('search', state.search));
+    dispatch(formActions.load('uploads.search', state.uploads.search));
     dispatch({type: 'SET_LIBRARY_FILTERS',
                                 documentTypes: state.uploads.filters.documentTypes,
                                 libraryFilters: state.uploads.filters.properties}

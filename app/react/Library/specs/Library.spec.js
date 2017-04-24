@@ -65,7 +65,7 @@ describe('Library', () => {
         expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(query, templates, thesauris);
         expect(state.library.filters.documentTypes).toEqual(['type1']);
         expect(state.library.filters.properties).toBe('properties');
-        expect(state.search).toBe('search');
+        expect(state.library.search).toBe('search');
         done();
       })
       .catch(done.fail);

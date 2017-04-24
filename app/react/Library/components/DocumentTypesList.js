@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {wrapDispatch} from 'app/Multireducer';
 import {connect} from 'react-redux';
@@ -59,7 +59,7 @@ export class DocumentTypesList extends Component {
     }
 
     this.setState({selectedItems});
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
   }
 
   change(item) {
@@ -73,7 +73,7 @@ export class DocumentTypesList extends Component {
     }
 
     this.setState({selectedItems});
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
   }
 
   toggleOptions(item, e) {

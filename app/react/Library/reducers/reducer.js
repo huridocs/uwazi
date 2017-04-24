@@ -8,12 +8,20 @@ import {multireducer} from 'app/Multireducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
 
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+
+const defaultSearch = prioritySortingCriteria.get();
+defaultSearch.searchTerm = '';
+defaultSearch.filters = {};
+
 export default (storeKey) => {
   return combineReducers({
     aggregations: multireducer(createReducer('aggregations', {}), storeKey),
     documents: multireducer(documents, storeKey),
     ui: multireducer(libraryUI, storeKey),
     filters: multireducer(libraryFilters, storeKey),
+    search: modelReducer(storeKey + '.search', defaultSearch),
+    searchForm: formReducer(storeKey + '.search', defaultSearch),
     //
     sidepanel: combineReducers({
       metadata: modelReducer(storeKey + '.sidepanel.metadata', {}),

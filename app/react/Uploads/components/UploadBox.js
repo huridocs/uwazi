@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
+import {wrapDispatch} from 'app/Multireducer';
 
 import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
 import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
@@ -83,7 +84,7 @@ export function mapStateToProps({uploads}) {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError}, dispatch);
+  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError}, wrapDispatch(dispatch, 'uploads'));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadBox);

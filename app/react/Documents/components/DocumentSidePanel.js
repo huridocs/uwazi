@@ -54,7 +54,7 @@ export class DocumentSidePanel extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
-      this.props.getDocumentReferences(newProps.doc.get('sharedId'));
+      this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
   }
 

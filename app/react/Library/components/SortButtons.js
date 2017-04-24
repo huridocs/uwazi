@@ -120,7 +120,7 @@ SortButtons.propTypes = {
 
 export function mapStateToProps(state, ownProps) {
   let {templates} = state;
-  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'search';
+  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'library.search';
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
     templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
@@ -134,7 +134,7 @@ export function mapStateToProps(state, ownProps) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({merge: actions.merge},wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({merge: actions.merge}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);

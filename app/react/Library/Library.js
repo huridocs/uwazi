@@ -1,12 +1,11 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import Immutable from 'immutable';
 
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import {enterLibrary, setDocuments, unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
@@ -14,8 +13,7 @@ import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultipleP
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
-import {store} from 'app/store';
-import {wrapDispatch} from 'app/Multireducer'
+import {wrapDispatch} from 'app/Multireducer';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
@@ -29,7 +27,7 @@ export default class Library extends RouteHandler {
     );
   }
 
-  static requestState(params, query = {filters: {}, types: []}) {
+  static requestState(params, query = {filters: {}, types: []}, globalResources) {
     const defaultSearch = prioritySortingCriteria.get();
 
     query.order = query.order || defaultSearch.order;
@@ -37,15 +35,14 @@ export default class Library extends RouteHandler {
 
     return api.search(query)
     .then((documents) => {
-      const state = store.getState();
-      const filterState = libraryHelpers.URLQueryToState(query, state.templates.toJS(), state.thesauris.toJS());
+      const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS(), globalResources.thesauris.toJS());
       return {
         library: {
           documents,
           filters: {documentTypes: query.types || [], properties: filterState.properties},
-          aggregations: documents.aggregations
-        },
-        search: filterState.search
+          aggregations: documents.aggregations,
+          search: filterState.search
+        }
       };
     });
   }
@@ -54,7 +51,7 @@ export default class Library extends RouteHandler {
     const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
     dispatch(setDocuments(state.library.documents));
     dispatch(actions.set('aggregations', state.library.aggregations));
-    dispatch(formActions.load('search', state.search));
+    dispatch(formActions.load('library.search', state.library.search));
     dispatch({type: 'SET_LIBRARY_FILTERS',
       documentTypes: state.library.filters.documentTypes,
       libraryFilters: state.library.filters.properties}

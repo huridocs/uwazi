@@ -23,11 +23,6 @@ import {reducer as metadata} from 'app/Metadata';
 import locale from 'app/I18N/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-
-const defaultSearch = prioritySortingCriteria.get();
-defaultSearch.searchTerm = '';
-defaultSearch.filters = {};
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -59,6 +54,5 @@ export default combineReducers({
   login,
   settings,
   metadata,
-  search: modelReducer('search', defaultSearch),
   searchForm: formReducer('search')
 });

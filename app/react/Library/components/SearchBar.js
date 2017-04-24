@@ -40,7 +40,7 @@ export class SearchBar extends Component {
     this.props.change('search.searchTerm', '');
     let filters = Object.assign({}, this.props.search);
     filters.searchTerm = '';
-    this.props.searchDocuments(filters);
+    this.props.searchDocuments(filters, this.props.storeKey);
   }
 
   render() {
@@ -98,12 +98,13 @@ SearchBar.propTypes = {
   suggestions: PropTypes.object,
   showSuggestions: PropTypes.bool,
   search: PropTypes.object,
-  overSuggestions: PropTypes.bool
+  overSuggestions: PropTypes.bool,
+  storeKey: PropTypes.string
 };
 
 export function mapStateToProps(state, props) {
   return {
-    search: state.search,
+    search: state[props.storeKey].search,
     suggestions: state[props.storeKey].ui.get('suggestions'),
     showSuggestions: state[props.storeKey].ui.get('showSuggestions'),
     overSuggestions: state[props.storeKey].ui.get('overSuggestions'),

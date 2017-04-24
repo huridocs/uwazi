@@ -17,11 +17,15 @@ export class LibraryFilters extends Component {
     super(props);
   }
 
+  reset() {
+    this.props.resetFilters(this.props.storeKey);
+  }
+
   render() {
     return (
       <SidePanel className="library-filters" open={this.props.open}>
         <div className="sidepanel-footer">
-          <span onClick={this.props.resetFilters} className="btn btn-primary">
+          <span onClick={this.reset.bind(this)} className="btn btn-primary">
             <i className="fa fa-refresh"></i>
             <span className="btn-label">{t('System', 'Reset')}</span>
           </span>
@@ -55,7 +59,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({resetFilters},wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({resetFilters}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);

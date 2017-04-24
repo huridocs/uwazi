@@ -19,15 +19,19 @@ export class FiltersForm extends Component {
   constructor(props) {
     super(props);
     this.search = debounce((values) => {
-      this.props.searchDocuments(values);
+      this.props.searchDocuments(values, this.props.storeKey);
     }, 400);
   }
 
   onChange(values) {
     if (this.autoSearch) {
       this.autoSearch = false;
-      this.search(values);
+      this.search(values, this.props.storeKey);
     }
+  }
+
+  submit(values) {
+    this.props.searchDocuments(values, this.props.storeKey);
   }
 
   translatedOptions(property) {
@@ -52,7 +56,7 @@ export class FiltersForm extends Component {
 
     const fields = libraryHelper.parseWithAggregations(this.props.fields.toJS(), aggregations)
     .filter((field) => field.type !== 'select' && field.type !== 'multiselect' || field.options.length);
-
+    const model = this.props.storeKey + '.search';
     return (
       <div className="filters-box">
         {(() => {
@@ -70,7 +74,8 @@ export class FiltersForm extends Component {
                   </div>;
           }
         })()}
-        <Form model="search" id="filtersForm" onSubmit={this.props.searchDocuments} onChange={this.onChange.bind(this)}>
+
+        <Form model={model} id="filtersForm" onSubmit={this.submit.bind(this)} onChange={this.onChange.bind(this)}>
         {fields.map((property, index) => {
           let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
           if (property.type === 'select' || property.type === 'multiselect') {
@@ -80,7 +85,7 @@ export class FiltersForm extends Component {
                     <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
                     </li>
                     <li className="wide">
                       <MultiSelect
@@ -106,13 +111,13 @@ export class FiltersForm extends Component {
                       {property.required ? <span className="required">*</span> : ''}
                       <div className="nested-strict">
                         <Field model={`.filters.${property.name}.strict`}>
-                          <input id={property.name + 'strict'} type='checkbox'onChange={() => this.props.activateFilter(property.name, true)}/>
+                          <input id={property.name + 'strict'} type='checkbox'onChange={() => this.props.activateFilter(property.name, true, fields)}/>
                         </Field>
                         <label htmlFor={property.name + 'strict'}>
                             <span>&nbsp;Strict mode</span>
                         </label>
                       </div>
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
                     </li>
                     <li className="wide">
                       <NestedMultiselect
@@ -136,14 +141,14 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
                   </li>
                   <li className="wide">
                     <DateRange
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
                         this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to, fields));
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to), fields);
                       }}
                     />
                   </li>
@@ -158,7 +163,7 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
                   </li>
                   <li className="wide">
                     <NumericRange
@@ -181,7 +186,7 @@ export class FiltersForm extends Component {
                     <label>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name)}></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
                     </label>
                   </li>
                   <li className="wide">
@@ -209,7 +214,8 @@ FiltersForm.propTypes = {
   toggleFilter: PropTypes.func,
   activateFilter: PropTypes.func,
   search: PropTypes.object,
-  documentTypes: PropTypes.object
+  documentTypes: PropTypes.object,
+  storeKey: PropTypes.string
 };
 
 export function mapStateToProps(state, props) {
@@ -217,7 +223,7 @@ export function mapStateToProps(state, props) {
     fields: state[props.storeKey].filters.get('properties'),
     aggregations: state[props.storeKey].aggregations,
     templates: state.templates,
-    search: state.search,
+    search: state[props.storeKey].search,
     documentTypes: state[props.storeKey].filters.get('documentTypes')
   };
 }

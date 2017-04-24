@@ -27,7 +27,7 @@ UploadEntityStatus.propTypes = {
 };
 
 export function mapStateToProps(state, props) {
-  const progress = state.progress.get(props.doc.get('sharedId')) || 1;
+  const progress = state.progress.get(props.doc.get('sharedId')) || 0;
   const uploaded = props.doc.get('uploaded');
   const processed = props.doc.get('processed');
   const isEntity = props.doc.get('type') === 'entity';

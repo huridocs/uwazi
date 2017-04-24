@@ -112,9 +112,9 @@ export function processFilters(readOnlySearch, filters, limit) {
   return search;
 }
 
-export function searchDocuments(readOnlySearch, limit) {
+export function searchDocuments(readOnlySearch, storeKey, limit) {
   return function (dispatch, getState) {
-    const filters = getState().library.filters.toJS();
+    const filters = getState()[storeKey].filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
     const pathname = browserHistory.getCurrentLocation().pathname;
@@ -214,9 +214,9 @@ export function deleteEntity(entity) {
   };
 }
 
-export function loadMoreDocuments(amount) {
+export function loadMoreDocuments(storeKey, amount) {
   return function (dispatch, getState) {
-    searchDocuments(getState().search, amount)(dispatch, getState);
+    searchDocuments(getState()[storeKey].search, storeKey, amount)(dispatch, getState);
   };
 }
 
@@ -230,11 +230,11 @@ export function getSuggestions(searchTerm) {
   };
 }
 
-export function getDocumentReferences(documentId) {
+export function getDocumentReferences(documentId, storeKey) {
   return (dispatch, getState) => {
     return referencesAPI.get(documentId)
     .then((references) => {
-      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, getState().locale)));
+      dispatch(actions.set(storeKey + '.sidepanel.references', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };
 }
