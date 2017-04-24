@@ -87,6 +87,7 @@ export class DocumentSidePanel extends Component {
     if (docType === 'entity' && (tab === 'references' || tab === 'toc')) {
       tab = 'metadata';
     }
+
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">

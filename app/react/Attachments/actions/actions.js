@@ -2,6 +2,7 @@ import {APIURL} from 'app/config.js';
 import api from 'app/utils/api';
 import superagent from 'superagent';
 import {notify} from 'app/Notifications/actions/notificationsActions';
+import {actions as formActions} from 'react-redux-form';
 
 import * as types from './actionTypes';
 
@@ -29,5 +30,12 @@ export function deleteAttachment(entityId, attachment) {
       dispatch({type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment});
       dispatch(notify('Attachment deleted', 'success'));
     });
+  };
+}
+
+export function loadForm(form, attachment) {
+  return function (dispatch) {
+    dispatch(formActions.reset(form));
+    dispatch(formActions.load(form, attachment));
   };
 }
