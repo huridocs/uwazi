@@ -1,7 +1,6 @@
 .EditTranslationForm {
-  .list-group-item {
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
+  .panel > .list-group .list-group-item {
+    display: block;
   }
   .input-group-addon {
     min-width: 45px;
