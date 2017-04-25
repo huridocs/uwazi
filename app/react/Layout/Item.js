@@ -10,6 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
+import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import PrintDate from './PrintDate';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
@@ -126,6 +127,7 @@ export class Item extends Component {
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
             <TemplateLabel template={doc.template}/>
+            <UploadEntityStatus doc={this.props.doc} />
           </div>
          {buttons}
         </ItemFooter>

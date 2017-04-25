@@ -7,7 +7,6 @@ import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import {t, I18NLink} from 'app/I18N';
 import {publish} from 'app/Uploads/actions/uploadsActions';
-import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
@@ -75,7 +74,6 @@ export class Doc extends Component {
     }
 
     const buttons = <div>
-                      <UploadEntityStatus doc={this.props.doc} />
                       <ShowIf if={doc.processed || isEntity}>
                         <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
                           <i className="fa fa-file-text-o"></i>
