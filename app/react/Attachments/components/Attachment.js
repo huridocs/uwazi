@@ -6,7 +6,6 @@ import {bindActionCreators} from 'redux';
 import filesize from 'filesize';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import {advancedSort} from 'app/utils/advancedSort';
 import t from 'app/I18N/t';
 
 import {deleteAttachment, loadForm} from '../actions/actions';
@@ -138,9 +137,8 @@ Attachment.contextTypes = {
   confirm: PropTypes.func
 };
 
-function mapStateToProps() {
+export function mapStateToProps() {
   return {
-    progress: null,
     model: 'documentViewer.sidepanel.attachment'
   };
 }

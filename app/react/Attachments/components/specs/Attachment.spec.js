@@ -1,11 +1,11 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {Attachment} from '../Attachment';
+import {Attachment, mapStateToProps} from '../Attachment';
 import {NeedAuthorization} from 'app/Auth';
 import UploadButton from 'app/Metadata/components/UploadButton';
 
-describe('Attachment', () => {
+fdescribe('Attachment', () => {
   let component;
   let props;
   let file;
@@ -85,5 +85,42 @@ describe('Attachment', () => {
     const downloadButton = component.find('.item').find('a').at(2);
 
     expect(downloadButton.props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
+  });
+
+  describe('mapStateToProps', () => {
+    it('should should maps if attachment is being edited', () => {
+      let state = {namespace: {$form: {model: 'namespace'}, _id: {_id: 'id'}}};
+      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).beingEdited).toEqual(true);
+
+      let state = {namespace: {$form: {model: 'namespace'}, field: {}}};
+      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).beingEdited).toEqual(true);
+
+      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: false}}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(true);
+
+      //state = {namespace: {$form: {model: 'namespace'}, field: {pristine: true}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(false);
+
+      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: true}}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(false);
+    });
+
+    //it('should return hasError true when pristine and invalid', () => {
+      //let state = {namespace: {$form: {model: 'namespace'}, field: {pristine: false, valid: false}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
+
+      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: false, valid: false}}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
+    //});
+
+    //it('should return hasError true when submitFailed and valid false and has not been touched', () => {
+      //let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true, valid: false, pristine: true}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
+    //});
+
+    //it('should return hasError false when submitFailed with no errors', () => {
+      //let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true}}};
+      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(false);
+    //});
   });
 });
