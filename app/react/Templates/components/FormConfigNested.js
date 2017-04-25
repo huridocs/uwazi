@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {addNestedProperty, removeNestedProperty} from 'app/Templates/actions/templateActions';
 import {Field} from 'react-redux-form';

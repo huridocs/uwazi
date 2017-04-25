@@ -20,7 +20,7 @@ describe('SearchBar', () => {
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm filters and sort', () => {
       component.find(Form).simulate('submit', 'SEARCH MODEL VALUES');
-      expect(props.searchDocuments).toHaveBeenCalledWith('SEARCH MODEL VALUES');
+      expect(props.searchDocuments).toHaveBeenCalledWith('SEARCH MODEL VALUES', props.storeKey);
     });
   });
 

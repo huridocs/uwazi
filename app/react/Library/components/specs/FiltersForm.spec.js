@@ -16,7 +16,8 @@ describe('FiltersForm', () => {
       documentTypes: Immutable({}),
       templates: [],
       aggregations: Immutable({}),
-      search: {searchTerm: 'Batman'}
+      search: {searchTerm: 'Batman'},
+      storeKey: 'library'
     };
     component = shallow(<FiltersForm {...props}/>);
   });
@@ -24,7 +25,7 @@ describe('FiltersForm', () => {
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm', () => {
       component.find(Form).simulate('submit', {myfilter: true});
-      expect(props.searchDocuments).toHaveBeenCalledWith({myfilter: true});
+      expect(props.searchDocuments).toHaveBeenCalledWith({myfilter: true}, 'library');
     });
   });
 

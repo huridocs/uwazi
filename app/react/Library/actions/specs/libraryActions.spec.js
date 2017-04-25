@@ -116,6 +116,7 @@ describe('libraryActions', () => {
       let store;
       let getState;
       let state;
+      const storeKey = 'library';
       beforeEach(() => {
         state = {properties: [
           {name: 'author', active: true},
@@ -143,7 +144,7 @@ describe('libraryActions', () => {
         const limit = 'limit';
         spyOn(browserHistory, 'push');
         spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library'});
-        actions.searchDocuments(query, limit)(dispatch, getState);
+        actions.searchDocuments(query, storeKey, limit)(dispatch, getState);
         const expected = Object.assign({}, query);
         expected.aggregations = [
           {name: 'select', nested: false},
@@ -164,7 +165,7 @@ describe('libraryActions', () => {
       });
 
       it('should dispatch a HIDE_SUGGESTIONS action', () => {
-        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}})(dispatch, getState);
+        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}}, storeKey)(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({type: types.HIDE_SUGGESTIONS});
       });
     });
@@ -271,7 +272,7 @@ describe('libraryActions', () => {
 
         const store = mockStore({locale: 'es'});
 
-        store.dispatch(actions.getDocumentReferences('id'))
+        store.dispatch(actions.getDocumentReferences('id', 'library'))
         .then(() => {
           expect(referencesAPI.get).toHaveBeenCalledWith('id');
           expect(store.getActions()).toEqual(expectedActions);

@@ -82,9 +82,9 @@ describe('Library DocumentsList container', () => {
         library: {
           documents,
           filters,
-          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']})
+          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']}),
+          search: {sort: 'sortProperty'}
         },
-        search: {sort: 'sortProperty'},
         user: fromJS({_id: 'uid'})
       };
 

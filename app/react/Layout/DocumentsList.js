@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-// TEST!!! Very sparsely tested, all the 'load more' functionality is not tested
 import React, {Component} from 'react';
 
 import Doc from 'app/Library/components/Doc';
@@ -49,6 +48,7 @@ export default class DocumentsList extends Component {
               <SortButtons sortCallback={this.props.searchDocuments}
                            selectedTemplates={this.props.filters.get('documentTypes')}
                            stateProperty={this.props.sortButtonsStateProperty}
+                           storeKey={this.props.storeKey}
               />
           </div>
           <RowList>

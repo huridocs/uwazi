@@ -39,7 +39,6 @@ export function URLQueryToState(query, templates, thesauris) {
       defaultValue = [];
     }
 
-    console.log(property.type);
     if (property.type === 'nested' || property.type === 'date' || property.type === 'daterange' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'numeric') {
       defaultValue = {};
     }

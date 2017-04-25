@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
 import {Field, Form, actions as formActions} from 'react-redux-form';
+import {wrapDispatch} from 'app/Multireducer';
 
 import {searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
@@ -38,16 +39,21 @@ export class SearchBar extends Component {
 
   resetSearch() {
     this.props.change('search.searchTerm', '');
-    let filters = Object.assign({}, this.props.search);
-    filters.searchTerm = '';
-    this.props.searchDocuments(filters, this.props.storeKey);
+    let search = Object.assign({}, this.props.search);
+    search.searchTerm = '';
+    this.props.searchDocuments(search, this.props.storeKey);
+  }
+
+  search(values) {
+    this.props.searchDocuments(values, this.props.storeKey);
   }
 
   render() {
     let {search, showSuggestions, suggestions, overSuggestions} = this.props;
+    const model = this.props.storeKey + '.search';
     return (
       <div className={'search-box' + (this.props.open ? ' is-active' : '')}>
-        <Form model="search" onSubmit={this.props.searchDocuments} autoComplete="off">
+        <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
           <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
             <Field model={'.searchTerm'}>
               <i className="fa fa-search"></i>
@@ -112,7 +118,7 @@ export function mapStateToProps(state, props) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     searchDocuments,
     setSearchTerm,
@@ -120,7 +126,7 @@ function mapDispatchToProps(dispatch) {
     hideSuggestions,
     setOverSuggestions,
     change: formActions.change
-  }, dispatch);
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);
