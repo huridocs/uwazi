@@ -4,7 +4,7 @@ import Nightmare from 'nightmare';
 
 Nightmare.action('clearInput', function (selector, done) {
   let backSpaces = [];
-  for (let i = 0; i < 20; i += 1) {
+  for (let i = 0; i < 50; i += 1) {
     backSpaces.push('\u0008');
   }
   this.wait(selector)

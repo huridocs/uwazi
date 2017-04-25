@@ -43,13 +43,13 @@ export class UploadEntity extends Component {
           <TemplateLabel template={entity.template}/>
         </div>
         <div className="item-shortcut-group">
-          <a className="item-shortcut item-shortcut--success" onClick={this.publish.bind(this)}>
+          <a className="item-shortcut btn btn-default btn-hover-success" onClick={this.publish.bind(this)}>
             <span className="itemShortcut-arrow">
               <i className="fa fa-send"></i>
             </span>
           </a>
           &nbsp;
-          <I18NLink to={`/entity/${entity.sharedId}`} className="item-shortcut" onClick={(e) => e.stopPropagation()}>
+          <I18NLink to={`/entity/${entity.sharedId}`} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
             <i className="fa fa-file-text-o"></i>
           </I18NLink>
         </div>

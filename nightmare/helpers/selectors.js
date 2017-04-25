@@ -76,10 +76,11 @@ export default {
     activeConnection: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div',
     editButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
+    deleteButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.delete-metadata.btn.btn-danger',
     openSidePanelButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
     sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
     metadataForm: '#metadataForm',
-    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--danger'
+    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger'
 
   },
   entityView: {
@@ -96,7 +97,7 @@ export default {
     firstDocument: '#app > div.content > div > div > main > div.item-group > div',
     newEntityButtom: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
     saveButton: '#app > div.content > div > div > aside.side-panel.is-active > div.sidepanel-footer > button',
-    firstPublishButton: '#app > div.content > div > div > main > div.item-group > div.undefined.item.item-status.item-success.is-disabled > div.item-actions > div.item-shortcut-group > a.item-shortcut.item-shortcut--success',
+    firstPublishButton: '#app > div.content > div > div > main > div.item-group > div.undefined.item.item-status.item-success.is-disabled > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-success',
     acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
   },
   navigation: {

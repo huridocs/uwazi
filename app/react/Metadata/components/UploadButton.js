@@ -57,7 +57,7 @@ export class UploadButton extends Component {
 
   renderUploadButton() {
     return (
-      <label htmlFor="upload-button-input" className="item-shortcut">
+      <label htmlFor="upload-button-input" className="item-shortcut btn btn-default">
         <i className="fa fa-upload"></i>
         <input onChange={this.onChange.bind(this)}
                type="file"
@@ -70,7 +70,7 @@ export class UploadButton extends Component {
 
   renderCompleted() {
     return (
-      <label htmlFor="upload-button-input" className="item-shortcut item-shortcut--success">
+      <label htmlFor="upload-button-input" className="item-shortcut btn btn-success">
         <i className="fa fa-check"></i>
         <input onChange={this.onChange.bind(this)}
                type="file"
@@ -83,7 +83,7 @@ export class UploadButton extends Component {
 
   renderFailed() {
     return (
-      <label htmlFor="upload-button-input" className="item-shortcut item-shortcut--danger">
+      <label htmlFor="upload-button-input" className="item-shortcut btn btn-danger">
         <i className="fa fa-exclamation-triangle"></i>
         <input onChange={this.onChange.bind(this)}
                type="file"
@@ -95,13 +95,13 @@ export class UploadButton extends Component {
   }
 
   renderProgress(progress) {
-    return <div className="item-shortcut item-shortcut--disabled">
-             <span className="item-shortcut__text">{progress}%</span>
+    return <div className="item-shortcut btn btn-default btn-disabled">
+             <span>{progress}%</span>
            </div>;
   }
 
   renderProcessing() {
-    return <div className="item-shortcut">
+    return <div className="item-shortcut btn btn-default">
              <i className="fa fa-cog fa-spin"></i>
            </div>;
   }
