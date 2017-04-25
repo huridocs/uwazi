@@ -34,10 +34,11 @@ export default class DocumentsList extends Component {
 
   render() {
     const {documents, connections} = this.props;
-
-    let counter = <span><b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
+    let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
-      counter = <span><b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
+      counter = <span>
+                  <b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+                </span>;
     }
 
     return (

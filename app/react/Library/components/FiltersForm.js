@@ -111,7 +111,11 @@ export class FiltersForm extends Component {
                       {property.required ? <span className="required">*</span> : ''}
                       <div className="nested-strict">
                         <Field model={`.filters.${property.name}.strict`}>
-                          <input id={property.name + 'strict'} type='checkbox'onChange={() => this.props.activateFilter(property.name, true, fields)}/>
+                          <input
+                            id={property.name + 'strict'}
+                            type='checkbox'
+                            onChange={() => this.props.activateFilter(property.name, true, fields)}
+                          />
                         </Field>
                         <label htmlFor={property.name + 'strict'}>
                             <span>&nbsp;Strict mode</span>

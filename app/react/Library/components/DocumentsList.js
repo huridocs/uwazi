@@ -63,7 +63,10 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({loadMoreDocuments, searchDocuments, selectDocument, selectDocuments, unselectDocument, unselectAllDocuments},wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    {loadMoreDocuments, searchDocuments, selectDocument, selectDocuments, unselectDocument, unselectAllDocuments},
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);
