@@ -1,19 +1,77 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
+import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
+selectors.doc = {
+  form: {
+    title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
+    type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
+    company: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
+    nemesis: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > select',
+    superPowersSearch: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(1) > div > input',
+    suporPowers: {
+      regeneration: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li.multiselectItem > label'
+    }
+  },
+  viewer: {
+    title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
+    company: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(2) > dd',
+    nemesis: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(3) > dd > a',
+    superpowers: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(4) > dd > ul'
+  }
+};
+
+const comicCharacter = '58ad7d240d44252fee4e61fd';
+
 describe('PublishDocument', () => {
   // missing test for actually upload and publish a document
+  describe('login', () => {
+    it('should log in as admin then click the uploads nav button', (done) => {
+      nightmare
+      .login('admin', 'admin')
+      .waitToClick(selectors.navigation.uploadsNavButton)
+      .wait(selectors.uploadsView.newEntityButtom)
+      .url()
+      .then((url) => {
+        expect(url).toBe(config.url + '/uploads');
+        done();
+      })
+      .catch(catchErrors(done));
+    }, 10000);
+  });
+
+  it('should fill a document metadata and publish it', (done) => {
+    nightmare
+    .click(selectors.uploadsView.firstDocument)
+    .clearInput(selectors.doc.form.title)
+    .type(selectors.doc.form.title, 'Wolverine')
+    .select(selectors.doc.form.type, comicCharacter)
+    .type(selectors.doc.form.company, 'Marvel Comics')
+    .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
+    .type(selectors.doc.form.superPowersSearch, 'regen')
+    .waitToClick(selectors.doc.form.suporPowers.regeneration)
+    .click(selectors.uploadsView.saveButton)
+    .waitToClick(selectors.uploadsView.firstPublishButton)
+    .waitToClick(selectors.uploadsView.acceptPublishModel)
+    .wait('.alert.alert-success')
+    .exists('.alert.alert-success')
+    .then((result) => {
+      expect(result).toBe(true);
+      done();
+    });
+  });
 
   describe('metadata editing', () => {
     it('should log in as admin and go into the document viewer for the desired entity', (done) => {
-      const title = 'Star Lord Wikipedia';
+      const title = 'Wolverine';
 
       nightmare
-      .login('admin', 'admin')
+      .waitForTheEntityToBeIndexed()
+      .click(selectors.navigation.libraryNavButton)
       .openDocumentFromLibrary(title)
       .getInnerText(selectors.documentView.contentHeader)
       .then(headerText => {
@@ -24,54 +82,32 @@ describe('PublishDocument', () => {
     }, 10000);
 
     it('should allow changing the different template\'s properties', (done) => {
-      selectors.docViewer = {
-        form: {
-          title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
-          type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
-          company: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
-          nemesis: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > select',
-          suporPowers: {
-            fly: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(5) > label > i.multiselectItem-icon.fa.fa-square-o',
-            rich: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label > i.multiselectItem-icon.fa.fa-check'
-          }
-        },
-        viewer: {
-          title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
-          company: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(2) > dd',
-          nemesis: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(3) > dd > a',
-          superpowers: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(4) > dd > ul'
-        }
-      };
-
       nightmare
       .openSidePanelOnDocumentViewer()
       .editDocumentFromDocumentViewer()
-      .clearInput(selectors.docViewer.form.title)
-      .type(selectors.docViewer.form.title, 'Star-Lord (Peter Quill)')
-      .clearInput(selectors.docViewer.form.company)
-      .type(selectors.docViewer.form.company, 'Marvel Comics')
-      .select(selectors.docViewer.form.nemesis, '86raxe05i4uf2yb9')
-      .waitToClick(selectors.docViewer.form.suporPowers.fly)
-      .waitToClick(selectors.docViewer.form.suporPowers.rich)
+      .type(selectors.doc.form.title, ' (Logan)')
+      .clearInput(selectors.doc.form.company)
+      .type(selectors.doc.form.company, 'Marvel')
+      .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
       .saveFromDocumentViewer()
       .refresh()
       .openSidePanelOnDocumentViewer()
-      //.wait(selectors.docViewer.viewer.title)
-      .getInnerText(selectors.docViewer.viewer.title)
+      //.wait(selectors.doc.viewer.title)
+      .getInnerText(selectors.doc.viewer.title)
       .then(text => {
-        expect(text).toBe('Star-Lord (Peter Quill)');
-        return nightmare.getInnerText(selectors.docViewer.viewer.company);
+        expect(text).toBe('Wolverine (Logan)');
+        return nightmare.getInnerText(selectors.doc.viewer.company);
       })
       .then(text => {
-        expect(text).toBe('Marvel Comics');
-        return nightmare.getInnerText(selectors.docViewer.viewer.nemesis);
+        expect(text).toBe('Marvel');
+        return nightmare.getInnerText(selectors.doc.viewer.nemesis);
       })
       .then(text => {
         expect(text).toBe('Daneryl');
-        return nightmare.getInnerText(selectors.docViewer.viewer.superpowers);
+        return nightmare.getInnerText(selectors.doc.viewer.superpowers);
       })
       .then(text => {
-        expect(text).toBe('tricky weaponsfly');
+        expect(text).toBe('regeneration');
       })
       .then(done);
     }, 20000);
@@ -81,21 +117,23 @@ describe('PublishDocument', () => {
     nightmare
     .waitForTheEntityToBeIndexed()
     .click(selectors.navigation.libraryNavButton)
-    .waitToClick(selectors.libraryView.libraryThirdDocument)
+    .waitToClick(selectors.libraryView.libraryFirstDocument)
     .waitToClick(selectors.libraryView.editEntityButton)
     .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e6201')
     .waitToClick(selectors.libraryView.saveButton)
     .waitForTheEntityToBeIndexed()
     .refresh()
-    .waitToClick(selectors.libraryView.libraryThirdDocument)
+    .waitToClick(selectors.libraryView.libraryFirstDocument)
     .getInnerText(selectors.libraryView.sidePanelDocumentType)
     .then(text => {
       expect(text).toBe('Test Document');
-    })
-    .then(() => {
-      done();
+      return nightmare
+      .click(selectors.libraryView.deleteButton)
+      .waitToClick(selectors.libraryView.deleteButtonConfirmation)
+      .waitForTheEntityToBeIndexed()
+      .then(done);
     });
-  });
+  }, 10000);
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {
