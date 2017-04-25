@@ -285,6 +285,10 @@ $item-padding: 15px;
       opacity: 1;
     }
   }
+  
+  &:not(:first-child) {
+    margin-left: 3px;
+  }
 }
 
 .item-shortcut-group {

@@ -80,10 +80,8 @@ export class Doc extends Component {
                         </I18NLink>
                       </ShowIf>
                       <ShowIf if={(doc.processed || isEntity) && !doc.published && hasTemplate}>
-                        <button className="item-shortcut" onClick={this.publish.bind(this)}>
-                          <span className="itemShortcut-arrow">
-                            <i className="fa fa-paper-plane"></i>
-                           </span>
+                        <button className="item-shortcut btn btn-default btn-hover-success" onClick={this.publish.bind(this)}>
+                          <i className="fa fa-paper-plane"></i>
                         </button>
                       </ShowIf>
                     </div>;
