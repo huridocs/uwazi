@@ -21,7 +21,7 @@ export class DocumentTypesList extends Component {
     }
 
     if (this.props.storeKey === 'uploads') {
-      items.push({id: 'missing', name: t('System', 'No template')});
+      items.unshift({id: 'missing', name: t('System', 'No type')});
     }
     this.state = {
       items,

@@ -58,7 +58,14 @@ export class Doc extends Component {
 
   publish(e) {
     e.stopPropagation();
-    this.props.publish(this.props.doc.toJS());
+    this.context.confirm({
+      accept: () => {
+        this.props.publish(this.props.doc.toJS());
+      },
+      title: 'Confirm',
+      message: 'Are you sure you want to publish this entity?',
+      type: 'success'
+    });
   }
 
   render() {
@@ -104,6 +111,10 @@ Doc.propTypes = {
   deleteConnection: PropTypes.func,
   publish: PropTypes.func,
   onClick: PropTypes.func
+};
+
+Doc.contextTypes = {
+  confirm: PropTypes.func
 };
 
 export function mapStateToProps(state, ownProps) {

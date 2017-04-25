@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {newEntity} from 'app/Uploads/actions/uploadsActions';
 import {t} from 'app/I18N';
+import {wrapDispatch} from 'app/Multireducer';
 
 export class UploadsHeader extends Component {
 
@@ -26,7 +27,7 @@ UploadsHeader.propTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({newEntity}, dispatch);
+  return bindActionCreators({newEntity}, wrapDispatch(dispatch, 'uploads'));
 }
 
 export default connect(null, mapDispatchToProps)(UploadsHeader);

@@ -126,7 +126,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
-            <ShowIf if={doc.template}>
+            <ShowIf if={!!doc.template}>
               <TemplateLabel template={doc.template}/>
             </ShowIf>
             <UploadEntityStatus doc={this.props.doc} />
