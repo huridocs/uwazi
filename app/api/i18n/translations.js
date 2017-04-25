@@ -114,7 +114,7 @@ export default {
         let system = language.contexts.find(c => c.label === 'System');
         system.values = valuesWithRemovedValues.concat(keysToAdd);
       });
-      console.log('YEAH2');
+
       return model.save(languages);
     });
   },

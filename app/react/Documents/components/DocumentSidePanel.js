@@ -40,20 +40,15 @@ export class DocumentSidePanel extends Component {
   deleteDocument() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.doc.toJS())
-        .then(() => {
-          const pathname = browserHistory.getCurrentLocation().pathname;
-          const path = (pathname + '/').replace(/\/\//g, '/');
-          browserHistory.push(path);
-        });
+        this.props.deleteDocument(this.props.doc.toJS());
       },
-      title: 'Confirm delete document',
-      message: 'Are you sure you want to delete this document?'
+      title: 'Confirm',
+      message: 'Are you sure you want to delete this item?'
     });
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
+    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
   }

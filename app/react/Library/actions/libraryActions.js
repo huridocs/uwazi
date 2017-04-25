@@ -166,11 +166,12 @@ export function multipleUpdate(entities, values) {
   };
 }
 
-export function saveEntity(entity) {
+export function saveEntity(entity, formModel) {
   return function (dispatch) {
     return entitiesAPI.save(entity)
     .then((updatedDoc) => {
-      dispatch(formActions.reset('library.sidepanel.metadata'));
+      dispatch(formActions.reset(formModel));
+      dispatch(unselectAllDocuments());
       if (entity._id) {
         dispatch(notify('Entity updated', 'success'));
         dispatch(updateEntity(updatedDoc));

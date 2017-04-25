@@ -12,7 +12,8 @@ function mapStateToProps(state, props) {
     formState: state[props.storeKey].sidepanel.multipleEditForm,
     templates: state.templates,
     entitiesSelected: state[props.storeKey].ui.get('selectedDocuments'),
-    thesauris: state.thesauris
+    thesauris: state.thesauris,
+    storeKey: props.storeKey
   };
 }
 
