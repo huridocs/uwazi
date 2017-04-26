@@ -36,7 +36,7 @@ describe('PublishDocument', () => {
       .waitToClick(selectors.navigation.uploadsNavButton)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/uploads');
+        expect(url.match(config.url + '/uploads')).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));

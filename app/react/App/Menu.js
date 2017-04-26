@@ -42,7 +42,7 @@ class Menu extends Component {
             </li>
             <NeedAuthorization>
               <li className="menuNav-item">
-                <I18NLink to='/uploads' className="menuNav-btn btn btn-default">
+                <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
                   <span><i className="fa fa-cloud-upload"></i></span>
                 </I18NLink>
               </li>
