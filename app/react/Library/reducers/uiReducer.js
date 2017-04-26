@@ -22,6 +22,11 @@ export default function ui(state = initialState, action = {}) {
     return state;
   }
 
+  if (action.type === types.SELECT_SINGLE_DOCUMENT) {
+    const doc = Immutable.fromJS(action.doc);
+    return state.update('selectedDocuments', () => Immutable.fromJS([doc]));
+  }
+
   if (action.type === types.SELECT_DOCUMENTS) {
     return action.docs.reduce((_state, doc) => {
       const alreadtySelected = _state.get('selectedDocuments').filter((_doc) => _doc.get('_id') === doc._id).size;

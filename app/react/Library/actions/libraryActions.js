@@ -30,6 +30,10 @@ export function unselectDocument(docId) {
   return {type: types.UNSELECT_DOCUMENT, docId};
 }
 
+export function selectSingleDocument(doc) {
+  return {type: types.SELECT_SINGLE_DOCUMENT, doc};
+}
+
 export function unselectAllDocuments() {
   return {type: types.UNSELECT_ALL_DOCUMENTS};
 }

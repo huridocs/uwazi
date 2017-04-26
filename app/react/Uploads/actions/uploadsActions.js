@@ -4,7 +4,7 @@ import {notify} from 'app/Notifications';
 import * as types from 'app/Uploads/actions/actionTypes';
 import metadata from 'app/Metadata';
 import api from '../../utils/api';
-import {selectDocument} from 'app/Library/actions/libraryActions';
+import {selectSingleDocument} from 'app/Library/actions/libraryActions';
 
 export function enterUploads() {
   return {
@@ -16,7 +16,7 @@ export function newEntity() {
   return function (dispatch, getState) {
     let newEntityMetadata = {title: '', type: 'entity'};
     dispatch(metadata.actions.loadInReduxForm('uploads.sidepanel.metadata', newEntityMetadata, getState().templates.toJS()));
-    dispatch(selectDocument(newEntityMetadata));
+    dispatch(selectSingleDocument(newEntityMetadata));
   };
 }
 
