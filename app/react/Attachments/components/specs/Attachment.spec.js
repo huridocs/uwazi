@@ -4,6 +4,7 @@ import {shallow} from 'enzyme';
 import {Attachment, mapStateToProps} from '../Attachment';
 import {NeedAuthorization} from 'app/Auth';
 import UploadButton from 'app/Metadata/components/UploadButton';
+import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
 fdescribe('Attachment', () => {
   let component;
@@ -34,6 +35,15 @@ fdescribe('Attachment', () => {
     render();
     expect(component.find('.item').length).toBe(1);
     expect(component.find('.item').at(0).text()).toContain('Human name 1');
+  });
+
+  describe('when its being edited', () => {
+    it('should render an edition form', () => {
+      props.beingEdited = true;
+      render();
+      expect(component.find(AttachmentForm).length).toBe(1);
+      expect(component.find('.item').at(0).text()).not.toContain('Human name 1');
+    });
   });
 
   it('should include an authorized delete button for each file', () => {
@@ -88,21 +98,13 @@ fdescribe('Attachment', () => {
   });
 
   describe('mapStateToProps', () => {
-    it('should should maps if attachment is being edited', () => {
-      let state = {namespace: {$form: {model: 'namespace'}, _id: {_id: 'id'}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).beingEdited).toEqual(true);
+    it('should map if attachment is being edited', () => {
+      let state = {documentViewer: {sidepanel: {attachment: {_id: 'id'}}}};
+      let ownProps = {file: {_id: 'id'}};
+      expect(mapStateToProps(state, ownProps).beingEdited).toEqual(true);
 
-      let state = {namespace: {$form: {model: 'namespace'}, field: {}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).beingEdited).toEqual(true);
-
-      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: false}}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(true);
-
-      //state = {namespace: {$form: {model: 'namespace'}, field: {pristine: true}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(false);
-
-      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: true}}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(false);
+      ownProps = {file: {_id: 'otherId'}};
+      expect(mapStateToProps(state, ownProps).beingEdited).toEqual(false);
     });
 
     //it('should return hasError true when pristine and invalid', () => {

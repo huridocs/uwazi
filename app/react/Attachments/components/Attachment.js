@@ -48,11 +48,16 @@ export class Attachment extends Component {
     const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename);
 
+    let name = file.originalname;
+    if (this.props.beingEdited) {
+      name = <AttachmentForm model={this.props.model}/>;
+    }
+
     return (
       <div className={`item highlight-hover ${item.itemClassName}`}>
         <div className="item-info">
           <div className="item-name">
-            {file.originalname}
+            {name}
             <NeedAuthorization>
               <ShowIf if={item.replaceable && !this.props.readOnly}>
                 <i className="property-help fa fa-question-circle">
@@ -137,9 +142,10 @@ Attachment.contextTypes = {
   confirm: PropTypes.func
 };
 
-export function mapStateToProps() {
+export function mapStateToProps({documentViewer}, ownProps) {
   return {
-    model: 'documentViewer.sidepanel.attachment'
+    model: 'documentViewer.sidepanel.attachment',
+    beingEdited: documentViewer.sidepanel.attachment._id === ownProps.file._id
   };
 }
 
