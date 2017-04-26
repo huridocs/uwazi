@@ -70,7 +70,7 @@ export default class DocumentsList extends Component {
                 {` ${t('System', 'documents')}`}
             </div>
             {(() => {
-              if (documents.get('rows').size < documents.totalRows && !this.state.loading) {
+              if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return <div className="col-sm-12 text-center">
                 <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">
                   {loadMoreAmmount + ' ' + t('System', 'x more')}

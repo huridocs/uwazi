@@ -57,6 +57,8 @@ export default {
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
     deleteButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.delete-metadata.btn.btn-danger',
     deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    loadMore: '#app > div.content > div > div > main > div > div > div.row > div:nth-child(2) > button',
+    documentAfterLoadMore: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(31)',
     sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > span > span'
   },
   documentView: {
