@@ -19,6 +19,7 @@ describe('Doc', () => {
       creationDate: 1234,
       type: 'document',
       sharedId: 'id',
+      processed: true,
       connections: [{sourceType: 'metadata'}, {_id: 'c1', sourceType: 'other', nonRelevant: true}]
     };
 
@@ -30,7 +31,8 @@ describe('Doc', () => {
       deleteConnection: jasmine.createSpy('deleteConnection'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
-      searchParams: {sort: 'sortProperty'}
+      searchParams: {sort: 'sortProperty'},
+      storeKey: 'library'
     };
   });
 
@@ -68,12 +70,6 @@ describe('Doc', () => {
         expect(eMock.stopPropagation).toHaveBeenCalled();
         expect(props.deleteConnection).toHaveBeenCalledWith({_id: 'c1', sourceType: 'other'});
       });
-    });
-
-    it('should hold a link to the document', () => {
-      render();
-      const button = component.find(Item).props().buttons;
-      expect(button.props.to).toBe('/document/id');
     });
 
     it('should pass the searchParams to the item', () => {
@@ -114,17 +110,20 @@ describe('Doc', () => {
         library: {
           ui: Immutable({selectedDocuments: [{_id: 'docId'}]})
         },
+        uploads: {
+          progress: Immutable({})
+        },
         user: Immutable({_id: 'batId'})
       };
     });
 
     it('should set active as true if ownProps match selected ID', () => {
-      const state = mapStateToProps(store, {doc: Immutable({_id: 'docId'})});
+      const state = mapStateToProps(store, {doc: Immutable({_id: 'docId'}), storeKey: 'library'});
       expect(state.active).toBe(true);
     });
 
     it('should set active as false if ownProps holds unselected document', () => {
-      const state = mapStateToProps(store, {doc: Immutable({_id: 'anotherId'})});
+      const state = mapStateToProps(store, {doc: Immutable({_id: 'anotherId'}), storeKey: 'library'});
       expect(state.active).toBe(false);
     });
   });

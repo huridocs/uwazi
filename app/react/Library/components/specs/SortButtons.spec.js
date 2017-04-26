@@ -22,7 +22,8 @@ describe('SortButtons', () => {
       templates: immutable([
         {properties: [{}, {filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text'}]}
       ]),
-      stateProperty: 'search'
+      stateProperty: 'search',
+      storeKey: 'library'
     };
   });
 
@@ -74,7 +75,7 @@ describe('SortButtons', () => {
         render();
         component.setState({active: true});
         component.find('li').last().children().at(0).simulate('click');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc'}, 'library');
 
         const templates = props.templates.toJS();
         templates[0].properties[1].name = 'different_name';
@@ -85,7 +86,7 @@ describe('SortButtons', () => {
         component.setState({active: true});
 
         component.find('li').last().children().at(0).simulate('click');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name', order: 'desc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name', order: 'desc'}, 'library');
       });
     });
   });
@@ -94,14 +95,14 @@ describe('SortButtons', () => {
     it('should merge with searchTerm and filtersForm and NOT toggle between asc/desc', () => {
       render();
       instance.sort('title', 'asc', 'number');
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'}, 'library');
 
       props.search.order = 'asc';
       props.search.treatAs = 'number';
       render();
       instance.sort('title', 'asc', 'string');
       expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'asc', treatAs: 'number'});
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'}, 'library');
     });
 
     it('should not fail if no sortCallback', () => {
@@ -121,19 +122,19 @@ describe('SortButtons', () => {
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('title');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc'}, 'library');
 
         props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'desc');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'desc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'desc'}, 'library');
 
         props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'asc');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc'});
+        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc'}, 'library');
       });
     });
 
@@ -170,12 +171,16 @@ describe('SortButtons', () => {
 
   describe('mapStateToProps', () => {
     it('should send all templates from state', () => {
-      expect(mapStateToProps({templates: immutable(['item'])}, {}).templates.get(0)).toBe('item');
+      const state = {templates: immutable(['item']), library: {search: {}}};
+      const _props = {storeKey: 'library'};
+      expect(mapStateToProps(state, _props).templates.get(0)).toBe('item');
     });
 
     it('should only send selectedTemplates if array passed in ownProps', () => {
       const templates = immutable([{_id: 'a'}, {_id: 'b'}]);
-      expect(mapStateToProps({templates}, {selectedTemplates: immutable(['b'])}).templates.getIn([0, '_id'])).toBe('b');
+      const state = {templates, library: {search: {}}};
+      const _props = {selectedTemplates: immutable(['b']), storeKey: 'library'};
+      expect(mapStateToProps(state, _props).templates.getIn([0, '_id'])).toBe('b');
     });
   });
 });

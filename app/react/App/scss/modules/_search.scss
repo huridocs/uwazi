@@ -12,6 +12,7 @@
   position: relative;
   display: block;
   width: 100%;
+  border-bottom: 1px solid $c-grey-light;
 
   .input-group {
     width: 100%;
@@ -21,7 +22,6 @@
     padding-left: 35px;
     border-radius: 0;
     border: 0;
-    border-bottom: 1px solid $c-grey-light;
     box-shadow: none;
     z-index: 4;
 

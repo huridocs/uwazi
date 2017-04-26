@@ -17,7 +17,7 @@ describe('Library DocumentsList container', () => {
 
   beforeEach(() => {
     props = {
-      documents: documents.toJS(),
+      documents: documents,
       selectedDocuments: Immutable.fromJS([]),
       search: {sort: 'sort'},
       filters: Immutable.fromJS({documentTypes: []}),
@@ -27,7 +27,8 @@ describe('Library DocumentsList container', () => {
       selectDocument: jasmine.createSpy('selectDocument'),
       selectDocuments: jasmine.createSpy('selectDocuments'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
-      authorized: true
+      authorized: true,
+      storeKey: 'library'
     };
   });
 
@@ -81,15 +82,15 @@ describe('Library DocumentsList container', () => {
         library: {
           documents,
           filters,
-          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']})
+          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']}),
+          search: {sort: 'sortProperty'}
         },
-        search: {sort: 'sortProperty'},
         user: fromJS({_id: 'uid'})
       };
 
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {storeKey: 'library'});
       expect(state).toEqual({
-        documents: documents.toJS(),
+        documents: documents,
         filters,
         filtersPanel: 'panel',
         search: {sort: 'sortProperty'},

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {Select} from 'app/ReactReduxForms';
 import {connect} from 'react-redux';

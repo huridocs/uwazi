@@ -22,7 +22,7 @@ export default (app) => {
       req.query.aggregations = JSON.parse(req.query.aggregations);
     }
 
-    return search.search(req.query, req.language)
+    return search.search(req.query, req.language, req.user)
     .then(results => res.json(results))
     .catch(res.error);
   });

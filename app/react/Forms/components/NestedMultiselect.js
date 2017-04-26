@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {Field, Control} from 'react-redux-form';
 import {MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';

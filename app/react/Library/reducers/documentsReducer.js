@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 
 const initialState = {rows: []};
 
@@ -13,7 +14,6 @@ export default function documents(state = initialState, action = {}) {
     const docIndex = state.get('rows').findIndex(doc => {
       return doc.get('_id') === action.doc._id;
     });
-
     return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
   }
 
@@ -25,6 +25,40 @@ export default function documents(state = initialState, action = {}) {
 
       return _state.setIn(['rows', docIndex], Immutable.fromJS(doc));
     }, state);
+  }
+
+  if (action.type === types.ELEMENT_CREATED) {
+    return state.update('rows', (rows) => rows.insert(0, Immutable.fromJS(action.doc)));
+  }
+
+  if (action.type === uploadTypes.UPLOAD_COMPLETE) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('sharedId') === action.doc;
+    });
+
+    let doc = state.get('rows').get(docIndex).toJS();
+    doc.uploaded = true;
+    return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
+  }
+
+  if (action.type === uploadTypes.DOCUMENT_PROCESSED) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('sharedId') === action.sharedId;
+    });
+
+    let doc = state.get('rows').get(docIndex).toJS();
+    doc.processed = true;
+    return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
+  }
+
+  if (action.type === uploadTypes.DOCUMENT_PROCESS_ERROR) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('sharedId') === action.sharedId;
+    });
+
+    let doc = state.get('rows').get(docIndex).toJS();
+    doc.processed = false;
+    return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
   if (action.type === types.REMOVE_DOCUMENT) {

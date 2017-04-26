@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {advancedSort} from 'app/utils/advancedSort';
 
 export default class Select extends Component {

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {connect} from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import {is} from 'immutable';
@@ -13,10 +14,14 @@ export class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
     let items = this.props.settings.collection.toJS().filters || [];
-    if (!items.length) {
+    if (!items.length || this.props.storeKey === 'uploads') {
       items = props.templates.toJS().map((tpl) => {
         return {id: tpl._id, name: tpl.name};
       });
+    }
+
+    if (this.props.storeKey === 'uploads') {
+      items.unshift({id: 'missing', name: t('System', 'No type')});
     }
     this.state = {
       items,
@@ -54,7 +59,7 @@ export class DocumentTypesList extends Component {
     }
 
     this.setState({selectedItems});
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
   }
 
   change(item) {
@@ -68,7 +73,7 @@ export class DocumentTypesList extends Component {
     }
 
     this.setState({selectedItems});
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.storeKey);
   }
 
   toggleOptions(item, e) {
@@ -192,21 +197,21 @@ DocumentTypesList.propTypes = {
   settings: PropTypes.object,
   templates: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
-  aggregations: PropTypes.object
+  aggregations: PropTypes.object,
+  storeKey: PropTypes.string
 };
 
-
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
-    libraryFilters: state.library.filters,
+    libraryFilters: state[props.storeKey].filters,
     settings: state.settings,
     templates: state.templates,
-    aggregations: state.library.aggregations
+    aggregations: state[props.storeKey].aggregations
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({filterDocumentTypes}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({filterDocumentTypes}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);

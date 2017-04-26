@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 import {connect} from 'react-redux';

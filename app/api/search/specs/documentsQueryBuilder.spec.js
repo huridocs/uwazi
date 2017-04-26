@@ -10,6 +10,19 @@ describe('documentQueryBuilder', () => {
     });
   });
 
+  describe('unpublished', () => {
+    it('should do a match all on published documents', () => {
+      expect(queryBuilder().unpublished().query().query.bool.must[0]).toEqual({match: {published: false}});
+    });
+  });
+
+  describe('owner', () => {
+    it('should do a match all documents uploaded by a specific user', () => {
+      const user = {_id: '123'};
+      expect(queryBuilder().owner(user).query().query.bool.must[1]).toEqual({match: {user: '123'}});
+    });
+  });
+
   describe('from', () => {
     it('should set from', () => {
       expect(queryBuilder().from(5).query().from).toEqual(5);
@@ -66,7 +79,7 @@ describe('documentQueryBuilder', () => {
   describe('filterByTemplate', () => {
     it('should add a match to get only documents that match with the templates', () => {
       let baseQuery = queryBuilder().filterByTemplate(['template1', 'template2']).query();
-      let expectedMatcher = {terms: {'template.raw': ['template1', 'template2']}};
+      let expectedMatcher = {terms: {'template': ['template1', 'template2']}};
       expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
     });
   });
@@ -85,6 +98,7 @@ describe('documentQueryBuilder', () => {
       let typesAggregation = {
         terms: {
           field: 'template.raw',
+          missing: 'missing',
           size: 0
         },
         aggregations: {

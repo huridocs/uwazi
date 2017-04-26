@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 import {actions} from 'react-redux-form';
 import {t} from 'app/I18N';
 
@@ -36,7 +37,7 @@ export class SortButtons extends Component {
     delete filters.treatAs;
 
     if (this.props.sortCallback) {
-      this.props.sortCallback(filters);
+      this.props.sortCallback(filters, this.props.storeKey);
     }
   }
 
@@ -114,12 +115,13 @@ SortButtons.propTypes = {
   search: PropTypes.object,
   templates: PropTypes.object,
   merge: PropTypes.func,
-  sortCallback: PropTypes.func
+  sortCallback: PropTypes.func,
+  storeKey: PropTypes.string
 };
 
 export function mapStateToProps(state, ownProps) {
   let {templates} = state;
-  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'search';
+  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : ownProps.storeKey + '.search';
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
     templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
@@ -132,8 +134,8 @@ export function mapStateToProps(state, ownProps) {
   return {stateProperty, search, templates};
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({merge: actions.merge}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({merge: actions.merge}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SortButtons);

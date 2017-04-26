@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {ShowMetadata} from 'app/Metadata';
@@ -11,7 +11,6 @@ import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
-import {browserHistory} from 'react-router';
 import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
 
@@ -40,32 +39,37 @@ export class DocumentSidePanel extends Component {
   deleteDocument() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.doc.toJS())
-        .then(() => {
-          browserHistory.push('/');
-        });
+        this.props.deleteDocument(this.props.doc.toJS());
       },
-      title: 'Confirm delete document',
-      message: 'Are you sure you want to delete this document?'
+      title: 'Confirm',
+      message: 'Are you sure you want to delete this item?'
     });
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
-      this.props.getDocumentReferences(newProps.doc.get('sharedId'));
+    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
+      this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
   }
 
   close() {
     if (this.props.formDirty) {
-      return this.props.showModal('ConfirmCloseForm', this.props.doc);
+      this.context.confirm({
+        accept: () => {
+          this.props.resetForm(this.props.formPath);
+          this.props.closePanel();
+        },
+        title: 'Confirm',
+        message: 'All changes will be lost, are you sure you want to proceed?'
+      });
+      return;
     }
     this.props.resetForm(this.props.formPath);
     this.props.closePanel();
   }
 
   submit(doc) {
-    this.props.saveDocument(doc);
+    this.props.saveDocument(doc, this.props.formPath);
   }
 
   render() {
@@ -145,6 +149,7 @@ export class DocumentSidePanel extends Component {
             formStatePath={this.props.formPath}
             entityBeingEdited={docBeingEdited}
             includeViewButton={!docBeingEdited && readOnly}
+            storeKey={this.props.storeKey}
           />
         </ShowIf>
 
@@ -210,10 +215,10 @@ export class DocumentSidePanel extends Component {
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited && this.props.doc.get('type') === 'document') {
-                  return <DocumentForm onSubmit={this.submit.bind(this)} />;
+                  return <DocumentForm storeKey={this.props.storeKey} onSubmit={this.submit.bind(this)} />;
                 }
                 if (docBeingEdited && this.props.doc.get('type') === 'entity') {
-                  return <EntityForm/>;
+                  return <EntityForm storeKey={this.props.storeKey} />;
                 }
 
                 return <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />;
@@ -275,7 +280,8 @@ DocumentSidePanel.propTypes = {
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
   isTargetDoc: PropTypes.bool,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  storeKey: PropTypes.string
 };
 
 DocumentSidePanel.contextTypes = {

@@ -95,7 +95,7 @@ describe('MetadataForm', () => {
     it('should call onSubmit with the values', () => {
       render();
       component.find(Form).simulate('submit', 'values');
-      expect(props.onSubmit).toHaveBeenCalledWith('values');
+      expect(props.onSubmit).toHaveBeenCalledWith('values', 'metadata');
     });
   });
 

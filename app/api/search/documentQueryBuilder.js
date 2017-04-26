@@ -2,7 +2,7 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'title', 'icon', 'processed', 'creationDate', 'template', 'metadata', 'type', 'sharedId', 'toc', 'attachments', 'language', 'file']
+      include: [ 'title', 'icon', 'processed', 'creationDate', 'template', 'metadata', 'type', 'sharedId', 'toc', 'attachments', 'language', 'file', 'uploaded', 'published']
     },
     from: 0,
     size: 30,
@@ -21,6 +21,7 @@ export default function () {
       types: {
         terms: {
           field: 'template.raw',
+          missing: 'missing',
           size: 0
         },
         aggregations: {
@@ -85,6 +86,17 @@ export default function () {
 
     language(language) {
       let match = {match: {language: language}};
+      baseQuery.query.bool.must.push(match);
+      return this;
+    },
+
+    unpublished() {
+      baseQuery.query.bool.must[0].match.published = false;
+      return this;
+    },
+
+    owner(user) {
+      let match = {match: {user: user._id}};
       baseQuery.query.bool.must.push(match);
       return this;
     },
@@ -345,8 +357,21 @@ export default function () {
     },
 
     filterByTemplate(templates = []) {
+      if (templates.includes('missing')) {
+        let _templates = templates.filter((t) => t !== 'missing');
+        let match = {
+          or: {
+            filters: [
+              {missing: {field: 'template'}},
+              {terms: {template: _templates}}
+            ]
+          }};
+        baseQuery.filter.bool.must.push(match);
+        return this;
+      }
+
       if (templates.length) {
-        let match = {terms: {'template.raw': templates}};
+        let match = {terms: {template: templates}};
         baseQuery.filter.bool.must.push(match);
       }
       return this;

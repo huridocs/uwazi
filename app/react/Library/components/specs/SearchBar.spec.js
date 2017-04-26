@@ -13,13 +13,14 @@ describe('SearchBar', () => {
     props = jasmine.createSpyObj(['searchDocuments', 'change', 'getSuggestions', 'hideSuggestions', 'setOverSuggestions']);
     props.suggestions = Immutable.fromJS([]);
     props.search = {searchTerm: 'Find my document', sort: 'title', filters: {isBatman: true}};
+    props.storeKey = 'library';
     component = shallow(<SearchBar {...props}/>);
   });
 
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm filters and sort', () => {
       component.find(Form).simulate('submit', 'SEARCH MODEL VALUES');
-      expect(props.searchDocuments).toHaveBeenCalledWith('SEARCH MODEL VALUES');
+      expect(props.searchDocuments).toHaveBeenCalledWith('SEARCH MODEL VALUES', props.storeKey);
     });
   });
 
@@ -76,13 +77,14 @@ describe('SearchBar', () => {
   describe('maped state', () => {
     it('should contain the searchTerm', () => {
       let store = {
-        search: 'search',
         library: {
-          ui: Immutable.fromJS({filtersPanel: true, suggestions: 'suggestions', showSuggestions: true, overSuggestions: true})
+          ui: Immutable.fromJS({filtersPanel: true, suggestions: 'suggestions', showSuggestions: true, overSuggestions: true}),
+          search: {searchTerm: 'search'}
         }
       };
-      let state = mapStateToProps(store);
-      expect(state).toEqual({open: true, search: 'search', suggestions: 'suggestions', showSuggestions: true, overSuggestions: true});
+
+      let state = mapStateToProps(store, {storeKey: 'library'});
+      expect(state).toEqual({open: true, search: {searchTerm: 'search'}, suggestions: 'suggestions', showSuggestions: true, overSuggestions: true});
     });
   });
 });

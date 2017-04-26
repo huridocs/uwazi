@@ -2,32 +2,9 @@ import * as types from 'app/Library/actions/actionTypes';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import comonPropertiesHelper from 'app/Metadata/helpers/comonProperties';
 import * as libraryActions from 'app/Library/actions/libraryActions';
-import {actions as formActions} from 'react-redux-form';
-
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
-function updateModelFilters(dispatch, getState, libraryFilters) {
-  let previousModelFilters = getState().search.filters;
-  let modelFilters = libraryFilters.reduce((model, property) => {
-    model[property.name] = previousModelFilters[property.name] || '';
-    if ((property.type === 'select' || property.type === 'multiselect') && model[property.name] === '') {
-      model[property.name] = [];
-    }
-
-    if (property.type === 'nested' && model[property.name] === '') {
-      model[property.name] = {};
-    }
-
-    if (property.type === 'numeric' || property.type === 'date') {
-      model[property.name] = {};
-    }
-
-    return model;
-  }, {});
-  dispatch(formActions.change('search.filters', modelFilters));
-}
-
-export function filterDocumentTypes(documentTypes) {
+export function filterDocumentTypes(documentTypes, storeKey) {
   return function (dispatch, getState) {
     const state = getState();
 
@@ -48,34 +25,30 @@ export function filterDocumentTypes(documentTypes) {
 
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
-    updateModelFilters(dispatch, getState, libraryFilters);
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
     const {sort, order} = prioritySortingCriteria.get({
-      currentCriteria: {sort: state.search.sort, order: state.search.order},
+      currentCriteria: {sort: state[storeKey].search.sort, order: state[storeKey].search.order},
       filteredTemplates: usefulTemplates.map(t => t._id),
       templates: state.templates
     });
 
     const search = Object.assign({aggregations, types: documentTypes}, state.search, {sort, order});
 
-    dispatch(libraryActions.searchDocuments(search));
+    dispatch(libraryActions.searchDocuments(search, storeKey));
   };
 }
 
-export function resetFilters() {
+export function resetFilters(storeKey) {
   return function (dispatch, getState) {
-    dispatch(formActions.reset('search'));
-    dispatch(formActions.setInitial('search'));
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: []});
-    libraryActions.searchDocuments(getState().search)(dispatch, getState);
+    libraryActions.searchDocuments(getState()[storeKey].search, storeKey)(dispatch, getState);
   };
 }
 
-export function toggleFilter(propertyName) {
-  return function (dispatch, getState) {
-    let state = getState().library.filters.toJS();
-    let updatedProperties = state.properties.map((property) => {
+export function toggleFilter(propertyName, properties) {
+  return function (dispatch) {
+    let updatedProperties = properties.map((property) => {
       if (property.name === propertyName) {
         property.active = !property.active;
       }
@@ -85,10 +58,9 @@ export function toggleFilter(propertyName) {
   };
 }
 
-export function activateFilter(propertyName, activate) {
-  return function (dispatch, getState) {
-    let state = getState().library.filters.toJS();
-    let updatedProperties = state.properties.map((property) => {
+export function activateFilter(propertyName, activate, properties) {
+  return function (dispatch) {
+    let updatedProperties = properties.map((property) => {
       if (property.name === propertyName) {
         property.active = activate;
       }

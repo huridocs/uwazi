@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import formater from '../Metadata/helpers/formater';
 import marked from 'app/utils/marked';
@@ -10,6 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
+import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import PrintDate from './PrintDate';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
@@ -125,7 +126,10 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
-            <TemplateLabel template={doc.template}/>
+            <ShowIf if={!!doc.template}>
+              <TemplateLabel template={doc.template}/>
+            </ShowIf>
+            <UploadEntityStatus doc={this.props.doc} />
           </div>
          {buttons}
         </ItemFooter>

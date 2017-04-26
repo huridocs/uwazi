@@ -28,6 +28,15 @@ describe('uiReducer', () => {
     });
   });
 
+  describe('selectSingleDocument', () => {
+    it('should set document and remove any other', () => {
+      let newState = uiReducer(initialState, {type: types.SELECT_DOCUMENT, doc: {_id: 'document'}});
+      newState = uiReducer(initialState, {type: types.SELECT_SINGLE_DOCUMENT, doc: {_id: 'other_document'}});
+      expect(newState.get('selectedDocuments').first().get('_id')).toBe('other_document');
+      expect(newState.get('selectedDocuments').size).toBe(1);
+    });
+  });
+
   describe('selectDocuments', () => {
     it('should add the documents to the selected document list', () => {
       let newState = uiReducer(initialState, {type: types.SELECT_DOCUMENTS, docs: [{_id: 'document'}, {_id: 'document2'}]});

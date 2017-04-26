@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
-// TEST!!! Very sparsely tested, all the 'load more' functionality is not tested
-import React, { Component } from 'react';
-import {fromJS as Immutable} from 'immutable';
+import React, {Component} from 'react';
 
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
@@ -21,7 +19,7 @@ export default class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    this.props.loadMoreDocuments(this.props.documents.rows.length + loadMoreAmmount);
+    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + loadMoreAmmount);
   }
 
   componentWillReceiveProps() {
@@ -36,10 +34,11 @@ export default class DocumentsList extends Component {
 
   render() {
     const {documents, connections} = this.props;
-
-    let counter = <span><b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
+    let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
-      counter = <span><b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.totalRows}</b> {t('System', 'documents')}</span>;
+      counter = <span>
+                  <b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+                </span>;
     }
 
     return (
@@ -50,11 +49,13 @@ export default class DocumentsList extends Component {
               <SortButtons sortCallback={this.props.searchDocuments}
                            selectedTemplates={this.props.filters.get('documentTypes')}
                            stateProperty={this.props.sortButtonsStateProperty}
+                           storeKey={this.props.storeKey}
               />
           </div>
           <RowList>
-            {documents.rows.map((doc, index) =>
-              <Doc doc={Immutable(doc)}
+            {documents.get('rows').map((doc, index) =>
+              <Doc doc={doc}
+                   storeKey={this.props.storeKey}
                    key={index}
                    onClick={this.clickOnDocument.bind(this)}
                    deleteConnection={this.props.deleteConnection}
@@ -63,13 +64,13 @@ export default class DocumentsList extends Component {
           </RowList>
           <div className="row">
             <div className="col-sm-12 text-center documents-counter">
-                <b>{documents.rows.length}</b>
+                <b>{documents.get('rows').size}</b>
                 {` ${t('System', 'of')} `}
-                <b>{documents.totalRows}</b>
+                <b>{documents.get('totalRows')}</b>
                 {` ${t('System', 'documents')}`}
             </div>
             {(() => {
-              if (documents.rows.length < documents.totalRows && !this.state.loading) {
+              if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return <div className="col-sm-12 text-center">
                 <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">
                   {loadMoreAmmount + ' ' + t('System', 'x more')}
@@ -98,5 +99,6 @@ DocumentsList.propTypes = {
   searchDocuments: PropTypes.func,
   deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string,
+  storeKey: PropTypes.string,
   clickOnDocument: PropTypes.func
 };

@@ -5,7 +5,7 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 
 export default {
-  search(query, language) {
+  search(query, language, user) {
     let documentsQuery = queryBuilder()
     .fullTextSearch(query.searchTerm, query.fields)
     .filterMetadata(query.filters)
@@ -31,6 +31,11 @@ export default {
 
     if (query.includeUnpublished) {
       documentsQuery.includeUnpublished();
+    }
+
+    if (query.unpublished && user) {
+      documentsQuery.unpublished();
+      documentsQuery.owner(user);
     }
 
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})

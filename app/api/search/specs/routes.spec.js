@@ -31,13 +31,14 @@ describe('search routes', () => {
       let filtersValue = JSON.stringify({property: 'property'});
       let types = JSON.stringify(['ruling', 'judgement']);
       let fields = JSON.stringify(['field1', 'field2']);
-      let req = {query: {searchTerm: 'test', filters: filtersValue, types, fields}, language: 'es'};
+      let req = {query: {searchTerm: 'test', filters: filtersValue, types, fields}, language: 'es', user: 'user'};
 
       routes.get('/api/search', req)
       .then((response) => {
         expect(search.search).toHaveBeenCalledWith(
           {searchTerm: 'test', filters: {property: 'property'}, types: ['ruling', 'judgement'], fields: ['field1', 'field2']},
-          'es'
+          'es',
+          'user'
         );
         expect(response).toEqual('results');
         done();
@@ -48,11 +49,11 @@ describe('search routes', () => {
     describe('when has no filters or types', () => {
       it('should search search and return the results', (done) => {
         spyOn(search, 'search').and.returnValue(new Promise((resolve) => resolve('results')));
-        let req = {query: {}, language: 'es'};
+        let req = {query: {}, language: 'es', user: 'user'};
 
         routes.get('/api/search', req)
         .then((response) => {
-          expect(search.search).toHaveBeenCalledWith({}, 'es');
+          expect(search.search).toHaveBeenCalledWith({}, 'es', 'user');
           expect(response).toEqual('results');
           done();
         })

@@ -42,7 +42,7 @@ describe('publish entity path', () => {
       .wait(selectors.uploadsView.newEntityButtom)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/uploads');
+        expect(url.match(config.url + '/uploads')).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));

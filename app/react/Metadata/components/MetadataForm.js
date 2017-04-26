@@ -26,6 +26,11 @@ const selectTemplateOptions = createSelector(
 );
 
 export class MetadataForm extends Component {
+
+  onSubmit(metadata) {
+    this.props.onSubmit(metadata, this.props.model);
+  }
+
   render() {
     const {model, template, templateOptions} = this.props;
     if (!template) {
@@ -33,7 +38,7 @@ export class MetadataForm extends Component {
     }
 
     return (
-      <Form id='metadataForm' model={model} onSubmit={this.props.onSubmit} validators={validator.generate(template.toJS())}>
+      <Form id='metadataForm' model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
 
         <FormGroup model={model} field={'title'}>
           <ul className="search__filter">

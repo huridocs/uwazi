@@ -5,14 +5,17 @@ import {shallow} from 'enzyme';
 import {APIURL} from 'app/config';
 import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/App/RouteHandler';
-import * as actionTypes from 'app/Uploads/actions/actionTypes.js';
+import * as actionTypes from 'app/Library/actions/actionTypes.js';
+import {fromJS as Immutable} from 'immutable';
 
 describe('UploadsRoute', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
+  let aggregations = [{1: '23'}, {2: '123'}];
   let component;
   let instance;
   let context;
   let props = {};
+  let globalResources = {templates: Immutable([]), thesauris: Immutable([])};
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
@@ -22,16 +25,18 @@ describe('UploadsRoute', () => {
 
     backend.restore();
     backend
-    .get(APIURL + 'search/unpublished', {body: JSON.stringify({rows: documents})});
+    .get(APIURL + 'search?filters=%7B%7D&types=%5B%5D&order=desc&sort=creationDate&unpublished=true', {body: JSON.stringify({rows: documents})});
   });
 
   afterEach(() => backend.restore());
 
   describe('static requestState()', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {
-      UploadsRoute.requestState()
+      let query;
+      let params;
+      UploadsRoute.requestState(params, query, globalResources)
       .then((state) => {
-        expect(state.uploads.documents).toEqual(documents);
+        expect(state.uploads.documents).toEqual({rows: documents});
         done();
       })
       .catch(done.fail);
@@ -40,11 +45,11 @@ describe('UploadsRoute', () => {
 
   describe('setReduxState()', () => {
     beforeEach(() => {
-      instance.setReduxState({uploads: {documents}});
+      instance.setReduxState({uploads: {documents, filters: {}, aggregations}});
     });
 
     it('should call setDocuments with the documents', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_UPLOADS, documents});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'uploads'});
     });
   });
 });

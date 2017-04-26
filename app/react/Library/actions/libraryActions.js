@@ -30,6 +30,10 @@ export function unselectDocument(docId) {
   return {type: types.UNSELECT_DOCUMENT, docId};
 }
 
+export function selectSingleDocument(doc) {
+  return {type: types.SELECT_SINGLE_DOCUMENT, doc};
+}
+
 export function unselectAllDocuments() {
   return {type: types.UNSELECT_ALL_DOCUMENTS};
 }
@@ -112,13 +116,19 @@ export function processFilters(readOnlySearch, filters, limit) {
   return search;
 }
 
-export function searchDocuments(readOnlySearch, limit) {
+export function searchDocuments(readOnlySearch, storeKey, limit) {
   return function (dispatch, getState) {
-    const filters = getState().library.filters.toJS();
+    const filters = getState()[storeKey].filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
-    browserHistory.push(`/library/${toUrlParams(search)}`);
+    const pathname = browserHistory.getCurrentLocation().pathname;
+    const path = (pathname + '/').replace(/\/\//g, '/');
+    browserHistory.push(path + toUrlParams(search));
   };
+}
+
+export function elementCreated(doc) {
+  return {type: types.ELEMENT_CREATED, doc};
 }
 
 export function updateEntity(updatedDoc) {
@@ -129,12 +139,12 @@ export function updateEntities(updatedDocs) {
   return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
 }
 
-export function saveDocument(doc) {
+export function saveDocument(doc, formKey) {
   return function (dispatch) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch(formActions.reset('library.sidepanel.metadata'));
+      dispatch(formActions.reset(formKey));
       dispatch(updateEntity(updatedDoc));
       dispatch(selectDocument(updatedDoc));
     });
@@ -160,13 +170,20 @@ export function multipleUpdate(entities, values) {
   };
 }
 
-export function saveEntity(entity) {
+export function saveEntity(entity, formModel) {
   return function (dispatch) {
     return entitiesAPI.save(entity)
     .then((updatedDoc) => {
-      dispatch(notify('Entity updated', 'success'));
-      dispatch(formActions.reset('library.sidepanel.metadata'));
-      dispatch(dispatch(updateEntity(updatedDoc)));
+      dispatch(formActions.reset(formModel));
+      dispatch(unselectAllDocuments());
+      if (entity._id) {
+        dispatch(notify('Entity updated', 'success'));
+        dispatch(updateEntity(updatedDoc));
+      } else {
+        dispatch(notify('Entity created', 'success'));
+        dispatch(elementCreated(updatedDoc));
+      }
+
       dispatch(selectDocument(updatedDoc));
     });
   };
@@ -202,9 +219,9 @@ export function deleteEntity(entity) {
   };
 }
 
-export function loadMoreDocuments(amount) {
+export function loadMoreDocuments(storeKey, amount) {
   return function (dispatch, getState) {
-    searchDocuments(getState().search, amount)(dispatch, getState);
+    searchDocuments(getState()[storeKey].search, storeKey, amount)(dispatch, getState);
   };
 }
 
@@ -218,11 +235,11 @@ export function getSuggestions(searchTerm) {
   };
 }
 
-export function getDocumentReferences(documentId) {
+export function getDocumentReferences(documentId, storeKey) {
   return (dispatch, getState) => {
     return referencesAPI.get(documentId)
     .then((references) => {
-      dispatch(actions.set('library.sidepanel.references', referencesUtils.filterRelevant(references, getState().locale)));
+      dispatch(actions.set(storeKey + '.sidepanel.references', referencesUtils.filterRelevant(references, getState().locale)));
     });
   };
 }

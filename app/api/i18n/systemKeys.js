@@ -64,10 +64,13 @@ export default [
 {key: 'Menu', label: 'Menu'},
 {key: 'Metadata', label: 'Metadata'},
 {key: 'Minimum', label: 'Minimum'},
+{key: 'My Files', label: 'My Files'},
 {key: 'Name', label: 'Name'},
 {key: 'New password', label: 'New password'},
+{key: 'New entity', label: 'New entity'},
 {key: 'No', label: 'No'},
 {key: 'No common filters', label: 'No common filters'},
+{key: 'No type', label: 'No type'},
 {key: 'of', label: 'of'},
 {key: 'Pages', label: 'Pages'},
 {key: 'Password', label: 'Password'},
@@ -109,5 +112,8 @@ export default [
 {key: 'View in library', label: 'View in library'},
 {key: 'x less', label: ' less'},
 {key: 'x more', label: ' more'},
+{key: 'No type', label: 'No type'},
+{key: 'My Files', label: 'My Files'},
+{key: 'New entity', label: 'New entity'},
 {key: 'selected', label: 'selected'}
 ];
