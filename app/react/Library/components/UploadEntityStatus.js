@@ -51,7 +51,7 @@ export function mapStateToProps(state, props) {
     return {
       progress,
       status: 'warning',
-      message: 'Metadata required'
+      message: 'No type selected'
     };
   }
 

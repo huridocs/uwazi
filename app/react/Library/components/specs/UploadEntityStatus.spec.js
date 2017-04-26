@@ -50,12 +50,12 @@ describe('UploadEntityStatus', () => {
     });
 
     describe('when is a document, uploaded, processed but without template', () => {
-      it('should return metadata required props', () => {
+      it('should return No type selected props', () => {
         doc = doc.set('uploaded', true);
         doc = doc.set('processed', true);
         const props = mapStateToProps(store, {doc});
         expect(props.status).toBe('warning');
-        expect(props.message).toBe('Metadata required');
+        expect(props.message).toBe('No type selected');
       });
     });
 
