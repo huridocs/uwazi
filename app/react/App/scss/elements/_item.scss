@@ -68,6 +68,16 @@
       margin-left: 0;
     }
   }
+  span,
+  dt,
+  dd {
+    &::selection {
+      background: transparent;
+    }
+    &::-moz-selection {
+      background: transparent;
+    }
+  }
 }
 
 
