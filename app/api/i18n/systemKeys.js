@@ -112,5 +112,8 @@ export default [
 {key: 'View in library', label: 'View in library'},
 {key: 'x less', label: ' less'},
 {key: 'x more', label: ' more'},
+{key: 'No type', label: 'No type'},
+{key: 'My Files', label: 'My Files'},
+{key: 'New entity', label: 'New entity'},
 {key: 'selected', label: 'selected'}
 ];
