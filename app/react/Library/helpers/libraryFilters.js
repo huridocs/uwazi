@@ -39,7 +39,12 @@ export function URLQueryToState(query, templates, thesauris) {
       defaultValue = [];
     }
 
-    if (property.type === 'nested' || property.type === 'date' || property.type === 'daterange' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'numeric') {
+    if (property.type === 'nested'
+      || property.type === 'date'
+      || property.type === 'daterange'
+      || property.type === 'multidate'
+      || property.type === 'multidaterange'
+      || property.type === 'numeric') {
       defaultValue = {};
     }
 

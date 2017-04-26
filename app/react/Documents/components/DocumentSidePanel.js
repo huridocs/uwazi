@@ -11,7 +11,6 @@ import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
-import {browserHistory} from 'react-router';
 import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
 

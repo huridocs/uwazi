@@ -84,7 +84,9 @@ export function mapStateToProps({uploads}) {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError}, wrapDispatch(dispatch, 'uploads'));
+  return bindActionCreators({
+    uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError
+  }, wrapDispatch(dispatch, 'uploads'));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadBox);
