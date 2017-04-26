@@ -79,7 +79,7 @@ describe('documentQueryBuilder', () => {
   describe('filterByTemplate', () => {
     it('should add a match to get only documents that match with the templates', () => {
       let baseQuery = queryBuilder().filterByTemplate(['template1', 'template2']).query();
-      let expectedMatcher = {terms: {'template.raw': ['template1', 'template2']}};
+      let expectedMatcher = {terms: {'template': ['template1', 'template2']}};
       expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
     });
   });

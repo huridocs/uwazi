@@ -359,7 +359,6 @@ export default function () {
     filterByTemplate(templates = []) {
       if (templates.includes('missing')) {
         let _templates = templates.filter((t) => t !== 'missing');
-        console.log(_templates);
         let match = {
           or: {
             filters: [
