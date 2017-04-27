@@ -47,7 +47,6 @@ export class UploadBox extends Component {
   }
 
   render() {
-    const {documents} = this.props;
     return (
       <Dropzone className="upload-box"
                 style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
