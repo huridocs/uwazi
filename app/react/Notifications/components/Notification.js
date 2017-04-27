@@ -6,6 +6,10 @@ import {removeNotification} from 'app/Notifications';
 
 export class Notification extends Component {
 
+  close() {
+    this.props.removeNotification(this.props.id);
+  }
+
   render() {
     let type = this.props.type || 'success';
     let cssClass = 'alert alert-' + type;
@@ -15,7 +19,7 @@ export class Notification extends Component {
     }
 
     return (
-        <div className={cssClass}>
+        <div className={cssClass} onClick={this.close.bind(this)}>
           <i className={icon}>
           </i>
           <span>{this.props.message}</span>
