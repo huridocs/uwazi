@@ -2,17 +2,17 @@
   display: block;
   position: relative;
   max-width: 960px;
-  padding: 25px;
-  margin: auto;
-  margin-bottom: 15px;
+  margin: 0 auto 30px;
   text-align: center;
-  color: $c-grey-dark;
-  border: 2px dashed $c-grey-light;
 
   &_wrapper {
-    display: inline-block;
+    display: block;
     position: relative;
     font-size: $f-size-lg;
+    padding: 25px;
+    margin-bottom: 15px;
+    color: $c-grey-dark;
+    border: 2px dashed $c-grey-light;
     
     .fa {
       color: $c-grey-dark;
@@ -33,11 +33,8 @@
   }
 }
 
-.upload-box {
-  .protip {
-    margin-top: 15px;
-    opacity: 0.6;
-  }
+.upload-box .protip {
+  opacity: 0.6;
 }
 
 .is-uploaded {
