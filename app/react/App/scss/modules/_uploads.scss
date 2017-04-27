@@ -2,86 +2,41 @@
   display: block;
   position: relative;
   max-width: 960px;
-  padding: 25px 45px 20px 54px;
+  padding: 25px;
   margin: auto;
   margin-bottom: 15px;
   text-align: center;
   color: $c-grey-dark;
-  border: 1px dashed $c-grey;
-
-  @media (max-width: 767px) {
-    padding: 25px;
-  }
+  border: 2px dashed $c-grey-light;
 
   &_wrapper {
     display: inline-block;
     position: relative;
-    text-align: left;
-  }
-
-  &_icon {
-    display: inline-block;
-    margin-right: 5px;
     font-size: $f-size-lg;
-    color: $c-grey-dark;
-  }
-
-  &_title {
-    display: inline-block;
-    margin: 0;
-    margin-right: 5px;
-    color: $c-grey-dark;
-
-    @media (max-width: 767px) {
-      display: none;
+    
+    .fa {
+      color: $c-grey-dark;
+      margin-right: 10px;
+    }
+    
+    a {
+      border-bottom: 1px dotted $c-grey-dark;
+      cursor: pointer;
+      color: $c-grey-dark;
+      
+      &:hover {
+        color: $c-black;
+        border-bottom: 1px solid $c-grey-dark;
+        text-decoration: none;
+      }
     }
   }
+}
 
-  &_link {
-    display: inline-block;
-    color: $c-grey-dark;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: none;
-    }
-
-    @media (max-width: 767px) {
-      display: inline;
-    }
-
-  }
-
-  &_cta {
-    margin: 0 5px;
-    text-transform: lowercase;
-    border-bottom: 1px dotted $c-grey-dark;
-
-    &:hover {
-      color: $c-black;
-      border-bottom: 1px solid $c-grey-dark;
-    }
-
-    @media (max-width: 767px) {
-      margin: 0;
-      text-transform: none;
-      border-bottom: 0;
-    }
-  }
-
-  &_or {
-    @media (max-width: 767px) {
-      display: none;
-    }
-  }
-
-  &_formats {
-    margin: 0 0 0 15px;
-    opacity: .5;
-    @media (max-width: 767px) {
-      display: block;
-      margin: 0;
-    }
+.upload-box {
+  .protip {
+    margin-top: 15px;
+    opacity: 0.6;
   }
 }
 
