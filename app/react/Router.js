@@ -1,7 +1,7 @@
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 import ReactDOM from 'react-dom';
-import {renderToStaticMarkup} from 'react-dom/server';
+import {renderToString} from 'react-dom/server';
 import {browserHistory} from 'react-router';
 import {Router, match, RouterContext} from 'react-router';
 import Helmet from 'react-helmet';
@@ -39,8 +39,11 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
     initialStore = store(initialData);
   }
 
+  // to prevent warnings on some client libs that use window global var
+  global.window = {};
+  //
   try {
-    componentHtml = renderToStaticMarkup(
+    componentHtml = renderToString(
       <Provider store={initialStore}>
         <CustomProvider initialData={initialData} user={user}>
           <Component {...componentProps} />
@@ -61,7 +64,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
     data = {};
   }
 
-  return '<!doctype html>\n' + renderToStaticMarkup(
+  return '<!doctype html>\n' + renderToString(
     <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData}/>
   );
 }
