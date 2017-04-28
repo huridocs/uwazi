@@ -141,7 +141,7 @@ export class SelectMultiplePanel extends Component {
     });
 
     return (
-      <SidePanel open={open} className="metadata-sidepanel">
+      <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
           <i className="fa fa-check-square"></i> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
