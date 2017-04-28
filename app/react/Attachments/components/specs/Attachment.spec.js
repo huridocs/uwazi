@@ -6,7 +6,7 @@ import {NeedAuthorization} from 'app/Auth';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
-fdescribe('Attachment', () => {
+describe('Attachment', () => {
   let component;
   let props;
   let file;

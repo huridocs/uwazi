@@ -26,6 +26,10 @@ export class UploadButton extends Component {
   }
 
   componentWillMount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
     this.socket = io();
 
     this.socket.on('conversionStart', (docId) => {
@@ -52,6 +56,10 @@ export class UploadButton extends Component {
   }
 
   componentWillUnmount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
     this.socket.disconnect();
   }
 
