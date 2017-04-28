@@ -25,13 +25,41 @@ Nightmare.action('login', function (name, password, done) {
 });
 
 Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
-  this.wait(1000)
+  this.wait(1200)
   .then(done);
 });
 
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
   .click(selector)
+  .then(done);
+});
+
+Nightmare.action('ctrlClick', function (selector, done) {
+  this.wait(selector)
+  .evaluate((elementToClick) => {
+    const e = new MouseEvent('click', {
+      ctrlKey: true,
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    document.querySelector(elementToClick).dispatchEvent(e);
+  }, selector)
+  .then(done);
+});
+
+Nightmare.action('shiftClick', function (selector, done) {
+  this.wait(selector)
+  .evaluate((elementToClick) => {
+    const e = new MouseEvent('click', {
+      shiftKey: true,
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    document.querySelector(elementToClick).dispatchEvent(e);
+  }, selector)
   .then(done);
 });
 
