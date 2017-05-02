@@ -58,11 +58,8 @@
 
 - **Fixtures**
 
-  clone fixtures inside uwazi project
-  `$ git clone https://github.com/huridocs/uwazi-fixtures.git`
-
   ```
-  $ ./install_fixtures.sh
+  $ ./database/blank_state.sh
   ```
 
 - launch application: `foreman start`, the app will be available after few seconds on localhost:3000
