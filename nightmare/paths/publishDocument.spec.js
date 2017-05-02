@@ -83,7 +83,7 @@ describe('PublishDocument', () => {
 
     it('should allow changing the different template\'s properties', (done) => {
       nightmare
-      .openSidePanelOnDocumentViewer()
+      .wait(selectors.documentView.sidePanelTitle)
       .editDocumentFromDocumentViewer()
       .type(selectors.doc.form.title, ' (Logan)')
       .clearInput(selectors.doc.form.company)
@@ -91,8 +91,7 @@ describe('PublishDocument', () => {
       .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
       .saveFromDocumentViewer()
       .refresh()
-      .openSidePanelOnDocumentViewer()
-      //.wait(selectors.doc.viewer.title)
+      .wait(selectors.documentView.sidePanelTitle)
       .getInnerText(selectors.doc.viewer.title)
       .then(text => {
         expect(text).toBe('Wolverine (Logan)');

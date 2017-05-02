@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = {reference: {}};
+const initialState = {reference: {}, panel: 'viewMetadataPanel'};
 
 let unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 

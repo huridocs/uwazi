@@ -170,12 +170,6 @@ Nightmare.action('saveFromDocumentViewer', function (done) {
   .then(done);
 });
 
-Nightmare.action('openSidePanelOnDocumentViewer', function (done) {
-  this.waitToClick(selectors.documentView.openSidePanelButton)
-  .wait(selectors.documentView.sidePanelTitle)
-  .then(done);
-});
-
 Nightmare.action('pickToday', function (input, done) {
   this.waitToClick(input)
   .wait(selectors.datePicker.today)
