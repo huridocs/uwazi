@@ -39,3 +39,9 @@ export function loadForm(form, attachment) {
     dispatch(formActions.load(form, attachment));
   };
 }
+
+export function resetForm(form) {
+  return function (dispatch) {
+    dispatch(formActions.reset(form));
+  };
+}

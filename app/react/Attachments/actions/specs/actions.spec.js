@@ -4,6 +4,7 @@ import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {mockID} from 'shared/uniqueID.js';
+import {actions as formActions} from 'react-redux-form';
 
 import * as actions from '../actions';
 import * as types from '../actionTypes';
@@ -76,6 +77,46 @@ describe('Attachments actions', () => {
       ];
 
       expect(api.delete).toHaveBeenCalledWith('attachments/delete', {entityId: 'id', filename: 'filename'});
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  describe('loadForm', () => {
+    beforeEach(() => {
+      spyOn(formActions, 'reset').and.callFake(form => {
+        return {type: 'formReset', value: form};
+      });
+      spyOn(formActions, 'load').and.callFake((form, attachment) => {
+        return {type: 'formLoad', value: form + ', ' + attachment};
+      });
+    });
+
+    fit('should reset and load passed form', () => {
+      store.dispatch(actions.loadForm('form', 'attachment'));
+
+      const expectedActions = [
+        {type: 'formReset', value: 'form'},
+        {type: 'formLoad', value: 'form, attachment'}
+      ];
+
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  describe('resetForm', () => {
+    beforeEach(() => {
+      spyOn(formActions, 'reset').and.callFake(form => {
+        return {type: 'formReset', value: form};
+      });
+    });
+
+    fit('should reset and load passed form', () => {
+      store.dispatch(actions.resetForm('form'));
+
+      const expectedActions = [
+        {type: 'formReset', value: 'form'}
+      ];
+
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
