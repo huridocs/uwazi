@@ -32,7 +32,7 @@ export class DocumentTypesList extends Component {
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">{t('System', 'Documents')}</div>
+      <div className="panel-heading">{t('System', 'Document types')}</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
           if (template.isEntity) {
@@ -57,7 +57,7 @@ export class DocumentTypesList extends Component {
         <I18NLink to="/settings/documents/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>{t('System', 'Add document')}</span>
+          <span>{t('System', 'Add document type')}</span>
         </I18NLink>
       </div>
     </div>;
