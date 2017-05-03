@@ -122,7 +122,7 @@ export class ConnectionsList extends Component {
                         </a>
                       </NeedAuthorization>
                     </ShowIf>
-                    &nbsp;
+
                     <ShowIf if={!this.props.targetDoc}>
                       <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
                             onClick={e => e.stopPropagation()}

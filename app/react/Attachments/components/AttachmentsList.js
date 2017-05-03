@@ -31,13 +31,19 @@ export class AttachmentsList extends Component {
 
     return <div className="item-group">
       {sortedFiles.map((file, index) => {
+        const isSourceDocument = isDocumentAttachments && index === 0;
+        // TEST!!!
+        if (isSourceDocument) {
+          file._id = parentId;
+        }
+        // ---
         return (
           <Attachment key={index}
             file={file}
             parentId={parentId}
             readOnly={readOnly}
             parentSharedId={parentSharedId}
-            isSourceDocument={isDocumentAttachments && index === 0}
+            isSourceDocument={isSourceDocument}
           />);
       })}
     </div>;

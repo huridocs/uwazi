@@ -21,6 +21,7 @@ describe('Attachment', () => {
       parentSharedId: 'parentSharedId',
       deleteAttachment: jasmine.createSpy('deleteAttachment'),
       loadForm: jasmine.createSpy('loadForm'),
+      resetForm: jasmine.createSpy('resetForm'),
       isSourceDocument: false
     };
 
@@ -37,12 +38,29 @@ describe('Attachment', () => {
     expect(component.find('.item').at(0).text()).toContain('Human name 1');
   });
 
-  describe('when its being edited', () => {
-    it('should render an edition form', () => {
+  describe('when its being edited (and not readOnly)', () => {
+    beforeEach(() => {
       props.beingEdited = true;
+      props.readOnly = false;
+    });
+
+    it('should render an edition form', () => {
       render();
+
       expect(component.find(AttachmentForm).length).toBe(1);
       expect(component.find('.item').at(0).text()).not.toContain('Human name 1');
+    });
+
+    fit('should render a cancel edit button', () => {
+      render();
+
+      const cancelButton = component.find('.item-shortcut-group').find('a').at(0);
+
+      expect(props.resetForm).not.toHaveBeenCalled();
+
+      cancelButton.simulate('click');
+
+      expect(props.resetForm).toHaveBeenCalled();
     });
   });
 
