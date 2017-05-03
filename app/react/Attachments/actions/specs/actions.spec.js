@@ -91,7 +91,7 @@ describe('Attachments actions', () => {
       });
     });
 
-    fit('should reset and load passed form', () => {
+    it('should reset and load passed form', () => {
       store.dispatch(actions.loadForm('form', 'attachment'));
 
       const expectedActions = [
@@ -110,7 +110,7 @@ describe('Attachments actions', () => {
       });
     });
 
-    fit('should reset and load passed form', () => {
+    it('should reset and load passed form', () => {
       store.dispatch(actions.resetForm('form'));
 
       const expectedActions = [
