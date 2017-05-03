@@ -26,6 +26,7 @@
   -webkit-align-items: center;
   align-items: center;
   padding: 15px;
+  height: 50px;
   @media(min-width: 1024px) {
     padding: 0 15px;
     width: calc(100% - 400px);
@@ -45,7 +46,7 @@
     width: auto;
   }
   .item-type__name {
-    margin: -3px 6px;
+    margin: -3px 0 -3px 10px;
     max-width: 100%;
   }
 }
