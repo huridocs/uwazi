@@ -58,7 +58,7 @@ export class UploadBox extends Component {
         <div className="protip">
           <i className="fa fa-lightbulb-o"></i>
           <b>ProTip!</b>
-          <span>Upload your documents in batches for faster upload time.</span>
+          <span>For better performance, upload your documents in batches of 50 or less.</span>
         </div>
       </Dropzone>
     );
