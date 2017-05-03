@@ -134,6 +134,7 @@ Attachment.propTypes = {
   parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,
   isSourceDocument: PropTypes.bool,
+  beingEdited: PropTypes.bool,
   deleteAttachment: PropTypes.func,
   loadForm: PropTypes.func
 };

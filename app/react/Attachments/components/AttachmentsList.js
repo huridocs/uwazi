@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import Immutable from 'immutable';
 
 import {advancedSort} from 'app/utils/advancedSort';
 
