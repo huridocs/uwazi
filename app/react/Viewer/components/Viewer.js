@@ -7,6 +7,7 @@ import {bindActionCreators} from 'redux';
 import ContextMenu from 'app/ContextMenu';
 
 import {loadDefaultViewerMenu, loadTargetDocument} from '../actions/documentActions';
+import {openPanel} from '../actions/uiActions';
 import {addReference} from '../actions/referencesActions';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
@@ -21,6 +22,10 @@ import ShowIf from 'app/App/ShowIf';
 import {TemplateLabel, Icon} from 'app/Layout';
 
 export class Viewer extends Component {
+
+  componentWillMount() {
+    this.context.store.dispatch(openPanel('viewMetadataPanel'));
+  }
 
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
@@ -39,7 +44,6 @@ export class Viewer extends Component {
     if (this.props.showConnections) {
       className += ' connections';
     }
-
 
     return (
       <div className="row">
