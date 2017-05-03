@@ -94,7 +94,7 @@ describe('publish entity path', () => {
       expect(result).toBe(true);
       done();
     });
-  });
+  }, 10000);
 
   it('should refresh and check the values', (done) => {
     nightmare
@@ -132,7 +132,7 @@ describe('publish entity path', () => {
     .then(() => {
       done();
     });
-  });
+  }, 10000);
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {
