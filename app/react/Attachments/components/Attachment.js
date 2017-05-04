@@ -79,8 +79,7 @@ export class Attachment extends Component {
                   </div>;
 
     if (this.props.beingEdited && !this.props.readOnly) {
-      name = <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId)}/>;
-      // TEST!!!
+      name = <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>;
       buttons = <div className="item-shortcut-group">
                   <NeedAuthorization>
                     <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
@@ -98,7 +97,9 @@ export class Attachment extends Component {
 
     return (
       <div className={`item highlight-hover ${item.itemClassName}`}>
+
         {name}
+
         <ShowIf if={Boolean(sizeString)}>
           <div className="item-metadata">
             <dl>

@@ -18,9 +18,12 @@ describe('Attachment', () => {
     props = {
       file,
       parentId: 'parentId',
+      model: 'model',
       parentSharedId: 'parentSharedId',
       deleteAttachment: jasmine.createSpy('deleteAttachment'),
+      renameAttachment: jasmine.createSpy('renameAttachment'),
       loadForm: jasmine.createSpy('loadForm'),
+      submitForm: jasmine.createSpy('submitForm'),
       resetForm: jasmine.createSpy('resetForm'),
       isSourceDocument: false
     };
@@ -44,14 +47,19 @@ describe('Attachment', () => {
       props.readOnly = false;
     });
 
-    it('should render an edition form', () => {
+    it('should render an edition form that renames on submit', () => {
       render();
 
       expect(component.find(AttachmentForm).length).toBe(1);
       expect(component.find('.item').at(0).text()).not.toContain('Human name 1');
+
+      const submit = component.find(AttachmentForm).props().onSubmit;
+      submit();
+
+      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model');
     });
 
-    fit('should render a cancel edit button', () => {
+    it('should render a cancel edit button', () => {
       render();
 
       const cancelButton = component.find('.item-shortcut-group').find('a').at(0);
@@ -60,7 +68,19 @@ describe('Attachment', () => {
 
       cancelButton.simulate('click');
 
-      expect(props.resetForm).toHaveBeenCalled();
+      expect(props.resetForm).toHaveBeenCalledWith('model');
+    });
+
+    it('should render a save edit button that submits form', () => {
+      render();
+
+      const saveButton = component.find('.item-shortcut-group').find('a.item-shortcut.btn-success');
+
+      expect(props.submitForm).not.toHaveBeenCalled();
+
+      saveButton.simulate('click');
+
+      expect(props.submitForm).toHaveBeenCalledWith('model');
     });
   });
 
@@ -117,7 +137,7 @@ describe('Attachment', () => {
 
   describe('mapStateToProps', () => {
     it('should map if attachment is being edited', () => {
-      let state = {documentViewer: {sidepanel: {attachment: {_id: 'id'}}}};
+      let state = {attachments: {edit: {attachment: {_id: 'id'}}}};
       let ownProps = {file: {_id: 'id'}};
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(true);
 
