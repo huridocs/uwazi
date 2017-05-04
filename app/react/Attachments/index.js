@@ -1,11 +1,11 @@
 import AttachmentsList from './components/AttachmentsList';
 import UploadAttachment from './components/UploadAttachment';
-import addAttachmentsReducer from './reducers/addAttachmentsReducer';
+import manageAttachmentsReducer from './reducers/manageAttachmentsReducer';
 import reducer from './reducers/reducer';
 
 export default {
   AttachmentsList,
   UploadAttachment,
-  addAttachmentsReducer,
+  manageAttachmentsReducer,
   reducer
 };
