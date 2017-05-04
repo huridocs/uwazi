@@ -44,6 +44,7 @@ export default combineReducers({
   translationsForm: modelReducer('translationsForm', []),
   translationsFormState: formReducer('translationsForm'),
   pages: createReducer('pages', []),
+  users: createReducer('users', []),
   documentViewer,
   contextMenu,
   connections: connections.reducer,

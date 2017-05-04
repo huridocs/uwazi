@@ -1,6 +1,7 @@
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('users routes', () => {
   let routes;
@@ -19,7 +20,7 @@ describe('users routes', () => {
           expect(users.update).toHaveBeenCalledWith('changes');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
 
@@ -32,7 +33,7 @@ describe('users routes', () => {
           expect(users.recoverPassword).toHaveBeenCalledWith('recover@me.com', 'http://localhost');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
 
@@ -45,22 +46,48 @@ describe('users routes', () => {
           expect(users.resetPassword).toHaveBeenCalledWith('changes');
           done();
         })
-        .catch(done.fail);
+        .catch(catchErrors(done));
       });
     });
   });
 
   describe('GET', () => {
+    it('should need authorization', () => {
+      let req = {};
+      expect(routes.get('/api/users', req)).toNeedAuthorization();
+    });
+
     it('should call users get', (done) => {
       spyOn(users, 'get').and.returnValue(Promise.resolve(['users']));
       let req = {};
       routes.get('/api/users', req)
       .then((res) => {
         expect(users.get).toHaveBeenCalled();
-        expect(res).toBe(['users']);
+        expect(res).toEqual(['users']);
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('DELETE', () => {
+    let req;
+    beforeEach(() => {
+      req = {query: {_id: 123, username: 'Nooooooo!'}};
+      spyOn(users, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
+    });
+
+    it('should need authorization', () => {
+      expect(routes.delete('/api/users', req)).toNeedAuthorization();
+    });
+
+    it('should use users to delete it', (done) => {
+      return routes.delete('/api/users', req)
+      .then(() => {
+        expect(users.delete).toHaveBeenCalledWith(req.query._id);
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 });

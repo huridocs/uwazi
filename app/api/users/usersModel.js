@@ -3,7 +3,7 @@ import instanceModel from 'api/odm';
 
 const userSchema = new mongoose.Schema({
   username: String,
-  password: String,
+  password: {type: String, select: false},
   email: String
 });
 

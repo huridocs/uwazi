@@ -13,12 +13,16 @@ export default {
     return model.save(user);
   },
 
-  get(query) {
-    return model.get(query);
+  get(query, select) {
+    return model.get(query, select);
   },
 
   getById(id) {
     return model.getById(id);
+  },
+
+  delete(_id) {
+    return model.delete({_id});
   },
 
   recoverPassword(email, domain) {

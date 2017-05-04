@@ -1,6 +1,4 @@
 import users from '../users.js';
-import fetch from 'isomorphic-fetch';
-import {db_url as dbUrl} from '../../config/database.js';
 import SHA256 from 'crypto-js/sha256';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
@@ -22,8 +20,8 @@ describe('Users', () => {
   describe('update', () => {
     it('should update user matching id', (done) => {
       return users.update({_id: userId, password: 'new_password'})
-      .then(() => users.getById(userId))
-      .then(user => {
+      .then(() => users.get({_id: userId}, '+password'))
+      .then(([user]) => {
         expect(user.password).toBe(SHA256('new_password').toString());
         expect(user.username).toBe('username');
         done();
@@ -33,7 +31,6 @@ describe('Users', () => {
   });
 
   describe('recoverPassword', () => {
-
     beforeEach(() => {
       spyOn(mailer, 'send');
     });
@@ -80,8 +77,8 @@ describe('Users', () => {
   describe('resetPassword', () => {
     it('should reset the password for the user based on the provided key', (done) => {
       users.resetPassword({key: expectedKey, password: '1234'})
-      .then(() => users.getById(recoveryUserId))
-      .then(user => {
+      .then(() => users.get({_id: recoveryUserId}, '+password'))
+      .then(([user]) => {
         expect(user.password).toBe(SHA256('1234').toString());
         done();
       })
@@ -96,6 +93,17 @@ describe('Users', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+  });
+
+  describe('delete()', () => {
+    it('should delete the user', (done) => {
+      users.delete(userId)
+      .then(() => users.getById(userId))
+      .then((user) => {
+        expect(user).toBe(null);
+        done();
+      });
     });
   });
 });

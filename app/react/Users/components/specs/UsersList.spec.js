@@ -13,9 +13,9 @@ describe('UsersList', () => {
   beforeEach(() => {
     props = {
       users: fromJS([
-        {_id: 1, title: 'User 1', sharedId: 'a1'},
-        {_id: 2, title: 'User 2', sharedId: 'a2'},
-        {_id: 3, title: 'User 3', sharedId: 'a3'}
+        {_id: 1, username: 'User 1', sharedId: 'a1'},
+        {_id: 2, username: 'User 2', sharedId: 'a2'},
+        {_id: 3, username: 'User 3', sharedId: 'a3'}
       ]),
       deleteUser: jasmine.createSpy('deleteUser').and.returnValue(Promise.resolve())
     };

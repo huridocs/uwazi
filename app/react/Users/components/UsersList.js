@@ -15,7 +15,7 @@ export class UsersList extends Component {
       accept: () => {
         this.props.deleteUser({_id: user.get('_id'), sharedId: user.get('sharedId')});
       },
-      title: 'Confirm delete user: ' + user.get('title'),
+      title: 'Confirm delete user: ' + user.get('username'),
       message: 'Are you sure you want to delete this user?'
     });
   }
@@ -29,12 +29,8 @@ export class UsersList extends Component {
         <ul className="list-group users">
           {users.map((user, index) =>
             <li key={index} className="list-group-item">
-              <I18NLink to={'/settings/users/edit/' + user.get('sharedId')}>{user.get('title')}</I18NLink>
+              <I18NLink to={'/settings/users/edit/' + user.get('sharedId')}>{user.get('username')}</I18NLink>
               <div className="list-group-item-actions">
-                <I18NLink to={'/settings/users/edit/' + user.get('sharedId')} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>&nbsp;
-                  <span>{t('System', 'Edit')}</span>
-                </I18NLink>
                 <a onClick={this.deleteUser.bind(this, user)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>

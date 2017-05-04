@@ -25,7 +25,7 @@ import NewPage from 'app/Pages/NewPage';
 import EditPage from 'app/Pages/EditPage';
 import PageView from 'app/Pages/PageView';
 
-import {Users, NewUser, EditUser} from 'app/Users';
+import {Users, NewUser} from 'app/Users';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import EntityView from 'app/Entities/EntityView';
@@ -70,7 +70,6 @@ const routes =
       <Route path='users'>
         <IndexRoute component={Users} />
         <Route path='new' component={NewUser} />
-        <Route path='edit/:pageId' component={EditUser} />
       </Route>
       <Route path='pages'>
         <IndexRoute component={Pages} />
