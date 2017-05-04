@@ -59,8 +59,9 @@ describe('AttachmentsList', () => {
       render();
     });
 
-    it('should pass isSourceDocument true to the first attachment', () => {
+    it('should pass isSourceDocument true to the first attachment and the entity id', () => {
       expect(component.find(Attachment).at(0).props().isSourceDocument).toBe(true);
+      expect(component.find(Attachment).at(0).props().file._id).toBe('parentId');
       expect(component.find(Attachment).at(1).props().isSourceDocument).toBe(false);
     });
   });
