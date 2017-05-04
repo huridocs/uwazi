@@ -94,13 +94,13 @@ describe('documents', () => {
   });
 
   describe('/download', () => {
-    it('should download the document with the titile as file name', (done) => {
+    it('should download the document with the originalname as file name', (done) => {
       let req = {query: {_id: batmanFinishesId}};
       let res = {download: jasmine.createSpy('download')};
 
       routes.get('/api/documents/download', req, res)
       .then(() => {
-        expect(res.download).toHaveBeenCalledWith(jasmine.any(String), 'Batman finishes.pdf');
+        expect(res.download).toHaveBeenCalledWith(jasmine.any(String), 'Batman original.pdf');
         done();
       })
       .catch(catchErrors(done));
