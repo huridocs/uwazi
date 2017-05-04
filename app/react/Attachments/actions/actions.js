@@ -23,15 +23,16 @@ export function uploadAttachment(entityId, file) {
   };
 }
 
-// TEST
-export function renameAttachment(entityId, model) {
+export function renameAttachment(entityId, form, file) {
   return function (dispatch) {
-    console.log('model:', model);
-    console.log({type: types.ATTACHMENT_RENAMED, entity: entityId, file: model});
-    dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: model});
+    return api.post('attachments/rename', {entityId, _id: file._id, originalname: file.originalname})
+    .then(renamedFile => {
+      dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: renamedFile.json});
+      dispatch(formActions.reset(form));
+      dispatch(notify('Attachment renamed', 'success'));
+    });
   };
 }
-// -----
 
 export function deleteAttachment(entityId, attachment) {
   return function (dispatch) {
@@ -50,14 +51,11 @@ export function loadForm(form, attachment) {
   };
 }
 
-// TEST
 export function submitForm(form) {
   return function (dispatch) {
-    console.log('submit');
     dispatch(formActions.submit(form));
   };
 }
-// -----
 
 export function resetForm(form) {
   return function (dispatch) {
