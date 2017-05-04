@@ -23,6 +23,16 @@ export function uploadAttachment(entityId, file) {
   };
 }
 
+// TEST
+export function renameAttachment(entityId, model) {
+  return function (dispatch) {
+    console.log('model:', model);
+    console.log({type: types.ATTACHMENT_RENAMED, entity: entityId, file: model});
+    dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: model});
+  };
+}
+// -----
+
 export function deleteAttachment(entityId, attachment) {
   return function (dispatch) {
     return api.delete('attachments/delete', {entityId, filename: attachment.filename})
@@ -39,6 +49,15 @@ export function loadForm(form, attachment) {
     dispatch(formActions.load(form, attachment));
   };
 }
+
+// TEST
+export function submitForm(form) {
+  return function (dispatch) {
+    console.log('submit');
+    dispatch(formActions.submit(form));
+  };
+}
+// -----
 
 export function resetForm(form) {
   return function (dispatch) {

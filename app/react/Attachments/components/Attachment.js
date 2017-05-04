@@ -8,7 +8,7 @@ import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import t from 'app/I18N/t';
 
-import {deleteAttachment, loadForm, resetForm} from '../actions/actions';
+import {deleteAttachment, renameAttachment, loadForm, submitForm, resetForm} from '../actions/actions';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
@@ -79,7 +79,7 @@ export class Attachment extends Component {
                   </div>;
 
     if (this.props.beingEdited && !this.props.readOnly) {
-      name = <AttachmentForm model={this.props.model}/>;
+      name = <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId)}/>;
       // TEST!!!
       buttons = <div className="item-shortcut-group">
                   <NeedAuthorization>
@@ -88,7 +88,7 @@ export class Attachment extends Component {
                     </a>
                   </NeedAuthorization>
                   <NeedAuthorization>
-                    <a className="item-shortcut btn btn-success">
+                    <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model)}>
                       <i className="fa fa-floppy-o"></i>
                     </a>
                   </NeedAuthorization>
@@ -142,7 +142,9 @@ Attachment.propTypes = {
   isSourceDocument: PropTypes.bool,
   beingEdited: PropTypes.bool,
   deleteAttachment: PropTypes.func,
+  renameAttachment: PropTypes.func,
   loadForm: PropTypes.func,
+  submitForm: PropTypes.func,
   resetForm: PropTypes.func
 };
 
@@ -150,15 +152,15 @@ Attachment.contextTypes = {
   confirm: PropTypes.func
 };
 
-export function mapStateToProps({documentViewer}, ownProps) {
+export function mapStateToProps({attachments}, ownProps) {
   return {
-    model: 'documentViewer.sidepanel.attachment',
-    beingEdited: ownProps.file._id && documentViewer.sidepanel.attachment._id === ownProps.file._id
+    model: 'attachments.edit.attachment',
+    beingEdited: ownProps.file._id && attachments.edit.attachment._id === ownProps.file._id
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({deleteAttachment, loadForm, resetForm}, dispatch);
+  return bindActionCreators({deleteAttachment, renameAttachment, loadForm, submitForm, resetForm}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Attachment);

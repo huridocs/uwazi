@@ -11,12 +11,12 @@ export class AttachmentForm extends Component {
     const {model} = this.props;
     return (
       <Form id='attachmentForm' model={model} onSubmit={this.props.onSubmit}>
-        <FormGroup model={model} field={'title'}>
+        <FormGroup model={model} field={'originalname'}>
           <ul className="search__filter">
             <li><label>{t('System', 'Filename label', 'Filename')} <span className="required">*</span></label></li>
             <li className="wide">
               <Field model={'.originalname'}>
-                <textarea className="form-control"/>
+                <input className="form-control"/>
               </Field>
             </li>
           </ul>
