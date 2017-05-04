@@ -9,8 +9,9 @@ import t from 'app/I18N/t';
 export class AttachmentForm extends Component {
   render() {
     const {model} = this.props;
+    const validators = {originalname: {required: val => !!val && val.trim() !== ''}};
     return (
-      <Form id='attachmentForm' model={model} onSubmit={this.props.onSubmit}>
+      <Form id='attachmentForm' model={model} onSubmit={this.props.onSubmit} validators={validators}>
         <FormGroup model={model} field={'originalname'}>
           <ul className="search__filter">
             <li><label>{t('System', 'Filename label', 'Filename')} <span className="required">*</span></label></li>
