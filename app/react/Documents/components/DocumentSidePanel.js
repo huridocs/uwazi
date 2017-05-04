@@ -77,7 +77,7 @@ export class DocumentSidePanel extends Component {
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
-    const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {}, {originalname: doc.get('title') + '.pdf'});
+    const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {});
     const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
     const startNewConnection = readOnly ? () => {} : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'));
 
