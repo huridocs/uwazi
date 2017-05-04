@@ -47,40 +47,32 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.secondDictionaryValForm)
       .type(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
-        done();
-      })
+      .waitToClick('.alert.alert-success')
+      .then(done)
       .catch(catchErrors(done));
     });
 
     it('should go back to dictionaries then edit the created dictionary', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
       //.wait(500)
       .type(selectors.settingsView.dictionaryNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
+      .waitToClick('.alert.alert-success')
       .type(selectors.settingsView.firstDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
+      .waitToClick('.alert.alert-success')
       .type(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
-        done();
-      })
+      .waitToClick('.alert.alert-success')
+      .then(done)
       .catch(catchErrors(done));
     }, 13000);
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
@@ -109,10 +101,8 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.documentTemplateNameForm)
       .type(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
+      .waitToClick('.alert.alert-success')
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
@@ -120,31 +110,27 @@ describe('metadata path', () => {
 
     it('should go back to Documents then edit the created document', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'new')
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
+      .waitToClick('.alert.alert-success')
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should go back to Documents then delete the created document template', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.documentsBackButton)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Connections tests', () => {
@@ -166,10 +152,8 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.connectionNameForm)
       .type(selectors.settingsView.connectionNameForm, 'test connection')
       .waitToClick(selectors.settingsView.saveConnectionButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
+      .waitToClick('.alert.alert-success')
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
@@ -177,34 +161,29 @@ describe('metadata path', () => {
 
     it('should go back to Connections then edit the created connection', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .wait(500)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
-      //.wait(500)
       .clearInput(selectors.settingsView.connectionNameForm)
       .type(selectors.settingsView.connectionNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveConnectionButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
+      .waitToClick('.alert.alert-success')
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should go back to connections then delete the created connection', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.connectionsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Entities tests', () => {
@@ -226,10 +205,8 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'e2e test entity')
       .click(selectors.settingsView.saveEntityButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
+      .waitToClick('.alert.alert-success')
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
@@ -237,32 +214,28 @@ describe('metadata path', () => {
 
     it('should go back to Entities then edit the created entity', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'e2e')
       .clearInput(selectors.settingsView.entityNameForm)
       .type(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
-      .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
+      .waitToClick('.alert.alert-success')
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should go back to Entities then delete the created entity', (done) => {
       nightmare
-      .wait(2600)
       .waitToClick(selectors.settingsView.entitiesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(done)
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('closing browser', () => {
