@@ -28,7 +28,7 @@ export default app => {
   });
 
   app.delete('/api/users', needsAuthorization, (req, res) => {
-    users.delete(req.query._id)
+    users.delete(req.query._id, req.user)
     .then(response => res.json(response))
     .catch(res.error);
   });

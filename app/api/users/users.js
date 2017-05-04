@@ -3,6 +3,7 @@ import mailer from '../utils/mailer';
 
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
+import {createError} from 'api/utils';
 
 export default {
   update(user) {
@@ -21,8 +22,19 @@ export default {
     return model.getById(id);
   },
 
-  delete(_id) {
-    return model.delete({_id});
+  delete(_id, currentUser) {
+    if (_id === currentUser._id.toString()) {
+      return Promise.reject(createError('Can not delete yourself', 403));
+    }
+    
+    return model.count()
+    .then((count) => {
+      if (count > 1) {
+        return model.delete({_id});
+      }
+
+      return Promise.reject(createError('Can not delete last user', 403));
+    });
   },
 
   recoverPassword(email, domain) {

@@ -4,7 +4,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 
 import fixtures, {userId, expectedKey, recoveryUserId} from './fixtures.js';
-import {db} from 'api/utils';
+import {db, createError} from 'api/utils';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 
 describe('Users', () => {
@@ -98,10 +98,41 @@ describe('Users', () => {
 
   describe('delete()', () => {
     it('should delete the user', (done) => {
-      users.delete(userId)
+      users.delete(userId, {_id: 'another_user'})
       .then(() => users.getById(userId))
       .then((user) => {
         expect(user).toBe(null);
+        done();
+      });
+    });
+
+    it('should not allow to delete self', (done) => {
+      users.delete(userId.toString(), {_id: userId})
+      .then(() => {
+        done.fail('should throw an error');
+      })
+      .catch((error) => {
+        expect(error).toEqual(createError('Can not delete yourself', 403));
+        return users.getById(userId);
+      })
+      .then((user) => {
+        expect(user).not.toBe(null);
+        done();
+      });
+    });
+
+    it('should not allow to delete the last user', (done) => {
+      users.delete(recoveryUserId.toString(), {_id: 'someone'})
+      .then(() => users.delete(userId.toString(), {_id: 'someone'}))
+      .then(() => {
+        done.fail('should throw an error');
+      })
+      .catch((error) => {
+        expect(error).toEqual(createError('Can not delete last user', 403));
+        return users.getById(userId);
+      })
+      .then((user) => {
+        expect(user).not.toBe(null);
         done();
       });
     });

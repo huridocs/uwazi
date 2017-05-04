@@ -73,7 +73,7 @@ describe('users routes', () => {
   describe('DELETE', () => {
     let req;
     beforeEach(() => {
-      req = {query: {_id: 123, username: 'Nooooooo!'}};
+      req = {query: {_id: 123, username: 'Nooooooo!'}, user: {_id: 'currentUser'}};
       spyOn(users, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
 
@@ -84,7 +84,7 @@ describe('users routes', () => {
     it('should use users to delete it', (done) => {
       return routes.delete('/api/users', req)
       .then(() => {
-        expect(users.delete).toHaveBeenCalledWith(req.query._id);
+        expect(users.delete).toHaveBeenCalledWith(req.query._id, {_id: 'currentUser'});
         done();
       })
       .catch(catchErrors(done));
