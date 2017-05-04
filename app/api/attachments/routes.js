@@ -1,4 +1,3 @@
-import {db_url as dbUrl} from '../config/database';
 import needsAuthorization from '../auth/authMiddleware';
 import multer from 'multer';
 import ID from 'shared/uniqueID';
@@ -43,6 +42,33 @@ export default (app) => {
       res.json(req.files[0]);
     })
     .catch(error => res.json({error}));
+  });
+
+  app.post('/api/attachments/rename', needsAuthorization, (req, res) => {
+    let renamedAttachment;
+
+    return entities.getById(req.body.entityId)
+    .then(entity => {
+      if (entity._id.toString() === req.body._id) {
+        entity.file.originalname = req.body.originalname;
+        renamedAttachment = Object.assign({_id: entity._id.toString()}, entity.file);
+      } else {
+        entity.attachments = (entity.attachments || []).map(attachment => {
+          if (attachment._id.toString() === req.body._id) {
+            attachment.originalname = req.body.originalname;
+            renamedAttachment = attachment;
+          }
+
+          return attachment;
+        });
+      }
+
+      return entities.saveMultiple([entity]);
+    })
+    .then(() => {
+      res.json(renamedAttachment);
+    })
+    .catch((error) => res.json({error}, 500));
   });
 
   app.delete('/api/attachments/delete', needsAuthorization, (req, res) => {
