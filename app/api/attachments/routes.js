@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import needsAuthorization from '../auth/authMiddleware';
 import multer from 'multer';
 import ID from 'shared/uniqueID';
@@ -32,14 +33,20 @@ export default (app) => {
   });
 
   app.post('/api/attachments/upload', needsAuthorization, upload.any(), (req, res) => {
+    let addedFile;
+
     return entities.getById(req.body.entityId)
     .then(entity => {
       entity.attachments = entity.attachments || [];
-      entity.attachments.push(req.files[0]);
+
+      addedFile = req.files[0];
+      addedFile._id = mongoose.Types.ObjectId();
+
+      entity.attachments.push(addedFile);
       return entities.saveMultiple([entity]);
     })
     .then(() => {
-      res.json(req.files[0]);
+      res.json(addedFile);
     })
     .catch(error => res.json({error}));
   });

@@ -62,7 +62,7 @@ describe('Attachments Routes', () => {
       expect(routes.post('/api/attachments/upload', req)).toNeedAuthorization();
     });
 
-    it('should add the uploaded file to attachments', (done) => {
+    it('should add the uploaded file to attachments and return it, incluiding its new ID', (done) => {
       routes.post('/api/attachments/upload', req)
       .then(addedFile => {
         return Promise.all([addedFile, entities.getById(req.body.entityId)]);
@@ -72,6 +72,7 @@ describe('Attachments Routes', () => {
         expect(dbEntity.attachments[2].filename).toEqual(file.filename);
         expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
         expect(addedFile.filename).toBe('mockfile.doc');
+        expect(addedFile._id).toBeDefined();
         done();
       })
       .catch(catchErrors(done));
