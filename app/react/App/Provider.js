@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Component, Children } from 'react';
+import {Component, Children} from 'react';
 import {isClient} from 'app/utils';
 
 class CustomProvider extends Component {
