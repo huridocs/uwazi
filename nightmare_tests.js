@@ -19,7 +19,6 @@ jasmine.loadConfig({
   spec_files: [
     'nightmare/helpers/extensions.js',
     'nightmare/**/*.spec.js'
-    //'nightmare/zones/*.spec.js'
   ]
 });
 

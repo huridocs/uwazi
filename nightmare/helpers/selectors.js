@@ -90,8 +90,13 @@ export default {
     openSidePanelButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
     sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
     metadataForm: '#metadataForm',
-    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger'
-
+    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
+    sidePanelAttachmentsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(5) > div',
+    sidePanelFirstAttachmentTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-info > div',
+    sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a:nth-child(1)',
+    attachmentFormInput: '#attachmentForm > div > ul > li.wide > div > input',
+    attachmentFormSubmit: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > div.item-shortcut-group > a.item-shortcut.btn.btn-success',
+    attachmentFormCancel: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > div.item-shortcut-group > a.item-shortcut.btn.btn-primary'
   },
   entityView: {
     contentHeader: '#app > div.content > div > div > div.content-header.content-header-entity',
@@ -100,7 +105,12 @@ export default {
     saveButton: '#app > div.content > div > div > div.sidepanel-footer > button.btn.btn-success',
     metadataForm: '#metadataForm',
     metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
-    metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select'
+    metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
+    sidePanelAttachmentsTab: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-tabs > ul > li:nth-child(3) > div',
+    sidePanelFirstAttachmentTitle: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-info > div',
+    sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a:nth-child(1)',
+    attachmentFormInput: '#attachmentForm > div > ul > li.wide > div > input',
+    attachmentFormSubmit: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-success'
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
