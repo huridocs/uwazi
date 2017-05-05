@@ -36,8 +36,8 @@ export class Attachment extends Component {
     options.deletable = !isSourceDocument;
     options.replaceable = isSourceDocument;
     options.downloadHref = isSourceDocument ?
-                         `/api/documents/download?_id=${parentId}` :
-                         `/api/attachments/download?_id=${parentId}&file=${filename}`;
+                           `/api/documents/download?_id=${parentId}&t=${new Date().getTime()}` :
+                           `/api/attachments/download?_id=${parentId}&file=${filename}`;
 
     return options;
   }
