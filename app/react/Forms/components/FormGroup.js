@@ -1,20 +1,31 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {getField} from 'react-redux-form';
+import {Control} from 'react-redux-form';
+
+const mapProps = {
+  className: ({fieldValue}) => {
+    let _fieldValue = fieldValue.$form || fieldValue;
+    return (!_fieldValue.pristine || _fieldValue.submitFailed) && !_fieldValue.valid
+    ? 'has-error'
+    : '';
+  }
+};
 
 export class FormGroup extends Component {
   render() {
-    let className = 'form-group';
-    if (this.props.hasError) {
-      className += ' has-error';
+    if (this.props.model) {
+      return (
+        <Control.custom model={this.props.model}
+          component={(props) => <div className={'form-group ' + props.className}>{props.children}</div>}
+          mapProps={mapProps}
+        >
+        {this.props.children}
+        </Control.custom>
+      );
     }
 
-    return (
-      <div className={className}>
-        {this.props.children}
-      </div>
-    );
+    return <div className={'form-group ' + this.props.className}>{this.props.children}</div>;
   }
 }
 
@@ -25,38 +36,9 @@ let childrenType = PropTypes.oneOfType([
 
 FormGroup.propTypes = {
   hasError: PropTypes.bool,
+  className: PropTypes.string,
   model: PropTypes.any,
   children: childrenType
 };
 
-export const mapStateToProps = (state, props) => {
-  if (props.model) {
-    const fieldState = getField(state, props.model + '.' + props.field);
-    if (!fieldState) {
-      return {hasError: false};
-    }
-
-    let touched = !fieldState.pristine;
-    if (fieldState.$form) {
-      touched = !fieldState.$form.pristine;
-    }
-    const invalid = fieldState.valid === false || !!fieldState.$form && fieldState.$form.valid === false;
-    return {
-      hasError: (touched || fieldState.submitFailed) && invalid,
-      touched: touched
-    };
-  }
-
-  let touched = !props.pristine;
-  if (props.$form) {
-    touched = !props.$form.pristine;
-  }
-
-  const invalid = props.valid === false || !!props.$form && props.$form.valid === false;
-  return {
-    hasError: (touched || props.submitFailed) && invalid,
-    touched: touched
-  };
-};
-
-export default connect(mapStateToProps)(FormGroup);
+export default connect()(FormGroup);

@@ -119,21 +119,6 @@ describe('DocumentSidePanel', () => {
     });
   });
 
-  describe('onSubmit', () => {
-    it('should saveDocument', () => {
-      props.saveDocument = jasmine.createSpy('saveDocument');
-      props.docBeingEdited = true;
-      const DocumentForm = () => {};
-      props.DocumentForm = DocumentForm;
-      render();
-
-      let doc = 'doc';
-      component.find(DocumentForm).simulate('submit', doc);
-
-      expect(props.saveDocument).toHaveBeenCalledWith(doc, props.formPath);
-    });
-  });
-
   describe('mapStateToProps', () => {
     it('should add filter selectors splitting references and connections', () => {
       const ownProps = {

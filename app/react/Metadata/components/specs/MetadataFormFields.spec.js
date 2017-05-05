@@ -2,8 +2,10 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {MetadataFormFields} from '../MetadataFormFields';
+import {FormGroup} from 'app/Forms';
 import {Select, MultiSelect, DatePicker} from 'app/ReactReduxForms';
 import {fromJS} from 'immutable';
+import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 
 
 describe('MetadataFormFields', () => {
@@ -34,11 +36,18 @@ describe('MetadataFormFields', () => {
   it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
     render();
 
-    let FormGroup = component.findWhere((node) => node.props().model === 'metadata');
-    expect(FormGroup.length).toBe(8);
+    let formGroups = component.find(FormGroup);
+    expect(formGroups.at(0).props().model).toBe('.metadata.field1');
+    expect(formGroups.at(1).props().model).toBe('.metadata.field2');
+    expect(formGroups.at(2).props().model).toBe('.metadata.field3');
+    expect(formGroups.at(3).props().model).toBe('.metadata.field4');
 
-    FormGroup = component.findWhere((node) => node.props().field === 'metadata.field1');
-    expect(FormGroup.length).toBe(2);
+    let warnings = component.find(MultipleEditionFieldWarning);
+    expect(warnings.at(0).props().model).toBe('metadata');
+    expect(warnings.at(0).props().field).toBe('metadata.field1');
+    expect(warnings.at(1).props().field).toBe('metadata.field2');
+    expect(warnings.at(2).props().field).toBe('metadata.field3');
+    expect(warnings.at(3).props().field).toBe('metadata.field4');
   });
 
   it('should render dynamic fields based on the template selected', () => {

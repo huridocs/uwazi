@@ -18,7 +18,9 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({changeTemplate: actions.changeTemplate, onSubmit: saveEntity}, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({
+    changeTemplate: actions.changeTemplate, onSubmit: saveEntity
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

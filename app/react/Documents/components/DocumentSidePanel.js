@@ -68,10 +68,6 @@ export class DocumentSidePanel extends Component {
     this.props.closePanel();
   }
 
-  submit(doc) {
-    this.props.saveDocument(doc, this.props.formPath);
-  }
-
   render() {
     const {doc, docBeingEdited, DocumentForm, readOnly, references, connections, EntityForm} = this.props;
     const TocForm = this.props.tocFormComponent;
@@ -216,7 +212,7 @@ export class DocumentSidePanel extends Component {
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited && this.props.doc.get('type') === 'document') {
-                  return <DocumentForm storeKey={this.props.storeKey} onSubmit={this.submit.bind(this)} />;
+                  return <DocumentForm storeKey={this.props.storeKey} />;
                 }
                 if (docBeingEdited && this.props.doc.get('type') === 'entity') {
                   return <EntityForm storeKey={this.props.storeKey} />;
