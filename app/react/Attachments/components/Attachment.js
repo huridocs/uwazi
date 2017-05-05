@@ -28,7 +28,7 @@ export class Attachment extends Component {
     return filename.substr(filename.lastIndexOf('.') + 1);
   }
 
-  getItemOptions(isSourceDocument, parentId, filename) {
+  getItemOptions(isSourceDocument, parentId, filename, originalname) {
     const options = {};
     options.itemClassName = isSourceDocument ? 'item-source-document' : '';
     options.typeClassName = isSourceDocument ? 'primary' : 'empty';
@@ -36,7 +36,7 @@ export class Attachment extends Component {
     options.deletable = !isSourceDocument;
     options.replaceable = isSourceDocument;
     options.downloadHref = isSourceDocument ?
-                           `/api/documents/download?_id=${parentId}&t=${new Date().getTime()}` :
+                           `/api/documents/download?_id=${parentId}&originalname=${originalname}` :
                            `/api/attachments/download?_id=${parentId}&file=${filename}`;
 
     return options;
@@ -45,7 +45,7 @@ export class Attachment extends Component {
   render() {
     const {file, parentId, parentSharedId, model, isSourceDocument} = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
-    const item = this.getItemOptions(isSourceDocument, parentId, file.filename);
+    const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
     let name = <div className="item-info">
                  <div className="item-name">{file.originalname}</div>
