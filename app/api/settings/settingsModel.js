@@ -24,7 +24,13 @@ const settingsSchema = new mongoose.Schema({
   home_page: String,
   languages: [languagesSchema],
   links: [linksSchema],
-  filters: [filtersSchema]
+  filters: [filtersSchema],
+  mailerConfig: {
+    host: String,
+    port: String,
+    user: String,
+    password: String
+  }
 });
 
 let Model = mongoose.model('settings', settingsSchema);

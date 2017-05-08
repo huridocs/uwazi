@@ -1,14 +1,7 @@
 import nodemailer from 'nodemailer';
 import smtp from 'nodemailer-smtp-transport';
 
-// let transporter = nodemailer.createTransport(smtp({
-//   host: 'mail.gandi.net',
-//   port: 587,
-//   auth: {
-//     user: '',
-//     pass: ''
-//   }
-// }));
+import settings from 'api/settings/settings';
 
 let transporter = nodemailer.createTransport({
   sendmail: true,
@@ -23,13 +16,27 @@ let transporter = nodemailer.createTransport({
 export default {
   send(mailOptions) {
     return new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log('error:', error);
-          reject(error);
-          return;
+      settings.get()
+      .then(config => {
+        if (config.mailerConfig && config.mailerConfig.host) {
+          transporter = nodemailer.createTransport(smtp({
+            host: config.mailerConfig.host,
+            port: Number(config.mailerConfig.port),
+            secure: true,
+            auth: {
+              user: config.mailerConfig.user,
+              pass: config.mailerConfig.password
+            }
+          }));
         }
-        resolve(info);
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve(info);
+        });
       });
     });
   }
