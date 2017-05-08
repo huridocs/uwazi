@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 import Text from 'app/Viewer/utils/Text';
 import Loader from 'app/components/Elements/Loader';

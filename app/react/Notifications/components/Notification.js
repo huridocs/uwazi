@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {removeNotification} from 'app/Notifications';
 
 export class Notification extends Component {
+
+  close() {
+    this.props.removeNotification(this.props.id);
+  }
 
   render() {
     let type = this.props.type || 'success';
@@ -15,7 +19,7 @@ export class Notification extends Component {
     }
 
     return (
-        <div className={cssClass}>
+        <div className={cssClass} onClick={this.close.bind(this)}>
           <i className={icon}>
           </i>
           <span>{this.props.message}</span>

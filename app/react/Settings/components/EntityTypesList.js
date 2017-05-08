@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
@@ -33,7 +33,7 @@ export class EntityTypesList extends Component {
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">{t('System', 'Entities')}</div>
+      <div className="panel-heading">{t('System', 'Entity types')}</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => {
           if (!template.isEntity) {
@@ -58,7 +58,7 @@ export class EntityTypesList extends Component {
         <Link to="/settings/entities/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
           &nbsp;
-          <span>{t('System', 'Add entity')}</span>
+          <span>{t('System', 'Add entity type')}</span>
         </Link>
       </div>
     </div>;

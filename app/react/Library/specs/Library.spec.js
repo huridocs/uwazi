@@ -9,6 +9,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
 import createStore from 'app/store';
+import {fromJS as Immutable} from 'immutable';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
@@ -17,6 +18,7 @@ describe('Library', () => {
   let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2, aggregations};
   let templates = [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}];
   let thesauris = [{name: 'countries', _id: '1', values: []}];
+  let globalResources = {templates: Immutable(templates), thesauris: Immutable(thesauris)};
   createStore({templates, thesauris});
   let component;
   let instance;
@@ -36,13 +38,6 @@ describe('Library', () => {
     expect(component.find(DocumentsList).length).toBe(1);
   });
 
-  describe('on mount', () => {
-    it('should enterLirabry()', () => {
-      component.instance().componentDidMount();
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'ENTER_LIBRARY'});
-    });
-  });
-
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {
       const query = {filters: {}, types: []};
@@ -53,7 +48,7 @@ describe('Library', () => {
         types: query.types
       };
 
-      Library.requestState({}, query)
+      Library.requestState({}, query, globalResources)
       .then((state) => {
         expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
         expect(state.library.documents).toEqual(documents);
@@ -67,21 +62,12 @@ describe('Library', () => {
     it('should process the query url params and transform it to state', (done) => {
       spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({properties: 'properties', search: 'search'});
       const query = {filters: {}, types: ['type1']};
-      Library.requestState({}, query)
+      Library.requestState({}, query, globalResources)
       .then((state) => {
         expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(query, templates, thesauris);
         expect(state.library.filters.documentTypes).toEqual(['type1']);
         expect(state.library.filters.properties).toBe('properties');
-        expect(state.search).toBe('search');
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should request the templates', (done) => {
-      Library.requestState()
-      .then((state) => {
-        expect(state.templates).toEqual(templates.rows);
+        expect(state.library.search).toBe('search');
         done();
       })
       .catch(done.fail);
@@ -95,8 +81,8 @@ describe('Library', () => {
     });
 
     it('should call set the documents and aggregations', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'library/aggregations/SET', value: aggregations});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'aggregations/SET', value: aggregations, __reducerKey: 'library'});
     });
   });
 });

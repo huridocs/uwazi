@@ -18,7 +18,7 @@ describe('ConnectionsList', () => {
     });
 
     it('should pass the documents and search from the state', () => {
-      expect(props.documents).toEqual(state.connectionsList.searchResults.toJS());
+      expect(props.documents).toEqual(state.connectionsList.searchResults);
       expect(props.search).toBe('sort');
     });
 

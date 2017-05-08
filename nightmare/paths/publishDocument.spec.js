@@ -34,10 +34,9 @@ describe('PublishDocument', () => {
       nightmare
       .login('admin', 'admin')
       .waitToClick(selectors.navigation.uploadsNavButton)
-      .wait(selectors.uploadsView.newEntityButtom)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/uploads');
+        expect(url.match(config.url + '/uploads')).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));
@@ -46,7 +45,8 @@ describe('PublishDocument', () => {
 
   it('should fill a document metadata and publish it', (done) => {
     nightmare
-    .click(selectors.uploadsView.firstDocument)
+    .click(selectors.libraryView.libraryFirstDocument)
+    .waitToClick(selectors.libraryView.editEntityButton)
     .clearInput(selectors.doc.form.title)
     .type(selectors.doc.form.title, 'Wolverine')
     .select(selectors.doc.form.type, comicCharacter)
@@ -54,7 +54,7 @@ describe('PublishDocument', () => {
     .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
     .type(selectors.doc.form.superPowersSearch, 'regen')
     .waitToClick(selectors.doc.form.suporPowers.regeneration)
-    .click(selectors.uploadsView.saveButton)
+    .click(selectors.libraryView.saveButton)
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
@@ -83,7 +83,7 @@ describe('PublishDocument', () => {
 
     it('should allow changing the different template\'s properties', (done) => {
       nightmare
-      .openSidePanelOnDocumentViewer()
+      .wait(selectors.documentView.sidePanelTitle)
       .editDocumentFromDocumentViewer()
       .type(selectors.doc.form.title, ' (Logan)')
       .clearInput(selectors.doc.form.company)
@@ -91,8 +91,7 @@ describe('PublishDocument', () => {
       .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
       .saveFromDocumentViewer()
       .refresh()
-      .openSidePanelOnDocumentViewer()
-      //.wait(selectors.doc.viewer.title)
+      .wait(selectors.documentView.sidePanelTitle)
       .getInnerText(selectors.doc.viewer.title)
       .then(text => {
         expect(text).toBe('Wolverine (Logan)');

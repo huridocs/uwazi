@@ -7,7 +7,6 @@ import {uiActions as connectionsUiActions} from 'app/Connections';
 import {closePanel} from '../actions/uiActions';
 import {actions as formActions} from 'react-redux-form';
 import {actions as actionCreators} from 'app/BasicReducer';
-
 import DocumentForm from '../containers/DocumentForm';
 import modals from 'app/Modals';
 import {actions} from 'app/Metadata';

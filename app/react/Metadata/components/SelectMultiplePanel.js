@@ -14,6 +14,7 @@ import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import {Select as SimpleSelect} from 'app/Forms';
 import {fromJS} from 'immutable';
 import {createSelector} from 'reselect';
+import {wrapDispatch} from 'app/Multireducer';
 
 import {TemplateLabel, SidePanel} from 'app/Layout';
 
@@ -140,7 +141,7 @@ export class SelectMultiplePanel extends Component {
     });
 
     return (
-      <SidePanel open={open} className="metadata-sidepanel">
+      <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
           <i className="fa fa-check-square"></i> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
@@ -264,13 +265,13 @@ export const mapStateToProps = (state, props) => {
   };
 };
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     deleteEntities,
     loadForm: metadataActions.loadTemplate,
     resetForm: metadataActions.resetReduxForm,
     multipleUpdate: metadataActions.multipleUpdate
-  }, dispatch);
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);

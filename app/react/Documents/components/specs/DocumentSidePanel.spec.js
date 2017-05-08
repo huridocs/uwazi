@@ -11,6 +11,7 @@ import Immutable from 'immutable';
 describe('DocumentSidePanel', () => {
   let component;
   let props;
+  let context;
 
   beforeEach(() => {
     props = {
@@ -20,12 +21,17 @@ describe('DocumentSidePanel', () => {
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
       references: ['reference'],
-      connections: ['connection']
+      connections: ['connection'],
+      formPath: 'formPath'
     };
   });
 
+  context = {
+    confirm: jasmine.createSpy('confirm')
+  };
+
   let render = () => {
-    component = shallow(<DocumentSidePanel {...props}/>);
+    component = shallow(<DocumentSidePanel {...props}/>, {context});
   };
 
   it('should have default props values assigned', () => {
@@ -88,11 +94,11 @@ describe('DocumentSidePanel', () => {
 
   describe('close', () => {
     describe('when form is dirty', () => {
-      it('should showModal ConfirmCloseForm', () => {
+      it('should confirm', () => {
         props.formDirty = true;
         render();
         component.find('i.close-modal').simulate('click');
-        expect(props.showModal).toHaveBeenCalledWith('ConfirmCloseForm', props.doc);
+        expect(context.confirm).toHaveBeenCalled();
       });
     });
 
@@ -124,7 +130,7 @@ describe('DocumentSidePanel', () => {
       let doc = 'doc';
       component.find(DocumentForm).simulate('submit', doc);
 
-      expect(props.saveDocument).toHaveBeenCalledWith(doc);
+      expect(props.saveDocument).toHaveBeenCalledWith(doc, props.formPath);
     });
   });
 

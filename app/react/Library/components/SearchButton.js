@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {t} from 'app/I18N';
@@ -46,10 +46,14 @@ SearchButton.propTypes = {
   metadataPanelIsOpen: PropTypes.bool
 };
 
-export function mapStateToProps(state) {
+SearchButton.contextTypes = {
+  storeKey: PropTypes.string
+};
+
+export function mapStateToProps(state, props) {
   return {
-    open: state.library.ui.get('filtersPanel'),
-    metadataPanelIsOpen: state.library.ui.get('selectedDocuments').size > 0
+    open: state[props.storeKey].ui.get('filtersPanel'),
+    metadataPanelIsOpen: state[props.storeKey].ui.get('selectedDocuments').size > 0
   };
 }
 

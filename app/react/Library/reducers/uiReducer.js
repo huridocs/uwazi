@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 
-const initialState = {searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: []};
+const initialState = Immutable.fromJS({searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: []});
 
 export default function ui(state = initialState, action = {}) {
   if (action.type === types.SET_SEARCHTERM) {
@@ -20,6 +20,11 @@ export default function ui(state = initialState, action = {}) {
     }
 
     return state;
+  }
+
+  if (action.type === types.SELECT_SINGLE_DOCUMENT) {
+    const doc = Immutable.fromJS(action.doc);
+    return state.update('selectedDocuments', () => Immutable.fromJS([doc]));
   }
 
   if (action.type === types.SELECT_DOCUMENTS) {

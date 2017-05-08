@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {reuploadDocument} from 'app/Metadata/actions/actions';
@@ -26,6 +26,10 @@ export class UploadButton extends Component {
   }
 
   componentWillMount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
     this.socket = io();
 
     this.socket.on('conversionStart', (docId) => {
@@ -52,6 +56,10 @@ export class UploadButton extends Component {
   }
 
   componentWillUnmount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
     this.socket.disconnect();
   }
 

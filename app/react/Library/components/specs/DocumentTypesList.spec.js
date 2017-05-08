@@ -35,7 +35,8 @@ describe('DocumentTypesList', () => {
       filterDocumentTypes: jasmine.createSpy('filterDocumentTypes'),
       settings: {collection: Immutable.fromJS({filters})},
       aggregations: Immutable.fromJS(aggregations),
-      libraryFilters: Immutable.fromJS({documentTypes: [2, 5]})
+      libraryFilters: Immutable.fromJS({documentTypes: [2, 5]}),
+      storeKey: 'library'
     };
   });
 
@@ -68,7 +69,7 @@ describe('DocumentTypesList', () => {
       render();
       let liElements = component.find('li');
       liElements.at(0).find('input').simulate('change');
-      expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 1]);
+      expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 1], props.storeKey);
     });
 
     describe('when is a group', () => {
@@ -76,10 +77,10 @@ describe('DocumentTypesList', () => {
         render();
         let liElements = component.find('li');
         liElements.at(2).find('input').first().simulate('change', {target: {checked: true}});
-        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 4]);
+        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 4], props.storeKey);
 
         liElements.at(2).find('input').first().simulate('change', {target: {checked: false}});
-        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2]);
+        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2], props.storeKey);
       });
     });
   });

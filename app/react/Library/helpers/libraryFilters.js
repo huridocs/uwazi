@@ -26,6 +26,7 @@ export function populateOptions(filters, thesauris) {
 export function URLQueryToState(query, templates, thesauris) {
   let properties = comonProperties(templates, query.types)
   .filter((prop) => prop.filter);
+
   let {searchTerm = '', filters = {}, sort = prioritySortingCriteria.get().sort, order = prioritySortingCriteria.get().order} = query;
 
   properties = populateOptions(properties, thesauris).map((property) => {
@@ -38,7 +39,12 @@ export function URLQueryToState(query, templates, thesauris) {
       defaultValue = [];
     }
 
-    if (property.type === 'nested' || property.type === 'date' || property.type === 'numeric') {
+    if (property.type === 'nested'
+      || property.type === 'date'
+      || property.type === 'daterange'
+      || property.type === 'multidate'
+      || property.type === 'multidaterange'
+      || property.type === 'numeric') {
       defaultValue = {};
     }
 

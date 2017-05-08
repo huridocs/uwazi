@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import {Component} from 'react';
 import JSONUtils from 'shared/JSONUtils';
 import {actions} from 'app/BasicReducer';
 import {I18NUtils} from 'app/I18N';

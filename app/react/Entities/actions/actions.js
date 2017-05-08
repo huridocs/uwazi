@@ -31,8 +31,8 @@ export function deleteEntities(entities) {
     return api.deleteMultiple(entities)
     .then(() => {
       dispatch(notify('Deletion success', 'success'));
-      dispatch(removeDocuments(entities));
       dispatch(unselectAllDocuments());
+      dispatch(removeDocuments(entities));
     });
   };
 }

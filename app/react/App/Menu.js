@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
 import {toUrlParams} from '../../shared/JSONRequest';
@@ -9,8 +9,13 @@ import {processFilters} from 'app/Library/actions/libraryActions';
 class Menu extends Component {
 
   libraryUrl() {
-    const params = processFilters(this.props.search, this.props.filters.toJS());
+    const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
     return '/library/' + toUrlParams(params);
+  }
+
+  uploadsUrl() {
+    const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
+    return '/uploads/' + toUrlParams(params);
   }
 
   render() {
@@ -37,7 +42,7 @@ class Menu extends Component {
             </li>
             <NeedAuthorization>
               <li className="menuNav-item">
-                <I18NLink to='/uploads' className="menuNav-btn btn btn-default">
+                <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
                   <span><i className="fa fa-cloud-upload"></i></span>
                 </I18NLink>
               </li>
@@ -71,19 +76,22 @@ class Menu extends Component {
 Menu.propTypes = {
   user: PropTypes.object,
   location: PropTypes.object,
-  search: PropTypes.object,
-  filters: PropTypes.object,
+  librarySearch: PropTypes.object,
+  libraryFilters: PropTypes.object,
+  uploadsSearch: PropTypes.object,
+  uploadsFilters: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
-  searchDocuments: PropTypes.func,
   links: PropTypes.object
 };
 
-export function mapStateToProps({user, search, settings, library}) {
+export function mapStateToProps({user, settings, library, uploads}) {
   return {
     user,
-    search,
-    filters: library.filters,
+    librarySearch: library.search,
+    libraryFilters: library.filters,
+    uploadsSearch: uploads.search,
+    uploadsFilters: uploads.filters,
     links: settings.collection.get('links')};
 }
 

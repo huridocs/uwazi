@@ -2,6 +2,7 @@ import {APIURL} from 'app/config.js';
 import api from 'app/utils/api';
 import superagent from 'superagent';
 import {notify} from 'app/Notifications/actions/notificationsActions';
+import {actions as formActions} from 'react-redux-form';
 
 import * as types from './actionTypes';
 
@@ -22,6 +23,17 @@ export function uploadAttachment(entityId, file) {
   };
 }
 
+export function renameAttachment(entityId, form, file) {
+  return function (dispatch) {
+    return api.post('attachments/rename', {entityId, _id: file._id, originalname: file.originalname})
+    .then(renamedFile => {
+      dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: renamedFile.json});
+      dispatch(formActions.reset(form));
+      dispatch(notify('Attachment renamed', 'success'));
+    });
+  };
+}
+
 export function deleteAttachment(entityId, attachment) {
   return function (dispatch) {
     return api.delete('attachments/delete', {entityId, filename: attachment.filename})
@@ -29,5 +41,24 @@ export function deleteAttachment(entityId, attachment) {
       dispatch({type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment});
       dispatch(notify('Attachment deleted', 'success'));
     });
+  };
+}
+
+export function loadForm(form, attachment) {
+  return function (dispatch) {
+    dispatch(formActions.reset(form));
+    dispatch(formActions.load(form, attachment));
+  };
+}
+
+export function submitForm(form) {
+  return function (dispatch) {
+    dispatch(formActions.submit(form));
+  };
+}
+
+export function resetForm(form) {
+  return function (dispatch) {
+    dispatch(formActions.reset(form));
   };
 }

@@ -8,10 +8,10 @@ export default {
     logoutButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div:nth-child(3) > div.panel-body > a',
     accountButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
     collectionButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(2)',
-    dictionariesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     documentsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
-    entitiesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(4)',
-    connectionsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
+    entitiesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
+    dictionariesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
+    connectionsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(4)',
     filtersButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(6)',
     createFilterGroupButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div.panel-heading > div > button.pull-right.btn.btn-sm.btn-default',
     newFilterGroupForm: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div:nth-child(2) > ul > div > div > div.input-group > input',
@@ -44,19 +44,29 @@ export default {
     translationsSaveButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > form > div > div > button'
   },
   libraryView: {
-    libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div',
+    libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',
+    libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
     librarySecondDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div',
     libraryThirdDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(3)',
+    libraryMultiEditListHeader: '#app > div.content > div > div > aside.side-panel.multi-edit > div.sidepanel-header',
+    libraryMultiEditEditButton: '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.edit.btn.btn-primary',
+    libraryMultiEditDeleteButton: '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.delete.btn.btn-danger',
+    libraryMultiEditSaveButton: '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success',
+    libraryMultiEditFormOption: '#multiEdit > div:nth-child(2) > div > ul > li.wide > ul > li:nth-child(2) > label > span',
+    libraryMultiEditFirstInput: '#multiEdit > div:nth-child(2) > div:nth-child(1) > ul > li.wide > div > input',
+    libraryMetadataPanel: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible',
     searchInLibrary: '#app > div.content > header > div > a',
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
-    firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > a',
+    firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
     documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span',
     editEntityButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-primary',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
     deleteButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.delete-metadata.btn.btn-danger',
     deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    loadMore: '#app > div.content > div > div > main > div > div > div.row > div:nth-child(2) > button',
+    documentAfterLoadMore: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(31)',
     sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > span > span'
   },
   documentView: {
@@ -80,8 +90,13 @@ export default {
     openSidePanelButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
     sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
     metadataForm: '#metadataForm',
-    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger'
-
+    unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
+    sidePanelAttachmentsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(5) > div',
+    sidePanelFirstAttachmentTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-info > div',
+    sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a:nth-child(1)',
+    attachmentFormInput: '#attachmentForm > div > ul > li.wide > div > input',
+    attachmentFormSubmit: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > div.item-shortcut-group > a.item-shortcut.btn.btn-success',
+    attachmentFormCancel: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > div.item-shortcut-group > a.item-shortcut.btn.btn-primary'
   },
   entityView: {
     contentHeader: '#app > div.content > div > div > div.content-header.content-header-entity',
@@ -90,14 +105,19 @@ export default {
     saveButton: '#app > div.content > div > div > div.sidepanel-footer > button.btn.btn-success',
     metadataForm: '#metadataForm',
     metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
-    metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select'
+    metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
+    sidePanelAttachmentsTab: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-tabs > ul > li:nth-child(3) > div',
+    sidePanelFirstAttachmentTitle: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-info > div',
+    sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a:nth-child(1)',
+    attachmentFormInput: '#attachmentForm > div > ul > li.wide > div > input',
+    attachmentFormSubmit: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-success'
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
-    firstDocument: '#app > div.content > div > div > main > div.item-group > div',
-    newEntityButtom: '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
-    saveButton: '#app > div.content > div > div > aside.side-panel.is-active > div.sidepanel-footer > button',
-    firstPublishButton: '#app > div.content > div > div > main > div.item-group > div.undefined.item.item-status.item-success.is-disabled > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-success',
+    firstDocument: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div',
+    newEntityButtom: '#app > div.content > div > div > div > div > button',
+    saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
+    firstPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > button',
     acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
   },
   navigation: {
@@ -110,5 +130,31 @@ export default {
   },
   datePicker: {
     today: 'body div.react-datepicker__month div.react-datepicker__day.react-datepicker__day--today'
+  },
+  newEntity: {
+    form: {
+      title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
+      type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
+      realName: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
+      age: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > input',
+      knownAccomplices: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > select',
+      mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
+      suporPowers: {
+        fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
+        laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label > i.multiselectItem-icon.fa.fa-square-o'
+      },
+      firstSighting: '#metadataForm > div:nth-child(4) > div:nth-child(6) > ul > li.wide > div > input',
+      whoIsHe: '#metadataForm > div:nth-child(4) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
+    },
+    viewer: {
+      title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
+      realName: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(2) > dd',
+      age: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(3) > dd',
+      knownAccomplices: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(4) > dd > a',
+      mainSuperpower: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(5) > dd',
+      superpowers: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(6) > dd > ul',
+      firstSight: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(7) > dd',
+      whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > dl:nth-child(8) > dd > div > p'
+    }
   }
 };

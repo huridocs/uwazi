@@ -4,6 +4,7 @@ import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {mockID} from 'shared/uniqueID.js';
+import {actions as formActions} from 'react-redux-form';
 
 import * as actions from '../actions';
 import * as types from '../actionTypes';
@@ -61,6 +62,29 @@ describe('Attachments actions', () => {
     });
   });
 
+  describe('renameAttachment', () => {
+    beforeEach(() => {
+      spyOn(api, 'post').and.returnValue({then: (cb) => cb({json: 'file'})});
+      spyOn(formActions, 'reset').and.callFake(form => {
+        return {type: 'formReset', value: form};
+      });
+      mockID();
+    });
+
+    it('should call on attachments/rename, with entity, file id and originalname', () => {
+      store.dispatch(actions.renameAttachment('id', 'form', {_id: 'fid', originalname: 'originalname'}));
+
+      const expectedActions = [
+        {type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file'},
+        {type: 'formReset', value: 'form'},
+        {type: 'NOTIFY', notification: {message: 'Attachment renamed', type: 'success', id: 'unique_id'}}
+      ];
+
+      expect(api.post).toHaveBeenCalledWith('attachments/rename', {entityId: 'id', _id: 'fid', originalname: 'originalname'});
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
   describe('deleteAttachment', () => {
     beforeEach(() => {
       spyOn(api, 'delete').and.returnValue({then: (cb) => cb()});
@@ -76,6 +100,64 @@ describe('Attachments actions', () => {
       ];
 
       expect(api.delete).toHaveBeenCalledWith('attachments/delete', {entityId: 'id', filename: 'filename'});
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  describe('loadForm', () => {
+    beforeEach(() => {
+      spyOn(formActions, 'reset').and.callFake(form => {
+        return {type: 'formReset', value: form};
+      });
+      spyOn(formActions, 'load').and.callFake((form, attachment) => {
+        return {type: 'formLoad', value: form + ', ' + attachment};
+      });
+    });
+
+    it('should reset and load passed form', () => {
+      store.dispatch(actions.loadForm('form', 'attachment'));
+
+      const expectedActions = [
+        {type: 'formReset', value: 'form'},
+        {type: 'formLoad', value: 'form, attachment'}
+      ];
+
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  describe('submitForm', () => {
+    beforeEach(() => {
+      spyOn(formActions, 'submit').and.callFake(form => {
+        return {type: 'formSubmit', value: form};
+      });
+    });
+
+    it('should submit the form', () => {
+      store.dispatch(actions.submitForm('form'));
+
+      const expectedActions = [
+        {type: 'formSubmit', value: 'form'}
+      ];
+
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  describe('resetForm', () => {
+    beforeEach(() => {
+      spyOn(formActions, 'reset').and.callFake(form => {
+        return {type: 'formReset', value: form};
+      });
+    });
+
+    it('should reset and load passed form', () => {
+      store.dispatch(actions.resetForm('form'));
+
+      const expectedActions = [
+        {type: 'formReset', value: 'form'}
+      ];
+
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

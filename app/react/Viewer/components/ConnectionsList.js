@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
@@ -122,7 +122,7 @@ export class ConnectionsList extends Component {
                         </a>
                       </NeedAuthorization>
                     </ShowIf>
-                    &nbsp;
+
                     <ShowIf if={!this.props.targetDoc}>
                       <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
                             onClick={e => e.stopPropagation()}

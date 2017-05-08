@@ -5913,9 +5913,15 @@ promise@^7.0.3, promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@15.5.7, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@~15.5.0:
+prop-types@15.5.7, prop-types@^15.5.7:
   version "15.5.7"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.7.tgz#231c4f29cdd82e355011d4889386ca9059544dd1"
+  dependencies:
+    fbjs "^0.8.9"
+
+prop-types@^15.5.6, prop-types@^15.5.8, prop-types@~15.5.0:
+  version "15.5.8"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.8.tgz#6b7b2e141083be38c8595aa51fc55775c7199394"
   dependencies:
     fbjs "^0.8.9"
 
@@ -6050,13 +6056,14 @@ react-addons-test-utils@15.5.0:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-react-datepicker@^0.44.0:
-  version "0.44.0"
-  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-0.44.0.tgz#c09f28d3aa06e7ac97062f2af069e4c1db5d927d"
+react-datepicker@0.46.0:
+  version "0.46.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-0.46.0.tgz#dd0c58efde9931964a248854e073151374fc937f"
   dependencies:
     classnames "^2.2.5"
     moment "^2.17.1"
-    react-onclickoutside "^5.9.0"
+    prop-types "^15.5.8"
+    react-onclickoutside "^5.11.1"
     tether "^1.4.0"
 
 react-deep-force-update@^1.0.0:
@@ -6099,7 +6106,7 @@ react-dropzone@^3.4.0:
   dependencies:
     attr-accept "^1.0.3"
 
-react-flags@^0.1.11:
+react-flags@0.1.12:
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/react-flags/-/react-flags-0.1.12.tgz#1ef52048ea57bad3cd40d8e3a193f4cbc963165c"
 
@@ -6122,7 +6129,7 @@ react-modal@^1.2.0:
     exenv "1.2.0"
     lodash.assign "^4.2.0"
 
-react-onclickoutside@^5.9.0:
+react-onclickoutside@^5.11.1:
   version "5.11.1"
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-5.11.1.tgz#00314e52567cf55faba94cabbacd119619070623"
   dependencies:
@@ -6135,9 +6142,9 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-redux-form@1.10.2:
-  version "1.10.2"
-  resolved "https://registry.yarnpkg.com/react-redux-form/-/react-redux-form-1.10.2.tgz#6852367d5b9b90327854d49abec178952a2a4fa0"
+react-redux-form@1.11.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/react-redux-form/-/react-redux-form-1.11.0.tgz#81dd698a01687d81772381f792f7aa474de9ab80"
   dependencies:
     icepick "^1.1.0"
     invariant "~2.2.1"

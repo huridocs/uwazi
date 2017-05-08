@@ -112,8 +112,6 @@ describe('SelectMultiplePanel', () => {
 
   describe('edit()', () => {
     it('should load the form with the comon properties for the selectedEntities', () => {
-
-
       render();
       component.find('.edit').simulate('click');
       expect(props.loadForm).toHaveBeenCalledWith('library.sidepanel.multipleEdit', props.template.toJS());

@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {wrapDispatch} from 'app/Multireducer';
 
 import {resetFilters} from 'app/Library/actions/filterActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
@@ -16,11 +17,15 @@ export class LibraryFilters extends Component {
     super(props);
   }
 
+  reset() {
+    this.props.resetFilters(this.props.storeKey);
+  }
+
   render() {
     return (
       <SidePanel className="library-filters" open={this.props.open}>
         <div className="sidepanel-footer">
-          <span onClick={this.props.resetFilters} className="btn btn-primary">
+          <span onClick={this.reset.bind(this)} className="btn btn-primary">
             <i className="fa fa-refresh"></i>
             <span className="btn-label">{t('System', 'Reset')}</span>
           </span>
@@ -30,11 +35,11 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
-          <SearchBar />
+          <SearchBar storeKey={this.props.storeKey}/>
           <div className="documentTypes-selector nested-selector">
-            <DocumentTypesList />
+            <DocumentTypesList storeKey={this.props.storeKey}/>
           </div>
-          <FiltersForm />
+          <FiltersForm storeKey={this.props.storeKey}/>
         </div>
       </SidePanel>
     );
@@ -43,17 +48,18 @@ export class LibraryFilters extends Component {
 
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  storeKey: PropTypes.string
 };
 
-export function mapStateToProps({library}) {
+export function mapStateToProps(state, props) {
   return {
-    open: library.ui.get('filtersPanel') && !library.ui.get('selectedDocuments').size > 0
+    open: state[props.storeKey].ui.get('filtersPanel') && !state[props.storeKey].ui.get('selectedDocuments').size > 0
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({resetFilters}, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators({resetFilters}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);

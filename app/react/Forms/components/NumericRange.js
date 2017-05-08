@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Numeric from './Numeric';
 import {t} from 'app/I18N';
 

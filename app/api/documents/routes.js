@@ -52,7 +52,8 @@ export default (app) => {
   app.get('/api/documents/download', (req, res) => {
     documents.getById(req.query._id)
     .then((response) => {
-      res.download(uploadDocumentsPath + response.file.filename, sanitize(response.title + path.extname(response.file.filename)));
+      const basename = path.basename(response.file.originalname, path.extname(response.file.originalname));
+      res.download(uploadDocumentsPath + response.file.filename, sanitize(basename + path.extname(response.file.filename)));
     })
     .catch((error) => res.json({error}, 500));
   });

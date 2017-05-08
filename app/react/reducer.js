@@ -15,7 +15,7 @@ import {reducer as attachments} from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
-import uploads from 'app/Uploads/reducers/reducer';
+import progress from 'app/Uploads/reducers/progressReducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducer';
@@ -23,15 +23,12 @@ import {reducer as metadata} from 'app/Metadata';
 import locale from 'app/I18N/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-
-const defaultSearch = prioritySortingCriteria.get();
-defaultSearch.searchTerm = '';
-defaultSearch.filters = {};
 
 export default combineReducers({
   notifications: notificationsReducer,
-  library,
+  library: library('library'),
+  uploads: library('uploads'),
+  progress,
   locale,
   template,
   page,
@@ -53,11 +50,9 @@ export default combineReducers({
   connectionsList: ConnectionsList.reducer,
   attachments,
   modals,
-  uploads,
   user,
   login,
   settings,
   metadata,
-  search: modelReducer('search', defaultSearch),
   searchForm: formReducer('search')
 });

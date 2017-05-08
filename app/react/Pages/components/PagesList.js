@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
 import {bindActionCreators} from 'redux';

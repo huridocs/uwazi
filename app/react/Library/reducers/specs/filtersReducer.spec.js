@@ -5,7 +5,7 @@ import filtersReducer from 'app/Library/reducers/filtersReducer';
 import 'jasmine-immutablejs-matchers';
 
 describe('filtersReducer', () => {
-  const initialState = Immutable.fromJS({templates: [], properties: [], thesauris: [], documentTypes: []});
+  const initialState = Immutable.fromJS({properties: [], documentTypes: []});
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
@@ -14,32 +14,7 @@ describe('filtersReducer', () => {
     });
   });
 
-  let templates = [
-    {_id: 'cba2', properties: [
-      {name: 'author', filter: false, type: 'text'},
-      {name: 'country', filter: true, type: 'select', content: 'abc1'}
-    ]},
-    {_id: 'abc1', properties: [
-      {name: 'author', filter: false, type: 'text'},
-      {name: 'country', filter: true, type: 'select', content: 'abc1'}
-    ]}
-  ];
-
-  let thesauris = [{_id: 'abc1', values: ['thesauri values']}];
-
   let libraryFilters = [{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']}];
-
-  describe('SET_LIBRARY_TEMPLATES', () => {
-    it('should set the templates in the state', () => {
-      let newState = filtersReducer(initialState, {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters});
-      expect(newState.toJS().templates).toEqual(templates);
-    });
-
-    it('should set the thesauris in the state', () => {
-      let newState = filtersReducer(initialState, {type: types.SET_LIBRARY_TEMPLATES, templates, thesauris, libraryFilters});
-      expect(newState.toJS().thesauris).toEqual(thesauris);
-    });
-  });
 
   describe('SET_LIBRARY_FILTERS', () => {
     it('should set the properties', () => {

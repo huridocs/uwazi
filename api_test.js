@@ -27,7 +27,7 @@ var db_config = require('./app/api/config/database.js');
 db_config.db_url = db_config.testing;
 
 var elasticConfig = require('./app/api/config/elasticIndexes.js');
-elasticConfig.index = elasticConfig.production;
+elasticConfig.index = elasticConfig.testing;
 
 jasmine.loadConfig({
   spec_dir: 'app/',

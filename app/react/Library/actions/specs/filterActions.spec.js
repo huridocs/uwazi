@@ -29,8 +29,10 @@ describe('filterActions', () => {
     };
 
     store = {
-      library: {filters: Immutable.fromJS(filtersState)},
-      search,
+      library: {
+        filters: Immutable.fromJS(filtersState),
+        search
+      },
       templates: Immutable.fromJS(templates),
       thesauris: Immutable.fromJS(thesauris)
     };
@@ -38,7 +40,6 @@ describe('filterActions', () => {
     spyOn(comonPropertiesHelper, 'comonProperties').and.returnValue(libraryFilters);
     spyOn(libraryHelper, 'populateOptions').and.returnValue(libraryFilters);
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(formActions, 'change').and.returnValue('FILTERS_UPDATED');
     spyOn(formActions, 'reset').and.returnValue('FILTERS_RESET');
     spyOn(formActions, 'setInitial').and.returnValue('FILTERS_SET_INITIAL');
     getState = jasmine.createSpy('getState').and.returnValue(store);
@@ -50,28 +51,22 @@ describe('filterActions', () => {
     });
 
     it('should dispatch an action SET_LIBRARY_FILTERS with the given types', () => {
-      actions.filterDocumentTypes(['a'])(dispatch, getState);
+      actions.filterDocumentTypes(['a'], 'library')(dispatch, getState);
       expect(comonPropertiesHelper.comonProperties).toHaveBeenCalledWith(templates, ['a']);
       expect(libraryHelper.populateOptions).toHaveBeenCalledWith(libraryFilters, thesauris);
       expect(dispatch).toHaveBeenCalledWith({type: types.SET_LIBRARY_FILTERS, libraryFilters, documentTypes: ['a']});
     });
 
-    it('should call form actions change with the new filters', () => {
-      actions.filterDocumentTypes(['a'])(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('search.filters', {author: 'RR Martin', country: ''});
-      expect(dispatch).toHaveBeenCalledWith('FILTERS_UPDATED');
-    });
-
     it('should perform a search with the filters and prioritySortingCriteria', () => {
-      store.search.sort = 'metadata.date';
-      store.search.order = 'desc';
+      store.library.search.sort = 'metadata.date';
+      store.library.search.order = 'desc';
       store.templates = Immutable.fromJS([
         {_id: 'a', properties: [{filter: true, type: 'date', name: 'date'}]},
         {_id: 'b'}
       ]);
 
       spyOn(libraryActions, 'searchDocuments');
-      actions.filterDocumentTypes(['a'])(dispatch, getState);
+      actions.filterDocumentTypes(['a'], 'library')(dispatch, getState);
 
       expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
         currentCriteria: {sort: 'metadata.date', order: 'desc'},
@@ -85,16 +80,8 @@ describe('filterActions', () => {
   });
 
   describe('resetFilters', () => {
-    it('should set all filters to an empty string', () => {
-      actions.resetFilters()(dispatch, getState);
-      expect(formActions.reset).toHaveBeenCalledWith('search');
-      expect(formActions.setInitial).toHaveBeenCalledWith('search');
-      expect(dispatch).toHaveBeenCalledWith('FILTERS_RESET');
-      expect(dispatch).toHaveBeenCalledWith('FILTERS_SET_INITIAL');
-    });
-
     it('should deactivate all the properties and documentTypes', () => {
-      actions.resetFilters()(dispatch, getState);
+      actions.resetFilters('library')(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_FILTERS,
         libraryFilters: [],
@@ -104,10 +91,11 @@ describe('filterActions', () => {
 
     it('should perform a search with the filters reset', () => {
       let searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
+      const storeKey = 'library';
       spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
-      actions.resetFilters()(dispatch, getState);
+      actions.resetFilters(storeKey)(dispatch, getState);
 
-      expect(libraryActions.searchDocuments).toHaveBeenCalledWith(search);
+      expect(libraryActions.searchDocuments).toHaveBeenCalledWith(search, storeKey);
       expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);
     });
   });
@@ -115,7 +103,7 @@ describe('filterActions', () => {
   describe('toggleFilter', () => {
     describe('when a property is not active', () => {
       it('should activate it', () => {
-        actions.toggleFilter('author')(dispatch, getState);
+        actions.toggleFilter('author', libraryFilters)(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({
           type: types.UPDATE_LIBRARY_FILTERS,
           libraryFilters: [{name: 'author', filter: true, active: true},
@@ -129,7 +117,7 @@ describe('filterActions', () => {
         filtersState.properties[0].active = true;
         store.library.filters = Immutable.fromJS(filtersState);
 
-        actions.toggleFilter('author')(dispatch, getState);
+        actions.toggleFilter('author', libraryFilters)(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({
           type: types.UPDATE_LIBRARY_FILTERS,
           libraryFilters: [{name: 'author', filter: true, active: false},
@@ -141,7 +129,7 @@ describe('filterActions', () => {
 
   describe('activateFilter', () => {
     it('should activate the filter', () => {
-      actions.activateFilter('author', true)(dispatch, getState);
+      actions.activateFilter('author', true, libraryFilters)(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.UPDATE_LIBRARY_FILTERS,
         libraryFilters: [{name: 'author', filter: true, active: true},

@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
+import {wrapDispatch} from 'app/Multireducer';
 
-import {uploadDocument, unselectAllDocuments, createDocument} from 'app/Uploads/actions/uploadsActions';
+import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
+import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import io from 'socket.io-client';
 
 export class UploadBox extends Component {
   onDrop(files) {
@@ -16,6 +19,29 @@ export class UploadBox extends Component {
       });
     });
     this.props.unselectAllDocuments();
+  }
+
+  componentWillMount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
+    this.socket = io();
+    this.socket.on('documentProcessed', (sharedId) => {
+      this.props.documentProcessed(sharedId);
+    });
+
+    this.socket.on('conversionFailed', (sharedId) => {
+      this.props.documentProcessError(sharedId);
+    });
+  }
+
+  componentWillUnmount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
+    this.socket.disconnect();
   }
 
   extractTitle(file) {
@@ -30,19 +56,17 @@ export class UploadBox extends Component {
 
   render() {
     return (
-      <Dropzone style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
-        <div className="upload-box">
-          <div className="upload-box_wrapper">
-            <i className="upload-box_icon fa fa-upload"></i>
-            <p className="upload-box_title">
-              <span>Drag and drop your files</span>
-            </p>
-            <a className="upload-box_link">
-              <span className="upload-box_or">or</span>
-              <b className="upload-box_cta">Click here for browsing your local files</b>
-            </a>
-            <span className="upload-box_formats">Supported formats: PDF</span>
-          </div>
+      <Dropzone className="upload-box"
+                style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
+        <div className="upload-box_wrapper">
+          <i className="fa fa-upload"></i>
+          <a className="upload-box_link">Browse your PDFs to upload</a>
+          <span> or drop your files here.</span>
+        </div>
+        <div className="protip">
+          <i className="fa fa-lightbulb-o"></i>
+          <b>ProTip!</b>
+          <span>For better performance, upload your documents in batches of 50 or less.</span>
         </div>
       </Dropzone>
     );
@@ -50,14 +74,25 @@ export class UploadBox extends Component {
 }
 
 UploadBox.propTypes = {
+  documentProcessed: PropTypes.func,
+  documentProcessError: PropTypes.func,
   uploadDocument: PropTypes.func,
   createDocument: PropTypes.func,
-  unselectAllDocuments: PropTypes.func
+  unselectAllDocuments: PropTypes.func,
+  documents: PropTypes.object
 };
+
+export function mapStateToProps({uploads}) {
+  return {
+    documents: uploads.documents
+  };
+}
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({uploadDocument, unselectAllDocuments, createDocument}, dispatch);
+  return bindActionCreators({
+    uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError
+  }, wrapDispatch(dispatch, 'uploads'));
 }
 
-export default connect(null, mapDispatchToProps)(UploadBox);
+export default connect(mapStateToProps, mapDispatchToProps)(UploadBox);

@@ -68,6 +68,16 @@
       margin-left: 0;
     }
   }
+  span,
+  dt,
+  dd {
+    &::selection {
+      background: transparent;
+    }
+    &::-moz-selection {
+      background: transparent;
+    }
+  }
 }
 
 
@@ -89,7 +99,7 @@ $item-padding: 15px;
   span {
     padding-left: 5px;
   }
-  
+
   .btn {
     padding: 0 5px;
   }
@@ -127,7 +137,7 @@ $item-padding: 15px;
 }
 
 .item-label-group {
-  width: calc(100% - 70px);
+  width: calc(100% - 90px);
   .item-type {
     width: 100%;
   }
@@ -285,13 +295,14 @@ $item-padding: 15px;
       opacity: 1;
     }
   }
+
+  &:not(:first-child) {
+    margin-left: 3px;
+  }
 }
 
 .item-shortcut-group {
   margin: 0 -5px;
-  .item-shortcut {
-    margin: 0;
-  }
 }
 
 .item-group-load-more {

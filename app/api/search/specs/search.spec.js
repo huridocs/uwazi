@@ -76,7 +76,7 @@ describe('search', () => {
         .language('es')
         .query();
 
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
         expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         expect(results.totalRows).toEqual(10);
         done();
@@ -96,7 +96,7 @@ describe('search', () => {
         .language('es')
         .query();
 
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
         expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         expect(results.totalRows).toEqual(10);
         done();
@@ -121,7 +121,7 @@ describe('search', () => {
         .sort('title', 'asc')
         .query();
 
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
         expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
       });
@@ -140,7 +140,7 @@ describe('search', () => {
         .language('es')
         .query();
 
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: expectedQuery});
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
         expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
       });
@@ -160,7 +160,7 @@ describe('search', () => {
       search.matchTitle('term', 'es')
       .then((results) => {
         let query = queryBuilder().fullTextSearch('term', ['title'], false).highlight(['title']).language('es').limit(5).query();
-        expect(elastic.search).toHaveBeenCalledWith({index: 'uwazi', body: query});
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: query});
         expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
         done();
       })
@@ -197,7 +197,7 @@ describe('search', () => {
       search.index(entity)
       .then(() => {
         expect(elastic.index)
-        .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1', body: {
+        .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {
           type: 'document',
           title: 'Batman indexes'
         }});
@@ -220,12 +220,12 @@ describe('search', () => {
         search.index(entity)
         .then(() => {
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: 'asd1', body: {
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {
             type: 'document',
             title: 'Batman indexes'
           }});
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: 'uwazi', type: 'fullText', parent: 'asd1', body: {
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {
             fullText: 'text'
           }});
           done();
@@ -313,7 +313,7 @@ describe('search', () => {
       search.delete(entity)
       .then(() => {
         expect(elastic.delete)
-        .toHaveBeenCalledWith({index: 'uwazi', type: 'entity', id: id.toString()});
+        .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: id.toString()});
         done();
       })
       .catch(done.fail);

@@ -30,34 +30,6 @@ describe('uploadsActions', () => {
     });
   });
 
-  describe('updateDocument()', () => {
-    it('should return a UPDATE_DOCUMENT with the document', () => {
-      let action = actions.updateDocument('document');
-      expect(action).toEqual({type: types.UPDATE_DOCUMENT, doc: 'document'});
-    });
-  });
-
-  describe('setUploads()', () => {
-    it('should return a SET_UPLOADS with the documents', () => {
-      let action = actions.setUploads('documents');
-      expect(action).toEqual({type: types.SET_UPLOADS, documents: 'documents'});
-    });
-  });
-
-  describe('setTemplates()', () => {
-    it('should return a SET_TEMPLATES_UPLOADS with the templates', () => {
-      let action = actions.setTemplates('templates');
-      expect(action).toEqual({type: types.SET_TEMPLATES_UPLOADS, templates: 'templates'});
-    });
-  });
-
-  describe('setThesauris()', () => {
-    it('should return a SET_THESAURIS_UPLOADS with the thesauris', () => {
-      let action = actions.setThesauris('thesauris');
-      expect(action).toEqual({type: types.SET_THESAURIS_UPLOADS, thesauris: 'thesauris'});
-    });
-  });
-
   describe('conversionComplete()', () => {
     it('should return a CONVERSION_COMPLETE with the document id', () => {
       let action = actions.conversionComplete('document_id');
@@ -124,59 +96,19 @@ describe('uploadsActions', () => {
       });
     });
 
-    describe('saveDocument', () => {
-      it('should save the document and dispatch a notification on success', (done) => {
-        let doc = {name: 'doc'};
-
-        const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
-          {type: types.UPDATE_DOCUMENT, doc},
-          {type: types.UNSELECT_ALL_DOCUMENTS}
-        ];
-        const store = mockStore({});
-
-        store.dispatch(actions.saveDocument(doc))
-        .then(() => {
-          expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-
-    describe('moveToLibrary', () => {
+    describe('publishDocument', () => {
       it('should save the document with published:true and dispatch notification on success', (done) => {
         let document = {name: 'doc', _id: 'abc1'};
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document published', type: 'success', id: 'unique_id'}},
-          {type: types.MOVED_TO_LIBRARY, id: 'abc1'}
+          {type: types.REMOVE_DOCUMENT, doc: document}
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.moveToLibrary(document))
+        store.dispatch(actions.publishDocument(document))
         .then(() => {
           expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc', _id: 'abc1', published: true}));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-
-    describe('deleteDocument', () => {
-      it('should delete the document and dispatch notification on success', (done) => {
-        let document = {name: 'doc', _id: 'abc1'};
-
-        const expectedActions = [
-          {type: notificationsTypes.NOTIFY, notification: {message: 'Document deleted', type: 'success', id: 'unique_id'}},
-          {type: types.ELEMENT_DELETED, id: 'abc1'}
-        ];
-        const store = mockStore({});
-
-        store.dispatch(actions.deleteDocument(document))
-        .then(() => {
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
