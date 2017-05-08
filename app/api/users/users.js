@@ -19,14 +19,33 @@ export default {
     }
 
     if (newUser) {
-      user.password = encryptPassword(random());
+      return this.newUser(user, domain);
     }
 
-    return model.save(user)
-    .then(() => {
-      if (newUser) {
-        return this.recoverPassword(user.email, domain);
+    return model.save(user);
+  },
+
+  newUser(user, domain) {
+    return Promise.all([
+      model.get({username: user.username}),
+      model.get({email: user.email})
+    ])
+    .then(([userNameMatch, emailMatch]) => {
+      if (userNameMatch.length) {
+        return Promise.reject(createError('Username already exists', 409));
       }
+
+      if (emailMatch.length) {
+        return Promise.reject(createError('Email already exists', 409));
+      }
+
+      user.password = encryptPassword(random());
+
+      return model.save(user)
+      .then((_user) => {
+        this.recoverPassword(user.email, domain);
+        return _user;
+      });
     });
   },
 
@@ -65,7 +84,7 @@ export default {
             from: '"Uwazi" <no-reply@uwazi.com>',
             to: email,
             subject: 'Password set',
-            text: `To set your password click the following link:\n${domain}/resetpassword/${key}`
+            text: `To set your password click the following link:\n${domain}/setpassword/${key}`
           };
           mailer.send(mailOptions);
         });

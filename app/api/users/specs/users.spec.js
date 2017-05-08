@@ -7,7 +7,7 @@ import fixtures, {userId, expectedKey, recoveryUserId} from './fixtures.js';
 import {db, createError} from 'api/utils';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 
-describe('Users', () => {
+fdescribe('Users', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
@@ -31,14 +31,42 @@ describe('Users', () => {
     });
 
     describe('new user', () => {
-      it('should do the recover password process', (done) => {
-        const domain = 'http://localhost';
+      const domain = 'http://localhost';
+
+      beforeEach(() => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+      });
+
+      it('should do the recover password process', (done) => {
         return users.save({username: 'spidey', email: 'peter@parker.com'}, currentUser, domain)
         .then(() => users.get({username: 'spidey'}))
         .then(([user]) => {
           expect(user.username).toBe('spidey');
           expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should not allow repeat username', (done) => {
+        return users.save({username: 'username', email: 'peter@parker.com'}, currentUser, domain)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Username already exists', 409));
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should not allow repeat email', (done) => {
+        return users.save({username: 'spidey', email: 'test@email.com'}, currentUser, domain)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Email already exists', 409));
           done();
         })
         .catch(catchErrors(done));
@@ -84,7 +112,7 @@ describe('Users', () => {
           to: 'test@email.com',
           subject: 'Password set',
           text: 'To set your password click the following link:\n' +
-          `domain/resetpassword/${key}`
+          `domain/setpassword/${key}`
         };
         expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
         done();

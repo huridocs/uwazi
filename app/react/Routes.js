@@ -105,7 +105,7 @@ const routes =
     <Route path='library' component={Library} />
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
-    <Route path='resetpassword/:key' component={ResetPassword} />
+    <Route path='setpassword/:key' component={ResetPassword} />
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path='entity/:entityId' component={EntityView} />
     <Route path='page/:pageId' component={PageView} />

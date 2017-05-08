@@ -8,7 +8,7 @@ export function deleteUser(user) {
     .then(() => {
       dispatch(basicActions.remove('users', user));
       dispatch(notify('Deleted successfully.', 'success'));
-    });
+    }).catch(() => Promise.resolve());
   };
 }
 
@@ -18,6 +18,6 @@ export function saveUser(user) {
     .then(() => {
       dispatch(basicActions.push('users', user));
       dispatch(notify('Saved successfully.', 'success'));
-    });
+    }).catch(() => Promise.resolve());
   };
 }
