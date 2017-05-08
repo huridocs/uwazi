@@ -22,6 +22,10 @@ export class UploadBox extends Component {
   }
 
   componentWillMount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
     this.socket = io();
     this.socket.on('documentProcessed', (sharedId) => {
       this.props.documentProcessed(sharedId);
@@ -33,6 +37,10 @@ export class UploadBox extends Component {
   }
 
   componentWillUnmount() {
+    //only on client
+    if (!window.document) {
+      return;
+    }
     this.socket.disconnect();
   }
 

@@ -117,5 +117,6 @@ export default [
 {key: 'No type', label: 'No type'},
 {key: 'My Files', label: 'My Files'},
 {key: 'New entity', label: 'New entity'},
-{key: 'selected', label: 'selected'}
+{key: 'selected', label: 'selected'},
+{key: 'Filename label', label: 'filename'}
 ];

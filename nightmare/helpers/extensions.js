@@ -12,6 +12,13 @@ Nightmare.action('clearInput', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('gotoLibrary', function (done) {
+  this.goto(config.url)
+  .waitToClick(selectors.navigation.libraryNavButton)
+  .wait(selectors.libraryView.libraryFirstDocument)
+  .then(done);
+});
+
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
   .wait(selectors.navigation.loginNavButton)

@@ -6,7 +6,7 @@ import paths, {attachmentsPath} from '../../config/paths';
 
 import entities from '../../entities';
 import attachmentsRoutes from '../routes';
-import fixtures, {entityId, toDeleteId} from './fixtures';
+import fixtures, {entityId, toDeleteId, attachmentToEdit} from './fixtures';
 import {db} from 'api/utils';
 
 describe('Attachments Routes', () => {
@@ -52,14 +52,8 @@ describe('Attachments Routes', () => {
 
     beforeEach(() => {
       file = {
-        //fieldname: 'file',
         originalname: 'new original name.miss',
         filename: 'mockfile.doc'
-        //encoding: '7bit',
-        //mimetype: 'application/octet-stream',
-        //destination: __dirname + '/uploads/',
-        //path: __dirname + '/uploads/mockfile.doc',
-        //size: 171411271
       };
       req = {user: 'admin', headers: {}, body: {entityId}, files: [file]};
     });
@@ -68,7 +62,7 @@ describe('Attachments Routes', () => {
       expect(routes.post('/api/attachments/upload', req)).toNeedAuthorization();
     });
 
-    it('should add the uploaded file to attachments', (done) => {
+    it('should add the uploaded file to attachments and return it, incluiding its new ID', (done) => {
       routes.post('/api/attachments/upload', req)
       .then(addedFile => {
         return Promise.all([addedFile, entities.getById(req.body.entityId)]);
@@ -78,9 +72,59 @@ describe('Attachments Routes', () => {
         expect(dbEntity.attachments[2].filename).toEqual(file.filename);
         expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
         expect(addedFile.filename).toBe('mockfile.doc');
+        expect(addedFile._id).toBeDefined();
         done();
       })
       .catch(catchErrors(done));
+    });
+  });
+
+  describe('/rename', () => {
+    let req;
+
+    beforeEach(() => {
+      req = {user: 'admin', body: {entityId, _id: attachmentToEdit.toString(), originalname: 'edited name'}};
+    });
+
+    it('should need authorization', () => {
+      expect(routes.post('/api/attachments/rename', {body: {entityId: 'a'}})).toNeedAuthorization();
+    });
+
+    it('should rename a specific attachment', (done) => {
+      routes.post('/api/attachments/rename', req)
+      .then(response => {
+        expect(response._id.toString()).toBe(attachmentToEdit.toString());
+        expect(response.filename).toBe('match.doc');
+        expect(response.originalname).toBe('edited name');
+
+        return entities.getById(req.body.entityId);
+      })
+      .then(entity => {
+        expect(entity.file.originalname).toBe('source doc');
+        expect(entity.attachments[0].originalname).toBe('o1');
+        expect(entity.attachments[1].originalname).toBe('edited name');
+        done();
+      });
+    });
+
+    it('should rename the base file if id matches entity', (done) => {
+      req.body._id = entityId.toString();
+      req.body.originalname = 'edited source name';
+
+      routes.post('/api/attachments/rename', req)
+      .then(response => {
+        expect(response._id.toString()).toBe(entityId.toString());
+        expect(response.filename).toBe('filename');
+        expect(response.originalname).toBe('edited source name');
+
+        return entities.getById(req.body.entityId);
+      })
+      .then(entity => {
+        expect(entity.file.originalname).toBe('edited source name');
+        expect(entity.attachments[0].originalname).toBe('o1');
+        expect(entity.attachments[1].originalname).toBe('common name 2.not');
+        done();
+      });
     });
   });
 

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Component, Children } from 'react';
+import {Component, Children} from 'react';
 
 class MockProvider extends Component {
 

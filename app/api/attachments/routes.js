@@ -1,4 +1,4 @@
-import {db_url as dbUrl} from '../config/database';
+import mongoose from 'mongoose';
 import needsAuthorization from '../auth/authMiddleware';
 import multer from 'multer';
 import ID from 'shared/uniqueID';
@@ -33,16 +33,49 @@ export default (app) => {
   });
 
   app.post('/api/attachments/upload', needsAuthorization, upload.any(), (req, res) => {
+    let addedFile;
+
     return entities.getById(req.body.entityId)
     .then(entity => {
       entity.attachments = entity.attachments || [];
-      entity.attachments.push(req.files[0]);
+
+      addedFile = req.files[0];
+      addedFile._id = mongoose.Types.ObjectId();
+
+      entity.attachments.push(addedFile);
       return entities.saveMultiple([entity]);
     })
     .then(() => {
-      res.json(req.files[0]);
+      res.json(addedFile);
     })
     .catch(error => res.json({error}));
+  });
+
+  app.post('/api/attachments/rename', needsAuthorization, (req, res) => {
+    let renamedAttachment;
+
+    return entities.getById(req.body.entityId)
+    .then(entity => {
+      if (entity._id.toString() === req.body._id) {
+        entity.file.originalname = req.body.originalname;
+        renamedAttachment = Object.assign({_id: entity._id.toString()}, entity.file);
+      } else {
+        entity.attachments = (entity.attachments || []).map(attachment => {
+          if (attachment._id.toString() === req.body._id) {
+            attachment.originalname = req.body.originalname;
+            renamedAttachment = attachment;
+          }
+
+          return attachment;
+        });
+      }
+
+      return entities.saveMultiple([entity]);
+    })
+    .then(() => {
+      res.json(renamedAttachment);
+    })
+    .catch((error) => res.json({error}, 500));
   });
 
   app.delete('/api/attachments/delete', needsAuthorization, (req, res) => {

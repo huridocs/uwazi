@@ -9,7 +9,9 @@ const entitySchema = new mongoose.Schema({
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
   file: {
     originalname: String,
-    filename: String
+    filename: String,
+    mimetype: String,
+    size: Number
   },
   icon: new mongoose.Schema({
     _id: String,
@@ -26,7 +28,9 @@ const entitySchema = new mongoose.Schema({
   }],
   attachments: [{
     originalname: String,
-    filename: String
+    filename: String,
+    mimetype: String,
+    size: Number
   }],
   creationDate: Number,
   fullText: {type: String, select: false},
