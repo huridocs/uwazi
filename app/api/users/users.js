@@ -84,11 +84,13 @@ export default {
             from: '"Uwazi" <no-reply@uwazi.com>',
             to: email,
             subject: 'Password set',
-            text: `To set your password click the following link:\n${domain}/setpassword/${key}`
+            text: `To set your password click on the following link:\n${domain}/setpassword/${key}`
           };
-          mailer.send(mailOptions);
+          return mailer.send(mailOptions);
         });
       }
+
+      return 'userNotFound';
     });
   },
 

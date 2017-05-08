@@ -11,7 +11,7 @@ export default app => {
 
   app.post('/api/recoverpassword', (req, res) => {
     users.recoverPassword(req.body.email, getDomain(req))
-    .then(response => res.json(response))
+    .then(() => res.json('OK'))
     .catch(res.error);
   });
 

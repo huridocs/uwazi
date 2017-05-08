@@ -29,8 +29,20 @@ describe('users routes', () => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
         let req = {body: {email: 'recover@me.com'}, protocol: 'http', get: () => 'localhost'};
         routes.post('/api/recoverpassword', req)
-        .then(() => {
+        .then(response => {
+          expect(response).toBe('OK');
           expect(users.recoverPassword).toHaveBeenCalledWith('recover@me.com', 'http://localhost');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should return an error if recover password fails', (done) => {
+        spyOn(users, 'recoverPassword').and.returnValue(Promise.reject('error'));
+        let req = {body: {email: 'recover@me.com'}, protocol: 'http', get: () => 'localhost'};
+        routes.post('/api/recoverpassword', req)
+        .then(response => {
+          expect(response.error).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -67,6 +79,17 @@ describe('users routes', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should return an error if recover password fails', (done) => {
+      spyOn(users, 'recoverPassword').and.returnValue(Promise.reject('error'));
+      let req = {body: {email: 'recover@me.com'}, protocol: 'http', get: () => 'localhost'};
+      routes.post('/api/recoverpassword', req)
+      .then(response => {
+        expect(response.error).toBe('error');
+        done();
+      })
+      .catch(done.fail);
     });
   });
 
