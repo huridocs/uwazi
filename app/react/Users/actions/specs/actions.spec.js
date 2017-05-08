@@ -1,4 +1,3 @@
-import {actions as formActions} from 'react-redux-form';
 import {actions as basicActions} from 'app/BasicReducer';
 import * as actions from '../actions';
 import * as Notifications from 'app/Notifications';
@@ -10,7 +9,9 @@ describe('User actions', () => {
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
+    spyOn(api, 'save').and.returnValue(Promise.resolve());
     spyOn(basicActions, 'remove').and.returnValue('USER REMOVED');
+    spyOn(basicActions, 'push').and.returnValue('USER PUSHED');
     spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
   });
 
@@ -31,6 +32,30 @@ describe('User actions', () => {
       it('should remove user', () => {
         expect(basicActions.remove).toHaveBeenCalledWith('users', 'data');
         expect(dispatch).toHaveBeenCalledWith('USER REMOVED');
+        expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
+      });
+    });
+  });
+
+  describe('saveUser', () => {
+    const username = 'Spidey';
+    const email = 'peter@parker.com';
+    it('should save a new user', () => {
+      actions.saveUser({username, email})(dispatch);
+      expect(api.save).toHaveBeenCalledWith({username, email});
+    });
+
+    describe('upon success', () => {
+      beforeEach((done) => {
+        actions.saveUser({username, email})(dispatch)
+        .then(() => {
+          done();
+        });
+      });
+
+      it('should remove user', () => {
+        expect(basicActions.push).toHaveBeenCalledWith('users', {username, email});
+        expect(dispatch).toHaveBeenCalledWith('USER PUSHED');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
       });
     });

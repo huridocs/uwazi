@@ -17,7 +17,7 @@ export class NewUser extends Component {
   }
 
   submit(values) {
-
+    this.props.saveUser(values);
   }
 
   render() {

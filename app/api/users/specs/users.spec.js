@@ -17,9 +17,10 @@ describe('Users', () => {
     });
   });
 
-  describe('update', () => {
-    it('should update user matching id', (done) => {
-      return users.update({_id: userId, password: 'new_password'})
+  describe('save', () => {
+    let currentUser = {_id: userId};
+    it('should save user matching id', (done) => {
+      return users.save({_id: userId.toString(), password: 'new_password'}, currentUser)
       .then(() => users.get({_id: userId}, '+password'))
       .then(([user]) => {
         expect(user.password).toBe(SHA256('new_password').toString());
@@ -27,6 +28,40 @@ describe('Users', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    describe('new user', () => {
+      it('should do the recover password process', (done) => {
+        const domain = 'http://localhost';
+        spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+        return users.save({username: 'spidey', email: 'peter@parker.com'}, currentUser, domain)
+        .then(() => users.get({username: 'spidey'}))
+        .then(([user]) => {
+          expect(user.username).toBe('spidey');
+          expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('different user', () => {
+      it('cant change the password', (done) => {
+        currentUser = {_id: 'the_hacker'};
+        return users.save({_id: userId.toString(), password: 'new_password'}, currentUser)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Can not change other user password', 403));
+          return users.get({_id: userId}, '+password');
+        })
+        .then(([user]) => {
+          expect(user.password).toBe('password');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 
@@ -47,8 +82,8 @@ describe('Users', () => {
         let expectedMailOptions = {
           from: '"Uwazi" <no-reply@uwazi.com>',
           to: 'test@email.com',
-          subject: 'Password recovery',
-          text: 'To reset your password click the following link:\n' +
+          subject: 'Password set',
+          text: 'To set your password click the following link:\n' +
           `domain/resetpassword/${key}`
         };
         expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);

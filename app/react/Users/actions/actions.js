@@ -11,3 +11,13 @@ export function deleteUser(user) {
     });
   };
 }
+
+export function saveUser(user) {
+  return function (dispatch) {
+    return UsersAPI.save(user)
+    .then(() => {
+      dispatch(basicActions.push('users', user));
+      dispatch(notify('Saved successfully.', 'success'));
+    });
+  };
+}

@@ -12,12 +12,12 @@ describe('users routes', () => {
 
   describe('POST', () => {
     describe('/users', () => {
-      it('should call users update with the body', (done) => {
-        spyOn(users, 'update').and.returnValue(Promise.resolve());
-        let req = {body: 'changes'};
+      it('should call users save with the body', (done) => {
+        spyOn(users, 'save').and.returnValue(Promise.resolve());
+        let req = {body: 'changes', user: {_id: 'currentUser'}, protocol: 'http', get: () => 'localhost'};
         routes.post('/api/users', req)
         .then(() => {
-          expect(users.update).toHaveBeenCalledWith('changes');
+          expect(users.save).toHaveBeenCalledWith('changes', {_id: 'currentUser'}, 'http://localhost');
           done();
         })
         .catch(catchErrors(done));
