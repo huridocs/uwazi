@@ -29,32 +29,32 @@ export class NewUser extends Component {
     };
     return (
       <div className="account-settings">
-        <div className="panel panel-default">
-          <LocalForm
-            onSubmit={this.submit.bind(this)}
-            validators={validator}>
+        <LocalForm
+          onSubmit={this.submit.bind(this)}
+          validators={validator}>
+            <div className="metadataTemplate panel-default panel">
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>&nbsp;
               <FormGroup model={'.username'}>
                 <Field model=".username">
-                  <label className="form-group-label" htmlFor="username">User name</label>
-                  <input id="username" className="form-control"/>
+                  <input id="username" className="form-control" placeholder="User Name"/>
                 </Field>
               </FormGroup>
               &nbsp;
+              <button type="submit" className="btn btn-success save-template">
+                <i className="fa fa-save"></i> Save
+              </button>
+            </div>
+            <div className="panel-body">
               <div className={nameGroupClass}>
                 <Field model=".email">
                   <label className="form-group-label" htmlFor="email">Email</label>
                   <input id="email" className="form-control"/>
                 </Field>
               </div>
-              &nbsp;
-              <button type="submit" className="btn btn-success save-template">
-                <i className="fa fa-save"></i> Save
-              </button>
             </div>
-          </LocalForm>
-        </div>
+          </div>
+        </LocalForm>
       </div>
     );
   }
