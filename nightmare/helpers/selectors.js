@@ -118,6 +118,8 @@ export default {
     newEntityButtom: '#app > div.content > div > div > div > div > button',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
     firstPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > button',
+    secondPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > button',
+    thirdPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(3) > div.item-actions > div:nth-child(2) > button',
     acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
   },
   navigation: {

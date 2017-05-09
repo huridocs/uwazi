@@ -79,10 +79,11 @@ describe('multi edit path', () => {
   });
 
   it('should publish the entities', (done) => {
-    nightmare.waitToClick(selectors.uploadsView.firstPublishButton)
+    nightmare
+    .waitToClick(selectors.uploadsView.thirdPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
-    .waitToClick(selectors.uploadsView.firstPublishButton)
+    .waitToClick(selectors.uploadsView.secondPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
     .waitToClick(selectors.uploadsView.firstPublishButton)
