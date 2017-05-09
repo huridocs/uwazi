@@ -12,7 +12,12 @@ let handleError = (error) => {
     browserHistory.replace('/login');
   }
 
-  store.dispatch(notify('An error has occurred', 'warning'));
+  if (error.status === 500) {
+    store.dispatch(notify('An error has occurred', 'danger'));
+    return Promise.reject();
+  }
+
+  store.dispatch(notify(error.json.error, 'danger'));
   return Promise.reject();
 };
 

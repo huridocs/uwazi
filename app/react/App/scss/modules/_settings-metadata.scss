@@ -1,7 +1,10 @@
 .metadataTemplate-heading {
+  display: -webkit-flex;
   display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
 
-  .template-name {
+  .form-group {
     flex: 1;
     margin-right: 15px;
 

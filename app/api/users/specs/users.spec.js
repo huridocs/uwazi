@@ -1,12 +1,10 @@
 import users from '../users.js';
-import fetch from 'isomorphic-fetch';
-import {db_url as dbUrl} from '../../config/database.js';
 import SHA256 from 'crypto-js/sha256';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 
 import fixtures, {userId, expectedKey, recoveryUserId} from './fixtures.js';
-import {db} from 'api/utils';
+import {db, createError} from 'api/utils';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 
 describe('Users', () => {
@@ -19,21 +17,83 @@ describe('Users', () => {
     });
   });
 
-  describe('update', () => {
-    it('should update user matching id', (done) => {
-      return users.update({_id: userId, password: 'new_password'})
-      .then(() => users.getById(userId))
-      .then(user => {
+  describe('save', () => {
+    let currentUser = {_id: userId};
+    it('should save user matching id', (done) => {
+      return users.save({_id: userId.toString(), password: 'new_password'}, currentUser)
+      .then(() => users.get({_id: userId}, '+password'))
+      .then(([user]) => {
         expect(user.password).toBe(SHA256('new_password').toString());
         expect(user.username).toBe('username');
         done();
       })
       .catch(catchErrors(done));
     });
+
+    describe('new user', () => {
+      const domain = 'http://localhost';
+
+      beforeEach(() => {
+        spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+      });
+
+      it('should do the recover password process', (done) => {
+        return users.save({username: 'spidey', email: 'peter@parker.com'}, currentUser, domain)
+        .then(() => users.get({username: 'spidey'}))
+        .then(([user]) => {
+          expect(user.username).toBe('spidey');
+          expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should not allow repeat username', (done) => {
+        return users.save({username: 'username', email: 'peter@parker.com'}, currentUser, domain)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Username already exists', 409));
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should not allow repeat email', (done) => {
+        return users.save({username: 'spidey', email: 'test@email.com'}, currentUser, domain)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Email already exists', 409));
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('different user', () => {
+      it('cant change the password', (done) => {
+        currentUser = {_id: 'the_hacker'};
+        return users.save({_id: userId.toString(), password: 'new_password'}, currentUser)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Can not change other user password', 403));
+          return users.get({_id: userId}, '+password');
+        })
+        .then(([user]) => {
+          expect(user.password).toBe('password');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
   });
 
   describe('recoverPassword', () => {
-
     beforeEach(() => {
       spyOn(mailer, 'send');
     });
@@ -50,9 +110,9 @@ describe('Users', () => {
         let expectedMailOptions = {
           from: '"Uwazi" <no-reply@uwazi.com>',
           to: 'test@email.com',
-          subject: 'Password recovery',
-          text: 'To reset your password click the following link:\n' +
-          `domain/resetpassword/${key}`
+          subject: 'Password set',
+          text: 'To set your password click the following link:\n' +
+          `domain/setpassword/${key}`
         };
         expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
         done();
@@ -80,8 +140,8 @@ describe('Users', () => {
   describe('resetPassword', () => {
     it('should reset the password for the user based on the provided key', (done) => {
       users.resetPassword({key: expectedKey, password: '1234'})
-      .then(() => users.getById(recoveryUserId))
-      .then(user => {
+      .then(() => users.get({_id: recoveryUserId}, '+password'))
+      .then(([user]) => {
         expect(user.password).toBe(SHA256('1234').toString());
         done();
       })
@@ -96,6 +156,48 @@ describe('Users', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+  });
+
+  describe('delete()', () => {
+    it('should delete the user', (done) => {
+      users.delete(userId, {_id: 'another_user'})
+      .then(() => users.getById(userId))
+      .then((user) => {
+        expect(user).toBe(null);
+        done();
+      });
+    });
+
+    it('should not allow to delete self', (done) => {
+      users.delete(userId.toString(), {_id: userId})
+      .then(() => {
+        done.fail('should throw an error');
+      })
+      .catch((error) => {
+        expect(error).toEqual(createError('Can not delete yourself', 403));
+        return users.getById(userId);
+      })
+      .then((user) => {
+        expect(user).not.toBe(null);
+        done();
+      });
+    });
+
+    it('should not allow to delete the last user', (done) => {
+      users.delete(recoveryUserId.toString(), {_id: 'someone'})
+      .then(() => users.delete(userId.toString(), {_id: 'someone'}))
+      .then(() => {
+        done.fail('should throw an error');
+      })
+      .catch((error) => {
+        expect(error).toEqual(createError('Can not delete last user', 403));
+        return users.getById(userId);
+      })
+      .then((user) => {
+        expect(user).not.toBe(null);
+        done();
+      });
     });
   });
 });

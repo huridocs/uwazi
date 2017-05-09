@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import {formater} from 'app/Metadata';
 import {bindActionCreators} from 'redux';
-import {saveDocument, saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
+import {saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
 import {actions as connectionsActions} from 'app/Connections';
 import {uiActions as connectionsUiActions} from 'app/Connections';
 import {closePanel} from '../actions/uiActions';
@@ -72,7 +72,6 @@ function mapDispatchToProps(dispatch) {
     startNewConnection: connectionsActions.startNewConnection,
     closeConnectionsPanel: connectionsUiActions.closePanel,
     resetForm: formActions.reset,
-    saveDocument,
     closePanel,
     deleteDocument,
     saveToc,

@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import {MetadataForm, mapStateToProps} from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
 import {Form, Field} from 'react-redux-form';
-import {Select as SimpleSelect} from 'app/Forms';
+import {FormGroup, Select as SimpleSelect} from 'app/Forms';
 import {IconSelector} from 'app/ReactReduxForms';
 
 
@@ -61,19 +61,20 @@ describe('MetadataForm', () => {
     expect(formFields.props().template).toBe(props.templates.get(0));
   });
 
-  it('should pass the model and field name to every field', () => {
+  it('should pass the model to Form and MetadataFormFields', () => {
     render();
-    let FormGroup = component.findWhere((node) => node.props().model === 'metadata');
-    expect(FormGroup.length).toBe(3);
-
-    FormGroup = component.findWhere((node) => node.props().field === 'title');
-    expect(FormGroup.length).toBe(1);
+    let form = component.find(Form);
+    expect(form.props().model).toBe('metadata');
+    let metadataFields = component.find(MetadataFormFields);
+    expect(metadataFields.props().model).toBe('metadata');
   });
 
   it('should render title field as a textarea', () => {
     render();
     let title = component.find('textarea').closest(Field);
+    let titleGroup = component.find(FormGroup).at(0);
     expect(title.props().model).toEqual('.title');
+    expect(titleGroup.props().model).toEqual('.title');
   });
 
   it('should render an icon selector linked to the icon property', () => {

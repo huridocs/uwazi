@@ -31,6 +31,14 @@ export class MetadataForm extends Component {
     this.props.onSubmit(metadata, this.props.model);
   }
 
+  componentWillReceiveProps(nextProps) {
+    Object.keys(nextProps).forEach((index) => {
+      if (nextProps[index] !== this.props[index]) {
+        console.log(index);
+      }
+    });
+  }
+
   render() {
     const {model, template, templateOptions} = this.props;
     if (!template) {
@@ -40,7 +48,7 @@ export class MetadataForm extends Component {
     return (
       <Form id='metadataForm' model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
 
-        <FormGroup model={model} field={'title'}>
+        <FormGroup model={'.title'}>
           <ul className="search__filter">
             <li><label>{t('System', 'Title')} <span className="required">*</span></label></li>
             <li className="wide">

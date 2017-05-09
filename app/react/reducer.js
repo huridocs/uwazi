@@ -18,7 +18,7 @@ import modals from 'app/Modals/reducers/modalsReducer';
 import progress from 'app/Uploads/reducers/progressReducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
-import login from 'app/Users/reducer';
+import login from 'app/Users/reducers/login';
 import {reducer as metadata} from 'app/Metadata';
 import locale from 'app/I18N/reducer';
 
@@ -44,6 +44,7 @@ export default combineReducers({
   translationsForm: modelReducer('translationsForm', []),
   translationsFormState: formReducer('translationsForm'),
   pages: createReducer('pages', []),
+  users: createReducer('users', []),
   documentViewer,
   contextMenu,
   connections: connections.reducer,

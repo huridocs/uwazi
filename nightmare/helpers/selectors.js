@@ -8,9 +8,9 @@ export default {
     logoutButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div:nth-child(3) > div.panel-body > a',
     accountButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
     collectionButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(2)',
+    dictionariesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     documentsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     entitiesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
-    dictionariesButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     connectionsButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(2) > div.list-group > a:nth-child(4)',
     filtersButton: '#app > div.content > div > div > div.col-xs-12.col-sm-4 > div > div:nth-child(1) > div.list-group > a:nth-child(6)',
     createFilterGroupButton: '#app > div.content > div > div > div.col-xs-12.col-sm-8 > div > div.FiltersForm-list.col-sm-9 > div > div.panel-heading > div > button.pull-right.btn.btn-sm.btn-default',
@@ -118,6 +118,8 @@ export default {
     newEntityButtom: '#app > div.content > div > div > div > div > button',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
     firstPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > button',
+    secondPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > button',
+    thirdPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(3) > div.item-actions > div:nth-child(2) > button',
     acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
   },
   navigation: {

@@ -1,4 +1,5 @@
 import users from 'app/Users/UsersAPI';
+import api from 'app/utils/api';
 import {APIURL} from 'app/config.js';
 import backend from 'fetch-mock';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -38,6 +39,33 @@ describe('UsersAPI', () => {
       users.currentUser()
       .then((response) => {
         expect(response).toEqual({name: 'doe'});
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('list()', () => {
+    it('should get all the users', (done) => {
+      spyOn(api, 'get').and.returnValue(Promise.resolve({json: ['users']}));
+      users.list()
+      .then((response) => {
+        expect(api.get).toHaveBeenCalledWith('users');
+        expect(response).toEqual(['users']);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('delete()', () => {
+    it('should delete the user', (done) => {
+      const user = {_id: '1234'};
+      spyOn(api, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
+      users.delete(user)
+      .then((response) => {
+        expect(api.delete).toHaveBeenCalledWith('users', user);
+        expect(response).toEqual('ok');
         done();
       })
       .catch(catchErrors(done));
