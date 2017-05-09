@@ -112,6 +112,7 @@ export default [
 {key: 'View', label: 'View'},
 {key: 'Uploading', label: 'Uploading'},
 {key: 'User', label: 'User'},
+{key: 'Username', label: 'Username'},
 {key: 'Users', label: 'Users'},
 {key: 'View in library', label: 'View in library'},
 {key: 'x less', label: ' less'},

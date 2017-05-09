@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {LocalForm, Field} from 'react-redux-form';
 import {notEmpty} from 'app/Metadata/helpers/validator';
 import {FormGroup} from 'app/Forms';
+import t from 'app/I18N/t';
 
 import {saveUser} from 'app/Users/actions/actions';
 
@@ -22,7 +23,6 @@ export class NewUser extends Component {
 
   render() {
     let backUrl = '/settings/users';
-    let nameGroupClass = 'form-group';
     const validator = {
       username: {required: notEmpty},
       email: {required: notEmpty}
@@ -36,19 +36,19 @@ export class NewUser extends Component {
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
               <button type="submit" className="btn btn-success save-template">
-                <i className="fa fa-save"></i> Save
+                <i className="fa fa-save"></i> {t('System', 'Save')}
               </button>
             </div>
             <div className="panel-body">
-              <FormGroup model={'.username'}>
+              <FormGroup model=".username">
                 <Field model=".username">
-                  <label className="form-group-label" htmlFor="username">Username</label>
+                  <label className="form-group-label" htmlFor="username">{t('System', 'Username')}</label>
                   <input id="username" className="form-control"/>
                 </Field>
               </FormGroup>
-              <FormGroup model={'.email'}>
+              <FormGroup model=".email">
                 <Field model=".email">
-                  <label className="form-group-label" htmlFor="email">Email</label>
+                  <label className="form-group-label" htmlFor="email">{t('System', 'Email')}</label>
                   <input id="email" className="form-control"/>
                 </Field>
               </FormGroup>

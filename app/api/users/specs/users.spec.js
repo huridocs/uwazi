@@ -7,7 +7,7 @@ import fixtures, {userId, expectedKey, recoveryUserId} from './fixtures.js';
 import {db, createError} from 'api/utils';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 
-fdescribe('Users', () => {
+describe('Users', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {

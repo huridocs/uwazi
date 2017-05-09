@@ -33,9 +33,8 @@ describe('UsersList', () => {
     it('should render a list with all users names', () => {
       render();
       expect(component.find('ul.users').find('li').length).toBe(3);
-      let nameLink = component.find('ul.users').find('li').last().find(I18NLink).first();
-      expect(nameLink.props().to).toBe('/settings/users/edit/a3');
-      expect(nameLink.props().children).toBe('User 3');
+      let span = component.find('ul.users').find('li').last().find('span').first();
+      expect(span.props().children).toBe('User 3');
     });
 
     it('should have a button to add a page', () => {
