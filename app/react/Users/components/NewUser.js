@@ -34,24 +34,24 @@ export class NewUser extends Component {
           validators={validator}>
             <div className="metadataTemplate panel-default panel">
             <div className="metadataTemplate-heading panel-heading">
-              <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>&nbsp;
-              <FormGroup model={'.username'}>
-                <Field model=".username">
-                  <input id="username" className="form-control" placeholder="User Name"/>
-                </Field>
-              </FormGroup>
-              &nbsp;
+              <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
               <button type="submit" className="btn btn-success save-template">
                 <i className="fa fa-save"></i> Save
               </button>
             </div>
             <div className="panel-body">
-              <div className={nameGroupClass}>
+              <FormGroup model={'.username'}>
+                <Field model=".username">
+                  <label className="form-group-label" htmlFor="username">Username</label>
+                  <input id="username" className="form-control"/>
+                </Field>
+              </FormGroup>
+              <FormGroup model={'.email'}>
                 <Field model=".email">
                   <label className="form-group-label" htmlFor="email">Email</label>
                   <input id="email" className="form-control"/>
                 </Field>
-              </div>
+              </FormGroup>
             </div>
           </div>
         </LocalForm>

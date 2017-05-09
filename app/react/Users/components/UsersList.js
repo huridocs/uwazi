@@ -29,7 +29,7 @@ export class UsersList extends Component {
         <ul className="list-group users">
           {users.map((user, index) =>
             <li key={index} className="list-group-item">
-              <I18NLink to={'/settings/users/edit/' + user.get('sharedId')}>{user.get('username')}</I18NLink>
+              <span>{user.get('username')}</span>
               <div className="list-group-item-actions">
                 <a onClick={this.deleteUser.bind(this, user)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>&nbsp;
