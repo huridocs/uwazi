@@ -53,7 +53,14 @@ mongoose.connect('mongodb://localhost/uwazi_testing');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  mongoose.connection.db.dropDatabase(function () {
-    jasmine.execute();
-  });
+  exec('cd database; node reindex_elastic.js testing', (error) => {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    mongoose.connection.db.dropDatabase(function () {
+      jasmine.execute();
+    });
+  })
+  .stdout.pipe(process.stdout);
 });
