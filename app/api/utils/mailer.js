@@ -37,7 +37,8 @@ export default {
           }
           resolve(info);
         });
-      });
+      })
+      .catch(reject);
     });
   }
 };

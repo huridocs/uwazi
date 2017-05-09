@@ -120,7 +120,7 @@ describe('Users', () => {
 
     describe('when something fails with the mailer', () => {
       it('should reject the promise and return the error', (done) => {
-        spyOn(mailer, 'send').and.returnValue(Promise.reject({Error: 'some error'}));
+        spyOn(mailer, 'send').and.callFake(() => Promise.reject({Error: 'some error'}));
 
         users.recoverPassword('test@email.com')
         .then(() => {
