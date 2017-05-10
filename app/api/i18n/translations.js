@@ -36,7 +36,7 @@ export default {
   },
 
   save(translation) {
-    if(translation.contexts) {
+    if (translation.contexts) {
       translation.contexts.forEach((context) => {
         if (context.values && !Array.isArray(context.values)) {
           let values = [];
