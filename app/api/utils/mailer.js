@@ -1,9 +1,9 @@
 import nodemailer from 'nodemailer';
-import smtp from 'nodemailer-smtp-transport';
+import mailerConfig from 'api/config/mailer';
 
 import settings from 'api/settings/settings';
 
-let transporter = nodemailer.createTransport({
+let transporterOptions = {
   sendmail: true,
   newline: 'unix',
   path: '/usr/sbin/sendmail',
@@ -11,24 +11,30 @@ let transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false
   }
-});
+};
+
+if (Object.keys(mailerConfig).length) {
+  transporterOptions = nodemailer.createTransport(mailerConfig);
+}
+
+let transporter = nodemailer.createTransport(transporterOptions);
+
 
 export default {
   send(mailOptions) {
     return new Promise((resolve, reject) => {
       settings.get()
       .then(config => {
-        if (config.mailerConfig && config.mailerConfig.host) {
-          transporter = nodemailer.createTransport(smtp({
-            host: config.mailerConfig.host,
-            port: Number(config.mailerConfig.port),
-            secure: true,
-            auth: {
-              user: config.mailerConfig.user,
-              pass: config.mailerConfig.password
-            }
-          }));
+        if (config.mailerConfig) {
+          try {
+            transporterOptions = JSON.parse(config.mailerConfig);
+            transporter = nodemailer.createTransport(transporterOptions);
+          } catch (err) {
+            reject(err);
+          }
         }
+
+        console.log('Options:', transporterOptions);
 
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
