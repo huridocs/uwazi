@@ -81,7 +81,7 @@ export default {
         return passwordRecoveriesModel.save({key, user: user._id})
         .then(() => {
           let mailOptions = {
-            from: '"Uwazi" <no-reply@uwazi.com>',
+            from: '"Uwazi" <no-reply@uwazi.io>',
             to: email,
             subject: 'Password set',
             text: `To set your password click on the following link:\n${domain}/setpassword/${key}`

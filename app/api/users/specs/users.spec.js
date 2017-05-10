@@ -106,7 +106,7 @@ describe('Users', () => {
       .then(recoverPasswordDb => {
         expect(recoverPasswordDb[0].user.toString()).toBe(userId.toString());
         let expectedMailOptions = {
-          from: '"Uwazi" <no-reply@uwazi.com>',
+          from: '"Uwazi" <no-reply@uwazi.io>',
           to: 'test@email.com',
           subject: 'Password set',
           text: 'To set your password click on the following link:\n' +
