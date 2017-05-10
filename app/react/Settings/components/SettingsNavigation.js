@@ -6,11 +6,13 @@ export class SettingsNavigation extends Component {
 
   render() {
     return <div>
-    <div className="panel panel-default">
-      <div className="panel-heading">{t('System', 'Settings')}</div>
+      <div className="panel panel-default">
+        <div className="panel-heading">{t('System', 'Settings')}</div>
         <div className="list-group">
           <I18NLink to='settings/account' activeClassName="active" className="list-group-item">{t('System', 'Account')}</I18NLink>
-          <ShowIf if={false}><I18NLink to='settings/users' activeClassName="active" className="list-group-item">{t('System', 'Users')}</I18NLink></ShowIf>
+          <ShowIf if={false}>
+            <I18NLink to='settings/users' activeClassName="active" className="list-group-item">{t('System', 'Users')}</I18NLink>
+          </ShowIf>
           <I18NLink to='settings/collection' activeClassName="active" className="list-group-item">{t('System', 'Collection')}</I18NLink>
           <I18NLink to='settings/navlinks' activeClassName="active" className="list-group-item">{t('System', 'Menu')}</I18NLink>
           <I18NLink to='settings/pages' activeClassName="active" className="list-group-item">{t('System', 'Pages')}</I18NLink>
