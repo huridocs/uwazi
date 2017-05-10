@@ -124,8 +124,7 @@ export default {
     Object.keys(values).forEach((key) => {
       translatedValues.push({key, value: values[key]});
     });
-    console.log('model:', model);
-    console.log('settings:', settings);
+
     return Promise.all([model.get(), settings.get()])
     .then(([translations, siteSettings]) => {
       let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;
