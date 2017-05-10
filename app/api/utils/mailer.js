@@ -1,3 +1,4 @@
+// TEST entire implementation
 import nodemailer from 'nodemailer';
 import mailerConfig from 'api/config/mailer';
 
@@ -14,35 +15,28 @@ let transporterOptions = {
 };
 
 if (Object.keys(mailerConfig).length) {
-  transporterOptions = nodemailer.createTransport(mailerConfig);
+  transporterOptions = mailerConfig;
 }
-
-let transporter = nodemailer.createTransport(transporterOptions);
-
 
 export default {
   send(mailOptions) {
+    let transporter;
+
     return new Promise((resolve, reject) => {
       settings.get()
       .then(config => {
-        if (config.mailerConfig) {
-          try {
-            transporterOptions = JSON.parse(config.mailerConfig);
-            transporter = nodemailer.createTransport(transporterOptions);
-          } catch (err) {
-            reject(err);
-          }
+        try {
+          transporter = nodemailer.createTransport(config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions);
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              reject(error);
+              return;
+            }
+            resolve(info);
+          });
+        } catch (err) {
+          reject(err);
         }
-
-        console.log('Options:', transporterOptions);
-
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-          resolve(info);
-        });
       })
       .catch(reject);
     });
