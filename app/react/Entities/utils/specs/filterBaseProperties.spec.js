@@ -1,7 +1,7 @@
 import {filterBaseProperties} from '../filterBaseProperties';
 
 describe('filterBaseProperties', () => {
-  fit('should only retrun entity base data (omitting attachments, toc, etc.)', () => {
+  it('should only retrun entity base data (omitting attachments, toc, etc.)', () => {
     const data = {
       _id: 'id',
       sharedId: 'sid',
