@@ -10,7 +10,7 @@ describe('Viewer EntityForm', () => {
       spyOn(entitiesUtils, 'filterBaseProperties').and.callFake(data => 'filtered ' + data);
     });
 
-    fit('should only send document base data on submit', () => {
+    it('should only send document base data on submit', () => {
       expect(entityActions.saveEntity).not.toHaveBeenCalled();
       mapDispatchToProps(() => {}).onSubmit('data');
       expect(entityActions.saveEntity).toHaveBeenCalledWith('filtered data');
