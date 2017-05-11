@@ -20,13 +20,12 @@
 }
 
 .entity-connections {
-  right: 0 !important;
-
-  @media (max-width: 1023px) {
-    position: relative !important;
-    width: 100% !important;
-    max-width: 999px !important;
-    top: 0 !important;
+  @media (min-width: 1023px) {
+    right: 0 !important;
+    //position: relative !important;
+    //width: 100% !important;
+    //max-width: 999px !important;
+    //top: 0 !important;
   }
 }
 
@@ -43,19 +42,19 @@
   padding: 15px;
   margin: 0;
   list-style: none;
-  
+
   li {
     display: -webkit-flex;
     display: flex;
     padding: 5px 0;
   }
-  
+
   .item-type {
     float: left;
     width: auto;
     max-width: 25%;
   }
-  
+
   .entity-title {
     padding-left: 10px;
     white-space: nowrap;
