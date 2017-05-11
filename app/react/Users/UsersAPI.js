@@ -22,6 +22,13 @@ export default {
     });
   },
 
+  getById(_id) {
+    return api.get('users', {_id})
+    .then((response) => {
+      return response.json[0];
+    });
+  },
+
   delete(user) {
     return api.delete('users', user)
     .then((response) => {

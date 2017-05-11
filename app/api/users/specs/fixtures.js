@@ -7,8 +7,8 @@ const expectedKey = SHA256('recovery@email.com' + 2000).toString();
 
 export default {
   users: [
-    {_id: userId, password: 'password', username: 'username', email: 'test@email.com'},
-    {_id: recoveryUserId, password: 'password', username: 'username', email: 'recovery@email.com'}
+    {_id: userId, password: 'password', username: 'username', email: 'test@email.com', role: 'admin'},
+    {_id: recoveryUserId, password: 'password', username: 'username', email: 'recovery@email.com', role: 'editor'}
   ],
   passwordrecoveries: [
     {_id: db.id(), key: expectedKey, user: recoveryUserId}

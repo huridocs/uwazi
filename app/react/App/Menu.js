@@ -92,7 +92,8 @@ export function mapStateToProps({user, settings, library, uploads}) {
     libraryFilters: library.filters,
     uploadsSearch: uploads.search,
     uploadsFilters: uploads.filters,
-    links: settings.collection.get('links')};
+    links: settings.collection.get('links')
+  };
 }
 
 export default connect(mapStateToProps)(Menu);

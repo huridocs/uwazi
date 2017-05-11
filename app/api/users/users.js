@@ -9,16 +9,19 @@ import {createError} from 'api/utils';
 const encryptPassword = password => SHA256(password).toString();
 export default {
   save(user, currentUser, domain) {
-    const newUser = !user._id;
     if (user.password && user._id && user._id !== currentUser._id.toString()) {
       return Promise.reject(createError('Can not change other user password', 403));
+    }
+
+    if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
+      return Promise.reject(createError('Can not change your own role', 403));
     }
 
     if (user.password) {
       user.password = encryptPassword(user.password);
     }
 
-    if (newUser) {
+    if (!user._id) {
       return this.newUser(user, domain);
     }
 

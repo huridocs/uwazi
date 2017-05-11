@@ -30,6 +30,22 @@ describe('Users', () => {
       .catch(catchErrors(done));
     });
 
+    describe('when you try to change your role', () => {
+      it('should throw an error', (done) => {
+        currentUser = {_id: userId, role: 'admin'};
+        let user = {_id: userId.toString(), role: 'editor'};
+        return users.save(user, currentUser)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Can not change your own role', 403));
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     describe('new user', () => {
       const domain = 'http://localhost';
 
