@@ -19,6 +19,13 @@ Nightmare.action('gotoLibrary', function (done) {
   .then(done);
 });
 
+Nightmare.action('goToUploads', function (done) {
+  this.goto(config.url)
+  .waitToClick(selectors.navigation.uploadsNavButton)
+  .wait(selectors.libraryView.libraryFirstDocument)
+  .then(done);
+});
+
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
   .wait(selectors.navigation.loginNavButton)

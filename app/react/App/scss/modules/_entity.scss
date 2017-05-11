@@ -25,7 +25,7 @@
     //position: relative !important;
     //width: 100% !important;
     //max-width: 999px !important;
-    //top: 0 !important;
+    //top: 50px !important;
   }
 }
 
@@ -34,7 +34,10 @@
   max-width: 9999px;
 
   .side-panel {
-    top: $header-height * 2 + 1 !important;
+    top: $header-height * 2 + 1;
+    @media (max-width: 1023px) {
+      top: $header-height * 3;
+    }
   }
 }
 

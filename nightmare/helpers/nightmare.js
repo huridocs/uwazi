@@ -3,8 +3,8 @@ import realMouse from 'nightmare-real-mouse';
 
 realMouse(Nightmare);
 
-export default function createNightmare() {
-  const nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(1100, 600);
+export default function createNightmare(width = 1100, height = 600) {
+  const nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(width, height);
 
   nightmare.on('page', function (type, message, error) {
     fail(error);
