@@ -25,12 +25,12 @@ describe('Error handling middleware', function () {
     });
   });
 
-  describe('when error is uwazi error (handled object with message and code)', () => {
+  describe('when error is uwazi error (handeled object with message and code)', () => {
     it('should respond the error message with the status', () => {
       middleware(req, res, next);
-      const error = {message: 'error', code: 'code'};
+      const error = {message: 'error', code: '345'};
       res.error(error);
-      expect(res.status).toHaveBeenCalledWith('code');
+      expect(res.status).toHaveBeenCalledWith('345');
       expect(res.json).toHaveBeenCalledWith({error: 'error'});
     });
   });
@@ -38,7 +38,17 @@ describe('Error handling middleware', function () {
   describe('when error is a MongoError', () => {
     it('should respond the error message with the status 500', () => {
       middleware(req, res, next);
-      const error = {name: 'MongoError', message: 'error', code: 'code'};
+      const error = {name: 'MongoError', message: 'error', code: '345'};
+      res.error(error);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({error: 'error'});
+    });
+  });
+
+  describe('when error code is a Mailer EAUTH error', () => {
+    it('should respond the error message with the status 500', () => {
+      middleware(req, res, next);
+      const error = {name: 'MongoError', message: 'error', code: 'EAUTH'};
       res.error(error);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({error: 'error'});

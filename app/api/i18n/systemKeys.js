@@ -63,6 +63,7 @@ export default [
 {key: 'Login', label: 'Login'},
 {key: 'Logout', label: 'Logout'},
 {key: 'Create group', label: 'Create group'},
+{key: 'Mailer configuration', label: 'Mailer configuration'},
 {key: 'Maximum', label: 'Maximum'},
 {key: 'Menu', label: 'Menu'},
 {key: 'Metadata', label: 'Metadata'},

@@ -1,4 +1,4 @@
-import settings from 'api/settings';
+import settings from 'api/settings/settings';
 
 import instanceModel from 'api/odm';
 import translationsModel from './translationsModel.js';
@@ -36,7 +36,7 @@ export default {
   },
 
   save(translation) {
-    if(translation.contexts) {
+    if (translation.contexts) {
       translation.contexts.forEach((context) => {
         if (context.values && !Array.isArray(context.values)) {
           let values = [];
@@ -124,6 +124,7 @@ export default {
     Object.keys(values).forEach((key) => {
       translatedValues.push({key, value: values[key]});
     });
+
     return Promise.all([model.get(), settings.get()])
     .then(([translations, siteSettings]) => {
       let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;

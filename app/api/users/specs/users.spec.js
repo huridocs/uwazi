@@ -94,24 +94,22 @@ describe('Users', () => {
   });
 
   describe('recoverPassword', () => {
-    beforeEach(() => {
-      spyOn(mailer, 'send');
-    });
-
     it('should find the matching email create a recover password doc in the database and send an email', (done) => {
+      spyOn(mailer, 'send').and.returnValue(Promise.resolve('OK'));
       spyOn(Date, 'now').and.returnValue(1000);
       const key = SHA256('test@email.com' + 1000).toString();
       users.recoverPassword('test@email.com', 'domain')
-      .then(() => {
+      .then(response => {
+        expect(response).toBe('OK');
         return passwordRecoveriesModel.get({key});
       })
-      .then(recoverPasswordDoc => {
-        expect(recoverPasswordDoc[0].user.toString()).toBe(userId.toString());
+      .then(recoverPasswordDb => {
+        expect(recoverPasswordDb[0].user.toString()).toBe(userId.toString());
         let expectedMailOptions = {
-          from: '"Uwazi" <no-reply@uwazi.com>',
+          from: '"Uwazi" <no-reply@uwazi.io>',
           to: 'test@email.com',
           subject: 'Password set',
-          text: 'To set your password click the following link:\n' +
+          text: 'To set your password click on the following link:\n' +
           `domain/setpassword/${key}`
         };
         expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
@@ -120,12 +118,28 @@ describe('Users', () => {
       .catch(catchErrors(done));
     });
 
+    describe('when something fails with the mailer', () => {
+      it('should reject the promise and return the error', (done) => {
+        spyOn(mailer, 'send').and.callFake(() => Promise.reject({Error: 'some error'}));
+
+        users.recoverPassword('test@email.com')
+        .then(() => {
+          done.fail('should not have resolved');
+        })
+        .catch(error => {
+          expect(error.Error).toBe('some error');
+          done();
+        });
+      });
+    });
+
     describe('when the user does not exist with that email', () => {
-      it('should do nothing', (done) => {
+      it('should not create the entry in the database, should not send a mail, and return "userNotFound".', (done) => {
         spyOn(Date, 'now').and.returnValue(1000);
         let key = SHA256('false@email.com' + 1000).toString();
         users.recoverPassword('false@email.com')
-        .then(() => {
+        .then(response => {
+          expect(response).toBe('userNotFound');
           return passwordRecoveriesModel.get({key});
         })
         .then(response => {

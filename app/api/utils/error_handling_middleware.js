@@ -11,7 +11,7 @@ export default function (req, res, next) {
 
     let code = error.code || 500;
 
-    if (error.name === 'MongoError') {
+    if (!(error.code > 0) || error.name === 'MongoError') {
       code = 500;
     }
 

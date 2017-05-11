@@ -13,7 +13,12 @@ export class CollectionSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {siteName: props.settings.site_name || '', homePage: props.settings.home_page || '', customLandingpage: !!props.settings.home_page};
+    this.state = {
+      siteName: props.settings.site_name || '',
+      homePage: props.settings.home_page || '',
+      mailerConfig: props.settings.mailerConfig || '',
+      customLandingpage: !!props.settings.home_page
+    };
   }
 
   changeLandingPage(e) {
@@ -29,6 +34,12 @@ export class CollectionSettings extends Component {
     this.props.setSettings(settings);
   }
 
+  changeMailerConfig(e) {
+    this.setState({mailerConfig: e.target.value});
+    let settings = Object.assign(this.props.settings, {mailerConfig: e.target.value});
+    this.props.setSettings(settings);
+  }
+
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
     let settings = Object.assign(this.props.settings, {home_page: e.target.value});
@@ -40,6 +51,7 @@ export class CollectionSettings extends Component {
     let settings = Object.assign({}, this.props.settings);
     settings.home_page = this.state.homePage;
     settings.site_name = this.state.siteName;
+    settings.mailerConfig = this.state.mailerConfig;
     SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated'), 'success');
@@ -108,6 +120,24 @@ export class CollectionSettings extends Component {
                 <li>A document: /document/4y9i99fadjp833di</li>
               </ul>
               <p>Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.</p>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
+              <textarea name="collectionMailerConfig"
+                        onChange={this.changeMailerConfig.bind(this)}
+                        value={this.state.mailerConfig}
+                        type="text"
+                        className="form-control"
+                        rows="5"/>
+            </div>
+            <div className="alert alert-info full-width">
+              <i className="fa fa-lightbulb-o"></i>
+              <p>This is a JSON configuration object that should match the options values required by Nodemailer, as explained in:</p>
+              <ul>
+                <li><a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a></li>
+              </ul>
+              <p>This setting takes precedence over all other mailer configuration.
+                 If left blank, then the configuration file in /api/config/mailer.js will be used.</p>
             </div>
             <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
           </form>
