@@ -33,7 +33,7 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.get('/api/search/unpublished', needsAuthorization, (req, res) => {
+  app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res) => {
     search.getUploadsByUser(req.user, req.language)
     .then(response => res.json({rows: response}))
     .catch(res.error);

@@ -15,9 +15,10 @@ const mapProps = {
 export class FormGroup extends Component {
   render() {
     if (this.props.model) {
+      let className = `form-group ${this.props.className || ''}`;
       return (
         <Control.custom model={this.props.model}
-          component={(props) => <div className={'form-group ' + props.className}>{props.children}</div>}
+          component={(props) => <div className={`${className} ${props.className}`}>{props.children}</div>}
           mapProps={mapProps}
         >
         {this.props.children}

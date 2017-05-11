@@ -40,14 +40,14 @@ class Menu extends Component {
                   <i className="fa fa-th"></i>
               </I18NLink>
             </li>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
                   <span><i className="fa fa-cloud-upload"></i></span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to='/settings/account' className="menuNav-btn btn btn-default">
                   <i className="fa fa-cog"></i>

@@ -70,6 +70,10 @@
   display: none;
 }
 
+.form-group-radio.has-error {
+  color: $c-danger;
+}
+
 .has-error {
   .input-group-addon {
     position: relative;

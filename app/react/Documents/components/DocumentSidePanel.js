@@ -150,7 +150,7 @@ export class DocumentSidePanel extends Component {
           />
         </ShowIf>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -161,7 +161,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
@@ -172,7 +172,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={startNewConnection}
@@ -184,7 +184,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
               <UploadAttachment entityId={doc.get('_id')}/>

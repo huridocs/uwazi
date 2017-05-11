@@ -38,7 +38,7 @@ describe('Users', () => {
       });
 
       it('should do the recover password process', (done) => {
-        return users.save({username: 'spidey', email: 'peter@parker.com'}, currentUser, domain)
+        return users.save({username: 'spidey', email: 'peter@parker.com', role: 'editor'}, currentUser, domain)
         .then(() => users.get({username: 'spidey'}))
         .then(([user]) => {
           expect(user.username).toBe('spidey');
@@ -49,7 +49,7 @@ describe('Users', () => {
       });
 
       it('should not allow repeat username', (done) => {
-        return users.save({username: 'username', email: 'peter@parker.com'}, currentUser, domain)
+        return users.save({username: 'username', email: 'peter@parker.com', role: 'editor'}, currentUser, domain)
         .then(() => {
           done.fail('should throw an error');
         })
@@ -61,7 +61,7 @@ describe('Users', () => {
       });
 
       it('should not allow repeat email', (done) => {
-        return users.save({username: 'spidey', email: 'test@email.com'}, currentUser, domain)
+        return users.save({username: 'spidey', email: 'test@email.com', role: 'editor'}, currentUser, domain)
         .then(() => {
           done.fail('should throw an error');
         })
@@ -76,7 +76,7 @@ describe('Users', () => {
     describe('different user', () => {
       it('cant change the password', (done) => {
         currentUser = {_id: 'the_hacker'};
-        return users.save({_id: userId.toString(), password: 'new_password'}, currentUser)
+        return users.save({_id: userId.toString(), password: 'new_password', role: 'editor'}, currentUser)
         .then(() => {
           done.fail('should throw an error');
         })

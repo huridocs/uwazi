@@ -8,13 +8,13 @@ export default app => {
     .catch(error => res.json({error}))
   });
 
-  app.post('/api/translations', needsAuthorization, (req, res) => {
+  app.post('/api/translations', needsAuthorization(), (req, res) => {
     translations.save(req.body)
     .then(response => res.json(response))
     .catch(error => res.json({error}))
   });
 
-  app.post('/api/translations/addentry', needsAuthorization, (req, res) => {
+  app.post('/api/translations/addentry', needsAuthorization(), (req, res) => {
     translations.addEntry(req.body.context, req.body.key, req.body.value)
     .then(response => res.json(response))
     .catch(error => res.json({error}))

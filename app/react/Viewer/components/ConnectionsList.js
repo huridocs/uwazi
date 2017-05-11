@@ -116,7 +116,7 @@ export class ConnectionsList extends Component {
                 buttons={
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
-                      <NeedAuthorization>
+                      <NeedAuthorization roles={['admin', 'editor']}>
                         <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteReference.bind(this, reference)}>
                           <i className="fa fa-trash"></i>
                         </a>

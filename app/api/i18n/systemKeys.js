@@ -12,7 +12,7 @@ export default [
 {key: 'Attachments', label: 'Attachments'},
 {key: 'Cancel', label: 'Cancel'},
 {key: 'Change password', label: 'Change password'},
-{key: 'Close admin session', label: 'Close admin session'},
+{key: 'Close session', label: 'Close session'},
 {key: 'Collection settings', label: 'Collection settings'},
 {key: 'Collection', label: 'Collection'},
 {key: 'Custom page', label: 'Custom page'},

@@ -4,7 +4,7 @@ import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
-  app.post('/api/entities', needsAuthorization, (req, res) => {
+  app.post('/api/entities', needsAuthorization(['admin', 'editor']), (req, res) => {
     return entities.save(req.body, {user: req.user, language: req.language})
     .then(response => {
       res.json(response);
@@ -19,7 +19,7 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.post('/api/entities/multipleupdate', needsAuthorization, (req, res) => {
+  app.post('/api/entities/multipleupdate', needsAuthorization(['admin', 'editor']), (req, res) => {
     return entities.multipleUpdate(req.body.ids, req.body.values, {user: req.user, language: req.language})
     .then(docs => {
       res.json(docs.map((doc) => doc.sharedId));
@@ -33,7 +33,7 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.get('/api/entities/uploads', needsAuthorization, (req, res) => {
+  app.get('/api/entities/uploads', needsAuthorization(['admin', 'editor']), (req, res) => {
     entities.getUploadsByUser(req.user)
     .then(response => res.json(response))
     .catch(res.error);
@@ -45,13 +45,13 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.delete('/api/entities', needsAuthorization, (req, res) => {
+  app.delete('/api/entities', needsAuthorization(['admin', 'editor']), (req, res) => {
     entities.delete(req.query.sharedId)
     .then(response => res.json(response))
     .catch(res.error);
   });
 
-  app.delete('/api/entities/multiple', needsAuthorization, (req, res) => {
+  app.delete('/api/entities/multiple', needsAuthorization(['admin', 'editor']), (req, res) => {
     entities.deleteMultiple(JSON.parse(req.query.sharedIds))
     .then(response => res.json(response))
     .catch(res.error);

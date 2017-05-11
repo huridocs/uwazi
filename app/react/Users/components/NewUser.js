@@ -25,7 +25,8 @@ export class NewUser extends Component {
     let backUrl = '/settings/users';
     const validator = {
       username: {required: notEmpty},
-      email: {required: notEmpty}
+      email: {required: notEmpty},
+      role: {required: notEmpty}
     };
     return (
       <div className="account-settings">
@@ -50,6 +51,15 @@ export class NewUser extends Component {
                 <Field model=".email">
                   <label className="form-group-label" htmlFor="email">{t('System', 'Email')}</label>
                   <input id="email" className="form-control"/>
+                </Field>
+              </FormGroup>
+              <FormGroup model=".role" className="form-group-radio">
+                <Field model=".role">
+                  <label className="form-group-label" htmlFor="email">{t('System', 'Role')}</label>
+                  <div>
+                    <input type="radio" name="role" value="admin"/> {t('System', 'admin')}&nbsp;
+                    <input type="radio" name="role" value="editor"/> {t('System', 'editor')}
+                  </div>
                 </Field>
               </FormGroup>
             </div>
