@@ -31,14 +31,6 @@ export class MetadataForm extends Component {
     this.props.onSubmit(metadata, this.props.model);
   }
 
-  componentWillReceiveProps(nextProps) {
-    Object.keys(nextProps).forEach((index) => {
-      if (nextProps[index] !== this.props[index]) {
-        console.log(index);
-      }
-    });
-  }
-
   render() {
     const {model, template, templateOptions} = this.props;
     if (!template) {
