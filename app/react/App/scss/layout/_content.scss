@@ -26,7 +26,7 @@
   -webkit-align-items: center;
   align-items: center;
   padding: 15px;
-  height: 50px;
+  height: $header-height;
   @media(min-width: 1024px) {
     padding: 0 15px;
     width: calc(100% - 400px);

@@ -9,6 +9,7 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions as formActions} from 'react-redux-form';
 import * as uiActions from './actions/uiActions';
 
+import SearchButton from 'app/Entities/components/SearchButton';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 export default class Entity extends RouteHandler {
@@ -72,6 +73,14 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
     this.context.store.dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));
     this.context.store.dispatch(formActions.merge('connectionsList.sort', state.connectionsList.sort));
+  }
+
+  static renderTools() {
+    return (
+      <div className="searchBox">
+        <SearchButton storeKey="library"/>
+      </div>
+    );
   }
 
   render() {

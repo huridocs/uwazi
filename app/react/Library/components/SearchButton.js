@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {t} from 'app/I18N';
 
 import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
+import {wrapDispatch} from 'app/Multireducer';
 import {unselectAllDocuments} from '../actions/libraryActions';
 
 export class SearchButton extends Component {
@@ -57,12 +58,12 @@ export function mapStateToProps(state, props) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     showFilters,
     hideFilters,
     unselectAllDocuments
-  }, dispatch);
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchButton);

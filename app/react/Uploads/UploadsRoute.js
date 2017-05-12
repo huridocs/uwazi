@@ -25,7 +25,7 @@ export default class Uploads extends RouteHandler {
   static renderTools() {
     return (
       <div className="searchBox">
-        <SearchButton storeKey="library"/>
+        <SearchButton storeKey="uploads"/>
       </div>
     );
   }
