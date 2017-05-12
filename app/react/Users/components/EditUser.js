@@ -7,10 +7,11 @@ import {LocalForm, Field} from 'react-redux-form';
 import {notEmpty} from 'app/Metadata/helpers/validator';
 import {FormGroup} from 'app/Forms';
 import t from 'app/I18N/t';
+import {fromJS as Immutable} from 'immutable';
 
-import {newUser} from 'app/Users/actions/actions';
+import {saveUser} from 'app/Users/actions/actions';
 
-export class NewUser extends Component {
+export class EditUser extends Component {
 
   constructor(props) {
     super(props);
@@ -18,47 +19,35 @@ export class NewUser extends Component {
   }
 
   submit(values) {
-    this.props.newUser(values);
+    this.props.saveUser(values);
   }
 
   render() {
     let backUrl = '/settings/users';
     const validator = {
-      username: {required: notEmpty},
-      email: {required: notEmpty},
       role: {required: notEmpty}
     };
     return (
       <div className="account-settings">
         <LocalForm
+          initialState={this.props.user.toJS()}
           onSubmit={this.submit.bind(this)}
           validators={validator}>
             <div className="metadataTemplate panel-default panel">
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
+              {this.props.user.username}
               <button type="submit" className="btn btn-success save-template">
                 <i className="fa fa-save"></i> {t('System', 'Save')}
               </button>
             </div>
             <div className="panel-body">
-              <FormGroup model=".username">
-                <Field model=".username">
-                  <label className="form-group-label" htmlFor="username">{t('System', 'Username')}</label>
-                  <input id="username" className="form-control"/>
-                </Field>
-              </FormGroup>
-              <FormGroup model=".email">
-                <Field model=".email">
-                  <label className="form-group-label" htmlFor="email">{t('System', 'Email')}</label>
-                  <input id="email" className="form-control"/>
-                </Field>
-              </FormGroup>
               <FormGroup model=".role" className="form-group-radio">
                 <Field model=".role">
                   <label className="form-group-label" htmlFor="email">{t('System', 'Role')}</label>
                   <div>
-                  <input type="radio" id="admin" name="role" value="admin"/>&nbsp;<label htmlFor="admin">{t('System', 'Admin')}</label>&nbsp;
-                  <input type="radio" id="editor" name="role" value="editor"/>&nbsp;<label htmlFor="editor">{t('System', 'Editor')}</label>
+                    <input type="radio" id="admin" name="role" value="admin"/>&nbsp;<label htmlFor="admin">{t('System', 'Admin')}</label>&nbsp;
+                    <input type="radio" id="editor" name="role" value="editor"/>&nbsp;<label htmlFor="editor">{t('System', 'Editor')}</label>
                   </div>
                 </Field>
               </FormGroup>
@@ -70,16 +59,17 @@ export class NewUser extends Component {
   }
 }
 
-NewUser.propTypes = {
-  newUser: PropTypes.func
+EditUser.propTypes = {
+  saveUser: PropTypes.func,
+  user: PropTypes.object
 };
 
-function mapStateToProps(state) {
-  return state;
+function mapStateToProps({users}, props) {
+  return {user: users.find((user) => user.get('_id') === props.params.userId) || Immutable({})};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({newUser}, dispatch);
+  return bindActionCreators({saveUser}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NewUser);
+export default connect(mapStateToProps, mapDispatchToProps)(EditUser);

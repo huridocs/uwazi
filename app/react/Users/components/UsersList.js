@@ -31,6 +31,10 @@ export class UsersList extends Component {
             <li key={index} className="list-group-item">
               <span>{user.get('username')}</span>
               <div className="list-group-item-actions">
+                <I18NLink to={'/settings/users/edit/' + user.get('_id')} className="btn btn-default btn-xs">
+                  <i className="fa fa-pencil"></i>&nbsp;
+                  <span>{t('System', 'Edit')}</span>
+                </I18NLink>
                 <a onClick={this.deleteUser.bind(this, user)} className="btn btn-danger btn-xs template-remove">
                   <i className="fa fa-trash"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>

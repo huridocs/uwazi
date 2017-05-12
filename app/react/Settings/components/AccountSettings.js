@@ -112,7 +112,7 @@ export class AccountSettings extends Component {
           </div>
         </div>
         <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Close admin session')}</div>
+          <div className="panel-heading">{t('System', 'Close session')}</div>
           <div className="panel-body">
             <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> {t('System', 'Logout')}</span></a>
           </div>

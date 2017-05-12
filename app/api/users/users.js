@@ -8,21 +8,27 @@ import {createError} from 'api/utils';
 
 const encryptPassword = password => SHA256(password).toString();
 export default {
-  save(user, currentUser, domain) {
-    const newUser = !user._id;
-    if (user.password && user._id && user._id !== currentUser._id.toString()) {
-      return Promise.reject(createError('Can not change other user password', 403));
-    }
+  save(user, currentUser) {
+    return model.get({_id: user._id})
+    .then(([userInTheDatabase]) => {
+      if (user.hasOwnProperty('password') && user._id && user._id !== currentUser._id.toString()) {
+        return Promise.reject(createError('Can not change other user password', 403));
+      }
 
-    if (user.password) {
-      user.password = encryptPassword(user.password);
-    }
+      if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
+        return Promise.reject(createError('Can not change your own role', 403));
+      }
 
-    if (newUser) {
-      return this.newUser(user, domain);
-    }
+      if (user.hasOwnProperty('role') && user.role !== userInTheDatabase.role && currentUser.role !== 'admin') {
+        return Promise.reject(createError('Unauthorized', 403));
+      }
 
-    return model.save(user);
+      if (user.hasOwnProperty('password')) {
+        user.password = encryptPassword(user.password);
+      }
+
+      return model.save(user);
+    });
   },
 
   newUser(user, domain) {

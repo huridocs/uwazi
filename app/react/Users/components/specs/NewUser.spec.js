@@ -9,7 +9,7 @@ describe('NewUser', () => {
 
   beforeEach(() => {
     props = {
-      saveUser: jasmine.createSpy('saveUser').and.returnValue(Promise.resolve())
+      newUser: jasmine.createSpy('newUser').and.returnValue(Promise.resolve())
     };
   });
 
@@ -25,12 +25,12 @@ describe('NewUser', () => {
   });
 
   describe('submit', () => {
-    it('should call saveUser', () => {
+    it('should call newUser', () => {
       render();
       const instance = component.instance();
       const user = {username: 'spidey', email: 'peter@parker.com'};
       instance.submit(user);
-      expect(props.saveUser).toHaveBeenCalledWith(user);
+      expect(props.newUser).toHaveBeenCalledWith(user);
     });
   });
 });

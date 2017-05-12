@@ -9,6 +9,7 @@ describe('UsersAPI', () => {
     backend.restore();
     backend
     .post(APIURL + 'users', {body: JSON.stringify('ok')})
+    .post(APIURL + 'users/new', {body: JSON.stringify('ok new')})
     .get(APIURL + 'user', {body: JSON.stringify({name: 'doe'})});
   });
 
@@ -28,6 +29,26 @@ describe('UsersAPI', () => {
       users.save(user)
       .then((response) => {
         expect(response).toEqual('ok');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('new()', () => {
+    let user;
+
+    beforeEach(() => {
+      user = {
+        name: 'doe',
+        _id: '123'
+      };
+    });
+
+    it('should post to users/new', (done) => {
+      users.new(user)
+      .then((response) => {
+        expect(response).toEqual('ok new');
         done();
       })
       .catch(catchErrors(done));

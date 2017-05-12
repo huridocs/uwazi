@@ -52,21 +52,21 @@ export class Attachment extends Component {
                </div>;
 
     let buttons = <div className="item-shortcut-group">
-                    <NeedAuthorization>
+                    <NeedAuthorization roles={['admin', 'editor']}>
                       <ShowIf if={!this.props.readOnly}>
                         <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
                           <i className="fa fa-pencil"></i>
                         </a>
                       </ShowIf>
                     </NeedAuthorization>
-                    <NeedAuthorization>
+                    <NeedAuthorization roles={['admin', 'editor']}>
                       <ShowIf if={item.deletable && !this.props.readOnly}>
                         <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
                           <i className="fa fa-trash"></i>
                         </a>
                       </ShowIf>
                     </NeedAuthorization>
-                    <NeedAuthorization>
+                    <NeedAuthorization roles={['admin', 'editor']}>
                       <ShowIf if={item.replaceable && !this.props.readOnly}>
                         <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
                       </ShowIf>
@@ -81,12 +81,12 @@ export class Attachment extends Component {
     if (this.props.beingEdited && !this.props.readOnly) {
       name = <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>;
       buttons = <div className="item-shortcut-group">
-                  <NeedAuthorization>
+                  <NeedAuthorization roles={['admin', 'editor']}>
                     <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
                       <i className="fa fa-close"></i>
                     </a>
                   </NeedAuthorization>
-                  <NeedAuthorization>
+                  <NeedAuthorization roles={['admin', 'editor']}>
                     <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model)}>
                       <i className="fa fa-floppy-o"></i>
                     </a>

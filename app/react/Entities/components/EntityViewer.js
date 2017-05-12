@@ -139,7 +139,7 @@ export class EntityViewer extends Component {
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
-              <NeedAuthorization>
+              <NeedAuthorization roles={['admin', 'editor']}>
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">
                   <i className="fa fa-plus"></i>
@@ -149,7 +149,7 @@ export class EntityViewer extends Component {
             </div>
           </ShowIf>
 
-          <NeedAuthorization>
+          <NeedAuthorization roles={['admin', 'editor']}>
             <ShowIf if={this.props.tab === 'attachments'}>
               <div className="sidepanel-footer">
                 <UploadAttachment entityId={entity._id}/>
