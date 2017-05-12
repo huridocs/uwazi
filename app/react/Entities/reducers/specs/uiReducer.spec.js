@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import uiReducer from '../uiReducer';
 import * as actions from '../../actions/uiActions';
 
-fdescribe('uiReducer', () => {
+describe('uiReducer', () => {
   const initialState = Immutable.fromJS({});
 
   describe('when state is undefined', () => {
