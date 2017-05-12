@@ -3,8 +3,14 @@ import users from './users';
 
 const getDomain = (req) => req.protocol + '://' + req.get('host');
 export default app => {
-  app.post('/api/users', needsAuthorization(), (req, res) => {
+  app.post('/api/users', needsAuthorization(['admin', 'editor']), (req, res) => {
     users.save(req.body, req.user, getDomain(req))
+    .then(response => res.json(response))
+    .catch(res.error);
+  });
+
+  app.post('/api/users/new', needsAuthorization(), (req, res) => {
+    users.newUser(req.body, getDomain(req))
     .then(response => res.json(response))
     .catch(res.error);
   });

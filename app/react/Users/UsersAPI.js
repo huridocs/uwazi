@@ -8,6 +8,13 @@ export default {
     });
   },
 
+  new(user) {
+    return api.post('users/new', user)
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   currentUser() {
     return api.get('user')
     .then((response) => {

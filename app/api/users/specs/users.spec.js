@@ -30,8 +30,22 @@ describe('Users', () => {
       .catch(catchErrors(done));
     });
 
-    describe('when you try to change your role', () => {
-      it('should throw an error', (done) => {
+    describe('when you try to change role', () => {
+      it('should be an admin', (done) => {
+        currentUser = {_id: userId, role: 'editor'};
+        let user = {_id: recoveryUserId, role: 'admin'};
+        return users.save(user, currentUser)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Unauthorized', 403));
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should not modify yourself', (done) => {
         currentUser = {_id: userId, role: 'admin'};
         let user = {_id: userId.toString(), role: 'editor'};
         return users.save(user, currentUser)
@@ -46,7 +60,7 @@ describe('Users', () => {
       });
     });
 
-    describe('new user', () => {
+    describe('newUser', () => {
       const domain = 'http://localhost';
 
       beforeEach(() => {
@@ -54,7 +68,7 @@ describe('Users', () => {
       });
 
       it('should do the recover password process', (done) => {
-        return users.save({username: 'spidey', email: 'peter@parker.com', role: 'editor'}, currentUser, domain)
+        return users.newUser({username: 'spidey', email: 'peter@parker.com', role: 'editor'}, domain)
         .then(() => users.get({username: 'spidey'}))
         .then(([user]) => {
           expect(user.username).toBe('spidey');
@@ -65,7 +79,7 @@ describe('Users', () => {
       });
 
       it('should not allow repeat username', (done) => {
-        return users.save({username: 'username', email: 'peter@parker.com', role: 'editor'}, currentUser, domain)
+        return users.newUser({username: 'username', email: 'peter@parker.com', role: 'editor'}, currentUser, domain)
         .then(() => {
           done.fail('should throw an error');
         })
@@ -77,7 +91,7 @@ describe('Users', () => {
       });
 
       it('should not allow repeat email', (done) => {
-        return users.save({username: 'spidey', email: 'test@email.com', role: 'editor'}, currentUser, domain)
+        return users.newUser({username: 'spidey', email: 'test@email.com', role: 'editor'}, currentUser, domain)
         .then(() => {
           done.fail('should throw an error');
         })

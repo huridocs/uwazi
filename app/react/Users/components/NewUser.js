@@ -8,7 +8,7 @@ import {notEmpty} from 'app/Metadata/helpers/validator';
 import {FormGroup} from 'app/Forms';
 import t from 'app/I18N/t';
 
-import {saveUser} from 'app/Users/actions/actions';
+import {newUser} from 'app/Users/actions/actions';
 
 export class NewUser extends Component {
 
@@ -18,7 +18,7 @@ export class NewUser extends Component {
   }
 
   submit(values) {
-    this.props.saveUser(values);
+    this.props.newUser(values);
   }
 
   render() {
@@ -71,7 +71,7 @@ export class NewUser extends Component {
 }
 
 NewUser.propTypes = {
-  saveUser: PropTypes.func
+  newUser: PropTypes.func
 };
 
 function mapStateToProps(state) {
@@ -79,7 +79,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveUser}, dispatch);
+  return bindActionCreators({newUser}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewUser);

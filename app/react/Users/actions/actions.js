@@ -21,3 +21,13 @@ export function saveUser(user) {
     }).catch(() => Promise.resolve());
   };
 }
+
+export function newUser(user) {
+  return function (dispatch) {
+    return UsersAPI.new(user)
+    .then(() => {
+      dispatch(basicActions.push('users', user));
+      dispatch(notify('Created successfully.', 'success'));
+    }).catch(() => Promise.resolve());
+  };
+}

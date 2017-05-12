@@ -24,6 +24,19 @@ describe('users routes', () => {
       });
     });
 
+    describe('/users/new', () => {
+      it('should call users newUser with the body', (done) => {
+        spyOn(users, 'newUser').and.returnValue(Promise.resolve());
+        let req = {body: 'changes', user: {_id: 'currentUser'}, protocol: 'http', get: () => 'localhost'};
+        routes.post('/api/users/new', req)
+        .then(() => {
+          expect(users.newUser).toHaveBeenCalledWith('changes', 'http://localhost');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     describe('/recoverpassword', () => {
       it('should call users update with the body email', (done) => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
