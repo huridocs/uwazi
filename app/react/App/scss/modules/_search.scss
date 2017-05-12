@@ -1,4 +1,5 @@
 .library-filters {
+  z-index: 6;
   top: 0;
   @media(min-width: 1024px) {
     top: $header-height;
@@ -101,8 +102,8 @@
       border-color: $c-white;
     } @else {
       color: $c-white;
-      background-color: $c-black;
-      border-color: $c-black;
+      background-color: $c-primary;
+      border-color: $c-primary;
     }
     @media(min-width: 454px) {
       right: 400px;
@@ -112,15 +113,13 @@
       right: 0;
     }
 
-    &:hover,
-    &:focus,
-    &:active {
+    &:hover {
       @if $theme == light {
         color: $c-black;
         background-color: $c-white;
       } @else {
         color: $c-white;
-        background-color: $c-black;
+        background-color: $c-primary-dark;
       }
     }
   }
