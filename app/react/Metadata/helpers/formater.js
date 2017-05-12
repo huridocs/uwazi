@@ -1,5 +1,6 @@
 import moment from 'moment';
 import t from 'app/I18N/t';
+import {advancedSort} from 'app/utils/advancedSort';
 
 export default {
 
@@ -63,7 +64,8 @@ export default {
       return this.getSelectOptions(option, thesauri);
     });
 
-    return {label: property.label, name: property.name, value: values, showInCard};
+    const sortedValues = advancedSort(values, {property: 'value'});
+    return {label: property.label, name: property.name, value: sortedValues, showInCard};
   },
 
   nested(property, rows, showInCard) {
