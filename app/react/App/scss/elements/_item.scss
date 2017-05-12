@@ -132,6 +132,9 @@ $item-padding: 15px;
 }
 
 .item-type {
+  display: -webkit-flex;
+  -webkit-align-items: center;
+  align-items: center;
   white-space: nowrap;
   width: calc(100% - 35px);
 }
@@ -144,8 +147,6 @@ $item-padding: 15px;
 }
 
 .item-type__icon {
-  position: relative;
-  top: -2px;
   margin-right: 5px;
   font-size: 14px;
 }
