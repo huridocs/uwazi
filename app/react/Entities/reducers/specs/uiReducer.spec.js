@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import uiReducer from '../uiReducer';
 import * as actions from '../../actions/uiActions';
 
-describe('uiReducer', () => {
+fdescribe('uiReducer', () => {
   const initialState = Immutable.fromJS({});
 
   describe('when state is undefined', () => {
@@ -14,9 +14,9 @@ describe('uiReducer', () => {
   });
 
   describe('when showTab', () => {
-    it('should set tab passed', () => {
+    it('should set tab passed and showFilters to false', () => {
       let newState = uiReducer(initialState, actions.showTab('tab'));
-      expect(newState.toJS()).toEqual({tab: 'tab'});
+      expect(newState.toJS()).toEqual({tab: 'tab', showFilters: false});
     });
   });
 
