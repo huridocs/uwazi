@@ -86,7 +86,8 @@ export default class DocumentsList extends Component {
               <div className="col-sm-12 text-center protip">
                 <i className="fa fa-lightbulb-o"></i>
                 <b>ProTip!</b>
-                <span>Use <span className="protip-key">cmd</span> + click to select multiple files.</span>
+                <span>Use <span className="protip-key">cmd</span> or <span className="protip-key">shift</span>&nbsp;
+                + click to select multiple files.</span>
               </div>
             </NeedAuthorization>
           </div>
