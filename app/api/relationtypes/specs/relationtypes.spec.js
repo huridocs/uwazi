@@ -5,7 +5,7 @@ import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures, {canNotBeDeleted, against} from './fixtures.js';
 
 describe('relationtypes', () => {

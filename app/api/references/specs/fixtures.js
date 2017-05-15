@@ -1,4 +1,4 @@
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();

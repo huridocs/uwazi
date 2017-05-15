@@ -1,7 +1,7 @@
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from '../translations.js';
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures, {entityTemplateId, documentTemplateId} from './fixtures.js';
 
 

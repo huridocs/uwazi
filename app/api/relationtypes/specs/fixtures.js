@@ -1,4 +1,4 @@
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 let against = db.id();
 let canNotBeDeleted = db.id();

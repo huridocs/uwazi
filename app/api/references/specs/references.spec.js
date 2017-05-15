@@ -1,7 +1,7 @@
 import references from '../references.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
 import fixturesForGroup, {template as templateForGroup,
                           entityTemplate, template1Id, template2Id,

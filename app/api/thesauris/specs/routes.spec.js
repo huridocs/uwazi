@@ -7,7 +7,7 @@ import thesauris from '../thesauris';
 import translations from 'api/i18n/translations';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures from './fixtures.js';
 
 describe('thesauris routes', () => {

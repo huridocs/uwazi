@@ -3,7 +3,7 @@ import settings from '../settings.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import fixtures from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('settings', () => {
   beforeEach((done) => {

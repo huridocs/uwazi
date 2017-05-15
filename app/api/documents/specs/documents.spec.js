@@ -8,7 +8,7 @@ import search from 'api/search/search';
 
 import documents from '../documents.js';
 import fixtures from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('documents', () => {
   beforeEach((done) => {

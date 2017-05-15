@@ -6,7 +6,7 @@ import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures, {dictionaryId, dictionaryIdToTranslate, dictionaryValueId} from './fixtures.js';
 
 describe('thesauris', () => {

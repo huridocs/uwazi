@@ -8,7 +8,7 @@ import references from 'api/references';
 import entitiesModel from 'api/entities/entitiesModel';
 
 import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('entities', () => {
   beforeEach((done) => {

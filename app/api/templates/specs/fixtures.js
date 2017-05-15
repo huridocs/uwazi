@@ -1,4 +1,4 @@
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 const templateToBeEditedId = '589af97080fc0b23471d67f2';
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const templateWithContents = db.id();

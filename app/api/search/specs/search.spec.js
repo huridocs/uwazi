@@ -6,7 +6,7 @@ import queryBuilder from 'api/search/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import fixtures, {templateId, userId} from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('search', () => {
   let result;

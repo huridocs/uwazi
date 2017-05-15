@@ -6,7 +6,7 @@ import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures, {entityId} from './fixtures.js';
 
 describe('upload routes', () => {
