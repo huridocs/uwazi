@@ -118,6 +118,7 @@ export class Attachment extends Component {
                 <span className="label label-success">
                   <ShowIf if={!this.props.readOnly}>
                     <span>
+                      &nbsp;
                       <i className="fa fa-arrow-left"></i>
                       <span>You are reading this document</span>
                     </span>
