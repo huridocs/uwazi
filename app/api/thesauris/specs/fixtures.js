@@ -7,7 +7,7 @@
   //]
 //};
 
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 const entityTemplateId = '589af97080fc0b23471d67f3';
 const dictionaryId = '589af97080fc0b23471d67f4';
 const dictionaryIdToTranslate = '589af97080fc0b23471d67f5';

@@ -7,7 +7,7 @@ import paths, {attachmentsPath} from '../../config/paths';
 import entities from '../../entities';
 import attachmentsRoutes from '../routes';
 import fixtures, {entityId, toDeleteId, attachmentToEdit} from './fixtures';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('Attachments Routes', () => {
   let routes;

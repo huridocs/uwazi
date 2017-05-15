@@ -4,7 +4,8 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 
 import fixtures, {userId, expectedKey, recoveryUserId} from './fixtures.js';
-import {db, createError} from 'api/utils';
+import db from 'api/utils/testing_db';
+import {createError} from 'api/utils';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 
 describe('Users', () => {

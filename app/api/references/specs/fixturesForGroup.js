@@ -1,4 +1,4 @@
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 const template = db.id();
 const entityTemplate = db.id();

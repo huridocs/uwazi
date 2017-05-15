@@ -4,7 +4,7 @@ import entities from 'api/entities/entities.js';
 import documents from 'api/documents/documents.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 import fixtures, {templateToBeEditedId, templateToBeDeleted, templateWithContents} from './fixtures.js';
 
 describe('templates', () => {

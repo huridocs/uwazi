@@ -4,7 +4,7 @@ import {mockID} from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 
 import fixtures, {pageToUpdate} from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('pages', () => {
   beforeEach((done) => {

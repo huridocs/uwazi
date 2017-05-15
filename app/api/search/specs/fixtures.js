@@ -1,4 +1,4 @@
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 const batmanFinishesId = db.id();
 const unpublishedId = db.id();

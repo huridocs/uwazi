@@ -5,7 +5,7 @@ import templates from '../../templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import fixtures, {batmanFinishesId} from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('documents', () => {
   let routes;

@@ -6,7 +6,7 @@ import thesauris from '../../thesauris/thesauris';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import fixtures, {templateId} from './fixtures.js';
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 describe('entities', () => {
   let routes;

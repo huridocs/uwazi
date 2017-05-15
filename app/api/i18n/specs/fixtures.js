@@ -1,4 +1,4 @@
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
 export default {

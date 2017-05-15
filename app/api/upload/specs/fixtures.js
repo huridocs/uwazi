@@ -7,7 +7,7 @@
   //]
 //};
 //
-import {db} from 'api/utils';
+import db from 'api/utils/testing_db';
 
 const entityId = db.id();
 
