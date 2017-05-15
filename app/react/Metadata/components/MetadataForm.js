@@ -40,7 +40,7 @@ export class MetadataForm extends Component {
     return (
       <Form id='metadataForm' model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
 
-        <FormGroup model={model} field={'title'}>
+        <FormGroup model={'.title'}>
           <ul className="search__filter">
             <li><label>{t('System', 'Title')} <span className="required">*</span></label></li>
             <li className="wide">

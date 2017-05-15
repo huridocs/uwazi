@@ -26,14 +26,18 @@ describe('pages', () => {
 
       pages.save(doc, user, 'es')
       .then((result) => {
-        return pages.get({sharedId: result.sharedId});
+        return Promise.all([
+          pages.getById(result.sharedId, 'es'),
+          pages.getById(result.sharedId, 'en'),
+          pages.getById(result.sharedId, 'pt')
+        ]);
       })
-      .then((docs) => {
-        expect(docs.length).toBe(3);
-        expect(docs[0].language).toBe('es');
-        expect(docs[0].title).toBe(doc.title);
-        expect(docs[0].user.equals(user._id)).toBe(true);
-        expect(docs[0].creationDate).toEqual(1);
+      .then(([es, en, pt]) => {
+        expect(es.title).toBe(doc.title);
+        expect(en.title).toBe(doc.title);
+        expect(pt.title).toBe(doc.title);
+        expect(es.user.equals(user._id)).toBe(true);
+        expect(es.creationDate).toEqual(1);
         done();
       })
       .catch(catchErrors(done));

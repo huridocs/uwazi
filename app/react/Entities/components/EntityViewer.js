@@ -21,6 +21,7 @@ import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
 import {TemplateLabel, Icon} from 'app/Layout';
+import SidePanel from 'app/Layout/SidePanel';
 
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
@@ -134,11 +135,11 @@ export class EntityViewer extends Component {
             entityBeingEdited={entityBeingEdited} />
         </ShowIf>
 
-        <aside className="side-panel entity-connections">
+        <SidePanel className={"entity-connections entity-" + this.props.tab} open={this.props.sidepanelOpen}>
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
-              <NeedAuthorization>
+              <NeedAuthorization roles={['admin', 'editor']}>
                 <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
                         className="create-connection btn btn-success">
                   <i className="fa fa-plus"></i>
@@ -148,7 +149,7 @@ export class EntityViewer extends Component {
             </div>
           </ShowIf>
 
-          <NeedAuthorization>
+          <NeedAuthorization roles={['admin', 'editor']}>
             <ShowIf if={this.props.tab === 'attachments'}>
               <div className="sidepanel-footer">
                 <UploadAttachment entityId={entity._id}/>
@@ -168,7 +169,7 @@ export class EntityViewer extends Component {
             </Tabs>
           </div>
 
-        </aside>
+        </SidePanel>
 
         <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
 
@@ -181,6 +182,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
+  sidepanelOpen: PropTypes.bool,
   connectionsGroups: PropTypes.object,
   templates: PropTypes.array,
   relationTypes: PropTypes.array,
@@ -219,7 +221,9 @@ const mapStateToProps = (state) => {
     entity: prepareMetadata(state),
     connectionsGroups: state.connectionsList.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
-    tab: state.entityView.uiState.get('tab')
+    tab: state.entityView.uiState.get('tab'),
+    sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
+    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
   };
 };
 

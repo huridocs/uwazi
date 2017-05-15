@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Component} from 'react';
+import RouteHandler from 'app/App/RouteHandler';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import auth from 'app/Auth';
 
-export class ResetPassword extends Component {
+export class ResetPassword extends RouteHandler {
 
   constructor(props, context) {
     super(props, context);
     this.state = {error: false, password: '', repeatPassword: ''};
+  }
+
+  static requestState() {
+    return Promise.resolve({});
   }
 
   passwordChange(e) {
@@ -58,7 +62,7 @@ export class ResetPassword extends Component {
               <div className="required">Passwords don&rsquo;t match</div>
             </div>
             <button type="submit" className="btn btn-block btn-lg btn-primary">
-              Reset password
+              Save password
             </button>
           </form>
         </div>

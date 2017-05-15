@@ -1,22 +1,44 @@
+// TEST entire implementation
 import nodemailer from 'nodemailer';
-import smtp from 'nodemailer-smtp-transport';
+import mailerConfig from 'api/config/mailer';
 
-let transporter = nodemailer.createTransport(smtp({
-  host: 'mail.gandi.net',
-  port: 587,
-  auth: {
-    user: '',
-    pass: ''
+import settings from 'api/settings/settings';
+
+let transporterOptions = {
+  sendmail: true,
+  newline: 'unix',
+  path: '/usr/sbin/sendmail',
+  secure: false,
+  tls: {
+    rejectUnauthorized: false
   }
-}));
+};
+
+if (Object.keys(mailerConfig).length) {
+  transporterOptions = mailerConfig;
+}
 
 export default {
   send(mailOptions) {
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return console.log(error);
-      }
-      console.log('Email sent', info);
+    let transporter;
+
+    return new Promise((resolve, reject) => {
+      settings.get()
+      .then(config => {
+        try {
+          transporter = nodemailer.createTransport(config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions);
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              reject(error);
+              return;
+            }
+            resolve(info);
+          });
+        } catch (err) {
+          reject(err);
+        }
+      })
+      .catch(reject);
     });
   }
 };

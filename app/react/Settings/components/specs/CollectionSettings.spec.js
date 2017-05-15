@@ -10,7 +10,7 @@ describe('CollectionSettings', () => {
 
   beforeEach(() => {
     props = {
-      settings: {_id: 'id', _rev: 'rev', site_name: 'Uwazi', home_page: '123', links: ['123']},
+      settings: {_id: 'id', links: ['123']},
       notify: jasmine.createSpy('notify')
     };
     component = shallow(<CollectionSettings {...props} />);
@@ -21,7 +21,14 @@ describe('CollectionSettings', () => {
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
     });
 
-    it('should save the settings', () => {
+    it('should save the settings with defaults', () => {
+      component.find('form').simulate('submit', {preventDefault: () => {}});
+      expect(SettingsAPI.save).toHaveBeenCalledWith(Object.assign({home_page: '', site_name: '', mailerConfig: ''}, props.settings));
+    });
+
+    it('should save the updated settings', () => {
+      props.settings = {_id: 'id', _rev: 'rev', site_name: 'Uwazi', home_page: '123', mailerConfig: 'some config', links: ['123']};
+      component = shallow(<CollectionSettings {...props} />);
       component.find('form').simulate('submit', {preventDefault: () => {}});
       expect(SettingsAPI.save).toHaveBeenCalledWith(props.settings);
     });

@@ -3,13 +3,13 @@ import search from '../search/search';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/references', needsAuthorization, (req, res) => {
+  app.post('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
     references.save(req.body, req.language)
     .then(response => res.json(response))
     .catch(error => res.json({error}));
   });
 
-  app.delete('/api/references', needsAuthorization, (req, res) => {
+  app.delete('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
     references.delete(req.query._id)
     .then(response => res.json(response))
     .catch(error => res.json({error: error.json}));

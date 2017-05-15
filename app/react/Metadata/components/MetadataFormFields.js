@@ -48,7 +48,7 @@ export class MetadataFormFields extends Component {
       <div>
         {template.properties.map((property) => {
           return (
-            <FormGroup key={property.name} model={this.props.model} field={'metadata.' + property.name}>
+            <FormGroup key={property.name} model={'.metadata.' + property.name}>
               <ul className="search__filter is-active">
                 <li>
                   <label>

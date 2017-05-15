@@ -2,8 +2,13 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {wrapDispatch} from 'app/Multireducer';
 
+import {filterBaseProperties} from 'app/Entities/utils/filterBaseProperties';
 import {saveDocument} from 'app/Library/actions/libraryActions';
 import {actions, MetadataForm} from 'app/Metadata';
+
+function onSubmit(data) {
+  return saveDocument(filterBaseProperties(data));
+}
 
 function mapStateToProps(state, props) {
   const templates = state.templates;
@@ -18,9 +23,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    changeTemplate: actions.changeTemplate, onSubmit: saveDocument, dispatch: wrapDispatch(dispatch, props.storeKey)
-  }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({changeTemplate: actions.changeTemplate, onSubmit}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

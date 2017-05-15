@@ -6,6 +6,7 @@ import SortButtons from 'app/Library/components/SortButtons';
 import {RowList} from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
+import {NeedAuthorization} from 'app/Auth';
 import {t} from 'app/I18N';
 
 const loadMoreAmmount = 30;
@@ -63,12 +64,12 @@ export default class DocumentsList extends Component {
             )}
           </RowList>
           <div className="row">
-            <div className="col-sm-12 text-center documents-counter">
+            <p className="col-sm-12 text-center documents-counter">
                 <b>{documents.get('rows').size}</b>
                 {` ${t('System', 'of')} `}
                 <b>{documents.get('totalRows')}</b>
                 {` ${t('System', 'documents')}`}
-            </div>
+            </p>
             {(() => {
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return <div className="col-sm-12 text-center">
@@ -81,6 +82,14 @@ export default class DocumentsList extends Component {
                 return <Loader/>;
               }
             })()}
+            <NeedAuthorization>
+              <div className="col-sm-12 text-center protip">
+                <i className="fa fa-lightbulb-o"></i>
+                <b>ProTip!</b>
+                <span>Use <span className="protip-key">cmd</span> or <span className="protip-key">shift</span>&nbsp;
+                + click to select multiple files.</span>
+              </div>
+            </NeedAuthorization>
           </div>
           <Footer/>
         </div>

@@ -35,7 +35,6 @@ export default {
 
     if (query.unpublished && user) {
       documentsQuery.unpublished();
-      documentsQuery.owner(user);
     }
 
     return elastic.search({index: elasticIndex, body: documentsQuery.query()})

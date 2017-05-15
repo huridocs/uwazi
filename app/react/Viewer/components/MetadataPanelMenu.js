@@ -30,7 +30,7 @@ export class MetadataPanelMenu extends Component {
             );
           }
           return (
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor']}>
               <MenuButtons.Main
                 onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
                 <i className="fa fa-pencil"></i>

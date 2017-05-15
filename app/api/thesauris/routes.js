@@ -2,7 +2,7 @@ import needsAuthorization from '../auth/authMiddleware';
 import thesauris from './thesauris';
 
 export default app => {
-  app.post('/api/thesauris', needsAuthorization, (req, res) => {
+  app.post('/api/thesauris', needsAuthorization(), (req, res) => {
     thesauris.save(req.body)
     .then((response) => {
       res.json(response);
@@ -31,7 +31,7 @@ export default app => {
     .catch((error) => res.json({error}));
   });
 
-  app.delete('/api/thesauris', needsAuthorization, (req, res) => {
+  app.delete('/api/thesauris', needsAuthorization(), (req, res) => {
     thesauris.delete(req.query._id, req.query._rev)
     .then((response) => {
       res.json(response);

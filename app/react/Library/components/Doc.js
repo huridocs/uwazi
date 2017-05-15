@@ -31,7 +31,7 @@ export class Doc extends Component {
                 {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
               </span>
             </div>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor']}>
               <ShowIf if={connection.sourceType !== 'metadata'}>
                 <button className="btn btn-default btn-hover-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
                   <i className="fa fa-trash"></i>

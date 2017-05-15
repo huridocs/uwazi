@@ -154,15 +154,45 @@ function handleRoute(res, renderProps, req) {
   renderPage();
 }
 
-function ServerRouter(req, res) {
+let allowedRoute = (user = {}, url) => {
+  const isAdmin = user.role === 'admin';
+  const isEditor = user.role === 'editor';
   let authRoutes = [
     '/uploads',
-    '/settings'
+    '/settings/account'
   ];
-  if (!req.user && authRoutes.reduce((found, authRoute) => {
-    return found || req.url.indexOf(authRoute) !== -1;
-  }, false)) {
-    res.redirect(302, '/login');
+
+  let adminRoutes = [
+    '/settings/users',
+    '/settings/collection',
+    '/settings/navlink',
+    '/settings/pages',
+    '/settings/translations',
+    '/settings/filters',
+    '/settings/documents',
+    '/settings/entities',
+    '/settings/dictionaries',
+    '/settings/connections'
+  ];
+
+  const isAdminRoute = adminRoutes.reduce((found, authRoute) => {
+    return found || url.indexOf(authRoute) !== -1;
+  }, false);
+
+  const isAuthRoute = authRoutes.reduce((found, authRoute) => {
+    return found || url.indexOf(authRoute) !== -1;
+  }, false);
+
+  return isAdminRoute && isAdmin ||
+         isAuthRoute && (isAdmin || isEditor) ||
+         !isAdminRoute && !isAuthRoute;
+};
+
+function ServerRouter(req, res) {
+  if (!allowedRoute(req.user, req.url)) {
+    const url = req.user ? '/' : '/login';
+    res.redirect(302, url);
+    return;
   }
 
   api.get('settings')

@@ -84,11 +84,11 @@ export default (app) => {
     });
   };
 
-  app.post('/api/upload', needsAuthorization, upload.any(), (req, res) => {
+  app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
     return uploadProcess(req, res);
   });
 
-  app.post('/api/reupload', needsAuthorization, upload.any(), (req, res) => {
+  app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
     return entities.getById(req.body.document)
     .then(doc => Promise.all([doc, references.deleteTextReferences(doc.sharedId, doc.language)]))
     .then(([doc]) => entities.saveMultiple([{_id: doc._id, toc: []}]))

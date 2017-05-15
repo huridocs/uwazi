@@ -7,7 +7,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   context: __dirname,
-  devtool: '#source-map',
+  devtool: '#eval-source-map',
   entry: {
     main: path.join(__dirname, 'app/react/index.js'),
     'pdf.worker': path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
@@ -54,7 +54,7 @@ module.exports = {
         test: /\.(jpe?g|png|eot|woff|woff2|ttf|gif|svg)(\?.*)?$/i,
         loaders: ['url-loader', 'img-loader'],
         include: [
-          path.join(__dirname, 'public'), 
+          path.join(__dirname, 'public'),
           path.join(__dirname, 'app'),
           path.join(__dirname, 'node_modules/react-widgets/lib/fonts/'),
           path.join(__dirname, 'node_modules/font-awesome/fonts/'),

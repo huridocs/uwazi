@@ -32,7 +32,7 @@ export default (app) => {
     .catch((error) => res.json({error}, 500));
   });
 
-  app.post('/api/attachments/upload', needsAuthorization, upload.any(), (req, res) => {
+  app.post('/api/attachments/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
     let addedFile;
 
     return entities.getById(req.body.entityId)
@@ -51,7 +51,7 @@ export default (app) => {
     .catch(error => res.json({error}));
   });
 
-  app.post('/api/attachments/rename', needsAuthorization, (req, res) => {
+  app.post('/api/attachments/rename', needsAuthorization(['admin', 'editor']), (req, res) => {
     let renamedAttachment;
 
     return entities.getById(req.body.entityId)
@@ -78,7 +78,7 @@ export default (app) => {
     .catch((error) => res.json({error}, 500));
   });
 
-  app.delete('/api/attachments/delete', needsAuthorization, (req, res) => {
+  app.delete('/api/attachments/delete', needsAuthorization(['admin', 'editor']), (req, res) => {
     return entities.getById(req.query.entityId)
     .then(entity => {
       entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);

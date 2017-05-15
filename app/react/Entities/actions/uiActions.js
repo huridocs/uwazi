@@ -6,3 +6,11 @@ export function showTab(tab) {
     tab
   };
 }
+
+export function hideFilters() {
+  return {type: types.HIDE_FILTERS};
+}
+
+export function showFilters() {
+  return {type: types.SHOW_FILTERS};
+}

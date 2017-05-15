@@ -34,9 +34,9 @@ describe('NeedAuthorization', () => {
   describe('maped state', () => {
     it('should map authorized true if user in the store', () => {
       let store = {
-        user: Immutable.fromJS({_id: 1})
+        user: Immutable.fromJS({_id: 1, role: 'admin'})
       };
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {roles: ['admin']});
       expect(state).toEqual({authorized: true});
     });
 
@@ -44,7 +44,7 @@ describe('NeedAuthorization', () => {
       let store = {
         user: Immutable.fromJS({})
       };
-      let state = mapStateToProps(store);
+      let state = mapStateToProps(store, {roles: ['admin']});
       expect(state).toEqual({authorized: false});
     });
   });

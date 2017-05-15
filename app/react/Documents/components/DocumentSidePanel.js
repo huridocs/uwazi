@@ -68,10 +68,6 @@ export class DocumentSidePanel extends Component {
     this.props.closePanel();
   }
 
-  submit(doc) {
-    this.props.saveDocument(doc, this.props.formPath);
-  }
-
   render() {
     const {doc, docBeingEdited, DocumentForm, readOnly, references, connections, EntityForm} = this.props;
     const TocForm = this.props.tocFormComponent;
@@ -154,7 +150,7 @@ export class DocumentSidePanel extends Component {
           />
         </ShowIf>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -165,7 +161,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
@@ -176,7 +172,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={startNewConnection}
@@ -188,7 +184,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc && !readOnly}>
             <div className="sidepanel-footer">
               <UploadAttachment entityId={doc.get('_id')}/>
@@ -216,7 +212,7 @@ export class DocumentSidePanel extends Component {
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited && this.props.doc.get('type') === 'document') {
-                  return <DocumentForm storeKey={this.props.storeKey} onSubmit={this.submit.bind(this)} />;
+                  return <DocumentForm storeKey={this.props.storeKey} />;
                 }
                 if (docBeingEdited && this.props.doc.get('type') === 'entity') {
                   return <EntityForm storeKey={this.props.storeKey} />;

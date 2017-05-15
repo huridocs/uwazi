@@ -28,11 +28,11 @@ export class PageCreator extends Component {
 
     return (
       <div className="account-settings">
-        <div className="panel panel-default">
-          <Form
-            model="page.data"
-            onSubmit={this.props.savePage}
-            validators={validator()}>
+        <Form
+          model="page.data"
+          onSubmit={this.props.savePage}
+          validators={validator()}>
+          <div className="panel panel-default">
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>&nbsp;
               <div className={nameGroupClass}>
@@ -56,8 +56,8 @@ export class PageCreator extends Component {
               </ShowIf>
               <MarkDown model=".metadata.content" rows={18} />
             </div>
-          </Form>
-        </div>
+          </div>
+        </Form>
       </div>
     );
   }

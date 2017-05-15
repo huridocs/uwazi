@@ -84,7 +84,7 @@ describe('Login', () => {
       api.get('error_url')
       .catch(() => {
         expect(store.dispatch).toHaveBeenCalledWith('notify action');
-        expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'warning');
+        expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'danger');
         done();
       });
     });

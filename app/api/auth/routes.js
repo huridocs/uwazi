@@ -1,11 +1,22 @@
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
+import mongoConnect from 'connect-mongo';
+import mongoose from 'mongoose';
 import './passport_conf.js';
+
+const MongoStore = mongoConnect(session);
 
 export default (app) => {
   app.use(cookieParser());
-  app.use(session({secret: 'Lola and Harvey'}));
+  app.use(session({
+    secret: 'Lola and Harvey',
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection
+    }),
+    resave: false,
+    saveUninitialized: false
+  }));
   app.use(passport.initialize());
   app.use(passport.session());
 

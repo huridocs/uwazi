@@ -6,7 +6,7 @@ import needsAuthorization from '../auth/authMiddleware';
 import {uploadDocumentsPath} from '../config/paths';
 
 export default (app) => {
-  app.post('/api/documents', needsAuthorization, (req, res) => {
+  app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res) => {
     return documents.save(req.body, {user: req.user, language: req.language})
     .then(doc => res.json(doc))
     .catch((error) => {
@@ -41,7 +41,7 @@ export default (app) => {
     .catch((error) => res.json({error}, 500));
   });
 
-  app.delete('/api/documents', needsAuthorization, (req, res) => {
+  app.delete('/api/documents', needsAuthorization(['admin', 'editor']), (req, res) => {
     documents.delete(req.query.sharedId)
     .then((response) => res.json(response))
     .catch((error) => {

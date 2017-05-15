@@ -25,7 +25,7 @@ export class MetadataFormButtons extends Component {
             </button>
           </I18NLink>
         </ShowIf>
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited}>
             <button
               onClick={() => this.props.loadInReduxForm(this.props.formStatePath, data, this.props.templates.toJS())}
@@ -49,7 +49,7 @@ export class MetadataFormButtons extends Component {
             <span className="btn-label">{t('System', 'Save')}</span>
           </button>
         </ShowIf>
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited}>
             <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>
               <i className="fa fa-trash"></i>
