@@ -8,6 +8,7 @@ import {Select as SimpleSelect} from 'app/Forms';
 import MetadataFormFields from './MetadataFormFields';
 import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import {createSelector} from 'reselect';
+import {filterBaseProperties} from 'app/Entities/utils/filterBaseProperties';
 import t from 'app/I18N/t';
 
 const selectTemplateOptions = createSelector(
@@ -28,7 +29,7 @@ const selectTemplateOptions = createSelector(
 export class MetadataForm extends Component {
 
   onSubmit(metadata) {
-    this.props.onSubmit(metadata, this.props.model);
+    this.props.onSubmit(filterBaseProperties(metadata), this.props.model);
   }
 
   render() {

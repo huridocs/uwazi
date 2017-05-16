@@ -1,13 +1,8 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {filterBaseProperties} from 'app/Entities/utils/filterBaseProperties';
 import {saveEntity} from 'app/Entities/actions/actions';
 import {actions, MetadataForm} from 'app/Metadata';
-
-function onSubmit(data) {
-  return saveEntity(filterBaseProperties(data));
-}
 
 function mapStateToProps(state) {
   return {
@@ -20,7 +15,7 @@ function mapStateToProps(state) {
 }
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({changeTemplate: actions.changeTemplate, onSubmit}, dispatch);
+  return bindActionCreators({changeTemplate: actions.changeTemplate, onSubmit: saveEntity}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
