@@ -78,4 +78,13 @@ describe('FilterSuggestions', () => {
       .toBe('Best SCI FI Authors');
     });
   });
+
+  describe('when content does not match with a thesauri (happening when opening property and the dictionary has been deleted)', () => {
+    it('should not show anything', () => {
+      renderComponent('authors', 'select', 'non existent thesauri');
+      let suggestion = component.find('tbody > tr').at(1);
+      expect(suggestion.text().trim())
+      .toBe('Template 2 Select Best SCI FI Authors');
+    });
+  });
 });
