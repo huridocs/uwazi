@@ -56,9 +56,11 @@ export class FilterSuggestions extends Component {
   }
 
   getThesauriName(thesauriId) {
-    return this.props.thesauris.toJS().find((thesauri) => {
+    let _thesauri = this.props.thesauris.toJS().find((thesauri) => {
       return thesauri._id === thesauriId;
-    }).name;
+    }) || {};
+
+    return _thesauri.name;
   }
 
   filterSuggestions(label, type, content, hasThesauri) {
