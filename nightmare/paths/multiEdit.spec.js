@@ -50,7 +50,8 @@ describe('multi edit path', () => {
 
   describe('editing different types', () => {
     it('should render a form with comon properties', (done) => {
-      nightmare.click(selectors.libraryView.libraryFirstDocument)
+      nightmare
+      .click(selectors.libraryView.libraryFirstDocument)
       .shiftClick(selectors.libraryView.libraryThirdDocument)
       .click(selectors.libraryView.libraryMultiEditEditButton)
       .wait(selectors.libraryView.libraryMultiEditFormOption)
