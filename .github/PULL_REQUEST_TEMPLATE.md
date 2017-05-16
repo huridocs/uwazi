@@ -6,7 +6,6 @@ PR check list:
 - [ ] Server test
 - [ ] End-to-end test
 - [ ] Pass code linter to client and server
-- [ ] Database views added ?
 - [ ] Update READ.me ?
 
 QA check list:

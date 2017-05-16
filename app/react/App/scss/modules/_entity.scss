@@ -72,3 +72,10 @@
     text-overflow: ellipsis;
   }
 }
+
+.create-reference {
+  z-index: 6;
+  @media(max-width: 1023px) {
+    top: 0;
+  }
+}

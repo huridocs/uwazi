@@ -2,15 +2,12 @@
   z-index: 6;
   top: 0;
   @media(min-width: 1024px) {
+    z-index: 4;
     top: $header-height;
     &.is-hidden {
       right: 0;
     }
   }
-}
-
-.metadata-sidepanel {
-  z-index: 6;
 }
 
 .search-box {

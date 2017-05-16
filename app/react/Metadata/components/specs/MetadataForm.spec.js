@@ -7,6 +7,7 @@ import MetadataFormFields from '../MetadataFormFields';
 import {Form, Field} from 'react-redux-form';
 import {FormGroup, Select as SimpleSelect} from 'app/Forms';
 import {IconSelector} from 'app/ReactReduxForms';
+import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
 
 describe('MetadataForm', () => {
@@ -94,9 +95,11 @@ describe('MetadataForm', () => {
 
   describe('submit', () => {
     it('should call onSubmit with the values', () => {
+      spyOn(entitiesUtils, 'filterBaseProperties').and.returnValue('filteredProperties');
       render();
       component.find(Form).simulate('submit', 'values');
-      expect(props.onSubmit).toHaveBeenCalledWith('values', 'metadata');
+      expect(entitiesUtils.filterBaseProperties).toHaveBeenCalledWith('values');
+      expect(props.onSubmit).toHaveBeenCalledWith('filteredProperties', 'metadata');
     });
   });
 
