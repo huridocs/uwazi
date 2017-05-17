@@ -18,7 +18,7 @@ export class MetadataTemplate extends Component {
   render() {
     const {connectDropTarget, formState} = this.props;
     let nameGroupClass = 'template-name form-group';
-    if (formState.name && !formState.name.valid && (formState.$form.submitFailed || formState.name.dirty)) {
+    if (formState.name && !formState.name.valid && (formState.$form.submitFailed || formState.name.touched)) {
       nameGroupClass += ' has-error';
     }
 
