@@ -42,7 +42,11 @@ export class DocumentSidePanel extends Component {
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS())
         .then(() => {
-          browserHistory.goBack();
+          const currentPath = browserHistory.getCurrentLocation().pathname;
+          const isLibraryorUploads = /library|uploads|^\/$|^\/..\/$/;
+          if (!currentPath.match(isLibraryorUploads)) {
+            browserHistory.goBack();
+          }
         });
       },
       title: 'Confirm',
