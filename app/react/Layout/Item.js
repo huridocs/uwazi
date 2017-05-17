@@ -10,8 +10,8 @@ import ShowIf from 'app/App/ShowIf';
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
-import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import PrintDate from './PrintDate';
+import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 export class Item extends Component {
@@ -129,7 +129,9 @@ export class Item extends Component {
             <ShowIf if={!!doc.template}>
               <TemplateLabel template={doc.template}/>
             </ShowIf>
-            <UploadEntityStatus doc={this.props.doc} />
+            <ShowIf if={!doc.template}>
+              <UploadEntityStatus doc={this.props.doc} />
+            </ShowIf>
           </div>
          {buttons}
         </ItemFooter>
