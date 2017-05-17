@@ -137,5 +137,7 @@ export default [
 {key: 'My Files', label: 'My Files'},
 {key: 'New entity', label: 'New entity'},
 {key: 'selected', label: 'selected'},
-{key: 'Filename label', label: 'filename'}
+{key: 'Filename label', label: 'filename'},
+{key: 'Forgot Password?', label: 'Forgot Password?'},
+{key: 'Send recovery email', label: 'Send recovery email'},
 ];
