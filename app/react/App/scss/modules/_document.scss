@@ -40,17 +40,17 @@
   }
 
   &.connections a.reference {
-    background-color: $c-secondary-lighten;
+    background-color: transparentize(yellow, 0.8);
   }
 
   a.highlighted,
   &.connections a.highlighted {
-    background-color: $c-secondary-light;
+    background-color: transparentize(yellow, 0.8);
     cursor: pointer;
   }
 
   &.connections a.is-active {
-    background-color: $c-secondary;
+    background-color: transparentize(yellow, 0.4);
     cursor: pointer;
   }
 }
