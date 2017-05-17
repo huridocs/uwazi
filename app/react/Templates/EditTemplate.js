@@ -40,6 +40,10 @@ export default class EditTemplate extends RouteHandler {
     });
   }
 
+  componentDidMount() {
+    this.context.store.dispatch(formActions.reset('template.data'));
+  }
+
   setReduxState({template, thesauris, templates}) {
     this.context.store.dispatch(formActions.load('template.data', template.data));
     this.context.store.dispatch(actions.set('thesauris', thesauris));

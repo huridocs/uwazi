@@ -1,3 +1,4 @@
+import {actions as formActions} from 'react-redux-form';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -20,6 +21,7 @@ export default class NewTemplate extends RouteHandler {
   }
 
   setReduxState({thesauris, templates}) {
+    this.context.store.dispatch(formActions.reset('template.data'));
     this.context.store.dispatch(actions.set('thesauris', thesauris));
     this.context.store.dispatch(actions.set('templates', templates));
   }
