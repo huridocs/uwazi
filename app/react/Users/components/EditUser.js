@@ -50,36 +50,36 @@ export class EditUser extends Component {
                       <div className="well">
                         <input type="radio" id="editor" name="role" value="editor"/>&nbsp;<label htmlFor="editor">{t('System', 'Editor')}</label>
                         <hr />
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Upload documents and create entities</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Delete documents and entities</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Organise the collection by applying properties</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Creating connections and references</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Creating a table of contents</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Manage site settings and configuration</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Add/delete users and assign roles</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Configure filters</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Add/edit translations</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Create document and entity types</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Create dictionaries</p>
-                        <p> <i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;Naming connections</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Upload documents and create entities')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Delete documents and entities')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Create connections and references')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Create a table of contents')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Manage site settings and configuration')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Configure filters')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Add/edit translations')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Create document and entity types')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Create dictionaries')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-times label-danger"></i>&nbsp;{t('System', 'Name connections')}</p>
                       </div>
                     </div>
                     <div className="col-sm-6">
                       <div className="well">
                         <input type="radio" id="admin" name="role" value="admin"/>&nbsp;<label htmlFor="admin">{t('System', 'Admin')}</label>&nbsp;
                         <hr />
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Upload documents and create entities</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Delete documents and entities</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Organise the collection by applying properties</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Creating connections and references</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Creating a table of contents</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Manage site settings and configuration</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Add/delete users and assign roles</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Configure filters</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Add/edit translations</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Create document and entity types</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Create dictionaries</p>
-                        <p> <i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;Naming connections</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Upload documents and create entities')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Delete documents and entities')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Create connections and references')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Create a table of contents')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Manage site settings and configuration')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Configure filters')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Add/edit translations')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Create document and entity types')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Create dictionaries')}</p>
+                        <p><i className="fa fa-lg fa-fw fa-check label-success"></i>&nbsp;{t('System', 'Name connections')}</p>
                       </div>
                     </div>
                   </div>
