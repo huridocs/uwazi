@@ -21,7 +21,6 @@ export default class NewTemplate extends RouteHandler {
   }
 
   setReduxState({thesauris, templates}) {
-    // test this mathafacka
     this.context.store.dispatch(formActions.reset('template.data'));
     this.context.store.dispatch(actions.set('thesauris', thesauris));
     this.context.store.dispatch(actions.set('templates', templates));

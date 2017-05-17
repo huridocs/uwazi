@@ -41,9 +41,6 @@ export default class EditTemplate extends RouteHandler {
   }
 
   componentDidMount() {
-    // patch to prevent an error on title edition when navigation back and forth on client side,
-    // this need to be executed on client. should be in setReduxState but after serverside rendering its throwing an error
-    // because this route is nested inside another, currently we do not have a good support for this
     this.context.store.dispatch(formActions.reset('template.data'));
   }
 
