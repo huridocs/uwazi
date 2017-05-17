@@ -16,7 +16,7 @@ describe('FormGroup', () => {
   };
 
   it('should render errors when touched and invalid', () => {
-    props.touched = true;
+    props.pristine = false;
     props.valid = false;
     render();
     let group = component.find('.form-group');
@@ -24,12 +24,20 @@ describe('FormGroup', () => {
   });
 
   it('should render errors when touched and submitFailed', () => {
-    props.touched = false;
+    props.pristine = false;
     props.submitFailed = true;
     props.valid = false;
     render();
     let group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(true);
+  });
+
+  it('should not render errors when not touched', () => {
+    props.pristine = true;
+    props.valid = false;
+    render();
+    let group = component.find('.form-group');
+    expect(group.hasClass('has-error')).toBe(false);
   });
 
   it('should not render errors when submitFailed with no errors', () => {

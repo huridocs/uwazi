@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import 'app/Thesauris/scss/thesauris.scss';
+import {notEmpty} from 'app/Metadata/helpers/validator';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {saveThesauri, addValue, removeValue} from 'app/Thesauris/actions/thesauriActions';
@@ -24,7 +25,8 @@ export class ThesauriForm extends Component {
           return !thesauris.find((thesauri) => {
             return thesauri._id !== id && thesauri.name.trim().toLowerCase() === val.trim().toLowerCase();
           });
-        }
+        },
+        required: notEmpty
       }
     };
   }
