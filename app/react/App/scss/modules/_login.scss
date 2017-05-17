@@ -16,16 +16,30 @@
 
 .login-password {
   position: relative;
-  padding-bottom: 45px;
+  padding-bottom: 30px;
   max-height: 100px;
   transition: max-height 300ms, padding 300ms;
   overflow: hidden;
-  .required {
-    position: absolute;
-    top: auto;
-    bottom: 0;
-    left: 0;
+  .forgot-password {
+    margin-top: 10px;
     text-align: center;
+    span {
+      margin: 0;
+      position: static;
+    }
+    a {
+      cursor: pointer;
+      text-decoration: underline;
+      color: $c-grey-dark;
+      opacity: 0.6;
+      &:hover {
+        opacity: 1;
+      }
+    }
+    a.label-danger {
+      color: $c-danger;
+      opacity: 1;
+    }
   }
 
   &.is-hidden{

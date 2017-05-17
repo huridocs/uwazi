@@ -64,23 +64,22 @@ export class Login extends RouteHandler {
             </div>
             <div className={'form-group login-password ' + (this.state.error ? 'has-error' : '') + (this.state.recoverPassword ? ' is-hidden' : '')}>
               <label className="form-group-label" htmlFor="password">{t('System', 'Password')}</label>
-              <div className="input-group">
                 <Field model="login.form.password">
                   <input type="password" name="password" id="password" className="form-control"/>
                 </Field>
-                  <div className="input-group-btn">
-                    <div title="{t('System', 'forgotPassword', 'Don\'t remember your password?')}"
-                      onClick={this.setRecoverPassword.bind(this)} className={'btn' + (this.state.error ? ' btn-danger' : ' btn-default')}
-                    >
-                      <i className="fa fa-question"></i>
-                    </div>
-                  </div>
+                <div className="forgot-password">
+                  <span className="required">{t('System', 'Login failed')} - </span>
+                  <a title={t('System', 'Forgot Password?')}
+                    onClick={this.setRecoverPassword.bind(this)} className={(this.state.error ? 'label-danger' : '')}>
+                    Forgot Password?
+                  </a>
               </div>
-              <div className="required">{t('System', 'Login failed')}</div>
             </div>
-            <button type="submit" className={'btn btn-block btn-lg ' + (this.state.recoverPassword ? 'btn-success' : 'btn-primary')}>
-              {this.state.recoverPassword ? t('System', 'Send recovery email') : t('System', 'Login button', 'Login')}
-            </button>
+            <p>
+              <button type="submit" className={'btn btn-block btn-lg ' + (this.state.recoverPassword ? 'btn-success' : 'btn-primary')}>
+                {this.state.recoverPassword ? t('System', 'Send recovery email') : t('System', 'Login button', 'Login')}
+              </button>
+            </p>
           </Form>
         </div>
       </div>
