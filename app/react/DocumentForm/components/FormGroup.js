@@ -5,7 +5,7 @@ export class FormGroup extends Component {
 
   render() {
     let className = 'form-group';
-    if ((this.props.touched === true || this.props.submitFailed) && this.props.valid === false) {
+    if ((!this.props.pristine || this.props.submitFailed) && this.props.valid === false) {
       className += ' has-error';
     }
 
@@ -24,7 +24,7 @@ let childrenType = PropTypes.oneOfType([
 ]);
 
 FormGroup.propTypes = {
-  touched: PropTypes.bool,
+  pristine: PropTypes.bool,
   valid: PropTypes.bool,
   submitFailed: PropTypes.bool,
   children: childrenType
