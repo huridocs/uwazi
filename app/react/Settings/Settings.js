@@ -4,6 +4,7 @@ import Helmet from 'react-helmet';
 import RouteHandler from 'app/App/RouteHandler';
 import SettingsNavigation from './components/SettingsNavigation';
 import UsersAPI from 'app/Users/UsersAPI';
+import SettingsAPI from './SettingsAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import {actions} from 'app/BasicReducer';
@@ -16,10 +17,11 @@ export class Settings extends RouteHandler {
       UsersAPI.currentUser(),
       ThesaurisAPI.getDictionaries(),
       RelationTypesAPI.get(),
-      I18NApi.get()
+      I18NApi.get(),
+      SettingsAPI.get()
     ])
-    .then(([user, dictionaries, relationTypes, translations]) => {
-      return {user, dictionaries, relationTypes, translations};
+    .then(([user, dictionaries, relationTypes, translations, collection]) => {
+      return {user, dictionaries, relationTypes, translations, settings: {collection}};
     });
   }
 
@@ -28,6 +30,7 @@ export class Settings extends RouteHandler {
     this.context.store.dispatch(actions.set('dictionaries', state.dictionaries));
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('translations', state.translations));
+    this.context.store.dispatch(actions.set('settings/collection', state.settings.collection));
   }
 
   render() {
