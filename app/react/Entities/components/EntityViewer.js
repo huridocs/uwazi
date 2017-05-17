@@ -26,22 +26,15 @@ import SidePanel from 'app/Layout/SidePanel';
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import {AttachmentsList, UploadAttachment} from 'app/Attachments';
-import {processFilters} from 'app/Library/actions/libraryActions';
-import {toUrlParams} from '../../../shared/JSONRequest';
 
 export class EntityViewer extends Component {
-
-  libraryUrl() {
-    const params = processFilters(this.props.library.search, this.props.library.filters.toJS());
-    return '/library/' + toUrlParams(params);
-  }
 
   deleteEntity() {
     this.context.confirm({
       accept: () => {
         this.props.deleteEntity(this.props.rawEntity.toJS())
         .then(() => {
-          browserHistory.push(this.libraryUrl());
+          browserHistory.goBack();
         });
       },
       title: 'Confirm delete',
