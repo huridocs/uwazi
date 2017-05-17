@@ -26,15 +26,22 @@ import SidePanel from 'app/Layout/SidePanel';
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import {AttachmentsList, UploadAttachment} from 'app/Attachments';
+import {processFilters} from 'app/Library/actions/libraryActions';
+import {toUrlParams} from '../../../shared/JSONRequest';
 
 export class EntityViewer extends Component {
+
+  libraryUrl() {
+    const params = processFilters(this.props.library.search, this.props.library.filters.toJS());
+    return '/library/' + toUrlParams(params);
+  }
 
   deleteEntity() {
     this.context.confirm({
       accept: () => {
         this.props.deleteEntity(this.props.rawEntity.toJS())
         .then(() => {
-          browserHistory.push('/');
+          browserHistory.push(this.libraryUrl());
         });
       },
       title: 'Confirm delete',
@@ -191,6 +198,7 @@ EntityViewer.propTypes = {
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
+  library: PropTypes.object,
   showTab: PropTypes.func
 };
 
@@ -222,6 +230,7 @@ const mapStateToProps = (state) => {
     connectionsGroups: state.connectionsList.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
+    library: state.library,
     sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
     || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
   };
