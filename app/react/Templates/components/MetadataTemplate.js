@@ -18,7 +18,7 @@ export class MetadataTemplate extends Component {
   render() {
     const {connectDropTarget, formState} = this.props;
     let nameGroupClass = 'template-name form-group';
-    if (formState.name && !formState.name.valid && (formState.$form.submitFailed || formState.name.touched)) {
+    if (formState.name && !formState.name.valid && (formState.$form.submitFailed || !formState.name.pristine)) {
       nameGroupClass += ' has-error';
     }
 
@@ -38,7 +38,7 @@ export class MetadataTemplate extends Component {
               <Field model=".name">
                 <input placeholder="Template name" className="form-control"/>
               </Field>
-              <ShowIf if={formState.name && formState.name.touched && formState.name.errors.duplicated}>
+              <ShowIf if={formState.name && !formState.name.pristine && formState.name.errors.duplicated}>
                 <div className="validation-error">
                   <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated name
                 </div>
