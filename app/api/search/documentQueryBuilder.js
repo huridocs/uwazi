@@ -70,6 +70,8 @@ export default function () {
                 inner_hits: {
                   _source: false,
                   highlight: {
+                    pre_tags: ['<b>'],
+                    post_tags: ['</b>'],
                     fields: {
                       fullText: {number_of_fragments :10}
                     }

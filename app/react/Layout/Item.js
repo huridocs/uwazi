@@ -94,6 +94,13 @@ export class Item extends Component {
     return this.formatMetadata(populatedMetadata, doc.creationDate, doc.template);
   }
 
+  getSearchSnipett(doc) {
+    if (doc.snippets && doc.snippets[0]) {
+      return <div className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0]}} />;
+    }
+    return false;
+  }
+
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
            templateClassName, buttons, evalPublished} = this.props;
@@ -120,9 +127,7 @@ export class Item extends Component {
             <span>{doc.title}</span>
             {snippet}
           </div>
-          <div className="item-snippet">
-            CASO <b>ARTAVIA</b> MURILLO Y OTROS (“FECUNDACIÓN IN VITRO”) VS. COSTA RICA. SUPERVISIÓN DE ...
-          </div>
+          {this.getSearchSnipett(doc)}
         </div>
         <div className="item-metadata">
           {metadata}
@@ -136,7 +141,7 @@ export class Item extends Component {
               <UploadEntityStatus doc={this.props.doc} />
             </ShowIf>
           </div>
-         {buttons}
+          {buttons}
         </ItemFooter>
       </RowList.Item>
     );
