@@ -13,8 +13,34 @@ describe('search', () => {
   let result;
   beforeEach((done) => {
     result = elasticResult().withDocs([
-      {title: 'doc1', _id: 'id1'},
-      {title: 'doc2', _id: 'id2'}
+      {title: 'doc1', _id: 'id1', snippets: {
+        hits: {
+          hits: [
+            {
+              highlight: {
+                fullText: 'snippets'
+              }
+            }
+          ]
+        }
+      }},
+      {title: 'doc2', _id: 'id2', snippets: {
+        hits: {
+          hits: [
+            {
+              highlight: {
+                fullText: 'snippets2'
+              }
+            }
+          ]
+        }
+      }},
+      {title: 'doc3', _id: 'id3'},
+      {title: 'doc4', _id: 'id4', snippets: {
+        hits: {
+          hits: []
+        }
+      }}
     ])
     .toObject();
 
@@ -94,7 +120,12 @@ describe('search', () => {
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        expect(results.rows).toEqual([
+          {_id: 'id1', title: 'doc1', snippets: 'snippets'},
+          {_id: 'id2', title: 'doc2', snippets: 'snippets2'},
+          {_id: 'id3', title: 'doc3', snippets: []},
+          {_id: 'id4', title: 'doc4', snippets: []}
+        ]);
         expect(results.totalRows).toEqual(10);
         done();
       });
@@ -114,7 +145,6 @@ describe('search', () => {
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         expect(results.totalRows).toEqual(10);
         done();
       });
@@ -129,7 +159,7 @@ describe('search', () => {
         order: 'asc',
         types: ['ruling']
       }, 'es')
-      .then((results) => {
+      .then(() => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
         .filterByTemplate(['ruling'])
@@ -143,7 +173,6 @@ describe('search', () => {
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
       });
     });
@@ -154,7 +183,7 @@ describe('search', () => {
         searchTerm: 'searchTerm',
         includeUnpublished: true
       }, 'es')
-      .then((results) => {
+      .then(() => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
         .includeUnpublished()
@@ -162,7 +191,6 @@ describe('search', () => {
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
       });
     });

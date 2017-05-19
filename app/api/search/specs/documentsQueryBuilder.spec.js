@@ -147,6 +147,14 @@ describe('documentQueryBuilder', () => {
                 has_child: {
                   type: 'fullText',
                   score_mode: 'max',
+                  inner_hits: {
+                    _source: false,
+                    highlight: {
+                      fields: {
+                        fullText: {number_of_fragments: 10}
+                      }
+                    }
+                  },
                   query: {
                     multi_match: {
                       query: 'term',

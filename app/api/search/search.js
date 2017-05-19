@@ -79,6 +79,10 @@ export default {
       .then((response) => {
         let rows = response.hits.hits.map((hit) => {
           let result = hit._source;
+          result.snippets = [];
+          if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+            result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
+          }
           result._id = hit._id;
           return result;
         });
