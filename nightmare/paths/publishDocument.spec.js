@@ -58,7 +58,7 @@ describe('PublishDocument', () => {
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();

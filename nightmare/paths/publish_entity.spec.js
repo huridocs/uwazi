@@ -39,7 +39,7 @@ describe('publish entity path', () => {
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();
@@ -89,7 +89,7 @@ describe('publish entity path', () => {
       'exploit the fears and phobias of his adversaries.')
     .click(selectors.libraryView.saveButton)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();

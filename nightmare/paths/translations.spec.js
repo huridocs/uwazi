@@ -29,7 +29,7 @@ describe('translations path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .manageItemFromList(selectors.settingsView.liElementsOfSection, 'Test Document', '.fa-language')
       .wait(selectors.settingsView.translationsSaveButton)
-      .exists(selectors.settingsView.translationsSaveButton)
+      .isVisible(selectors.settingsView.translationsSaveButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -45,7 +45,7 @@ describe('translations path', () => {
       .type(selectors.settingsView.translationInputEs, 'Documento')
       .waitToClick(selectors.settingsView.translationsSaveButton)
       .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
+      .isVisible('.alert.alert-success')
       .then((result) => {
         expect(result).toBe(true);
         done();
