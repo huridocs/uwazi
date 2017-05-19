@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import SidePanel from 'app/Layout/SidePanel';
 import {ShowMetadata} from 'app/Metadata';
 import {t} from 'app/I18N';
+import {browserHistory} from 'react-router';
 
 import AttachmentsList from 'app/Attachments/components/AttachmentsList';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
@@ -39,7 +40,14 @@ export class DocumentSidePanel extends Component {
   deleteDocument() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.doc.toJS());
+        this.props.deleteDocument(this.props.doc.toJS())
+        .then(() => {
+          const currentPath = browserHistory.getCurrentLocation().pathname;
+          const isLibraryorUploads = /library|uploads|^\/$|^\/..\/$/;
+          if (!currentPath.match(isLibraryorUploads)) {
+            browserHistory.goBack();
+          }
+        });
       },
       title: 'Confirm',
       message: 'Are you sure you want to delete this item?'

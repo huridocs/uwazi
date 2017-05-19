@@ -34,7 +34,7 @@ export class EntityViewer extends Component {
       accept: () => {
         this.props.deleteEntity(this.props.rawEntity.toJS())
         .then(() => {
-          browserHistory.push('/');
+          browserHistory.goBack();
         });
       },
       title: 'Confirm delete',
@@ -191,6 +191,7 @@ EntityViewer.propTypes = {
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
+  library: PropTypes.object,
   showTab: PropTypes.func
 };
 
@@ -222,6 +223,7 @@ const mapStateToProps = (state) => {
     connectionsGroups: state.connectionsList.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
+    library: state.library,
     sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
     || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
   };
