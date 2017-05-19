@@ -28,7 +28,7 @@ describe('filters path', () => {
       .waitToClick(selectors.settingsView.filtersButton)
       .waitToClick(selectors.settingsView.createFilterGroupButton)
       .wait(selectors.settingsView.newFilterGroupForm)
-      .exists(selectors.settingsView.newFilterGroupForm)
+      .isVisible(selectors.settingsView.newFilterGroupForm)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -42,7 +42,7 @@ describe('filters path', () => {
       .type(selectors.settingsView.newFilterGroupForm, 'Test Group')
       .waitToClick(selectors.settingsView.filtrableTypesSaveButton)
       .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
+      .isVisible('.alert.alert-success')
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -55,7 +55,7 @@ describe('filters path', () => {
       .deleteItemFromList(selectors.settingsView.listOfFilterGroups, 'Test Group')
       .waitToClick(selectors.settingsView.saveFilterGroupButton)
       .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
+      .isVisible('.alert.alert-success')
       .then((result) => {
         expect(result).toBe(true);
         done();

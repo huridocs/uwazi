@@ -8,7 +8,7 @@ const nightmare = createNightmare();
 describe('Smoke test,', () => {
   describe('while logged in,', () => {
     describe('login success,', () => {
-      fit('should redirect to library view', (done) => {
+      it('should redirect to library view', (done) => {
         nightmare
         .login('admin', 'admin')
         .url()
@@ -26,7 +26,7 @@ describe('Smoke test,', () => {
       it('should check if documents loaded correctly', (done) => {
         nightmare
         .wait(selectors.libraryView.libraryFirstDocument)
-        .exists(selectors.libraryView.libraryFirstDocument)
+        .isVisible(selectors.libraryView.libraryFirstDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -37,8 +37,8 @@ describe('Smoke test,', () => {
       it('when clicking on a document a side panel should appear', (done) => {
         nightmare
         .click(selectors.libraryView.libraryFirstDocument)
-        .wait('.side-panel.is-active')
-        .exists('.side-panel.is-active')
+        .wait(selectors.libraryView.libraryMetadataPanel)
+        .isVisible(selectors.libraryView.libraryMetadataPanel)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -48,35 +48,11 @@ describe('Smoke test,', () => {
 
       it('when clicking the side panels cross it should disappear', (done) => {
         nightmare
-        .waitToClick('.fa-close')
-        .wait('.side-panel.is-hidden')
-        .exists('.side-panel.is-hidden')
+        .waitToClick('.closeSidepanel')
+        .wait(2000)
+        .isVisible(selectors.libraryView.libraryMetadataPanel)
         .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('when clicking the filters menu it should appear', (done) => {
-        nightmare
-        .waitToClick(selectors.libraryView.searchInLibrary)
-        .wait('.side-panel.is-active')
-        .exists('.side-panel.is-active')
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('when clicking the filters menu cross it should disappear', (done) => {
-        nightmare
-        .waitToClick('.fa-close')
-        .wait('.side-panel.is-hidden')
-        .exists('.side-panel.is-hidden')
-        .then((result) => {
-          expect(result).toBe(true);
+          expect(result).toBe(false);
           done();
         })
         .catch(catchErrors(done));
@@ -86,7 +62,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.libraryView.firstDocumentViewButton)
         .wait('.page')
-        .exists('.page')
+        .isVisible('.page')
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -98,7 +74,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.navigation.libraryNavButton)
         .wait(selectors.libraryView.libraryFirstDocument)
-        .exists(selectors.libraryView.libraryFirstDocument)
+        .isVisible(selectors.libraryView.libraryFirstDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -112,7 +88,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.navigation.uploadsNavButton)
         .wait(selectors.uploadsView.uploadBox)
-        .exists(selectors.uploadsView.uploadBox)
+        .isVisible(selectors.uploadsView.uploadBox)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -123,8 +99,8 @@ describe('Smoke test,', () => {
       it('click on a document then a side panel with the metadata form should appear', (done) => {
         nightmare
         .waitToClick(selectors.uploadsView.firstDocument)
-        .wait('.side-panel.is-active')
-        .exists('.side-panel.is-active')
+        .wait(selectors.uploadsView.metadataPanel)
+        .isVisible(selectors.uploadsView.metadataPanel)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -136,10 +112,9 @@ describe('Smoke test,', () => {
         nightmare
         .wait('.close-modal')
         .click('.close-modal')
-        .wait('.side-panel.is-hidden')
-        .exists('.side-panel.is-hidden')
+        .isVisible(selectors.uploadsView.metadataPanel)
         .then((result) => {
-          expect(result).toBe(true);
+          expect(result).toBe(false);
           done();
         })
         .catch(catchErrors(done));
@@ -163,7 +138,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.collectionButton)
         .wait(selectors.settingsView.collectionNameForm)
-        .exists(selectors.settingsView.collectionNameForm)
+        .isVisible(selectors.settingsView.collectionNameForm)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -175,7 +150,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.documentsButton)
         .wait(selectors.settingsView.addNewDocument)
-        .exists(selectors.settingsView.addNewDocument)
+        .isVisible(selectors.settingsView.addNewDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -187,7 +162,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.firstEditButton)
         .wait(selectors.settingsView.documentsBackButton)
-        .exists(selectors.settingsView.documentsBackButton)
+        .isVisible(selectors.settingsView.documentsBackButton)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -199,7 +174,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.documentsBackButton)
         .wait(selectors.settingsView.addNewDocument)
-        .exists(selectors.settingsView.addNewDocument)
+        .isVisible(selectors.settingsView.addNewDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -211,7 +186,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.connectionsButton)
         .wait(selectors.settingsView.addNewConnection)
-        .exists(selectors.settingsView.addNewConnection)
+        .isVisible(selectors.settingsView.addNewConnection)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -223,7 +198,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.firstEditButton)
         .wait(selectors.settingsView.connectionsBackButton)
-        .exists(selectors.settingsView.connectionsBackButton)
+        .isVisible(selectors.settingsView.connectionsBackButton)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -235,7 +210,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.connectionsBackButton)
         .wait(selectors.settingsView.addNewConnection)
-        .exists(selectors.settingsView.addNewConnection)
+        .isVisible(selectors.settingsView.addNewConnection)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -247,7 +222,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.dictionariesButton)
         .wait(selectors.settingsView.addNewDictionary)
-        .exists(selectors.settingsView.addNewDictionary)
+        .isVisible(selectors.settingsView.addNewDictionary)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -259,7 +234,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.firstEditButton)
         .wait(selectors.settingsView.dictionariesBackButton)
-        .exists(selectors.settingsView.dictionariesBackButton)
+        .isVisible(selectors.settingsView.dictionariesBackButton)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -271,7 +246,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.dictionariesBackButton)
         .wait(selectors.settingsView.addNewDictionary)
-        .exists(selectors.settingsView.addNewDictionary)
+        .isVisible(selectors.settingsView.addNewDictionary)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -283,7 +258,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.entitiesButton)
         .wait(selectors.settingsView.addNewEntity)
-        .exists(selectors.settingsView.addNewEntity)
+        .isVisible(selectors.settingsView.addNewEntity)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -295,7 +270,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.firstEditButton)
         .wait(selectors.settingsView.entitiesBackButton)
-        .exists(selectors.settingsView.entitiesBackButton)
+        .isVisible(selectors.settingsView.entitiesBackButton)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -307,7 +282,7 @@ describe('Smoke test,', () => {
         nightmare
         .waitToClick(selectors.settingsView.entitiesBackButton)
         .wait(selectors.settingsView.addNewEntity)
-        .exists(selectors.settingsView.addNewEntity)
+        .isVisible(selectors.settingsView.addNewEntity)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -323,7 +298,7 @@ describe('Smoke test,', () => {
         })
         .waitToClick(selectors.settingsView.logoutButton)
         .wait(selectors.libraryView.libraryFirstDocument)
-        .exists(selectors.libraryView.libraryFirstDocument)
+        .isVisible(selectors.libraryView.libraryFirstDocument)
         .then((result) => {
           expect(result).toBe(true);
           done();

@@ -27,7 +27,7 @@ selectors.doc = {
 
 const comicCharacter = '58ad7d240d44252fee4e61fd';
 
-fdescribe('PublishDocument', () => {
+describe('PublishDocument', () => {
   // missing test for actually upload and publish a document
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
@@ -58,7 +58,7 @@ fdescribe('PublishDocument', () => {
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();

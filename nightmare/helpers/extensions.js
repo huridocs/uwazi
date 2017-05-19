@@ -78,10 +78,13 @@ Nightmare.action('shiftClick', function (selector, done) {
 });
 
 Nightmare.action('isVisible', function (selector, done) {
-  console.log(selector);
   this.wait(selector)
   .evaluate_now((elementSelector) => {
-    const element = document.querySelector(elementSelector);
+    const selectorMatches = document.querySelectorAll(elementSelector);
+    const element = selectorMatches[0];
+    if (selectorMatches.length > 1) {
+      throw new Error(`multiple matches of ${elementSelector} found`);
+    }
     let isVisible = false;
     if (element) {
       const eventHandler = (e) => {
@@ -162,15 +165,9 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 
 Nightmare.action('getInnerText', function (selector, done) {
   this.wait(selector)
-  .isVisible(selector)
-  .then((result) => {
-    if (result) {
-      return this.evaluate_now((elementToSelect) => {
-        return document.querySelector(elementToSelect).innerText;
-      }, done, selector);
-    }
-    return;
-  });
+  .evaluate_now((elementToSelect) => {
+    return document.querySelector(elementToSelect).innerText;
+  }, done, selector);
 });
 
 Nightmare.action('selectText', function (selector, done) {

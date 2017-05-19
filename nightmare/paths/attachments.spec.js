@@ -34,7 +34,7 @@ describe('attachments path', () => {
         .type(selectors.libraryView.searchInput, itemName)
         .waitToClick(selectors.libraryView.firstSearchSuggestion)
         .wait(selectors.documentView.documentPage)
-        .exists(selectors.documentView.documentPage)
+        .isVisible(selectors.documentView.documentPage)
         .then((result) => {
           expect(result).toBe(true);
           done();

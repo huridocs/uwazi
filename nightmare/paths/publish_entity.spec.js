@@ -6,7 +6,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-fdescribe('publish entity path', () => {
+describe('publish entity path', () => {
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
@@ -39,7 +39,7 @@ fdescribe('publish entity path', () => {
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();
@@ -89,7 +89,7 @@ fdescribe('publish entity path', () => {
       'exploit the fears and phobias of his adversaries.')
     .click(selectors.libraryView.saveButton)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();

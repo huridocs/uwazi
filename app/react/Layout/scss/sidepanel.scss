@@ -16,6 +16,7 @@ $c-sidebar: $c-white;
   border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;
   width: calc(100% - #{$header-height});
+  transition: right 300ms;
   &.is-hidden {
     right: -100%;
   }

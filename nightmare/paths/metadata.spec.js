@@ -28,7 +28,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.dictionariesButton)
       .waitToClick(selectors.settingsView.addNewDictionary)
       .wait(selectors.settingsView.saveDictionaryButton)
-      .exists(selectors.settingsView.saveDictionaryButton)
+      .isVisible(selectors.settingsView.saveDictionaryButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -87,7 +87,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.documentsButton)
       .waitToClick(selectors.settingsView.addNewDocument)
       .wait(selectors.settingsView.saveDocumentButton)
-      .exists(selectors.settingsView.saveDocumentButton)
+      .isVisible(selectors.settingsView.saveDocumentButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -139,7 +139,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.connectionsButton)
       .waitToClick(selectors.settingsView.addNewConnection)
       .wait(selectors.settingsView.saveConnectionButton)
-      .exists(selectors.settingsView.saveConnectionButton)
+      .isVisible(selectors.settingsView.saveConnectionButton)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -192,7 +192,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.entitiesButton)
       .waitToClick(selectors.settingsView.addNewEntity)
       .wait(selectors.settingsView.saveEntityButton)
-      .exists(selectors.settingsView.saveEntityButton)
+      .isVisible(selectors.settingsView.saveEntityButton)
       .then((result) => {
         expect(result).toBe(true);
         done();

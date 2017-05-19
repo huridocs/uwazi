@@ -30,7 +30,7 @@ describe('references path', () => {
         .type(selectors.libraryView.searchInput, itemName)
         .waitToClick(selectors.libraryView.firstSearchSuggestion)
         .wait(selectors.documentView.documentPage)
-        .exists(selectors.documentView.documentPage)
+        .isVisible(selectors.documentView.documentPage)
         .then((result) => {
           expect(result).toBe(true);
           done();
@@ -50,7 +50,7 @@ describe('references path', () => {
       .waitToClick(selectors.documentView.createReferenceSidePanelFirstSearchSuggestion)
       .waitToClick(selectors.documentView.createReferenceSidePanelNextButton)
       .wait(selectors.documentView.targetDocument)
-      .exists(selectors.documentView.targetDocument)
+      .isVisible(selectors.documentView.targetDocument)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -64,8 +64,9 @@ describe('references path', () => {
       .scrollElement(selectors.documentView.viewer, 500)
       .selectText('#pageContainer1 > div.textLayer > div:nth-child(1)')
       .waitToClick(selectors.documentView.saveConnectionButton)
+      .waitToClick('.alert.alert-success')
       .wait(selectors.documentView.activeConnection)
-      .exists(selectors.documentView.activeConnection)
+      .isVisible(selectors.documentView.activeConnection)
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -79,7 +80,7 @@ describe('references path', () => {
       .waitToClick(selectors.documentView.unlinkIcon)
       .waitToClick('.modal-footer .btn-danger')
       .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
+      .isVisible('.alert.alert-success')
       .then((result) => {
         expect(result).toBe(true);
         done();
