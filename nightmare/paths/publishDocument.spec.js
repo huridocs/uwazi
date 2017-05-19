@@ -27,7 +27,7 @@ selectors.doc = {
 
 const comicCharacter = '58ad7d240d44252fee4e61fd';
 
-describe('PublishDocument', () => {
+fdescribe('PublishDocument', () => {
   // missing test for actually upload and publish a document
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {

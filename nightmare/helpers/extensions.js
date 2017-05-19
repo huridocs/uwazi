@@ -77,6 +77,44 @@ Nightmare.action('shiftClick', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('isVisible', function (selector, done) {
+  console.log(selector);
+  this.wait(selector)
+  .evaluate_now((elementSelector) => {
+    const element = document.querySelector(elementSelector);
+    let isVisible = false;
+    if (element) {
+      const eventHandler = (e) => {
+        e.preventDefault();
+        isVisible = true;
+      };
+      element.addEventListener('mouseover', eventHandler);
+      const elementBoundaries = element.getBoundingClientRect();
+      const x = elementBoundaries.left + element.offsetWidth / 2;
+      const y = elementBoundaries.top + element.offsetHeight / 2;
+      const elementInCenter = document.elementFromPoint(x, y);
+      const elementInTopLeft = document.elementFromPoint(elementBoundaries.left, elementBoundaries.top);
+      const elementInBottomRight = document.elementFromPoint(elementBoundaries.right, elementBoundaries.bottom);
+      const e = new MouseEvent('mouseover', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      });
+      if (elementInCenter) {
+        elementInCenter.dispatchEvent(e);
+      }
+      if (elementInTopLeft) {
+        elementInTopLeft.dispatchEvent(e);
+      }
+      if (elementInBottomRight) {
+        elementInBottomRight.dispatchEvent(e);
+      }
+      element.removeEventListener('mouseover', eventHandler);
+    }
+    return isVisible;
+  }, done, selector);
+});
+
 Nightmare.action('manageItemFromList', function (liElement, targetText, action, done) {
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;
@@ -124,9 +162,15 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 
 Nightmare.action('getInnerText', function (selector, done) {
   this.wait(selector)
-  .evaluate_now((elementToSelect) => {
-    return document.querySelector(elementToSelect).innerText;
-  }, done, selector);
+  .isVisible(selector)
+  .then((result) => {
+    if (result) {
+      return this.evaluate_now((elementToSelect) => {
+        return document.querySelector(elementToSelect).innerText;
+      }, done, selector);
+    }
+    return;
+  });
 });
 
 Nightmare.action('selectText', function (selector, done) {

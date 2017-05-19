@@ -8,7 +8,7 @@ const nightmare = createNightmare();
 describe('Smoke test,', () => {
   describe('while logged in,', () => {
     describe('login success,', () => {
-      it('should redirect to library view', (done) => {
+      fit('should redirect to library view', (done) => {
         nightmare
         .login('admin', 'admin')
         .url()
