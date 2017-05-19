@@ -141,3 +141,9 @@
   height: 150px;
   background: url('../../../../public/document-loader.gif') center no-repeat;
 }
+
+.textLayer {
+  opacity: 1;
+}
+.textLayer ::selection { background: rgba(0,0,255,0.2); }
+.textLayer ::-moz-selection { background: rgba(0,0,255,0.2); }
