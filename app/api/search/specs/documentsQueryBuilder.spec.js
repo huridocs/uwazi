@@ -90,6 +90,14 @@ describe('documentQueryBuilder', () => {
       let expectedMatcher = {terms: {'sharedId.raw': ['id1', 'id2']}};
       expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
     });
+
+    describe('when id is a single value', () => {
+      it('should add it to an array', () => {
+        let baseQuery = queryBuilder().filterById('id').query();
+        let expectedMatcher = {terms: {'sharedId.raw': ['id']}};
+        expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+      });
+    });
   });
 
   describe('aggregations', () => {
@@ -150,6 +158,8 @@ describe('documentQueryBuilder', () => {
                   inner_hits: {
                     _source: false,
                     highlight: {
+                      pre_tags: ['<b>'],
+                      post_tags: ['</b>'],
                       fields: {
                         fullText: {number_of_fragments: 10}
                       }

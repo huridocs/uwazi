@@ -50,7 +50,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true) {
+    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 10) {
       if (term) {
         let should = [
           {
@@ -73,7 +73,7 @@ export default function () {
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      fullText: {number_of_fragments :10}
+                      fullText: {number_of_fragments}
                     }
                   }
                 },
@@ -388,8 +388,15 @@ export default function () {
     },
 
     filterById(ids = []) {
-      if (ids.length) {
-        let match = {terms: {'sharedId.raw': ids}};
+      let _ids;
+      if (typeof ids === 'string') {
+        _ids = [ids];
+      }
+      if (Array.isArray(ids)) {
+        _ids = ids;
+      }
+      if (_ids.length) {
+        let match = {terms: {'sharedId.raw': _ids}};
         baseQuery.filter.bool.must.push(match);
       }
       return this;

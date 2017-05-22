@@ -62,6 +62,21 @@ describe('search routes', () => {
     });
   });
 
+  describe('/api/search/search_snippets', () => {
+    it('should search', (done) => {
+      spyOn(search, 'searchSnippets').and.returnValue(new Promise((resolve) => resolve('results')));
+      let req = {query: {searchTerm: 'test', id: 'id'}, language: 'es'};
+
+      routes.get('/api/search/search_snippets', req)
+      .then((response) => {
+        expect(response).toEqual('results');
+        expect(search.searchSnippets).toHaveBeenCalledWith('test', 'id', 'es');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('/api/search/match_title', () => {
     it('should search search by title and return the results', (done) => {
       spyOn(search, 'matchTitle').and.returnValue(new Promise((resolve) => resolve('results')));

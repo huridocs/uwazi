@@ -86,6 +86,24 @@ describe('search', () => {
     });
   });
 
+  describe('searchSnippets', () => {
+    it('perform a search on fullText of the document passed and return the snippets', (done) => {
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+      search.searchSnippets('searchTerm', 'id', 'es')
+      .then((results) => {
+        let expectedQuery = queryBuilder()
+        .fullTextSearch('searchTerm', [], true, 9999)
+        .filterById('id')
+        .language('es')
+        .query();
+
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
+        expect(results.rows[0]).toEqual( {_id: 'id1', title: 'doc1', snippets: 'snippets'});
+        done();
+      });
+    });
+  });
+
   describe('search', () => {
 
     beforeEach(() => {
