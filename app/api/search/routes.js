@@ -27,7 +27,7 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.get('/api/search/search_snippets', (req, res) => {
+  app.get('/api/search_snippets', (req, res) => {
     return search.searchSnippets(req.query.searchTerm, req.query.id, req.language)
     .then(results => res.json(results))
     .catch(res.error);
