@@ -52,6 +52,14 @@ $nav-height: $header-height;
   border: 0;
 }
 
+.nav .tab-separator {
+  width: 1px;
+  height: $header-height - 20px;
+  margin-top: 12px;
+  margin-left: 10px;
+  border-left: 1px solid $c-grey-light;
+}
+
 .nav-tabs {
   display: -webkit-flex;
   display: flex;

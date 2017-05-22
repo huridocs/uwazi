@@ -101,12 +101,6 @@ export class DocumentSidePanel extends Component {
               this.props.showTab(selectedTab);
             }}>
             <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="metadata" default>
-                  <i className="fa fa-info-circle"></i>
-                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-                </TabLink>
-              </li>
               {(() => {
                 if (docType !== 'entity') {
                   return <li>
@@ -130,6 +124,18 @@ export class DocumentSidePanel extends Component {
                 }
                 return <span/>;
               })()}
+              {(() => {
+                if (docType !== 'entity') {
+                  return <li className="tab-separator"></li>;
+                }
+                return <span/>;
+              })()}
+              <li>
+                <TabLink to="metadata" default>
+                  <i className="fa fa-info-circle"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                </TabLink>
+              </li>
               <li>
                 <TabLink to="connections">
                   <i className="fa fa-exchange"></i>

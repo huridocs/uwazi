@@ -92,7 +92,7 @@ export default {
     sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
     metadataForm: '#metadataForm',
     unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
-    sidePanelAttachmentsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(5) > div',
+    sidePanelAttachmentsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(6) > div',
     sidePanelFirstAttachmentTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-info > div',
     sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a:nth-child(1)',
     attachmentFormInput: '#attachmentForm > div > ul > li.wide > div > input',
