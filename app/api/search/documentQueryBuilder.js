@@ -52,15 +52,18 @@ export default function () {
 
     fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 10) {
       if (term) {
-        let should = [
-          {
+        let should = [];
+
+        if (fieldsToSearch.length) {
+          should.push({
             multi_match: {
               query: term,
               type: 'phrase_prefix',
               fields: fieldsToSearch
             }
-          }
-        ];
+          });
+        }
+
         if (includeFullText) {
           should.unshift(
             {

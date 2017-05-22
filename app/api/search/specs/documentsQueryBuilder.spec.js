@@ -187,6 +187,20 @@ describe('documentQueryBuilder', () => {
       );
     });
 
+    describe('when fieldsToSearch is empty', () => {
+      it('shoud not include the multi_match', () => {
+        let baseQuery = queryBuilder().fullTextSearch('term', [], false).query();
+        expect(baseQuery.query.bool.must[1]).toEqual(
+          {
+            bool: {
+              should: [
+              ]
+            }
+          }
+        );
+      });
+    });
+
     describe('when includeFullText = false', () => {
       it('should only search on the document by fieldsToSearch', () => {
         let baseQuery = queryBuilder().fullTextSearch('term', ['field1', 'field2'], false).query();
