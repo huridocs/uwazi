@@ -15,8 +15,8 @@ $c-sidebar: $c-white;
   bottom: 0;
   border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;
-  transition: right 500ms;
   width: calc(100% - #{$header-height});
+  transition: right 300ms;
   &.is-hidden {
     right: -100%;
   }
@@ -163,11 +163,11 @@ $c-sidebar: $c-white;
 
     &.relationship-hover,
     &.highlight-hover:hover {
-      background: $c-secondary-lighten;
+      box-shadow: inset 0 0 0 1px $c-grey-light;
     }
 
     &.relationship-active {
-      background: $c-secondary-light;
+      box-shadow: inset 0 0 0 1px $c-bootstrap-primary, inset 0 0 0 4px transparentize($c-bootstrap-primary, 0.7);
     }
   }
   @media(min-width: 1024px) {

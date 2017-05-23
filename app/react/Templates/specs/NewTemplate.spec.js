@@ -1,4 +1,5 @@
 import React from 'react';
+import {actions as formActions} from 'react-redux-form';
 import {shallow} from 'enzyme';
 import backend from 'fetch-mock';
 
@@ -44,7 +45,9 @@ describe('NewTemplate', () => {
 
   describe('setReduxState()', () => {
     it('should call setThesauri with thesauri passed', () => {
+      spyOn(formActions, 'reset').and.returnValue('reset');
       instance.setReduxState({thesauris: 'thesauris', templates: 'templates'});
+      expect(context.store.dispatch).toHaveBeenCalledWith('reset');
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: 'templates'});
     });

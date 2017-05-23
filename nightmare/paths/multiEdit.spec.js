@@ -40,7 +40,7 @@ describe('multi edit path', () => {
       .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e61fb')
       .click(selectors.uploadsView.saveButton)
       .wait('.alert.alert-success')
-      .exists('.alert.alert-success')
+      .isVisible('.alert.alert-success')
       .then((result) => {
         expect(result).toBe(true);
         done();
@@ -57,6 +57,7 @@ describe('multi edit path', () => {
       .wait(selectors.libraryView.libraryMultiEditFormOption)
       .click(selectors.libraryView.libraryMultiEditFormOption)
       .click(selectors.libraryView.libraryMultiEditSaveButton)
+      .waitToClick('.alert.alert-success')
       .waitForTheEntityToBeIndexed()
       .click(selectors.libraryView.libraryFirstDocument)
       .getInnerText(selectors.libraryView.libraryMetadataPanel)
@@ -90,11 +91,12 @@ describe('multi edit path', () => {
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
-    .exists('.alert.alert-success')
+    .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
       done();
-    });
+    })
+    .catch(catchErrors(done));
   });
 
   it('should go to the library', () => {

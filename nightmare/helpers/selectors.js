@@ -55,7 +55,7 @@ export default {
     libraryMultiEditSaveButton: '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success',
     libraryMultiEditFormOption: '#multiEdit > div:nth-child(2) > div > ul > li.wide > ul > li:nth-child(2) > label > span',
     libraryMultiEditFirstInput: '#multiEdit > div:nth-child(2) > div:nth-child(1) > ul > li.wide > div > input',
-    libraryMetadataPanel: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible',
+    libraryMetadataPanel: '.side-panel.metadata-sidepanel',
     searchInLibrary: '#app > div.content > header > div > a',
     searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
@@ -92,7 +92,7 @@ export default {
     sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div > h1',
     metadataForm: '#metadataForm',
     unlinkIcon: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
-    sidePanelAttachmentsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(5) > div',
+    sidePanelAttachmentsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(6) > div',
     sidePanelFirstAttachmentTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-info > div',
     sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a:nth-child(1)',
     attachmentFormInput: '#attachmentForm > div > ul > li.wide > div > input',
@@ -114,14 +114,15 @@ export default {
     attachmentFormSubmit: '#app > div.content > div > div > aside.side-panel.entity-connections > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-success'
   },
   uploadsView: {
-    uploadBox: '#app > div.content > div > div > main > div:nth-child(1) > div',
+    uploadBox: '#app > div.content > div > div > main > div.upload-box',
     firstDocument: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div',
     newEntityButtom: '#app > div.content > div > div > div > div > button',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button.btn.btn-success',
     firstPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > button',
     secondPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > button',
     thirdPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(3) > div.item-actions > div:nth-child(2) > button',
-    acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success'
+    acceptPublishModel: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success',
+    metadataPanel: '.side-panel.metadata-sidepanel',
   },
   navigation: {
     loginNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',

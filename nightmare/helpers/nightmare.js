@@ -10,6 +10,10 @@ export default function createNightmare(width = 1100, height = 600) {
     fail(error);
   });
 
+  nightmare.on('dom-ready', function () {
+    nightmare.inject('css', __dirname + '/tests.css');
+  });
+
   nightmare.on('console', function (type, message) {
     if (message.match(/React\.createClass is deprecated|Accessing PropTypes via the main React package is deprecated/)) {
       return;
