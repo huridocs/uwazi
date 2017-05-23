@@ -1,0 +1,117 @@
+.react-datepicker__header {
+  background-color: $c-grey-lighten;
+  border-bottom: $c-grey-light; 
+}
+
+.react-datepicker__current-month {
+  font-size: $f-size-lg;
+  line-height: 20px;
+}
+
+.react-datepicker__year-read-view {
+  font-size: $f-size-sm;
+  line-height: 20px;
+}
+
+.react-datepicker__year-option,
+.react-datepicker__month-option {
+  font-size: $f-size;
+}
+
+.react-datepicker__year-option {
+  height: 24px;
+  line-height: 24px;
+}
+
+.react-datepicker__navigation--years-previous,
+.react-datepicker__navigation--years-upcoming,
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  border: 8px solid transparent;
+}
+.react-datepicker__navigation--years-upcoming {
+  top: 0;
+  border-bottom-color: #ccc;
+}
+.react-datepicker__navigation--years-previous {
+  top: 8px;
+  border-top-color: #ccc;
+  
+}
+.react-datepicker__navigation--previous{
+  left: 0;
+  border-right-color: #ccc;
+}
+.react-datepicker__navigation--next{
+  right: 0;
+  border-left-color: #ccc;
+}
+
+
+.react-datepicker__day-name,
+.react-datepicker__day {
+  font-size: $f-size;
+  width: 30px;
+  height: 30px;
+  line-height: 32px;
+  font-family: $f-regular;
+  font-weight: 300;
+}
+
+.react-datepicker__close-icon {
+  position: absolute;
+  right: 0;
+  top: 16px;
+}
+
+
+.react-datepicker__triangle {
+  left: 30px;
+}
+.react-datepicker__tether-element {
+  margin-left: -7px;
+}
+.react-datepicker__tether-element-attached-bottom.react-datepicker__tether-element {
+  margin-top: -7px;
+}
+
+
+.react-datepicker__day--keyboard-selected {
+  background-color: $c-bootstrap-primary;
+}
+.react-datepicker__day--keyboard-selected:hover {
+  background-color: $c-bootstrap-primary-dark;
+}
+.react-datepicker__day--outside-month {
+  color: $c-grey-light;
+}
+
+
+.react-datepicker__close-icon::after {
+  background: $c-grey-light;
+  color: $c-grey-dark;
+}
+.react-datepicker__close-icon:hover::after {
+  background: $c-danger;
+  color: $c-white;
+}
+
+
+.multidate {
+  .react-datepicker__input-container {
+    width: 100%;
+  }
+  .react-datepicker__input-container .react-datepicker__close-icon {
+    display: none;
+  }
+}
+
+.multidate-range {
+  .react-datepicker__close-icon {
+    top: 38px;
+    z-index: 1;
+    &:after {
+      box-shadow: 0 0 0 3px $c-white;
+    }
+  }
+}
