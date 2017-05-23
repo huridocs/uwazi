@@ -96,6 +96,7 @@ describe('libraryActions', () => {
       backend.restore();
       backend
       .get(APIURL + 'search/match_title?searchTerm=batman', {body: JSON.stringify(documentCollection)})
+      .get(APIURL + 'search_snippets?searchTerm=term&id=id', {body: JSON.stringify({response: 'response'})})
       .get(APIURL + 'search?searchTerm=batman', {body: JSON.stringify(documentCollection)})
       .get(APIURL +
         'search?searchTerm=batman' +
@@ -278,6 +279,23 @@ describe('libraryActions', () => {
         store.dispatch(actions.getDocumentReferences('id', 'library'))
         .then(() => {
           expect(referencesAPI.get).toHaveBeenCalledWith('id');
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    describe('searchSnippets', () => {
+      it('should search document snippets and update it on the store', (done) => {
+        mockID();
+        const expectedActions = [
+          {type: types.UPDATE_DOCUMENT, doc: {response: 'response'}}
+        ];
+        const store = mockStore({});
+
+        store.dispatch(actions.searchSnippets('term', 'id'))
+        .then(() => {
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

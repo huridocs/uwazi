@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {SearchText} from '../SearchText.js';
 
-fdescribe('SearchText', () => {
+describe('SearchText', () => {
   let component;
   //let instance;
   let props;
