@@ -1,7 +1,6 @@
 import * as actions from './actions/actions';
 import formater from './helpers/formater';
 import validator from './helpers/validator';
-import comonProperties from './helpers/comonProperties';
 import MetadataForm from './components/MetadataForm';
 import MetadataFormButtons from './components/MetadataFormButtons';
 import MetadataFormFields from './components/MetadataFormFields';
@@ -18,6 +17,5 @@ export default {
   MetadataFormFields,
   ShowMetadata,
   SelectMultiplePanel,
-  comonProperties,
   reducer
 };

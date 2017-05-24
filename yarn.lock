@@ -6539,6 +6539,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
+"rison@https://github.com/Nanonid/rison.git":
+  version "0.1.2"
+  resolved "https://github.com/Nanonid/rison.git#85f3f98419c315504c399c96c0e6b8114584e634"
+
 run-async@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/run-async/-/run-async-0.1.0.tgz#c8ad4a5e110661e402a7d21b530e009f25f8e389"

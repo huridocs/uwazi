@@ -4,6 +4,7 @@ import elastic from '../elastic';
 import elasticResult from './elasticResult';
 import queryBuilder from 'api/search/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import templatesModel from '../../templates';
 
 import fixtures, {templateId, userId} from './fixtures.js';
 import db from 'api/utils/testing_db';
@@ -60,6 +61,18 @@ describe('search', () => {
   });
 
   describe('search', () => {
+
+    beforeEach(() => {
+      const templates = [{
+        _id: 'ruling',
+        properties: [
+          {name: 'property1', type: 'text', filter: true},
+          {name: 'property2', type: 'text', filter: true}
+        ]
+      }];
+      spyOn(templatesModel, 'get').and.returnValue(Promise.resolve(templates));
+    });
+
     it('should perform a search on all fields', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
       search.search({
@@ -71,8 +84,12 @@ describe('search', () => {
       .then((results) => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm', ['field'])
-        .filterMetadata({property1: 'value1', property2: 'value2'})
         .filterByTemplate(['ruling'])
+        .filterMetadata({
+          property1: { value: 'value1', type: 'text' },
+          property2: { value: 'value2', type: 'text' }
+        })
+        .aggregations([])
         .language('es')
         .query();
 
@@ -115,8 +132,12 @@ describe('search', () => {
       .then((results) => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
-        .filterMetadata({property1: 'value1', property2: 'value2'})
         .filterByTemplate(['ruling'])
+        .filterMetadata({
+          property1: { value: 'value1', type: 'text' },
+          property2: { value: 'value2', type: 'text' }
+        })
+        .aggregations([])
         .language('es')
         .sort('title', 'asc')
         .query();

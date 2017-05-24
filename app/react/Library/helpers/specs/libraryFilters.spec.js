@@ -48,7 +48,7 @@ describe('library helper', () => {
         order: 'order',
         sort: 'sort',
         types: ['3'],
-        filters: {country: {value: 'countryValue'}}
+        filters: {country: 'countryValue'}
       };
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
