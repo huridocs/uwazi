@@ -132,9 +132,6 @@ export default {
       }
 
       return entities.get(query, select, {skip: offset, limit})
-      //.then((docs) => {
-        //return docs;
-      //})
       .then((docs) => this.bulkIndex(docs))
       .then(() => index(offset + limit, totalRows));
     };
