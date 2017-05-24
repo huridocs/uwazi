@@ -11,7 +11,6 @@ import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import documents from 'app/Documents';
 import {api} from 'app/Entities';
 import {browserHistory} from 'react-router';
-import {toUrlParams} from 'shared/JSONRequest';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
@@ -156,7 +155,7 @@ describe('libraryActions', () => {
         expected.types = ['decision'];
         expected.limit = limit;
 
-        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`);
+        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
       });
 
       it('should dispatch a HIDE_SUGGESTIONS action', () => {

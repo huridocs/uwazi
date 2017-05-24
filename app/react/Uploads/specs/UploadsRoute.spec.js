@@ -2,7 +2,6 @@ import React from 'react';
 import backend from 'fetch-mock';
 import {shallow} from 'enzyme';
 
-import {APIURL} from 'app/config';
 import searchAPI from 'app/Search/SearchAPI';
 import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/App/RouteHandler';
