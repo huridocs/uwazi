@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import queryBuilder from 'api/search/documentQueryBuilder';
 
-describe('documentQueryBuilder', () => {
+fdescribe('documentQueryBuilder', () => {
   beforeEach(() => {});
 
   describe('default query', () => {
@@ -61,26 +61,26 @@ describe('documentQueryBuilder', () => {
         property1: {value: 'value1', type: 'text'},
         property2: {value: 'value2', type: 'text'}
       }).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({match: {'metadata.property1': 'value1'}});
-      expect(baseQuery.filter.bool.must[1]).toEqual({match: {'metadata.property2': 'value2'}});
+      expect(baseQuery.query.bool.must[1]).toEqual({match: {'metadata.property1': 'value1'}});
+      expect(baseQuery.query.bool.must[2]).toEqual({match: {'metadata.property2': 'value2'}});
     });
 
     it('should filter range filters', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: {from: 10, to: 20}, type: 'range'}}).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({range: {'metadata.property1': {gte: 10, lte: 20}}});
+      expect(baseQuery.query.bool.must[1]).toEqual({range: {'metadata.property1': {gte: 10, lte: 20}}});
     });
 
     it('should filter multiselect filters', () => {
       let baseQuery = queryBuilder().filterMetadata({property1: {value: [23, 4, 16], type: 'multiselect'}}).query();
-      expect(baseQuery.filter.bool.must[0]).toEqual({terms: {'metadata.property1.raw': [23, 4, 16]}});
+      expect(baseQuery.query.bool.must[1]).toEqual({terms: {'metadata.property1.raw': [23, 4, 16]}});
     });
   });
 
   describe('filterByTemplate', () => {
     it('should add a match to get only documents that match with the templates', () => {
       let baseQuery = queryBuilder().filterByTemplate(['template1', 'template2']).query();
-      let expectedMatcher = {terms: {'template': ['template1', 'template2']}};
-      expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+      let expectedMatcher = {terms: {template: ['template1', 'template2']}};
+      expect(baseQuery.query.bool.must[1]).toEqual(expectedMatcher);
     });
   });
 
@@ -88,14 +88,15 @@ describe('documentQueryBuilder', () => {
     it('should add a match to get only documents that match with the passed ids', () => {
       let baseQuery = queryBuilder().filterById(['id1', 'id2']).query();
       let expectedMatcher = {terms: {'sharedId.raw': ['id1', 'id2']}};
-      expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+      //expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+      expect(baseQuery.query.bool.must[1]).toEqual(expectedMatcher);
     });
 
     describe('when id is a single value', () => {
       it('should add it to an array', () => {
         let baseQuery = queryBuilder().filterById('id').query();
         let expectedMatcher = {terms: {'sharedId.raw': ['id']}};
-        expect(baseQuery.filter.bool.must[0]).toEqual(expectedMatcher);
+        expect(baseQuery.query.bool.must[1]).toEqual(expectedMatcher);
       });
     });
   });
@@ -105,9 +106,9 @@ describe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().query();
       let typesAggregation = {
         terms: {
-          field: 'template.raw',
+          field: 'template',
           missing: 'missing',
-          size: 0
+          size: 1
         },
         aggregations: {
           filtered: {
@@ -127,7 +128,7 @@ describe('documentQueryBuilder', () => {
       let property1Aggregation = {
         terms: {
           field: 'metadata.property1.raw',
-          size: 0
+          size: 1
         },
         aggregations: {
           filtered: {
@@ -225,11 +226,11 @@ describe('documentQueryBuilder', () => {
     describe('sort', () => {
       it('should add a sort property desc by default', () => {
         let baseQuery = queryBuilder().sort('title').query();
-        expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'desc', ignore_unmapped: true}});
+        expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'desc', unmapped_type: 'boolean'}});
       });
       it('should sort by order passed', () => {
         let baseQuery = queryBuilder().sort('title', 'asc').query();
-        expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'asc', ignore_unmapped: true}});
+        expect(baseQuery.sort[0]).toEqual({'title.raw': {order: 'asc', unmapped_type: 'boolean'}});
       });
     });
   });

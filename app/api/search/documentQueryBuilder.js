@@ -11,18 +11,13 @@ export default function () {
         must: [{match: {published: true}}]
       }
     },
-    filter: {
-      bool: {
-        must: []
-      }
-    },
     sort: [],
     aggregations: {
       types: {
         terms: {
           field: 'template.raw',
           missing: 'missing',
-          size: 0
+          size: 10
         },
         aggregations: {
           filtered: {
@@ -116,7 +111,7 @@ export default function () {
 
     sort(property, order = 'desc') {
       let sort = {};
-      sort[`${property}.raw`] = {order, ignore_unmapped: true};
+      sort[`${property}.raw`] = {order, unmapped_type: 'boolean'};
       baseQuery.sort.push(sort);
       return this;
     },
@@ -264,7 +259,7 @@ export default function () {
           match = this.nestedrangeFilter(filters, property);
         }
 
-        baseQuery.filter.bool.must.push(match);
+        baseQuery.query.bool.must.push(match);
         baseQuery.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });
       return this;
@@ -274,7 +269,7 @@ export default function () {
       return {
         terms: {
           field: key,
-          size: 0
+          size: 10
         },
         aggregations: {
           filtered: {
@@ -355,9 +350,8 @@ export default function () {
     aggregations(properties) {
       properties.forEach((property) => {
         let path = `metadata.${property.name}.raw`;
-        let filters = baseQuery.filter.bool.must.filter((match) => {
-          return !match.terms ||
-            match.terms && !match.terms[path];
+        let filters = baseQuery.query.bool.must.filter((match) => {
+          return !match.terms || match.terms && !match.terms[path];
         });
 
         if (property.nested) {
@@ -379,13 +373,13 @@ export default function () {
               {terms: {template: _templates}}
             ]
           }};
-        baseQuery.filter.bool.must.push(match);
+        baseQuery.query.bool.must.push(match);
         return this;
       }
 
       if (templates.length) {
         let match = {terms: {template: templates}};
-        baseQuery.filter.bool.must.push(match);
+        baseQuery.query.bool.must.push(match);
       }
       return this;
     },
@@ -400,7 +394,8 @@ export default function () {
       }
       if (_ids.length) {
         let match = {terms: {'sharedId.raw': _ids}};
-        baseQuery.filter.bool.must.push(match);
+        //baseQuery.filter.bool.must.push(match);
+        baseQuery.query.bool.must.push(match);
       }
       return this;
     },

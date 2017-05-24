@@ -51,9 +51,9 @@ export default {
             index: 'analyzed',
             omit_norms: true,
             analyzer: 'tokenizer',
-            fielddata: {format: 'enabled'},
+            //fielddata: true,
             fields: {
-              raw: {type: 'string', analyzer: 'folding'}
+              raw: {type: 'keyword'}
             }
           }
         }
