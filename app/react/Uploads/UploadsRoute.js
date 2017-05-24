@@ -32,7 +32,7 @@ export default class Uploads extends RouteHandler {
   }
 
   static requestState(params, _query = {}, globalResources) {
-    const defaultSearch = prioritySortingCriteria.get();
+    const defaultSearch = prioritySortingCriteria.get({templates: globalResources.templates});
     let query = rison.decode(_query.q || '()');
     query.order = query.order || defaultSearch.order;
     query.sort = query.sort || defaultSearch.sort;

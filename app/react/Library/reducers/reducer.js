@@ -22,6 +22,7 @@ export default (storeKey) => {
     filters: multireducer(libraryFilters, storeKey),
     search: modelReducer(storeKey + '.search', defaultSearch),
     searchForm: formReducer(storeKey + '.search', defaultSearch),
+    selectedSorting: createReducer(storeKey + '.selectedSorting', {}),
     //
     sidepanel: combineReducers({
       metadata: modelReducer(storeKey + '.sidepanel.metadata', {}),

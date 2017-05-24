@@ -13,6 +13,8 @@ class Menu extends Component {
   }
 
   uploadsUrl() {
+    console.log('uploadsSearch:', this.props.uploadsSearch);
+    console.log('uploadsFilters:', this.props.uploadsFilters.toJS());
     const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
     return '/uploads/' + encodeSearch(params);
   }

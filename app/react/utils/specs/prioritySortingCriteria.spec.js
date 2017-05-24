@@ -3,7 +3,7 @@ import prioritySorting from '../prioritySortingCriteria';
 
 const prioritySortingCriteria = prioritySorting.get;
 
-describe('prioritySortingCriteria', () => {
+fdescribe('prioritySortingCriteria', () => {
   it('should return an object with global default sort and oder', () => {
     expect(prioritySortingCriteria()).toEqual({sort: 'creationDate', order: 'desc', treatAs: 'number'});
   });
@@ -84,6 +84,22 @@ describe('prioritySortingCriteria', () => {
       };
 
       expect(prioritySortingCriteria(options)).toEqual({sort: 'creationDate', order: 'desc', treatAs: 'number'});
+    });
+
+    it('should override creationDate as default with weighted priority sorting if any exists', () => {
+      const options = {
+        currentCriteria: null,
+        filteredTemplates: [],
+        templates: Immutable([
+          {_id: 't1', properties: [{name: 'property0', filter: false, type: 'text'}]},
+          {_id: 't2', properties: [{name: 'property1', prioritySorting: true, filter: true, type: 'date'}]},
+          {_id: 't3', properties: [{name: 'property2', prioritySorting: true, filter: true, type: 'text'}]},
+          {_id: 't4', properties: [{name: 'property1', filter: true, type: 'date'}]},
+          {_id: 't5', properties: [{name: 'property2', prioritySorting: true, filter: true, type: 'text'}]}
+        ])
+      };
+
+      expect(prioritySortingCriteria(options)).toEqual({sort: 'metadata.property2', order: 'asc', treatAs: 'string'});
     });
 
     it('should weight the priority sorting criteria when all templates passed and selection is invalid', () => {
