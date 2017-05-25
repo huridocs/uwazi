@@ -23,9 +23,7 @@ export function filterDocumentTypes(documentTypes, storeKey) {
       currentCriteria: {sort: state[storeKey].search.sort, order: state[storeKey].search.order},
       filteredTemplates: usefulTemplates.map(t => t._id),
       templates: state.templates,
-      // TEST!!!
       selectedSorting: getState()[storeKey].selectedSorting
-      // -------
     });
 
     const search = Object.assign({types: documentTypes}, state.search, {sort, order});

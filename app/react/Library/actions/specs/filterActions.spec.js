@@ -45,7 +45,7 @@ describe('filterActions', () => {
     getState = jasmine.createSpy('getState').and.returnValue(store);
   });
 
-  describe('filterDocumentTypes', () => {
+  fdescribe('filterDocumentTypes', () => {
     beforeEach(() => {
       spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'metadata.date', order: 'desc'});
     });
@@ -60,6 +60,7 @@ describe('filterActions', () => {
     it('should perform a search with the filters and prioritySortingCriteria', () => {
       store.library.search.sort = 'metadata.date';
       store.library.search.order = 'desc';
+      store.library.selectedSorting = 'selectedSorting';
       store.templates = Immutable.fromJS([
         {_id: 'a', properties: [{filter: true, type: 'date', name: 'date'}]},
         {_id: 'b'}
@@ -71,7 +72,8 @@ describe('filterActions', () => {
       expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
         currentCriteria: {sort: 'metadata.date', order: 'desc'},
         filteredTemplates: ['a'],
-        templates: store.templates
+        templates: store.templates,
+        selectedSorting: 'selectedSorting'
       });
 
       expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('metadata.date');
