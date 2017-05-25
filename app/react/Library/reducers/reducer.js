@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-
+import Immutable from 'immutable';
 import documents from './documentsReducer';
 import libraryUI from './uiReducer';
 import libraryFilters from './filtersReducer';
@@ -10,7 +10,8 @@ import {modelReducer, formReducer} from 'react-redux-form';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
-const defaultSearch = prioritySortingCriteria.get();
+const templates = window.__reduxData__ && window.__reduxData__.templates ? Immutable.fromJS(window.__reduxData__.templates) : null;
+const defaultSearch = prioritySortingCriteria.get({templates});
 defaultSearch.searchTerm = '';
 defaultSearch.filters = {};
 
