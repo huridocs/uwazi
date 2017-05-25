@@ -45,7 +45,7 @@ describe('filterActions', () => {
     getState = jasmine.createSpy('getState').and.returnValue(store);
   });
 
-  fdescribe('filterDocumentTypes', () => {
+  describe('filterDocumentTypes', () => {
     beforeEach(() => {
       spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'metadata.date', order: 'desc'});
     });
