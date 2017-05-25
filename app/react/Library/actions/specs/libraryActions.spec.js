@@ -162,6 +162,15 @@ describe('libraryActions', () => {
         actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}}, storeKey)(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({type: types.HIDE_SUGGESTIONS});
       });
+
+      it('should set the storeKey selectedSorting if user has selected a custom sorting', () => {
+        const expectedDispatch = {
+          type: 'library.selectedSorting/SET',
+          value: {searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}
+        };
+        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}, storeKey)(dispatch, getState);
+        expect(dispatch).toHaveBeenCalledWith(expectedDispatch);
+      });
     });
 
     describe('getSuggestions', () => {

@@ -111,17 +111,15 @@ export function encodeSearch(search) {
 }
 
 export function searchDocuments(readOnlySearch, storeKey, limit) {
-  console.log('triggered by sort:', readOnlySearch);
   return function (dispatch, getState) {
     const filters = getState()[storeKey].filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
-    // TEST!!!
+
     if (readOnlySearch.userSelectedSorting) {
-      console.log('about to set:', storeKey + '.selectedSorting', readOnlySearch);
       dispatch(actions.set(storeKey + '.selectedSorting', readOnlySearch));
     }
-    // -------
+
     const pathname = browserHistory.getCurrentLocation().pathname;
     const path = (pathname + '/').replace(/\/\//g, '/');
     browserHistory.push(path + encodeSearch(search));
