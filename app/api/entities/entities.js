@@ -57,7 +57,7 @@ export default {
               d.published = doc.published;
             }
 
-            if (doc.toc && d.file.filename === doc.file.filename) {
+            if (doc.toc && doc.file && d.file.filename === doc.file.filename) {
               d.toc = doc.toc;
             }
 
