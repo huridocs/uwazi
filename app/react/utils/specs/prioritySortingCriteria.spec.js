@@ -3,7 +3,7 @@ import prioritySorting from '../prioritySortingCriteria';
 
 const prioritySortingCriteria = prioritySorting.get;
 
-fdescribe('prioritySortingCriteria', () => {
+describe('prioritySortingCriteria', () => {
   it('should return an object with global default sort and oder', () => {
     expect(prioritySortingCriteria()).toEqual({sort: 'creationDate', order: 'desc', treatAs: 'number'});
   });
@@ -86,7 +86,7 @@ fdescribe('prioritySortingCriteria', () => {
       expect(prioritySortingCriteria(options)).toEqual({sort: 'creationDate', order: 'desc', treatAs: 'number'});
     });
 
-    it('should override creationDate as default with weighted priority sorting if any exists', () => {
+    it('should override creationDate as default with weighted templates priority sorting if any exists', () => {
       const options = {
         currentCriteria: null,
         filteredTemplates: [],
@@ -160,6 +160,47 @@ fdescribe('prioritySortingCriteria', () => {
       };
 
       expect(prioritySortingCriteria(options)).toEqual({sort: 'metadata.property1', order: 'asc', treatAs: 'string'});
+    });
+
+    it('should keep the selectedSorting if one exists and is valid for the selection', () => {
+      const options = {
+        currentCriteria: {sort: 'metadata.property1', order: 'asc', treatAs: 'string'},
+        filteredTemplates: [],
+        templates: Immutable([
+          {properties: [{name: 'property0', filter: true, type: 'text'}]},
+          {properties: [{name: 'property1', filter: true, type: 'date', prioritySorting: true}]}
+        ]),
+        selectedSorting: Immutable({sort: 'metadata.property0', order: 'desc', treatAs: 'string'})
+      };
+
+      expect(prioritySortingCriteria(options)).toEqual(options.selectedSorting.toJS());
+    });
+
+    it('should default to prioritySorting instead of the selectedSorting if one exists and is invalid for the selection', () => {
+      const options = {
+        currentCriteria: {sort: 'metadata.nonExistentProperty', order: 'asc', treatAs: 'string'},
+        filteredTemplates: [],
+        templates: Immutable([
+          {properties: [{name: 'property0', filter: false, type: 'text'}]},
+          {properties: [{name: 'property1', filter: true, type: 'date', prioritySorting: true}]}
+        ]),
+        selectedSorting: Immutable({sort: 'metadata.nonExistentProperty', order: 'desc', treatAs: 'string'})
+      };
+
+      expect(prioritySortingCriteria(options)).toEqual({sort: 'metadata.property1', order: 'desc', treatAs: 'number'});
+    });
+
+    it('should default to prioritySorting instead of currentCriteria', () => {
+      const options = {
+        currentCriteria: {sort: 'metadata.property0', order: 'asc', treatAs: 'string'},
+        filteredTemplates: [],
+        templates: Immutable([
+          {properties: [{name: 'property0', filter: true, type: 'text'}]},
+          {properties: [{name: 'property1', filter: true, type: 'date', prioritySorting: true}]}
+        ])
+      };
+
+      expect(prioritySortingCriteria(options)).toEqual({sort: 'metadata.property1', order: 'desc', treatAs: 'number'});
     });
   });
 });

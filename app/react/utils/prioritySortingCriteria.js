@@ -39,26 +39,6 @@ function asessCriteriaValid(validTemplates, options) {
   }, false);
 }
 
-// function evalSortResults(validTemplates, options, sortResults) {
-//   validTemplates.reduce((results, template) => {
-//     template.get('commonProperties').forEach(property => {
-//       if (property.get('prioritySorting')) {
-//         appendNewOcurrency(results.sortableOcurrences, property, false);
-//       }
-//     });
-
-//     results.criteriaValid = template.get('properties').reduce((valid, property) => {
-//       const sortable = property.get('filter') && (property.get('type') === 'text' || property.get('type') === 'date');
-//       if (sortable && property.get('prioritySorting')) {
-//         appendNewOcurrency(results.sortableOcurrences, property);
-//       }
-//       return Boolean(valid || sortable && 'metadata.' + property.get('name') === options.currentCriteria.sort);
-//     }, results.criteriaValid);
-
-//     return sortResults;
-//   }, sortResults);
-// }
-
 export default {
   get: (options = {}) => {
     if (options.override) {
@@ -99,13 +79,11 @@ export default {
       }
 
       if (options.currentCriteria) {
-        // TEST!!!
         if (options.selectedSorting && options.selectedSorting.size) {
           options.currentCriteria = options.selectedSorting.toJS();
         } else {
           options.currentCriteria = sortingDefault;
         }
-        // -----
 
         let criteriaValid = options.currentCriteria.sort === 'title' || options.currentCriteria.sort === 'creationDate';
 
