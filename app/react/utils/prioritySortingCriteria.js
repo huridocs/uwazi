@@ -98,10 +98,8 @@ export default {
         };
       }
 
-      console.log('currentCriteria:', options.currentCriteria);
       if (options.currentCriteria) {
         // TEST!!!
-        console.log('current selectedSorting:', options.selectedSorting);
         if (options.selectedSorting && options.selectedSorting.size) {
           options.currentCriteria = options.selectedSorting.toJS();
         } else {
