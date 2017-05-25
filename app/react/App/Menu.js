@@ -13,8 +13,6 @@ class Menu extends Component {
   }
 
   uploadsUrl() {
-    console.log('uploadsSearch:', this.props.uploadsSearch);
-    console.log('uploadsFilters:', this.props.uploadsFilters.toJS());
     const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
     return '/uploads/' + encodeSearch(params);
   }
@@ -93,6 +91,7 @@ export function mapStateToProps({user, settings, library, uploads}) {
     libraryFilters: library.filters,
     uploadsSearch: uploads.search,
     uploadsFilters: uploads.filters,
+    uploadsSelectedSorting: uploads.selectedSorting,
     links: settings.collection.get('links')
   };
 }
