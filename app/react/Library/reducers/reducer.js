@@ -5,12 +5,17 @@ import libraryUI from './uiReducer';
 import libraryFilters from './filtersReducer';
 import createReducer from 'app/BasicReducer';
 import {multireducer} from 'app/Multireducer';
+import {isClient} from 'app/utils';
 
 import {modelReducer, formReducer} from 'react-redux-form';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
-const templates = window.__reduxData__ && window.__reduxData__.templates ? Immutable.fromJS(window.__reduxData__.templates) : null;
+let templates = null;
+if (isClient) {
+  templates = window.__reduxData__ && window.__reduxData__.templates ? Immutable.fromJS(window.__reduxData__.templates) : null;
+}
+
 const defaultSearch = prioritySortingCriteria.get({templates});
 defaultSearch.searchTerm = '';
 defaultSearch.filters = {};
