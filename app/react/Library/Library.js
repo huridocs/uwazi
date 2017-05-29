@@ -1,5 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
+import rison from 'rison';
 
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
@@ -27,9 +28,9 @@ export default class Library extends RouteHandler {
     );
   }
 
-  static requestState(params, query = {filters: {}, types: []}, globalResources) {
+  static requestState(params, _query = {}, globalResources) {
     const defaultSearch = prioritySortingCriteria.get();
-
+    let query = rison.decode(_query.q || '()');
     query.order = query.order || defaultSearch.order;
     query.sort = query.sort || defaultSearch.sort;
 

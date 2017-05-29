@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import rison from 'rison';
 
 import searchAPI from 'app/Search/SearchAPI';
 import libraryHelpers from '../helpers/libraryFilters';
@@ -40,12 +41,12 @@ describe('Library', () => {
 
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {
-      const query = {filters: {}, types: []};
+      const query = {q: rison.encode({filters: {something: 1}, types: []})};
       const expectedSearch = {
         sort: prioritySortingCriteria.get().sort,
         order: prioritySortingCriteria.get().order,
-        filters: query.filters,
-        types: query.types
+        filters: {something: 1},
+        types: []
       };
 
       Library.requestState({}, query, globalResources)
@@ -61,10 +62,11 @@ describe('Library', () => {
 
     it('should process the query url params and transform it to state', (done) => {
       spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({properties: 'properties', search: 'search'});
-      const query = {filters: {}, types: ['type1']};
+      const q = {filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate'};
+      const query = {q: rison.encode(q)};
       Library.requestState({}, query, globalResources)
       .then((state) => {
-        expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(query, templates, thesauris);
+        expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris);
         expect(state.library.filters.documentTypes).toEqual(['type1']);
         expect(state.library.filters.properties).toBe('properties');
         expect(state.library.search).toBe('search');

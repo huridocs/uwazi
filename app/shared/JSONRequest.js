@@ -5,6 +5,7 @@ export function toUrlParams(_data) {
   if (!data || Object.keys(data).length === 0) {
     return '';
   }
+
   return '?' + Object.keys(data).map((key) => {
     if (typeof data[key] === 'undefined' || data[key] === null) {
       return;
