@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import queryBuilder from 'api/search/documentQueryBuilder';
 
-fdescribe('documentQueryBuilder', () => {
+xdescribe('documentQueryBuilder', () => {
   beforeEach(() => {});
 
   describe('default query', () => {
@@ -106,9 +106,9 @@ fdescribe('documentQueryBuilder', () => {
       let baseQuery = queryBuilder().query();
       let typesAggregation = {
         terms: {
-          field: 'template',
+          field: 'template.raw',
           missing: 'missing',
-          size: 1
+          size: 9999
         },
         aggregations: {
           filtered: {
@@ -128,13 +128,13 @@ fdescribe('documentQueryBuilder', () => {
       let property1Aggregation = {
         terms: {
           field: 'metadata.property1.raw',
-          size: 1
+          size: 9999
         },
         aggregations: {
           filtered: {
             filter: {
               bool: {
-                must: []
+                must: [{match: {published: true}}]
               }
             }
           }

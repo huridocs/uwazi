@@ -13,17 +13,22 @@ export default function () {
     },
     sort: [],
     aggregations: {
-      types: {
-        terms: {
-          field: 'template.raw',
-          missing: 'missing',
-          size: 10
-        },
+      all_filters: {
+        global: {},
         aggregations: {
-          filtered: {
-            filter: {
-              bool: {
-                must: []
+          types: {
+            terms: {
+              field: 'template.raw',
+              missing: 'missing',
+              size: 9999
+            },
+            aggregations: {
+              filtered: {
+                filter: {
+                  bool: {
+                    must: []
+                  }
+                }
               }
             }
           }
@@ -260,7 +265,7 @@ export default function () {
         }
 
         baseQuery.query.bool.must.push(match);
-        baseQuery.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
+        //baseQuery.aggregations.all_filters.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });
       return this;
     },
@@ -269,7 +274,7 @@ export default function () {
       return {
         terms: {
           field: key,
-          size: 10
+          size: 9999
         },
         aggregations: {
           filtered: {

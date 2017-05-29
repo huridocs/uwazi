@@ -1,6 +1,5 @@
 var exec = require('child_process').exec;
 require('babel-core/register')(); //babel polyfill ES6
-
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
 
