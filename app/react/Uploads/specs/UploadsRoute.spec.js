@@ -1,10 +1,12 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import rison from 'rison';
 
 import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes.js';
 import {fromJS as Immutable} from 'immutable';
+
 
 import searchAPI from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
@@ -33,14 +35,14 @@ describe('UploadsRoute', () => {
 
   describe('static requestState()', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {
-      const query = {filters: {}, types: []};
+      const query = {q: rison.encode({filters: {something: 1}, types: ['types']})};
       let params;
 
       const expectedSearch = {
         sort: prioritySortingCriteria.get({templates: Immutable(templates)}).sort,
         order: prioritySortingCriteria.get({templates: Immutable(templates)}).order,
-        filters: query.filters,
-        types: query.types,
+        filters: {something: 1},
+        types: ['types'],
         unpublished: true
       };
 
