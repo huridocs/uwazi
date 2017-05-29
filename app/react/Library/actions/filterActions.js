@@ -18,10 +18,12 @@ export function filterDocumentTypes(documentTypes, storeKey) {
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
+
     const {sort, order} = prioritySortingCriteria.get({
       currentCriteria: {sort: state[storeKey].search.sort, order: state[storeKey].search.order},
       filteredTemplates: usefulTemplates.map(t => t._id),
-      templates: state.templates
+      templates: state.templates,
+      selectedSorting: getState()[storeKey].selectedSorting
     });
 
     const search = Object.assign({types: documentTypes}, state.search, {sort, order});

@@ -17,7 +17,10 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 describe('Library', () => {
   let aggregations = {buckets: []};
   let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2, aggregations};
-  let templates = [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}];
+  let templates = [
+    {name: 'Decision', _id: 'abc1', properties: [{name: 'p', filter: true, type: 'text', prioritySorting: true}]},
+    {name: 'Ruling', _id: 'abc2', properties: []}
+  ];
   let thesauris = [{name: 'countries', _id: '1', values: []}];
   let globalResources = {templates: Immutable(templates), thesauris: Immutable(thesauris)};
   createStore({templates, thesauris});
@@ -43,8 +46,8 @@ describe('Library', () => {
     it('should request the documents passing search object on the store', (done) => {
       const query = {q: rison.encode({filters: {something: 1}, types: []})};
       const expectedSearch = {
-        sort: prioritySortingCriteria.get().sort,
-        order: prioritySortingCriteria.get().order,
+        sort: prioritySortingCriteria.get({templates: Immutable(templates)}).sort,
+        order: prioritySortingCriteria.get({templates: Immutable(templates)}).order,
         filters: {something: 1},
         types: []
       };

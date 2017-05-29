@@ -115,6 +115,11 @@ export function searchDocuments(readOnlySearch, storeKey, limit) {
     const filters = getState()[storeKey].filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
+
+    if (readOnlySearch.userSelectedSorting) {
+      dispatch(actions.set(storeKey + '.selectedSorting', readOnlySearch));
+    }
+
     const pathname = browserHistory.getCurrentLocation().pathname;
     const path = (pathname + '/').replace(/\/\//g, '/');
     browserHistory.push(path + encodeSearch(search));
