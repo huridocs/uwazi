@@ -5,7 +5,7 @@ import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
 import documents from 'app/Documents';
 import {browserHistory} from 'react-router';
-import {toUrlParams} from 'shared/JSONRequest';
+import rison from 'rison';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import {api as entitiesAPI} from 'app/Entities';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
@@ -81,39 +81,33 @@ export function setOverSuggestions(boolean) {
 }
 
 export function processFilters(readOnlySearch, filters, limit) {
-  const search = Object.assign({}, readOnlySearch);
-  search.aggregations = filters.properties
-  .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
-  .map((property) => {
-    if (property.type === 'nested') {
-      return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
-    }
-    return {name: property.name, nested: false};
-  });
-
+  const search = Object.assign({filters: {}}, readOnlySearch);
   search.filters = {};
   filters.properties.forEach((property) => {
-    if (!property.active) {
-      return;
+    if (property.active) {
+      search.filters[property.name] = readOnlySearch.filters[property.name];
     }
-    let type = 'text';
-    if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
-      type = 'range';
-    }
-    if (property.type === 'select' || property.type === 'multiselect') {
-      type = 'multiselect';
-    }
-    if (property.type === 'nested') {
-      type = 'nested';
-    }
-    if (property.type === 'multidaterange') {
-      type = 'nestedrange';
-    }
-    search.filters[property.name] = {value: readOnlySearch.filters[property.name], type};
   });
   search.types = filters.documentTypes;
   search.limit = limit;
   return search;
+}
+
+export function encodeSearch(search) {
+  Object.keys(search).forEach((key) => {
+    if (search[key] && search[key].length === 0) {
+      delete search[key];
+    }
+
+    if (typeof search[key] === 'object' && Object.keys(search[key]).length === 0) {
+      delete search[key];
+    }
+
+    if (search[key] === '') {
+      delete search[key];
+    }
+  });
+  return '?q=' + rison.encode(search);
 }
 
 export function searchDocuments(readOnlySearch, storeKey, limit) {
@@ -121,9 +115,14 @@ export function searchDocuments(readOnlySearch, storeKey, limit) {
     const filters = getState()[storeKey].filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
     dispatch(hideSuggestions());
+
+    if (readOnlySearch.userSelectedSorting) {
+      dispatch(actions.set(storeKey + '.selectedSorting', readOnlySearch));
+    }
+
     const pathname = browserHistory.getCurrentLocation().pathname;
     const path = (pathname + '/').replace(/\/\//g, '/');
-    browserHistory.push(path + toUrlParams(search));
+    browserHistory.push(path + encodeSearch(search));
   };
 }
 

@@ -18,7 +18,7 @@ export default {
   comonProperties: (templates, documentTypes = []) => {
     let properties = [];
     let selectedTemplates = templates.filter((template) => {
-      return documentTypes.includes(template._id);
+      return documentTypes.includes(template._id.toString());
     });
 
     if (selectedTemplates.length) {
@@ -32,7 +32,6 @@ export default {
         }
       });
     }
-
     return properties;
   }
 };

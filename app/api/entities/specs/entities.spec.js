@@ -112,6 +112,40 @@ describe('entities', () => {
       });
     });
 
+    describe('when other languages have the same file', () => {
+      it('should replicate the toc being saved', (done) => {
+        let doc = {
+          _id: batmanFinishesId,
+          sharedId: 'shared',
+          metadata: {text: 'newMetadata'},
+          template: templateId,
+          toc: [{label: 'entry1'}],
+          file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}
+        };
+
+        entities.save(doc, {language: 'en'})
+        .then((updatedDoc) => {
+          expect(updatedDoc.language).toBe('en');
+          return Promise.all([
+            entities.getById('shared', 'es'),
+            entities.getById('shared', 'en'),
+            entities.getById('shared', 'pt')
+          ]);
+        })
+        .then(([docES, docEN, docPT]) => {
+          expect(docEN.published).toBe(true);
+          expect(docES.published).toBe(true);
+          expect(docPT.published).toBe(true);
+
+          expect(docEN.toc[0].label).toBe(doc.toc[0].label);
+          expect(docES.toc).toBeUndefined();
+          expect(docPT.toc[0].label).toBe(doc.toc[0].label);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     describe('when published/template property changes', () => {
       it('should replicate the change for all the languages', (done) => {
         let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateId};
@@ -183,14 +217,16 @@ describe('entities', () => {
     });
 
     it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
-      let doc = {_id: syncPropertiesEntityId, sharedId: 'shared1', template: templateId, metadata: {
-        text: 'changedText',
-        select: 'select',
-        multiselect: 'multiselect',
-        date: 'date',
-        multidate: 'multidate',
-        multidaterange: 'multidaterange'
-      }};
+      let doc = {_id: syncPropertiesEntityId, sharedId: 'shared1', template: templateId,
+        metadata: {
+          text: 'changedText',
+          select: 'select',
+          multiselect: 'multiselect',
+          date: 'date',
+          multidate: 'multidate',
+          multidaterange: 'multidaterange'
+        }
+      };
 
       entities.save(doc, {language: 'en'})
       .then((updatedDoc) => {

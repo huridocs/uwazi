@@ -2,20 +2,19 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {NeedAuthorization} from 'app/Auth';
-import {toUrlParams} from '../../shared/JSONRequest';
 import {I18NLink, I18NMenu, t} from 'app/I18N';
-import {processFilters} from 'app/Library/actions/libraryActions';
+import {processFilters, encodeSearch} from 'app/Library/actions/libraryActions';
 
 class Menu extends Component {
 
   libraryUrl() {
     const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
-    return '/library/' + toUrlParams(params);
+    return '/library/' + encodeSearch(params);
   }
 
   uploadsUrl() {
     const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
-    return '/uploads/' + toUrlParams(params);
+    return '/uploads/' + encodeSearch(params);
   }
 
   render() {
@@ -92,6 +91,7 @@ export function mapStateToProps({user, settings, library, uploads}) {
     libraryFilters: library.filters,
     uploadsSearch: uploads.search,
     uploadsFilters: uploads.filters,
+    uploadsSelectedSorting: uploads.selectedSorting,
     links: settings.collection.get('links')
   };
 }

@@ -3,12 +3,36 @@ import elastic from './elastic';
 import queryBuilder from './documentQueryBuilder';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
+import templatesModel from '../templates';
+import {comonProperties} from 'shared/comonProperties';
+
+function processFiltes(filters, properties) {
+  let result = {};
+  Object.keys(filters || {}).forEach((propertyName) => {
+    let property = properties.find((p) => p.name === propertyName);
+    let type = 'text';
+    if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
+      type = 'range';
+    }
+    if (property.type === 'select' || property.type === 'multiselect') {
+      type = 'multiselect';
+    }
+    if (property.type === 'nested') {
+      type = 'nested';
+    }
+    if (property.type === 'multidaterange') {
+      type = 'nestedrange';
+    }
+    result[property.name] = {value: filters[property.name], type};
+  });
+
+  return result;
+}
 
 export default {
   search(query, language, user) {
     let documentsQuery = queryBuilder()
     .fullTextSearch(query.searchTerm, query.fields)
-    .filterMetadata(query.filters)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
@@ -25,10 +49,6 @@ export default {
       documentsQuery.limit(query.limit);
     }
 
-    if (query.aggregations) {
-      documentsQuery.aggregations(query.aggregations);
-    }
-
     if (query.includeUnpublished) {
       documentsQuery.includeUnpublished();
     }
@@ -37,15 +57,34 @@ export default {
       documentsQuery.unpublished();
     }
 
-    return elastic.search({index: elasticIndex, body: documentsQuery.query()})
-    .then((response) => {
-      let rows = response.hits.hits.map((hit) => {
-        let result = hit._source;
-        result._id = hit._id;
-        return result;
+    return templatesModel.get()
+    .then((templates) => {
+      const allTemplates = templates.map((t) => t._id);
+      const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
+      const properties = comonProperties(templates, filteringTypes);
+      let aggregations = properties
+      .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+      .map((property) => {
+        if (property.type === 'nested') {
+          return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
+        }
+        return {name: property.name, nested: false};
       });
 
-      return {rows, totalRows: response.hits.total, aggregations: response.aggregations};
+      const filters = processFiltes(query.filters, properties);
+      documentsQuery.filterMetadata(filters)
+      .aggregations(aggregations);
+
+      return elastic.search({index: elasticIndex, body: documentsQuery.query()})
+      .then((response) => {
+        let rows = response.hits.hits.map((hit) => {
+          let result = hit._source;
+          result._id = hit._id;
+          return result;
+        });
+
+        return {rows, totalRows: response.hits.total, aggregations: response.aggregations};
+      });
     });
   },
 
@@ -132,9 +171,6 @@ export default {
       }
 
       return entities.get(query, select, {skip: offset, limit})
-      //.then((docs) => {
-        //return docs;
-      //})
       .then((docs) => this.bulkIndex(docs))
       .then(() => index(offset + limit, totalRows));
     };

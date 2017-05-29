@@ -7,7 +7,7 @@ import {t} from 'app/I18N';
 import {deleteEntities} from 'app/Entities/actions/actions';
 import MetadataFormFields from './MetadataFormFields';
 import ShowIf from 'app/App/ShowIf';
-import {comonProperties} from 'app/Metadata/helpers/comonProperties';
+import {comonProperties} from 'shared/comonProperties';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import validator from 'app/Metadata/helpers/validator';
 import {FormGroup, IconSelector} from 'app/ReactReduxForms';

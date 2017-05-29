@@ -57,6 +57,10 @@ export default {
               d.published = doc.published;
             }
 
+            if (doc.toc && doc.file && d.file.filename === doc.file.filename) {
+              d.toc = doc.toc;
+            }
+
             if (typeof doc.template !== 'undefined') {
               d.template = doc.template;
             }

@@ -1,5 +1,5 @@
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import {comonProperties} from 'app/Metadata/helpers/comonProperties';
+import {comonProperties} from 'shared/comonProperties';
 
 function getOptions(property, thesauris) {
   let matchingTHesauri = thesauris.find((thesauri) => {
@@ -48,7 +48,7 @@ export function URLQueryToState(query, templates, thesauris) {
       defaultValue = {};
     }
 
-    filters[property.name] = filters[property.name] ? filters[property.name].value : defaultValue;
+    filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
     return property;
   });
 

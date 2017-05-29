@@ -1,5 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import rison from 'rison';
 
 import searchAPI from 'app/Search/SearchAPI';
 import libraryHelpers from '../helpers/libraryFilters';
@@ -16,7 +17,10 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 describe('Library', () => {
   let aggregations = {buckets: []};
   let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2, aggregations};
-  let templates = [{name: 'Decision', _id: 'abc1', properties: []}, {name: 'Ruling', _id: 'abc2', properties: []}];
+  let templates = [
+    {name: 'Decision', _id: 'abc1', properties: [{name: 'p', filter: true, type: 'text', prioritySorting: true}]},
+    {name: 'Ruling', _id: 'abc2', properties: []}
+  ];
   let thesauris = [{name: 'countries', _id: '1', values: []}];
   let globalResources = {templates: Immutable(templates), thesauris: Immutable(thesauris)};
   createStore({templates, thesauris});
@@ -40,12 +44,12 @@ describe('Library', () => {
 
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {
-      const query = {filters: {}, types: []};
+      const query = {q: rison.encode({filters: {something: 1}, types: []})};
       const expectedSearch = {
-        sort: prioritySortingCriteria.get().sort,
-        order: prioritySortingCriteria.get().order,
-        filters: query.filters,
-        types: query.types
+        sort: prioritySortingCriteria.get({templates: Immutable(templates)}).sort,
+        order: prioritySortingCriteria.get({templates: Immutable(templates)}).order,
+        filters: {something: 1},
+        types: []
       };
 
       Library.requestState({}, query, globalResources)
@@ -61,10 +65,11 @@ describe('Library', () => {
 
     it('should process the query url params and transform it to state', (done) => {
       spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({properties: 'properties', search: 'search'});
-      const query = {filters: {}, types: ['type1']};
+      const q = {filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate'};
+      const query = {q: rison.encode(q)};
       Library.requestState({}, query, globalResources)
       .then((state) => {
-        expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(query, templates, thesauris);
+        expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris);
         expect(state.library.filters.documentTypes).toEqual(['type1']);
         expect(state.library.filters.properties).toBe('properties');
         expect(state.library.search).toBe('search');

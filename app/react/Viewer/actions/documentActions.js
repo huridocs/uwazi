@@ -56,10 +56,10 @@ export function saveDocument(doc) {
 
 export function saveToc(toc) {
   return function (dispatch, getState) {
-    const {_id, _rev, sharedId} = getState().documentViewer.doc.toJS();
+    const {_id, _rev, sharedId, file} = getState().documentViewer.doc.toJS();
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
-    return dispatch(saveDocument({_id, _rev, sharedId, toc}));
+    return dispatch(saveDocument({_id, _rev, sharedId, toc, file}));
   };
 }
 
