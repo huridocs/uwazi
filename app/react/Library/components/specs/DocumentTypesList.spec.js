@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react';
 import {shallow} from 'enzyme';
 import Immutable from 'immutable';
@@ -21,13 +22,15 @@ describe('DocumentTypesList', () => {
     ];
 
     aggregations = {
-      types: {
-        buckets: [
-          {doc_count: 23, key: 1, filtered: {doc_count: 7}},
-          {doc_count: 43, key: 2, filtered: {doc_count: 2}},
-          {doc_count: 31, key: 4, filtered: {doc_count: 4}},
-          {doc_count: 68, key: 5, filtered: {doc_count: 9}}
-        ]
+      all: {
+        types: {
+          buckets: [
+            {doc_count: 23, key: 1, filtered: {doc_count: 7}},
+            {doc_count: 43, key: 2, filtered: {doc_count: 2}},
+            {doc_count: 31, key: 4, filtered: {doc_count: 4}},
+            {doc_count: 68, key: 5, filtered: {doc_count: 9}}
+          ]
+        }
       }
     };
 

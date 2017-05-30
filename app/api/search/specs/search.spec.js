@@ -173,11 +173,12 @@ describe('search', () => {
       });
     });
 
-    fit('should filter by metadata, and return aggregations', (done) => {
+    fit('should filter by metadata, and return template aggregations', (done) => {
       Promise.all([
         search.search({filters: {field1: {value: 'joker', type: 'text'}}}, 'en')
       ])
       .then(([joker]) => {
+        console.log(JSON.stringify(joker, null, ' '));
         expect(joker.rows.length).toBe(2);
         done();
       });

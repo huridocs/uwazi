@@ -13,7 +13,7 @@ export default function () {
     },
     sort: [],
     aggregations: {
-      all_filters: {
+      all: {
         global: {},
         aggregations: {
           types: {
@@ -265,7 +265,7 @@ export default function () {
         }
 
         baseQuery.query.bool.must.push(match);
-        //baseQuery.aggregations.all_filters.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
+        baseQuery.aggregations.all_filters.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });
       return this;
     },
