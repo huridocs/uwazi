@@ -79,8 +79,10 @@ export class ThesauriForm extends Component {
                         </li>;
                 })}
               </ul>
-              <div className="panel-body">
-                <a className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</a>
+              <div className="panel-body text-center">
+                <a className="btn btn-primary" onClick={this.props.addValue}>
+                  <i className="fa fa-plus"></i> Add item
+                </a>
               </div>
               <div className="panel-footer">
                 <I18NLink to="/settings/dictionaries" className="btn btn-default">
