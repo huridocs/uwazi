@@ -4,9 +4,15 @@
 
 .panel-default > .panel-heading {
 	font-weight: bold;
-	border-bottom-color: $c-grey-light;
-  background-color: $c-grey-lighten;
   padding: 16px;
+}
+
+.panel-heading,
+.panel-footer {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
 }
 
 .panel > .list-group .list-group-item {

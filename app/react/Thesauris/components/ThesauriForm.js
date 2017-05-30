@@ -82,6 +82,14 @@ export class ThesauriForm extends Component {
               <div className="panel-body">
                 <a className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</a>
               </div>
+              <div className="panel-footer">
+                <I18NLink to="/settings/dictionaries" className="btn btn-default">
+                  <i className="fa fa-arrow-left"></i> Back
+                </I18NLink>
+                <button className="btn btn-success save-template">
+                  <i className="fa fa-save"/> Save
+                </button>
+              </div>
             </div>
           </Form>
       </div>
