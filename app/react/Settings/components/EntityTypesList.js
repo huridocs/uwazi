@@ -55,7 +55,7 @@ export class EntityTypesList extends Component {
         })}
       </ul>
       <div className="panel-body">
-        <Link to="/settings/entities/new" className="btn btn-success">
+        <Link to="/settings/entities/new" className="btn btn-primary">
           <i className="fa fa-plus"></i>
           &nbsp;
           <span>{t('System', 'Add entity type')}</span>

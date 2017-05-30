@@ -44,7 +44,7 @@ export class UsersList extends Component {
           )}
         </ul>
         <div className="panel-body">
-          <I18NLink to="/settings/users/new" className="btn btn-success">
+          <I18NLink to="/settings/users/new" className="btn btn-primary">
             <i className="fa fa-plus"></i>
             &nbsp;
             <span>{t('System', 'Add user')}</span>

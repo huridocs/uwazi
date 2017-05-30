@@ -51,7 +51,7 @@ export class ThesaurisList extends Component {
         })}
       </ul>
       <div className="panel-body">
-        <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
+        <I18NLink to="/settings/dictionaries/new" className="btn btn-primary">
           <i className="fa fa-plus"></i>
           &nbsp;
           <span>{t('System', 'Add dictionary')}</span>

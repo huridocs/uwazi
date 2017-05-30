@@ -59,7 +59,7 @@ export class NavlinksSettings extends Component {
                 })}
               </ul>
               <div className="panel-body">
-                <a className="btn btn-success"
+                <a className="btn btn-primary"
                    onClick={this.props.addLink.bind(this, links)}>
                   <i className="fa fa-plus"></i>&nbsp;<span>{t('System', 'Add link')}</span>
                 </a>
