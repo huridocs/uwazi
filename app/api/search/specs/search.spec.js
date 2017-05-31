@@ -173,13 +173,16 @@ describe('search', () => {
       });
     });
 
-    fit('should filter by metadata, and return template aggregations', (done) => {
+    fit('should filter by metadata, and return template aggregations based on the filter the language and the published status', (done) => {
       Promise.all([
         search.search({filters: {field1: {value: 'joker', type: 'text'}}}, 'en')
       ])
       .then(([joker]) => {
-        console.log(JSON.stringify(joker, null, ' '));
         expect(joker.rows.length).toBe(2);
+
+        const typesAggs = joker.aggregations.all.types.buckets;
+        expect(typesAggs.find((a) => a.key === 'templateMetadata1').filtered.doc_count).toBe(2);
+        expect(typesAggs.find((a) => a.key === 'templateMetadata2').filtered.doc_count).toBe(0);
         done();
       });
     });

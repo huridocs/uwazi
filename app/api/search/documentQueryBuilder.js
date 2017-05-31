@@ -26,7 +26,7 @@ export default function () {
               filtered: {
                 filter: {
                   bool: {
-                    must: []
+                    must: [{match: {published: true}}]
                   }
                 }
               }
@@ -36,6 +36,8 @@ export default function () {
       }
     }
   };
+
+  const aggregations = baseQuery.aggregations.all.aggregations;
 
   return {
     query() {
@@ -100,6 +102,7 @@ export default function () {
     language(language) {
       let match = {match: {language: language}};
       baseQuery.query.bool.must.push(match);
+      aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       return this;
     },
 
@@ -265,7 +268,7 @@ export default function () {
         }
 
         baseQuery.query.bool.must.push(match);
-        baseQuery.aggregations.all_filters.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
+        baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });
       return this;
     },

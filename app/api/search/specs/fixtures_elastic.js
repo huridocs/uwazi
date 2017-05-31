@@ -18,14 +18,20 @@ export default {
     {_id: db.id(), sharedId: 'metadata1', template: 'templateMetadata1', language: 'en', title: 'metadata1', published: true, user: userId,
       metadata: {field1: 'joker', field2: 'bane'}
     },
-    {_id: db.id(), sharedId: 'metadata2', template: 'templateMetadata1', language: 'en', title: 'metadata1', published: true, user: userId,
+    {_id: db.id(), sharedId: 'metadata1', template: 'templateMetadata1', language: 'es', title: 'metadata1 es', published: true, user: userId,
+      metadata: {field1: 'joker', field2: 'bane'}
+    },
+    {_id: db.id(), sharedId: 'metadata2', template: 'templateMetadata1', language: 'en', title: 'metadata2', published: true, user: userId,
       metadata: {field1: 'joker', field2: 'penguin'}
     },
-    {_id: db.id(), sharedId: 'metadata3', template: 'templateMetadata2', language: 'en', title: 'metadata1', published: true, user: userId,
+    {_id: db.id(), sharedId: 'metadata3', template: 'templateMetadata2', language: 'en', title: 'metadata3', published: true, user: userId,
       metadata: {field1: 'bane', field3: 'penguin'}
     },
-    {_id: db.id(), sharedId: 'metadata4', template: 'templateMetadata2', language: 'en', title: 'metadata1', published: true, user: userId,
+    {_id: db.id(), sharedId: 'metadata4', template: 'templateMetadata2', language: 'en', title: 'metadata4', published: true, user: userId,
       metadata: {field1: 'penguin', field3: 'joker'}
+    },
+    {_id: db.id(), sharedId: 'metadata5', template: 'templateMetadata1', language: 'en', title: 'metadata5', published: false, user: userId,
+      metadata: {field1: 'joker'}
     }
     //
   ]};
