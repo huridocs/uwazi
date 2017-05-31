@@ -13,6 +13,7 @@ describe('Login', () => {
     .post(APIURL + 'test_post', JSON.stringify({method: 'POST'}))
     .delete(APIURL + 'test_delete?data=delete', JSON.stringify({method: 'DELETE'}))
     .get(APIURL + 'unauthorised', {status: 401, body: {}})
+    .get(APIURL + 'notfound', {status: 404, body: {}})
     .get(APIURL + 'error_url', {status: 500, body: {}});
   });
 
@@ -73,6 +74,17 @@ describe('Login', () => {
         api.get('unauthorised')
         .catch(() => {
           expect(browserHistory.replace).toHaveBeenCalledWith('/login');
+          done();
+        });
+      });
+    });
+
+    describe('404', () => {
+      it('should redirect to login', (done) => {
+        spyOn(browserHistory, 'replace');
+        api.get('notfound')
+        .catch(() => {
+          expect(browserHistory.replace).toHaveBeenCalledWith('/404');
           done();
         });
       });

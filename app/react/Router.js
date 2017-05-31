@@ -136,6 +136,22 @@ function handleRoute(res, renderProps, req) {
           thesauris: Immutable(globalResources.thesauris)
         }), globalResources]);
       })
+      .catch((error) => {
+        if (error.status === 401) {
+          res.redirect(302, '/login');
+          return Promise.reject(error);
+        }
+
+        if (error.status === 404) {
+          res.redirect(302, '/404');
+          return Promise.reject(error);
+        }
+
+        if (error.status === 500) {
+          handleError(res, error);
+          return Promise.reject(error);
+        }
+      })
       .then(([initialData, globalResources]) => {
         initialData.user = globalResources.user;
         initialData.settings = globalResources.settings;

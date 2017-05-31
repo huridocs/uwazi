@@ -1,13 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
+import RouteHandler from 'app/App/RouteHandler';
 import Helmet from 'react-helmet';
 
-class NoMatch extends Component {
+class NoMatch extends RouteHandler {
 
   render() {
     return (
       <div>
         <Helmet title='Not Found' />
-        <h2>404</h2> Page was not found
+        <h2>404</h2>
       </div>
     );
   }
