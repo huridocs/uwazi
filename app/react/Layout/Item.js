@@ -151,6 +151,7 @@ Item.propTypes = {
   doc: PropTypes.object,
   itemHeader: PropTypes.object,
   buttons: PropTypes.object,
+  labels: PropTypes.object,
   className: PropTypes.string,
   templateClassName: PropTypes.string,
   evalPublished: PropTypes.bool
