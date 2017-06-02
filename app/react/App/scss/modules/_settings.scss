@@ -1,0 +1,25 @@
+.settings {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-top: 30px;
+  overflow-y: scroll;
+}
+
+.settings-navigation,
+.settings-content {
+  width: 100%;
+  padding: 0 15px;
+}
+
+@media(min-width: 1024px) {
+  .settings-navigation {
+    width: 400px;
+  }
+
+  .settings-content {
+    width: calc(100% - 400px);
+  }
+}
+
