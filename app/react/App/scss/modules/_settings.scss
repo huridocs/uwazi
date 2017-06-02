@@ -23,3 +23,57 @@
   }
 }
 
+.settings-footer {
+  position: fixed;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+  padding: 0 0 20px;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 4;
+  @media(min-width: 1024px) {
+    right: calc((100% - 400px)/2);
+  }
+  
+  .btn {
+    position: relative;
+    border-radius: 50%;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
+    padding: 0;
+    margin: 0 6px;
+  }
+
+  .btn-label {
+    color: $c-grey-dark;
+    position: absolute;
+    top: 100%;
+    font-size: 10px;
+    line-height: 1.5em;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
+  }
+
+  .btn:hover .btn-label {
+    color: $c-black;
+  }
+}
+
+// Improve this
+
+.settings-content > .thesauri,
+.settings-content > .thesauri > form,
+.settings-content > .thesauri > form .panel {
+  height: 100%;
+}
+
+.settings-content > .thesauri > form .panel {
+  margin-bottom: 0;
+  padding-bottom: 80px;
+  overflow-y: scroll; 
+}

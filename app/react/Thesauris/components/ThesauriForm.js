@@ -59,10 +59,6 @@ export class ThesauriForm extends Component {
                     </ShowIf>
                   </Field>
                 </FormGroup>
-                &nbsp;
-                <button className="btn btn-success save-template">
-                  <i className="fa fa-save"/> Save
-                </button>
               </div>
               <ul className="thesauri-values list-group">
                 <li className="list-group-item"><b>Items:</b></li>
@@ -79,8 +75,15 @@ export class ThesauriForm extends Component {
                         </li>;
                 })}
               </ul>
-              <div className="panel-body">
-                <a className="btn btn-success" onClick={this.props.addValue}><i className="fa fa-plus"></i>Add item</a>
+              <div className="settings-footer">
+                <a className="btn btn-primary" onClick={this.props.addValue}>
+                  <i className="fa fa-plus"></i>
+                  <span className="btn-label">Add item</span>
+                </a>
+                <button className="btn btn-success save-template">
+                  <i className="fa fa-save"/>
+                  <span className="btn-label">Save</span>
+                </button>
               </div>
             </div>
           </Form>
