@@ -88,7 +88,7 @@ export class DocumentTypesList extends Component {
 
   aggregations(item) {
     let aggregations = this.props.aggregations.toJS();
-    let buckets = aggregations.all.types ? aggregations.all.types.buckets : [];
+    let buckets = aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
     let found = buckets.find((agg) => agg.key === item.id);
     if (found) {
       return found.filtered.doc_count;
