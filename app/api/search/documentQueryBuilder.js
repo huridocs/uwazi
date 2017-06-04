@@ -168,7 +168,7 @@ export default function () {
       let match = {
         nested: {
           path: `metadata.${property}`,
-          filter: {
+          query: {
             bool: {
               must: []
             }
@@ -185,14 +185,14 @@ export default function () {
 
       keys.forEach((key) => {
         if (properties[key].any) {
-          match.nested.filter.bool.must.push({exists: {field: `metadata.${property}.${key}`}});
+          match.nested.query.bool.must.push({exists: {field: `metadata.${property}.${key}`}});
           return;
         }
 
         properties[key].values.forEach((val) => {
           let term = {term: {}};
           term.term[`metadata.${property}.${key}.raw`] = {value: val};
-          match.nested.filter.bool.must.push(term);
+          match.nested.query.bool.must.push(term);
         });
       });
 
@@ -217,7 +217,7 @@ export default function () {
         let nestedmatch = {
           nested: {
             path: `metadata.${property}`,
-            filter: {
+            query: {
               bool: {
                 must: [
                 ]
@@ -227,13 +227,13 @@ export default function () {
         };
 
         if (properties[key].any) {
-          nestedmatch.nested.filter.bool.must[0] = {exists: {field: `metadata.${property}.${key}`}};
+          nestedmatch.nested.query.bool.must[0] = {exists: {field: `metadata.${property}.${key}`}};
           return nestedmatch;
         }
 
         let terms = {terms: {}};
         terms.terms[`metadata.${property}.${key}.raw`] = properties[key].values;
-        nestedmatch.nested.filter.bool.must[0] = terms;
+        nestedmatch.nested.query.bool.must[0] = terms;
         return nestedmatch;
       });
 
@@ -301,7 +301,7 @@ export default function () {
 
       property.nestedProperties.forEach((prop) => {
         let nestedFilters = readOnlyFilters.filter((match) => match.nested)
-        .map((nestedFilter) => nestedFilter.nested.filter.bool.must)
+        .map((nestedFilter) => nestedFilter.nested.query.bool.must)
         .reduce((result, propFilters) => {
           return result.concat(propFilters);
         }, []);
@@ -310,7 +310,7 @@ export default function () {
         let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must) {
             match.bool.must = match.bool.must.filter((nestedMatcher) => {
-              return !nestedMatcher.nested.filter.bool.must[0].terms || !nestedMatcher.nested.filter.bool.must[0].terms[path];
+              return !nestedMatcher.nested.query.bool.must[0].terms || !nestedMatcher.nested.query.bool.must[0].terms[path];
             });
 
             if (!match.bool.must.length) {
@@ -319,12 +319,12 @@ export default function () {
           }
 
           return match;
-        });
+        }).filter((f) => f);
 
         nestedAggregation.aggregations[prop.key] = {
           terms: {
             field: path,
-            size: 0
+            size: 9999
           },
           aggregations: {
             filtered: {
@@ -363,10 +363,10 @@ export default function () {
         });
 
         if (property.nested) {
-          return baseQuery.aggregations[property.name] = this.nestedAggregation(property, filters);
+          return baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, filters);
         }
 
-        baseQuery.aggregations[property.name] = this.aggregation(path, filters);
+        baseQuery.aggregations.all.aggregations[property.name] = this.aggregation(path, filters);
       });
       return this;
     },
@@ -402,7 +402,6 @@ export default function () {
       }
       if (_ids.length) {
         let match = {terms: {'sharedId.raw': _ids}};
-        //baseQuery.filter.bool.must.push(match);
         baseQuery.query.bool.must.push(match);
       }
       return this;
