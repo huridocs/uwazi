@@ -104,7 +104,7 @@ export class DocumentSidePanel extends Component {
             }}>
             <ul className="nav nav-tabs">
               {(() => {
-                if (docType !== 'entity' && false) {
+                if (docType !== 'entity' && 0) {
                   return <li>
                     <TabLink to="text-search">
                       <i className="fa fa-search"></i>
@@ -220,13 +220,13 @@ export class DocumentSidePanel extends Component {
 
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
-            {(() => {
-              if (false) {
-                return <TabContent for="text-search">
-                  <SearchText snippets={snippets}/>
-                </TabContent>
-              }
-            })()}
+
+            <ShowIf if={false}>
+              <TabContent for="text-search">
+                <SearchText snippets={snippets}/>
+              </TabContent>;
+            </ShowIf>
+
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc toc={doc.get('toc')} readOnly={readOnly} />
