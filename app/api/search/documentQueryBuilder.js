@@ -108,6 +108,7 @@ export default function () {
 
     unpublished() {
       baseQuery.query.bool.must[0].match.published = false;
+      baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
       return this;
     },
 

@@ -178,14 +178,19 @@ describe('search', () => {
 
     it('should filter by metadata, and return template aggregations based on the filter the language and the published status', (done) => {
       Promise.all([
-        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {field1: 'joker'}}, 'en')
+        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {field1: 'joker'}}, 'en'),
+        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], unpublished: true}, 'en', {_id: 'user'})
       ])
-      .then(([joker]) => {
+      .then(([joker, unpublished]) => {
         expect(joker.rows.length).toBe(2);
 
         const typesAggs = joker.aggregations.all.types.buckets;
         expect(typesAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(2);
         expect(typesAggs.find((a) => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+
+        const unpublishedAggs = unpublished.aggregations.all.types.buckets;
+        expect(unpublishedAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
+        expect(unpublishedAggs.find((a) => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
         done();
       })
       .catch(catchErrors(done));
