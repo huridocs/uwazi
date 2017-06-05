@@ -1,4 +1,5 @@
 import React from 'react';
+import rison from 'rison';
 
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
@@ -6,7 +7,6 @@ import PagesAPI from './PagesAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import {actions} from 'app/BasicReducer';
-import queryString from 'query-string';
 
 import PageViewer from './components/PageViewer';
 import pageItemLists from './utils/pageItemLists';
@@ -15,7 +15,8 @@ function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
 
   listsData.searchs = listsData.params.map(params => {
-    let query = params ? queryString.parse(params) : {filters: {}, types: []};
+    const sanitizedParams = params ? params.replace(/%27/g, '\'') : '';
+    let query = sanitizedParams ? rison.decode(sanitizedParams.replace('?q=', '') || '()') : {filters: {}, types: []};
     query.limit = '6';
     return api.search(query);
   });
