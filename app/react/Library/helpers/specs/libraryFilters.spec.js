@@ -81,12 +81,14 @@ describe('library helper', () => {
       ];
 
       let aggregations = {
-        country: {
-          buckets: [{
-            key: 1,
-            doc_count: 4,
-            filtered: {doc_count: 2}
-          }]
+        all: {
+          country: {
+            buckets: [{
+              key: 1,
+              doc_count: 4,
+              filtered: {doc_count: 2}
+            }]
+          }
         }
       };
 

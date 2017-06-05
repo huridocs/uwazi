@@ -1,20 +1,48 @@
+/* eslint-disable max-nested-callbacks */
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import search from '../search.js';
 import elastic from '../elastic';
 import elasticResult from './elasticResult';
 import queryBuilder from 'api/search/documentQueryBuilder';
 import {catchErrors} from 'api/utils/jasmineHelpers';
-import templatesModel from '../../templates';
 
-import fixtures, {templateId, userId} from './fixtures.js';
+import fixtures, {templateId, userId} from './fixtures';
+import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
+import elasticTesting from 'api/utils/elastic_testing';
 
 describe('search', () => {
   let result;
   beforeEach((done) => {
     result = elasticResult().withDocs([
-      {title: 'doc1', _id: 'id1'},
-      {title: 'doc2', _id: 'id2'}
+      {title: 'doc1', _id: 'id1', snippets: {
+        hits: {
+          hits: [
+            {
+              highlight: {
+                fullText: 'snippets'
+              }
+            }
+          ]
+        }
+      }},
+      {title: 'doc2', _id: 'id2', snippets: {
+        hits: {
+          hits: [
+            {
+              highlight: {
+                fullText: 'snippets2'
+              }
+            }
+          ]
+        }
+      }},
+      {title: 'doc3', _id: 'id3'},
+      {title: 'doc4', _id: 'id4', snippets: {
+        hits: {
+          hits: []
+        }
+      }}
     ])
     .toObject();
 
@@ -60,92 +88,276 @@ describe('search', () => {
     });
   });
 
-  describe('search', () => {
-
-    beforeEach(() => {
-      const templates = [{
-        _id: 'ruling',
-        properties: [
-          {name: 'property1', type: 'text', filter: true},
-          {name: 'property2', type: 'text', filter: true}
-        ]
-      }];
-      spyOn(templatesModel, 'get').and.returnValue(Promise.resolve(templates));
-    });
-
-    it('should perform a search on all fields', (done) => {
+  describe('searchSnippets', () => {
+    it('perform a search on fullText of the document passed and return the snippets', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      search.search({
-        searchTerm: 'searchTerm',
-        filters: {property1: 'value1', property2: 'value2'},
-        fields: ['field'],
-        types: ['ruling']
-      }, 'es')
+      search.searchSnippets('searchTerm', 'id', 'es')
       .then((results) => {
         let expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm', ['field'])
-        .filterByTemplate(['ruling'])
-        .filterMetadata({
-          property1: { value: 'value1', type: 'text' },
-          property2: { value: 'value2', type: 'text' }
-        })
-        .aggregations([])
+        .fullTextSearch('searchTerm', [], true, 9999)
+        .filterById('id')
         .language('es')
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
-        expect(results.totalRows).toEqual(10);
+        expect(results.rows[0]).toEqual({_id: 'id1', title: 'doc1', snippets: 'snippets'});
         done();
       });
     });
+  });
+
+  describe('search', () => {
+    beforeEach((done) => {
+      db.clearAllAndLoad(elasticFixtures, (err) => {
+        if (err) {
+          done.fail(err);
+        }
+
+        elasticTesting.reindex()
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
+    it('should perform a fullTextSearch on fullText and title', (done) => {
+      Promise.all([
+        search.search({searchTerm: 'spanish'}, 'es'),
+        search.search({searchTerm: 'english'}, 'es'),
+        search.search({searchTerm: 'english'}, 'en'),
+        search.search({searchTerm: 'Batman finishes'}, 'en'),
+        search.search({searchTerm: 'Batman begins'}, 'es'),
+        search.search({searchTerm: 'Batman'}, 'en')
+      ])
+      .then(([spanish, none, english, batmanFinishes, batmanBegins, batman]) => {
+        expect(spanish.rows.length).toBe(1);
+        expect(none.rows.length).toBe(0);
+        expect(english.rows.length).toBe(1);
+        expect(batmanFinishes.rows.length).toBe(1);
+        expect(batmanBegins.rows.length).toBe(1);
+        expect(batman.rows.length).toBe(2);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should filter by templates', (done) => {
+      Promise.all([
+        search.search({types: [ids.template1]}, 'es'),
+        search.search({types: [ids.template2]}, 'es'),
+        search.search({types: [ids.template1]}, 'en'),
+        search.search({types: [ids.template1, ids.template2]}, 'en')
+      ])
+      .then(([template1es, template2es, template1en, allTemplatesEn]) => {
+        expect(template1es.rows.length).toBe(2);
+        expect(template1en.rows.length).toBe(2);
+        expect(template2es.rows.length).toBe(1);
+        expect(allTemplatesEn.rows.length).toBe(3);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
 
     it('should allow searching only within specific Ids', (done) => {
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      search.search({
-        searchTerm: 'searchTerm',
-        ids: ['1', '3']
-      }, 'es')
-      .then((results) => {
-        const expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm')
-        .filterById(['1', '3'])
-        .language('es')
-        .query();
-
-        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
-        expect(results.totalRows).toEqual(10);
+      Promise.all([
+        search.search({ids: [ids.batmanBegins]}, 'es'),
+        search.search({ids: ids.batmanBegins}, 'en'),
+        search.search({ids: [ids.batmanFinishes, ids.batmanBegins]}, 'en')
+      ])
+      .then(([es, en, both]) => {
+        expect(es.rows.length).toBe(1);
+        expect(es.rows[0].title).toBe('Batman begins es');
+        expect(en.rows.length).toBe(1);
+        expect(en.rows[0].title).toBe('Batman begins en');
+        expect(both.rows.length).toBe(2);
+        expect(both.rows.find((r) => r.title === 'Batman finishes en')).not.toBe(null);
+        expect(both.rows.find((r) => r.title === 'Batman begins en')).not.toBe(null);
         done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should filter by metadata, and return template aggregations based on the filter the language and the published status', (done) => {
+      Promise.all([
+        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {field1: 'joker'}}, 'en'),
+        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], unpublished: true}, 'en', {_id: 'user'})
+      ])
+      .then(([joker, unpublished]) => {
+        expect(joker.rows.length).toBe(2);
+
+        const typesAggs = joker.aggregations.all.types.buckets;
+        expect(typesAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(2);
+        expect(typesAggs.find((a) => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+
+        const unpublishedAggs = unpublished.aggregations.all.types.buckets;
+        expect(unpublishedAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
+        expect(unpublishedAggs.find((a) => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    describe('select aggregations', () => {
+      it('should return aggregations of select fields when filtering by types', (done) => {
+        Promise.all([
+          search.search({types: [ids.templateMetadata1]}, 'en'),
+          search.search({types: [ids.templateMetadata2]}, 'en'),
+          search.search({types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
+        ])
+        .then(([template1, template2, both]) => {
+          const template1Aggs = template1.aggregations.all.select1.buckets;
+          expect(template1Aggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+
+          const template2Aggs = template2.aggregations.all.select1.buckets;
+          expect(template2Aggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(0);
+          expect(template2Aggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+
+          const bothAggs = both.aggregations.all.select1.buckets;
+          expect(bothAggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(2);
+          expect(bothAggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(2);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('multiselect aggregations', () => {
+      it('should return aggregations of multiselect fields when filtering by types', (done) => {
+        Promise.all([
+          search.search({types: [ids.templateMetadata1]}, 'en'),
+          search.search({types: [ids.templateMetadata2]}, 'en'),
+          search.search({types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en'),
+          search.search({filters: {multiselect1: ['multiValue2']}, types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
+        ])
+        .then(([template1, template2, both, filtered]) => {
+          const template1Aggs = template1.aggregations.all.multiselect1.buckets;
+          expect(template1Aggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(2);
+
+          const template2Aggs = template2.aggregations.all.multiselect1.buckets;
+          expect(template2Aggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(0);
+          expect(template2Aggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+
+          const bothAggs = both.aggregations.all.multiselect1.buckets;
+          expect(bothAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(bothAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+
+          const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
+          const templateAggs = filtered.aggregations.all.types.buckets;
+          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+          expect(templateAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(0);
+          expect(templateAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
+
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      describe('nested', () => {
+        it('should search by nested and calculate nested aggregations of fields when filtering by types', (done) => {
+          Promise.all([
+            search.search({types: [ids.templateMetadata2]}, 'en'),
+            search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {nestedField: {properties: {nested1: {any: true}}}}}, 'en')
+          ])
+          .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
+            const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
+            expect(template2NestedAggs.rows.length).toBe(2);
+            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
+            expect(nestedAggs.find((a) => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
+            expect(nestedAggs.find((a) => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
+            expect(nestedAggs.find((a) => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
+            expect(nestedAggs.find((a) => a.key === '5').filtered.total.filtered.doc_count).toBe(2);
+
+            const bothTemplatesAggs = nestedSearchFirstLevel.aggregations.all.nestedField.nested1.buckets;
+            expect(nestedSearchFirstLevel.rows.length).toBe(3);
+            expect(bothTemplatesAggs.find((a) => a.key === '1').filtered.total.filtered.doc_count).toBe(1);
+            expect(bothTemplatesAggs.find((a) => a.key === '2').filtered.total.filtered.doc_count).toBe(1);
+            expect(bothTemplatesAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(2);
+            expect(bothTemplatesAggs.find((a) => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
+            expect(bothTemplatesAggs.find((a) => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
+            expect(bothTemplatesAggs.find((a) => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
+            expect(bothTemplatesAggs.find((a) => a.key === '5').filtered.total.filtered.doc_count).toBe(2);
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+
+        it('should search second level of nested field', (done) => {
+          Promise.all([
+            search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {
+              nestedField: {properties: {nested1: {values: ['1']}}}
+            }}, 'en'),
+            search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {
+              nestedField: {properties: {nested1: {values: ['2']}}}
+            }}, 'en'),
+            search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {
+              nestedField: {properties: {nested1: {values: ['3']}}}
+            }}, 'en'),
+            search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {
+              nestedField: {properties: {nested1: {values: ['3', '5']}}}
+            }}, 'en')
+          ])
+          .then(([value1, value2, value3, value35]) => {
+            expect(value1.rows.length).toBe(1);
+            expect(value1.rows[0].title).toBe('metadata1');
+
+            expect(value2.rows.length).toBe(1);
+            expect(value2.rows[0].title).toBe('metadata1');
+
+            expect(value3.rows.length).toBe(2);
+            expect(value3.rows.find((r) => r.title === 'metadata1')).toBeDefined();
+            expect(value3.rows.find((r) => r.title === 'metadata4')).toBeDefined();
+
+            expect(value35.rows.length).toBe(3);
+            expect(value35.rows.find((r) => r.title === 'metadata1')).toBeDefined();
+            expect(value35.rows.find((r) => r.title === 'metadata4')).toBeDefined();
+            expect(value35.rows.find((r) => r.title === 'metadata5')).toBeDefined();
+
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+
+        describe('strict nested filter', () => {
+          it('should return only results with values selected in the same key', (done) => {
+            Promise.all([
+              search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {
+                nestedField: {properties: {nested1: {values: ['1', '5']}}, strict: true}
+              }}, 'en'),
+              search.search({types: [ids.templateMetadata1, ids.templateMetadata2], filters: {
+                nestedField: {properties: {nested1: {values: ['1', '2']}}, strict: true}
+              }}, 'en')
+            ])
+            .then(([strict15, strict12]) => {
+              expect(strict15.rows.length).toBe(0);
+              expect(strict12.rows.length).toBe(1);
+              done();
+            })
+            .catch(catchErrors(done));
+          });
+        });
       });
     });
 
     it('should sort if sort is present', (done) => {
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      search.search({
-        searchTerm: 'searchTerm',
-        filters: {property1: 'value1', property2: 'value2'},
-        sort: 'title',
-        order: 'asc',
-        types: ['ruling']
-      }, 'es')
-      .then((results) => {
-        let expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm')
-        .filterByTemplate(['ruling'])
-        .filterMetadata({
-          property1: { value: 'value1', type: 'text' },
-          property2: { value: 'value2', type: 'text' }
-        })
-        .aggregations([])
-        .language('es')
-        .sort('title', 'asc')
-        .query();
+      Promise.all([
+        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], order: 'asc', sort: 'title'}, 'en'),
+        search.search({types: [ids.templateMetadata1, ids.templateMetadata2], order: 'desc', sort: 'title'}, 'en')
+      ])
+      .then(([asc, desc]) => {
+        expect(asc.rows[0].title).toBe('metadata1');
+        expect(asc.rows[1].title).toBe('metadata2');
+        expect(asc.rows[2].title).toBe('metadata3');
+        expect(asc.rows[3].title).toBe('metadata4');
 
-        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
+        expect(desc.rows[0].title).toBe('metadata5');
+        expect(desc.rows[1].title).toBe('metadata4');
+        expect(desc.rows[2].title).toBe('metadata3');
+        expect(desc.rows[3].title).toBe('metadata2');
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
     it('should allow including unpublished documents', (done) => {
@@ -154,7 +366,7 @@ describe('search', () => {
         searchTerm: 'searchTerm',
         includeUnpublished: true
       }, 'es')
-      .then((results) => {
+      .then(() => {
         let expectedQuery = queryBuilder()
         .fullTextSearch('searchTerm')
         .includeUnpublished()
@@ -162,7 +374,6 @@ describe('search', () => {
         .query();
 
         expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows).toEqual([{_id: 'id1', title: 'doc1'}, {_id: 'id2', title: 'doc2'}]);
         done();
       });
     });

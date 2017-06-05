@@ -217,9 +217,21 @@ $item-padding: 15px;
 }
 
 .item-snippet {
-  margin: 15px 0;
-  font-family: $f-mono;
+  margin-top: 15px;
   font-size: $f-size-sm;
+  b {
+    color: #000;
+    background: $c-secondary-light;
+    box-shadow: -2px 0 0 0 rgba(255, 204, 102, 0.3), 2px 0 0 0 rgba(255, 204, 102, 0.3);
+  }
+  .show-more {
+    background: #fff;
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 2px 15px;
+    box-shadow: 0 -6px 9px -4px #fff, 0 -15px 10px -3px #fff;
+  }
 }
 
 .item-metadata {

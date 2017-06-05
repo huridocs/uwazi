@@ -21,7 +21,8 @@ describe('Item', () => {
         icon: {_id: 'icon', type: 'Icons'},
         title: 'doc title',
         template: 'templateId',
-        creationDate: 123
+        creationDate: 123,
+        snippets: []
       }),
       active: true,
       className: 'custom-class',
@@ -153,6 +154,50 @@ describe('Item', () => {
       expect(component.find('.item-metadata').html()).toContain('value1');
       expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
       expect(component.find('.item-metadata').html()).toContain('<dd class="">value2</dd>');
+    });
+  });
+
+  describe('when doc have no snippets', () => {
+    it('should not render snippet secction when undefined', () => {
+      props.doc = Immutable({
+        type: 'entity',
+        icon: {_id: 'icon', type: 'Icons'},
+        title: 'doc title',
+        template: 'templateId',
+        creationDate: 123
+      });
+
+      render();
+      expect(component.find('.item-snippet').length).toBe(0);
+    });
+    it('should not render snippet secction when empty', () => {
+      props.doc = Immutable({
+        type: 'entity',
+        icon: {_id: 'icon', type: 'Icons'},
+        title: 'doc title',
+        template: 'templateId',
+        creationDate: 123,
+        snippets: []
+      });
+
+      render();
+      expect(component.find('.item-snippet').length).toBe(0);
+    });
+  });
+
+  describe('when doc have snippets', () => {
+    it('should render the first snippet of the document if exists', () => {
+      props.doc = Immutable({
+        type: 'entity',
+        icon: {_id: 'icon', type: 'Icons'},
+        title: 'doc title',
+        template: 'templateId',
+        creationDate: 123,
+        snippets: ['<span>snippet!</span>']
+      });
+
+      render();
+      expect(component.find('.item-snippet').html()).toContain('<span>snippet!</span>');
     });
   });
 

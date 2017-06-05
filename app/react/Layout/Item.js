@@ -93,6 +93,13 @@ export class Item extends Component {
     return this.formatMetadata(populatedMetadata, doc.creationDate, doc.template);
   }
 
+  getSearchSnipett(doc) {
+    if (doc.snippets && doc.snippets[0]) {
+      return <div className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0]}} />;
+    }
+    return false;
+  }
+
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
            templateClassName, buttons, evalPublished} = this.props;
@@ -119,6 +126,7 @@ export class Item extends Component {
             <span>{doc.title}</span>
             {snippet}
           </div>
+          {this.getSearchSnipett(doc)}
         </div>
         <div className="item-metadata">
           {metadata}
@@ -130,7 +138,7 @@ export class Item extends Component {
             </ShowIf>
             {this.props.labels}
           </div>
-         {buttons}
+          {buttons}
         </ItemFooter>
       </RowList.Item>
     );

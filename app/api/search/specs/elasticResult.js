@@ -41,6 +41,10 @@ export default function () {
         delete doc._id;
 
         newHit._source = doc;
+        if (doc.snippets) {
+          newHit.inner_hits = {fullText: doc.snippets};
+          delete doc.snippets;
+        }
         result.hits.hits.push(newHit);
       });
       return this;

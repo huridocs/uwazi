@@ -140,4 +140,5 @@ export default [
 {key: 'Filename label', label: 'filename'},
 {key: 'Forgot Password?', label: 'Forgot Password?'},
 {key: 'Send recovery email', label: 'Send recovery email'},
+{key: 'Search text', label: 'Search text'}
 ];
