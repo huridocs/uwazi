@@ -59,6 +59,16 @@ describe('UploadEntityStatus', () => {
       });
     });
 
+    describe('when is a document, not uploaded, not processed and without progress', () => {
+      it('should return No type selected props', () => {
+        doc = doc.set('uploaded', false);
+        store.progress = Immutable({});
+        const props = mapStateToProps(store, {doc});
+        expect(props.status).toBe('danger');
+        expect(props.message).toBe('Upload failed');
+      });
+    });
+
     describe('when is uploaded, processed and with template', () => {
       it('should return empty props', () => {
         doc = doc.set('uploaded', true);

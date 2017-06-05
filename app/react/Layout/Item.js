@@ -11,7 +11,6 @@ import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
-import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 export class Item extends Component {
@@ -129,9 +128,7 @@ export class Item extends Component {
             <ShowIf if={!!doc.template}>
               <TemplateLabel template={doc.template}/>
             </ShowIf>
-            <ShowIf if={!doc.template}>
-              <UploadEntityStatus doc={this.props.doc} />
-            </ShowIf>
+            {this.props.labels}
           </div>
          {buttons}
         </ItemFooter>
@@ -154,6 +151,7 @@ Item.propTypes = {
   doc: PropTypes.object,
   itemHeader: PropTypes.object,
   buttons: PropTypes.object,
+  labels: PropTypes.object,
   className: PropTypes.string,
   templateClassName: PropTypes.string,
   evalPublished: PropTypes.bool

@@ -7,6 +7,7 @@ import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import {t, I18NLink} from 'app/I18N';
 import {publish} from 'app/Uploads/actions/uploadsActions';
+import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
@@ -99,7 +100,9 @@ export class Doc extends Component {
                  searchParams={this.props.searchParams}
                  deleteConnection={this.props.deleteConnection}
                  itemHeader={itemConnections}
-                 buttons={buttons}/>;
+                 buttons={buttons}
+                 labels={<UploadEntityStatus doc={this.props.doc} />}
+            />;
   }
 }
 
@@ -120,7 +123,7 @@ Doc.contextTypes = {
 export function mapStateToProps(state, ownProps) {
   const active = ownProps.storeKey ? !!state[ownProps.storeKey].ui.get('selectedDocuments')
   .find((doc) => doc.get('_id') === ownProps.doc.get('_id')) : false;
-  
+
   return {
     active
   };
