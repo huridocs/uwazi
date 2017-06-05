@@ -36,7 +36,7 @@ export class EditUser extends Component {
             <div className="metadataTemplate panel-default panel">
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-              {this.props.user.username}
+              {this.props.user.get('username')}
               <button type="submit" className="btn btn-success save-template">
                 <i className="fa fa-save"></i> {t('System', 'Save')}
               </button>
