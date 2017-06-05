@@ -147,7 +147,7 @@ export default function () {
       let match = {
         nested: {
           path: `metadata.${property}`,
-          filter: {
+          query: {
             bool: {
               should: []
             }
@@ -159,8 +159,8 @@ export default function () {
       let toMatch = {range: {}};
       toMatch.range[`metadata.${property}.to`] = {gte: filters[property].value.from, lte: filters[property].value.to};
 
-      match.nested.filter.bool.should.push(fromMatch);
-      match.nested.filter.bool.should.push(toMatch);
+      match.nested.query.bool.should.push(fromMatch);
+      match.nested.query.bool.should.push(toMatch);
       return match;
     },
 
