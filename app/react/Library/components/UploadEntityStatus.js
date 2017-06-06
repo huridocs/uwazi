@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+  import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {ItemFooter} from 'app/Layout/Lists';
 import {connect} from 'react-redux';
@@ -28,11 +28,11 @@ UploadEntityStatus.propTypes = {
 };
 
 export function mapStateToProps(state, props) {
-  const progress = state.progress.get(props.doc.get('sharedId')) || 0;
+  const progress = state.progress.get(props.doc.get('sharedId'));
   const uploaded = props.doc.get('uploaded');
   const processed = props.doc.get('processed');
   const isEntity = props.doc.get('type') === 'entity';
-  if (!uploaded && !isEntity) {
+  if (!uploaded && !isEntity && progress) {
     return {
       progress,
       status: 'processing',
@@ -40,7 +40,7 @@ export function mapStateToProps(state, props) {
     };
   }
 
-  if (typeof props.doc.get('processed') === 'undefined' && !isEntity) {
+  if (typeof props.doc.get('processed') === 'undefined' && !isEntity && uploaded) {
     return {
       progress: 100,
       status: 'processing',
@@ -53,6 +53,14 @@ export function mapStateToProps(state, props) {
       progress,
       status: 'warning',
       message: 'No type selected'
+    };
+  }
+
+  if (!uploaded && !isEntity && !progress) {
+    return {
+      progress,
+      status: 'danger',
+      message: 'Upload failed'
     };
   }
 

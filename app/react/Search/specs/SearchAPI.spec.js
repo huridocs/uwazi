@@ -11,6 +11,7 @@ describe('SearchAPI', () => {
     backend.restore();
     backend
     .get(APIURL + 'search', {body: JSON.stringify(searchResponse)})
+    .get(APIURL + 'search_snippets?searchTerm=term&id=id', {body: JSON.stringify(searchResponse)})
     .get(APIURL + 'search/list?keys=%5B%221%22%2C%222%22%5D', {body: JSON.stringify({rows: listResponse})})
     .get(APIURL + 'search/unpublished', {body: JSON.stringify({rows: 'uploads'})})
     .get(APIURL + 'search/count_by_template?templateId=templateId', {body: JSON.stringify(1)})
@@ -58,6 +59,17 @@ describe('SearchAPI', () => {
       searchAPI.countByTemplate('templateId')
       .then((response) => {
         expect(response).toEqual(1);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('searchSnippets()', () => {
+    it('should search snippets for a certain document', (done) => {
+      searchAPI.searchSnippets('term', 'id')
+      .then((response) => {
+        expect(response).toEqual(searchResponse);
         done();
       })
       .catch(done.fail);

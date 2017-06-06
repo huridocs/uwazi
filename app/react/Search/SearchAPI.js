@@ -18,6 +18,14 @@ export default {
     });
   },
 
+  searchSnippets(searchTerm, sharedId) {
+    let url = 'search_snippets';
+    return api.get(url, {searchTerm, id: sharedId})
+    .then((response) => {
+      return response.json;
+    });
+  },
+
   search(filters) {
     let url = 'search';
     return api.get(url, filters)

@@ -1,6 +1,5 @@
 import search from './search';
 import needsAuthorization from '../auth/authMiddleware';
-
 export default (app) => {
   app.get('/api/search/count_by_template', (req, res) => {
     return search.countByTemplate(req.query.templateId)
@@ -23,6 +22,12 @@ export default (app) => {
     }
 
     return search.search(req.query, req.language, req.user)
+    .then(results => res.json(results))
+    .catch(res.error);
+  });
+
+  app.get('/api/search_snippets', (req, res) => {
+    return search.searchSnippets(req.query.searchTerm, req.query.id, req.language)
     .then(results => res.json(results))
     .catch(res.error);
   });

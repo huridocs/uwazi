@@ -79,6 +79,10 @@ export default {
       .then((response) => {
         let rows = response.hits.hits.map((hit) => {
           let result = hit._source;
+          result.snippets = [];
+          if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+            result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
+          }
           result._id = hit._id;
           return result;
         });
@@ -90,6 +94,29 @@ export default {
 
   getUploadsByUser(user, language) {
     return model.get({user: user._id, language, published: false});
+  },
+
+  searchSnippets(searchTerm, sharedId, language) {
+    let query = queryBuilder()
+    .fullTextSearch(searchTerm, [], true, 9999)
+    .filterById(sharedId)
+    .language(language)
+    .query();
+
+    return elastic.search({index: elasticIndex, body: query})
+    .then((response) => {
+      let rows = response.hits.hits.map((hit) => {
+        let result = hit._source;
+        result._id = hit._id;
+        result.snippets = [];
+        if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+          result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
+        }
+        return result;
+      });
+
+      return {rows};
+    });
   },
 
   matchTitle(searchTerm, language) {

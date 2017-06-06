@@ -109,7 +109,7 @@ export class CollectionSettings extends Component {
                 />
               </div>
             </div>
-            <div className="alert alert-info full-width">
+            <div className="alert alert-info">
               <i className="fa fa-home"></i>
               <p>The landing page is the first thing users will see when visiting your Uwazi instance.
               You can use any URL from your Uwazi instance as a landing page, examples:</p>
@@ -130,7 +130,7 @@ export class CollectionSettings extends Component {
                         className="form-control"
                         rows="5"/>
             </div>
-            <div className="alert alert-info full-width">
+            <div className="alert alert-info">
               <i className="fa fa-lightbulb-o"></i>
               <p>This is a JSON configuration object that should match the options values required by Nodemailer, as explained in:</p>
               <ul>

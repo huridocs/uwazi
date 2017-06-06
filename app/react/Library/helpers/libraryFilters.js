@@ -60,8 +60,8 @@ export function parseWithAggregations(filters, aggregations) {
     if (property.content) {
       property.options = property.options.map((option) => {
         let aggregation;
-        if (aggregations[property.name]) {
-          aggregation = aggregations[property.name].buckets
+        if (aggregations.all && aggregations.all[property.name]) {
+          aggregation = aggregations.all[property.name].buckets
           .find((bucket) => bucket.key.toString() === option.id.toString());
         }
 
