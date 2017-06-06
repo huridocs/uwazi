@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import backend from 'fetch-mock';
 import {APIURL} from 'app/config.js';
 import {actions as formActions} from 'react-redux-form';
