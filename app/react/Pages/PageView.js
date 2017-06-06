@@ -15,8 +15,17 @@ function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
 
   listsData.searchs = listsData.params.map(params => {
-    const sanitizedParams = params ? params.replace(/%27/g, '\'') : '';
-    let query = sanitizedParams ? rison.decode(sanitizedParams.replace('?q=', '') || '()') : {filters: {}, types: []};
+    const sanitizedParams = params ? decodeURI(params) : '';
+    const queryDefault = {filters: {}, types: []};
+    let query = queryDefault;
+
+    if (sanitizedParams) {
+      query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
+      if (typeof query !== 'object') {
+        query = queryDefault;
+      }
+    }
+
     query.limit = '6';
     return api.search(query);
   });
