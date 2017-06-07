@@ -135,7 +135,7 @@ export class EntityViewer extends Component {
             entityBeingEdited={entityBeingEdited} />
         </ShowIf>
 
-        <SidePanel className={"entity-connections entity-" + this.props.tab} open={this.props.sidepanelOpen}>
+        <SidePanel className={'entity-connections entity-' + this.props.tab} open={this.props.sidepanelOpen}>
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />

@@ -1,4 +1,4 @@
-  import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {ItemFooter} from 'app/Layout/Lists';
 import {connect} from 'react-redux';

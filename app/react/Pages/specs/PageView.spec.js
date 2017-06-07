@@ -29,7 +29,7 @@ describe('PageView', () => {
     spyOn(ThesaurisAPI, 'get').and.returnValue(Promise.resolve('thesauris'));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
-      params: ['?a=1&b=2', '', '?x=1&y=2&limit=24']
+      params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number']
     });
 
     RouteHandler.renderedFromServer = true;
@@ -56,19 +56,22 @@ describe('PageView', () => {
     it('should request each list inside the content limited to 6 items and set the state', (done) => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
-        expect(api.search.calls.count()).toBe(3);
-        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({a: '1', b: '2', limit: '6'});
+        expect(api.search.calls.count()).toBe(4);
+        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({a: 1, b: 2, limit: '6'});
         expect(api.search.calls.argsFor(1)[0]).toEqual({filters: {}, types: [], limit: '6'});
-        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({x: '1', y: '2', limit: '6'});
+        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({x: 1, y: ['array'], limit: '6'});
+        expect(api.search.calls.argsFor(3)[0]).toEqual({filters: {}, types: [], limit: '6'});
 
-        expect(response.page.itemLists.length).toBe(3);
+        expect(response.page.itemLists.length).toBe(4);
 
-        expect(response.page.itemLists[0].params).toBe('?a=1&b=2');
+        expect(response.page.itemLists[0].params).toBe('?q=(a:1,b:2)');
         expect(response.page.itemLists[0].items).toEqual(['resultsFor:0']);
         expect(response.page.itemLists[1].params).toBe('');
         expect(response.page.itemLists[1].items).toEqual(['resultsFor:1']);
-        expect(response.page.itemLists[2].params).toBe('?x=1&y=2&limit=24');
+        expect(response.page.itemLists[2].params).toBe('?q=(x:1,y:!(%27array%27),limit:24)');
         expect(response.page.itemLists[2].items).toEqual(['resultsFor:2']);
+        expect(response.page.itemLists[3].params).toBe('?order=metadata.form&treatAs=number');
+        expect(response.page.itemLists[3].items).toEqual(['resultsFor:3']);
         done();
       })
       .catch(done.fail);

@@ -8,10 +8,10 @@ let t = (contextId, key, _text) => {
   let context = translation.contexts.find((ctx) => ctx.id === contextId) || {values: {}};
 
   if (!context.values) {
-    console.log(contextId);
-    console.log(key);
-    console.log(_text);
-    console.log(context);
+    console.log(contextId); // eslint-disable-line no-console
+    console.log(key); // eslint-disable-line no-console
+    console.log(_text); // eslint-disable-line no-console
+    console.log(context); // eslint-disable-line no-console
   }
 
   if (contextId === 'System' && !context.values[key]) {

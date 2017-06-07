@@ -6,8 +6,8 @@ import {t} from 'app/I18N';
 import {Field, LocalForm} from 'react-redux-form';
 
 export class SearchText extends Component {
-  search(){}
-  resetSearch(){}
+  search() {}
+  resetSearch() {}
 
   render() {
     const {snippets} = this.props;
