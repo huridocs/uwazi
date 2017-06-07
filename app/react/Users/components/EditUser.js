@@ -35,8 +35,11 @@ export class EditUser extends Component {
           validators={validator}>
             <div className="metadataTemplate panel-default panel">
             <div className="metadataTemplate-heading panel-heading">
-              <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-              {this.props.user.get('username')}
+              <div>
+                <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
+                &nbsp;
+                {this.props.user.get('username')}
+              </div>
             </div>
             <div className="panel-body">
               <FormGroup model=".role" className="form-group-radio">
