@@ -39,7 +39,7 @@ export class RelationTypeForm extends Component {
             validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
           >
             <div className="panel panel-default">
-              <div className="panel-heading relationType">
+              <div className="panel-heading">
                 <I18NLink to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
                 &nbsp;
                 <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
@@ -56,12 +56,14 @@ export class RelationTypeForm extends Component {
                       })()}
                   </Field>
                 </FormGroup>
-                &nbsp;
-                <button type="submit" className="btn btn-success save-template">
-                  <i className="fa fa-save"/> Save
-                </button>
               </div>
               <div className="panel-body">Currently connections only need a title.</div>
+              <div className="settings-footer">
+                <button type="submit" className="btn btn-success save-template">
+                  <i className="fa fa-save"/>
+                  <span className="btn-label">Save</span>
+                </button>
+              </div>
             </div>
           </Form>
       </div>

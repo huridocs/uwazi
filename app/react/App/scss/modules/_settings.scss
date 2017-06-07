@@ -66,18 +66,41 @@
 
 // Improve this
 
-.settings-content > .thesauri,
-.settings-content > .thesauri > form,
-.settings-content > .thesauri > form > .panel {
+.settings-content {
+  .thesauri,
+  .relationType,
+  .EditTranslationForm,
+  .NavlinksSettings,
+  .account-settings,
+  .page-creator,
+  .user-creator {
+    height: 100%;
+  }
+}
+
+.settings-content form,
+.settings-content .panel {
   height: 100%;
 }
 
-.settings-content > .thesauri > form > .panel {
+.settings-content .account-settings form {
+  height: auto;
+}
+
+.settings-content .panel:last-of-type,
+.settings-content .page-creator .panel,
+.settings-content .account-settings .panel,
+.settings-content .user-creator .panel,
+.settings-content .EditTranslationForm .panel {
   margin-bottom: 0;
 }
 
-.settings-content > .thesauri > form > .panel > .list-group {
-  height: calc(100% - 65px);
+.settings-content .account-settings > .panel > .panel-body,
+.settings-content form > .panel > .panel-body,
+.settings-content form > .panel > .list-group,
+.settings-content > .panel > .panel-body,
+.settings-content > .panel > .list-group {
+  height: calc(100% - 51px);
   padding-bottom: 80px;
   overflow-y: scroll; 
 }

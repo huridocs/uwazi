@@ -28,7 +28,7 @@ export class EditUser extends Component {
       role: {required: notEmpty}
     };
     return (
-      <div className="account-settings">
+      <div className="user-creator">
         <LocalForm
           initialState={this.props.user.toJS()}
           onSubmit={this.submit.bind(this)}
@@ -37,9 +37,6 @@ export class EditUser extends Component {
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
               {this.props.user.get('username')}
-              <button type="submit" className="btn btn-success save-template">
-                <i className="fa fa-save"></i> {t('System', 'Save')}
-              </button>
             </div>
             <div className="panel-body">
               <FormGroup model=".role" className="form-group-radio">
@@ -85,6 +82,12 @@ export class EditUser extends Component {
                   </div>
                 </Field>
               </FormGroup>
+            </div>
+            <div className="settings-footer">
+              <button type="submit" className="btn btn-success save-template">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">{t('System', 'Save')}</span>
+              </button>
             </div>
           </div>
         </LocalForm>

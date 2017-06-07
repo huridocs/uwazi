@@ -27,7 +27,7 @@ export class PageCreator extends Component {
     }
 
     return (
-      <div className="account-settings">
+      <div className="page-creator">
         <Form
           model="page.data"
           onSubmit={this.props.savePage}
@@ -40,12 +40,6 @@ export class PageCreator extends Component {
                   <input placeholder="Page name" className="form-control"/>
                 </Field>
               </div>
-              &nbsp;
-              <button type="submit"
-                      className="btn btn-success save-template"
-                      disabled={!!savingPage}>
-                <i className="fa fa-save"></i> Save
-              </button>
             </div>
             <div className="panel-body">
               <ShowIf if={Boolean(page.data._id)}>
@@ -56,6 +50,14 @@ export class PageCreator extends Component {
               </ShowIf>
               <MarkDown model=".metadata.content" rows={18} />
             </div>
+          </div>
+          <div className="settings-footer">
+            <button type="submit"
+                    className="btn btn-success save-template"
+                    disabled={!!savingPage}>
+              <i className="fa fa-save"></i>
+              <span className="btn-label">Save</span>
+            </button>
           </div>
         </Form>
       </div>

@@ -139,7 +139,12 @@ export class CollectionSettings extends Component {
               <p>This setting takes precedence over all other mailer configuration.
                  If left blank, then the configuration file in /api/config/mailer.js will be used.</p>
             </div>
-            <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
+            <div className="settings-footer">
+              <button type="submit" className="btn btn-success">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">{t('System', 'Save')}</span>
+              </button>
+            </div>
           </form>
         </div>
       </div>

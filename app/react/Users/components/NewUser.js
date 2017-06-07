@@ -29,16 +29,13 @@ export class NewUser extends Component {
       role: {required: notEmpty}
     };
     return (
-      <div className="account-settings">
+      <div className="user-creator">
         <LocalForm
           onSubmit={this.submit.bind(this)}
           validators={validator}>
             <div className="metadataTemplate panel-default panel">
             <div className="metadataTemplate-heading panel-heading">
               <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-              <button type="submit" className="btn btn-success save-template">
-                <i className="fa fa-save"></i> {t('System', 'Save')}
-              </button>
             </div>
             <div className="panel-body">
               <FormGroup model=".username">
@@ -96,6 +93,12 @@ export class NewUser extends Component {
                   </div>
                 </Field>
               </FormGroup>
+            </div>
+            <div className="settings-footer">
+              <button type="submit" className="btn btn-success save-template">
+                <i className="fa fa-save"></i>
+                <span className="btn-label">{t('System', 'Save')}</span>
+              </button>
             </div>
           </div>
         </LocalForm>
