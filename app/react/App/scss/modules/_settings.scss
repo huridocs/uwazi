@@ -68,12 +68,16 @@
 
 .settings-content > .thesauri,
 .settings-content > .thesauri > form,
-.settings-content > .thesauri > form .panel {
+.settings-content > .thesauri > form > .panel {
   height: 100%;
 }
 
-.settings-content > .thesauri > form .panel {
+.settings-content > .thesauri > form > .panel {
   margin-bottom: 0;
+}
+
+.settings-content > .thesauri > form > .panel > .list-group {
+  height: calc(100% - 65px);
   padding-bottom: 80px;
   overflow-y: scroll; 
 }
