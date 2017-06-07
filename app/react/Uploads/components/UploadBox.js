@@ -7,9 +7,21 @@ import {wrapDispatch} from 'app/Multireducer';
 
 import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
 import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
-import io from 'socket.io-client';
+import socket from 'app/socket';
 
 export class UploadBox extends Component {
+
+  constructor(props) {
+    super(props);
+    socket.on('documentProcessed', (sharedId) => {
+      this.props.documentProcessed(sharedId);
+    });
+
+    socket.on('conversionFailed', (sharedId) => {
+      this.props.documentProcessError(sharedId);
+    });
+  }
+
   onDrop(files) {
     files.forEach((file) => {
       let doc = {title: this.extractTitle(file)};
@@ -19,29 +31,6 @@ export class UploadBox extends Component {
       });
     });
     this.props.unselectAllDocuments();
-  }
-
-  componentWillMount() {
-    //only on client
-    if (!window.document) {
-      return;
-    }
-    this.socket = io();
-    this.socket.on('documentProcessed', (sharedId) => {
-      this.props.documentProcessed(sharedId);
-    });
-
-    this.socket.on('conversionFailed', (sharedId) => {
-      this.props.documentProcessError(sharedId);
-    });
-  }
-
-  componentWillUnmount() {
-    //only on client
-    if (!window.document) {
-      return;
-    }
-    this.socket.disconnect();
   }
 
   extractTitle(file) {
