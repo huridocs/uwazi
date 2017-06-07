@@ -76,11 +76,11 @@ export class FiltersForm extends Component {
         })()}
 
         <Form model={model} id="filtersForm" onSubmit={this.submit.bind(this)} onChange={this.onChange.bind(this)}>
-        {fields.map((property, index) => {
+        {fields.map((property) => {
           let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
           if (property.type === 'select' || property.type === 'multiselect') {
             return (
-              <FormGroup key={index}>
+              <FormGroup key={property.name}>
                   <ul className={propertyClass}>
                     <li>
                       {t(translationContext, property.label)}
@@ -104,7 +104,7 @@ export class FiltersForm extends Component {
           }
           if (property.type === 'nested') {
             return (
-              <FormGroup key={index}>
+              <FormGroup key={property.name}>
                   <ul className={propertyClass}>
                     <li>
                       {t(translationContext, property.label)}
@@ -140,7 +140,7 @@ export class FiltersForm extends Component {
           }
           if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange') {
             return (
-              <FormGroup key={index}>
+              <FormGroup key={property.name}>
                 <ul className={propertyClass}>
                   <li>
                     {t(translationContext, property.label)}
@@ -162,7 +162,7 @@ export class FiltersForm extends Component {
           }
           if (property.type === 'numeric') {
             return (
-              <FormGroup key={index}>
+              <FormGroup key={property.name}>
                 <ul className={propertyClass}>
                   <li>
                     {t(translationContext, property.label)}
@@ -183,7 +183,7 @@ export class FiltersForm extends Component {
               );
           }
           return (
-            <FormGroup key={index}>
+            <FormGroup key={property.name}>
               <Field model={`.filters.${property.name}`} >
                 <ul className={propertyClass}>
                   <li>

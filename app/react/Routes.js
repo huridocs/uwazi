@@ -110,6 +110,7 @@ const routes =
     <Route path='document/:documentId' component={ViewDocument} />
     <Route path='entity/:entityId' component={EntityView} />
     <Route path='page/:pageId' component={PageView} />
+    <Route path='404' component={NoMatch} />
   </Route>
 ;
 

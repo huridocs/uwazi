@@ -34,7 +34,6 @@ export default (app) => {
       const docs = _docs.map((doc) => {
         doc.file = req.files[0];
         doc.uploaded = true;
-        doc.processed = false;
         return doc;
       });
       return entities.saveMultiple(docs);

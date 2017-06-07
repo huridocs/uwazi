@@ -9,21 +9,9 @@
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
       ```
-- **Elasticsearch** (2.4)
-    - OSX
-      - `brew update`
-      - `brew install elasticsearch@2.4`
-
-    - Ubuntu
-      ```
-      $ wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-      $ echo "deb http://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
-      $ sudo apt-get update && sudo apt-get -y install elasticsearch
-      $ sudo update-rc.d elasticsearch defaults 95 10
-
-      $ echo "deb https://packages.elastic.co/logstash/2.3/debian stable main" | sudo tee -a /etc/apt/sources.list
-      $ sudo apt-get update && sudo apt-get install logstash
-      ```
+- **Elasticsearch** (5.4)
+   - https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html
+    
 - **Docsplit**
     - OSX
       - `brew install ruby`

@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {reuploadDocument} from 'app/Metadata/actions/actions';
-import io from 'socket.io-client';
+import socket from 'app/socket';
 
 export class UploadButton extends Component {
 
@@ -11,6 +11,28 @@ export class UploadButton extends Component {
     super(props, context);
 
     this.state = {processing: false, failed: false, completed: false};
+
+    socket.on('conversionStart', (docId) => {
+      if (docId === this.props.documentId) {
+        this.setState({processing: true, failed: false, completed: false});
+      }
+    });
+
+    socket.on('conversionFailed', (docId) => {
+      if (docId === this.props.documentId) {
+        this.setState({processing: false, failed: true, completed: false});
+      }
+    });
+
+    socket.on('documentProcessed', (docId) => {
+      if (docId === this.props.documentId) {
+        this.setState({processing: false, failed: false, completed: true}, () => {
+          setTimeout(() => {
+            this.setState({processing: false, failed: false, completed: false});
+          }, 2000);
+        });
+      }
+    });
   }
 
   onChange(e) {
@@ -23,44 +45,6 @@ export class UploadButton extends Component {
       message: 'Are you sure you want to upload a new document?\n\n' +
                'All Table of Contents (TOC) and all text-based references linked to the previous document will be lost.'
     });
-  }
-
-  componentWillMount() {
-    //only on client
-    if (!window.document) {
-      return;
-    }
-    this.socket = io();
-
-    this.socket.on('conversionStart', (docId) => {
-      if (docId === this.props.documentId) {
-        this.setState({processing: true, failed: false, completed: false});
-      }
-    });
-
-    this.socket.on('documentProcessed', (docId) => {
-      if (docId === this.props.documentId) {
-        this.setState({processing: false, failed: false, completed: true}, () => {
-          setTimeout(() => {
-            this.setState({processing: false, failed: false, completed: false});
-          }, 2000);
-        });
-      }
-    });
-
-    this.socket.on('conversionFailed', (docId) => {
-      if (docId === this.props.documentId) {
-        this.setState({processing: false, failed: true, completed: false});
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    //only on client
-    if (!window.document) {
-      return;
-    }
-    this.socket.disconnect();
   }
 
   renderUploadButton() {
