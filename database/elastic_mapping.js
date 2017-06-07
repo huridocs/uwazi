@@ -35,11 +35,11 @@ export default {
           path_match: 'fullText',
           match_mapping_type: 'string',
           mapping: {
-            type: 'string',
+            type: 'text',
             index: 'analyzed',
             omit_norms: true,
             analyzer: 'standard',
-            fielddata: {format: 'enabled'}
+            term_vector: 'with_positions_offsets'
           }
         }
       }, {

@@ -1,15 +1,17 @@
+import markdownEscapedValues from 'app/utils/markdownEscapedValues';
+
 const listPlaceholder = '{---UWAZILIST---}';
+const listEscape = '{list}';
 
 export default {
   generate: (originalText) => {
-    const listMatch = /{list}\((.*?)\)/g;
-    const params = [];
-    const originalContent = originalText || '';
+    const values = markdownEscapedValues(originalText, '(...)', listEscape);
 
-    const content = originalContent.replace(listMatch, (_, list) => {
-      const listParams = /\?(.*)/g.exec(list);
-      params.push(listParams ? listParams[0] : '');
-      return listPlaceholder;
+    let content = originalText || '';
+    const params = values.map(match => {
+      content = content.replace(`${listEscape}(${match})`, listPlaceholder);
+      const urlParams = /\?(.*)/g.exec(match);
+      return urlParams ? urlParams[0] : '';
     });
 
     return {params, content};
