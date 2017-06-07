@@ -22,7 +22,7 @@ export default class PDF extends EventEmitter {
   extractText() {
     let logFile = fs.createWriteStream(this.logFile, {flags: 'a'});
     let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
-    let options = ['text', '-o', tmpPath, this.filepath];
+    let options = ['text', '--no-ocr', '-o', tmpPath, this.filepath];
     let extraction = spawn('docsplit', options);
     extraction.stderr.pipe(logFile);
     extraction.stdout.pipe(logFile);
