@@ -42,11 +42,11 @@ export default (app) => {
   app.get('/api/entities', (req, res) => {
     entities.getById(req.query._id, req.language)
     .then((response) => {
-      if(!response) {
-        res.json({}, 404)
+      if (!response) {
+        res.json({}, 404);
         return;
       }
-      res.json({rows: [response]})
+      res.json({rows: [response]});
     })
     .catch(res.error);
   });

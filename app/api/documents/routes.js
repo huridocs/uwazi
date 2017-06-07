@@ -36,8 +36,8 @@ export default (app) => {
     }
 
     documents.getById(id, req.language).then(response => {
-      if(!response) {
-        es.json({}, 404)
+      if (!response) {
+        res.json({}, 404);
         return;
       }
       res.json({rows: [response]});
