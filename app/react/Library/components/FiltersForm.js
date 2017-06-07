@@ -76,7 +76,7 @@ export class FiltersForm extends Component {
         })()}
 
         <Form model={model} id="filtersForm" onSubmit={this.submit.bind(this)} onChange={this.onChange.bind(this)}>
-        {fields.map((property, index) => {
+        {fields.map((property) => {
           let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
           if (property.type === 'select' || property.type === 'multiselect') {
             return (
