@@ -64,5 +64,15 @@
 .metadataTemplate-constructor {
   .list-group-item {
     margin: 4px 7px;
+    padding: 0 !important;
+  }
+  .btn {
+    line-height: 44px;
+    margin-right: 15px;
+    padding: 0 15px;
+    border-width: 0;
+    border-right: 1px solid $c-grey-light;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }
