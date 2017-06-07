@@ -10,7 +10,7 @@
       $ sudo apt-get install -y nodejs
       ```
 - **Elasticsearch** (5.4)
-    https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html
+   - https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html
     
 - **Docsplit**
     - OSX
