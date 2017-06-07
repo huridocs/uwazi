@@ -2,7 +2,11 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'title', 'icon', 'processed', 'creationDate', 'template', 'metadata', 'type', 'sharedId', 'toc', 'attachments', 'language', 'file', 'uploaded', 'published']
+      include: [
+        'title', 'icon', 'processed', 'creationDate', 'template',
+        'metadata', 'type', 'sharedId', 'toc', 'attachments',
+        'language', 'file', 'uploaded', 'published'
+      ]
     },
     from: 0,
     size: 30,
@@ -83,10 +87,23 @@ export default function () {
                   }
                 },
                 query: {
-                  multi_match: {
-                    query: term,
-                    type: 'phrase_prefix',
-                    fields: 'fullText'
+                  bool: {
+                    must: {
+                      multi_match: {
+                        query: term,
+                        type: 'best_fields',
+                        cutoff_frequency: 0.0007,
+                        operator: 'and',
+                        fields: ['fullText']
+                      }
+                    },
+                    should: {
+                      multi_match: {
+                        query: term,
+                        type: 'phrase_prefix',
+                        fields: ['fullText']
+                      }
+                    }
                   }
                 }
               }
