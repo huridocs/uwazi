@@ -14,7 +14,7 @@ import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
-//import SearchText from './SearchText';
+import SearchText from './SearchText';
 
 import {fromJS} from 'immutable';
 import {createSelector} from 'reselect';
@@ -82,7 +82,7 @@ export class DocumentSidePanel extends Component {
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
-    //const snippets = doc.get('snippets') ? doc.get('snippets').toJS() : [];
+    const snippets = doc.get('snippets') ? doc.get('snippets').toJS() : [];
     const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {});
     const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
     const startNewConnection = readOnly ? () => {} : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'));
@@ -104,7 +104,7 @@ export class DocumentSidePanel extends Component {
             }}>
             <ul className="nav nav-tabs">
               {(() => {
-                if (docType !== 'entity' && 0) {
+                if (docType !== 'entity') {
                   return <li>
                     <TabLink to="text-search">
                       <i className="fa fa-search"></i>
@@ -220,7 +220,9 @@ export class DocumentSidePanel extends Component {
 
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
-
+            <TabContent for="text-search">
+              <SearchText snippets={snippets}/>
+            </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc toc={doc.get('toc')} readOnly={readOnly} />

@@ -41,7 +41,7 @@ export class SearchText extends Component {
 }
 
 SearchText.propTypes = {
-  snippets: PropTypes.object
+  snippets: PropTypes.array
 };
 
 function mapStateToProps() {
