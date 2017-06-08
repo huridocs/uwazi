@@ -79,6 +79,7 @@ export default function () {
                 inner_hits: {
                   _source: false,
                   highlight: {
+                    order: 'score',
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
@@ -101,6 +102,7 @@ export default function () {
                       multi_match: {
                         query: term,
                         type: 'phrase_prefix',
+                        slop: 50,
                         fields: ['fullText']
                       }
                     }
