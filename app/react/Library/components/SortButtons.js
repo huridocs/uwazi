@@ -107,6 +107,7 @@ export class SortButtons extends Component {
           {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
           {additionalSorts}
         </ul>
+        <i className="fa fa-caret-down"></i>
       </div>
     );
   }
