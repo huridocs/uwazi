@@ -25,7 +25,7 @@
     color: $c-grey;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    padding: 15px;
+    margin-top: 15px;
   }
   .no-properties-wrap {
     display: block;
@@ -63,10 +63,19 @@
     margin-bottom: 15px;
   }
 }
+.FiltersForm-constructor {
+  padding-left: 30px;
+  border-left: 1px solid $c-grey;  
+  
+  .no-properties {
+    display: none;
+  }
+}
+
 .FiltersForm-list,
 .FiltersForm-constructor {  
   .list-group-item {
-    margin: 7px 15px;
+    margin: 7px 0;
     &:first-of-type {
       margin-top: 15px;
     }

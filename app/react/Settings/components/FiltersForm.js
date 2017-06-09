@@ -95,31 +95,33 @@ export class FiltersForm extends Component {
   }
 
   render() {
-    return <div className="FiltersForm row">
-            <div className="FiltersForm-list col-sm-9">
+    return <div className="FiltersForm">
+            <div className="FiltersForm-list">
               <div className="panel panel-default">
                 <div className="panel-heading">
                   Filtrable types
                 </div>
-                <DragAndDropContainer
-                  id="active"
-                  onChange={this.activesChange.bind(this)}
-                  renderItem={this.renderItem.bind(this)}
-                  items={this.state.activeFilters}
-                  />
-              </div>
-            </div>
-            <div className="FiltersForm-constructor col-sm-3">
-              <div className="panel panel-default">
-                <div className="panel-heading">
-                  Document and entities
+                <div className="panel-body">
+                  <div className="col-sm-9">
+                    <DragAndDropContainer
+                      id="active"
+                      onChange={this.activesChange.bind(this)}
+                      renderItem={this.renderItem.bind(this)}
+                      items={this.state.activeFilters}
+                      />
+                  </div>
+                  <div className="col-sm-3">
+                    <div className="FiltersForm-constructor">
+                      <div><i>Document and entities</i></div>
+                      <DragAndDropContainer
+                        id="inactive"
+                        onChange={this.unactivesChange.bind(this)}
+                        renderItem={this.renderItem.bind(this)}
+                        items={this.state.inactiveFilters}
+                        />
+                    </div>
+                  </div>
                 </div>
-                <DragAndDropContainer
-                  id="inactive"
-                  onChange={this.unactivesChange.bind(this)}
-                  renderItem={this.renderItem.bind(this)}
-                  items={this.state.inactiveFilters}
-                  />
               </div>
             </div>
             <div className="settings-footer">
