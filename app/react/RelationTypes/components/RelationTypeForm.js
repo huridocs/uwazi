@@ -40,8 +40,6 @@ export class RelationTypeForm extends Component {
           >
             <div className="panel panel-default">
               <div className="panel-heading">
-                <I18NLink to="/settings/connections" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-                &nbsp;
                 <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
                   <Field model=".name">
                       <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
@@ -59,6 +57,10 @@ export class RelationTypeForm extends Component {
               </div>
               <div className="panel-body">Currently connections only need a title.</div>
               <div className="settings-footer">
+                <I18NLink to="/settings/connections" className="btn btn-default">
+                  <i className="fa fa-arrow-left"></i>
+                  <span className="btn-label">Back</span>
+                </I18NLink>
                 <button type="submit" className="btn btn-success save-template">
                   <i className="fa fa-save"/>
                   <span className="btn-label">Save</span>

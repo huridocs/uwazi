@@ -33,9 +33,9 @@ export class NewUser extends Component {
         <LocalForm
           onSubmit={this.submit.bind(this)}
           validators={validator}>
-            <div className="metadataTemplate panel-default panel">
-            <div className="metadataTemplate-heading panel-heading">
-              <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
+            <div className="panel-default panel">
+            <div className="panel-heading">
+              New user
             </div>
             <div className="panel-body">
               <FormGroup model=".username">
@@ -95,6 +95,10 @@ export class NewUser extends Component {
               </FormGroup>
             </div>
             <div className="settings-footer">
+              <I18NLink to={backUrl} className="btn btn-default">
+                <i className="fa fa-arrow-left"></i>
+                <span className="btn-label">Back</span>
+              </I18NLink>
               <button type="submit" className="btn btn-success save-template">
                 <i className="fa fa-save"></i>
                 <span className="btn-label">{t('System', 'Save')}</span>

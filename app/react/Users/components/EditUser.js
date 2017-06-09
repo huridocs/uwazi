@@ -33,11 +33,9 @@ export class EditUser extends Component {
           initialState={this.props.user.toJS()}
           onSubmit={this.submit.bind(this)}
           validators={validator}>
-            <div className="metadataTemplate panel-default panel">
-            <div className="metadataTemplate-heading panel-heading">
+            <div className="panel-default panel">
+            <div className="panel-heading">
               <div>
-                <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-                &nbsp;
                 {this.props.user.get('username')}
               </div>
             </div>
@@ -87,6 +85,10 @@ export class EditUser extends Component {
               </FormGroup>
             </div>
             <div className="settings-footer">
+              <I18NLink to={backUrl} className="btn btn-default">
+                <i className="fa fa-arrow-left"></i>
+                <span className="btn-label">Back</span>
+              </I18NLink>
               <button type="submit" className="btn btn-success save-template">
                 <i className="fa fa-save"></i>
                 <span className="btn-label">{t('System', 'Save')}</span>

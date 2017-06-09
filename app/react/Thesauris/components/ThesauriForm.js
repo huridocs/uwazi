@@ -47,8 +47,6 @@ export class ThesauriForm extends Component {
           >
             <div className="panel panel-default thesauri">
               <div className="panel-heading">
-                <I18NLink to="/settings/dictionaries" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-                &nbsp;
                 <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
                   <Field model=".name">
                     <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
@@ -76,6 +74,10 @@ export class ThesauriForm extends Component {
                 })}
               </ul>
               <div className="settings-footer">
+                <I18NLink to="/settings/dictionaries" className="btn btn-default">
+                  <i className="fa fa-arrow-left"></i>
+                  <span className="btn-label">Back</span>
+                </I18NLink>
                 <a className="btn btn-primary" onClick={this.props.addValue}>
                   <i className="fa fa-plus"></i>
                   <span className="btn-label">Add item</span>

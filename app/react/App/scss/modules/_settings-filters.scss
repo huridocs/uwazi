@@ -1,7 +1,6 @@
 .FiltersForm-list,
 .FiltersForm-constructor {
   .panel {
-    background: $c-grey-lighten;
     display: table;
     width: 100%;
   }
@@ -27,7 +26,6 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     padding: 15px;
-    background: $c-grey-lighten;
   }
   .no-properties-wrap {
     display: block;
@@ -64,9 +62,11 @@
   .input-group {
     margin-bottom: 15px;
   }
-  
+}
+.FiltersForm-list,
+.FiltersForm-constructor {  
   .list-group-item {
-    margin: 4px 15px;
+    margin: 7px 15px;
     &:first-of-type {
       margin-top: 15px;
     }
@@ -77,11 +77,5 @@
       background: $c-white;
       padding: 0 0 10px;
     }
-  }
-}
-
-.FiltersForm-constructor {
-  .list-group-item {
-    margin: 4px 7px;
   }
 }

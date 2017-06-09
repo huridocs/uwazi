@@ -68,17 +68,22 @@
 
 .settings-content {
   .thesauri,
+  .metadata,
   .relationType,
   .EditTranslationForm,
   .NavlinksSettings,
   .account-settings,
   .page-creator,
-  .user-creator {
+  .user-creator,
+  .FiltersForm,
+  .FiltersForm-list {
     height: 100%;
   }
 }
 
 .settings-content form,
+.settings-content main,
+.settings-content main > div,
 .settings-content .panel {
   height: 100%;
 }
@@ -101,6 +106,6 @@
 .settings-content > .panel > .panel-body,
 .settings-content > .panel > .list-group {
   height: calc(100% - 51px);
-  padding-bottom: 80px;
+  padding-bottom: 85px;
   overflow-y: scroll; 
 }

@@ -32,8 +32,6 @@ export class MetadataTemplate extends Component {
           validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
         >
           <div className="metadataTemplate-heading panel-heading">
-            <I18NLink to={this.props.backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-            &nbsp;
             <div className={nameGroupClass}>
               <Field model=".name">
                 <input placeholder="Template name" className="form-control"/>
@@ -44,10 +42,6 @@ export class MetadataTemplate extends Component {
                 </div>
               </ShowIf>
             </div>
-            &nbsp;
-            <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
-              <i className="fa fa-save"/> Save
-            </button>
           </div>
 
           {connectDropTarget(
@@ -65,7 +59,16 @@ export class MetadataTemplate extends Component {
               </div>
             </ul>
           )}
-
+          <div className="settings-footer">
+            <I18NLink to={this.props.backUrl} className="btn btn-default">
+              <i className="fa fa-arrow-left"></i>
+              <span className="btn-label">Back</span>
+            </I18NLink>
+            <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
+              <i className="fa fa-save"/>
+              <span className="btn-label">Save</span>
+            </button>
+          </div>
         </Form>
       </div>
     );

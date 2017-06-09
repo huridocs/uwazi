@@ -34,7 +34,6 @@ export class PageCreator extends Component {
           validators={validator()}>
           <div className="panel panel-default">
             <div className="metadataTemplate-heading panel-heading">
-              <I18NLink to={backUrl} className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>&nbsp;
               <div className={nameGroupClass}>
                 <Field model=".title">
                   <input placeholder="Page name" className="form-control"/>
@@ -52,6 +51,10 @@ export class PageCreator extends Component {
             </div>
           </div>
           <div className="settings-footer">
+            <I18NLink to={backUrl} className="btn btn-default">
+              <i className="fa fa-arrow-left"></i>
+              <span className="btn-label">Back</span>
+            </I18NLink>
             <button type="submit"
                     className="btn btn-success save-template"
                     disabled={!!savingPage}>
