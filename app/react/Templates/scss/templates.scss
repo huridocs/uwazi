@@ -9,8 +9,7 @@
     color: #AFAFAF;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-
-    padding: 15px;
+    margin-top: 15px;
     .fa {
       margin-right: 5px;
     }
@@ -46,10 +45,29 @@
   }
 }
 
+.metadataTemplate .list-group-item {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  line-height: 23px;
+  border-color: $c-grey-light;
+  border-left-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+.metadataTemplate-constructor {
+  border-left: 1px solid $c-grey;
+  padding-left: 30px;
+}
+
 .metadataTemplate-list,
 .metadataTemplate-constructor {
   .list-group-item {
-    margin: 7px 15px;
+    margin: 7px 0;
     &:first-of-type {
       margin-top: 15px;
     }

@@ -26,32 +26,41 @@ export class TemplateCreator extends Component {
     }
 
     return (
-      <div className="row metadata">
-        <main className="col-xs-12 col-sm-9">
-            <MetadataTemplate saveTemplate={save} backUrl={backUrl} />
-        </main>
-        <aside className="col-xs-12 col-sm-3">
-          <div className="metadataTemplate-constructor panel panel-default">
-            <div className="panel-heading">Properties</div>
-            <ul className="list-group">
-              <PropertyOption label='Text' type='text'/>
-              <PropertyOption label='Numeric' type='numeric'/>
-              <PropertyOption label='Select' type='select'/>
-              <PropertyOption label='Multi Select' type='multiselect'/>
-              <PropertyOption label='Date' type='date'/>
-              <PropertyOption label='Rich Text' type='markdown'/>
-              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                <PropertyOption label='Violated articles' type='nested'/>
-              </ShowIf>
-              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                <PropertyOption label='Multi Date' type='multidate'/>
-              </ShowIf>
-              <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                <PropertyOption label='Multi Date Range' type='multidaterange'/>
-              </ShowIf>
-            </ul>
+      <div className="metadata">
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            Metadata creator
           </div>
-        </aside>
+          <div className="panel-body">
+            <div className="row">
+              <main className="col-xs-12 col-sm-9">
+                <MetadataTemplate saveTemplate={save} backUrl={backUrl} />
+              </main>
+              <aside className="col-xs-12 col-sm-3">
+                <div className="metadataTemplate-constructor">
+                  <div><i>Properties</i></div>
+                  <ul className="list-group">
+                    <PropertyOption label='Text' type='text'/>
+                    <PropertyOption label='Numeric' type='numeric'/>
+                    <PropertyOption label='Select' type='select'/>
+                    <PropertyOption label='Multi Select' type='multiselect'/>
+                    <PropertyOption label='Date' type='date'/>
+                    <PropertyOption label='Rich Text' type='markdown'/>
+                    <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                      <PropertyOption label='Violated articles' type='nested'/>
+                    </ShowIf>
+                    <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                      <PropertyOption label='Multi Date' type='multidate'/>
+                    </ShowIf>
+                    <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                      <PropertyOption label='Multi Date Range' type='multidaterange'/>
+                    </ShowIf>
+                  </ul>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

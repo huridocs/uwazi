@@ -28,10 +28,10 @@ export class MetadataTemplate extends Component {
         <Form
           model="template.data"
           onSubmit={this.props.saveTemplate}
-          className="metadataTemplate panel-default panel"
+          className="metadataTemplate"
           validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
         >
-          <div className="metadataTemplate-heading panel-heading">
+          <div className="metadataTemplate-heading">
             <div className={nameGroupClass}>
               <Field model=".name">
                 <input placeholder="Template name" className="form-control"/>
