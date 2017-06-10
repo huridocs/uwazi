@@ -59,6 +59,10 @@ export class DocumentSidePanel extends Component {
     if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
+
+    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.searchSnippets) {
+      this.props.searchSnippets('artavia', newProps.doc.get('sharedId'), this.props.storeKey);
+    }
   }
 
   close() {
@@ -305,6 +309,7 @@ DocumentSidePanel.propTypes = {
   getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
+  searchSnippets: PropTypes.func,
   isTargetDoc: PropTypes.bool,
   readOnly: PropTypes.bool,
   storeKey: PropTypes.string
