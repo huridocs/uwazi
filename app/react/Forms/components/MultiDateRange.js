@@ -49,11 +49,11 @@ export default class MultiDateRange extends Component {
                   <div className="multidate-range">
                     <div className="DatePicker__From">
                       <span>From:&nbsp;</span>
-                        <DatePicker value={value.from} onChange={this.fromChange.bind(this, index)}/>
+                        <DatePicker format={this.props.format} value={value.from} onChange={this.fromChange.bind(this, index)}/>
                     </div>
                     <div className="DatePicker__To">
                       <span>&nbsp;To:&nbsp;</span>
-                        <DatePicker value={value.to} endOfDay={true} onChange={this.toChange.bind(this, index)}/>
+                        <DatePicker format={this.props.format} value={value.to} endOfDay={true} onChange={this.toChange.bind(this, index)}/>
                     </div>
                     <button className="react-datepicker__close-icon" onClick={this.remove.bind(this, index)}></button>
                   </div>
@@ -71,5 +71,6 @@ export default class MultiDateRange extends Component {
 
 MultiDateRange.propTypes = {
   value: PropTypes.array,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  format: PropTypes.string
 };

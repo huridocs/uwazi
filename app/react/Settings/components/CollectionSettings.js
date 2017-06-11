@@ -2,23 +2,40 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import {isClient} from 'app/utils';
 
 import {actions} from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
+import {RadioButtons} from 'app/Forms';
 import {t} from 'app/I18N';
 
 export class CollectionSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
+    const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     this.state = {
       siteName: props.settings.site_name || '',
       homePage: props.settings.home_page || '',
       mailerConfig: props.settings.mailerConfig || '',
-      customLandingpage: !!props.settings.home_page
+      customLandingpage: !!props.settings.home_page,
+      dateFormat: props.settings.dateFormat,
+      dateSeparator
     };
+  }
+
+  dateFormatOptions(separator) {
+    return [
+      {label: `Year, Month, Day`, value: `YYYY${separator}MM${separator}DD`},
+      {label: `Day, Month, Year`, value: `DD${separator}MM${separator}YYYY`},
+      {label: `Month, Day, Year`, value: `MM${separator}DD${separator}YYYY`}
+    ];
+  }
+
+  renderDateFormatLabel(option) {
+    return <span>{option.label} <code>{moment().format(option.value)}</code></span>;
   }
 
   changeLandingPage(e) {
@@ -46,6 +63,17 @@ export class CollectionSettings extends Component {
     this.props.setSettings(settings);
   }
 
+  changeDateFormat(dateFormat) {
+    this.setState({dateFormat});
+    let settings = Object.assign(this.props.settings, {dateFormat});
+
+    this.props.setSettings(settings);
+  }
+
+  changeDateFormatSeparator(dateSeparator) {
+    this.setState({dateSeparator});
+  }
+
   updateSettings(e) {
     e.preventDefault();
     let settings = Object.assign({}, this.props.settings);
@@ -61,6 +89,7 @@ export class CollectionSettings extends Component {
 
   render() {
     const hostname = isClient ? window.location.origin : '';
+
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection settings')}</div>
@@ -138,6 +167,22 @@ export class CollectionSettings extends Component {
               </ul>
               <p>This setting takes precedence over all other mailer configuration.
                  If left blank, then the configuration file in /api/config/mailer.js will be used.</p>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label">{t('System', 'Date format')}</label>
+              <div>{t('System', 'Separator')}</div>
+              <RadioButtons
+                options={[{label: '/', value: '/'}, {label: '-', value: '-'}]}
+                value={this.state.dateSeparator}
+                onChange={this.changeDateFormatSeparator.bind(this)}
+              />
+              <div>{t('System', 'Order')}</div>
+              <RadioButtons
+                options={this.dateFormatOptions(this.state.dateSeparator)}
+                value={this.state.dateFormat}
+                onChange={this.changeDateFormat.bind(this)}
+                renderLabel={this.renderDateFormatLabel}
+              />
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">
