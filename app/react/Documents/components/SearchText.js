@@ -4,17 +4,26 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {t} from 'app/I18N';
 import {Field, LocalForm} from 'react-redux-form';
+import {searchSnippets} from 'app/Library/actions/libraryActions';
+import Immutable from 'immutable';
 
 export class SearchText extends Component {
-  search() {}
   resetSearch() {}
 
+  submit(value) {
+    this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey);
+  }
+
   render() {
-    const {snippets} = this.props;
+    let snippets = this.props.snippets.toJS();
+    if (!snippets.length) {
+      snippets = this.props.doc.get('snippets') ? this.props.doc.get('snippets').toJS() : [];
+    }
+
     return (
       <div>
         <div className={'search-box'}>
-          <LocalForm model={'searchText'} onSubmit={this.search.bind(this)} autoComplete="off">
+          <LocalForm model={'searchText'} onSubmit={this.submit.bind(this)} autoComplete="off">
             <div className={'input-group'}>
               <Field model={'.searchTerm'}>
                 <i className="fa fa-search"></i>
@@ -41,15 +50,20 @@ export class SearchText extends Component {
 }
 
 SearchText.propTypes = {
-  snippets: PropTypes.array
+  snippets: PropTypes.object,
+  storeKey: PropTypes.string,
+  doc: PropTypes.object,
+  searchSnippets: PropTypes.func
 };
 
-function mapStateToProps() {
-  return {};
+function mapStateToProps(state, props) {
+  return {
+    snippets: state[props.storeKey].sidepanel.snippets
+  };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({searchSnippets}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

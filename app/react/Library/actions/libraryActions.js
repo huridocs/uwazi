@@ -142,7 +142,6 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
   return function (dispatch) {
     return api.searchSnippets(searchTerm, sharedId)
     .then((snippets) => {
-      console.log(snippets);
       dispatch(actions.set(storeKey + '.sidepanel.snippets', snippets));
     });
   };

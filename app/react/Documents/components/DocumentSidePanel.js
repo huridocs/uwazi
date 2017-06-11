@@ -225,7 +225,7 @@ export class DocumentSidePanel extends Component {
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="text-search">
-              <SearchText snippets={snippets}/>
+              <SearchText doc={doc} storeKey={this.props.storeKey}/>
             </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
