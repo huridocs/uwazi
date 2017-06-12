@@ -3,18 +3,12 @@ import React, {Component} from 'react';
 
 export default class RadioButtons extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {value: props.value};
-  }
-
   change(value) {
-    this.setState({value});
     this.props.onChange(value);
   }
 
   checked(value) {
-    return value === this.state.value;
+    return value === this.props.value;
   }
 
   renderLabel(opt) {
@@ -35,20 +29,22 @@ export default class RadioButtons extends Component {
     return (
         <div>
         {options.map((option) => {
-          return <div className='radio' key={option[optionsValue]}>
-                  <label htmlFor={prefix + option[optionsValue]}>
-                    <input
-                      type='radio'
-                      value={option[optionsValue]}
-                      id={prefix + option[optionsValue]}
-                      onChange={this.change.bind(this, option[optionsValue])}
-                      checked={this.checked(option[optionsValue])}
-                    />
-                    <span className="multiselectItem-name">
-                      {this.renderLabel(option)}
-                    </span>
-                  </label>
-                </div>;
+          return (
+            <div className='radio' key={option[optionsValue]}>
+              <label htmlFor={prefix + option[optionsValue]}>
+                <input
+                  type='radio'
+                  value={option[optionsValue]}
+                  id={prefix + option[optionsValue]}
+                  onChange={this.change.bind(this, option[optionsValue])}
+                  checked={this.checked(option[optionsValue])}
+                />
+                <span className="multiselectItem-name">
+                  {this.renderLabel(option)}
+                </span>
+              </label>
+            </div>
+          );
         })}
       </div>
     );
