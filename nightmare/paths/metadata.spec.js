@@ -57,7 +57,7 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
-      //.wait(500)
+      .wait(selectors.settingsView.dictionaryNameForm)
       .type(selectors.settingsView.dictionaryNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')

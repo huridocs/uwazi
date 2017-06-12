@@ -1,4 +1,5 @@
-/*eslint max-len: ["error", 500]*/
+/*eslint max-len: ["error", 500] */
+/*eslint key-spacing: ["error", 500] */
 export default {
   settingsView: {
     liElementsOfSection:            '#app > div.content > div > div > div.settings-content > div > ul > li',
@@ -36,7 +37,7 @@ export default {
     dictionaryNameForm:             '#thesauriName',
     connectionNameForm:             '#relationTypeName',
     entityNameForm:                 '#app > div.content > div > div > div.settings-content > div > main > div > form > div > div > div > input',
-    documentTemplateNameForm:       '#app > div.content > div > div > div.settings-content > div > main > div > form > div > div > div > input',
+    documentTemplateNameForm:       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
     deleteButtonConfirmation:       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     translationsButton:             '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(6)',
     translationInputEn:             '#app > div.content > div > div > div.settings-content > div > form > div > ul > li:nth-child(4) > div:nth-child(2) > div > div > input',

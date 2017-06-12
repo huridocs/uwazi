@@ -151,7 +151,7 @@ Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
 
 Nightmare.action('editItemFromList', function (liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.fa-pencil')
-  .wait('.admin-content form')
+  .wait('.settings form')
   .then(done);
 });
 
