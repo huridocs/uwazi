@@ -26,11 +26,18 @@ export class CollectionSettings extends Component {
     };
   }
 
+  dateFormatSeparatorOptions() {
+    return [
+      {label: '/', value: '/'},
+      {label: '-', value: '-'}
+    ];
+  }
+
   dateFormatOptions(separator) {
     return [
-      {label: `Year, Month, Day`, value: `YYYY${separator}MM${separator}DD`},
-      {label: `Day, Month, Year`, value: `DD${separator}MM${separator}YYYY`},
-      {label: `Month, Day, Year`, value: `MM${separator}DD${separator}YYYY`}
+      {label: 'Year, Month, Day', value: `YYYY${separator}MM${separator}DD`},
+      {label: 'Day, Month, Year', value: `DD${separator}MM${separator}YYYY`},
+      {label: 'Month, Day, Year', value: `MM${separator}DD${separator}YYYY`}
     ];
   }
 
@@ -41,13 +48,13 @@ export class CollectionSettings extends Component {
   changeLandingPage(e) {
     const customLandingpage = e.target.value === 'custom';
     this.setState({customLandingpage, homePage: ''});
-    let settings = Object.assign(this.props.settings, {home_page: ''});
+    let settings = Object.assign(this.props.settings, {home_page: ''}); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
   changeName(e) {
     this.setState({siteName: e.target.value});
-    let settings = Object.assign(this.props.settings, {site_name: e.target.value});
+    let settings = Object.assign(this.props.settings, {site_name: e.target.value}); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
@@ -59,26 +66,35 @@ export class CollectionSettings extends Component {
 
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
-    let settings = Object.assign(this.props.settings, {home_page: e.target.value});
+    let settings = Object.assign(this.props.settings, {home_page: e.target.value});  // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
   changeDateFormat(dateFormat) {
     this.setState({dateFormat});
     let settings = Object.assign(this.props.settings, {dateFormat});
-
     this.props.setSettings(settings);
   }
 
   changeDateFormatSeparator(dateSeparator) {
-    this.setState({dateSeparator});
+    const selectedFormatPosition = this.dateFormatSeparatorOptions().reduce((position, separator) => {
+      const dateFormatOptions = this.dateFormatOptions(separator.value);
+      const foundFormat = dateFormatOptions.find(s => s.value === this.state.dateFormat);
+      return foundFormat ? dateFormatOptions.indexOf(foundFormat) : position;
+    }, null);
+
+    const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value;
+
+    this.setState({dateSeparator, dateFormat});
+    let settings = Object.assign(this.props.settings, {dateFormat});
+    this.props.setSettings(settings);
   }
 
   updateSettings(e) {
     e.preventDefault();
     let settings = Object.assign({}, this.props.settings);
-    settings.home_page = this.state.homePage;
-    settings.site_name = this.state.siteName;
+    settings.home_page = this.state.homePage;  // eslint-disable-line camelcase
+    settings.site_name = this.state.siteName;  // eslint-disable-line camelcase
     settings.mailerConfig = this.state.mailerConfig;
     SettingsAPI.save(settings)
     .then((result) => {
@@ -172,7 +188,7 @@ export class CollectionSettings extends Component {
               <label className="form-group-label">{t('System', 'Date format')}</label>
               <div>{t('System', 'Separator')}</div>
               <RadioButtons
-                options={[{label: '/', value: '/'}, {label: '-', value: '-'}]}
+                options={this.dateFormatSeparatorOptions()}
                 value={this.state.dateSeparator}
                 onChange={this.changeDateFormatSeparator.bind(this)}
               />
