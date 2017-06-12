@@ -83,7 +83,8 @@ export class CollectionSettings extends Component {
       return foundFormat ? dateFormatOptions.indexOf(foundFormat) : position;
     }, null);
 
-    const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value;
+    const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition] ?
+                       this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value : '';
 
     this.setState({dateSeparator, dateFormat});
     let settings = Object.assign(this.props.settings, {dateFormat});
