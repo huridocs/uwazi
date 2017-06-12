@@ -109,6 +109,26 @@ describe('search', () => {
           done();
         });
       });
+
+      describe('when document is not matched', () => {
+        it('should return empty array', (done) => {
+          search.searchSnippets('not matching string', ids.batmanFinishes, 'es')
+          .then((snippets) => {
+            expect(snippets.length).toBe(0);
+            done();
+          });
+        });
+      });
+
+      describe('when searchTerm is empty', () => {
+        it('should return empty array', (done) => {
+          search.searchSnippets('', ids.batmanFinishes, 'es')
+          .then((snippets) => {
+            expect(snippets.length).toBe(0);
+            done();
+          });
+        });
+      });
     });
 
     it('should perform a fullTextSearch on fullText and title', (done) => {
