@@ -3,6 +3,7 @@ import {shallow} from 'enzyme';
 
 import {SearchText} from '../SearchText.js';
 import Immutable from 'immutable';
+import {actions as formActions} from 'react-redux-form';
 
 describe('SearchText', () => {
   let component;
@@ -35,23 +36,6 @@ describe('SearchText', () => {
     expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2]});
   });
 
-  it('should render doc snippets if search snippets are empty', () => {
-    props.snippets = Immutable.fromJS([]);
-    props.doc = Immutable.fromJS({
-      _id: 'id',
-      snippets: [
-        'doc snippet 1',
-        'doc snippet 2'
-      ]
-    });
-
-    render();
-    let snippets = component.find('li');
-    expect(snippets.length).toBe(2);
-    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: 'doc snippet 1'});
-    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: 'doc snippet 2'});
-  });
-
   describe('submit', () => {
     it('should searchSnippets with value, doc id and storeKey', () => {
       props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
@@ -59,6 +43,22 @@ describe('SearchText', () => {
 
       instance.submit({searchTerm: 'value'});
       expect(props.searchSnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
+    });
+  });
+
+  describe('on new props', () => {
+    it('should set initial search to props.searchTerm and query for the snippets', () => {
+      props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
+      props.searchTerm = 'newSearchTerm';
+      let dispatch = jasmine.createSpy('dispatch');
+      render();
+      instance.attachDispatch(dispatch);
+
+      props.doc = Immutable.fromJS({_id: 'another_id', sharedId: 'sharedId2'});
+
+      instance.componentWillReceiveProps(props);
+      expect(props.searchSnippets).toHaveBeenCalledWith('newSearchTerm', 'sharedId2', 'storeKey');
+      expect(instance.formDispatch).toHaveBeenCalledWith(formActions.change('searchText.searchTerm', 'newSearchTerm'));
     });
   });
 });

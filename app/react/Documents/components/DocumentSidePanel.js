@@ -59,10 +59,6 @@ export class DocumentSidePanel extends Component {
     if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
-
-    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.searchSnippets) {
-      this.props.searchSnippets('artavia', newProps.doc.get('sharedId'), this.props.storeKey);
-    }
   }
 
   close() {
@@ -86,7 +82,6 @@ export class DocumentSidePanel extends Component {
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
-    const snippets = doc.get('snippets') ? doc.get('snippets').toJS() : [];
     const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {});
     const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
     const startNewConnection = readOnly ? () => {} : this.props.startNewConnection.bind(null, 'basic', doc.get('sharedId'));
