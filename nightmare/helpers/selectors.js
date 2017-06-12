@@ -1,4 +1,4 @@
-/*eslint max-len: ["error", 500] */
+/*eslint max-len: ["error", 500], */
 /*eslint key-spacing: ["error", 500] */
 export default {
   settingsView: {
@@ -19,9 +19,9 @@ export default {
     listOfFilterGroups:             '#app > div.content > div > div > div.settings-content > div > div.FiltersForm-list.col-sm-9 > div > div:nth-child(2) > ul > div > div > div.input-group',
     filtrableTypesSaveButton:       '#app > div.content > div > div > div.settings-content > div > div.FiltersForm-list.col-sm-9 > div > div.panel-heading > div > button.pull-right.btn.btn-sm.btn-success',
     dictionariesBackButton:         '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > a.btn.btn-default',
-    documentsBackButton:            '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > a.btn.btn-default',
+    documentsBackButton:            '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > a.btn.btn-default',
     connectionsBackButton:          '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > a.btn.btn-default',
-    entitiesBackButton:             '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > a.btn.btn-default',
+    entitiesBackButton:             '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > a.btn.btn-default',
     addNewDictionary:               '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewDocument:                 '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewEntity:                   '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
@@ -31,8 +31,8 @@ export default {
     secondDictionaryValForm:        '#app > div.content > div > div > div.settings-content > div > form > div > ul > li:nth-child(3) > div > div > input',
     saveFilterGroupButton:          '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > button',
     saveDictionaryButton:           '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > button',
-    saveDocumentButton:             '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > button',
-    saveEntityButton:               '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > button',
+    saveDocumentButton:             '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
+    saveEntityButton:               '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveConnectionButton:           '#app > div.content > div > div > div.settings-content > div > form > div > div.panel-heading.relationType > button',
     dictionaryNameForm:             '#thesauriName',
     connectionNameForm:             '#relationTypeName',
