@@ -6,7 +6,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-describe('metadata path', () => {
+fdescribe('metadata path', () => {
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
