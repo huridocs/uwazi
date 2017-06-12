@@ -105,17 +105,17 @@ export default {
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
-      let rows = response.hits.hits.map((hit) => {
-        let result = hit._source;
-        result._id = hit._id;
-        result.snippets = [];
-        if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-          result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
-        }
-        return result;
-      });
+      //let rows = response.hits.hits.map((hit) => {
+        //let result = hit._source;
+        //result._id = hit._id;
+        //result.snippets = [];
+        //if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+          //result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
+        //}
+        //return result;
+      //});
 
-      return {rows};
+      return response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight.fullText;
     });
   },
 
