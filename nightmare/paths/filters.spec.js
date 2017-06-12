@@ -53,7 +53,7 @@ describe('filters path', () => {
     it('should delete the filters group', (done) => {
       nightmare
       .deleteItemFromList(selectors.settingsView.listOfFilterGroups, 'Test Group')
-      .waitToClick(selectors.settingsView.saveFilterGroupButton)
+      .waitToClick(selectors.settingsView.filtrableTypesSaveButton)
       .wait('.alert.alert-success')
       .isVisible('.alert.alert-success')
       .then((result) => {

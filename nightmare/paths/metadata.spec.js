@@ -6,7 +6,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-fdescribe('metadata path', () => {
+describe('metadata path', () => {
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
@@ -113,8 +113,8 @@ fdescribe('metadata path', () => {
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'new')
-      .clearInput(selectors.settingsView.entityNameForm)
-      .type(selectors.settingsView.entityNameForm, 'edited')
+      .clearInput(selectors.settingsView.documentTemplateNameForm)
+      .type(selectors.settingsView.documentTemplateNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
       .waitToClick('.alert.alert-success')
       .then(() => {
