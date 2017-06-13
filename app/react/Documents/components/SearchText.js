@@ -71,7 +71,7 @@ SearchText.propTypes = {
 function mapStateToProps(state, props) {
   return {
     snippets: state[props.storeKey].sidepanel.snippets,
-    searchTerm: state[props.storeKey].search.searchTerm
+    searchTerm: props.storeKey !== 'documentViewer' ? state[props.storeKey].search.searchTerm : ''
   };
 }
 
