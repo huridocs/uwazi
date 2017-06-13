@@ -39,13 +39,13 @@ describe('metadata path', () => {
     it('should create a new dictionary with two values', (done) => {
       nightmare
       .wait(selectors.settingsView.dictionaryNameForm)
-      .type(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
+      .write(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
       .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
       .wait(selectors.settingsView.firstDictionaryValForm)
-      .type(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
+      .write(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
       .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
       .wait(selectors.settingsView.secondDictionaryValForm)
-      .type(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
+      .write(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
       .then(done)
@@ -58,13 +58,13 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
       .wait(selectors.settingsView.dictionaryNameForm)
-      .type(selectors.settingsView.dictionaryNameForm, 'edited')
+      .write(selectors.settingsView.dictionaryNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
-      .type(selectors.settingsView.firstDictionaryValForm, 'edited')
+      .write(selectors.settingsView.firstDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
-      .type(selectors.settingsView.secondDictionaryValForm, 'edited')
+      .write(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
       .then(done)
@@ -99,7 +99,7 @@ describe('metadata path', () => {
       //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
       nightmare
       .wait(selectors.settingsView.documentTemplateNameForm)
-      .type(selectors.settingsView.documentTemplateNameForm, 'new document')
+      .write(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
       .waitToClick('.alert.alert-success')
       .then(() => {
@@ -114,7 +114,7 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'new')
       .clearInput(selectors.settingsView.documentTemplateNameForm)
-      .type(selectors.settingsView.documentTemplateNameForm, 'edited')
+      .write(selectors.settingsView.documentTemplateNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
       .waitToClick('.alert.alert-success')
       .then(() => {
@@ -150,7 +150,7 @@ describe('metadata path', () => {
     it('should create a new connection', (done) => {
       nightmare
       .wait(selectors.settingsView.connectionNameForm)
-      .type(selectors.settingsView.connectionNameForm, 'test connection')
+      .write(selectors.settingsView.connectionNameForm, 'test connection')
       .waitToClick(selectors.settingsView.saveConnectionButton)
       .waitToClick('.alert.alert-success')
       .then(() => {
@@ -166,7 +166,7 @@ describe('metadata path', () => {
       .wait(500)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
       .clearInput(selectors.settingsView.connectionNameForm)
-      .type(selectors.settingsView.connectionNameForm, 'edited')
+      .write(selectors.settingsView.connectionNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveConnectionButton)
       .waitToClick('.alert.alert-success')
       .then(() => {
@@ -203,7 +203,7 @@ describe('metadata path', () => {
     it('should create a new entity', (done) => {
       nightmare
       .wait(selectors.settingsView.entityNameForm)
-      .type(selectors.settingsView.entityNameForm, 'e2e test entity')
+      .write(selectors.settingsView.entityNameForm, 'e2e test entity')
       .click(selectors.settingsView.saveEntityButton)
       .waitToClick('.alert.alert-success')
       .then(() => {
@@ -218,7 +218,7 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'e2e')
       .clearInput(selectors.settingsView.entityNameForm)
-      .type(selectors.settingsView.entityNameForm, 'edited')
+      .write(selectors.settingsView.entityNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveEntityButton)
       .waitToClick('.alert.alert-success')
       .then(() => {

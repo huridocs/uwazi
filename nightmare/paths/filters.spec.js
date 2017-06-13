@@ -39,7 +39,7 @@ describe('filters path', () => {
     it('should create a group called Test Group', (done) => {
       nightmare
       .clearInput(selectors.settingsView.newFilterGroupForm)
-      .type(selectors.settingsView.newFilterGroupForm, 'Test Group')
+      .write(selectors.settingsView.newFilterGroupForm, 'Test Group')
       .waitToClick(selectors.settingsView.filtrableTypesSaveButton)
       .wait('.alert.alert-success')
       .isVisible('.alert.alert-success')

@@ -6,7 +6,7 @@ export default {
     firstEditButton:                '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(1) > div > a > i',
     collectionNameForm:             '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div > input',
     settingsHeader:                 '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
-    logoutButton:                   '#app > div.content > div > div > div.settings-content > div > div:nth-child(3) > div.panel-body > a',
+    logoutButton:                   '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     accountButton:                  '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
     collectionButton:               '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(3)',
     dictionariesButton:             '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',

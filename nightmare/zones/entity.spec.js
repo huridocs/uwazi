@@ -24,7 +24,7 @@ describe('Entity zone', () => {
     it('should allow changing the entity\'s title and template (common properties)', (done) => {
       nightmare
       .editEntityFromEntityViewer()
-      .type(selectors.entityView.metadataFormTitle, ' (Dr. Langstrom)')
+      .write(selectors.entityView.metadataFormTitle, ' (Dr. Langstrom)')
       // TEMPLATE change is not working for the current implementation!!!
       // .select(selectors.entityView.metadataFormType, '58ad7d240d44252fee4e61fb')
       .saveEntityFromEntityViewer()
@@ -64,15 +64,15 @@ describe('Entity zone', () => {
 
       nightmare
       .editEntityFromEntityViewer()
-      .type(selectors.manBatEntity.form.realName, 'Dr. Kirk Langstrom')
-      .type(selectors.manBatEntity.form.age, '39')
+      .write(selectors.manBatEntity.form.realName, 'Dr. Kirk Langstrom')
+      .write(selectors.manBatEntity.form.age, '39')
       .select(selectors.manBatEntity.form.knownAccomplices, 'o184buh2w179o1or')
       .select(selectors.manBatEntity.form.mainSuperpower, 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb')
       .waitToClick(selectors.manBatEntity.form.suporPowers.fly)
       .wait(selectors.manBatEntity.form.suporPowers.laserBeam)
       .waitToClick(selectors.manBatEntity.form.suporPowers.laserBeam)
       .pickToday(selectors.manBatEntity.form.firstSighting)
-      .type(selectors.manBatEntity.form.whoIsHe, 'This is your typical Jekyll and Hyde story: To cure his progressing ' +
+      .write(selectors.manBatEntity.form.whoIsHe, 'This is your typical Jekyll and Hyde story: To cure his progressing ' +
                                                  'deafness, Dr. Langstrom invented a serum to give him echolocation ' +
                                                  '(a sonar that bats use to guide them in the dark). Yay science! ' +
                                                  'Downside: the serum’s side-effects transformed sweet Dr. Langstrom ' +

@@ -27,7 +27,7 @@ describe('references path', () => {
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
       .then((itemName) => {
         return nightmare
-        .type(selectors.libraryView.searchInput, itemName)
+        .write(selectors.libraryView.searchInput, itemName)
         .waitToClick(selectors.libraryView.firstSearchSuggestion)
         .wait(selectors.documentView.documentPage)
         .isVisible(selectors.documentView.documentPage)
@@ -45,7 +45,7 @@ describe('references path', () => {
       .waitToClick(selectors.documentView.createParagraphLinkButton)
       .wait(selectors.documentView.createReferenceSidePanelIsActive)
       .select(selectors.documentView.createReferenceSidePanelSelect, selectors.documentView.createReferenceSidePanelSelectFirstValue)
-      .type(selectors.documentView.createReferenceSidePanelInput, 'home')
+      .write(selectors.documentView.createReferenceSidePanelInput, 'home')
       .wait(1500)
       .waitToClick(selectors.documentView.createReferenceSidePanelFirstSearchSuggestion)
       .waitToClick(selectors.documentView.createReferenceSidePanelNextButton)
