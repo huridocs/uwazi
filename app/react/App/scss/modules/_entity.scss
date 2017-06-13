@@ -17,6 +17,12 @@
     height: calc(100% - 51px);
     width: calc(100% - 400px) !important;
   }
+  
+  
+  .item {
+    border-color: $c-grey-light !important;
+    cursor: default !important;
+  }
 }
 
 .entity-connections {
