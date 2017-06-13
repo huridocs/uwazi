@@ -22,7 +22,7 @@ const getField = (property, _model, thesauris) => {
     return <Select model={_model} optionsValue='id' options={translateOptions(thesauri)}/>;
   case 'multiselect':
     thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-    return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} />;
+    return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} prefix={_model} />;
   case 'date':
     return <DatePicker model={_model}/>;
   case 'numeric':
