@@ -50,7 +50,7 @@ export class SearchText extends Component {
           </LocalForm>
         </div>
 
-        <ul>
+        <ul className="snippet-list">
           {snippets.map((snippet, index) => {
             return <li key={index} dangerouslySetInnerHTML={{__html: snippet}}></li>;
           })}

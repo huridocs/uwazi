@@ -217,7 +217,7 @@ $item-padding: 15px;
 }
 
 .item-snippet {
-  margin-top: 15px;
+  display: inline;
   font-size: $f-size-sm;
   b {
     color: #000;
@@ -232,6 +232,14 @@ $item-padding: 15px;
     padding: 2px 15px;
     box-shadow: 0 -6px 9px -4px #fff, 0 -15px 10px -3px #fff;
   }
+  
+  .item-snippet-wrapper:hover & {
+    border-bottom: 1px solid $c-grey;  
+  }
+}
+
+.item-snippet-wrapper {
+  margin-top: 15px;
 }
 
 .item-metadata {
