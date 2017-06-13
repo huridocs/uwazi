@@ -53,7 +53,7 @@ describe('NavlinksSettings', () => {
   });
 
   it('should have an add button that calls on addLink with links', () => {
-    component.find('a.btn-success').props().onClick();
+    component.find('a.btn-primary').props().onClick();
     expect(props.addLink).toHaveBeenCalledWith(props.links);
   });
 
