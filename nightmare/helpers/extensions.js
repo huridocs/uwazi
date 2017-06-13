@@ -12,6 +12,12 @@ Nightmare.action('clearInput', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('write', function (selector, text, done) {
+  this.wait(selector)
+  .insert(selector, text)
+  .then(done);
+});
+
 Nightmare.action('gotoLibrary', function (done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.libraryNavButton)
@@ -31,8 +37,8 @@ Nightmare.action('login', function (name, password, done) {
   .wait(selectors.navigation.loginNavButton)
   .click(selectors.navigation.loginNavButton)
   .wait('#username')
-  .type('input[name="username"]', name)
-  .type('input[name="password"]', password)
+  .write('input[name="username"]', name)
+  .write('input[name="password"]', password)
   .click('button[type="submit"]')
   .wait(selectors.navigation.settingsNavButton)
   .then(done);
@@ -151,7 +157,7 @@ Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
 
 Nightmare.action('editItemFromList', function (liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.fa-pencil')
-  .wait('.admin-content form')
+  .wait('.settings form')
   .then(done);
 });
 
@@ -184,7 +190,7 @@ Nightmare.action('selectText', function (selector, done) {
 });
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
-  this.type(selectors.libraryView.searchInput, itemName)
+  this.write(selectors.libraryView.searchInput, itemName)
   .waitToClick(selectors.libraryView.firstSearchSuggestion)
   .wait(elementToSelect => {
     return document.querySelector(elementToSelect).innerText;
@@ -193,7 +199,7 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
 });
 
 Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
-  this.type(selectors.libraryView.searchInput, itemName)
+  this.write(selectors.libraryView.searchInput, itemName)
   .waitToClick(selectors.libraryView.firstSearchSuggestion)
   .wait(elementToSelect => {
     return document.querySelector(elementToSelect).innerText;

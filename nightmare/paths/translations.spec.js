@@ -40,9 +40,9 @@ describe('translations path', () => {
     it('should change Test Document text to Document and Documento', (done) => {
       nightmare
       .clearInput(selectors.settingsView.translationInputEn)
-      .type(selectors.settingsView.translationInputEn, 'Document')
+      .write(selectors.settingsView.translationInputEn, 'Document')
       .clearInput(selectors.settingsView.translationInputEs)
-      .type(selectors.settingsView.translationInputEs, 'Documento')
+      .write(selectors.settingsView.translationInputEs, 'Documento')
       .waitToClick(selectors.settingsView.translationsSaveButton)
       .wait('.alert.alert-success')
       .isVisible('.alert.alert-success')

@@ -50,11 +50,10 @@ export class RelationTypesList extends Component {
             </li>;
         })}
       </ul>
-      <div className="panel-body">
+      <div className="settings-footer">
         <I18NLink to="/settings/connections/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
-          &nbsp;
-          <span>{t('System', 'Add connection')}</span>
+          <span className="btn-label">{t('System', 'Add connection')}</span>
         </I18NLink>
       </div>
     </div>;

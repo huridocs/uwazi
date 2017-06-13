@@ -53,11 +53,10 @@ export class DocumentTypesList extends Component {
             </li>;
         })}
       </ul>
-      <div className="panel-body">
+      <div className="settings-footer">
         <I18NLink to="/settings/documents/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
-          &nbsp;
-          <span>{t('System', 'Add document type')}</span>
+          <span className="btn-label">{t('System', 'Add document type')}</span>
         </I18NLink>
       </div>
     </div>;
