@@ -52,7 +52,7 @@ export class SearchText extends Component {
 
         <ul className="snippet-list">
           {snippets.map((snippet, index) => {
-            return <li key={index} dangerouslySetInnerHTML={{__html: snippet}}></li>;
+            return <li key={index} dangerouslySetInnerHTML={{__html: snippet + ' ...'}}></li>;
           })}
         </ul>
       </div>
