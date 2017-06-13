@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {wrapDispatch} from 'app/Multireducer';
 import {actions} from 'react-redux-form';
+import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
 
 export class SortButtons extends Component {
@@ -55,10 +56,16 @@ export class SortButtons extends Component {
           className={'Dropdown-option ' + (isActive ? 'is-active' : '')}>
         <a className={'Dropdown-option__item ' + (isActive && search.order === firstOrder ? 'is-active' : '')}
            onClick={() => this.handleClick(sortString, firstOrder, treatAs)}>
+           <ShowIf if={isActive && search.order === firstOrder}>
+             <span>Sort by</span>
+           </ShowIf>
            {t(context, label)} ({treatAs !== 'number' ? 'A-Z' : t('System', 'Recently')})
         </a>
         <a className={'Dropdown-option__item ' + (isActive && search.order === secondOrder ? 'is-active' : '')}
            onClick={() => this.handleClick(sortString, secondOrder, treatAs)}>
+           <ShowIf if={isActive && search.order === secondOrder}>
+             <span>Sort by</span>
+           </ShowIf>
            {t(context, label)} ({treatAs !== 'number' ? 'Z-A' : t('System', 'Least recently')})
         </a>
       </li>

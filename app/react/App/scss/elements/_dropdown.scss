@@ -52,8 +52,6 @@
   flex-wrap: wrap;
   -webkit-justify-content: flex-end;
   justify-content: flex-end;
-  -webkit-flex-direction: column;
-  flex-direction: column;
   width: 100%;
   line-height: 1.75em;
   cursor: pointer;
@@ -70,6 +68,22 @@
   }
 }
 
+.Dropdown-option {
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+.Dropdown-option__item {
+  span {
+    font-weight: normal;
+    margin-right: 7px;
+    opacity: 0.6;
+    
+    @media(max-width: 767px) {
+      display: none;
+    }
+  }
+}
 
 .Dropdown.is-active {  
   .Dropdown-option,
