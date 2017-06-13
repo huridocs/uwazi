@@ -52,6 +52,22 @@ export default class MultiSelect extends Component {
     this.setState({showAll: showAll});
   }
 
+  sort(options, optionsValue, optionsLabel) {
+    return options.sort((a, b) => {
+      let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+
+      if (typeof options[0].results !== 'undefined') {
+        sorting = a.results > b.results ? -1 : 1;
+      }
+
+      if (sorting === 0) {
+        sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
+      }
+
+      return sorting;
+    });
+  }
+
   render() {
     let {optionsValue, optionsLabel, prefix} = this.props;
     optionsValue = optionsValue || 'value';
@@ -70,14 +86,7 @@ export default class MultiSelect extends Component {
     let tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
 
     if (!this.props.noSort) {
-      options.sort((a, b) => {
-        let sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
-        if (!tooManyOptions || sorting === 0) {
-          sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
-        }
-
-        return sorting;
-      });
+      options = this.sort(options, optionsValue, optionsLabel);
     }
 
     if (tooManyOptions) {
