@@ -59,14 +59,14 @@ export class SortButtons extends Component {
            <ShowIf if={isActive && search.order === firstOrder}>
              <span>Sort by</span>
            </ShowIf>
-           {t(context, label)} ({treatAs !== 'number' ? 'A-Z' : t('System', 'Recently')})
+           <span>{t(context, label)} ({treatAs !== 'number' ? 'A-Z' : t('System', 'Recently')})</span>
         </a>
         <a className={'Dropdown-option__item ' + (isActive && search.order === secondOrder ? 'is-active' : '')}
            onClick={() => this.handleClick(sortString, secondOrder, treatAs)}>
            <ShowIf if={isActive && search.order === secondOrder}>
              <span>Sort by</span>
            </ShowIf>
-           {t(context, label)} ({treatAs !== 'number' ? 'Z-A' : t('System', 'Least recently')})
+           <span>{t(context, label)} ({treatAs !== 'number' ? 'Z-A' : t('System', 'Least recently')})</span>
         </a>
       </li>
     );

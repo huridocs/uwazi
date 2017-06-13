@@ -74,7 +74,7 @@
 }
 
 .Dropdown-option__item {
-  span {
+  span:first-child {
     font-weight: normal;
     margin-right: 7px;
     opacity: 0.6;
