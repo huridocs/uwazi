@@ -51,7 +51,7 @@ export default {
         ]
       }
     },
-    {_id: db.id(), sharedId: 'metadata5', template: templateMetadata1, language: 'en', title: 'metadata6', published: false, user: userId,
+    {_id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: 'unpublished document', published: false, user: userId,
       metadata: {field1: 'joker'}
     }
     //

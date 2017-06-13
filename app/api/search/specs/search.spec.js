@@ -110,6 +110,14 @@ describe('search', () => {
         });
       });
 
+      it('should perform the search on unpublished documents also', (done) => {
+        search.searchSnippets('unpublished', 'unpublishedSharedId', 'en')
+        .then((snippets) => {
+          expect(snippets.length).toBe(1);
+          done();
+        });
+      });
+
       describe('when document is not matched', () => {
         it('should return empty array', (done) => {
           search.searchSnippets('not matching string', ids.batmanFinishes, 'es')
