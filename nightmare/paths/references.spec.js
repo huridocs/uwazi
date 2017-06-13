@@ -46,7 +46,7 @@ describe('references path', () => {
       .wait(selectors.documentView.createReferenceSidePanelIsActive)
       .select(selectors.documentView.createReferenceSidePanelSelect, selectors.documentView.createReferenceSidePanelSelectFirstValue)
       .write(selectors.documentView.createReferenceSidePanelInput, 'home')
-      .wait(1500)
+      .wait(3000)
       .waitToClick(selectors.documentView.createReferenceSidePanelFirstSearchSuggestion)
       .waitToClick(selectors.documentView.createReferenceSidePanelNextButton)
       .wait(selectors.documentView.targetDocument)
