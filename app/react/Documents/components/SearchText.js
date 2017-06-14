@@ -29,29 +29,29 @@ export class SearchText extends Component {
     let snippets = this.props.snippets.toJS();
     return (
       <div>
-          <div className={'search-box'}>
-            <LocalForm
+          <LocalForm
               model={'searchText'}
               onSubmit={this.submit.bind(this)}
               getDispatch={(dispatch) => this.attachDispatch(dispatch)}
               autoComplete="off"
             >
-              <div className={'input-group'}>
-                <ShowIf if={this.props.storeKey === 'documentViewer'} >
-                  <Field model={'.searchTerm'}>
-                    <i className="fa fa-search"></i>
-                    <input
-                      type="text"
-                      placeholder={t('System', 'Search')}
-                      className="form-control"
-                      autoComplete="off"
-                    />
-                    <i className="fa fa-close" onClick={this.resetSearch.bind(this)}></i>
-                  </Field>
-                </ShowIf>
+            <ShowIf if={this.props.storeKey === 'documentViewer'} >
+              <div className={'search-box'}>
+                <div className={'input-group'}>
+                    <Field model={'.searchTerm'}>
+                      <i className="fa fa-search"></i>
+                      <input
+                        type="text"
+                        placeholder={t('System', 'Search')}
+                        className="form-control"
+                        autoComplete="off"
+                      />
+                      <i className="fa fa-close" onClick={this.resetSearch.bind(this)}></i>
+                    </Field>
+                </div>
               </div>
-            </LocalForm>
-          </div>
+            </ShowIf>
+          </LocalForm>
 
         <ul className="snippet-list">
           {snippets.map((snippet, index) => {
