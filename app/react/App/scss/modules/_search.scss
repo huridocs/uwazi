@@ -780,6 +780,8 @@ label.multiselectItem-label {
     align-items: center;
     margin: 15px;
     padding-bottom: 15px;
+    font-size: $f-size-sm;
+    line-height: 1.8em;
   }
   
   li:not(:last-of-type) {
