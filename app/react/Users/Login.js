@@ -6,6 +6,8 @@ import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 import RouteHandler from 'app/App/RouteHandler';
 import {t} from 'app/I18N';
+import {actions as formActions} from 'react-redux-form';
+import ShowIf from 'app/App/ShowIf';
 
 import auth from 'app/Auth';
 
@@ -29,6 +31,8 @@ export class Login extends RouteHandler {
   }
 
   recoverPassword(email) {
+    this.setState({recoverPassword: false, error: false});
+    this.props.reset('login.form');
     return this.props.recoverPassword(email);
   }
 
@@ -43,7 +47,13 @@ export class Login extends RouteHandler {
   }
 
   setRecoverPassword() {
+    this.props.reset('login.form');
     this.setState({recoverPassword: true, error: false});
+  }
+
+  setLogin() {
+    this.props.reset('login.form');
+    this.setState({recoverPassword: false, error: false});
   }
 
   render() {
@@ -67,11 +77,11 @@ export class Login extends RouteHandler {
                 <Field model="login.form.password">
                   <input type="password" name="password" id="password" className="form-control"/>
                 </Field>
-                <div className="forgot-password">
+                <div className="form-text">
                   <span className="required">{t('System', 'Login failed')} - </span>
                   <a title={t('System', 'Forgot Password?')}
                     onClick={this.setRecoverPassword.bind(this)} className={(this.state.error ? 'label-danger' : '')}>
-                    Forgot Password?
+                    {t('System', 'Forgot Password?')}
                   </a>
               </div>
             </div>
@@ -80,6 +90,14 @@ export class Login extends RouteHandler {
                 {this.state.recoverPassword ? t('System', 'Send recovery email') : t('System', 'Login button', 'Login')}
               </button>
             </p>
+            <ShowIf if={this.state.recoverPassword}>
+              <div className="form-text">
+                <a title={t('System', 'Cancel')}
+                  onClick={this.setLogin.bind(this)} >
+                  {t('System', 'Cancel')}
+                </a>
+              </div>
+            </ShowIf>
           </Form>
         </div>
       </div>
@@ -93,7 +111,11 @@ Login.propTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({login: auth.actions.login, recoverPassword: auth.actions.recoverPassword}, dispatch);
+  return bindActionCreators({
+    login: auth.actions.login,
+    recoverPassword: auth.actions.recoverPassword,
+    reset: formActions.reset
+  }, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(Login);
