@@ -89,15 +89,15 @@ export class Login extends RouteHandler {
               <button type="submit" className={'btn btn-block btn-lg ' + (this.state.recoverPassword ? 'btn-success' : 'btn-primary')}>
                 {this.state.recoverPassword ? t('System', 'Send recovery email') : t('System', 'Login button', 'Login')}
               </button>
-              <ShowIf if={this.state.recoverPassword}>
-                <div className="form-text">
-                  <a title={t('System', 'Cancel')}
-                    onClick={this.setLogin.bind(this)} >
-                    {t('System', 'Cancel')}
-                  </a>
-                </div>
-              </ShowIf>
             </p>
+            <ShowIf if={this.state.recoverPassword}>
+              <div className="form-text">
+                <a title={t('System', 'Cancel')}
+                  onClick={this.setLogin.bind(this)} >
+                  {t('System', 'Cancel')}
+                </a>
+              </div>
+            </ShowIf>
           </Form>
         </div>
       </div>
