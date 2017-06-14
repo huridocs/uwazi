@@ -110,5 +110,6 @@ DocumentsList.propTypes = {
   deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string,
   storeKey: PropTypes.string,
+  onSnippetClick: PropTypes.func,
   clickOnDocument: PropTypes.func
 };

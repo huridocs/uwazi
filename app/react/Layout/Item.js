@@ -160,6 +160,7 @@ Item.propTypes = {
   thesauris: PropTypes.object,
   search: PropTypes.object,
   onClick: PropTypes.func,
+  onSnippetClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   active: PropTypes.bool,
