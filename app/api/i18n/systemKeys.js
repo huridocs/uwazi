@@ -103,6 +103,7 @@ export default [
 {key: 'Settings updated', label: 'Settings updated'},
 {key: 'Settings', label: 'Settings'},
 {key: 'Size', label: 'Size'},
+{key: 'Sort by', label: 'Sort by'},
 {key: 'Table of Content', label: 'Table of Content'},
 {key: 'Thesauri saved', label: 'Thesauri saved'},
 {key: 'Title', label: 'Title'},
