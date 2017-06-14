@@ -12,6 +12,15 @@ Nightmare.action('clearInput', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('librarySearch', function (searchTerm, done) {
+  this.write(selectors.libraryView.searchInput, 'batman')
+  .evaluate((selector) => {
+    document.querySelector(selector).submit();
+  }, selectors.libraryView.searchForm)
+  .wait(100)
+  .then(done);
+});
+
 Nightmare.action('write', function (selector, text, done) {
   this.wait(selector)
   .insert(selector, text)
