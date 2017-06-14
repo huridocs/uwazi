@@ -73,7 +73,7 @@
   flex-direction: column;
 }
 
-.Dropdown-option__item {
+.Dropdown-option__item.is-active {
   span:first-child {
     font-weight: normal;
     margin-right: 7px;
