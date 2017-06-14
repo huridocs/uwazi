@@ -31,9 +31,9 @@ describe('SearchText', () => {
     render();
     let snippets = component.find('li');
     expect(snippets.length).toBe(3);
-    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0]});
-    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1]});
-    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2]});
+    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0] + ' ...'});
+    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1] + ' ...'});
+    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2] + ' ...'});
   });
 
   describe('submit', () => {
