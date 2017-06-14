@@ -1,14 +1,45 @@
 .Dropdown {
   position: absolute;
+  display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
-  padding: 0;
+  padding: 0 0 0 5px;
   margin: 0;
   z-index: 1;
+  border: 1px solid transparent;
+  
+  &:hover {
+    background: $c-grey-lighten;
+    border-bottom-color: $c-grey;
+    padding: 3px 5px 3px 10px;
+    margin-top: -3px;
+    margin-right: -5px;
+  }
+  &.is-active {
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
+    padding: 10px 3px 10px 15px;
+    margin-top: -10px;
+    margin-right: -3px;
+    border-radius: $border-radius;
+    background: $c-white;
+    box-shadow: $box-shadow;
+    border-color: $c-grey;
+  }
+  
+  .fa {
+    color: $c-primary;
+    margin-left: 3px;
+  }
 }
+
 .Dropdown-list {
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: column;
   flex-direction: column;
+  -webkit-align-items: flex-end;
   align-items: flex-end;
   margin: 0;
   padding: 0;
@@ -17,33 +48,59 @@
 .Dropdown-option,
 .Dropdown-option__item {
   display: none;
+  -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
+  -webkit-justify-content: flex-end;
   justify-content: flex-end;
   width: 100%;
   line-height: 1.75em;
   cursor: pointer;
   order: 1;
   font-weight: normal;
+  color: $c-primary !important;
 
   &.is-active {
     order: 0;
+    display: -webkit-flex;
     display: flex;
     font-weight: bold;
     text-decoration: none;
   }
 }
 
-.Dropdown.is-active {
-  align-items: flex-start;
-  padding: 10px 15px;
-  margin-top: -10px;
-  margin-right: -15px;
-  border-radius: $border-radius;
-  background: $c-white;
-  box-shadow: $box-shadow, inset 0 0 0 1px $c-grey-light;
-  
+.Dropdown-option {
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+.Dropdown-option__item.is-active {
+  span:first-child {
+    font-weight: normal;
+    margin-right: 7px;
+    opacity: 0.6;
+    
+    @media(max-width: 767px) {
+      display: none;
+    }
+  }
+}
+
+.Dropdown.is-active {  
   .Dropdown-option,
   .Dropdown-option__item {
+    display: -webkit-flex;
     display: flex;
+  }
+  
+  .Dropdown-option__item.is-active {
+    width: calc(100% + 28px);
+    padding-top: 10px;
+    margin: -10px 0px 0 -15px;
+    padding-right: 13px;
+    background: $c-grey-lighten;
+  }
+  
+  .fa {
+    margin-top: 5px;
   }
 }
