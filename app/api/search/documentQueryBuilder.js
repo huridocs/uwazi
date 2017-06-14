@@ -56,7 +56,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 10) {
+    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 1) {
       if (term) {
         let should = [];
 
