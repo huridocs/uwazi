@@ -175,6 +175,14 @@ $c-sidebar: $c-white;
       @include tooltip('top-left');
     }
   }
+  
+  .search-box {
+    width: calc(100% - 10px);
+    margin: 5px;
+    border: 1px solid $c-grey-light;
+    box-shadow: $box-shadow;
+    z-index: 1;
+  }
 }
 
 .sidepanel-body {
