@@ -55,7 +55,13 @@ export class SearchText extends Component {
 
         <ul className="snippet-list">
           {snippets.map((snippet, index) => {
-            return <li key={index} dangerouslySetInnerHTML={{__html: snippet + ' ...'}}></li>;
+            return (
+              <li key={index}>
+                <div dangerouslySetInnerHTML={{__html: snippet + ' ...'}}></div>
+                <span>
+                  <a href="#">page 1</a>
+                </span>
+              </li>);
           })}
         </ul>
       </div>

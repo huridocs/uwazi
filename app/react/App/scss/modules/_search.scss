@@ -774,12 +774,24 @@ label.multiselectItem-label {
   list-style: none;
   
   li {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
     margin: 15px;
     padding-bottom: 15px;
   }
   
   li:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
+  }
+  
+  span {
+    width: 120px;
+    text-align: right;
+  }
+  a {
+    border-bottom: 1px dotted $c-primary;
   }
   
   b {
