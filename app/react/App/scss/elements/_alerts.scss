@@ -67,10 +67,14 @@
 
 .panel-body {
   .alert {
-    margin: 0 0 45px;
+    margin: 0 0 80px;
     width: 100%;
     left: 0;
   }
+}
+
+.list-group .alert {
+  margin: 0;
 }
 
 .sidepanel-body {

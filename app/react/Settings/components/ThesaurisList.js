@@ -33,7 +33,7 @@ export class ThesaurisList extends Component {
   render() {
     return <div className="panel panel-default">
       <div className="panel-heading">{t('System', 'Dictionaries')}</div>
-      <ul className="list-group relation-types">
+      <ul className="list-group">
         {this.props.dictionaries.toJS().map((dictionary, index) => {
           return <li key={index} className="list-group-item">
               <I18NLink to={'/settings/dictionaries/edit/' + dictionary._id}>{dictionary.name}</I18NLink>
@@ -50,11 +50,10 @@ export class ThesaurisList extends Component {
             </li>;
         })}
       </ul>
-      <div className="panel-body">
+      <div className="settings-footer">
         <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
-          &nbsp;
-          <span>{t('System', 'Add dictionary')}</span>
+          <span className="btn-label">{t('System', 'Add dictionary')}</span>
         </I18NLink>
       </div>
     </div>;

@@ -32,8 +32,8 @@ describe('SortButtons', () => {
       render();
       expect(component.find('li').length).toBe(3);
 
-      expect(component.find('li').last().children().at(0).text()).toBe('sortableProperty (A-Z)');
-      expect(component.find('li').last().children().at(1).text()).toBe('sortableProperty (Z-A)');
+      expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (A-Z)');
+      expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Z-A)');
     });
 
     it('should use use "recent" label for date type properties', () => {
@@ -43,8 +43,8 @@ describe('SortButtons', () => {
       render();
       expect(component.find('li').length).toBe(3);
 
-      expect(component.find('li').last().children().at(0).text()).toBe('sortableProperty (Recently)');
-      expect(component.find('li').last().children().at(1).text()).toBe('sortableProperty (Least recently)');
+      expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (Recently)');
+      expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Least recently)');
     });
 
     describe('when multiple options have the same name', () => {
@@ -57,8 +57,8 @@ describe('SortButtons', () => {
 
         expect(component.find('li').length).toBe(3);
 
-        expect(component.find('li').last().children().at(0).text()).toBe('sortableProperty (A-Z)');
-        expect(component.find('li').last().children().at(1).text()).toBe('sortableProperty (Z-A)');
+        expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (A-Z)');
+        expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Z-A)');
       });
     });
 

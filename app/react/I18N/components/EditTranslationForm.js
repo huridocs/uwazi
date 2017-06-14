@@ -67,14 +67,9 @@ export class EditTranslationForm extends Component {
             onSubmit={this.props.saveTranslations}>
             <div className="panel panel-default">
               <div className="panel-heading">
-                <I18NLink to="/settings/translations" className="btn btn-default"><i className="fa fa-arrow-left"></i> Back</I18NLink>
-                &nbsp;
-                <button type="submit" className="btn btn-success save-template">
-                  <i className="fa fa-save"/> {t('System', 'Save')}
-                </button>
+                {contextName}
               </div>
               <ul className="list-group">
-                <li className="list-group-item"><b>{contextName}</b></li>
                 {(() => {
                   if (translations.length) {
                     return contextKeys.sort().map((value) => {
@@ -97,6 +92,16 @@ export class EditTranslationForm extends Component {
                   }
                 })()}
               </ul>
+            </div>
+            <div className="settings-footer">
+              <I18NLink to="/settings/translations" className="btn btn-default">
+                <i className="fa fa-arrow-left"></i>
+                <span className="btn-label">Back</span>
+              </I18NLink>
+              <button type="submit" className="btn btn-success save-template">
+                <i className="fa fa-save"/>
+                <span className="btn-label">{t('System', 'Save')}</span>
+              </button>
             </div>
           </Form>
       </div>

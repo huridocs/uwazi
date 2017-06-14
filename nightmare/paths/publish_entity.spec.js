@@ -25,10 +25,10 @@ describe('publish entity path', () => {
   it('should create a new entity and publish it', (done) => {
     nightmare
     .click(selectors.uploadsView.newEntityButtom)
-    .type(selectors.newEntity.form.title, 'scarecrow')
+    .write(selectors.newEntity.form.title, 'scarecrow')
     .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
-    .type(selectors.newEntity.form.realName, '?')
-    .type(selectors.newEntity.form.age, '40')
+    .write(selectors.newEntity.form.realName, '?')
+    .write(selectors.newEntity.form.age, '40')
     .select(selectors.newEntity.form.knownAccomplices, 'o184buh2w179o1or')
     .select(selectors.newEntity.form.mainSuperpower, 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb')
     .waitToClick(selectors.newEntity.form.suporPowers.fly)
@@ -81,10 +81,10 @@ describe('publish entity path', () => {
     nightmare
     .click(selectors.libraryView.editEntityButton)
     .clearInput(selectors.newEntity.form.realName)
-    .type(selectors.newEntity.form.realName, 'Dr. Jonathan Crane')
+    .write(selectors.newEntity.form.realName, 'Dr. Jonathan Crane')
     .clearInput(selectors.newEntity.form.age)
-    .type(selectors.newEntity.form.age, '35')
-    .type(selectors.newEntity.form.whoIsHe, 'Scarecrow is depicted as a professor of psychology in Gotham ' +
+    .write(selectors.newEntity.form.age, '35')
+    .write(selectors.newEntity.form.whoIsHe, 'Scarecrow is depicted as a professor of psychology in Gotham ' +
       'City who uses a variety of fear-enhancing chemical agents to ' +
       'exploit the fears and phobias of his adversaries.')
     .click(selectors.libraryView.saveButton)

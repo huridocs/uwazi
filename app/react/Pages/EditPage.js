@@ -17,6 +17,10 @@ export default class EditPage extends RouteHandler {
     });
   }
 
+  componentDidMount() {
+    this.context.store.dispatch(formActions.reset('page.data'));
+  }
+
   setReduxState({page}) {
     this.context.store.dispatch(formActions.load('page.data', page.data));
   }

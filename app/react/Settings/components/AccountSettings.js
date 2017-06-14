@@ -65,8 +65,11 @@ export class AccountSettings extends Component {
     return (
       <div className="account-settings">
         <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Email address')}</div>
+          <div className="panel-heading">
+            {t('System', 'Account')}
+          </div>
           <div className="panel-body">
+            <h5>{t('System', 'Email address')}</h5>
             <form onSubmit={this.updateEmail.bind(this)}>
               <div className="form-group">
                 <label className="form-group-label" htmlFor="collection_name">{t('System', 'Email')}</label>
@@ -74,11 +77,8 @@ export class AccountSettings extends Component {
               </div>
               <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
             </form>
-          </div>
-        </div>
-        <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Change password')}</div>
-          <div className="panel-body">
+            <hr />
+            <h5>{t('System', 'Change password')}</h5>
             <form onSubmit={this.updatePassword.bind(this)}>
               <div className={'form-group' + (this.state.passwordError ? ' has-error' : '')}>
                 <label className="form-group-label" htmlFor="password">{t('System', 'New password')}</label>
@@ -111,11 +111,11 @@ export class AccountSettings extends Component {
             </form>
           </div>
         </div>
-        <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Close session')}</div>
-          <div className="panel-body">
-            <a href='/logout' className="btn btn-danger"><i className="fa fa-sign-out"></i><span> {t('System', 'Logout')}</span></a>
-          </div>
+        <div className="settings-footer">
+          <a href='/logout' className="btn btn-danger">
+            <i className="fa fa-sign-out"></i>
+            <span className="btn-label">{t('System', 'Logout')}</span>
+          </a>
         </div>
       </div>
     );

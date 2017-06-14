@@ -293,8 +293,9 @@ describe('Smoke test,', () => {
       it('should click the account button and then click on logout button', (done) => {
         nightmare
         .waitToClick(selectors.settingsView.accountButton)
+        .wait(500)
         .evaluate(function () {
-          document.querySelector('.admin-content').scrollTop = 999;
+          document.querySelector('#app > div.content > div > div').scrollTop = 999;
         })
         .waitToClick(selectors.settingsView.logoutButton)
         .wait(selectors.libraryView.libraryFirstDocument)

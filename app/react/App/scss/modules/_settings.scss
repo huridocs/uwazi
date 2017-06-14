@@ -1,0 +1,111 @@
+.settings {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-top: 30px;
+  overflow-y: scroll;
+}
+
+.settings-navigation,
+.settings-content {
+  width: 100%;
+  padding: 0 15px;
+}
+
+@media(min-width: 1024px) {
+  .settings-navigation {
+    width: 400px;
+  }
+
+  .settings-content {
+    width: calc(100% - 400px);
+  }
+}
+
+.settings-footer {
+  position: fixed;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+  padding: 0 0 20px;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 4;
+  @media(min-width: 1024px) {
+    right: calc((100% - 400px)/2);
+  }
+  
+  .btn {
+    position: relative;
+    border-radius: 50%;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
+    padding: 0;
+    margin: 0 6px;
+  }
+
+  .btn-label {
+    color: $c-grey-dark;
+    position: absolute;
+    top: 100%;
+    font-size: 10px;
+    line-height: 1.5em;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
+  }
+
+  .btn:hover .btn-label {
+    color: $c-black;
+  }
+}
+
+// Improve this
+
+.settings-content {
+  .thesauri,
+  .metadata,
+  .relationType,
+  .EditTranslationForm,
+  .NavlinksSettings,
+  .account-settings,
+  .page-creator,
+  .user-creator,
+  .FiltersForm,
+  .FiltersForm-list {
+    height: 100%;
+  }
+}
+
+.settings-content form,
+.settings-content main,
+.settings-content main > div,
+.settings-content .panel {
+  height: 100%;
+}
+
+.settings-content .account-settings form {
+  height: auto;
+}
+
+.settings-content .panel:last-of-type,
+.settings-content .page-creator .panel,
+.settings-content .account-settings .panel,
+.settings-content .user-creator .panel,
+.settings-content .EditTranslationForm .panel {
+  margin-bottom: 0;
+}
+
+.settings-content .account-settings > .panel > .panel-body,
+.settings-content form > .panel > .panel-body,
+.settings-content form > .panel > .list-group,
+.settings-content > .panel > .panel-body,
+.settings-content > .panel > .list-group {
+  height: calc(100% - 51px);
+  padding-bottom: 85px;
+  overflow-y: scroll; 
+}

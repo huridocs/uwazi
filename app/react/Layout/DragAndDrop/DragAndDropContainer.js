@@ -5,7 +5,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import DragAndDropItem from './DragAndDropItem';
 import {DropTarget} from 'react-dnd';
 import ID from 'shared/uniqueID';
-import ShowIf from 'app/App/ShowIf';
 
 export class DragAndDropContainer extends Component {
 
@@ -56,11 +55,9 @@ export class DragAndDropContainer extends Component {
                           {this.renderItem(item)}
                         </DragAndDropItem>;
               })}
-              <ShowIf if={!this.props.items.length}>
-                <div className="no-properties">
-                  <div className="no-properties-wrap">Drag items here</div>
-                </div>
-              </ShowIf>
+              <div className="no-properties">
+                <div className="no-properties-wrap">Drag items here</div>
+              </div>
             </ul>)}
           </div>;
   }

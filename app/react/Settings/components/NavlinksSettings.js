@@ -38,15 +38,16 @@ export class NavlinksSettings extends Component {
               <div className={nameGroupClass}>
                 {t('System', 'Menu')}
               </div>
-              &nbsp;
-              <button type="submit"
-                      className="btn btn-success"
-                      disabled={!!this.props.savingNavlinks}>
-                <i className="fa fa-save"/> {t('System', 'Save')}
-              </button>
             </div>
-
             <ul className="list-group">
+              <li>
+                <div className="alert alert-info">
+                  <i className="fa fa-lightbulb-o"></i>
+                  From here you control the Menu navigation links.<br /><br />
+                  Use only relative URLs (starting with a /) and not fully formed URLs like http://www.google.com.<br />
+                  If you copied a page universal URL, be sure to delete the first part (http://yourdomain.com).
+                </div>
+              </li>
               {links.map((link, i) => {
                 return (
                   <NavlinkForm key={link.localID || link._id}
@@ -57,23 +58,21 @@ export class NavlinksSettings extends Component {
                 );
               })}
             </ul>
-            <div className="panel-body">
-              <a className="btn btn-success"
+            <div className="settings-footer">
+              <a className="btn btn-primary"
                  onClick={this.props.addLink.bind(this, links)}>
-                <i className="fa fa-plus"></i>&nbsp;<span>{t('System', 'Add link')}</span>
+                <i className="fa fa-plus"></i>
+                <span className="btn-label">{t('System', 'Add link')}</span>
               </a>
+              <button type="submit"
+                      className="btn btn-success"
+                      disabled={!!this.props.savingNavlinks}>
+                <i className="fa fa-save"/>
+                <span className="btn-label">{t('System', 'Save')}</span>
+              </button>
             </div>
-
           </div>
-
-
         </Form>
-        <div className="alert alert-info">
-          <i className="fa fa-lightbulb-o"></i>
-          From here you control the Menu navigation links.<br /><br />
-          Use only relative URLs (starting with a /) and not fully formed URLs like http://www.google.com.<br />
-          If you copied a page universal URL, be sure to delete the first part (http://yourdomain.com).
-        </div>
       </div>
     );
   }

@@ -22,13 +22,13 @@
 @import "layout/main";
 @import "layout/aside";
 
-@import "modules/admin";
 @import "modules/search";
 @import "modules/document";
 @import "modules/page";
 @import "modules/toc";
 @import "modules/entity";
 @import "modules/metadata-view";
+@import "modules/settings";
 @import "modules/settings-nav";
 @import "modules/settings-metadata";
 @import "modules/settings-filters";
@@ -38,6 +38,8 @@
 @import "modules/markdown";
 @import "modules/library";
 @import "modules/ContextMenu";
+
+@import "custom/custom";
 
 @import "../../Timeline/scss/timeline";
 @import "utilities/utilities";

@@ -35,12 +35,12 @@ export class Settings extends RouteHandler {
 
   render() {
     return (
-        <div className="row admin-content">
+        <div className="row settings">
           <Helmet title="Settings" />
-          <div className="col-xs-12 col-sm-4">
+          <div className="settings-navigation">
             <SettingsNavigation/>
           </div>
-          <div className="col-xs-12 col-sm-8">
+          <div className="settings-content">
             {this.props.children}
           </div>
         </div>
