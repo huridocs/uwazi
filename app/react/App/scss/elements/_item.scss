@@ -221,8 +221,8 @@ $item-padding: 15px;
   font-size: $f-size-sm;
   b {
     color: #000;
-    background: $c-secondary-light;
-    box-shadow: -2px 0 0 0 rgba(255, 204, 102, 0.3), 2px 0 0 0 rgba(255, 204, 102, 0.3);
+    background-color: transparentize(yellow, 0.4);
+    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
   .show-more {
     background: #fff;
