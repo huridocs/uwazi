@@ -18,7 +18,8 @@ describe('Login', () => {
     props = {
       login: jasmine.createSpy('login').and.returnValue(Promise.resolve()),
       recoverPassword: jasmine.createSpy('recoverPassword').and.returnValue(Promise.resolve()),
-      notify: jasmine.createSpy('notify')
+      notify: jasmine.createSpy('notify'),
+      reset: jasmine.createSpy('reset')
     };
     render();
   });

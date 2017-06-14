@@ -20,31 +20,32 @@
   max-height: 100px;
   transition: max-height 300ms, padding 300ms;
   overflow: hidden;
-  .forgot-password {
-    margin-top: 10px;
-    text-align: center;
-    span {
-      margin: 0;
-      position: static;
-    }
-    a {
-      cursor: pointer;
-      text-decoration: underline;
-      color: $c-grey-dark;
-      opacity: 0.6;
-      &:hover {
-        opacity: 1;
-      }
-    }
-    a.label-danger {
-      color: $c-danger;
-      opacity: 1;
-      font-weight: bold;
-    }
-  }
 
   &.is-hidden{
     max-height: 0;
     padding-bottom: 0;
+  }
+}
+
+.form-text {
+  margin-top: 10px;
+  text-align: center;
+  span {
+    margin: 0;
+    position: static;
+  }
+  a {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $c-grey-dark;
+    opacity: 0.6;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  a.label-danger {
+    color: $c-danger;
+    opacity: 1;
+    font-weight: bold;
   }
 }
