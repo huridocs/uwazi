@@ -59,6 +59,7 @@ export default class DocumentsList extends Component {
                    storeKey={this.props.storeKey}
                    key={index}
                    onClick={this.clickOnDocument.bind(this)}
+                   onSnippetClick={this.props.onSnippetClick}
                    deleteConnection={this.props.deleteConnection}
                    searchParams={this.props.search} />
             )}

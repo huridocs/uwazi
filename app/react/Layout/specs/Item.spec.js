@@ -27,6 +27,7 @@ describe('Item', () => {
       active: true,
       className: 'custom-class',
       onClick: jasmine.createSpy('onClick'),
+      onSnippetClick: jasmine.createSpy('onSnippetClick'),
       onMouseEnter: jasmine.createSpy('onMouseEnter'),
       onMouseLeave: jasmine.createSpy('onMouseLeave'),
       additionalIcon: <div>additionalIcon</div>,
@@ -62,6 +63,13 @@ describe('Item', () => {
 
     component.find(RowList.Item).simulate('mouseLeave');
     expect(props.onMouseLeave).toHaveBeenCalled();
+  });
+
+  it('should call onSnippetClick when clicking on the snippet', () => {
+    props.doc = Immutable({_id: 'id', snippets: ['snippet']});
+    render();
+    component.find('.item-snippet').simulate('click');
+    expect(props.onSnippetClick).toHaveBeenCalled();
   });
 
   it('should include a header if present', () => {
