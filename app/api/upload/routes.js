@@ -43,7 +43,7 @@ export default (app) => {
 
       let file = req.files[0].destination + req.files[0].filename;
 
-      let socket = req.io.getSocket();
+      let socket = req.io.getCurrentSessionSocket();
       if (socket) {
         socket.emit('conversionStart', req.body.document);
       }
@@ -53,7 +53,7 @@ export default (app) => {
       ]);
     })
     .then(([conversion, _docs]) => {
-      let socket = req.io.getSocket();
+      let socket = req.io.getCurrentSessionSocket();
       if (socket) {
         socket.emit('documentProcessed', req.body.document);
       }
@@ -77,7 +77,7 @@ export default (app) => {
           });
           entities.saveMultiple(docs);
         });
-        let socket = req.io.getSocket();
+        let socket = req.io.getCurrentSessionSocket();
         socket.emit('conversionFailed', req.body.document);
       }
     });
