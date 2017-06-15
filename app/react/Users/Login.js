@@ -8,6 +8,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import {t} from 'app/I18N';
 import {actions as formActions} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
+import {reconnectSocket} from 'app/socket';
 
 import auth from 'app/Auth';
 
@@ -39,6 +40,7 @@ export class Login extends RouteHandler {
   login(credentials) {
     return this.props.login(credentials)
     .then(() => {
+      reconnectSocket();
       browserHistory.push('/');
     })
     .catch(() => {

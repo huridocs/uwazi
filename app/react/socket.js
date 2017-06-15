@@ -6,3 +6,12 @@ if (isClient) {
 }
 
 export default socket;
+
+const reconnectSocket = () => {
+  socket.disconnect();
+  socket.connect();
+};
+
+export {
+  reconnectSocket
+};
