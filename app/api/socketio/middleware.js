@@ -8,9 +8,17 @@ export default (server, app) => {
   });
 
   app.use((req, res, next) => {
-    req.io.getCurrentSessionSocket = () => {
-      let sessionSocket = null;
-      Object.keys(req.io.sockets.connected).forEach((socketId) => {
+    req.io.getCurrentSessionSockets = () => {
+      let sessionSockets = {
+        sockets: [],
+        emit: function (...args) {
+          this.sockets.forEach(socket => {
+            socket.emit(...args);
+          });
+        }
+      };
+
+      Object.keys(req.io.sockets.connected).reduce((sockets, socketId) => {
         const socket = req.io.sockets.connected[socketId];
         const socketCookie = cookie.parse(socket.request.headers.cookie);
         let sessionId;
@@ -20,11 +28,13 @@ export default (server, app) => {
         }
 
         if (sessionId === req.session.id) {
-          sessionSocket = socket;
+          sockets.sockets.push(socket);
         }
-      });
 
-      return sessionSocket;
+        return sockets;
+      }, sessionSockets);
+
+      return sessionSockets;
     };
 
     next();
