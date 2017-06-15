@@ -18,7 +18,7 @@ describe('upload routes', () => {
   beforeEach((done) => {
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     iosocket = jasmine.createSpyObj('socket', ['emit']);
-    let io = {getSocket: () => {
+    let io = {getCurrentSessionSocket: () => {
       return iosocket;
     }};
     routes = instrumentRoutes(uploadRoutes);
