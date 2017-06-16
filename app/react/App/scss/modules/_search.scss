@@ -4,6 +4,7 @@
   @media(min-width: 1024px) {
     z-index: 4;
     top: $header-height;
+    background-color: transparent;
     &.is-hidden {
       right: 0;
     }
@@ -252,7 +253,7 @@
 
   &:not(:last-child),
   .form-group:not(:last-child) & {
-    border-bottom: 1px dotted $c-grey-light;
+    border-bottom: 1px solid $c-grey-light;
   }
 
   > li:first-child {
@@ -430,7 +431,7 @@
   list-style-type: none;
 
   &:not(:last-child) {
-    border-bottom: 1px dotted $c-grey-light;
+    border-bottom: 1px dotted $c-grey;
   }
 }
 
@@ -445,7 +446,7 @@
 
   input.form-control {
     border: 0;
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid $c-grey;
     border-radius: 0;
     box-shadow: none;
     padding-left: 26px;
@@ -456,7 +457,7 @@
   }
 
   .fa {
-    color: $c-grey-light;
+    color: $c-grey;
     position: absolute;
     top: 9px;
     left: 6px;
@@ -527,7 +528,7 @@
 .multiselectItem-icon {
   width: 20px;
   font-size: $f-size-lg;
-  color: $c-grey-light;
+  color: $c-grey;
 
   &:first-of-type {
     position: relative;
