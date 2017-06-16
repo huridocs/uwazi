@@ -43,20 +43,17 @@ export default (app) => {
 
       let file = req.files[0].destination + req.files[0].filename;
 
-      let socket = req.io.getCurrentSessionSocket();
-      if (socket) {
-        socket.emit('conversionStart', req.body.document);
-      }
+      let sessionSockets = req.io.getCurrentSessionSockets();
+      sessionSockets.emit('conversionStart', req.body.document);
+
       return Promise.all([
         new PDF(file, req.files[0].originalname).convert(),
         getDocuments(req.body.document, allLanguages)
       ]);
     })
     .then(([conversion, _docs]) => {
-      let socket = req.io.getCurrentSessionSocket();
-      if (socket) {
-        socket.emit('documentProcessed', req.body.document);
-      }
+      let sessionSockets = req.io.getCurrentSessionSockets();
+      sessionSockets.emit('documentProcessed', req.body.document);
 
       const docs = _docs.map((doc) => {
         doc.processed = true;
@@ -77,8 +74,9 @@ export default (app) => {
           });
           entities.saveMultiple(docs);
         });
-        let socket = req.io.getCurrentSessionSocket();
-        socket.emit('conversionFailed', req.body.document);
+
+        let sessionSockets = req.io.getCurrentSessionSockets();
+        sessionSockets.emit('conversionFailed', req.body.document);
       }
     });
   };
