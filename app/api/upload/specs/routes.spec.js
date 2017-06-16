@@ -18,8 +18,8 @@ describe('upload routes', () => {
   beforeEach((done) => {
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     iosocket = jasmine.createSpyObj('socket', ['emit']);
-    let io = {getCurrentSessionSocket: () => {
-      return iosocket;
+    let io = {getCurrentSessionSockets: () => {
+      return {sockets: [iosocket], emit: iosocket.emit};
     }};
     routes = instrumentRoutes(uploadRoutes);
     file = {fieldname: 'file',

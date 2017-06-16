@@ -20,31 +20,58 @@ describe('socketio middleware', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  describe('getCurrentSessionSocket', () => {
+  describe('getCurrentSessionSockets', () => {
     const createSocket = (cookie) => {
-      return {request: {headers: {cookie}}};
+      return {
+        request: {headers: {cookie}},
+        emit: jasmine.createSpy('emit')
+      };
     };
-    it('should find and return the socket belonging to the current cookie', () => {
-      const socket1 = createSocket('connect.sid=s%3AsessionId.moreCookieStuff; io=socketioStuff; locale=en');
-      const socket2 = createSocket('connect.sid=s%3AsessionId2.moreCookieStuff; io=socketioStuff; locale=en');
+
+    let socket1;
+    let socket2;
+    let socket3;
+    let req;
+    let res;
+    let next;
+
+    beforeEach(() => {
+      socket1 = createSocket('connect.sid=s%3AsessionId.moreCookieStuff; io=socketioStuff; locale=en');
+      socket2 = createSocket('connect.sid=s%3AsessionId2.moreCookieStuff; io=socketioStuff; locale=en');
+      socket3 = createSocket('connect.sid=s%3AsessionId.otherCookieStuff; io=otherSocketioStuff; locale=en');
+
       const socketWithoutSid = createSocket('io=socketioStuff; locale=en');
 
-      const req = {
-        io: {sockets: {connected: {socket1, socket2, socketWithoutSid}}},
+      req = {
+        io: {sockets: {connected: {socket1, socket2, socketWithoutSid, socket3}}},
         session: {id: 'sessionId'}
       };
 
-      const res = {};
-      const next = jasmine.createSpy('next');
+      res = {};
+      next = jasmine.createSpy('next');
       executeMiddleware(req, res, next);
+    });
 
-      let socket = req.io.getCurrentSessionSocket();
-      expect(socket).toBe(socket1);
+    it('should find and return an array of sockets belonging to the current cookie', () => {
+      let result = req.io.getCurrentSessionSockets();
+      expect(result.sockets[0]).toBe(socket1);
+      expect(result.sockets[1]).toBe(socket3);
 
       req.session.id = 'sessionId2';
       executeMiddleware(req, res, next);
-      socket = req.io.getCurrentSessionSocket();
-      expect(socket).toBe(socket2);
+      result = req.io.getCurrentSessionSockets();
+      expect(result.sockets[0]).toBe(socket2);
+    });
+
+    it('should include in the result an "emit" function that emits to all the found sockets the sent message', () => {
+      let result = req.io.getCurrentSessionSockets();
+      const data = {data: 'data'};
+
+      result.emit('Message', data);
+
+      expect(socket1.emit).toHaveBeenCalledWith('Message', data);
+      expect(socket2.emit).not.toHaveBeenCalled();
+      expect(socket3.emit).toHaveBeenCalledWith('Message', data);
     });
   });
 });
