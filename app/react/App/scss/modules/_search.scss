@@ -15,7 +15,8 @@
   position: relative;
   display: block;
   width: 100%;
-  border-bottom: 1px solid $c-grey-light;
+  border: 1px solid $c-grey-light;
+  box-shadow: $box-shadow;
 
   .input-group {
     width: 100%;
@@ -146,7 +147,7 @@
 }
 
 .search-suggestions {
-  display: none;
+  display: none !important;
   position: absolute;
   top: $header-height - 1px;
   left: 0;

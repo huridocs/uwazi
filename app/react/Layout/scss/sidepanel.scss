@@ -179,8 +179,6 @@ $c-sidebar: $c-white;
   .search-box {
     width: calc(100% - 10px);
     margin: 5px;
-    border: 1px solid $c-grey-light;
-    box-shadow: $box-shadow;
     z-index: 1;
   }
 }
