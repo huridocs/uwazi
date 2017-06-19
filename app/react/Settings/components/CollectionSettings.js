@@ -2,35 +2,59 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import moment from 'moment';
 import {isClient} from 'app/utils';
 
 import {actions} from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import {notify} from 'app/Notifications/actions/notificationsActions';
+import {RadioButtons} from 'app/Forms';
 import {t} from 'app/I18N';
 
 export class CollectionSettings extends Component {
 
   constructor(props, context) {
     super(props, context);
+    const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     this.state = {
       siteName: props.settings.site_name || '',
       homePage: props.settings.home_page || '',
       mailerConfig: props.settings.mailerConfig || '',
-      customLandingpage: !!props.settings.home_page
+      customLandingpage: !!props.settings.home_page,
+      dateFormat: props.settings.dateFormat,
+      dateSeparator
     };
+  }
+
+  dateFormatSeparatorOptions() {
+    return [
+      {label: '/', value: '/'},
+      {label: '-', value: '-'}
+    ];
+  }
+
+  dateFormatOptions(separator) {
+    return [
+      {label: 'Year, Month, Day', value: `YYYY${separator}MM${separator}DD`},
+      {label: 'Day, Month, Year', value: `DD${separator}MM${separator}YYYY`},
+      {label: 'Month, Day, Year', value: `MM${separator}DD${separator}YYYY`}
+    ];
+  }
+
+  renderDateFormatLabel(option) {
+    return <span>{option.label} <code>{moment().format(option.value)}</code></span>;
   }
 
   changeLandingPage(e) {
     const customLandingpage = e.target.value === 'custom';
     this.setState({customLandingpage, homePage: ''});
-    let settings = Object.assign(this.props.settings, {home_page: ''});
+    let settings = Object.assign(this.props.settings, {home_page: ''}); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
   changeName(e) {
     this.setState({siteName: e.target.value});
-    let settings = Object.assign(this.props.settings, {site_name: e.target.value});
+    let settings = Object.assign(this.props.settings, {site_name: e.target.value}); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
@@ -42,15 +66,36 @@ export class CollectionSettings extends Component {
 
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
-    let settings = Object.assign(this.props.settings, {home_page: e.target.value});
+    let settings = Object.assign(this.props.settings, {home_page: e.target.value});  // eslint-disable-line camelcase
+    this.props.setSettings(settings);
+  }
+
+  changeDateFormat(dateFormat) {
+    this.setState({dateFormat});
+    let settings = Object.assign(this.props.settings, {dateFormat});
+    this.props.setSettings(settings);
+  }
+
+  changeDateFormatSeparator(dateSeparator) {
+    const selectedFormatPosition = this.dateFormatSeparatorOptions().reduce((position, separator) => {
+      const dateFormatOptions = this.dateFormatOptions(separator.value);
+      const foundFormat = dateFormatOptions.find(s => s.value === this.state.dateFormat);
+      return foundFormat ? dateFormatOptions.indexOf(foundFormat) : position;
+    }, null);
+
+    const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition] ?
+                       this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value : '';
+
+    this.setState({dateSeparator, dateFormat});
+    let settings = Object.assign(this.props.settings, {dateFormat});
     this.props.setSettings(settings);
   }
 
   updateSettings(e) {
     e.preventDefault();
     let settings = Object.assign({}, this.props.settings);
-    settings.home_page = this.state.homePage;
-    settings.site_name = this.state.siteName;
+    settings.home_page = this.state.homePage;  // eslint-disable-line camelcase
+    settings.site_name = this.state.siteName;  // eslint-disable-line camelcase
     settings.mailerConfig = this.state.mailerConfig;
     SettingsAPI.save(settings)
     .then((result) => {
@@ -61,6 +106,7 @@ export class CollectionSettings extends Component {
 
   render() {
     const hostname = isClient ? window.location.origin : '';
+
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection settings')}</div>
@@ -138,6 +184,22 @@ export class CollectionSettings extends Component {
               </ul>
               <p>This setting takes precedence over all other mailer configuration.
                  If left blank, then the configuration file in /api/config/mailer.js will be used.</p>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label">{t('System', 'Date format')}</label>
+              <div>{t('System', 'Separator')}</div>
+              <RadioButtons
+                options={this.dateFormatSeparatorOptions()}
+                value={this.state.dateSeparator}
+                onChange={this.changeDateFormatSeparator.bind(this)}
+              />
+              <div>{t('System', 'Order')}</div>
+              <RadioButtons
+                options={this.dateFormatOptions(this.state.dateSeparator)}
+                value={this.state.dateFormat}
+                onChange={this.changeDateFormat.bind(this)}
+                renderLabel={this.renderDateFormatLabel}
+              />
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">

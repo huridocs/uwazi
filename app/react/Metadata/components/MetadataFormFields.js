@@ -13,34 +13,35 @@ const translateOptions = (thesauri) => {
   });
 };
 
-const getField = (property, _model, thesauris) => {
-  let thesauri;
-  const propertyType = property.type;
-  switch (propertyType) {
-  case 'select':
-    thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-    return <Select model={_model} optionsValue='id' options={translateOptions(thesauri)}/>;
-  case 'multiselect':
-    thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
-    return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} prefix={_model} />;
-  case 'date':
-    return <DatePicker model={_model}/>;
-  case 'numeric':
-    return <Numeric model={_model}/>;
-  case 'markdown':
-    return <MarkDown model={_model}/>;
-  case 'nested':
-    return <Nested model={_model}/>;
-  case 'multidate':
-    return <MultiDate model={_model}/>;
-  case 'multidaterange':
-    return <MultiDateRange model={_model}/>;
-  default:
-    return <Field model={_model}><input className="form-control"/></Field>;
-  }
-};
-
 export class MetadataFormFields extends Component {
+
+  getField(property, _model, thesauris) {
+    let thesauri;
+    const propertyType = property.type;
+    switch (propertyType) {
+    case 'select':
+      thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+      return <Select model={_model} optionsValue='id' options={translateOptions(thesauri)}/>;
+    case 'multiselect':
+      thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+      return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} prefix={_model} />;
+    case 'date':
+      return <DatePicker model={_model} format={this.props.dateFormat}/>;
+    case 'numeric':
+      return <Numeric model={_model}/>;
+    case 'markdown':
+      return <MarkDown model={_model}/>;
+    case 'nested':
+      return <Nested model={_model}/>;
+    case 'multidate':
+      return <MultiDate model={_model} format={this.props.dateFormat}/>;
+    case 'multidaterange':
+      return <MultiDateRange model={_model} format={this.props.dateFormat}/>;
+    default:
+      return <Field model={_model}><input className="form-control"/></Field>;
+    }
+  }
+
   render() {
     const thesauris = this.props.thesauris.toJS();
     const template = this.props.template.toJS();
@@ -61,7 +62,7 @@ export class MetadataFormFields extends Component {
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>
-                <li className="wide">{getField(property, `.metadata.${property.name}`, thesauris, property)}</li>
+                <li className="wide">{this.getField(property, `.metadata.${property.name}`, thesauris, property)}</li>
               </ul>
             </FormGroup>
           );
@@ -76,7 +77,14 @@ MetadataFormFields.propTypes = {
   model: PropTypes.string,
   state: PropTypes.object,
   thesauris: PropTypes.object,
-  multipleEdition: PropTypes.bool
+  multipleEdition: PropTypes.bool,
+  dateFormat: PropTypes.string
 };
 
-export default connect()(MetadataFormFields);
+export const mapStateToProps = (state) => {
+  return {
+    dateFormat: state.settings.collection.get('dateFormat')
+  };
+};
+
+export default connect(mapStateToProps)(MetadataFormFields);
