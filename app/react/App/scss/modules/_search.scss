@@ -15,8 +15,8 @@
   position: relative;
   display: block;
   width: 100%;
+  max-width: 568px;
   border: 1px solid $c-grey-light;
-  border-radius: $header-height/2;
   box-shadow: $box-shadow;
 
   .input-group {
@@ -27,7 +27,6 @@
     padding-left: 15px;
     padding-right: 35px;
     font-size: $f-size-lg;
-    border-radius: $header-height/2 !important;
     border: 0;
     box-shadow: none;
     z-index: 4;
