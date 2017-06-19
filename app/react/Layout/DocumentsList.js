@@ -46,7 +46,7 @@ export default class DocumentsList extends Component {
     return (
       <div className="documents-list">
         <div className="main-wrapper">
-          <div className="sort-by">
+          <div className="search-list">
             <SearchBar storeKey={this.props.storeKey}/>
           </div>
           <div className="sort-by">

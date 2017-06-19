@@ -356,6 +356,12 @@ $item-padding: 15px;
   }
 }
 
+.search-list {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 15px;
+}
+
 /* sort-by controller */
 
 .sort-by {
@@ -364,12 +370,16 @@ $item-padding: 15px;
   width: 100%;
   max-width: 960px;
   margin: 0 auto 15px;
+  padding: 0 15px;
   text-align: center;
   @media(min-width: 1024px) {
     text-align: right;
     #documents-counter {
       text-align: left;
     }
+  }
+  .Dropdown {
+    right: 15px;
   }
 }
 /** /

@@ -16,6 +16,7 @@
   display: block;
   width: 100%;
   border: 1px solid $c-grey-light;
+  border-radius: $header-height/2;
   box-shadow: $box-shadow;
 
   .input-group {
@@ -23,8 +24,10 @@
   }
   .form-control {
     height: $header-height;
-    padding-left: 35px;
-    border-radius: 0;
+    padding-left: 15px;
+    padding-right: 35px;
+    font-size: $f-size-lg;
+    border-radius: $header-height/2 !important;
     border: 0;
     box-shadow: none;
     z-index: 4;
@@ -42,20 +45,19 @@
     line-height: $header-height;
     top: 50%;
     transform: translateY(-50%);
+    font-size: $f-size-lg;
     z-index: 5;
   }
   .input-group .fa-search {
-    left: 15px;
+    right: 18px;
   }
   .input-group .fa-close {
     display: none;
     right: 15px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
     text-align: center;
-    padding: 1px;
-    font-size: 11px;
     color: $c-white;
     background: $c-bootstrap-primary;
     border-radius: 50%;
@@ -780,7 +782,7 @@ label.multiselectItem-label {
     display: flex;
     -webkit-align-items: center;
     align-items: center;
-    margin: 15px;
+    margin: 15px 15px 15px 20px;
     padding-bottom: 15px;
     font-size: $f-size-sm;
     line-height: 1.8em;

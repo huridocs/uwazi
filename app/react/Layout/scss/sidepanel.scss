@@ -180,6 +180,10 @@ $c-sidebar: $c-white;
     width: calc(100% - 10px);
     margin: 5px;
     z-index: 1;
+    
+    .form-control {
+      font-size: $f-size;
+    }
   }
 }
 
