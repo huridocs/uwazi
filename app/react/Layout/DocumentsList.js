@@ -50,7 +50,10 @@ export default class DocumentsList extends Component {
             <SearchBar storeKey={this.props.storeKey}/>
           </div>
           <div className="sort-by">
-              <div className="u-floatLeft documents-counter">{counter}</div>
+              <div className="documents-counter">
+                <span className="documents-counter-label">{counter}</span>
+                <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
+              </div>
               <SortButtons sortCallback={this.props.searchDocuments}
                            selectedTemplates={this.props.filters.get('documentTypes')}
                            stateProperty={this.props.sortButtonsStateProperty}
