@@ -16,19 +16,18 @@
   display: block;
   width: 100%;
   max-width: 568px;
-  border: 1px solid $c-grey-light;
-  box-shadow: $box-shadow;
-
+  
   .input-group {
     width: 100%;
   }
   .form-control {
-    height: $header-height;
+    height: $header-height * 0.88;
     padding-left: 15px;
     padding-right: 35px;
     font-size: $f-size-lg;
     border: 0;
-    box-shadow: none;
+    border: 1px solid $c-grey-light !important;
+    box-shadow: $box-shadow;
     z-index: 4;
 
     @include placeholder($c-black);
