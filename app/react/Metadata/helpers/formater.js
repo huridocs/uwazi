@@ -9,6 +9,13 @@ export default {
     return {label: property.label, name: property.name, value, showInCard};
   },
 
+  daterange(property, daterange, showInCard) {
+    let from = moment.utc(daterange.from, 'X').format('ll');
+    let to = moment.utc(daterange.to, 'X').format('ll');
+    let value = `${from} - ${to}`;
+    return {label: property.label, name: property.name, value, showInCard};
+  },
+
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
       return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
@@ -112,6 +119,10 @@ export default {
 
       if (property.type === 'date' && value) {
         return this.date(property, value, showInCard);
+      }
+
+      if (property.type === 'daterange' && value) {
+        return this.daterange(property, value, showInCard);
       }
 
       if (property.type === 'multidate' && value) {

@@ -20,7 +20,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'nested') {
       type = 'nested';
     }
-    if (property.type === 'multidaterange') {
+    if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
     }
     result[property.name] = {value: filters[property.name], type};

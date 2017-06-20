@@ -16,6 +16,9 @@ const resetMetadata = (metadata, template, options) => {
     if (assignProperty && property.type !== 'date') {
       metadata[property.name] = '';
     }
+    if (assignProperty && property.type === 'daterange') {
+      metadata[property.name] = {};
+    }
     if (assignProperty && property.type === 'multiselect') {
       metadata[property.name] = [];
     }

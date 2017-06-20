@@ -31,7 +31,7 @@ export class Item extends Component {
       if (property.value && property.value !== '' || property.markdown) {
         let dlClassName = '';
 
-        let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
+        let value = property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
         if (property.markdown) {
           dlClassName = 'full-width';
           value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
