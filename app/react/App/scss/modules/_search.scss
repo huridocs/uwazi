@@ -43,25 +43,28 @@
     line-height: $header-height;
     top: 50%;
     transform: translateY(-50%);
-    font-size: $f-size-lg;
     z-index: 5;
   }
   .input-group .fa-search {
-    right: 18px;
+    right: 20px;
+    font-size: $f-size-lg;
+    cursor: pointer;
   }
   .input-group .fa-close {
     display: none;
-    right: 15px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
+    right: 50px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
     text-align: center;
-    color: $c-white;
-    background: $c-bootstrap-primary;
+    font-size: $f-size-sm;
+    color: $c-grey;
+    border: 1px solid $c-grey;
     border-radius: 50%;
     cursor: pointer;
     &:hover {
-      background: $c-bootstrap-primary-dark;
+      color: $c-black;
+      border-color: $c-black;
     }
   }
   .input-group.is-active .fa-close {

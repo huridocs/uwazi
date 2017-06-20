@@ -6,7 +6,6 @@ import {wrapDispatch} from 'app/Multireducer';
 
 import {resetFilters} from 'app/Library/actions/filterActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
-{/*import SearchBar from 'app/Library/components/SearchBar';*/}
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
 import {t} from 'app/I18N';
@@ -29,14 +28,9 @@ export class LibraryFilters extends Component {
             <i className="fa fa-refresh"></i>
             <span className="btn-label">{t('System', 'Reset')}</span>
           </span>
-          <button type="submit" form="filtersForm" className="btn btn-success">
-            <i className="fa fa-search"></i>
-            <span className="btn-label">{t('System', 'Search')}</span>
-          </button>
         </div>
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters')}</p>
-          {/*<SearchBar storeKey={this.props.storeKey}/>*/}
           <div className="documentTypes-selector nested-selector">
             <DocumentTypesList storeKey={this.props.storeKey}/>
           </div>
