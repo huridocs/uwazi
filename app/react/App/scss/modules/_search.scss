@@ -779,26 +779,26 @@ label.multiselectItem-label {
   list-style: none;
   
   li {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
+    height: 50px;
     margin: 15px 15px 15px 20px;
     padding-bottom: 15px;
     font-size: $f-size-sm;
     line-height: 1.8em;
+    overflow: hidden;
   }
   
   li:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
-  
-  span {
-    width: 120px;
-    text-align: right;
-  }
   a {
+    position: relative;
+    margin-right: 15px;
     border-bottom: 1px dotted $c-primary;
+    &:after {
+      content: '-';
+      position: absolute;
+      right: -9px;
+    }
   }
   
   b {
