@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 
 class Events extends EventEmitter {}
 
-describe('PDF', function () {
+fdescribe('PDF', function () {
   let pdf;
 
   describe('extractText', () => {
@@ -13,14 +13,12 @@ describe('PDF', function () {
       pdf = new PDFObject(filepath);
     });
 
-    it('should extract the text of the pdf using docsplit', (done) => {
+    fit('should extract the text of the pdf by page', (done) => {
       pdf.extractText()
-      .then((text) => {
-        let lines = text.split(/\f/);
-
-        expect(lines[0]).toBe('Page 1\n\n');
-        expect(lines[1]).toBe('Page 2\n\n');
-        expect(lines[2]).toBe('Page 3\n\n');
+      .then((pages) => {
+        expect(pages[1]).toMatch(/Page 1/);
+        expect(pages[2]).toMatch(/Page 2/);
+        expect(pages[3]).toMatch(/Page 3/);
         done();
       })
       .catch(done.fail);

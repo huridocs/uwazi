@@ -2,6 +2,7 @@ import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
 import fs from 'fs';
+import readDirFiles from 'read-dir-files';
 
 let basename = (filepath = '') => {
   let finalPath = filepath;
@@ -19,21 +20,53 @@ export default class PDF extends EventEmitter {
     this.optimizedPath = filepath;
   }
 
+  split(tmpPath) {
+    const log = fs.createWriteStream(this.logFile, {flags: 'a'});
+    let options = ['-sDEVICE=pdfwrite', '-dSAFER', '-o', tmpPath + 'page.%d.pdf', this.filepath];
+    let extraction = spawn('gs', options);
+    extraction.stderr.pipe(log);
+    extraction.stdout.pipe(log);
+
+    return new Promise((resolve) => {
+      extraction.stdout.on('close', () => {
+        resolve();
+      });
+    });
+  }
+
   extractText() {
-    let logFile = fs.createWriteStream(this.logFile, {flags: 'a'});
     let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
-    let options = ['text', '--no-ocr', '-o', tmpPath, this.filepath];
-    let extraction = spawn('docsplit', options);
-    extraction.stderr.pipe(logFile);
-    extraction.stdout.pipe(logFile);
 
     return new Promise((resolve, reject) => {
-      extraction.stdout.on('close', () => {
-        fs.readFile(tmpPath + basename(this.filepath) + '.txt', 'utf-8', (err, content) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(content);
+      fs.mkdir(tmpPath, (mkdirError) => {
+        if (mkdirError) {
+          return reject(mkdirError);
+        }
+
+        return this.split(tmpPath)
+        .then(() => {
+          const log = fs.createWriteStream(this.logFile, {flags: 'a'});
+          let command = `docsplit text --no-ocr -o ${tmpPath}txt/ ${tmpPath}page*pdf`;
+          let options = ['-c', command];
+          let extraction = spawn('/bin/sh', options);
+          extraction.stderr.pipe(log);
+          extraction.stdout.pipe(log);
+          extraction.stdout.on('close', () => {
+            readDirFiles.read(`${tmpPath}txt/`, (error, files) => {
+              if (error) {
+                reject(error);
+              }
+              let content = {};
+
+              Object.keys(files).forEach((fileName) => {
+                const buffer = files[fileName];
+                const pageNumber = fileName.split('.')[1];
+                content[`page_${pageNumber}`] = buffer.toString('utf8');
+              });
+
+              resolve(content);
+            });
+          });
         });
       });
     });

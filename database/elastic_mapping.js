@@ -32,7 +32,7 @@ export default {
         }
       }, {
         fullText_fields: {
-          path_match: 'fullText',
+          path_match: 'fullText.*',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
