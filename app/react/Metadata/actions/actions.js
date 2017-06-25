@@ -59,6 +59,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 
     dispatch(formActions.reset(form));
     dispatch(formActions.load(form, entity));
+    dispatch(formActions.setPristine(form));
   };
 }
 

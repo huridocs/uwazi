@@ -5,6 +5,10 @@ export function notEmpty(val) {
   if (typeof val === 'number') {
     return true;
   }
+
+  if(typeof val === 'object') {
+    return Boolean(Object.keys(val).length);
+  }
   return !!val && val.trim() !== '';
 }
 
