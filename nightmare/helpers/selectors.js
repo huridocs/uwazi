@@ -45,7 +45,7 @@ export default {
   },
   libraryView: {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',
-    libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
+    libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div > span',
     librarySecondDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div',
     libraryThirdDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(3)',
@@ -68,7 +68,10 @@ export default {
     deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     loadMore: '#app > div.content > div > div > main > div > div > div.row > div:nth-child(2) > button',
     documentAfterLoadMore: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(31)',
-    sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > span > span'
+    sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > span > span',
+    superVillianType: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label > span',
+    minorVillianType: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label > span',
+    resetFilters: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-footer > span'
   },
   documentView: {
     viewer: '#app > div.content > div > div > main',

@@ -22,11 +22,11 @@ export default class NumericRange extends Component {
     return (
         <div>
           <div className="Numeric__From">
-            <span>{t('System', 'From', 'From')}:</span>
+            <span>{t('System', 'Label date "From"')}</span>
             <Numeric value={this.state.from} onChange={(val) => this.onChange('from', val)}/>
           </div>
           <div className="Numeric__To">
-            <span>&nbsp;{t('System', 'To', 'To')}:</span>
+            <span>&nbsp;{t('System', 'Label date "to"')}</span>
             <Numeric value={this.state.to} onChange={(val) => this.onChange('to', val)}/>
           </div>
         </div>

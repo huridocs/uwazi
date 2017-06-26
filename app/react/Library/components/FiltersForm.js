@@ -174,8 +174,7 @@ export class FiltersForm extends Component {
                     <NumericRange
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
-                        this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to, fields));
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to), fields);
                       }}
                     />
                   </li>
