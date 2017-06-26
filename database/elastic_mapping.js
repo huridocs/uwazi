@@ -2,7 +2,20 @@
 export default {
   settings: {
     analysis: {
+      char_filter: {
+        remove_annotation: {
+          type: 'pattern_replace',
+          pattern: '\\[\\[[0-9]+\\]\\]',
+          replacement: ''
+        }
+      },
       analyzer: {
+        fullText_analyzer: {
+          type: 'custom',
+          tokenizer: 'standard',
+          filter: ['lowercase', 'asciifolding'],
+          char_filter: ['remove_annotation']
+        },
         folding: {
           tokenizer: 'keyword',
           filter: ['lowercase', 'asciifolding']
@@ -38,7 +51,7 @@ export default {
             type: 'text',
             index: 'analyzed',
             omit_norms: true,
-            analyzer: 'standard',
+            analyzer: 'fullText_analyzer',
             term_vector: 'with_positions_offsets'
           }
         }
