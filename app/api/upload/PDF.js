@@ -22,13 +22,16 @@ export default class PDF extends EventEmitter {
 
   split(tmpPath) {
     const log = fs.createWriteStream(this.logFile, {flags: 'a'});
-    let options = ['-sDEVICE=pdfwrite', '-dSAFER', '-o', tmpPath + 'page.%d.pdf', this.filepath];
+    let options = ['-sDEVICE=pdfwrite', '-dSAFER', '-o', tmpPath + '%d.pdf', this.filepath];
     let extraction = spawn('gs', options);
     extraction.stderr.pipe(log);
     extraction.stdout.pipe(log);
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       extraction.stdout.on('close', () => {
+        //if (!code) {
+          //reject();
+        //}
         resolve();
       });
     });
@@ -46,7 +49,7 @@ export default class PDF extends EventEmitter {
         return this.split(tmpPath)
         .then(() => {
           const log = fs.createWriteStream(this.logFile, {flags: 'a'});
-          let command = `docsplit text --no-ocr -o ${tmpPath}txt/ ${tmpPath}page*pdf`;
+          let command = `docsplit text --no-ocr -o ${tmpPath}txt/ ${tmpPath}*pdf`;
           let options = ['-c', command];
           let extraction = spawn('/bin/sh', options);
           extraction.stderr.pipe(log);
@@ -56,7 +59,8 @@ export default class PDF extends EventEmitter {
               if (error) {
                 reject(error);
               }
-              let content = {};
+
+              let orderedFiles = [];
 
               Object.keys(files).forEach((fileName) => {
                 const buffer = files[fileName];
