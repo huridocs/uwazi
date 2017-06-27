@@ -66,7 +66,21 @@ export default class PDF extends EventEmitter {
               Object.keys(files).forEach((fileName) => {
                 const buffer = files[fileName];
                 const pageNumber = fileName.split('.')[1];
-                content[`page_${pageNumber}`] = buffer.toString('utf8');
+                //content[`page_${pageNumber}`] = buffer.toString('utf8');
+                orderedFiles.push({
+                  page: Number(fileName.split('.')[0]),
+                  buffer
+                });
+              });
+
+              orderedFiles.sort((a, b) => {
+                return a.page - b.page;
+              });
+
+              let content = '';
+              orderedFiles.forEach((file) => {
+                content += file.buffer.toString('utf8').replace(/(\S+)(\s?)/g, '$1[[' + file.page + ']]$2');
+                //content += file.buffer.toString('utf8');
               });
 
               resolve(content);

@@ -16,10 +16,6 @@ export default {
           filter: ['lowercase', 'asciifolding'],
           char_filter: ['remove_annotation']
         },
-        folding: {
-          tokenizer: 'keyword',
-          filter: ['lowercase', 'asciifolding']
-        },
         tokenizer: {
           tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding']
@@ -45,7 +41,7 @@ export default {
         }
       }, {
         fullText_fields: {
-          path_match: 'fullText.*',
+          match: 'fullText',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
@@ -64,7 +60,6 @@ export default {
             index: 'analyzed',
             omit_norms: true,
             analyzer: 'tokenizer',
-            //fielddata: true,
             fields: {
               raw: {type: 'keyword'}
             }

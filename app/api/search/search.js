@@ -111,6 +111,8 @@ export default {
     .language(language)
     .query();
 
+    console.log(JSON.stringify(query, null, ' '));
+
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       if (response.hits.hits.length === 0) {
