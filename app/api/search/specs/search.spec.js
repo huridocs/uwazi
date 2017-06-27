@@ -20,7 +20,7 @@ describe('search', () => {
           hits: [
             {
               highlight: {
-                fullText: 'snippets'
+                fullText: []
               }
             }
           ]
@@ -31,7 +31,7 @@ describe('search', () => {
           hits: [
             {
               highlight: {
-                fullText: 'snippets2'
+                fullText: []
               }
             }
           ]
@@ -106,8 +106,12 @@ describe('search', () => {
         search.searchSnippets('spanish', ids.batmanFinishes, 'es')
         .then((snippets) => {
           expect(snippets.length).toBe(1);
+          expect(snippets[0].page).toBe(34);
+          expect(snippets[0].text).toMatch('spanish');
+          expect(snippets[0].text).not.toMatch('[[34]]');
           done();
-        });
+        })
+        .catch(catchErrors(done));
       });
 
       it('should perform the search on unpublished documents also', (done) => {
@@ -115,7 +119,8 @@ describe('search', () => {
         .then((snippets) => {
           expect(snippets.length).toBe(1);
           done();
-        });
+        })
+        .catch(catchErrors(done));
       });
 
       describe('when document is not matched', () => {
@@ -124,7 +129,8 @@ describe('search', () => {
           .then((snippets) => {
             expect(snippets.length).toBe(0);
             done();
-          });
+          })
+          .catch(catchErrors(done));
         });
       });
 
@@ -134,7 +140,8 @@ describe('search', () => {
           .then((snippets) => {
             expect(snippets.length).toBe(0);
             done();
-          });
+          })
+          .catch(catchErrors(done));
         });
       });
     });
@@ -149,9 +156,12 @@ describe('search', () => {
         search.search({searchTerm: 'Batman'}, 'en')
       ])
       .then(([spanish, none, english, batmanFinishes, batmanBegins, batman]) => {
+        expect(english.rows[0].snippets[0].page).toBe(12);
+        expect(english.rows[0].snippets[0].text).toBe('<b>english</b> document');
+        expect(english.rows.length).toBe(1);
+
         expect(spanish.rows.length).toBe(1);
         expect(none.rows.length).toBe(0);
-        expect(english.rows.length).toBe(1);
         expect(batmanFinishes.rows.length).toBe(1);
         expect(batmanBegins.rows.length).toBe(1);
         expect(batman.rows.length).toBe(2);

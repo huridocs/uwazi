@@ -20,20 +20,20 @@ describe('SearchText', () => {
       storeKey: 'storeKey',
       searchSnippets: jasmine.createSpy('searchSnippets'),
       snippets: Immutable.fromJS([
-        'first <b>snippet 1</b> found',
-        'second <b>snippet 2</b> found',
-        'third <b>snippet 3</b> found'
+        {text: 'first <b>snippet 1</b> found', page: 1},
+        {text: 'second <b>snippet 3</b> found', page: 2},
+        {text: 'third <b>snippet 3</b> found', page: 3}
       ])
     };
   });
 
   it('should render all snippets with dangerouslySetInnerHTML', () => {
     render();
-    let snippets = component.find('li');
+    let snippets = component.find('li span');
     expect(snippets.length).toBe(3);
-    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0] + ' ...'});
-    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1] + ' ...'});
-    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2] + ' ...'});
+    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0].text + ' ...'});
+    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1].text + ' ...'});
+    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2].text + ' ...'});
   });
 
   describe('submit', () => {

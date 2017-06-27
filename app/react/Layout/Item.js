@@ -103,7 +103,7 @@ export class Item extends Component {
     if (doc.snippets && doc.snippets[0]) {
       return (
         <div className="item-snippet-wrapper">
-          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0] + ' ...'}} />
+          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
         </div>
       );
     }

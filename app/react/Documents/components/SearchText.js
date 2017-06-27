@@ -57,8 +57,8 @@ export class SearchText extends Component {
           {snippets.map((snippet, index) => {
             return (
               <li key={index}>
-                <a href="#">page 1</a>
-                <span dangerouslySetInnerHTML={{__html: snippet + ' ...'}}></span>
+                <a href="#">page {snippet.page}</a>
+                <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
               </li>);
           })}
         </ul>

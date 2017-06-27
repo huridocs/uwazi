@@ -81,7 +81,14 @@ export default {
           let result = hit._source;
           result.snippets = [];
           if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-            result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
+            const regex = /\[\[(\d+)\]\]/g;
+            result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText.map((snippet) => {
+              const matches = regex.exec(snippet);
+              return {
+                text: snippet.replace(regex, ''),
+                page: matches ? Number(matches[1]) : 0
+              };
+            });
           }
           result._id = hit._id;
           return result;
@@ -114,7 +121,15 @@ export default {
         return [];
       }
 
-      return response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight.fullText;
+
+      const regex = /\[\[(\d+)\]\]/g;
+      return response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight.fullText.map((snippet) => {
+        const matches = regex.exec(snippet);
+        return {
+          text: snippet.replace(regex, ''),
+          page: matches ? Number(matches[1]) : 0
+        };
+      });
     });
   },
 

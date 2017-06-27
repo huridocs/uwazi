@@ -66,7 +66,7 @@ describe('Item', () => {
   });
 
   it('should call onSnippetClick when clicking on the snippet', () => {
-    props.doc = Immutable({_id: 'id', snippets: ['snippet']});
+    props.doc = Immutable({_id: 'id', snippets: [{text: 'snippet', page: 1}]});
     render();
     component.find('.item-snippet').simulate('click');
     expect(props.onSnippetClick).toHaveBeenCalled();
@@ -239,7 +239,7 @@ describe('Item', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: ['<span>snippet!</span>']
+        snippets: [{text: '<span>snippet!</span>', page: 1}]
       });
 
       render();
