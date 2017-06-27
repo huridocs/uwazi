@@ -26,27 +26,28 @@ describe('PDF', function () {
       .catch(done.fail);
     });
 
-    //fit('should reject the promise on error', (done) => {
-      //let commandBeingExecuted = new Events();
-      //commandBeingExecuted.stdout = new Events();
-      //commandBeingExecuted.stderr = new Events();
-      //commandBeingExecuted.stdout.pipe = () => {};
-      //commandBeingExecuted.stderr.pipe = () => {};
-      //spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
-      //spyOn(pdf, 'split').and.returnValue(Promise.resolve());
+    it('should reject the promise on error', (done) => {
+      let commandBeingExecuted = new Events();
+      commandBeingExecuted.stdout = new Events();
+      commandBeingExecuted.stderr = new Events();
+      commandBeingExecuted.stdout.pipe = () => {};
+      commandBeingExecuted.stderr.pipe = () => {};
+      spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
+      spyOn(pdf, 'split').and.returnValue(Promise.resolve());
 
-      //pdf.extractText()
-      //.then(() => {
-        //done.fail('promise should be rejected when there is an exit code === 1');
-      //})
-      //.catch((error) => {
-        //expect(error.toString().indexOf('no such file or directory') > -1).toBe(true);
-        //done();
-      //});
+      pdf.extractText()
+      .then(() => {
+        done.fail('promise should be rejected when there is an exit code === 1');
+      })
+      .catch((error) => {
+        expect(error.toString().indexOf('no such file or directory') > -1).toBe(true);
+        done();
+      });
 
-      //commandBeingExecuted.stdout.emit('close', 'error');
-      ////commandBeingExecuted.stdout.emit('close', 'error');
-    //});
+      setTimeout(() => {
+        commandBeingExecuted.stdout.emit('close');
+      }, 100);
+    });
   });
 
 

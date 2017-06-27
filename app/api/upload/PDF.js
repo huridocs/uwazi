@@ -28,10 +28,11 @@ export default class PDF extends EventEmitter {
     extraction.stdout.pipe(log);
 
     return new Promise((resolve, reject) => {
+      extraction.stdout.on('error', (err) => {
+        reject(err);
+      });
+
       extraction.stdout.on('close', () => {
-        //if (!code) {
-          //reject();
-        //}
         resolve();
       });
     });
@@ -57,7 +58,7 @@ export default class PDF extends EventEmitter {
           extraction.stdout.on('close', () => {
             readDirFiles.read(`${tmpPath}txt/`, (error, files) => {
               if (error) {
-                reject(error);
+                return reject(error);
               }
 
               let orderedFiles = [];

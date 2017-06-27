@@ -68,7 +68,7 @@ describe('upload routes', () => {
       .catch(catchErrors(done));
     });
 
-    fdescribe('when conversion fails', () => {
+    describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'conversionFailed') {
