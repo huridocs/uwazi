@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {t} from 'app/I18N';
 import {actions as formActions, Field, LocalForm} from 'react-redux-form';
 import {searchSnippets} from 'app/Library/actions/libraryActions';
+import {scrollToPage} from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 
 export class SearchText extends Component {
@@ -57,7 +58,10 @@ export class SearchText extends Component {
           {snippets.map((snippet, index) => {
             return (
               <li key={index}>
-                <a href="#">page {snippet.page}</a>
+                <a href="#" onClick={(e) => {
+                  e.preventDefault();
+                  this.props.scrollToPage(snippet.page);
+                }}>page {snippet.page}</a>
                 <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
               </li>);
           })}
@@ -72,7 +76,8 @@ SearchText.propTypes = {
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
-  searchSnippets: PropTypes.func
+  searchSnippets: PropTypes.func,
+  scrollToPage: PropTypes.func
 };
 
 function mapStateToProps(state, props) {
@@ -83,7 +88,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchSnippets}, dispatch);
+  return bindActionCreators({searchSnippets, scrollToPage}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

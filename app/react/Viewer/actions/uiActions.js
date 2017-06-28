@@ -53,6 +53,11 @@ export function goToActive(value = true) {
   };
 }
 
+// proof of concept
+export function scrollToPage(pageNumber) {
+  scroller.to(`.document-viewer div#page-${pageNumber}`, '.document-viewer', {duration: 0, dividerOffset: 1});
+}
+
 export function scrollTo(reference, docInfo, element = 'a') {
   //
   let page = Object.keys(docInfo).find((pageNumber) => {
