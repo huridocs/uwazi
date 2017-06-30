@@ -20,6 +20,7 @@ import ConfirmCloseForm from './ConfirmCloseForm';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import {TemplateLabel, Icon} from 'app/Layout';
+import Marker from 'app/Viewer/utils/Marker';
 
 export class Viewer extends Component {
 
@@ -29,6 +30,7 @@ export class Viewer extends Component {
 
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
+    Marker.init('div.main-wrapper');
   }
 
   render() {
