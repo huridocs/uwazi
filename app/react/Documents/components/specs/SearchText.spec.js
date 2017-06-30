@@ -18,7 +18,8 @@ describe('SearchText', () => {
   beforeEach(() => {
     props = {
       storeKey: 'storeKey',
-      searchSnippets: jasmine.createSpy('searchSnippets'),
+      searchSnippets: jasmine.createSpy('searchSnippets').and.returnValue(Promise.resolve([{page: 2}])),
+      highlightSearch: jasmine.createSpy('highlightSearch'),
       snippets: Immutable.fromJS([
         {text: 'first <b>snippet 1</b> found', page: 1},
         {text: 'second <b>snippet 3</b> found', page: 2},
@@ -37,12 +38,16 @@ describe('SearchText', () => {
   });
 
   describe('submit', () => {
-    it('should searchSnippets with value, doc id and storeKey', () => {
+    it('should searchSnippets with value, doc id and storeKey', (done) => {
       props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
       render();
 
-      instance.submit({searchTerm: 'value'});
-      expect(props.searchSnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
+      instance.submit({searchTerm: 'value'})
+      .then(() => {
+        expect(props.highlightSearch).toHaveBeenCalledWith(2, 'value');
+        expect(props.searchSnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
+        done();
+      });
     });
   });
 

@@ -56,7 +56,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 1) {
+    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 1, type = 'fvh') {
       if (term) {
         let should = [];
 
@@ -83,7 +83,7 @@ export default function () {
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      fullText: {number_of_fragments}
+                      fullText: {number_of_fragments, type}
                     }
                   }
                 },
@@ -102,7 +102,7 @@ export default function () {
                       multi_match: {
                         query: term,
                         type: 'phrase_prefix',
-                        slop: 50,
+                        //slop: 50,
                         fields: ['fullText']
                       }
                     }

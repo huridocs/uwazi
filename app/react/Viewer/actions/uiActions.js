@@ -3,6 +3,11 @@ import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
 import {setTargetSelection} from 'app/Viewer/actions/selectionActions';
 import {events} from 'app/utils';
+import {isClient} from 'app/utils';
+let Mark;
+if (isClient) {
+  Mark = require('mark.js');
+}
 
 export function closePanel() {
   return {
@@ -54,8 +59,13 @@ export function goToActive(value = true) {
 }
 
 // proof of concept
-export function scrollToPage(pageNumber) {
+export function highlightSearch(pageNumber, keyword) {
   scroller.to(`.document-viewer div#page-${pageNumber}`, '.document-viewer', {duration: 0, dividerOffset: 1});
+
+  setTimeout(() => {
+    const markInstance = new Mark(`div#page-${pageNumber}`);
+    markInstance.mark(keyword);
+  }, 500);
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {

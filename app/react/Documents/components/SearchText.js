@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import {t} from 'app/I18N';
 import {actions as formActions, Field, LocalForm} from 'react-redux-form';
 import {searchSnippets} from 'app/Library/actions/libraryActions';
-import {scrollToPage} from 'app/Viewer/actions/uiActions';
+import {highlightSearch} from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 
 export class SearchText extends Component {
@@ -23,7 +23,11 @@ export class SearchText extends Component {
   }
 
   submit(value) {
-    this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey);
+    this.currentSearchTerm = value.searchTerm;
+    return this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey)
+    .then((snippets) => {
+      this.props.highlightSearch(snippets[0].page, value.searchTerm);
+    });
   }
 
   render() {
@@ -60,7 +64,7 @@ export class SearchText extends Component {
               <li key={index}>
                 <a href="#" onClick={(e) => {
                   e.preventDefault();
-                  this.props.scrollToPage(snippet.page);
+                  this.props.highlightSearch(snippet.page, this.currentSearchTerm);
                 }}>page {snippet.page}</a>
                 <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
               </li>);
@@ -77,18 +81,19 @@ SearchText.propTypes = {
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
-  scrollToPage: PropTypes.func
+  highlightSearch: PropTypes.func
 };
 
 function mapStateToProps(state, props) {
   return {
     snippets: state[props.storeKey].sidepanel.snippets,
-    searchTerm: props.storeKey !== 'documentViewer' ? state[props.storeKey].search.searchTerm : ''
+    searchTerm: props.storeKey !== 'documentViewer' ? state[props.storeKey].search.searchTerm : '',
+    highlightSearch
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchSnippets, scrollToPage}, dispatch);
+  return bindActionCreators({searchSnippets}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

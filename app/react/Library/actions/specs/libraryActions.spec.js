@@ -264,8 +264,8 @@ describe('libraryActions', () => {
       });
     });
 
-    describe('getDocumentReferences', () => {
-      it('should set the library sidepanel references', (done) => {
+    describe('searchSnippets', () => {
+      it('should search snippets for the searchTerm', (done) => {
         spyOn(SearchApi, 'searchSnippets').and.returnValue(Promise.resolve('response'));
 
         const expectedActions = [
@@ -275,7 +275,8 @@ describe('libraryActions', () => {
         const store = mockStore({locale: 'es'});
 
         store.dispatch(actions.searchSnippets('query', 'sharedId', 'storeKey'))
-        .then(() => {
+        .then((snippets) => {
+          expect(snippets).toBe('response');
           expect(SearchApi.searchSnippets).toHaveBeenCalledWith('query', 'sharedId');
           expect(store.getActions()).toEqual(expectedActions);
         })
