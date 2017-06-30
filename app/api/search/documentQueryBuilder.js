@@ -92,7 +92,7 @@ export default function () {
                     must: {
                       multi_match: {
                         query: term,
-                        type: 'phrase_prefix',
+                        type: 'best_fields',
                         cutoff_frequency: 0.0007,
                         operator: 'and',
                         fields: ['fullText']
