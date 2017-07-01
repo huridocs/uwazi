@@ -5,23 +5,19 @@ import {bindActionCreators} from 'redux';
 import {DropTarget} from 'react-dnd';
 import {Form} from 'react-redux-form';
 import {I18NLink} from 'app/I18N';
-import {actions as formActions, Field} from 'react-redux-form';
+import {actions as formActions} from 'react-redux-form';
 
 import {inserted, addProperty} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import validator from './ValidateTemplate';
-import ShowIf from 'app/App/ShowIf';
+import {FormGroup} from 'app/Forms';
+import {Field} from 'react-redux-form';
 
 export class MetadataTemplate extends Component {
 
   render() {
-    const {connectDropTarget, formState} = this.props;
-    let nameGroupClass = 'template-name form-group';
-    if (formState.name && !formState.name.valid && (formState.$form.submitFailed || !formState.name.pristine)) {
-      nameGroupClass += ' has-error';
-    }
-
+    const {connectDropTarget} = this.props;
     return (
       <div>
         <RemovePropertyConfirm />
@@ -29,28 +25,23 @@ export class MetadataTemplate extends Component {
           model="template.data"
           onSubmit={this.props.saveTemplate}
           className="metadataTemplate"
-          validators={validator(this.props.template.properties, this.props.templates.toJS(), this.props.template._id)}
+          validators={validator(this.props.properties, this.props.templates.toJS(), this.props._id)}
         >
           <div className="metadataTemplate-heading">
-            <div className={nameGroupClass}>
-              <Field model=".name">
-                <input placeholder="Template name" className="form-control"/>
-              </Field>
-              <ShowIf if={formState.name && !formState.name.pristine && formState.name.errors.duplicated}>
-                <div className="validation-error">
-                  <i className="fa fa-exclamation-triangle"></i>&nbsp;Duplicated name
-                </div>
-              </ShowIf>
-            </div>
+          <FormGroup model={'.name'}>
+            <Field model={'.name'}>
+              <input placeholder="Template name" className="form-control"/>
+            </Field>
+          </FormGroup>
           </div>
 
           {connectDropTarget(
             <ul className="metadataTemplate-list list-group">
-              {this.props.template.commonProperties.map((config, index) => {
+              {this.props.commonProperties.map((config, index) => {
                 const localID = config.localID || config._id;
-                return <MetadataProperty {...config} key={localID} localID={localID} index={index - this.props.template.commonProperties.length} />;
+                return <MetadataProperty {...config} key={localID} localID={localID} index={index - this.props.commonProperties.length} />;
               })}
-              {this.props.template.properties.map((config, index) => {
+              {this.props.properties.map((config, index) => {
                 const localID = config.localID || config._id;
                 return <MetadataProperty {...config} key={localID} localID={localID} index={index}/>;
               })}
@@ -79,10 +70,12 @@ MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   formState: PropTypes.object,
   backUrl: PropTypes.string,
+  _id: PropTypes.string,
   saveTemplate: PropTypes.func,
   savingTemplate: PropTypes.bool,
   setErrors: PropTypes.func,
-  template: PropTypes.object,
+  properties: PropTypes.array,
+  commonProperties: PropTypes.array,
   templates: PropTypes.object
 };
 
@@ -114,10 +107,11 @@ export {dropTarget};
 
 const mapStateToProps = ({template, templates}) => {
   return {
-    template: template.data,
+    _id: template.data._id,
+    commonProperties: template.data.commonProperties,
+    properties: template.data.properties,
     templates: templates,
-    savingTemplate: template.uiState.get('savingTemplate'),
-    formState: template.formState
+    savingTemplate: template.uiState.get('savingTemplate')
   };
 };
 
