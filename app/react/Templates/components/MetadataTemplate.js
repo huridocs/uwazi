@@ -87,14 +87,14 @@ const target = {
   drop(props, monitor) {
     let item = monitor.getItem();
 
-    let propertyAlreadyAdded = props.template.properties[item.index];
+    let propertyAlreadyAdded = props.properties[item.index];
 
     if (propertyAlreadyAdded) {
       props.inserted(item.index);
       return;
     }
 
-    props.addProperty({label: item.label, type: item.type}, props.template.properties.length);
+    props.addProperty({label: item.label, type: item.type}, props.properties.length);
     return {name: 'container'};
   }
 };
