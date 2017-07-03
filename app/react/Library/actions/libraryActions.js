@@ -153,7 +153,7 @@ export function saveDocument(doc, formKey) {
       dispatch(notify('Document updated', 'success'));
       dispatch(formActions.reset(formKey));
       dispatch(updateEntity(updatedDoc));
-      dispatch(selectDocument(updatedDoc));
+      dispatch(selectSingleDocument(updatedDoc));
     });
   };
 }
@@ -191,7 +191,7 @@ export function saveEntity(entity, formModel) {
         dispatch(elementCreated(updatedDoc));
       }
 
-      dispatch(selectDocument(updatedDoc));
+      dispatch(selectSingleDocument(updatedDoc));
     });
   };
 }
