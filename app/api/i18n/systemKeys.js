@@ -28,6 +28,7 @@ export default [
 {key: 'Create group', label: 'Create group'},
 {key: 'Date added', label: 'Date added'},
 {key: 'Date format', label: 'Date format'},
+{key: 'Duplicated name', label: 'Duplicated name'},
 {key: 'Separator', label: 'Separator'},
 {key: 'Order', label: 'Order'},
 {key: 'Delete', label: 'Delete'},

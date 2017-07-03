@@ -18,16 +18,10 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let template = {
-          properties: [
-            {label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}
-          ],
-          _id: 1,
-          backUrl: 'url',
-          commonProperties: []
-        };
+        let properties = [{label: 'childTarget', localID: 'childId', inserting: true, type: 'text'}];
+        let commonProperties = [];
         let templates = Immutable.fromJS([]);
-        let targetProps = {template, templates, connectDropTarget: identity, formState: {fields: {}, errors: {}}, backUrl: 'url'};
+        let targetProps = {properties, commonProperties, templates, connectDropTarget: identity, formState: {fields: {}, errors: {}}, backUrl: 'url'};
         let sourceProps = {label: 'source', type: 'type', index: 2, localID: 'source', connectDragSource: identity,
           formState: {fields: {}, errors: {}}};
         return <div>
@@ -71,10 +65,17 @@ describe('MetadataTemplate', () => {
   }
 
   describe('render()', () => {
-    let props = {backUrl: '', template: {properties: []}, connectDropTarget: (x) => x, formState: {fields: {}}, templates: Immutable.fromJS([])};
+    let props = {
+      backUrl: '',
+      _id: '123',
+      commonProperties: [],
+      properties: [],
+      connectDropTarget: (x) => x,
+      formState: {fields: {}},
+      templates: Immutable.fromJS([])
+    };
 
     it('should disable send button when saving the template', () => {
-      props.template.commonProperties = [];
       let component = shallow(<MetadataTemplate {...props} />);
       expect(component.find('button').props().disabled).toBe(false);
 
@@ -84,14 +85,12 @@ describe('MetadataTemplate', () => {
     });
 
     it('should render the template name field', () => {
-      props.template.commonProperties = [];
       let component = shallow(<MetadataTemplate {...props} />);
       expect(component.find(Field).node.props.model).toBe('.name');
     });
 
     describe('when fields is empty', () => {
       it('should render a blank state', () => {
-        props.template.commonProperties = [];
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find('.no-properties').length).toBe(1);
       });
@@ -99,8 +98,7 @@ describe('MetadataTemplate', () => {
 
     describe('when it has commonProperties', () => {
       it('should render all commonProperties as MetadataProperty', () => {
-        props.template.properties = [];
-        props.template.commonProperties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
+        props.commonProperties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
         expect(component.find(MetadataProperty).at(0).props().index).toBe(-2);
@@ -110,8 +108,8 @@ describe('MetadataTemplate', () => {
 
     describe('when it has properties', () => {
       it('should render all properties as MetadataProperty', () => {
-        props.template.properties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
-        props.template.commonProperties = [];
+        props.properties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
+        props.commonProperties = [];
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
       });
