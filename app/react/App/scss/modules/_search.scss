@@ -15,7 +15,9 @@
   position: relative;
   display: block;
   width: 100%;
-  max-width: 568px;
+  @media(min-width: 1024px) {
+    width: 66.25%;
+  }
   
   .input-group {
     width: 100%;
