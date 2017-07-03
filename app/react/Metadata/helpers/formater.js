@@ -9,6 +9,22 @@ export default {
     return {label: property.label, name: property.name, value, showInCard};
   },
 
+  formatDateRange(daterange) {
+    let from = '';
+    let to = '';
+    if (daterange.from) {
+      from = moment.utc(daterange.from, 'X').format('ll');
+    }
+    if (daterange.to) {
+      to = moment.utc(daterange.to, 'X').format('ll');
+    }
+    return `${from} - ${to}`;
+  },
+
+  daterange(property, daterange, showInCard) {
+    return {label: property.label, name: property.name, value: this.formatDateRange(daterange), showInCard};
+  },
+
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
       return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
@@ -18,9 +34,7 @@ export default {
 
   multidaterange(property, dateranges, showInCard) {
     let value = dateranges.map((range) => {
-      let from = moment.utc(range.from, 'X').format('ll');
-      let to = moment.utc(range.to, 'X').format('ll');
-      return {value: `${from} - ${to}`};
+      return {value: this.formatDateRange(range)};
     });
     return {label: property.label, name: property.name, value, showInCard};
   },
@@ -112,6 +126,10 @@ export default {
 
       if (property.type === 'date' && value) {
         return this.date(property, value, showInCard);
+      }
+
+      if (property.type === 'daterange' && value) {
+        return this.daterange(property, value, showInCard);
       }
 
       if (property.type === 'multidate' && value) {

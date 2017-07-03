@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
+import {FormGroup, Select, MultiSelect, MarkDown, DatePicker, Nested, DateRange, MultiDate, MultiDateRange, Numeric} from 'app/ReactReduxForms';
 import {Field} from 'react-redux-form';
 import t from 'app/I18N/t';
 import {connect} from 'react-redux';
@@ -27,6 +27,8 @@ export class MetadataFormFields extends Component {
       return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} prefix={_model} />;
     case 'date':
       return <DatePicker model={_model} format={this.props.dateFormat}/>;
+    case 'daterange':
+      return <DateRange model={_model} format={this.props.dateFormat}/>;
     case 'numeric':
       return <Numeric model={_model}/>;
     case 'markdown':

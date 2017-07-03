@@ -138,7 +138,7 @@ export class FiltersForm extends Component {
               </FormGroup>
             );
           }
-          if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange') {
+          if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'daterange') {
             return (
               <FormGroup key={property.name}>
                 <ul className={propertyClass}>

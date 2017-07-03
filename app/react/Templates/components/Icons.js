@@ -8,5 +8,6 @@ export default {
   markdown: 'fa fa-file-text-o fa-fw',
   nested: 'fa fa-cubes fa-fw',
   multidate: 'fa fa-calendar fa-fw',
-  multidaterange: 'fa fa-calendar fa-fw'
+  multidaterange: 'fa fa-calendar fa-fw',
+  daterange: 'fa fa-calendar fa-fw'
 };
