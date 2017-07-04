@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
+import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import {RowList} from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
@@ -62,6 +63,7 @@ export default class DocumentsList extends Component {
                            storeKey={this.props.storeKey}
               />
           </div>
+          <LibraryCharts storeKey={this.props.storeKey} />
           <RowList>
             {documents.get('rows').map((doc, index) =>
               <Doc doc={doc}

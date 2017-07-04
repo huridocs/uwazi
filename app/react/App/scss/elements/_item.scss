@@ -80,6 +80,16 @@
   }
 }
 
+.item-group-charts .item {
+  @media (min-width: 1024px) {
+    width: 49.375%;
+    margin: 0 0 15px;
+    &:not(:nth-child(2n)) {
+      margin-right: 1.25%;
+    }
+  }
+}
+
 
 $item-width: auto;
 $item-padding: 15px;
