@@ -9,7 +9,7 @@ class ExtendedTooltip extends React.Component {
       return (
         <div style={{backgroundColor: '#fff', border: '1px solid #ccc'}}>
           <div style={{backgroundColor: '#eee', borderBottom: '1px dashed #ccc', padding: '5px'}}>
-            Firmantes
+            {this.props.chartLabel}
           </div>
           <div style={{padding: '5px'}}>
             {this.props.payload[0].payload.name}:&nbsp;&nbsp;<b style={{color: '#600'}}>{this.props.payload[0].value}</b>
@@ -23,7 +23,8 @@ class ExtendedTooltip extends React.Component {
 
 ExtendedTooltip.propTypes = {
   payload: PropTypes.array,
-  active: PropTypes.bool
+  active: PropTypes.bool,
+  chartLabel: PropTypes.string
 };
 
 export class RechartsBar extends Component {
@@ -55,7 +56,7 @@ export class RechartsBar extends Component {
           <XAxis dataKey="xAxisName" label={this.props.chartLabel}/>
           <YAxis/>
           <CartesianGrid strokeDasharray="2 4"/>
-          <Tooltip content={<ExtendedTooltip parentData={this.state.fullData} />}/>
+          <Tooltip content={<ExtendedTooltip parentData={this.state.fullData} chartLabel={this.props.chartLabel} />}/>
           <Bar dataKey="value" fill="#D24040" />
         </BarChart>
       </ResponsiveContainer>
