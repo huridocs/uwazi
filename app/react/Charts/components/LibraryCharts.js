@@ -10,8 +10,7 @@ export class LibraryCharts extends Component {
 
   render() {
     const fields = parseWithAggregations(this.props.fields.toJS(), this.props.aggregations.toJS())
-    .filter(field => field.type !== 'select' && field.type !== 'multiselect' || field.options.length)
-    .filter(field => field.type !== 'date');
+    .filter(field => (field.type === 'select' || field.type === 'multiselect') && field.options.length);
     // console.log(fields);
     return (
       <div className="item-group item-group-charts">

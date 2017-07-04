@@ -17,9 +17,12 @@ export class RechartsPie extends Component {
   }
 
   mountData(props) {
-    const fullData = Immutable.fromJS(props.data.map(item => {
-      return {name: item.label, value: item.results, enabled: true};
-    }));
+    let fullData = Immutable.fromJS([]);
+    if (props.data) {
+      fullData = Immutable.fromJS(props.data.map(item => {
+        return {name: item.label, value: item.results, enabled: true};
+      }));
+    }
     this.setState({activeIndex: 0, fullData});
   }
 
