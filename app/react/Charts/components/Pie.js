@@ -33,15 +33,15 @@ export class RechartsPie extends Component {
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;
     const sy = cy + (outerRadius + 10) * sin;
-    const mx = cx + (outerRadius + 30) * cos;
-    const my = cy + (outerRadius + 30) * sin;
-    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+    const mx = cx + (outerRadius + 15) * cos;
+    const my = cy + (outerRadius + 15) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 15;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
 
     return (
       <g>
-        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>{payload.name}</text>
+        {/* <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>{payload.name}</text> */}
         <Sector
           cx={cx}
           cy={cy}
@@ -65,7 +65,7 @@ export class RechartsPie extends Component {
         <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none"/>
         <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${payload.name}: ${value}`}</text>
         <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-          {`(Proporción: ${(percent * 100).toFixed(2)}%)`}
+          {`(${(percent * 100).toFixed(2)}%)`}
         </text>
       </g>
     );
@@ -141,6 +141,7 @@ export class RechartsPie extends Component {
               <Cell key={index} fill={filteredColors[index]} opacity={0.8} />
             )}
           </Pie>
+          {/*
           <Legend
                   onMouseEnter={this.onFullIndexEnter.bind(this)}
                   onClick={this.onIndexClick.bind(this)}
@@ -154,6 +155,7 @@ export class RechartsPie extends Component {
                     };
                   })}
           />
+          */}
         </PieChart>
       </ResponsiveContainer>
     );
