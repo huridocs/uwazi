@@ -7,6 +7,8 @@ import {actions as formActions, Field, LocalForm} from 'react-redux-form';
 import {searchSnippets} from 'app/Library/actions/libraryActions';
 import {highlightSearch} from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
+import {Link} from 'react-router';
+import {browserHistory} from 'react-router';
 
 export class SearchText extends Component {
   resetSearch() {}
@@ -23,15 +25,17 @@ export class SearchText extends Component {
   }
 
   submit(value) {
+    //
     this.currentSearchTerm = value.searchTerm;
-    return this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey)
-    .then((snippets) => {
-      this.props.highlightSearch(snippets[0].page, value.searchTerm);
-    });
+    const path = browserHistory.getCurrentLocation().pathname;
+    browserHistory.push(path + '?searchTerm=' + value.searchTerm);
+
+    return this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey);
   }
 
   render() {
     let snippets = this.props.snippets.toJS();
+    const pathname = browserHistory.getCurrentLocation().pathname;
     return (
       <div>
           <LocalForm
@@ -62,10 +66,7 @@ export class SearchText extends Component {
           {snippets.map((snippet, index) => {
             return (
               <li key={index}>
-                <a href="#" onClick={(e) => {
-                  e.preventDefault();
-                  this.props.highlightSearch(snippet.page, this.currentSearchTerm);
-                }}>page {snippet.page}</a>
+                <Link to={{pathname, query: {page: snippet.page, searchTerm: this.currentSearchTerm}}}>page {snippet.page}</Link>
                 <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
               </li>);
           })}

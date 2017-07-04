@@ -93,7 +93,7 @@ export default function () {
                       multi_match: {
                         query: term,
                         type: 'best_fields',
-                        cutoff_frequency: 0.0007,
+                        fuzziness: 1,
                         operator: 'and',
                         fields: ['fullText']
                       }
@@ -102,7 +102,6 @@ export default function () {
                       multi_match: {
                         query: term,
                         type: 'phrase_prefix',
-                        //slop: 50,
                         fields: ['fullText']
                       }
                     }

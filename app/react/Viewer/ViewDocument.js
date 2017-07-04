@@ -25,6 +25,14 @@ export default class ViewDocument extends RouteHandler {
     this.emptyState();
   }
 
+  //
+  componentWillReceiveProps(props) {
+    if (props.params.documentId !== this.props.params.documentId) {
+      return super.componentWillReceiveProps(props);
+    }
+  }
+  //
+
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
     this.context.store.dispatch(actions.unset('viewer/templates'));
@@ -40,6 +48,6 @@ export default class ViewDocument extends RouteHandler {
   }
 
   render() {
-    return <Viewer />;
+    return <Viewer page={Number(this.props.location.query.page)} searchTerm={this.props.location.query.searchTerm}/>;
   }
 }

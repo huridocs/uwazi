@@ -62,7 +62,7 @@ export class Viewer extends Component {
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={!this.props.targetDoc}>
-              <SourceDocument />
+              <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
             </ShowIf>
             <TargetDocument />
             <Footer/>
@@ -88,6 +88,7 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   doc: PropTypes.object,
+  page: PropTypes.number,
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,

@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
+import {scrollToPage} from '../actions/uiActions';
 import Text from 'app/Viewer/utils/Text';
 import Loader from 'app/components/Elements/Loader';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
+import Marker from 'app/Viewer/utils/Marker.js';
 import {APIURL} from '../../config.js';
 
 export class Document extends Component {
@@ -55,6 +57,10 @@ export class Document extends Component {
     if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
       this.props.unsetSelection();
     }
+
+    if (nextProps.page) {
+      scrollToPage(nextProps.page);
+    }
   }
 
   componentWillMount() {
@@ -67,6 +73,10 @@ export class Document extends Component {
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
+    if (this.props.searchTerm) {
+      Marker.unmark();
+      Marker.mark(this.props.searchTerm);
+    }
   }
 
   pdfLoaded(range) {

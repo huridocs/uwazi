@@ -65,6 +65,11 @@ export function highlightSearch(pageNumber, searchTerm) {
 }
 //
 
+export function scrollToPage(page) {
+  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 100, dividerOffset: 1});
+}
+
+
 export function scrollTo(reference, docInfo, element = 'a') {
   //
   let page = Object.keys(docInfo).find((pageNumber) => {

@@ -105,7 +105,7 @@ export default {
 
   searchSnippets(searchTerm, sharedId, language) {
     let query = queryBuilder()
-    .fullTextSearch(searchTerm, [], true, 9999, 'plain')
+    .fullTextSearch(searchTerm, [], true, 9999)
     .includeUnpublished()
     .filterById(sharedId)
     .language(language)
