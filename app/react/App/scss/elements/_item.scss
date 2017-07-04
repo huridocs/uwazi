@@ -81,6 +81,7 @@
 }
 
 .item-group-charts .item {
+  overflow: hidden;
   @media (min-width: 1024px) {
     width: 49.375%;
     margin: 0 0 15px;
