@@ -164,11 +164,4 @@ RechartsPie.propTypes = {
   data: PropTypes.array
 };
 
-// export function mapStateToProps(state, props) {
-//   return {
-//     aggregations: state[props.storeKey].aggregations,
-//     fields: state[props.storeKey].filters.get('properties')
-//   };
-// }
-
 export default connect()(RechartsPie);
