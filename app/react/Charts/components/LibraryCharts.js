@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {parseWithAggregations} from 'app/Library/helpers/libraryFilters';
+
+import Pie from './Pie';
 // import {bindActionCreators} from 'redux';
 
 export class LibraryCharts extends Component {
@@ -10,13 +12,14 @@ export class LibraryCharts extends Component {
     const fields = parseWithAggregations(this.props.fields.toJS(), this.props.aggregations.toJS())
     .filter(field => field.type !== 'select' && field.type !== 'multiselect' || field.options.length)
     .filter(field => field.type !== 'date');
-    console.log(fields);
+    // console.log(fields);
     return (
       <div className="item-group item-group-charts">
         {fields.map((field, index) => {
           return (
             <div key={index} className="item">
               {field.label}
+              <Pie data={field.options} />
             </div>
           );
         })}
