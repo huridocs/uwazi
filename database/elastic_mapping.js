@@ -10,8 +10,20 @@ export default {
         }
       },
       analyzer: {
-        fullText_analyzer: {
+        plain: {
           type: 'custom',
+          tokenizer: 'standard',
+          filter: ['lowercase', 'asciifolding'],
+          char_filter: ['remove_annotation']
+        },
+        spanish: {
+          type: 'spanish',
+          tokenizer: 'standard',
+          filter: ['lowercase', 'asciifolding'],
+          char_filter: ['remove_annotation']
+        },
+        english: {
+          type: 'english',
           tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding'],
           char_filter: ['remove_annotation']
@@ -40,14 +52,38 @@ export default {
           }
         }
       }, {
-        fullText_fields: {
+        fullText: {
           match: 'fullText',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
             index: 'analyzed',
             omit_norms: true,
-            analyzer: 'fullText_analyzer',
+            analyzer: 'plain',
+            term_vector: 'with_positions_offsets'
+          }
+        }
+      }, {
+        fullText_es: {
+          match: 'fullText_es',
+          match_mapping_type: 'string',
+          mapping: {
+            type: 'text',
+            index: 'analyzed',
+            omit_norms: true,
+            analyzer: 'spanish',
+            term_vector: 'with_positions_offsets'
+          }
+        }
+      }, {
+        fullText_en: {
+          match: 'fullText_en',
+          match_mapping_type: 'string',
+          mapping: {
+            type: 'text',
+            index: 'analyzed',
+            omit_norms: true,
+            analyzer: 'english',
             term_vector: 'with_positions_offsets'
           }
         }

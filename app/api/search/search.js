@@ -5,6 +5,13 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
+import franc from 'franc';
+
+const languages = {
+  spa: 'es',
+  eng: 'en',
+  por: 'pt'
+};
 
 function processFiltes(filters, properties) {
   let result = {};
@@ -111,6 +118,8 @@ export default {
     .language(language)
     .query();
 
+    console.log(JSON.stringify(query, null, ' '))
+
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       if (response.hits.hits.length === 0) {
@@ -122,8 +131,10 @@ export default {
       }
 
 
+      let highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
+
       const regex = /\[\[(\d+)\]\]/g;
-      return response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight.fullText.map((snippet) => {
+      return highlights[Object.keys(highlights)[0]].map((snippet) => {
         const matches = regex.exec(snippet);
         return {
           text: snippet.replace(regex, ''),
@@ -167,7 +178,10 @@ export default {
     const body = entity;
     let fullTextIndex = Promise.resolve();
     if (entity.fullText) {
-      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: {fullText: entity.fullText}});
+      const fullText = {};
+      const language = languages[franc(entity.fullText)];
+      fullText['fullText_' + language] = entity.fullText;
+      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
       delete entity.fullText;
     }
     return Promise.all([
@@ -197,7 +211,11 @@ export default {
         action = {};
         action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id};
         body.push(action);
-        body.push({fullText: doc.fullText});
+
+        const fullText = {};
+        const language = languages[franc(doc.fullText)];
+        fullText['fullText_' + language] = doc.fullText;
+        body.push(fullText);
         delete doc.fullText;
       }
     });

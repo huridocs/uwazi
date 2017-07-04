@@ -83,7 +83,7 @@ export default function () {
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      fullText: {number_of_fragments, type}
+                      'fullText_*': {number_of_fragments, type}
                     }
                   }
                 },
@@ -94,15 +94,14 @@ export default function () {
                         query: term,
                         type: 'best_fields',
                         fuzziness: 1,
-                        operator: 'and',
-                        fields: ['fullText']
+                        fields: ['fullText*']
                       }
                     },
                     should: {
                       multi_match: {
                         query: term,
-                        type: 'phrase_prefix',
-                        fields: ['fullText']
+                        type: 'phrase',
+                        fields: ['fullText*']
                       }
                     }
                   }
