@@ -27,13 +27,10 @@
       > ul {
         padding: 0;
         margin: 0;
+        list-style: none;
       }
       > ul li {
-        display: inline-block;
-        margin: 5px 10px 0 0;
-        &:not(:last-child):after {
-          content: ',';
-        }
+        margin: 5px 0;
       }
     }
     a {
