@@ -107,7 +107,6 @@ export class RechartsPie extends Component {
   }
 
   render() {
-    console.log('reRender');
     const fullColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#D24040', '#A250B3'];
     const filteredColors = [];
 

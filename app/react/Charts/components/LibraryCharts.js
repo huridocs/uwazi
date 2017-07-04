@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {parseWithAggregations} from 'app/Library/helpers/libraryFilters';
 
 import Pie from './Pie';
-// import {bindActionCreators} from 'redux';
+import Bar from './Bar';
 
 export class LibraryCharts extends Component {
 
@@ -17,8 +17,14 @@ export class LibraryCharts extends Component {
         {fields.map((field, index) => {
           return (
             <div key={index} className="item">
-              {field.label}
-              <Pie data={field.options} />
+              <div>
+                {field.label}
+                <Pie data={field.options} />
+              </div>
+              <div>
+                {field.label}
+                <Bar data={field.options} chartLabel={field.label} />
+              </div>
             </div>
           );
         })}
