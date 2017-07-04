@@ -18,11 +18,8 @@ export class LibraryCharts extends Component {
           return (
             <div key={index} className="item">
               <div>
-                {field.label}
+                <p>{field.label}</p>
                 <Pie data={field.options} />
-              </div>
-              <div>
-                {field.label}
                 <Bar data={field.options} chartLabel={field.label} />
               </div>
             </div>
