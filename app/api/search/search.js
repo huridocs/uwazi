@@ -5,7 +5,6 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
-import franc from 'franc';
 import languages from './languages';
 
 function processFiltes(filters, properties) {
@@ -124,7 +123,6 @@ export default {
         return [];
       }
 
-
       let highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
 
       const regex = /\[\[(\d+)\]\]/g;
@@ -173,7 +171,7 @@ export default {
     let fullTextIndex = Promise.resolve();
     if (entity.fullText) {
       const fullText = {};
-      const language = languages[franc(entity.fullText)];
+      const language = languages.detect(entity.fullText);
       fullText['fullText_' + language] = entity.fullText;
       fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
       delete entity.fullText;
@@ -207,7 +205,7 @@ export default {
         body.push(action);
 
         const fullText = {};
-        const language = languages[franc(doc.fullText)];
+        const language = languages.detect(doc.fullText);
         fullText['fullText_' + language] = doc.fullText;
         body.push(fullText);
         delete doc.fullText;

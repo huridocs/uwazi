@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
-import languagesMapping from '../app/api/search/languages';
-const unique = (v, i, a) => a.indexOf(v) === i;
-let languages = Object.keys(languagesMapping).map((k) => languagesMapping[k]).filter(unique);
+import languages from '../app/api/search/languages';
 
 let config = {
   settings: {
@@ -150,7 +148,7 @@ let config = {
 };
 
 
-languages.forEach((language) => {
+languages.get().forEach((language) => {
   config.settings.analysis.analyzer[language] = {
     type: language,
     tokenizer: 'standard',

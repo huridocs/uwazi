@@ -10,6 +10,7 @@ import fixtures, {templateId, userId} from './fixtures';
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
+import languages from '../languages';
 
 describe('search', () => {
   let result;
@@ -471,6 +472,7 @@ describe('search', () => {
     describe('when document has fullText', () => {
       it('should index the fullText as child', (done) => {
         spyOn(elastic, 'index').and.returnValue(Promise.resolve());
+        spyOn(languages, 'detect').and.returnValue('english');
 
         const entity = {
           _id: 'asd1',
@@ -488,7 +490,7 @@ describe('search', () => {
           }});
           expect(elastic.index)
           .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {
-            fullText: 'text'
+            fullText_english: 'text'
           }});
           done();
         })
@@ -520,6 +522,7 @@ describe('search', () => {
     describe('when docs have fullText', () => {
       it('should be indexed separatedly as a child of the doc', (done) => {
         spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+        spyOn(languages, 'detect').and.returnValue('english');
         const toIndexDocs = [
           {_id: 'id1', title: 'test1', fullText: 'text1'},
           {_id: 'id2', title: 'test2', fullText: 'text2'}
@@ -531,11 +534,11 @@ describe('search', () => {
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
             {title: 'test1'},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
-            {fullText: 'text1'},
+            {fullText_english: 'text1'},
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
             {title: 'test2'},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
-            {fullText: 'text2'}
+            {fullText_english: 'text2'}
           ]});
           done();
         });

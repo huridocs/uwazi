@@ -1,4 +1,6 @@
-export default {
+import franc from 'franc';
+
+let languages = {
   ara: 'arabic',
   arm: 'armenian',
   baq: 'basque',
@@ -27,9 +29,20 @@ export default {
   por: 'portuguese',
   ron: 'romanian',
   rus: 'russian',
-  ckb: 'sorani', //central kurdish
+  ckb: 'sorani',
   spa: 'spanish',
   swe: 'swedish',
   tur: 'turkish',
   tha: 'thai'
+};
+
+export default {
+  get: () => {
+    const unique = (v, i, a) => a.indexOf(v) === i;
+    return Object.keys(languages).map((k) => languages[k]).filter(unique);
+  },
+
+  detect: (text) => {
+    return languages[franc(text)] || 'other';
+  }
 };
