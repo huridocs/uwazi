@@ -82,8 +82,11 @@ export default {
           let result = hit._source;
           result.snippets = [];
           if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+
             const regex = /\[\[(\d+)\]\]/g;
-            let highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
+
+            let highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+
             result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
               const matches = regex.exec(snippet);
               return {

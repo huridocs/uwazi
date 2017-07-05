@@ -13,9 +13,9 @@ const templateMetadata2 = db.id();
 
 export default {
   entities: [
-    {_id: db.id(), sharedId: batmanFinishes, template: template1, language: 'en', title: 'Batman finishes en', fullText: 'english[[12]] document[[2]]', published: true, user: userId},
+    {_id: db.id(), sharedId: batmanFinishes, template: template1, language: 'en', title: 'Batman finishes en', fullText: 'english[[12]] document[[2]] english[[123]]', published: true, user: userId},
     {_id: db.id(), sharedId: batmanFinishes, template: template1, language: 'es', title: 'Batman finishes es', fullText: 'spanish[[34]] document[[4]]', published: true, user: userId},
-    {_id: db.id(), sharedId: batmanBegins, template: template2, language: 'en', title: 'Batman begins en', published: true, user: userId},
+    {_id: db.id(), sharedId: batmanBegins, template: template2, language: 'en', title: 'Batman begins en', fullText: 'english[[2]] another[[5]]', published: true, user: userId},
     {_id: db.id(), sharedId: batmanBegins, template: template2, language: 'es', title: 'Batman begins es', published: true, user: userId},
     {_id: db.id(), sharedId: 'unpublished', template: template, language: 'es', title: 'unpublished', published: false, user: userId},
     {_id: db.id(), sharedId: 'shared3', template: template1, language: 'en', title: 'template1 title en', published: true, user: userId},
