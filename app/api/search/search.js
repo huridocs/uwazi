@@ -6,12 +6,7 @@ import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
 import franc from 'franc';
-
-const languages = {
-  spa: 'es',
-  eng: 'en',
-  por: 'pt'
-};
+import languages from './languages';
 
 function processFiltes(filters, properties) {
   let result = {};
@@ -89,7 +84,8 @@ export default {
           result.snippets = [];
           if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
             const regex = /\[\[(\d+)\]\]/g;
-            result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText.map((snippet) => {
+            let highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
+            result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
               const matches = regex.exec(snippet);
               return {
                 text: snippet.replace(regex, ''),
@@ -117,8 +113,6 @@ export default {
     .filterById(sharedId)
     .language(language)
     .query();
-
-    console.log(JSON.stringify(query, null, ' '))
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {

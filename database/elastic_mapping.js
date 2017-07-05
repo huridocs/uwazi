@@ -1,5 +1,9 @@
 /* eslint-disable camelcase */
-export default {
+import languagesMapping from '../app/api/search/languages';
+const unique = (v, i, a) => a.indexOf(v) === i;
+let languages = Object.keys(languagesMapping).map((k) => languagesMapping[k]).filter(unique);
+
+let config = {
   settings: {
     analysis: {
       char_filter: {
@@ -10,20 +14,8 @@ export default {
         }
       },
       analyzer: {
-        plain: {
+        other: {
           type: 'custom',
-          tokenizer: 'standard',
-          filter: ['lowercase', 'asciifolding'],
-          char_filter: ['remove_annotation']
-        },
-        spanish: {
-          type: 'spanish',
-          tokenizer: 'standard',
-          filter: ['lowercase', 'asciifolding'],
-          char_filter: ['remove_annotation']
-        },
-        english: {
-          type: 'english',
           tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding'],
           char_filter: ['remove_annotation']
@@ -52,38 +44,14 @@ export default {
           }
         }
       }, {
-        fullText: {
+        fullText_other: {
           match: 'fullText',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
             index: 'analyzed',
             omit_norms: true,
-            analyzer: 'plain',
-            term_vector: 'with_positions_offsets'
-          }
-        }
-      }, {
-        fullText_es: {
-          match: 'fullText_es',
-          match_mapping_type: 'string',
-          mapping: {
-            type: 'text',
-            index: 'analyzed',
-            omit_norms: true,
-            analyzer: 'spanish',
-            term_vector: 'with_positions_offsets'
-          }
-        }
-      }, {
-        fullText_en: {
-          match: 'fullText_en',
-          match_mapping_type: 'string',
-          mapping: {
-            type: 'text',
-            index: 'analyzed',
-            omit_norms: true,
-            analyzer: 'english',
+            analyzer: 'other',
             term_vector: 'with_positions_offsets'
           }
         }
@@ -180,3 +148,30 @@ export default {
     }
   }
 };
+
+
+languages.forEach((language) => {
+  config.settings.analysis.analyzer[language] = {
+    type: language,
+    tokenizer: 'standard',
+    filter: ['lowercase', 'asciifolding'],
+    char_filter: ['remove_annotation']
+  };
+
+  let mapping = {};
+  mapping[`fullText_${language}`] = {
+    match: `fullText_${language}`,
+    match_mapping_type: 'string',
+    mapping: {
+      type: 'text',
+      index: 'analyzed',
+      omit_norms: true,
+      analyzer: language,
+      term_vector: 'with_positions_offsets'
+    }
+  };
+
+  config.mappings._default_.dynamic_templates.unshift(mapping);
+});
+
+export default config;
