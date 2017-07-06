@@ -9,6 +9,7 @@ import {highlightSearch} from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 import {Link} from 'react-router';
 import {browserHistory} from 'react-router';
+import {isClient} from '../../utils';
 
 export class SearchText extends Component {
   resetSearch() {}
@@ -35,7 +36,10 @@ export class SearchText extends Component {
 
   render() {
     let snippets = this.props.snippets.toJS();
-    const pathname = browserHistory.getCurrentLocation().pathname;
+    let pathname;
+    if (isClient) {
+      pathname = browserHistory.getCurrentLocation().pathname;
+    }
     return (
       <div>
           <LocalForm
