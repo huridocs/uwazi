@@ -256,9 +256,13 @@ $item-padding: 15px;
     dl:hover dt {
       display: block;
     }
+    dl:hover dd {
+      border-bottom: 1px solid $c-grey;
+    }
   }
 
   dd {
+    display: inline;
     width: 100%;
     &.item-metadata-empty {
       color: $c-grey;
