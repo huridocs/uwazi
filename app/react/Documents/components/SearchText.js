@@ -10,6 +10,8 @@ import ShowIf from 'app/App/ShowIf';
 import {Link} from 'react-router';
 import {browserHistory} from 'react-router';
 import {isClient} from '../../utils';
+import {scrollToPage} from 'app/Viewer/actions/uiActions';
+import {toUrlParams} from '../../../shared/JSONRequest';
 
 export class SearchText extends Component {
   resetSearch() {}
@@ -29,7 +31,10 @@ export class SearchText extends Component {
     //
     this.currentSearchTerm = value.searchTerm;
     const path = browserHistory.getCurrentLocation().pathname;
-    browserHistory.push(path + '?searchTerm=' + value.searchTerm);
+    const query = browserHistory.getCurrentLocation().query;
+    query.searchTerm = value.searchTerm;
+
+    browserHistory.push(path + toUrlParams(query));
 
     return this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey);
   }
@@ -70,7 +75,9 @@ export class SearchText extends Component {
           {snippets.map((snippet, index) => {
             return (
               <li key={index}>
-                <Link to={{pathname, query: {page: snippet.page, searchTerm: this.currentSearchTerm}}}>page {snippet.page}</Link>
+                <Link onClick={() => this.props.scrollToPage(snippet.page)} to={{pathname, query: {page: snippet.page, searchTerm: this.currentSearchTerm || ''}}}>
+                  page {snippet.page}
+                </Link>
                 <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
               </li>);
           })}
@@ -87,6 +94,10 @@ SearchText.propTypes = {
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
   highlightSearch: PropTypes.func
+};
+
+SearchText.defaultProps = {
+  scrollToPage
 };
 
 function mapStateToProps(state, props) {

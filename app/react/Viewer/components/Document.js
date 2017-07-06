@@ -57,10 +57,6 @@ export class Document extends Component {
     if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
       this.props.unsetSelection();
     }
-
-    if (nextProps.page) {
-      scrollToPage(nextProps.page);
-    }
   }
 
   componentWillMount() {
@@ -119,6 +115,7 @@ export class Document extends Component {
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
                 pdfInfo={doc.pdfInfo}
+                page={this.props.page}
                 onLoad={this.pdfLoaded.bind(this)}
                 file={`${APIURL}documents/download?_id=${doc._id}`}
                 filename={doc.file ? doc.file.filename : null}/>
