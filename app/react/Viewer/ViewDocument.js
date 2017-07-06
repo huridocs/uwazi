@@ -25,6 +25,12 @@ export default class ViewDocument extends RouteHandler {
     this.emptyState();
   }
 
+  componentWillMount() {
+    if (this.props.location.query.searchTerm) {
+      this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
+    }
+  }
+
   //
   componentWillReceiveProps(props) {
     if (props.params.documentId !== this.props.params.documentId) {

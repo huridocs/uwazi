@@ -70,7 +70,7 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel storeKey={'documentViewer'}/>
+        <ViewMetadataPanel storeKey={'documentViewer'} searchTerm={this.props.searchTerm}/>
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />

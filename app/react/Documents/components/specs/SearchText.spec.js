@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {SearchText} from '../SearchText.js';
 import Immutable from 'immutable';
-import {Link} from 'react-router';
+import {I18NLink} from 'app/I18N';
 import {actions as formActions} from 'react-redux-form';
 import {browserHistory} from 'react-router';
 
@@ -31,20 +31,83 @@ describe('SearchText', () => {
   });
 
   it('should render all snippets with dangerouslySetInnerHTML', () => {
+    props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
     render();
     let snippets = component.find('li span');
     expect(snippets.length).toBe(3);
     expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0].text + ' ...'});
-    expect(component.find(Link).at(0).props().to.query).toEqual({page: 1, searchTerm: ''});
+    expect(component.find(I18NLink).at(0).props().to).toMatch(/page=1&searchTerm=/);
     expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1].text + ' ...'});
     expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2].text + ' ...'});
   });
 
   it('should scrollToPage when click on a snippet link', () => {
+    props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
     props.scrollToPage = jasmine.createSpy('scrollToPage');
     render();
-    component.find(Link).at(1).simulate('click');
+    component.find(I18NLink).at(1).simulate('click');
     expect(props.scrollToPage).toHaveBeenCalledWith(2);
+  });
+
+  describe('searchSnippets', () => {
+    it('should searchSnippets and dispatch form change', () => {
+      props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
+      spyOn(formActions, 'change').and.returnValue('changeAction');
+      render();
+      let dispatch = jasmine.createSpy('dispatch');
+      instance.attachDispatch(dispatch);
+
+      instance.searchSnippets('term', 'docId');
+      expect(props.searchSnippets).toHaveBeenCalledWith('term', 'docId', 'storeKey');
+      expect(formActions.change).toHaveBeenCalledWith('searchText.searchTerm', 'term');
+      expect(dispatch).toHaveBeenCalledWith('changeAction');
+    });
+
+    it('should do nothing when searchTerm or id are undefined', () => {
+      props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
+      spyOn(formActions, 'change').and.returnValue('changeAction');
+      render();
+      let dispatch = jasmine.createSpy('dispatch');
+      instance.attachDispatch(dispatch);
+
+      instance.searchSnippets('term', null);
+      expect(props.searchSnippets).not.toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('componentDidMount', () => {
+    it('should searchSnippets when storeKey is documentViewer', () => {
+      props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
+      props.searchTerm = 'term';
+      render();
+      spyOn(instance, 'searchSnippets');
+      instance.componentDidMount();
+      expect(instance.searchSnippets).not.toHaveBeenCalled();
+
+      props.storeKey = 'documentViewer';
+      render();
+      spyOn(instance, 'searchSnippets');
+      instance.componentDidMount();
+      expect(instance.searchSnippets).toHaveBeenCalledWith('term', 'sharedId');
+    });
+  });
+
+  describe('componentWillReceiveProps', () => {
+    it('should searchSnippets when searchTerm or doc changes', () => {
+      props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
+      props.searchTerm = 'term';
+      render();
+      spyOn(instance, 'searchSnippets');
+      instance.componentWillReceiveProps({searchTerm: 'term', doc: props.doc});
+      expect(instance.searchSnippets).not.toHaveBeenCalled();
+
+      instance.componentWillReceiveProps({searchTerm: 'another term', doc: props.doc});
+      expect(instance.searchSnippets).toHaveBeenCalledWith('another term', 'sharedId');
+
+      instance.componentWillReceiveProps({searchTerm: 'term', doc: props.doc.set('sharedId', 'another id')});
+      expect(instance.searchSnippets).toHaveBeenCalledWith('term', 'another id');
+    });
   });
 
   describe('submit', () => {

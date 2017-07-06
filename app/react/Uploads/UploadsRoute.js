@@ -69,6 +69,7 @@ export default class Uploads extends RouteHandler {
   }
 
   render() {
+    let query = rison.decode(this.props.location.query.q || '()');
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Uploads')} />
@@ -78,7 +79,7 @@ export default class Uploads extends RouteHandler {
           <DocumentsList storeKey="uploads"/>
         </main>
         <LibraryFilters uploadsSection={true} storeKey="uploads"/>
-        <ViewMetadataPanel storeKey="uploads"/>
+        <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm}/>
         <SelectMultiplePanelContainer storeKey="uploads"/>
       </div>
     );
