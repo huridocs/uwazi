@@ -176,3 +176,49 @@ mark, .mark {
     }
   }
 }
+
+.create-reference {
+  .item {
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    min-height: auto;
+    padding: 5px 0;
+    margin: 0 15px !important;
+    border-color: $c-grey-light !important;
+    transition: padding 225ms;
+    &:after {
+      content: '\f00c';
+      font-family: FontAwesome;
+      position: absolute;
+      top: 50%;
+      left: -10px;
+      font-size: $f-size-lg;
+      color: $c-success;
+      opacity: 0;
+      transform: translateY(-50%);
+      transition: 225ms all;
+    }
+
+    &.is-selected {
+      box-shadow: none;
+      padding-left: 20px;
+      &:after {
+        opacity: 1;
+        left: 0;
+      }
+    }
+  }
+  .item-info {
+    padding: 0;
+  }
+  .item-actions {
+    position: relative;
+    height: auto;
+    padding: 0;
+    margin-left: 15px;
+  }
+  .item-type {
+    width: auto;
+    max-width: 75px;
+  }
+}
