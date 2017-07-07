@@ -149,7 +149,7 @@ mark, .mark {
   
   .fa {
     width: 20px;
-    color: $c-grey;
+    color: $c-grey-light;
   }
 }
 
@@ -187,29 +187,29 @@ mark, .mark {
     -webkit-flex-direction: row;
     flex-direction: row;
     min-height: auto;
-    padding: 5px 0;
+    padding: 5px 0 5px 25px;
     margin: 0 15px !important;
     border-color: $c-grey-light !important;
-    transition: padding 225ms;
-    &:after {
-      content: '\f00c';
+    
+    &::after {
+      content: '\F096';
       font-family: FontAwesome;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
       position: absolute;
       top: 50%;
-      left: -10px;
+      left: 0;
       font-size: $f-size-lg;
-      color: $c-success;
-      opacity: 0;
+      color: $c-grey-light;
       transform: translateY(-50%);
-      transition: 225ms all;
     }
 
     &.is-selected {
       box-shadow: none;
-      padding-left: 25px;
+      font-weight: bold;
       &:after {
-        opacity: 1;
-        left: 0;
+        content: '\f00c';
+        color: $c-success;
       }
     }
   }
