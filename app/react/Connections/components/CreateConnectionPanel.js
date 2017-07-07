@@ -28,10 +28,6 @@ export class CreateConnectionPanel extends Component {
           <h1>Create {typeLabel}</h1>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
 
-          <div className="relationship-steps">
-            <h2>Connection type<small>1</small></h2>
-          </div>
-
           <Select
             value={connection.relationType}
             placeholder="Connection type..."
@@ -40,33 +36,30 @@ export class CreateConnectionPanel extends Component {
             options={this.props.relationTypes.toJS()}
             onChange={e => this.props.setRelationType(e.target.value)}/>
 
-        <div className="relationship-steps">
-          <h2>Select document or entity<small>2</small></h2>
+          <div className="search-form">
+            <SearchForm connectionType={connection.type}/>
+          </div>
         </div>
-        <div className="form-group">
-          <SearchForm connectionType={connection.type}/>
+
+        <div className="sidepanel-footer">
+          <ShowIf if={connection.type !== 'targetRanged'}>
+            <ActionButton action="save" onCreate={(reference) => {
+              this.props.onCreate(reference, pdfInfo);
+            }}/>
+          </ShowIf>
+          <ShowIf if={connection.type === 'targetRanged'}>
+            <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
+          </ShowIf>
         </div>
-      </div>
 
-      <div className="sidepanel-footer">
-        <ShowIf if={connection.type !== 'targetRanged'}>
-          <ActionButton action="save" onCreate={(reference) => {
-            this.props.onCreate(reference, pdfInfo);
-          }}/>
-        </ShowIf>
-        <ShowIf if={connection.type === 'targetRanged'}>
-          <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
-        </ShowIf>
-      </div>
-
-      <div className="sidepanel-body">
-        <SearchResults
-          results={searchResults}
-          searching={uiState.get('searching')}
-          selected={connection.targetDocument}
-          onClick={this.props.setTargetDocument}/>
-      </div>
-    </SidePanel>
+        <div className="sidepanel-body">
+          <SearchResults
+            results={searchResults}
+            searching={uiState.get('searching')}
+            selected={connection.targetDocument}
+            onClick={this.props.setTargetDocument}/>
+        </div>
+      </SidePanel>
     );
   }
 }

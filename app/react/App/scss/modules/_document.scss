@@ -139,6 +139,40 @@ mark, .mark {
   }
 }
 
-.create-reference .form-group {
-  margin-bottom: 15px;
+.search-form {
+  .form-group {
+    position: relative;
+    margin-bottom: 15px;
+    .fa {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      color: $c-black;
+      cursor: pointer;
+    }
+  }
+  .form-control {
+    padding-left: 20px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    color: $c-black;
+    box-shadow: none !important;
+    @include placeholder($c-black);
+
+    &:hover,
+    &:focus {
+      border-color: $c-black;
+      background: transparent;
+    }
+    
+    &:focus {
+      cursor: text;
+      @include placeholder(transparent);
+    }
+  }
 }
