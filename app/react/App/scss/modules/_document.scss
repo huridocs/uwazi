@@ -139,39 +139,44 @@ mark, .mark {
   }
 }
 
+.connections-list {
+  list-style-type: none;
+  line-height: 24px;
+  padding: 15px;
+  margin: 0 -15px;
+  color: $c-grey-dark;
+  border-bottom: 1px solid $c-grey-lighten;
+  
+  .fa {
+    width: 20px;
+    color: $c-grey;
+  }
+}
+
 .search-form {
   .form-group {
     position: relative;
-    margin-bottom: 15px;
+    margin: 0 -15px;
     .fa {
       position: absolute;
-      top: 3px;
-      left: 0;
+      top: 15px;
+      left: 15px;
       color: $c-black;
       cursor: pointer;
     }
   }
   .form-control {
-    padding-left: 20px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    height: 24px;
-    line-height: 24px;
+    padding-left: 40px;
+    height: $header-height;
+    line-height: $header-height;
     border-radius: 0;
     border: 0;
-    border-bottom: 1px solid transparent;
     color: $c-black;
     box-shadow: none !important;
     @include placeholder($c-black);
 
-    &:hover,
     &:focus {
-      border-color: $c-black;
       background: transparent;
-    }
-    
-    &:focus {
-      cursor: text;
       @include placeholder(transparent);
     }
   }

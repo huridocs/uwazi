@@ -28,6 +28,14 @@ export class CreateConnectionPanel extends Component {
           <h1>Create {typeLabel}</h1>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
 
+          <ul className="connections-list">
+            <li><i className="fa fa-square-o"></i> Voto separado</li>
+            <li><i className="fa fa-square-o"></i> Corte</li>
+            <li><i className="fa fa-square-o"></i> Comisión</li>
+            <li><i className="fa fa-square-o"></i> Firmante</li>
+          </ul>
+
+          {/*
           <Select
             value={connection.relationType}
             placeholder="Connection type..."
@@ -35,7 +43,7 @@ export class CreateConnectionPanel extends Component {
             optionsLabel="name"
             options={this.props.relationTypes.toJS()}
             onChange={e => this.props.setRelationType(e.target.value)}/>
-
+            */}
           <div className="search-form">
             <SearchForm connectionType={connection.type}/>
           </div>
