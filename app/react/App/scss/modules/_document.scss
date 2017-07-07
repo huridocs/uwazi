@@ -191,6 +191,11 @@ mark, .mark {
     margin: 0 15px !important;
     border-color: $c-grey-light !important;
     
+    .item-name {
+      font-family: $f-regular;
+      color: $c-grey-dark;
+    }
+    
     &::after {
       content: '\F096';
       font-family: FontAwesome;
@@ -210,6 +215,10 @@ mark, .mark {
       &:after {
         content: '\f00c';
         color: $c-success;
+      }
+      
+      .item-name {
+        color: $c-black;
       }
     }
   }
