@@ -6,7 +6,7 @@ export function notEmpty(val) {
     return true;
   }
 
-  if(typeof val === 'object') {
+  if (typeof val === 'object') {
     return Boolean(Object.keys(val).length);
   }
   return !!val && val.trim() !== '';
