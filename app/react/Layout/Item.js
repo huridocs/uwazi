@@ -32,10 +32,16 @@ export class Item extends Component {
         let dlClassName = '';
 
         let value = property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
+
         if (property.markdown) {
           dlClassName = 'full-width';
           value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
         }
+
+        if (property.value.map && (property.type === 'multidate' || property.type === 'multidaterange')) {
+          value = <span dangerouslySetInnerHTML={{__html: property.value.map(d => d.value).join('<br />')}}></span>;
+        }
+
         return (
           <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>

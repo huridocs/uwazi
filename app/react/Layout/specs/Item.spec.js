@@ -155,6 +155,44 @@ describe('Item', () => {
       expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
       expect(component.find('.item-metadata').html()).toContain('<dd class="">value2</dd>');
     });
+
+    it('should render multiple values separated by comas', () => {
+      props.templates = Immutable([{
+        _id: 'templateId',
+        properties: [
+          {name: 'sex', label: 'sexLabel', showInCard: true}
+        ]
+      }]);
+
+      props.doc = props.doc.set('metadata', {
+        sex: [{value: 'a'}, {value: 'b'}]
+      });
+
+      render();
+      expect(component.find('.item-metadata').html()).toContain('a, b');
+    });
+
+    it('should render multiple values separated by <br /> if multidate or multidaterange', () => {
+      props.templates = Immutable([{
+        _id: 'templateId',
+        properties: [
+          {name: 'date', type: 'date', label: 'date', showInCard: true},
+          {name: 'multidate', type: 'multidate', label: 'multidate', showInCard: true},
+          {name: 'multidaterange', type: 'multidaterange', label: 'multidaterange', showInCard: true}
+        ]
+      }]);
+
+      props.doc = props.doc.set('metadata', {
+        date: [1, 1000],
+        multidate: [10000, 100000],
+        multidaterange: [{from: 1000000, to: 1200000}, {from: 2000000, to: 2200000}]
+      });
+
+      render();
+      expect(component.find('.item-metadata').find('dd').at(0).html()).toContain(',');
+      expect(component.find('.item-metadata').find('dd').at(1).html()).toContain('<br />');
+      expect(component.find('.item-metadata').find('dd').at(2).html()).toContain('<br />');
+    });
   });
 
   describe('when doc have no snippets', () => {
