@@ -29,8 +29,16 @@
         margin: 0;
         list-style: none;
       }
-      > ul li {
+      > ul.multiline li {
         margin: 5px 0;
+      }
+
+      > ul.comma-separated li {
+        display: inline-block;
+        margin: 5px 10px 0 0;
+        &:not(:last-child):after {
+          content: ',';
+        }
       }
     }
     a {
