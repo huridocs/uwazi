@@ -1,6 +1,8 @@
 import * as actions from 'app/Viewer/actions/uiActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import scroller from 'app/Viewer/utils/Scroller';
+import Marker from 'app/Viewer/utils/Marker.js';
+import Immutable from 'immutable';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
@@ -126,6 +128,41 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({type: types.RESET_REFERENCE_CREATION});
       expect(dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
       expect(dispatch).toHaveBeenCalledWith({type: 'viewer/targetDocHTML/UNSET'});
+    });
+  });
+
+  describe('highlightSnippets', () => {
+    it('should unmark all and mark snippets passed only once', () => {
+      let container = document.createElement('div');
+      let innerHTML = '<div class="main-wrapper">unique ';
+      innerHTML += 'snippet <span>marked</span> (with)  multiple spaces';
+      innerHTML += 'snippet marked </br>new line';
+      innerHTML += '</div>';
+      container.innerHTML = innerHTML;
+      document.body.appendChild(container);
+      Marker.init('div.main-wrapper');
+
+      let snippets = Immutable.fromJS([
+        {text: 'unique'},
+        {text: 'unique'},
+        {text: 'snippet <b>marked</b> (with) multiple spaces'},
+        {text: 'snippet <b>marked</b>\nnew line'}
+      ]);
+
+      actions.highlightSnippets(snippets);
+      let marks = document.querySelectorAll('mark');
+      expect(marks[0].innerHTML).toBe('unique');
+      expect(marks[1].innerHTML).toBe('snippet ');
+      expect(marks[2].innerHTML).toBe('marked');
+      expect(marks[3].innerHTML).toBe(' (with)  multiple spaces');
+      expect(marks[4].innerHTML).toBe('snippet marked ');
+      expect(marks[5].innerHTML).toBe('new line');
+
+      actions.highlightSnippets(Immutable.fromJS([]));
+      marks = document.querySelectorAll('mark');
+      expect(marks.length).toBe(0);
+
+      container.innerHTML = '';
     });
   });
 });

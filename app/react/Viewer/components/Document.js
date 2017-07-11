@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
-import {scrollToPage} from '../actions/uiActions';
 import Text from 'app/Viewer/utils/Text';
 import Loader from 'app/components/Elements/Loader';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
-import Marker from 'app/Viewer/utils/Marker.js';
+import {highlightSnippets} from 'app/Viewer/actions/uiActions';
 import {APIURL} from '../../config.js';
 
 export class Document extends Component {
@@ -71,19 +70,7 @@ export class Document extends Component {
     this.text.activate(this.props.activeReference);
 
     if (this.props.searchTerm) {
-      Marker.unmark();
-      this.props.snippets.forEach((snippet) => {
-        //console.log(snippet.get('text').replace(/<[^>]*>/g, ''));
-        //console.log(Marker);
-        let stringRegexp = snippet.get('text')
-        .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
-        .replace(/<[^>]*>/g, '')
-        .replace(/\s+/g, '\\s*')
-        .replace(/\n/g, '\\s*');
-
-        let regexp = new RegExp(stringRegexp);
-        Marker.markRegExp(regexp, {separateWordSearch: false, acrossElements: true});
-      });
+      this.props.highlightSnippets(this.props.snippets);
     }
   }
 
@@ -139,13 +126,21 @@ export class Document extends Component {
   }
 }
 
+Document.defaultProps = {
+  highlightSnippets
+};
+
 Document.propTypes = {
   doc: PropTypes.object,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,
+  highlightSnippets: PropTypes.func,
   header: PropTypes.func,
+  searchTerm: PropTypes.string,
+  snippets: PropTypes.object,
+  page: PropTypes.number,
   activateReference: PropTypes.func,
   doScrollToActive: PropTypes.bool,
   scrollToActive: PropTypes.func,

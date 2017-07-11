@@ -54,21 +54,28 @@ export function goToActive(value = true) {
   };
 }
 
-// proof of concept
-export function highlightSearch(pageNumber, searchTerm) {
-  scroller.to(`.document-viewer div#page-${pageNumber}`, '.document-viewer', {duration: 0, dividerOffset: 1});
+export function highlightSnippets(snippets) {
+  let highlights = snippets.map((snippet) => {
+    return snippet.get('text')
+    .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, '\\s*')
+    .replace(/\n/g, '\\s*');
+  })
+  .filter((elem, pos, arr) => {
+    return arr.indexOf(elem) === pos;
+  });
 
-  setTimeout(() => {
-    Marker.unmark();
-    Marker.mark(searchTerm);
-  }, 500);
+  Marker.unmark();
+  highlights.forEach((highlightRegExp) => {
+    let regexp = new RegExp(highlightRegExp);
+    Marker.markRegExp(regexp, {separateWordSearch: false, acrossElements: true});
+  });
 }
-//
 
 export function scrollToPage(page) {
   scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 100, dividerOffset: 1});
 }
-
 
 export function scrollTo(reference, docInfo, element = 'a') {
   //
