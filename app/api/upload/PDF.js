@@ -1,8 +1,7 @@
-import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
 import fs from 'fs';
-import readDirFiles from 'read-dir-files';
+import PDFJS from 'pdfjs-dist';
 
 let basename = (filepath = '') => {
   let finalPath = filepath;
@@ -20,71 +19,28 @@ export default class PDF extends EventEmitter {
     this.optimizedPath = filepath;
   }
 
-  split(tmpPath) {
-    const log = fs.createWriteStream(this.logFile, {flags: 'a'});
-    let options = ['-sDEVICE=pdfwrite', '-dSAFER', '-o', tmpPath + '%d.pdf', this.filepath];
-    let extraction = spawn('gs', options);
-    extraction.stderr.pipe(log);
-    extraction.stdout.pipe(log);
-
-    return new Promise((resolve, reject) => {
-      extraction.stdout.on('error', (err) => {
-        reject(err);
-      });
-
-      extraction.stdout.on('close', () => {
-        resolve();
-      });
-    });
-  }
-
   extractText() {
-    let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
-
     return new Promise((resolve, reject) => {
-      fs.mkdir(tmpPath, (mkdirError) => {
-        if (mkdirError) {
-          return reject(mkdirError);
+      fs.readFile(this.filepath, (err, data) => {
+        if (err) {
+          return reject(err);
         }
-
-        return this.split(tmpPath)
-        .then(() => {
-          const log = fs.createWriteStream(this.logFile, {flags: 'a'});
-          let command = `docsplit text --no-ocr -o ${tmpPath}txt/ ${tmpPath}*pdf`;
-          let options = ['-c', command];
-          let extraction = spawn('/bin/sh', options);
-          extraction.stderr.pipe(log);
-          extraction.stdout.pipe(log);
-          extraction.stdout.on('close', () => {
-            readDirFiles.read(`${tmpPath}txt/`, (error, files) => {
-              if (error) {
-                return reject(error);
-              }
-
-              let orderedFiles = [];
-
-              Object.keys(files).forEach((fileName) => {
-                const buffer = files[fileName];
-                const pageNumber = fileName.split('.')[1];
-                //content[`page_${pageNumber}`] = buffer.toString('utf8');
-                orderedFiles.push({
-                  page: Number(fileName.split('.')[0]),
-                  buffer
-                });
+        const fileData = new Uint8Array(data);
+        PDFJS.getDocument(fileData).then(pdf => {
+          const maxPages = pdf.pdfInfo.numPages;
+          let pages = [];
+          for (let pageNumber = 1; pageNumber <= maxPages; pageNumber += 1) {
+            pages.push(pdf.getPage(pageNumber).then(page => {
+              return page.getTextContent().then(text => {
+                return text.items.map(s => s.str).join('').replace(/(\S+)(\s?)/g, '$1[[' + (Number(page.pageIndex) + 1) + ']]$2') + '\f';
               });
-
-              orderedFiles.sort((a, b) => {
-                return a.page - b.page;
-              });
-
-              let content = '';
-              orderedFiles.forEach((file) => {
-                content += file.buffer.toString('utf8').replace(/(\S+)(\s?)/g, '$1[[' + file.page + ']]$2');
-                //content += file.buffer.toString('utf8');
-              });
-
-              resolve(content);
-            });
+            }));
+          }
+          Promise.all(pages).then(texts => {
+            resolve(texts.join(''));
+          })
+          .catch((error) => {
+            resolve(error);
           });
         });
       });

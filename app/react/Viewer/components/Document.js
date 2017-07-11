@@ -69,9 +69,21 @@ export class Document extends Component {
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
+
     if (this.props.searchTerm) {
       Marker.unmark();
-      Marker.mark(this.props.searchTerm);
+      this.props.snippets.forEach((snippet) => {
+        //console.log(snippet.get('text').replace(/<[^>]*>/g, ''));
+        //console.log(Marker);
+        let stringRegexp = snippet.get('text')
+        .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, '\\s*')
+        .replace(/\n/g, '\\s*');
+
+        let regexp = new RegExp(stringRegexp);
+        Marker.markRegExp(regexp, {separateWordSearch: false, acrossElements: true});
+      });
     }
   }
 
