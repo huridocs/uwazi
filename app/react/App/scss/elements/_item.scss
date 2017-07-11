@@ -82,13 +82,19 @@
 
 .item-group-charts .item {
   overflow: hidden;
-  @media (min-width: 1024px) {
-    width: 49.375%;
-    margin: 0 0 15px;
-    &:not(:nth-child(2n)) {
-      margin-right: 1.25%;
+  width: 100%;
+  margin-right: 0;
+
+  .item-chart-type {
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+
+    button {
+      margin-left: 5px;
     }
   }
+
   p {
     font-weight: 300;
     font-family: $f-special;

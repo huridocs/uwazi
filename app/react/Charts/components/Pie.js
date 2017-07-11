@@ -5,16 +5,15 @@ import {ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector} from 'recharts
 
 import Immutable from 'immutable';
 
-export class RechartsPie extends Component {
-  componentWillMount() {
-    this.mountData(this.props);
+function ellipsisString(string, maxLength) {
+  if (string.length <= maxLength) {
+    return string;
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      this.mountData(nextProps);
-    }
-  }
+  return string.substring(0, maxLength - 3) + '...';
+}
+
+export class RechartsPie extends Component {
 
   mountData(props) {
     let fullData = Immutable.fromJS([]);
@@ -26,6 +25,16 @@ export class RechartsPie extends Component {
     this.setState({activeIndex: 0, fullData});
   }
 
+  componentWillMount() {
+    this.mountData(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps) {
+      this.mountData(nextProps);
+    }
+  }
+
   renderActiveShape(props) {
     const RADIAN = Math.PI / 180;
     const {cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value} = props;
@@ -33,15 +42,15 @@ export class RechartsPie extends Component {
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;
     const sy = cy + (outerRadius + 10) * sin;
-    const mx = cx + (outerRadius + 15) * cos;
-    const my = cy + (outerRadius + 15) * sin;
-    const ex = mx + (cos >= 0 ? 1 : -1) * 15;
+    const mx = cx + (outerRadius + 20) * cos;
+    const my = cy + (outerRadius + 20) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 20;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
 
     return (
       <g>
-        {/* <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>{payload.name}</text> */}
+        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>{ellipsisString(payload.name, 14)}</text>
         <Sector
           cx={cx}
           cy={cy}
@@ -121,7 +130,7 @@ export class RechartsPie extends Component {
     }, []);
 
     return (
-      <ResponsiveContainer height={300}>
+      <ResponsiveContainer height={320}>
         <PieChart>
           <Pie
               data={filteredData}
@@ -134,14 +143,13 @@ export class RechartsPie extends Component {
               activeShape={this.renderActiveShape}
               animationBegin={200}
               animationDuration={500}
-              onMouseMove={this.onIndexEnter.bind(this)}
+              onMouseEnter={this.onIndexEnter.bind(this)}
               onClick={this.onIndexEnter.bind(this)}
               fill="#8884d8">
             {filteredData.map((entry, index) =>
               <Cell key={index} fill={filteredColors[index]} opacity={0.8} />
             )}
           </Pie>
-          {/*
           <Legend
                   onMouseEnter={this.onFullIndexEnter.bind(this)}
                   onClick={this.onIndexClick.bind(this)}
@@ -155,7 +163,6 @@ export class RechartsPie extends Component {
                     };
                   })}
           />
-          */}
         </PieChart>
       </ResponsiveContainer>
     );

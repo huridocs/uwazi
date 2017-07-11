@@ -50,7 +50,7 @@ export class RechartsBar extends Component {
 
   render() {
     return (
-      <ResponsiveContainer height={300}>
+      <ResponsiveContainer height={320}>
         <BarChart height={300} data={this.state.fullData}
                   margin={{top: 0, right: 30, left: 0, bottom: 0}}>
           <XAxis dataKey="xAxisName" label={this.props.chartLabel}/>

@@ -6462,9 +6462,9 @@ recharts-scale@0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/recharts-scale/-/recharts-scale-0.3.1.tgz#635f14c998b151d63f2e8fff1fcbe46faf0423a6"
 
-recharts@^1.0.0-alpha.1:
-  version "1.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/recharts/-/recharts-1.0.0-alpha.1.tgz#f9cee06d0d3e03dc11911760f0c6dc29e572e528"
+recharts@^1.0.0-alpha.2:
+  version "1.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/recharts/-/recharts-1.0.0-alpha.2.tgz#fc99fefc4c6fee150f1c1f516145ac1e77f2e3e7"
   dependencies:
     classnames "2.2.5"
     core-js "2.4.1"
