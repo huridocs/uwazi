@@ -33,6 +33,18 @@ export class CreateConnectionPanel extends Component {
             <li><i className="fa fa-square-o"></i> Corte</li>
             <li><i className="fa fa-square-o"></i> Comisión</li>
             <li><i className="fa fa-square-o"></i> Firmante</li>
+            <li><i className="fa fa-square-o"></i> Voto separado</li>
+            <li><i className="fa fa-square-o"></i> Corte</li>
+            <li><i className="fa fa-square-o"></i> Comisión</li>
+            <li><i className="fa fa-square-o"></i> Firmante</li>
+            <li><i className="fa fa-square-o"></i> Voto separado</li>
+            <li><i className="fa fa-square-o"></i> Corte</li>
+            <li><i className="fa fa-square-o"></i> Comisión</li>
+            <li><i className="fa fa-square-o"></i> Firmante</li>
+            <li><i className="fa fa-square-o"></i> Voto separado</li>
+            <li><i className="fa fa-square-o"></i> Corte</li>
+            <li><i className="fa fa-square-o"></i> Comisión</li>
+            <li><i className="fa fa-square-o"></i> Firmante</li>
           </ul>
 
           {/*

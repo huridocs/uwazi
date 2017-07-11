@@ -146,6 +146,8 @@ mark, .mark {
   margin: 0 -15px;
   color: $c-grey-dark;
   border-bottom: 1px solid $c-grey-lighten;
+  overflow-y: scroll;
+  max-height: 150px;
   
   .fa {
     width: 20px;
