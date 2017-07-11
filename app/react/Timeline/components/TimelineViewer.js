@@ -229,11 +229,7 @@ export class TimelineViewer extends Component {
       });
 
       const entityDates = this.getDates(entity, isCase);
-      let relatedDates = [];
-      if (relatedEntity) {
-        relatedDates = this.getDates(relatedEntity, !isCase);
-      }
-
+      const relatedDates = relatedEntity ? this.getDates(relatedEntity, !isCase) : [];
       const dates = entityDates.concat(relatedDates);
 
       this.setState({
