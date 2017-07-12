@@ -9,6 +9,10 @@ describe('JSONRequest', () => {
     .put('http://localhost:3000/api/test', JSON.stringify({response: 'put'}))
     .get('http://localhost:3000/api/test', JSON.stringify({response: 'get'}))
     .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', JSON.stringify({response: 'get with params'}))
+    .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D&q=(order:desc,sort:creationDate)',
+         JSON.stringify({response: 'get with params and rison "q"'}))
+    .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D&q=%7Bunable%3A%20%22to%20decode%22%7D',
+         JSON.stringify({response: 'get with params and undecodable q'}))
     .delete('http://localhost:3000/api/test', JSON.stringify({response: 'delete'}))
     .delete('http://localhost:3000/api/test?id=123', JSON.stringify({response: 'delete with params'}));
   });
@@ -112,6 +116,30 @@ describe('JSONRequest', () => {
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.json).toEqual({response: 'get with params'});
+          expect(backend.lastOptions().body).not.toBeDefined();
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
+    describe('when passing rison encoded data', () => {
+      it('should transform only non rison (q) params and not send a body', (done) => {
+        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: {value: 2}, q: '(order:desc,sort:creationDate)'})
+        .then((response) => {
+          expect(response.status).toBe(200);
+          expect(response.json).toEqual({response: 'get with params and rison "q"'});
+          expect(backend.lastOptions().body).not.toBeDefined();
+          done();
+        })
+        .catch(done.fail);
+      });
+
+      it('should transform q if its content is not able to be rison decoded', (done) => {
+        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: {value: 2}, q: '{unable: "to decode"}'})
+        .then((response) => {
+          expect(response.status).toBe(200);
+          expect(response.json).toEqual({response: 'get with params and undecodable q'});
           expect(backend.lastOptions().body).not.toBeDefined();
           done();
         })
