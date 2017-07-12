@@ -91,7 +91,7 @@
     margin-top: 5px;
 
     button {
-      margin-left: 5px;
+      margin-left: 3px;
     }
   }
 
@@ -404,6 +404,10 @@ $item-padding: 15px;
   padding: 0 15px;
   .sort-buttons {
     flex: 1;
+  }
+
+  &.toggle-buttons button {
+    margin-left: 3px;
   }
 }
 /** /
