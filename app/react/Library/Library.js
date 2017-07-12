@@ -5,7 +5,9 @@ import rison from 'rison';
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
+import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
+import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
@@ -63,13 +65,28 @@ export default class Library extends RouteHandler {
     wrapDispatch(this.context.store.dispatch, 'library')(enterLibrary());
   }
 
+  // TEST!!!! How do you test SUPER?
+  componentWillReceiveProps(nextProps) {
+    console.log(this.props);
+    if (nextProps.location.query.q !== this.props.location.query.q) {
+      console.log(super.componentWillReceiveProps);
+      return super.componentWillReceiveProps(nextProps);
+    }
+  }
+  // ---------
+
   render() {
     let query = rison.decode(this.props.location.query.q || '()');
+    // TEST!!!
+    const chartView = this.props.location.query.view === 'chart';
+    const mainView = !chartView ? <DocumentsList storeKey="library"/> : <LibraryCharts storeKey="library" />;
+    
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="document-viewer with-panel">
-          <DocumentsList storeKey="library"/>
+          <ListChartToggleButtons active={chartView ? 'chart' : 'list'} />
+          {mainView}
         </main>
         <LibraryFilters storeKey="library"/>
         <ViewMetadataPanel storeKey="library" searchTerm={query.searchTerm}/>

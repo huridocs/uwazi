@@ -27,11 +27,7 @@ describe('Library', () => {
   let component;
   let instance;
   let context;
-  let props = {
-    location: {
-      query: {}
-    }
-  };
+  let props = {location: {query: {q: {}}}};
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
@@ -94,4 +90,22 @@ describe('Library', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'aggregations/SET', value: aggregations, __reducerKey: 'library'});
     });
   });
+
+  // describe('componentWillReceiveProps()', () => {
+  //   beforeEach(() => {
+  //     props.location = {query: {q: '(a:1)'}};
+  //     component = shallow(<Library {...props}/>, {context});
+  //     instance = component.instance();
+  //     spyOn(instance, 'componentWillReceiveProps').and.callThrough();
+  //     console.log('ROOT:', instance.parent);
+  //     spyOn(component.root.instance(), 'componentWillReceiveProps');
+  //   });
+
+  //   fit('should update if Q has changed', () => {
+  //     const nextProps = {location: {query: {q: '(a:2)'}}};
+  //     instance.componentWillReceiveProps(nextProps);
+  //     console.log(instance.componentWillReceiveProps.calls.count());
+  //     expect(instance.componentWillReceiveProps).toHaveBeenCalledWith(nextProps);
+  //   });
+  // });
 });

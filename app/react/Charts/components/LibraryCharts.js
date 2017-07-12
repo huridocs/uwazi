@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {parseWithAggregations} from 'app/Library/helpers/libraryFilters';
@@ -27,8 +27,12 @@ export class LibraryCharts extends Component {
     });
 
     return (
-      <div className="item-group item-group-charts">
-        {fields.map((field, index) => <LibraryChart key={index} options={field.options} label={field.label} />)}
+      <div className="documents-list">
+        <div className="main-wrapper">
+          <div className="item-group item-group-charts">
+            {fields.map((field, index) => <LibraryChart key={index} options={field.options} label={field.label} />)}
+          </div>
+        </div>
       </div>
     );
   }
