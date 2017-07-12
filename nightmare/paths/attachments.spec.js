@@ -12,7 +12,7 @@ let getValue = (selector) => {
   return document.querySelector(selector).value;
 };
 
-describe('attachments path', () => {
+fdescribe('attachments path', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
@@ -25,20 +25,14 @@ describe('attachments path', () => {
   });
 
   describe('main document pdf', () => {
-    it('should find a document then open it', (done) => {
+    it('should open the second document', (done) => {
       nightmare
-      .wait(selectors.libraryView.librarySecondDocumentTitle)
-      .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
-      .then((itemName) => {
-        return nightmare
-        .write(selectors.libraryView.searchInput, itemName)
-        .waitToClick(selectors.libraryView.firstSearchSuggestion)
-        .wait(selectors.documentView.documentPage)
-        .isVisible(selectors.documentView.documentPage)
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        });
+      .waitToClick(selectors.libraryView.librarySecondDocumentLink)
+      .wait(selectors.documentView.documentPage)
+      .isVisible(selectors.documentView.documentPage)
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
       })
       .catch(catchErrors(done));
     });

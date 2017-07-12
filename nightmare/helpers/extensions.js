@@ -198,9 +198,28 @@ Nightmare.action('selectText', function (selector, done) {
   .then(done);
 });
 
+//this.write(selectors.libraryView.searchInput, itemName)
+//.type(selectors.libraryView.searchInput, '\u000d')
+//.wait(selectors.libraryView.anyItemSnippet)
+
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
-  this.write(selectors.libraryView.searchInput, itemName)
-  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  this.evaluate((nameToFind) => {
+    //return document.querySelector(elementToSelect).innerText;
+    let cards = document.querySelectorAll('div.item-entity');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.querySelector('a').click();
+    }
+  }, itemName)
   .wait(elementToSelect => {
     return document.querySelector(elementToSelect).innerText;
   }, selectors.entityView.contentHeaderTitle)

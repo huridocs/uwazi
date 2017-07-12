@@ -51,6 +51,8 @@ export default {
     libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
     librarySecondDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div',
+    librarySecondDocumentLink: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
+    anyItemSnippet: 'div.item-snippet-wrapper > div',
     libraryThirdDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(3)',
     libraryMultiEditListHeader: '#app > div.content > div > div > aside.side-panel.multi-edit > div.sidepanel-header',
     libraryMultiEditEditButton: '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.edit.btn.btn-primary',
@@ -61,7 +63,7 @@ export default {
     libraryMetadataPanel: '.side-panel.metadata-sidepanel',
     searchInLibrary: '#app > div.content > header > div > a',
     searchForm: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form',
-    searchInput: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.input-group > div > input',
+    searchInput: '#app > div.content > div > div > main > div > div > div.search-list > div > form > div.input-group > div > input',
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
     firstEntityViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
@@ -74,7 +76,7 @@ export default {
     documentAfterLoadMore: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(31)',
     superVillianType: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label > span',
     minorVillianType: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label > span',
-    resetFilters: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-footer > span'
+    resetFilters: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-footer > span',
     sidePanelCloseButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > i',
     sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > span > span'
   },
