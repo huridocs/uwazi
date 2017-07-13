@@ -2,7 +2,12 @@
 [![dependency Status](https://david-dm.org/huridocs/uwazidocs/status.svg)](https://david-dm.org/huridocs/uwazi#info=dependencies)
 
 #Global dependencies
-
+- **Git**
+  - Ubuntu
+    ```
+    $ sudo apt-get install git
+    ```
+  - or <https://git-scm.com/downloads>
 - **NodeJs 6.9.5**
     - Ubuntu
       ```
@@ -29,6 +34,12 @@
 
 #Development
 
+- **Clone the repository**
+  ```
+  $ git clone https://github.com/huridocs/uwazi.git
+  $ cd uwazi
+  ```
+
 - **Dependencies**
 
   install [yarn](https://yarnpkg.com/en/) and execute:
@@ -47,11 +58,12 @@
 - **Fixtures**
 
   ```
-  $ ./database/blank_state.sh
+  $ cd database
+  $ ./blank_state.sh
   ```
 
-- launch application: `foreman start`, the app will be available after few seconds on localhost:3000
-- test api: `node test_api.js`
+- launch application: `foreman start -p 3000`, the app will be available after few seconds on localhost:3000
+- test api: `node api_test.js`, if you want to watch for file changes: `./test_api.sh`
 - test react: `karma start`
 
 #Suggestions
@@ -71,6 +83,8 @@
       Then open a .js file and go to:
       view -> syntax -> open all current extensions as ... -> Babel -> Javascript (Babel)
 
+#Troubleshooting
+
 - If autowatch does not work, check the max_user_watches with:
 
   ```
@@ -83,7 +97,7 @@
   $ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
   ```
 
-- If the nice 'World Globe' on the 'server listening on port...' line is not showing properly:
+- If the nice 'World Globe' (🌎) on the 'server listening on port...' line is not showing properly:
 
 
   ```
