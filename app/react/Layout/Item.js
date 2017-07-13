@@ -28,14 +28,19 @@ export class Item extends Component {
         isSortingProperty = true;
       }
 
-      if (property.value && property.value !== '' || property.markdown) {
-        let dlClassName = '';
+      if (property.value && String(property.value).length || property.markdown) {
+        let dlClassName = 'item-property-default';
 
         let value = property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
 
         if (property.markdown) {
-          dlClassName = 'full-width';
+          dlClassName = 'item-property-markdown';
           value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
+        }
+        
+        if (property.type === 'date' || property.type === 'daterange' ||
+            property.type === 'multidate' || property.type === 'multidaterange') {
+          dlClassName = 'item-property-date';
         }
 
         if (property.value.map && (property.type === 'multidate' || property.type === 'multidaterange')) {
