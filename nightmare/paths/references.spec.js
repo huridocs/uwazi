@@ -27,8 +27,7 @@ describe('references path', () => {
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
       .then((itemName) => {
         return nightmare
-        .write(selectors.libraryView.searchInput, itemName)
-        .waitToClick(selectors.libraryView.firstSearchSuggestion)
+        .openDocumentFromLibrary(itemName)
         .wait(selectors.documentView.documentPage)
         .isVisible(selectors.documentView.documentPage)
         .then((result) => {

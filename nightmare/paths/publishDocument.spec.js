@@ -72,6 +72,7 @@ describe('PublishDocument', () => {
       nightmare
       .waitForTheEntityToBeIndexed()
       .click(selectors.navigation.libraryNavButton)
+      .waitForTheEntityToBeIndexed()
       .openDocumentFromLibrary(title)
       .getInnerText(selectors.documentView.contentHeader)
       .then(headerText => {

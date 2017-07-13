@@ -12,12 +12,12 @@ selectors.libraryView.filters = {
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
   dobFrom: '#filtersForm div.DatePicker__From > div > input',
   dobTo: '#filtersForm div.DatePicker__To > div > input'
-}
+};
 
 const nightmare = createNightmare().gotoLibrary();
 
-fdescribe('search filters path', () => {
-  fdescribe('filter one type', () => {
+describe('search filters path', () => {
+  describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.superVillianType)
@@ -31,7 +31,7 @@ fdescribe('search filters path', () => {
     });
   });
 
-  fdescribe('filter by more types', () => {
+  describe('filter by more types', () => {
     it('should show entities of those type', (done) => {
       nightmare.gotoLibrary()
       .waitToClick(selectors.libraryView.superVillianType)
@@ -46,7 +46,7 @@ fdescribe('search filters path', () => {
     });
   });
 
-  fdescribe('multiselect filters', () => {
+  describe('multiselect filters', () => {
     it('should filter', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
@@ -79,8 +79,8 @@ fdescribe('search filters path', () => {
     });
   });
 
-  fdescribe('numeric filters', () => {
-    fit('should filter by a range', (done) => {
+  describe('numeric filters', () => {
+    it('should filter by a range', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
       .waitToClick(selectors.libraryView.superVillianType)
@@ -161,7 +161,7 @@ fdescribe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    })
+    });
 
     it('should filter by a date for Thanos', (done) => {
       nightmare.gotoLibrary()
@@ -176,7 +176,7 @@ fdescribe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    })
+    });
 
     it('should filter by a range of dates for Daneryl', (done) => {
       nightmare.gotoLibrary()
@@ -192,6 +192,13 @@ fdescribe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    })
+    });
+  });
+
+  describe('closing browser', () => {
+    it('should close the browser', (done) => {
+      nightmare.end()
+      .then(done);
+    });
   });
 });

@@ -28,6 +28,10 @@ export class LibraryFilters extends Component {
             <i className="fa fa-refresh"></i>
             <span className="btn-label">{t('System', 'Reset')}</span>
           </span>
+          <button type="submit" form="filtersForm" className="btn btn-success">
+            <i className="fa fa-search"></i>
+            <span className="btn-label">{t('System', 'Search')}</span>
+          </button>
         </div>
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters')}</p>

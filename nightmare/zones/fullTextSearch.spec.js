@@ -6,7 +6,7 @@ import config from '../helpers/config.js';
 
 const nightmare = createNightmare();
 
-describe('Library zone', () => {
+describe('FullTextSearch zone', () => {
   it('should go to library', (done) => {
     nightmare
     .goto(config.url)
@@ -17,6 +17,7 @@ describe('Library zone', () => {
   it('should show text snippets when performing a text search', (done) => {
     nightmare
     .librarySearch('batman')
+    .wait(selectors.libraryView.libraryFirstDocumentSnippet)
     .getInnerText(selectors.libraryView.libraryFirstDocumentSnippet)
     .then(snippet => {
       expect(snippet.toLowerCase()).toContain('batman');
@@ -29,7 +30,7 @@ describe('Library zone', () => {
     it('should open the snippets tab on the sidePanel', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.libraryFirstDocumentSnippet)
-      .wait(100)
+      .wait(200)
       .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
       .then(snippet => {
         expect(snippet.toLowerCase()).toContain('batman');
@@ -47,12 +48,10 @@ describe('Library zone', () => {
     nightmare
     .waitToClick(selectors.libraryView.sidePanelCloseButton)
     .clearInput(selectors.libraryView.searchInput)
-    .openDocumentFromLibrary('batman')
+    .openDocumentFromLibrary('Batman')
     .waitToClick(selectors.documentView.searchTextTab)
     .write(selectors.documentView.searchTextInput, 'joker')
-    .evaluate((selector) => {
-      document.querySelector(selector).submit();
-    }, selectors.documentView.searchTextForm)
+    .typeEnter(selectors.documentView.searchTextInput)
     .wait(200)
     .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
     .then(snippet => {
@@ -65,11 +64,12 @@ describe('Library zone', () => {
     })
     .catch(catchErrors(done));
   });
-});
 
-describe('closing browser', () => {
-  it('should close the browser', (done) => {
-    nightmare.end()
-    .then(done);
+  describe('closing browser', () => {
+    it('should close the browser', (done) => {
+      nightmare.end()
+      .then(done);
+    });
   });
 });
+

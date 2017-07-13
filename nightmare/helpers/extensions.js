@@ -12,12 +12,15 @@ Nightmare.action('clearInput', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('typeEnter', function (selector, done) {
+  this.type(selector, '\u000d')
+  .then(done);
+});
+
 Nightmare.action('librarySearch', function (searchTerm, done) {
   this.write(selectors.libraryView.searchInput, 'batman')
-  .evaluate((selector) => {
-    document.querySelector(selector).submit();
-  }, selectors.libraryView.searchForm)
-  .wait(100)
+  .type(selectors.libraryView.searchInput, '\u000d')
+  .wait('.item-snippet')
   .then(done);
 });
 
@@ -204,7 +207,6 @@ Nightmare.action('selectText', function (selector, done) {
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    //return document.querySelector(elementToSelect).innerText;
     let cards = document.querySelectorAll('div.item-entity');
     let found = false;
     cards.forEach((card) => {
@@ -227,8 +229,22 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
 });
 
 Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
-  this.write(selectors.libraryView.searchInput, itemName)
-  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  this.evaluate((nameToFind) => {
+    let cards = document.querySelectorAll('div.item-document');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.querySelector('a').click();
+    }
+  }, itemName)
   .wait(elementToSelect => {
     return document.querySelector(elementToSelect).innerText;
   }, selectors.documentView.contentHeader)
