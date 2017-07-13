@@ -43,11 +43,13 @@ export default class DocumentsList extends Component {
                 </span>;
     }
 
+    const Search = this.props.SearchBar;
+
     return (
       <div className="documents-list">
         <div className="main-wrapper">
           <div className="search-list">
-            <SearchBar storeKey={this.props.storeKey}/>
+            <Search storeKey={this.props.storeKey}/>
           </div>
           <div className="sort-by">
               <div className="documents-counter">
@@ -106,11 +108,16 @@ export default class DocumentsList extends Component {
   }
 }
 
+DocumentsList.defaultProps = {
+  SearchBar
+};
+
 DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   connections: PropTypes.object,
   filters: PropTypes.object,
   selectedDocument: PropTypes.object,
+  SearchBar: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,
