@@ -9,10 +9,10 @@ describe('Pages: pageItemLists util', () => {
     content = '## title\nSome text with a [URL](http://google.com) inside.' +
               '\n\n{list}(http://someurl:3000/es/?parameters=values)' +
               '\n\nWhich should be in its own line, "separated" with TWO line breaks (to create a new <p> Element)' +
-              '\n\n{list}(http://someurl:3000/es/)' +
+              '\n\n{list}(http://someurl:3000/es/)(limit:6)' +
               '\n\nAnd should allow multiple lists with different values' +
               '\n\n{list}(https://cejil.uwazi.io/es/library/?q=(filters:(mandatos_de_la_corte:(from:1496620800)),order:asc,sort:title,types:!(%2758b2f3a35d59f31e1345b4b6%27)))' +
-              '\n\n{list}(http://anotherurl:5000/es/?a=b)' +
+              '\n\n{list}(http://anotherurl:5000/es/?a=b)(limit:12,other:option)' +
               '\n\n```javascript\nCode\n```';
   });
 
@@ -25,10 +25,20 @@ describe('Pages: pageItemLists util', () => {
     expect(params[3]).toBe('?a=b');
   });
 
+  it('should extract optional additional parameters', () => {
+    const options = pageLists.generate(content).options;
+    expect(options.length).toBe(4);
+    expect(options[0]).toEqual({});
+    expect(options[1]).toEqual({limit: 6});
+    expect(options[2]).toEqual({});
+    expect(options[3]).toEqual({limit: 12, other: 'option'});
+  });
+
   it('should return the content with list placeholders', () => {
     const newContent = pageLists.generate(content).content;
     expect(newContent).toContain('{---UWAZILIST---}');
     expect(newContent).not.toContain('?parameters=values');
+    expect(newContent).not.toContain('limit:12,other:option');
     expect(newContent).not.toContain('order:asc,sort:title,types:!(%2758b2f3a35d59f31e1345b4b6%27)');
   });
 
