@@ -45,7 +45,7 @@ export default {
   },
   libraryView: {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',
-    libraryFirstDocumentSnippet: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div',
+    libraryFirstDocumentSnippet: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div > span',
     librarySidePanelFirstSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(1)',
     librarySidePanelSecondSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(2)',
     libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',

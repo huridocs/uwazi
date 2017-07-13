@@ -12,7 +12,7 @@ let getValue = (selector) => {
   return document.querySelector(selector).value;
 };
 
-fdescribe('attachments path', () => {
+describe('attachments path', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare

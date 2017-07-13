@@ -16,8 +16,8 @@ selectors.libraryView.filters = {
 
 const nightmare = createNightmare().gotoLibrary();
 
-describe('search filters path', () => {
-  describe('filter one type', () => {
+fdescribe('search filters path', () => {
+  fdescribe('filter one type', () => {
     it('should only show entities of that type', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.superVillianType)
@@ -31,7 +31,7 @@ describe('search filters path', () => {
     });
   });
 
-  describe('filter by more types', () => {
+  fdescribe('filter by more types', () => {
     it('should show entities of those type', (done) => {
       nightmare.gotoLibrary()
       .waitToClick(selectors.libraryView.superVillianType)
@@ -46,7 +46,7 @@ describe('search filters path', () => {
     });
   });
 
-  describe('multiselect filters', () => {
+  fdescribe('multiselect filters', () => {
     it('should filter', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
@@ -79,8 +79,8 @@ describe('search filters path', () => {
     });
   });
 
-  describe('numeric filters', () => {
-    it('should filter by a range', (done) => {
+  fdescribe('numeric filters', () => {
+    fit('should filter by a range', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
       .waitToClick(selectors.libraryView.superVillianType)
