@@ -88,6 +88,7 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   doc: PropTypes.object,
+  searchTerm: PropTypes.string,
   page: PropTypes.number,
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,

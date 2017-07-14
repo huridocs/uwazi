@@ -284,6 +284,7 @@ DocumentSidePanel.propTypes = {
   DocumentForm: PropTypes.func,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string,
+  searchTerm: PropTypes.string,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   tocBeingEdited: PropTypes.bool,
