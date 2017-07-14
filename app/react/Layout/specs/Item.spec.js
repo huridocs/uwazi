@@ -27,6 +27,7 @@ describe('Item', () => {
       active: true,
       className: 'custom-class',
       onClick: jasmine.createSpy('onClick'),
+      onSnippetClick: jasmine.createSpy('onSnippetClick'),
       onMouseEnter: jasmine.createSpy('onMouseEnter'),
       onMouseLeave: jasmine.createSpy('onMouseLeave'),
       additionalIcon: <div>additionalIcon</div>,
@@ -62,6 +63,13 @@ describe('Item', () => {
 
     component.find(RowList.Item).simulate('mouseLeave');
     expect(props.onMouseLeave).toHaveBeenCalled();
+  });
+
+  it('should call onSnippetClick when clicking on the snippet', () => {
+    props.doc = Immutable({_id: 'id', snippets: [{text: 'snippet', page: 1}]});
+    render();
+    component.find('.item-snippet').simulate('click');
+    expect(props.onSnippetClick).toHaveBeenCalled();
   });
 
   it('should include a header if present', () => {
@@ -155,6 +163,44 @@ describe('Item', () => {
       expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
       expect(component.find('.item-metadata').html()).toContain('<dd class="">value2</dd>');
     });
+
+    it('should render multiple values separated by comas', () => {
+      props.templates = Immutable([{
+        _id: 'templateId',
+        properties: [
+          {name: 'sex', label: 'sexLabel', showInCard: true}
+        ]
+      }]);
+
+      props.doc = props.doc.set('metadata', {
+        sex: [{value: 'a'}, {value: 'b'}]
+      });
+
+      render();
+      expect(component.find('.item-metadata').html()).toContain('a, b');
+    });
+
+    it('should render multiple values separated by <br /> if multidate or multidaterange', () => {
+      props.templates = Immutable([{
+        _id: 'templateId',
+        properties: [
+          {name: 'date', type: 'date', label: 'date', showInCard: true},
+          {name: 'multidate', type: 'multidate', label: 'multidate', showInCard: true},
+          {name: 'multidaterange', type: 'multidaterange', label: 'multidaterange', showInCard: true}
+        ]
+      }]);
+
+      props.doc = props.doc.set('metadata', {
+        date: [1, 1000],
+        multidate: [10000, 100000],
+        multidaterange: [{from: 1000000, to: 1200000}, {from: 2000000, to: 2200000}]
+      });
+
+      render();
+      expect(component.find('.item-metadata').find('dd').at(0).html()).toContain(',');
+      expect(component.find('.item-metadata').find('dd').at(1).html()).toContain('<br />');
+      expect(component.find('.item-metadata').find('dd').at(2).html()).toContain('<br />');
+    });
   });
 
   describe('when doc have no snippets', () => {
@@ -193,7 +239,7 @@ describe('Item', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: ['<span>snippet!</span>']
+        snippets: [{text: '<span>snippet!</span>', page: 1}]
       });
 
       render();

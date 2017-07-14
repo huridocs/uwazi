@@ -9,5 +9,5 @@ mongoose.connect(dbConfig.development);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  require('./app/api/migrations/add_role_to_users.js');
+  require('./app/api/migrations/reprocess_documents.js');
 });

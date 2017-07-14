@@ -37,7 +37,7 @@ export default class MultiDate extends Component {
       {(() => {
         return this.state.values.map((value, index) => {
           return <div key={index} className="multidate-item">
-                  <DatePicker onChange={this.onChange.bind(this, index)} value={value}/>
+                  <DatePicker locale={this.props.locale} format={this.props.format} onChange={this.onChange.bind(this, index)} value={value}/>
                   <button className="react-datepicker__close-icon" onClick={this.remove.bind(this, index)}></button>
                  </div>;
         });
@@ -53,5 +53,7 @@ export default class MultiDate extends Component {
 
 MultiDate.propTypes = {
   value: PropTypes.array,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  locale: PropTypes.string,
+  format: PropTypes.string
 };

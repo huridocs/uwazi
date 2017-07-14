@@ -7,6 +7,7 @@ import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
+import {highlightSnippets} from 'app/Viewer/actions/uiActions';
 import {APIURL} from '../../config.js';
 
 export class Document extends Component {
@@ -67,6 +68,10 @@ export class Document extends Component {
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
+
+    if (this.props.searchTerm) {
+      this.props.highlightSnippets(this.props.snippets);
+    }
   }
 
   pdfLoaded(range) {
@@ -109,6 +114,7 @@ export class Document extends Component {
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
                 pdfInfo={doc.pdfInfo}
+                page={this.props.page}
                 onLoad={this.pdfLoaded.bind(this)}
                 file={`${APIURL}documents/download?_id=${doc._id}`}
                 filename={doc.file ? doc.file.filename : null}/>
@@ -120,13 +126,21 @@ export class Document extends Component {
   }
 }
 
+Document.defaultProps = {
+  highlightSnippets
+};
+
 Document.propTypes = {
   doc: PropTypes.object,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,
+  highlightSnippets: PropTypes.func,
   header: PropTypes.func,
+  searchTerm: PropTypes.string,
+  snippets: PropTypes.object,
+  page: PropTypes.number,
   activateReference: PropTypes.func,
   doScrollToActive: PropTypes.bool,
   scrollToActive: PropTypes.func,

@@ -10,6 +10,7 @@ import fixtures, {templateId, userId} from './fixtures';
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
+import languages from '../languages';
 
 describe('search', () => {
   let result;
@@ -20,7 +21,7 @@ describe('search', () => {
           hits: [
             {
               highlight: {
-                fullText: 'snippets'
+                fullText: []
               }
             }
           ]
@@ -31,7 +32,7 @@ describe('search', () => {
           hits: [
             {
               highlight: {
-                fullText: 'snippets2'
+                fullText: []
               }
             }
           ]
@@ -88,24 +89,6 @@ describe('search', () => {
     });
   });
 
-  describe('searchSnippets', () => {
-    it('perform a search on fullText of the document passed and return the snippets', (done) => {
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-      search.searchSnippets('searchTerm', 'id', 'es')
-      .then((results) => {
-        let expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm', [], true, 9999)
-        .filterById('id')
-        .language('es')
-        .query();
-
-        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
-        expect(results.rows[0]).toEqual({_id: 'id1', title: 'doc1', snippets: 'snippets'});
-        done();
-      });
-    });
-  });
-
   describe('search', () => {
     beforeEach((done) => {
       db.clearAllAndLoad(elasticFixtures, (err) => {
@@ -119,6 +102,51 @@ describe('search', () => {
       });
     });
 
+    describe('searchSnippets', () => {
+      it('perform a search on fullText of the document passed and return the snippets', (done) => {
+        search.searchSnippets('spanish', ids.batmanFinishes, 'es')
+        .then((snippets) => {
+          expect(snippets.length).toBe(1);
+          expect(snippets[0].page).toBe(34);
+          expect(snippets[0].text).toMatch('spanish');
+          expect(snippets[0].text).not.toMatch('[[34]]');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should perform the search on unpublished documents also', (done) => {
+        search.searchSnippets('unpublished', 'unpublishedSharedId', 'en')
+        .then((snippets) => {
+          expect(snippets.length).toBe(1);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      describe('when document is not matched', () => {
+        it('should return empty array', (done) => {
+          search.searchSnippets('not matching string', ids.batmanFinishes, 'es')
+          .then((snippets) => {
+            expect(snippets.length).toBe(0);
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+      });
+
+      describe('when searchTerm is empty', () => {
+        it('should return empty array', (done) => {
+          search.searchSnippets('', ids.batmanFinishes, 'es')
+          .then((snippets) => {
+            expect(snippets.length).toBe(0);
+            done();
+          })
+          .catch(catchErrors(done));
+        });
+      });
+    });
+
     it('should perform a fullTextSearch on fullText and title', (done) => {
       Promise.all([
         search.search({searchTerm: 'spanish'}, 'es'),
@@ -129,9 +157,12 @@ describe('search', () => {
         search.search({searchTerm: 'Batman'}, 'en')
       ])
       .then(([spanish, none, english, batmanFinishes, batmanBegins, batman]) => {
+        expect(english.rows.find(r => r.snippets[0].text.match('<b>english</b> document <b>english</b>')).snippets[0].page).toBe(12);
+        expect(english.rows.find(r => r.snippets[0].text.match('<b>english</b> another')).snippets[0].page).toBe(2);
+        expect(english.rows.length).toBe(2);
+
         expect(spanish.rows.length).toBe(1);
         expect(none.rows.length).toBe(0);
-        expect(english.rows.length).toBe(1);
         expect(batmanFinishes.rows.length).toBe(1);
         expect(batmanBegins.rows.length).toBe(1);
         expect(batman.rows.length).toBe(2);
@@ -441,6 +472,7 @@ describe('search', () => {
     describe('when document has fullText', () => {
       it('should index the fullText as child', (done) => {
         spyOn(elastic, 'index').and.returnValue(Promise.resolve());
+        spyOn(languages, 'detect').and.returnValue('english');
 
         const entity = {
           _id: 'asd1',
@@ -458,7 +490,7 @@ describe('search', () => {
           }});
           expect(elastic.index)
           .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {
-            fullText: 'text'
+            fullText_english: 'text'
           }});
           done();
         })
@@ -490,6 +522,7 @@ describe('search', () => {
     describe('when docs have fullText', () => {
       it('should be indexed separatedly as a child of the doc', (done) => {
         spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+        spyOn(languages, 'detect').and.returnValue('english');
         const toIndexDocs = [
           {_id: 'id1', title: 'test1', fullText: 'text1'},
           {_id: 'id2', title: 'test2', fullText: 'text2'}
@@ -501,11 +534,11 @@ describe('search', () => {
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
             {title: 'test1'},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
-            {fullText: 'text1'},
+            {fullText_english: 'text1'},
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
             {title: 'test2'},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
-            {fullText: 'text2'}
+            {fullText_english: 'text2'}
           ]});
           done();
         });

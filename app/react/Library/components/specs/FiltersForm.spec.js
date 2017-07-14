@@ -39,7 +39,8 @@ describe('FiltersForm', () => {
         form: {
           filters: 'filtersForm'
         },
-        templates: Immutable([])
+        templates: Immutable([]),
+        settings: {collection: Immutable({})}
       };
       let state = mapStateToProps(store, {storeKey: 'library'});
       expect(state.fields.toJS()).toEqual([{name: 'author'}]);

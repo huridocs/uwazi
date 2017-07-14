@@ -25,7 +25,8 @@ const settingsSchema = new mongoose.Schema({
   languages: [languagesSchema],
   links: [linksSchema],
   filters: [filtersSchema],
-  mailerConfig: String
+  mailerConfig: String,
+  dateFormat: String
 });
 
 let Model = mongoose.model('settings', settingsSchema);

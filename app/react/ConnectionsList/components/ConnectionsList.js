@@ -4,6 +4,7 @@ import {fromJS as Immutable} from 'immutable';
 import {searchReferences, loadMoreReferences} from '../actions/actions';
 
 import DocumentsList from 'app/Layout/DocumentsList';
+import SearchBar from 'app/ConnectionsList/components/SearchBar.js';
 
 export function mapStateToProps({connectionsList}) {
   const documents = connectionsList.searchResults;
@@ -13,7 +14,8 @@ export function mapStateToProps({connectionsList}) {
     connections: {totalRows: documents.get('rows').reduce((total, r) => total + r.get('connections').size, 0)},
     filters: Immutable({documentTypes: []}),
     search: connectionsList.sort,
-    sortButtonsStateProperty: 'connectionsList.sort'
+    sortButtonsStateProperty: 'connectionsList.sort',
+    SearchBar
   };
 }
 

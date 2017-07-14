@@ -9,6 +9,22 @@ export default {
     return {label: property.label, name: property.name, value, showInCard};
   },
 
+  formatDateRange(daterange) {
+    let from = '';
+    let to = '';
+    if (daterange.from) {
+      from = moment.utc(daterange.from, 'X').format('ll');
+    }
+    if (daterange.to) {
+      to = moment.utc(daterange.to, 'X').format('ll');
+    }
+    return `${from} ~ ${to}`;
+  },
+
+  daterange(property, daterange, showInCard) {
+    return {label: property.label, name: property.name, value: this.formatDateRange(daterange), showInCard};
+  },
+
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
       return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
@@ -18,9 +34,7 @@ export default {
 
   multidaterange(property, dateranges, showInCard) {
     let value = dateranges.map((range) => {
-      let from = moment.utc(range.from, 'X').format('ll');
-      let to = moment.utc(range.to, 'X').format('ll');
-      return {value: `${from} - ${to}`};
+      return {value: this.formatDateRange(range)};
     });
     return {label: property.label, name: property.name, value, showInCard};
   },
@@ -103,31 +117,35 @@ export default {
       let showInCard = property.showInCard;
 
       if (property.type === 'select' && value) {
-        return this.select(property, value, thesauris, showInCard);
+        return Object.assign(this.select(property, value, thesauris, showInCard), {type: property.type});
       }
 
       if (property.type === 'multiselect' && value) {
-        return this.multiselect(property, value, thesauris, showInCard);
+        return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type: property.type});
       }
 
       if (property.type === 'date' && value) {
-        return this.date(property, value, showInCard);
+        return Object.assign(this.date(property, value, showInCard), {type: property.type});
+      }
+
+      if (property.type === 'daterange' && value) {
+        return Object.assign(this.daterange(property, value, showInCard), {type: property.type});
       }
 
       if (property.type === 'multidate' && value) {
-        return this.multidate(property, value, showInCard);
+        return Object.assign(this.multidate(property, value, showInCard), {type: property.type});
       }
 
       if (property.type === 'multidaterange' && value) {
-        return this.multidaterange(property, value, showInCard);
+        return Object.assign(this.multidaterange(property, value, showInCard), {type: property.type});
       }
 
       if (property.type === 'markdown' && value) {
-        return this.markdown(property, value, showInCard);
+        return Object.assign(this.markdown(property, value, showInCard), {type: property.type});
       }
 
       if (property.type === 'nested' && value) {
-        return this.nested(property, value, showInCard);
+        return Object.assign(this.nested(property, value, showInCard), {type: property.type});
       }
 
       return {label: property.label, name: property.name, value, showInCard};

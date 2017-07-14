@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 
 import PDFPage from './PDFPage.js';
 import '../../../../node_modules/pdfjs-dist/web/pdf_viewer.css';
+import {scrollToPage} from 'app/Viewer/actions/uiActions';
 
 import {isClient} from 'app/utils';
 import {advancedSort} from 'app/utils/advancedSort';
@@ -71,6 +72,13 @@ export class PDF extends Component {
         start: start.chars,
         end: end.chars
       });
+
+      if (!this.initialized) {
+        if (this.props.page) {
+          this.props.scrollToPage(this.props.page);
+        }
+        this.initialized = true;
+      }
     }
   }
 
@@ -101,12 +109,18 @@ export class PDF extends Component {
   }
 }
 
+PDF.defaultProps = {
+  scrollToPage
+};
+
 PDF.propTypes = {
   file: PropTypes.string,
   pdfInfo: PropTypes.object,
+  page: PropTypes.number,
   filename: PropTypes.string,
   style: PropTypes.object,
-  onLoad: PropTypes.func
+  onLoad: PropTypes.func,
+  scrollToPage: PropTypes.func
 };
 
 export default PDF;

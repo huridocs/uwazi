@@ -19,7 +19,10 @@ describe('ViewDocument', () => {
       }
       return action;
     })}};
-    component = shallow(<ViewDocument renderedFromServer={true} />, {context});
+    let props = {
+      location: {query: {}}
+    };
+    component = shallow(<ViewDocument {...props} renderedFromServer={true} />, {context});
     instance = component.instance();
 
     spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);

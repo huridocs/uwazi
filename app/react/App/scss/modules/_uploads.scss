@@ -67,3 +67,9 @@
 	right: -3px;
 	color: red;
 }
+
+.content-header ~ .library-filters{
+  @media (min-width: 1024px) {
+    top: 101px;
+  }
+}

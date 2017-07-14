@@ -14,6 +14,8 @@ describe('metadata validator', () => {
     it('should return false on an empty string', () => {
       expect(notEmpty('')).toBe(false);
       expect(notEmpty('  ')).toBe(false);
+      expect(notEmpty({})).toBe(false);
+      expect(notEmpty([])).toBe(false);
       expect(notEmpty('value')).toBe(true);
       expect(notEmpty(423)).toBe(true);
       expect(notEmpty(0)).toBe(true);
