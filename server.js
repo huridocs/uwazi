@@ -10,7 +10,46 @@ require.extensions['.css'] = function () { return; };
 var express = require('express');
 var path = require('path');
 var compression = require('compression');
+var swaggerJSDoc = require('swagger-jsdoc');
 const app = express();
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+// swagger definition
+var swaggerDefinition = {
+  info: {
+    title: 'Uwazi API',
+    version: '1.0.0',
+    description: 'Uwazi is an open-source solution for building and sharing document collections',
+  },
+  host: 'localhost:3000',
+  basePath: '/api',
+  tags: [
+    {name: "attachments"},
+    {name: "entities"}
+  ]
+};
+
+// options for the swagger docs
+var options = {
+  // import swaggerDefinitions
+  swaggerDefinition: swaggerDefinition,
+  // path to the API docs
+  apis: ['./app/api/**/*.js'],
+};
+
+// initialize swagger-jsdoc
+var swaggerSpec = swaggerJSDoc(options);
+// serve swagger
+app.get('/swagger.json', function(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 var http = require('http').Server(app);
 var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 
