@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
 import Doc from 'app/Library/components/Doc';
+import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
 import {RowList} from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
@@ -42,11 +43,19 @@ export default class DocumentsList extends Component {
                 </span>;
     }
 
+    const Search = this.props.SearchBar;
+
     return (
       <div className="documents-list">
         <div className="main-wrapper">
+          <div className="search-list">
+            <Search storeKey={this.props.storeKey}/>
+          </div>
           <div className="sort-by">
-              <div className="u-floatLeft documents-counter">{counter}</div>
+              <div className="documents-counter">
+                <span className="documents-counter-label">{counter}</span>
+                <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
+              </div>
               <SortButtons sortCallback={this.props.searchDocuments}
                            selectedTemplates={this.props.filters.get('documentTypes')}
                            stateProperty={this.props.sortButtonsStateProperty}
@@ -59,6 +68,7 @@ export default class DocumentsList extends Component {
                    storeKey={this.props.storeKey}
                    key={index}
                    onClick={this.clickOnDocument.bind(this)}
+                   onSnippetClick={this.props.onSnippetClick}
                    deleteConnection={this.props.deleteConnection}
                    searchParams={this.props.search} />
             )}
@@ -98,16 +108,22 @@ export default class DocumentsList extends Component {
   }
 }
 
+DocumentsList.defaultProps = {
+  SearchBar
+};
+
 DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   connections: PropTypes.object,
   filters: PropTypes.object,
   selectedDocument: PropTypes.object,
+  SearchBar: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,
   deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string,
   storeKey: PropTypes.string,
+  onSnippetClick: PropTypes.func,
   clickOnDocument: PropTypes.func
 };

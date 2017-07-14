@@ -55,6 +55,15 @@
   }
 }
 
+mark, .mark {
+  color: transparent !important;
+  background-color: transparentize(yellow, 0.4) !important;
+  padding: 0 !important;
+  mark, .mark {
+    background-color: transparent !important;
+  }
+}
+
 .relation-dialog {
   position: absolute;
   right: -30px;

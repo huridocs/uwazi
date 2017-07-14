@@ -175,6 +175,16 @@ $c-sidebar: $c-white;
       @include tooltip('top-left');
     }
   }
+  
+  .search-box {
+    width: calc(100% - 10px);
+    margin: 5px;
+    z-index: 1;
+    
+    .form-control {
+      font-size: $f-size;
+    }
+  }
 }
 
 .sidepanel-body {
@@ -267,6 +277,15 @@ $c-sidebar: $c-white;
   .btn:disabled .btn-label {
     color: $c-grey !important;
   }
+}
+
+.sidepanel-title {
+  padding: 15px 15px 0;
+  margin: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  opacity: .6;
 }
 
 .item.readOnly {

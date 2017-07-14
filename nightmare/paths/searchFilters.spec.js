@@ -12,7 +12,7 @@ selectors.libraryView.filters = {
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
   dobFrom: '#filtersForm div.DatePicker__From > div > input',
   dobTo: '#filtersForm div.DatePicker__To > div > input'
-}
+};
 
 const nightmare = createNightmare().gotoLibrary();
 
@@ -161,7 +161,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    })
+    });
 
     it('should filter by a date for Thanos', (done) => {
       nightmare.gotoLibrary()
@@ -176,7 +176,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    })
+    });
 
     it('should filter by a range of dates for Daneryl', (done) => {
       nightmare.gotoLibrary()
@@ -192,6 +192,13 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    })
+    });
+  });
+
+  describe('closing browser', () => {
+    it('should close the browser', (done) => {
+      nightmare.end()
+      .then(done);
+    });
   });
 });

@@ -64,6 +64,7 @@ export default class Library extends RouteHandler {
   }
 
   render() {
+    let query = rison.decode(this.props.location.query.q || '()');
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
@@ -71,7 +72,7 @@ export default class Library extends RouteHandler {
           <DocumentsList storeKey="library"/>
         </main>
         <LibraryFilters storeKey="library"/>
-        <ViewMetadataPanel storeKey="library"/>
+        <ViewMetadataPanel storeKey="library" searchTerm={query.searchTerm}/>
         <SelectMultiplePanelContainer storeKey="library"/>
       </div>
     );

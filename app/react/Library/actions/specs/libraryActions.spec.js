@@ -13,6 +13,7 @@ import {api} from 'app/Entities';
 import {browserHistory} from 'react-router';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
+import SearchApi from 'app/Search/SearchAPI';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 const middlewares = [thunk];
@@ -96,7 +97,6 @@ describe('libraryActions', () => {
       backend.restore();
       backend
       .get(APIURL + 'search/match_title?searchTerm=batman', {body: JSON.stringify(documentCollection)})
-      .get(APIURL + 'search_snippets?searchTerm=term&id=id', {body: JSON.stringify({response: 'response'})})
       .get(APIURL + 'search?searchTerm=batman', {body: JSON.stringify(documentCollection)})
       .get(APIURL +
         'search?searchTerm=batman' +
@@ -264,6 +264,27 @@ describe('libraryActions', () => {
       });
     });
 
+    describe('searchSnippets', () => {
+      it('should search snippets for the searchTerm', (done) => {
+        spyOn(SearchApi, 'searchSnippets').and.returnValue(Promise.resolve('response'));
+
+        const expectedActions = [
+          {type: 'storeKey.sidepanel.snippets/SET', value: 'response'}
+        ];
+
+        const store = mockStore({locale: 'es'});
+
+        store.dispatch(actions.searchSnippets('query', 'sharedId', 'storeKey'))
+        .then((snippets) => {
+          expect(snippets).toBe('response');
+          expect(SearchApi.searchSnippets).toHaveBeenCalledWith('query', 'sharedId');
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
+      });
+    });
+
     describe('getDocumentReferences', () => {
       it('should set the library sidepanel references', (done) => {
         mockID();
@@ -285,17 +306,21 @@ describe('libraryActions', () => {
         .catch(done.fail);
       });
     });
-
-    describe('searchSnippets', () => {
-      it('should search document snippets and update it on the store', (done) => {
+    describe('getDocumentReferences', () => {
+      it('should set the library sidepanel references', (done) => {
         mockID();
-        const expectedActions = [
-          {type: types.UPDATE_DOCUMENT, doc: {response: 'response'}}
-        ];
-        const store = mockStore({});
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
+        spyOn(referencesUtils, 'filterRelevant').and.callFake((references, locale) => 'relevantReferences for ' + references + ', ' + locale);
 
-        store.dispatch(actions.searchSnippets('term', 'id'))
+        const expectedActions = [
+          {type: 'library.sidepanel.references/SET', value: 'relevantReferences for response, es'}
+        ];
+
+        const store = mockStore({locale: 'es'});
+
+        store.dispatch(actions.getDocumentReferences('id', 'library'))
         .then(() => {
+          expect(referencesAPI.get).toHaveBeenCalledWith('id');
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

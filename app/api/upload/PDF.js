@@ -1,7 +1,7 @@
-import {spawn} from 'child_process';
 import path from 'path';
 import EventEmitter from 'events';
 import fs from 'fs';
+import PDFJS from 'pdfjs-dist';
 
 let basename = (filepath = '') => {
   let finalPath = filepath;
@@ -20,20 +20,28 @@ export default class PDF extends EventEmitter {
   }
 
   extractText() {
-    let logFile = fs.createWriteStream(this.logFile, {flags: 'a'});
-    let tmpPath = '/tmp/' + Date.now() + 'docsplit/';
-    let options = ['text', '--no-ocr', '-o', tmpPath, this.filepath];
-    let extraction = spawn('docsplit', options);
-    extraction.stderr.pipe(logFile);
-    extraction.stdout.pipe(logFile);
-
     return new Promise((resolve, reject) => {
-      extraction.stdout.on('close', () => {
-        fs.readFile(tmpPath + basename(this.filepath) + '.txt', 'utf-8', (err, content) => {
-          if (err) {
-            reject(err);
+      fs.readFile(this.filepath, (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        const fileData = new Uint8Array(data);
+        PDFJS.getDocument(fileData).then(pdf => {
+          const maxPages = pdf.pdfInfo.numPages;
+          let pages = [];
+          for (let pageNumber = 1; pageNumber <= maxPages; pageNumber += 1) {
+            pages.push(pdf.getPage(pageNumber).then(page => {
+              return page.getTextContent().then(text => {
+                return text.items.map(s => s.str).join('').replace(/(\S+)(\s?)/g, '$1[[' + (Number(page.pageIndex) + 1) + ']]$2') + '\f';
+              });
+            }));
           }
-          resolve(content);
+          Promise.all(pages).then(texts => {
+            resolve(texts.join(''));
+          })
+          .catch((error) => {
+            resolve(error);
+          });
         });
       });
     });

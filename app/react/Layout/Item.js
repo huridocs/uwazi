@@ -101,7 +101,11 @@ export class Item extends Component {
 
   getSearchSnipett(doc) {
     if (doc.snippets && doc.snippets[0]) {
-      return <div className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0]}} />;
+      return (
+        <div className="item-snippet-wrapper">
+          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
+        </div>
+      );
     }
     return false;
   }
@@ -156,6 +160,7 @@ Item.propTypes = {
   thesauris: PropTypes.object,
   search: PropTypes.object,
   onClick: PropTypes.func,
+  onSnippetClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   active: PropTypes.bool,

@@ -2,7 +2,11 @@
 export default function () {
   let baseQuery = {
     _source: {
-      include: [ 'title', 'icon', 'processed', 'creationDate', 'template', 'metadata', 'type', 'sharedId', 'toc', 'attachments', 'language', 'file', 'uploaded', 'published']
+      include: [
+        'title', 'icon', 'processed', 'creationDate', 'template',
+        'metadata', 'type', 'sharedId', 'toc', 'attachments',
+        'language', 'file', 'uploaded', 'published'
+      ]
     },
     from: 0,
     size: 30,
@@ -52,7 +56,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 10) {
+    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 1, type = 'fvh') {
       if (term) {
         let should = [];
 
@@ -75,18 +79,31 @@ export default function () {
                 inner_hits: {
                   _source: false,
                   highlight: {
+                    order: 'score',
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      fullText: {number_of_fragments}
+                      'fullText_*': {number_of_fragments, type}
                     }
                   }
                 },
                 query: {
-                  multi_match: {
-                    query: term,
-                    type: 'phrase_prefix',
-                    fields: 'fullText'
+                  bool: {
+                    must: {
+                      multi_match: {
+                        query: term,
+                        type: 'best_fields',
+                        fuzziness: 'AUTO',
+                        fields: ['fullText*']
+                      }
+                    },
+                    should: {
+                      multi_match: {
+                        query: term,
+                        type: 'phrase',
+                        fields: ['fullText*']
+                      }
+                    }
                   }
                 }
               }

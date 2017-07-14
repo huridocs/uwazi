@@ -138,14 +138,16 @@ export function updateEntities(updatedDocs) {
   return {type: types.UPDATE_DOCUMENTS, docs: updatedDocs};
 }
 
-export function searchSnippets(searchTerm, sharedId) {
+export function searchSnippets(searchTerm, sharedId, storeKey) {
   return function (dispatch) {
     return api.searchSnippets(searchTerm, sharedId)
     .then((snippets) => {
-      dispatch(updateEntity(snippets));
+      dispatch(actions.set(storeKey + '.sidepanel.snippets', snippets));
+      return snippets;
     });
   };
 }
+
 export function saveDocument(doc, formKey) {
   return function (dispatch) {
     return documents.api.save(doc)

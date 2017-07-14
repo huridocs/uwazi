@@ -8,7 +8,7 @@ import {actions as formActions} from 'react-redux-form';
 import modals from 'app/Modals';
 import {formater} from 'app/Metadata';
 import {actions} from 'app/Metadata';
-import {deleteDocument} from 'app/Library/actions/libraryActions';
+import {deleteDocument, searchSnippets} from 'app/Library/actions/libraryActions';
 import {deleteEntity} from 'app/Entities/actions/actions';
 import {createSelector} from 'reselect';
 import DocumentForm from '../containers/DocumentForm';
@@ -60,6 +60,7 @@ function mapDispatchToProps(dispatch, props) {
     },
     saveDocument,
     deleteDocument,
+    searchSnippets,
     deleteEntity,
     showModal: modals.actions.showModal,
     showTab: (tab) => actionCreators.set(props.storeKey + '.sidepanel.tab', tab)

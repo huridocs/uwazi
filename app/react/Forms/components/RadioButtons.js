@@ -21,9 +21,8 @@ export default class RadioButtons extends Component {
   }
 
   render() {
-    let {optionsValue, optionsLabel, prefix, options} = this.props;
+    let {optionsValue, prefix, options} = this.props;
     optionsValue = optionsValue || 'value';
-    optionsLabel = optionsLabel || 'label';
     prefix = prefix || '';
 
     return (

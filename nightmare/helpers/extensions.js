@@ -12,6 +12,18 @@ Nightmare.action('clearInput', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('typeEnter', function (selector, done) {
+  this.type(selector, '\u000d')
+  .then(done);
+});
+
+Nightmare.action('librarySearch', function (searchTerm, done) {
+  this.write(selectors.libraryView.searchInput, 'batman')
+  .type(selectors.libraryView.searchInput, '\u000d')
+  .wait('.item-snippet')
+  .then(done);
+});
+
 Nightmare.action('write', function (selector, text, done) {
   this.wait(selector)
   .insert(selector, text)
@@ -189,9 +201,27 @@ Nightmare.action('selectText', function (selector, done) {
   .then(done);
 });
 
+//this.write(selectors.libraryView.searchInput, itemName)
+//.type(selectors.libraryView.searchInput, '\u000d')
+//.wait(selectors.libraryView.anyItemSnippet)
+
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
-  this.write(selectors.libraryView.searchInput, itemName)
-  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  this.evaluate((nameToFind) => {
+    let cards = document.querySelectorAll('div.item-entity');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.querySelector('a').click();
+    }
+  }, itemName)
   .wait(elementToSelect => {
     return document.querySelector(elementToSelect).innerText;
   }, selectors.entityView.contentHeaderTitle)
@@ -199,8 +229,22 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
 });
 
 Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
-  this.write(selectors.libraryView.searchInput, itemName)
-  .waitToClick(selectors.libraryView.firstSearchSuggestion)
+  this.evaluate((nameToFind) => {
+    let cards = document.querySelectorAll('div.item-document');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.querySelector('a').click();
+    }
+  }, itemName)
   .wait(elementToSelect => {
     return document.querySelector(elementToSelect).innerText;
   }, selectors.documentView.contentHeader)
