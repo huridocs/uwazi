@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip, Rectangle, Legend} from 'recharts';
 
-const fullColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#D24040', '#A250B3'];
+import colorScheme from '../utils/colorScheme';
 
 class ExtendedTooltip extends React.Component {
   render() {
@@ -31,7 +31,7 @@ ExtendedTooltip.propTypes = {
 
 const ColoredBar = (props) => {
   const {index} = props;
-  return <Rectangle {...props} stroke="none" fill={fullColors[index % fullColors.length]}/>;
+  return <Rectangle {...props} stroke="none" fill={colorScheme[index % colorScheme.length]}/>;
 };
 
 ColoredBar.propTypes = {
@@ -80,7 +80,7 @@ export class RechartsBar extends Component {
                     return {
                       value: item.name,
                       type: 'rect',
-                      color: fullColors[index % fullColors.length],
+                      color: colorScheme[index % colorScheme.length],
                       formatter: () => <span style={{color: '#333'}}>{item.name}</span>
                     };
                   })}

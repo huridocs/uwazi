@@ -5,6 +5,8 @@ import {ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector} from 'recharts
 
 import Immutable from 'immutable';
 
+import colorScheme from '../utils/colorScheme';
+
 function ellipsisString(string, maxLength) {
   if (string.length <= maxLength) {
     return string;
@@ -116,7 +118,6 @@ export class RechartsPie extends Component {
   }
 
   render() {
-    const fullColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#D24040', '#A250B3'];
     const filteredColors = [];
 
     const fullData = this.state.fullData.toJS();
@@ -124,7 +125,7 @@ export class RechartsPie extends Component {
     const filteredData = fullData.reduce((results, item, index) => {
       if (item.enabled) {
         results.push(item);
-        filteredColors.push(fullColors[index % fullColors.length]);
+        filteredColors.push(colorScheme[index % colorScheme.length]);
       }
       return results;
     }, []);
@@ -157,7 +158,7 @@ export class RechartsPie extends Component {
                     return {
                       value: item.name,
                       type: 'rect',
-                      color: fullData[index].enabled ? fullColors[index % fullColors.length] : '#aaa',
+                      color: fullData[index].enabled ? colorScheme[index % colorScheme.length] : '#aaa',
                       formatter: () => <span style={{color: fullData[index].enabled ? '#333' : '#999'}}>{item.name}</span>
                     };
                   })}
