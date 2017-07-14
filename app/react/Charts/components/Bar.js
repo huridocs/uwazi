@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip} from 'recharts';
+import {ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip, Rectangle, Legend} from 'recharts';
+
+const fullColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#D24040', '#A250B3'];
 
 class ExtendedTooltip extends React.Component {
   render() {
@@ -27,6 +29,20 @@ ExtendedTooltip.propTypes = {
   chartLabel: PropTypes.string
 };
 
+const ColoredBar = (props) => {
+  const {index} = props;
+  return <Rectangle {...props} stroke="none" fill={fullColors[index % fullColors.length]}/>;
+};
+
+ColoredBar.propTypes = {
+  fill: PropTypes.string,
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
+  index: PropTypes.number
+};
+
 export class RechartsBar extends Component {
   componentWillMount() {
     this.mountData(this.props);
@@ -40,12 +56,13 @@ export class RechartsBar extends Component {
 
   mountData(props) {
     let fullData = [];
+
     if (props.data) {
       fullData = props.data.map(item => {
         return {name: item.label, value: item.results, xAxisName: ''};
       });
     }
-    this.setState({activeIndex: 0, fullData});
+    this.setState({fullData});
   }
 
   render() {
@@ -57,7 +74,17 @@ export class RechartsBar extends Component {
           <YAxis/>
           <CartesianGrid strokeDasharray="2 4"/>
           <Tooltip content={<ExtendedTooltip parentData={this.state.fullData} chartLabel={this.props.chartLabel} />}/>
-          <Bar dataKey="value" fill="#D24040" />
+          <Bar dataKey="value" fill="#D24040" shape={<ColoredBar />} />
+          <Legend
+                  payload={this.state.fullData.map((item, index) => {
+                    return {
+                      value: item.name,
+                      type: 'rect',
+                      color: fullColors[index % fullColors.length],
+                      formatter: () => <span style={{color: '#333'}}>{item.name}</span>
+                    };
+                  })}
+          />
         </BarChart>
       </ResponsiveContainer>
     );

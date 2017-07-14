@@ -51,6 +51,7 @@ export default [
 {key: 'Dictionaries', label: 'Dictionaries'},
 {key: 'Discard changes', label: 'Discard changes'},
 {key: 'Document types', label: 'Document types'},
+{key: 'Document and entity types', label: 'Document and entity types'},
 {key: 'Documents', label: 'Documents'},
 {key: 'Edit', label: 'Edit'},
 {key: 'Editor', label: 'Editor'},

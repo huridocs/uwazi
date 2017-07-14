@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import Pie from './Pie';
 import Bar from './Bar';
 
-export class LibraryCharts extends Component {
+export class LibraryChart extends Component {
 
   constructor(props) {
     super(props);
@@ -65,9 +65,9 @@ export class LibraryCharts extends Component {
   }
 }
 
-LibraryCharts.propTypes = {
+LibraryChart.propTypes = {
   options: PropTypes.array,
   label: PropTypes.string
 };
 
-export default connect()(LibraryCharts);
+export default connect()(LibraryChart);

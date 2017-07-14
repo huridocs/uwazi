@@ -67,9 +67,7 @@ export default class Library extends RouteHandler {
 
   // TEST!!!! How do you test SUPER?
   componentWillReceiveProps(nextProps) {
-    console.log(this.props);
     if (nextProps.location.query.q !== this.props.location.query.q) {
-      console.log(super.componentWillReceiveProps);
       return super.componentWillReceiveProps(nextProps);
     }
   }
@@ -80,7 +78,7 @@ export default class Library extends RouteHandler {
     // TEST!!!
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? <DocumentsList storeKey="library"/> : <LibraryCharts storeKey="library" />;
-    
+
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />

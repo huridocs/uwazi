@@ -17,13 +17,15 @@ export class ListChartToggleButtons extends Component {
 
   render() {
     return (
-      <div className="sort-by toggle-buttons">
-        <button className={`btn ${this.props.active !== 'chart' ? 'btn-success' : 'btn-default'}`}
-                onClick={this.changeView.bind(this, 'list')}>
-          <i className="fa fa-th-large" />
-        </button>
-        <button className={`btn ${this.props.active === 'chart' ? 'btn-success' : 'btn-default'}`}
-                onClick={this.changeView.bind(this, 'chart')}><i className="fa fa-area-chart" /></button>
+      <div className="search-list listChart-toggleButtons">
+        <div className="buttons-group">
+          <button className={`btn ${this.props.active !== 'chart' ? 'btn-success' : 'btn-default'}`}
+                  onClick={this.changeView.bind(this, 'list')}>
+            <i className="fa fa-th-large" />
+          </button>
+          <button className={`btn ${this.props.active === 'chart' ? 'btn-success' : 'btn-default'}`}
+                  onClick={this.changeView.bind(this, 'chart')}><i className="fa fa-area-chart" /></button>
+        </div>
       </div>
     );
   }

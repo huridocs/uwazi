@@ -255,9 +255,9 @@ $item-padding: 15px;
     padding: 2px 15px;
     box-shadow: 0 -6px 9px -4px #fff, 0 -15px 10px -3px #fff;
   }
-  
+
   .item-snippet-wrapper:hover & {
-    border-bottom: 1px solid $c-grey;  
+    border-bottom: 1px solid $c-grey;
   }
 }
 
@@ -405,9 +405,17 @@ $item-padding: 15px;
   .sort-buttons {
     flex: 1;
   }
+}
 
-  &.toggle-buttons button {
-    margin-left: 3px;
+/* Charts */
+.listChart-toggleButtons {
+  height: 28px;
+  .buttons-group {
+    float: right;
+
+    button {
+      margin-left: 3px;
+    }
   }
 }
 /** /
@@ -507,7 +515,7 @@ $item-padding: 15px;
   b {
     color: $c-primary;
   }
-  
+
   &-sort {
     margin: 0 4px;
     @media(max-width: 768px) {

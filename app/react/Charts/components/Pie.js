@@ -42,9 +42,9 @@ export class RechartsPie extends Component {
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;
     const sy = cy + (outerRadius + 10) * sin;
-    const mx = cx + (outerRadius + 20) * cos;
-    const my = cy + (outerRadius + 20) * sin;
-    const ex = mx + (cos >= 0 ? 1 : -1) * 20;
+    const mx = cx + (outerRadius + 22) * cos;
+    const my = cy + (outerRadius + 22) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
 
@@ -158,7 +158,6 @@ export class RechartsPie extends Component {
                       value: item.name,
                       type: 'rect',
                       color: fullData[index].enabled ? fullColors[index % fullColors.length] : '#aaa',
-                      className: 'mierda',
                       formatter: () => <span style={{color: fullData[index].enabled ? '#333' : '#999'}}>{item.name}</span>
                     };
                   })}
