@@ -157,10 +157,8 @@ describe('search', () => {
         search.search({searchTerm: 'Batman'}, 'en')
       ])
       .then(([spanish, none, english, batmanFinishes, batmanBegins, batman]) => {
-        expect(english.rows[0].snippets[0].page).toBe(12);
-        expect(english.rows[0].snippets[0].text).toBe('<b>english</b> document <b>english</b>');
-        expect(english.rows[1].snippets[0].page).toBe(2);
-        expect(english.rows[1].snippets[0].text).toBe('<b>english</b> another');
+        expect(english.rows.find(r => r.snippets[0].text.match('<b>english</b> document <b>english</b>')).snippets[0].page).toBe(12);
+        expect(english.rows.find(r => r.snippets[0].text.match('<b>english</b> another')).snippets[0].page).toBe(2);
         expect(english.rows.length).toBe(2);
 
         expect(spanish.rows.length).toBe(1);
