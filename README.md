@@ -12,17 +12,6 @@
 - **Elasticsearch** (5.4)
    - https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html
     
-- **Docsplit**
-    - OSX
-      - `brew install ruby`
-      - `brew install ghostscript`
-      - `gem install docsplit`
-      - install non optional dependencies for docsplit -> [https://documentcloud.github.io/docsplit/](https://documentcloud.github.io/docsplit/)
-    - UBUNTU
-      - install ruby `sudo apt-get install ruby-full`
-      - `gem install docsplit`
-      - install non optional dependencies for docsplit -> [https://documentcloud.github.io/docsplit/](https://documentcloud.github.io/docsplit/)
-
 - **MongoDB**
     - Ubuntu
       https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
