@@ -45,15 +45,12 @@ export class TemplateCreator extends Component {
                     <PropertyOption label='Select' type='select'/>
                     <PropertyOption label='Multi Select' type='multiselect'/>
                     <PropertyOption label='Date' type='date'/>
+                    <PropertyOption label='Date Range' type='daterange'/>
+                    <PropertyOption label='Multi Date' type='multidate'/>
+                    <PropertyOption label='Multi Date Range' type='multidaterange'/>
                     <PropertyOption label='Rich Text' type='markdown'/>
                     <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
                       <PropertyOption label='Violated articles' type='nested'/>
-                    </ShowIf>
-                    <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                      <PropertyOption label='Multi Date' type='multidate'/>
-                    </ShowIf>
-                    <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                      <PropertyOption label='Multi Date Range' type='multidaterange'/>
                     </ShowIf>
                   </ul>
                 </div>

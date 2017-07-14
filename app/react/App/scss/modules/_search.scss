@@ -4,6 +4,7 @@
   @media(min-width: 1024px) {
     z-index: 4;
     top: $header-height;
+    background-color: transparent;
     &.is-hidden {
       right: 0;
     }
@@ -14,17 +15,21 @@
   position: relative;
   display: block;
   width: 100%;
-  border-bottom: 1px solid $c-grey-light;
-
+  @media(min-width: 1024px) {
+    width: 66.25%;
+  }
+  
   .input-group {
     width: 100%;
   }
   .form-control {
-    height: $header-height;
-    padding-left: 35px;
-    border-radius: 0;
+    height: $header-height * 0.88;
+    padding-left: 15px;
+    padding-right: 35px;
+    font-size: $f-size-lg;
     border: 0;
-    box-shadow: none;
+    border: 1px solid $c-grey-light !important;
+    box-shadow: $box-shadow;
     z-index: 4;
 
     @include placeholder($c-black);
@@ -43,23 +48,25 @@
     z-index: 5;
   }
   .input-group .fa-search {
-    left: 15px;
+    right: 20px;
+    font-size: $f-size-lg;
+    cursor: pointer;
   }
   .input-group .fa-close {
     display: none;
-    right: 15px;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
+    right: 50px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
     text-align: center;
-    padding: 1px;
-    font-size: 11px;
-    color: $c-white;
-    background: $c-bootstrap-primary;
+    font-size: $f-size-sm;
+    color: $c-grey;
+    border: 1px solid $c-grey;
     border-radius: 50%;
     cursor: pointer;
     &:hover {
-      background: $c-bootstrap-primary-dark;
+      color: $c-black;
+      border-color: $c-black;
     }
   }
   .input-group.is-active .fa-close {
@@ -145,7 +152,7 @@
 }
 
 .search-suggestions {
-  display: none;
+  display: none !important;
   position: absolute;
   top: $header-height - 1px;
   left: 0;
@@ -182,8 +189,8 @@
     text-decoration: none;
   }
   b {
-    background: $c-secondary-light;
-    box-shadow: -2px 0 0 0 rgba(255, 204, 102, 0.3), 2px 0 0 0 rgba(255, 204, 102, 0.3);
+    background-color: transparentize(yellow, 0.4);
+    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 
   .fa {
@@ -252,7 +259,7 @@
 
   &:not(:last-child),
   .form-group:not(:last-child) & {
-    border-bottom: 1px dotted $c-grey-light;
+    border-bottom: 1px solid $c-grey-light;
   }
 
   > li:first-child {
@@ -430,7 +437,7 @@
   list-style-type: none;
 
   &:not(:last-child) {
-    border-bottom: 1px dotted $c-grey-light;
+    border-bottom: 1px dotted $c-grey;
   }
 }
 
@@ -445,7 +452,7 @@
 
   input.form-control {
     border: 0;
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid $c-grey;
     border-radius: 0;
     box-shadow: none;
     padding-left: 26px;
@@ -456,7 +463,7 @@
   }
 
   .fa {
-    color: $c-grey-light;
+    color: $c-grey;
     position: absolute;
     top: 9px;
     left: 6px;
@@ -527,7 +534,7 @@
 .multiselectItem-icon {
   width: 20px;
   font-size: $f-size-lg;
-  color: $c-grey-light;
+  color: $c-grey;
 
   &:first-of-type {
     position: relative;
@@ -765,5 +772,40 @@ label.multiselectItem-label {
   &-range {
     width: 100%;
     padding-right: 15px;
+  }
+}
+
+.snippet-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  
+  li {
+    height: 50px;
+    margin: 15px 15px 15px 20px;
+    padding-bottom: 15px;
+    font-size: $f-size-sm;
+    line-height: 1.8em;
+    overflow: hidden;
+  }
+  
+  li:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
+  }
+  a {
+    position: relative;
+    margin-right: 15px;
+    border-bottom: 1px dotted $c-primary;
+    &:after {
+      content: '-';
+      position: absolute;
+      right: -9px;
+    }
+  }
+  
+  b {
+    color: #9a9b02;
+    background-color: transparentize(yellow, 0.4);
+    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }

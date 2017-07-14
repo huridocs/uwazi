@@ -27,7 +27,11 @@ describe('Library', () => {
   let component;
   let instance;
   let context;
-  let props = {};
+  let props = {
+    location: {
+      query: {}
+    }
+  };
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;

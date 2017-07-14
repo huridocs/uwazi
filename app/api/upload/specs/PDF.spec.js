@@ -13,40 +13,18 @@ describe('PDF', function () {
       pdf = new PDFObject(filepath);
     });
 
-    it('should extract the text of the pdf using docsplit', (done) => {
+    it('should extract the text of the pdf by page, every word on every page should have appended the page number in between [[]]', (done) => {
       pdf.extractText()
       .then((text) => {
         let lines = text.split(/\f/);
-
-        expect(lines[0]).toBe('Page 1\n\n');
-        expect(lines[1]).toBe('Page 2\n\n');
-        expect(lines[2]).toBe('Page 3\n\n');
+        expect(lines[0]).toBe('Page[[1]] 1[[1]]');
+        expect(lines[1]).toBe('Page[[2]] 2[[2]]');
+        expect(lines[2]).toBe('Page[[3]] 3[[3]]');
         done();
       })
       .catch(done.fail);
     });
-
-    it('should reject the promise on error', (done) => {
-      let commandBeingExecuted = new Events();
-      commandBeingExecuted.stdout = new Events();
-      commandBeingExecuted.stderr = new Events();
-      commandBeingExecuted.stdout.pipe = () => {};
-      commandBeingExecuted.stderr.pipe = () => {};
-      spyOn(childProcess, 'spawn').and.returnValue(commandBeingExecuted);
-
-      pdf.extractText()
-      .then(() => {
-        done.fail('promise should be rejected when there is an exit code === 1');
-      })
-      .catch((error) => {
-        expect(error.toString().indexOf('no such file or directory') > -1).toBe(true);
-        done();
-      });
-
-      commandBeingExecuted.stdout.emit('close', 'error');
-    });
   });
-
 
   describe('convert', () => {
     let filepath = __dirname + '/12345.test.pdf';
@@ -54,18 +32,13 @@ describe('PDF', function () {
       pdf = new PDFObject(filepath);
     });
 
-    //afterEach((done) => {
-      //if (pdf.optimizedPath) {
-        //fs.unlink(pdf.optimizedPath, done);
-      //} else {
-        //done();
-      //}
-    //});
-
     it('should optimize and extract html and text', (done) => {
       pdf.convert()
       .then((conversion) => {
-        expect(conversion.fullText).toMatch('Page 1');
+        let lines = conversion.fullText.split(/\f/);
+
+        expect(lines[0]).toBe('Page[[1]] 1[[1]]');
+        //expect(conversion.fullText).toMatch('Page\[\[1\]\] 1');
         done();
       })
       .catch(done.fail);

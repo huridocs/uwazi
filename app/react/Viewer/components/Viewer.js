@@ -20,6 +20,7 @@ import ConfirmCloseForm from './ConfirmCloseForm';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import {TemplateLabel, Icon} from 'app/Layout';
+import Marker from 'app/Viewer/utils/Marker';
 
 export class Viewer extends Component {
 
@@ -29,6 +30,7 @@ export class Viewer extends Component {
 
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
+    Marker.init('div.main-wrapper');
   }
 
   render() {
@@ -60,7 +62,7 @@ export class Viewer extends Component {
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={!this.props.targetDoc}>
-              <SourceDocument />
+              <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
             </ShowIf>
             <TargetDocument />
             <Footer/>
@@ -68,7 +70,7 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel />
+        <ViewMetadataPanel storeKey={'documentViewer'} searchTerm={this.props.searchTerm}/>
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
@@ -86,6 +88,8 @@ export class Viewer extends Component {
 
 Viewer.propTypes = {
   doc: PropTypes.object,
+  searchTerm: PropTypes.string,
+  page: PropTypes.number,
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,

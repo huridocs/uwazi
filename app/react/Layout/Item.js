@@ -31,11 +31,17 @@ export class Item extends Component {
       if (property.value && property.value !== '' || property.markdown) {
         let dlClassName = '';
 
-        let value = typeof property.value !== 'object' ? property.value : property.value.map(d => d.value).join(', ');
+        let value = property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
+
         if (property.markdown) {
           dlClassName = 'full-width';
           value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
         }
+
+        if (property.value.map && (property.type === 'multidate' || property.type === 'multidaterange')) {
+          value = <span dangerouslySetInnerHTML={{__html: property.value.map(d => d.value).join('<br />')}}></span>;
+        }
+
         return (
           <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
@@ -95,7 +101,11 @@ export class Item extends Component {
 
   getSearchSnipett(doc) {
     if (doc.snippets && doc.snippets[0]) {
-      return <div className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0]}} />;
+      return (
+        <div className="item-snippet-wrapper">
+          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
+        </div>
+      );
     }
     return false;
   }
@@ -150,6 +160,7 @@ Item.propTypes = {
   thesauris: PropTypes.object,
   search: PropTypes.object,
   onClick: PropTypes.func,
+  onSnippetClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   active: PropTypes.bool,

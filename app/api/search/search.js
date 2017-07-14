@@ -5,6 +5,7 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
+import languages from './languages';
 
 function processFiltes(filters, properties) {
   let result = {};
@@ -20,7 +21,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'nested') {
       type = 'nested';
     }
-    if (property.type === 'multidaterange') {
+    if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
     }
     result[property.name] = {value: filters[property.name], type};
@@ -81,7 +82,18 @@ export default {
           let result = hit._source;
           result.snippets = [];
           if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-            result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
+
+            const regex = /\[\[(\d+)\]\]/g;
+
+            let highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+
+            result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
+              const matches = regex.exec(snippet);
+              return {
+                text: snippet.replace(regex, ''),
+                page: matches ? Number(matches[1]) : 0
+              };
+            });
           }
           result._id = hit._id;
           return result;
@@ -99,23 +111,31 @@ export default {
   searchSnippets(searchTerm, sharedId, language) {
     let query = queryBuilder()
     .fullTextSearch(searchTerm, [], true, 9999)
+    .includeUnpublished()
     .filterById(sharedId)
     .language(language)
     .query();
 
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
-      let rows = response.hits.hits.map((hit) => {
-        let result = hit._source;
-        result._id = hit._id;
-        result.snippets = [];
-        if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-          result.snippets = hit.inner_hits.fullText.hits.hits[0].highlight.fullText;
-        }
-        return result;
-      });
+      if (response.hits.hits.length === 0) {
+        return [];
+      }
 
-      return {rows};
+      if (!response.hits.hits[0].inner_hits) {
+        return [];
+      }
+
+      let highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
+
+      const regex = /\[\[(\d+)\]\]/g;
+      return highlights[Object.keys(highlights)[0]].map((snippet) => {
+        const matches = regex.exec(snippet);
+        return {
+          text: snippet.replace(regex, ''),
+          page: matches ? Number(matches[1]) : 0
+        };
+      });
     });
   },
 
@@ -153,7 +173,10 @@ export default {
     const body = entity;
     let fullTextIndex = Promise.resolve();
     if (entity.fullText) {
-      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: {fullText: entity.fullText}});
+      const fullText = {};
+      const language = languages.detect(entity.fullText);
+      fullText['fullText_' + language] = entity.fullText;
+      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
       delete entity.fullText;
     }
     return Promise.all([
@@ -183,7 +206,11 @@ export default {
         action = {};
         action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id};
         body.push(action);
-        body.push({fullText: doc.fullText});
+
+        const fullText = {};
+        const language = languages.detect(doc.fullText);
+        fullText['fullText_' + language] = doc.fullText;
+        body.push(fullText);
         delete doc.fullText;
       }
     });

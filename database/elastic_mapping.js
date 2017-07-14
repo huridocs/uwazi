@@ -1,11 +1,22 @@
 /* eslint-disable camelcase */
-export default {
+import languages from '../app/api/search/languages';
+
+let config = {
   settings: {
     analysis: {
+      char_filter: {
+        remove_annotation: {
+          type: 'pattern_replace',
+          pattern: '\\[\\[[0-9]+\\]\\]',
+          replacement: ''
+        }
+      },
       analyzer: {
-        folding: {
-          tokenizer: 'keyword',
-          filter: ['lowercase', 'asciifolding']
+        other: {
+          type: 'custom',
+          tokenizer: 'standard',
+          filter: ['lowercase', 'asciifolding'],
+          char_filter: ['remove_annotation']
         },
         tokenizer: {
           tokenizer: 'standard',
@@ -31,14 +42,14 @@ export default {
           }
         }
       }, {
-        fullText_fields: {
-          path_match: 'fullText',
+        fullText_other: {
+          match: 'fullText',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
             index: 'analyzed',
             omit_norms: true,
-            analyzer: 'standard',
+            analyzer: 'other',
             term_vector: 'with_positions_offsets'
           }
         }
@@ -51,7 +62,6 @@ export default {
             index: 'analyzed',
             omit_norms: true,
             analyzer: 'tokenizer',
-            //fielddata: true,
             fields: {
               raw: {type: 'keyword'}
             }
@@ -136,3 +146,30 @@ export default {
     }
   }
 };
+
+
+languages.get().forEach((language) => {
+  config.settings.analysis.analyzer[language] = {
+    type: language,
+    tokenizer: 'standard',
+    filter: ['lowercase', 'asciifolding'],
+    char_filter: ['remove_annotation']
+  };
+
+  let mapping = {};
+  mapping[`fullText_${language}`] = {
+    match: `fullText_${language}`,
+    match_mapping_type: 'string',
+    mapping: {
+      type: 'text',
+      index: 'analyzed',
+      omit_norms: true,
+      analyzer: language,
+      term_vector: 'with_positions_offsets'
+    }
+  };
+
+  config.mappings._default_.dynamic_templates.unshift(mapping);
+});
+
+export default config;

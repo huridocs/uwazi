@@ -95,6 +95,7 @@ export class Doc extends Component {
                     </div>;
 
     return <Item onClick={this.onClick.bind(this)}
+                 onSnippetClick={this.props.onSnippetClick}
                  active={this.props.active}
                  doc={this.props.doc}
                  searchParams={this.props.searchParams}
@@ -113,6 +114,7 @@ Doc.propTypes = {
   authorized: PropTypes.bool,
   deleteConnection: PropTypes.func,
   publish: PropTypes.func,
+  onSnippetClick: PropTypes.func,
   onClick: PropTypes.func
 };
 

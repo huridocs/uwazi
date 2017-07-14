@@ -138,7 +138,7 @@ export class FiltersForm extends Component {
               </FormGroup>
             );
           }
-          if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange') {
+          if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'daterange') {
             return (
               <FormGroup key={property.name}>
                 <ul className={propertyClass}>
@@ -154,6 +154,7 @@ export class FiltersForm extends Component {
                         this.autoSearch = true;
                         this.props.activateFilter(property.name, Boolean(val.from || val.to), fields);
                       }}
+                      format={this.props.dateFormat}
                     />
                   </li>
                 </ul>
@@ -173,8 +174,7 @@ export class FiltersForm extends Component {
                     <NumericRange
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
-                        this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to, fields));
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to), fields);
                       }}
                     />
                   </li>
@@ -219,7 +219,8 @@ FiltersForm.propTypes = {
   activateFilter: PropTypes.func,
   search: PropTypes.object,
   documentTypes: PropTypes.object,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
+  dateFormat: PropTypes.string
 };
 
 export function mapStateToProps(state, props) {
@@ -228,7 +229,8 @@ export function mapStateToProps(state, props) {
     aggregations: state[props.storeKey].aggregations,
     templates: state.templates,
     search: state[props.storeKey].search,
-    documentTypes: state[props.storeKey].filters.get('documentTypes')
+    documentTypes: state[props.storeKey].filters.get('documentTypes'),
+    dateFormat: state.settings.collection.get('dateFormat')
   };
 }
 

@@ -17,7 +17,11 @@ describe('UploadsRoute', () => {
   let component;
   let instance;
   let context;
-  let props = {};
+  let props = {
+    location: {
+      query: {}
+    }
+  };
   let templates = [
     {name: 'Decision', _id: 'abc1', properties: [{name: 'p', filter: true, type: 'text', prioritySorting: true}]},
     {name: 'Ruling', _id: 'abc2', properties: []}

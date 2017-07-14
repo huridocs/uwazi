@@ -4,33 +4,45 @@
   display: flex;
   -webkit-align-items: center;
   align-items: center;
-  padding: 0 0 0 5px;
-  margin: 0;
   z-index: 1;
+  margin-top: -6px;
   border: 1px solid transparent;
   
   &:hover {
     background: $c-grey-lighten;
-    border-bottom-color: $c-grey;
-    padding: 3px 5px 3px 10px;
-    margin-top: -3px;
-    margin-right: -5px;
   }
   &.is-active {
     -webkit-align-items: flex-start;
     align-items: flex-start;
-    padding: 10px 3px 10px 15px;
-    margin-top: -10px;
-    margin-right: -3px;
     border-radius: $border-radius;
     background: $c-white;
     box-shadow: $box-shadow;
     border-color: $c-grey;
   }
-  
+}
+
+.Dropdown {
   .fa {
+    position: relative;
+    left: 4px;
     color: $c-primary;
-    margin-left: 3px;
+  }
+  
+  .fa-caret-down {
+    top: 4px;
+  }
+  .fa-caret-up {
+    display: none;
+    top: 3px;
+  }
+}
+
+.Dropdown.is-active {
+  .fa-caret-down {
+    display: none;
+  }
+  .fa-caret-up {
+    display: block;
   }
 }
 
@@ -50,15 +62,14 @@
   display: none;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
-  -webkit-justify-content: flex-end;
-  justify-content: flex-end;
   width: 100%;
   line-height: 1.75em;
   cursor: pointer;
   order: 1;
   font-weight: normal;
   color: $c-primary !important;
-
+  z-index: 1;
+  
   &.is-active {
     order: 0;
     display: -webkit-flex;
@@ -71,17 +82,24 @@
 .Dropdown-option {
   -webkit-flex-direction: column;
   flex-direction: column;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
 }
 
-.Dropdown-option__item.is-active {
-  span:first-child {
-    font-weight: normal;
-    margin-right: 7px;
-    opacity: 0.6;
-    
-    @media(max-width: 767px) {
-      display: none;
-    }
+.Dropdown-option__item {
+    padding: 3px 7px 2px;
+}
+
+.Dropdown:hover,
+.Dropdown.is-active {
+  
+  span {
+    opacity: 1;
+  }
+
+  .Dropdown-option__item.is-active,
+  .fa {
+    color: $c-black !important;
   }
 }
 
@@ -90,17 +108,5 @@
   .Dropdown-option__item {
     display: -webkit-flex;
     display: flex;
-  }
-  
-  .Dropdown-option__item.is-active {
-    width: calc(100% + 28px);
-    padding-top: 10px;
-    margin: -10px 0px 0 -15px;
-    padding-right: 13px;
-    background: $c-grey-lighten;
-  }
-  
-  .fa {
-    margin-top: 5px;
   }
 }

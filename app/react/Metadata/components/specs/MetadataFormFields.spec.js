@@ -2,8 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {MetadataFormFields} from '../MetadataFormFields';
-import {FormGroup} from 'app/Forms';
-import {Select, MultiSelect, DatePicker} from 'app/ReactReduxForms';
+import {Select, MultiSelect, DatePicker, FormGroup} from 'app/ReactReduxForms';
 import {fromJS} from 'immutable';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 

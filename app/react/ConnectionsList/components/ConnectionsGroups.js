@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 
 import ShowIf from 'app/App/ShowIf';
 
-import SearchBar from './SearchBar';
 import ConnectionsGroup from './ConnectionsGroup';
 
 export class ConnectionsGroups extends Component {
@@ -14,7 +13,6 @@ export class ConnectionsGroups extends Component {
     return (
       <ShowIf if={Boolean(connectionsGroups.size)}>
         <div>
-          <SearchBar />
           <div className="nested-selector">
             <ul className="multiselect is-active">
               {connectionsGroups.map(group =>

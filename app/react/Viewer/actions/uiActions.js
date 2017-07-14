@@ -3,6 +3,7 @@ import {actions} from 'app/BasicReducer';
 import scroller from 'app/Viewer/utils/Scroller';
 import {setTargetSelection} from 'app/Viewer/actions/selectionActions';
 import {events} from 'app/utils';
+import Marker from 'app/Viewer/utils/Marker.js';
 
 export function closePanel() {
   return {
@@ -51,6 +52,29 @@ export function goToActive(value = true) {
     type: types.GO_TO_ACTIVE,
     value
   };
+}
+
+export function highlightSnippets(snippets) {
+  let highlights = snippets.map((snippet) => {
+    return snippet.get('text')
+    .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, '\\s*')
+    .replace(/\n/g, '\\s*');
+  })
+  .filter((elem, pos, arr) => {
+    return arr.indexOf(elem) === pos;
+  });
+
+  Marker.unmark();
+  highlights.forEach((highlightRegExp) => {
+    let regexp = new RegExp(highlightRegExp);
+    Marker.markRegExp(regexp, {separateWordSearch: false, acrossElements: true});
+  });
+}
+
+export function scrollToPage(page) {
+  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 100, dividerOffset: 1});
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {

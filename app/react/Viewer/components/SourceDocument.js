@@ -13,6 +13,7 @@ const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeRefer
 
 const mapStateToProps = ({user, documentViewer}) => {
   return {
+    snippets: documentViewer.sidepanel.snippets,
     selection: selectSourceRange(documentViewer),
     doScrollToActive: documentViewer.uiState.get('goToActive'),
     doc: documentViewer.doc,

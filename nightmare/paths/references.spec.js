@@ -27,8 +27,7 @@ describe('references path', () => {
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
       .then((itemName) => {
         return nightmare
-        .write(selectors.libraryView.searchInput, itemName)
-        .waitToClick(selectors.libraryView.firstSearchSuggestion)
+        .openDocumentFromLibrary(itemName)
         .wait(selectors.documentView.documentPage)
         .isVisible(selectors.documentView.documentPage)
         .then((result) => {
@@ -56,7 +55,7 @@ describe('references path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
 
     it('should select a word from the second document then click the save button', (done) => {
       nightmare

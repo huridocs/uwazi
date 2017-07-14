@@ -23,11 +23,21 @@ export default class DateRange extends Component {
         <div>
           <div className="DatePicker__From">
             <span>{t('System', 'Label date "From"', 'From:')}&nbsp;</span>
-              <DatePicker value={this.state.from} onChange={(val) => this.onChange('from', val)}/>
+              <DatePicker
+                locale={this.props.locale}
+                format={this.props.format}
+                value={this.state.from}
+                onChange={(val) => this.onChange('from', val)}
+              />
           </div>
           <div className="DatePicker__To">
             <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
-              <DatePicker value={this.state.to} onChange={(val) => this.onChange('to', val)}/>
+              <DatePicker
+                locale={this.props.locale}
+                format={this.props.format}
+                value={this.state.to}
+                onChange={(val) => this.onChange('to', val)}
+              />
           </div>
         </div>
     );
@@ -38,5 +48,7 @@ export default class DateRange extends Component {
 DateRange.propTypes = {
   model: PropTypes.string,
   value: PropTypes.object,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  locale: PropTypes.string,
+  format: PropTypes.string
 };

@@ -16,6 +16,9 @@ const resetMetadata = (metadata, template, options) => {
     if (assignProperty && property.type !== 'date') {
       metadata[property.name] = '';
     }
+    if (assignProperty && property.type === 'daterange') {
+      metadata[property.name] = {};
+    }
     if (assignProperty && property.type === 'multiselect') {
       metadata[property.name] = [];
     }
@@ -56,6 +59,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 
     dispatch(formActions.reset(form));
     dispatch(formActions.load(form, entity));
+    dispatch(formActions.setPristine(form));
   };
 }
 

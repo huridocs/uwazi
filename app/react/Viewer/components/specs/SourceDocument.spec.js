@@ -13,6 +13,9 @@ describe('SourceDocument', function () {
   let state = {
     user: Immutable.fromJS({_id: 1}),
     documentViewer: {
+      sidepanel: {
+        snippets: Immutable.fromJS([])
+      },
       uiState: Immutable.fromJS({
         reference: {sourceRange: {selection: 'selection'}},
         highlightedReference: 'highlightedReference'

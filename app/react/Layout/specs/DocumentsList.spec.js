@@ -18,6 +18,7 @@ describe('DocumentsList', () => {
       search: {sort: 'sort'},
       filters: Immutable.fromJS({documentTypes: []}),
       clickOnDocument: {apply: jasmine.createSpy('clickOnDocumentApply')},
+      onSnippetClick: jasmine.createSpy('onSnippetClick'),
       searchDocuments: () => {},
       deleteConnection: () => {}
     };
@@ -41,6 +42,12 @@ describe('DocumentsList', () => {
     render();
     expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
     expect(component.find(SortButtons).props().selectedTemplates).toBe(props.filters.get('documentTypes'));
+  });
+
+  it('should pass onClickSnippet to Doc', () => {
+    render();
+    const docProps = component.find(Doc).at(0).props();
+    expect(docProps.onSnippetClick).toBe(props.onSnippetClick);
   });
 
   describe('Clicking on a document', () => {

@@ -34,13 +34,17 @@ export default class DatePicker extends Component {
   }
 
   render() {
+    const locale = this.props.locale || 'en';
+    const format = this.props.format || 'DD/MM/YYYY';
+
     return (
         <DatePickerComponent
-          dateFormat="MMM DD, YYYY"
+          dateFormat={format}
           className="form-control"
           onChange={this.onChange.bind(this)}
           selected={this.state.value}
-          locale='en-gb'
+          locale={locale}
+          placeholderText={format}
           isClearable={true}
           fixedHeight
           showYearDropdown
@@ -53,5 +57,7 @@ export default class DatePicker extends Component {
 DatePicker.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.any,
-  endOfDay: PropTypes.bool
+  endOfDay: PropTypes.bool,
+  locale: PropTypes.string,
+  format: PropTypes.string
 };

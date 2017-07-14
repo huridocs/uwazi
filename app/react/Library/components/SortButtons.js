@@ -56,17 +56,23 @@ export class SortButtons extends Component {
           className={'Dropdown-option ' + (isActive ? 'is-active' : '')}>
         <a className={'Dropdown-option__item ' + (isActive && search.order === firstOrder ? 'is-active' : '')}
            onClick={() => this.handleClick(sortString, firstOrder, treatAs)}>
-           <ShowIf if={isActive && search.order === firstOrder}>
-             <span>{t('System', 'Sort by')}</span>
-           </ShowIf>
            <span>{t(context, label)} ({treatAs !== 'number' ? 'A-Z' : t('System', 'Recently')})</span>
+           <ShowIf if={isActive && search.order === firstOrder}>
+             <i className="fa fa-caret-down"></i>
+           </ShowIf>
+           <ShowIf if={isActive && search.order === firstOrder}>
+             <i className="fa fa-caret-up"></i>
+           </ShowIf>
         </a>
         <a className={'Dropdown-option__item ' + (isActive && search.order === secondOrder ? 'is-active' : '')}
            onClick={() => this.handleClick(sortString, secondOrder, treatAs)}>
-           <ShowIf if={isActive && search.order === secondOrder}>
-             <span>{t('System', 'Sort by')}</span>
-           </ShowIf>
            <span>{t(context, label)} ({treatAs !== 'number' ? 'Z-A' : t('System', 'Least recently')})</span>
+           <ShowIf if={isActive && search.order === secondOrder}>
+             <i className="fa fa-caret-down"></i>
+           </ShowIf>
+           <ShowIf if={isActive && search.order === secondOrder}>
+             <i className="fa fa-caret-up"></i>
+           </ShowIf>
         </a>
       </li>
     );
@@ -108,13 +114,14 @@ export class SortButtons extends Component {
     const order = search.order === 'asc' ? 'up' : 'down';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
-      <div className={'Dropdown order-by u-floatRight ' + (this.state.active ? 'is-active' : '')}>
-        <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-          {this.createSortItem(0, 'title', 'System', 'Title', {isActive: search.sort === 'title', search, treatAs: 'string'})}
-          {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
-          {additionalSorts}
-        </ul>
-        <i className="fa fa-caret-down"></i>
+      <div className="sort-buttons">
+        <div className={'Dropdown order-by ' + (this.state.active ? 'is-active' : '')}>
+          <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
+            {this.createSortItem(0, 'title', 'System', 'Title', {isActive: search.sort === 'title', search, treatAs: 'string'})}
+            {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
+            {additionalSorts}
+          </ul>
+        </div>
       </div>
     );
   }
