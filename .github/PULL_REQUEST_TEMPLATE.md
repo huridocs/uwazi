@@ -7,6 +7,7 @@ PR check list:
 - [ ] End-to-end test
 - [ ] Pass code linter to client and server
 - [ ] Update READ.me ?
+- [ ] Update API documentation ?
 
 QA check list:
 
