@@ -26,4 +26,5 @@ export default (app, server) => {
   require('./settings/routes.js')(app);
   require('./i18n/routes.js')(app);
   require('./attachments/routes.js')(app);
+  require('./swagger/swaggerconfig.js')(app);
 };

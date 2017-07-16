@@ -19,46 +19,9 @@ const storage = multer.diskStorage({
   }
 });
 
-/**
-* @swagger
-* definition:
-*   Error:
-*     properties:
-*       error:
-*         type: string
-*/
-
 export default (app) => {
   let upload = multer({storage});
 
-  /**
-  * @swagger
-  * /attachments/download:
-  *   get:
-  *     tags:
-  *       - attachments
-  *     description: Returns the attachments for a document
-  *     parameters:
-  *       - name: _id
-  *         description: _id of the attachment requested
-  *         in:  query
-  *         required: true
-  *         type: string
-  *       - name: file
-  *         description: file name of the attachment requested
-  *         in:  query
-  *         required: true
-  *         type: string
-  *     responses:
-  *       200:
-  *         description: The original file
-  *         schema:
-  *           type: file
-  *       500:
-  *          description: Server error
-  *          schema:
-  *           $ref: '#/definitions/Error'
-  */
   app.get('/api/attachments/download', (req, res) => {
     entities.getById(req.query._id)
     .then(response => {
