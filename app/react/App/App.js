@@ -6,7 +6,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import './scss/styles.scss';
-import './scss/fixes.scss';
 
 import Notifications from 'app/Notifications';
 import Menu from './Menu';

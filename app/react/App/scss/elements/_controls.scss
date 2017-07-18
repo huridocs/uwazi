@@ -28,6 +28,8 @@
 
 .form-control {
   height: 32px;
+  border-color: $c-grey;
+  box-shadow: none;
 }
 
 .form-group {
@@ -112,6 +114,9 @@
   }
 }
 
+.error {
+  display: inherit;
+}
 
 .btn {
   outline: none !important;

@@ -61,16 +61,10 @@ export class FiltersForm extends Component {
       <div className="filters-box">
         {(() => {
           let activeTypes = templates.filter((template) => documentTypes.includes(template.get('_id')));
-
-          if (documentTypes.length === 0) {
-            return <div className="empty-state select-type">
-                    <i className="fa fa-arrow-up"></i><b>{t('System', 'Select to start filtering')}</b>
-                  </div>;
-          }
-
-          if (activeTypes.length > 0 && fields.length === 0) {
+          if (activeTypes.size > 0 && fields.length === 0) {
             return <div className="empty-state no-filters">
-                    <i className="fa fa-close"></i><b>{t('System', 'No common filters')}</b>
+                    <i className="fa fa-close"></i>
+                    <span>{t('System', 'No common filters')}</span>
                   </div>;
           }
         })()}
