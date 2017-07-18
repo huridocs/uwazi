@@ -13,7 +13,7 @@
 .search-box {
   position: relative;
   display: block;
-  width: 100%;
+  width: calc(100% - 100px);
   @media(min-width: 1024px) {
     width: 66.25%;
   }

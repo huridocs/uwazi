@@ -92,6 +92,12 @@
 
     button {
       margin-left: 3px;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      border-radius: 50%;
+      padding: 0;
+      text-align: center;
     }
   }
 
@@ -409,12 +415,28 @@ $item-padding: 15px;
 
 /* Charts */
 .listChart-toggleButtons {
-  height: 28px;
+  position: relative;
+  &.is-list {
+    margin-bottom: 0;
+  }
+  &.is-chart {
+    height: $header-height * 0.88;
+  }
   .buttons-group {
-    float: right;
+    position: absolute;
+    right: 0;
+    height: 28px;
+    margin: 0;
+    z-index: 1;
 
     button {
       margin-left: 3px;
+      height: $header-height * 0.88;
+      line-height: $header-height * 0.88;
+      width: $header-height * 0.88;
+      border-radius: 50%;
+      padding: 0;
+      text-align: center;
     }
   }
 }

@@ -17,7 +17,7 @@ export class ListChartToggleButtons extends Component {
 
   render() {
     return (
-      <div className="search-list listChart-toggleButtons">
+      <div className={`search-list listChart-toggleButtons ${this.props.active === 'chart' ? 'is-chart' : 'is-list'}`}>
         <div className="buttons-group">
           <button className={`btn ${this.props.active !== 'chart' ? 'btn-success' : 'btn-default'}`}
                   onClick={this.changeView.bind(this, 'list')}>
