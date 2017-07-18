@@ -29,7 +29,8 @@ describe('PageView', () => {
     spyOn(ThesaurisAPI, 'get').and.returnValue(Promise.resolve('thesauris'));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
-      params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number']
+      params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number'],
+      options: [{}, {limit: 9}, {limit: 0}, {limit: 12}]
     });
 
     RouteHandler.renderedFromServer = true;
@@ -53,14 +54,14 @@ describe('PageView', () => {
       .catch(done.fail);
     });
 
-    it('should request each list inside the content limited to 6 items and set the state', (done) => {
+    it('should request each list inside the content limited to 6 items (default) or the passed value and set the state', (done) => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
         expect(api.search.calls.count()).toBe(4);
         expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({a: 1, b: 2, limit: '6'});
-        expect(api.search.calls.argsFor(1)[0]).toEqual({filters: {}, types: [], limit: '6'});
+        expect(api.search.calls.argsFor(1)[0]).toEqual({filters: {}, types: [], limit: '9'});
         expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({x: 1, y: ['array'], limit: '6'});
-        expect(api.search.calls.argsFor(3)[0]).toEqual({filters: {}, types: [], limit: '6'});
+        expect(api.search.calls.argsFor(3)[0]).toEqual({filters: {}, types: [], limit: '12'});
 
         expect(response.page.itemLists.length).toBe(4);
 
