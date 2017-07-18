@@ -11,6 +11,7 @@ var express = require('express');
 var path = require('path');
 var compression = require('compression');
 const app = express();
+
 var http = require('http').Server(app);
 var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 
