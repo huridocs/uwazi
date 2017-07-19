@@ -9,17 +9,18 @@ import LibraryChart from './LibraryChart';
 
 export class LibraryCharts extends Component {
 
-  aggregations(item) {
-    let aggregations = this.props.aggregations.toJS();
-    let buckets = aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
-    let found = buckets.find((agg) => agg.key === item.id);
+  itemResults(item) {
+    const aggregations = this.aggregations;
+    const buckets = aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
+    const found = buckets.find((agg) => agg.key === item.id);
+
     if (found) {
       return found.filtered.doc_count;
     }
 
     if (item.items) {
       return item.items.reduce((result, _item) => {
-        return result + this.aggregations(_item);
+        return result + this.itemResults(_item);
       }, 0);
     }
 
@@ -40,30 +41,34 @@ export class LibraryCharts extends Component {
     }
 
     const fields = [{options: items.map(item => {
-      return {label: t(item.id, item.name), results: this.aggregations(item)};
+      return {label: t(item.id, item.name), results: this.itemResults(item)};
     }), label: t('System', 'Document and entity types')}];
 
     return fields;
   }
 
   render() {
-    let fields;
+    let fields = [];
 
-    if (this.props.aggregations.size && this.props.fields.size) {
-      fields = parseWithAggregations(this.props.fields.toJS(), this.props.aggregations.toJS())
-      .filter(field => (field.type === 'select' || field.type === 'multiselect') && field.options.length)
-      .map(field => {
-        field.options.sort((a, b) => {
-          if (a.results === b.results) {
-            return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
-          }
+    if (this.props.aggregations) {
+      this.aggregations = this.props.aggregations.toJS();
 
-          return b.results - a.results;
+      if (this.props.fields.size) {
+        fields = parseWithAggregations(this.props.fields.toJS(), this.aggregations)
+        .filter(field => (field.type === 'select' || field.type === 'multiselect') && field.options.length)
+        .map(field => {
+          field.options.sort((a, b) => {
+            if (a.results === b.results) {
+              return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+            }
+
+            return b.results - a.results;
+          });
+          return field;
         });
-        return field;
-      });
-    } else {
-      fields = this.conformDocumentTypesToFields();
+      } else {
+        fields = this.conformDocumentTypesToFields();
+      }
     }
 
     return (
