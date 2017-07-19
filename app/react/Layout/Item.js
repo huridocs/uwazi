@@ -37,7 +37,7 @@ export class Item extends Component {
           dlClassName = 'item-property-markdown';
           value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
         }
-        
+
         if (property.type === 'date' || property.type === 'daterange' ||
             property.type === 'multidate' || property.type === 'multidaterange') {
           dlClassName = 'item-property-date';
