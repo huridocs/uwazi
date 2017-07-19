@@ -20,8 +20,7 @@ karmaConfig = {
   singleRun: false,
   frameworks: ['jasmine'],
   files: [
-    './node_modules/phantomjs-polyfill-find/find-polyfill.js',
-    './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
+    './node_modules/babel-polyfill/browser.js',
     'tests.webpack.js'
   ],
   plugins: [
@@ -63,7 +62,7 @@ module.exports = function (config) {
       //enforce: 'pre',
       //test: /\.js$/,
       //include: [
-        //path.join(__dirname, 'public'), 
+        //path.join(__dirname, 'public'),
         //path.join(__dirname, 'app'),
         //path.join(__dirname, 'node_modules/react-widgets/lib/fonts/'),
         //path.join(__dirname, 'node_modules/font-awesome/fonts/'),
