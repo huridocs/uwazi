@@ -255,17 +255,25 @@ $item-padding: 15px;
   }
   dt {
     margin: 6px 0 2px;
+    font-style: normal;
+    font-size: $f-size-xs;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
   }
-  @media(min-width: 1024px) {
-    dt {
-      @include tooltip('top-left');
-    }
+  .item-property-default {
+    @media(min-width: 1024px) {
+      dt {
+        @include tooltip('top-left');
+      }
 
-    dl:hover dt {
-      display: block;
-    }
-    dl:hover dd {
-      border-bottom: 1px solid $c-grey;
+      &:hover dt {
+        display: block;
+        font-size: $f-size-xs;
+        opacity: 1;
+      }
+      &:hover dd {
+        border-bottom: 1px solid $c-grey;
+      }
     }
   }
 

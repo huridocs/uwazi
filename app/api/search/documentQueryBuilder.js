@@ -12,7 +12,10 @@ export default function () {
     size: 30,
     query: {
       bool: {
-        must: [{match: {published: true}}]
+        must: [],
+        filter: [
+          {term: {published: true}}
+        ]
       }
     },
     sort: [],
@@ -49,9 +52,9 @@ export default function () {
     },
 
     includeUnpublished() {
-      const matchPulished = baseQuery.query.bool.must.find(i => i.match && i.match.published);
+      const matchPulished = baseQuery.query.bool.filter.find(i => i.term && i.term.published);
       if (matchPulished) {
-        baseQuery.query.bool.must.splice(baseQuery.query.bool.must.indexOf(matchPulished), 1);
+        baseQuery.query.bool.filter.splice(baseQuery.query.bool.filter.indexOf(matchPulished), 1);
       }
       return this;
     },
@@ -117,14 +120,14 @@ export default function () {
     },
 
     language(language) {
-      let match = {match: {language: language}};
-      baseQuery.query.bool.must.push(match);
+      let match = {term: {language: language}};
+      baseQuery.query.bool.filter.push(match);
       aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       return this;
     },
 
     unpublished() {
-      baseQuery.query.bool.must[0].match.published = false;
+      baseQuery.query.bool.filter[0].term.published = false;
       baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
       return this;
     },
@@ -399,7 +402,7 @@ export default function () {
               {terms: {template: _templates}}
             ]
           }};
-        baseQuery.query.bool.must.push(match);
+        baseQuery.query.bool.filter.push(match);
         return this;
       }
 
@@ -420,7 +423,7 @@ export default function () {
       }
       if (_ids.length) {
         let match = {terms: {'sharedId.raw': _ids}};
-        baseQuery.query.bool.must.push(match);
+        baseQuery.query.bool.filter.push(match);
       }
       return this;
     },

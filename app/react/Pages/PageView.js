@@ -14,7 +14,7 @@ import pageItemLists from './utils/pageItemLists';
 function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
 
-  listsData.searchs = listsData.params.map(params => {
+  listsData.searchs = listsData.params.map((params, index) => {
     const sanitizedParams = params ? decodeURI(params) : '';
     const queryDefault = {filters: {}, types: []};
     let query = queryDefault;
@@ -26,7 +26,7 @@ function prepareLists(page) {
       }
     }
 
-    query.limit = '6';
+    query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
     return api.search(query);
   });
 

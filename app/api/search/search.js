@@ -115,7 +115,6 @@ export default {
     .filterById(sharedId)
     .language(language)
     .query();
-
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       if (response.hits.hits.length === 0) {
