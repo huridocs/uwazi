@@ -74,7 +74,7 @@
     "prop-types": "15.5.7",
     "query-string": "4.3.1",
     "react": "15.5.4",
-    "react-addons-perf": "15.5.0",
+    "react-addons-perf": "15.4.2",
     "react-addons-shallow-compare": "15.5.0",
     "react-datepicker": "0.46.0",
     "react-dnd": "2.1.4",
