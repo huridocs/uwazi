@@ -6,6 +6,8 @@ import searchAPI from 'app/Search/SearchAPI';
 import libraryHelpers from '../helpers/libraryFilters';
 import Library from 'app/Library/Library';
 import DocumentsList from 'app/Library/components/DocumentsList';
+import LibraryCharts from 'app/Charts/components/LibraryCharts';
+import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
@@ -27,7 +29,7 @@ describe('Library', () => {
   let component;
   let instance;
   let context;
-  let props = {location: {query: {q: {}}}};
+  let props = {location: {query: {q: '(a:1)'}}};
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
@@ -38,8 +40,20 @@ describe('Library', () => {
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
   });
 
-  it('should render the DocumentsList', () => {
+  it('should render the DocumentsList (by default)', () => {
     expect(component.find(DocumentsList).length).toBe(1);
+    expect(component.find(DocumentsList).props().storeKey).toBe('library');
+    expect(component.find(ListChartToggleButtons).props().active).toBe('list');
+  });
+
+  it('should render the LibraryCharts (if query type is chart)', () => {
+    props.location.query.view = 'chart';
+    component = shallow(<Library {...props}/>, {context});
+
+    expect(component.find(DocumentsList).length).toBe(0);
+    expect(component.find(LibraryCharts).length).toBe(1);
+    expect(component.find(LibraryCharts).props().storeKey).toBe('library');
+    expect(component.find(ListChartToggleButtons).props().active).toBe('chart');
   });
 
   describe('static requestState()', () => {
@@ -91,21 +105,21 @@ describe('Library', () => {
     });
   });
 
-  // describe('componentWillReceiveProps()', () => {
-  //   beforeEach(() => {
-  //     props.location = {query: {q: '(a:1)'}};
-  //     component = shallow(<Library {...props}/>, {context});
-  //     instance = component.instance();
-  //     spyOn(instance, 'componentWillReceiveProps').and.callThrough();
-  //     console.log('ROOT:', instance.parent);
-  //     spyOn(component.root.instance(), 'componentWillReceiveProps');
-  //   });
+  describe('componentWillReceiveProps()', () => {
+    beforeEach(() => {
+      instance.superComponentWillReceiveProps = jasmine.createSpy('superComponentWillReceiveProps');
+    });
 
-  //   fit('should update if Q has changed', () => {
-  //     const nextProps = {location: {query: {q: '(a:2)'}}};
-  //     instance.componentWillReceiveProps(nextProps);
-  //     console.log(instance.componentWillReceiveProps.calls.count());
-  //     expect(instance.componentWillReceiveProps).toHaveBeenCalledWith(nextProps);
-  //   });
-  // });
+    it('should update if "q" has changed', () => {
+      const nextProps = {location: {query: {q: '(a:2)'}}};
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.superComponentWillReceiveProps).toHaveBeenCalledWith(nextProps);
+    });
+
+    it('should not update if "q" is the same', () => {
+      const nextProps = {location: {query: {q: '(a:1)'}}};
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.superComponentWillReceiveProps).not.toHaveBeenCalled();
+    });
+  });
 });

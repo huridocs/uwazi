@@ -22,6 +22,11 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Library extends RouteHandler {
 
+  constructor(props, context) {
+    super(props, context);
+    this.superComponentWillReceiveProps = super.componentWillReceiveProps;
+  }
+
   static renderTools() {
     return (
       <div className="searchBox">
@@ -65,17 +70,14 @@ export default class Library extends RouteHandler {
     wrapDispatch(this.context.store.dispatch, 'library')(enterLibrary());
   }
 
-  // TEST!!!! How do you test SUPER?
   componentWillReceiveProps(nextProps) {
     if (nextProps.location.query.q !== this.props.location.query.q) {
-      return super.componentWillReceiveProps(nextProps);
+      return this.superComponentWillReceiveProps(nextProps);
     }
   }
-  // ---------
 
   render() {
     let query = rison.decode(this.props.location.query.q || '()');
-    // TEST!!!
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? <DocumentsList storeKey="library"/> : <LibraryCharts storeKey="library" />;
 
