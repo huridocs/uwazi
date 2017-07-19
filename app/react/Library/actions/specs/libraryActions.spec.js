@@ -91,6 +91,15 @@ describe('libraryActions', () => {
     });
   });
 
+  describe('encodeSearch', () => {
+    it('should return a query string with ?q= at the beginning by default', () => {
+      expect(actions.encodeSearch({a: 1, b: 'z'})).toBe('?q=(a:1,b:z)');
+    });
+    it('should allow returning a rison query value, not appending the ?q= when other options may be found in the URL', () => {
+      expect(actions.encodeSearch({a: 1, b: 'z'}, false)).toBe('(a:1,b:z)');
+    });
+  });
+
   describe('async action', () => {
     let dispatch;
     beforeEach(() => {
@@ -143,7 +152,7 @@ describe('libraryActions', () => {
         };
         const limit = 'limit';
         spyOn(browserHistory, 'push');
-        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library'});
+        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library', query: {view: 'chart'}});
         actions.searchDocuments(query, storeKey, limit)(dispatch, getState);
         const expected = Object.assign({}, query);
         expected.filters = {
@@ -156,7 +165,7 @@ describe('libraryActions', () => {
         expected.types = ['decision'];
         expected.limit = limit;
 
-        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
+        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
       });
 
       it('should dispatch a HIDE_SUGGESTIONS action', () => {

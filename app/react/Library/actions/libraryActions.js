@@ -94,7 +94,6 @@ export function processFilters(readOnlySearch, filters, limit) {
   return search;
 }
 
-// TEST!!! appendQ
 export function encodeSearch(search, appendQ = true) {
   Object.keys(search).forEach((key) => {
     if (search[key] && search[key].length === 0) {
@@ -125,10 +124,9 @@ export function searchDocuments(readOnlySearch, storeKey, limit) {
 
     const pathname = browserHistory.getCurrentLocation().pathname;
     const path = (pathname + '/').replace(/\/\//g, '/');
-    const query = browserHistory.getCurrentLocation().query;
-    // TEST!!!
-    query.q = encodeSearch(search, false);
+    const query = browserHistory.getCurrentLocation().query || {};
 
+    query.q = encodeSearch(search, false);
     browserHistory.push(path + toUrlParams(query));
   };
 }
