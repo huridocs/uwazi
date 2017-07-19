@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {t} from 'app/I18N';
 
 import Pie from './Pie';
 import Bar from './Bar';
@@ -24,7 +25,7 @@ export class LibraryChart extends Component {
       }
 
       if (optionIndex === maxPieItems) {
-        clusteredResults.push({label: 'other', results: option.results});
+        clusteredResults.push({label: t('System', 'Other'), results: option.results});
       }
 
       if (optionIndex > maxPieItems) {

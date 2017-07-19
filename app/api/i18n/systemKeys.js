@@ -96,6 +96,7 @@ export default [
 {key: 'No type', label: 'No type'},
 {key: 'No', label: 'No'},
 {key: 'Order', label: 'Order'},
+{key: 'Other', label: 'Other'},
 {key: 'Pages', label: 'Pages'},
 {key: 'Password updated', label: 'Password updated'},
 {key: 'Password', label: 'Password'},
