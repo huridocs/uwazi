@@ -76,7 +76,6 @@ export default {
           g.templates = g.templates.map(excludeRefs);
         });
       }
-
       return groupedReferences;
     });
   },
