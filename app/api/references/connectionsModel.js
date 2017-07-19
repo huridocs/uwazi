@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 import instanceModel from 'api/odm';
 
 const connectionSchema = new mongoose.Schema({
-  sourceDocument: String,
+  sourceDocument: {type: String, index: true},
   sourceProperty: String,
   sourceType: String,
   relationType: String,
-  targetDocument: String,
+  targetDocument: {type: String, index: true},
   sourceRange: {
     start: Number,
     end: Number,

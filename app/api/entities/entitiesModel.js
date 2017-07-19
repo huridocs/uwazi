@@ -91,7 +91,7 @@ import instanceModel from 'api/odm';
 
 const entitySchema = new mongoose.Schema({
   language: String,
-  sharedId: String,
+  sharedId: {type: String, index: true},
   type: String,
   title: String,
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
