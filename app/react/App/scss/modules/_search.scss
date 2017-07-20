@@ -774,31 +774,25 @@ label.multiselectItem-label {
   list-style: none;
   
   li {
-    height: 50px;
-    margin: 15px 15px 15px 20px;
-    padding-bottom: 15px;
+    padding: 10px 15px 10px 0;
     font-size: $f-size-sm;
     line-height: 1.8em;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   
   li:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
   a {
-    position: relative;
-    margin-right: 15px;
-    border-bottom: 1px dotted $c-primary;
-    &:after {
-      content: '-';
-      position: absolute;
-      right: -9px;
-    }
+    padding: 15px;
   }
   
   b {
-    color: #9a9b02;
-    background-color: transparentize(yellow, 0.4);
-    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
+    font-weight: normal;
+    color: #333300;
+    background-color: transparentize(yellow, 0.8);
+    // box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }

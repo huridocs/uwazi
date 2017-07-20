@@ -151,7 +151,7 @@ export class SelectMultiplePanel extends Component {
             <ul className="entities-list">
               {entitiesSelected.map((entity, index) => {
                 return <li key={index}>
-                  <span className="entity-title">{entity.get('title')}</span>&nbsp;
+                  <span className="entity-title">{entity.get('title')}</span>
                   <TemplateLabel template={entity.get('template')}/>
                 </li>;
               })}
