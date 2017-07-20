@@ -86,7 +86,7 @@ export class SearchText extends Component {
                 <I18NLink
                   onClick={() => this.props.scrollToPage(snippet.page)}
                   to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${this.props.searchTerm || ''}`}>
-                  page {snippet.page}
+                  {snippet.page}
                 </I18NLink>
                 <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
               </li>);
