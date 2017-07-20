@@ -11,6 +11,7 @@ export class LibraryChart extends Component {
   constructor(props) {
     super(props);
     this.state = {type: 'pie'};
+    this.maxPieItems = 14;
   }
 
   assignType(type) {
@@ -18,17 +19,16 @@ export class LibraryChart extends Component {
   }
 
   clusterResults(options) {
-    const maxPieItems = 14;
     return options.reduce((clusteredResults, option, optionIndex) => {
-      if (optionIndex < maxPieItems) {
+      if (optionIndex < this.maxPieItems) {
         clusteredResults.push(option);
       }
 
-      if (optionIndex === maxPieItems) {
+      if (optionIndex === this.maxPieItems) {
         clusteredResults.push({label: t('System', 'Other'), results: option.results});
       }
 
-      if (optionIndex > maxPieItems) {
+      if (optionIndex > this.maxPieItems) {
         clusteredResults[clusteredResults.length - 1].results += option.results;
       }
 
