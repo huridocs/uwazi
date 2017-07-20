@@ -5,7 +5,7 @@ import {fromJS} from 'immutable';
 import {LibraryCharts, mapStateToProps} from '../LibraryCharts';
 import LibraryChart from '../LibraryChart';
 
-fdescribe('LibraryCharts', () => {
+describe('LibraryCharts', () => {
   let component;
   let props;
 
