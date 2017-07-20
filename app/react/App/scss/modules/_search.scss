@@ -774,7 +774,7 @@ label.multiselectItem-label {
   list-style: none;
   
   li {
-    padding: 10px 15px;
+    padding: 10px 15px 10px 0;
     font-size: $f-size-sm;
     line-height: 1.8em;
     overflow: hidden;
@@ -786,7 +786,7 @@ label.multiselectItem-label {
     border-bottom: 1px solid $c-grey-light;
   }
   a {
-    margin-right: 15px;
+    padding: 15px;
   }
   
   b {
