@@ -35,5 +35,5 @@ export default (app) => {
     res.send(swaggerSpec);
   });
 
-  app.use('/api', express.static(path.resolve(__dirname, 'ui')));
+  app.use('/api', express.static(path.resolve(__dirname, '../../../public/swaggerUI')));
 };
