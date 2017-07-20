@@ -88,7 +88,7 @@ export class SearchText extends Component {
                   to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${this.props.searchTerm || ''}`}>
                   {snippet.page}
                 </I18NLink>
-                <span dangerouslySetInnerHTML={{__html: snippet.text + ' ...'}}></span>
+                <span dangerouslySetInnerHTML={{__html: snippet.text + ' blablabla blablabla blablabla blablabla...'}}></span>
               </li>);
           })}
         </ul>
