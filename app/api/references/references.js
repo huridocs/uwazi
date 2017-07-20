@@ -45,18 +45,16 @@ export default {
     return model.get({$or: [{targetDocument: id}, {sourceDocument: id}]})
     .then((response) => {
       let connections = response.map((connection) => normalizeConnection(connection, id));
-      let requestDocuments = [];
-      connections.forEach((connection) => {
-        let promise = entities.getById(connection.connectedDocument, language)
-        .then((connectedDocument) => {
-          normalizeConnectedDocumentData(connection, connectedDocument);
+      let documentIds = connections.map((connection) => connection.connectedDocument);
+      return entities.get({sharedId: {$in: documentIds}, language})
+      .then((_connectedDocuments) => {
+        const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
+          res[doc.sharedId] = doc;
+          return res;
+        }, {});
+        return connections.map((connection) => {
+          return normalizeConnectedDocumentData(connection, connectedDocuments[connection.connectedDocument]);
         });
-        requestDocuments.push(promise);
-      });
-
-      return Promise.all(requestDocuments)
-      .then(() => {
-        return connections;
       });
     });
   },
