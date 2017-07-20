@@ -14,7 +14,7 @@ import {fromJS as Immutable} from 'immutable';
 import searchAPI from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
-fdescribe('UploadsRoute', () => {
+describe('UploadsRoute', () => {
   let documents = [{title: 'Something to publish'}, {title: 'My best recipes'}];
   let aggregations = [{1: '23'}, {2: '123'}];
   let component;
