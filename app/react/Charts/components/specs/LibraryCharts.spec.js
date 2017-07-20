@@ -70,6 +70,38 @@ fdescribe('LibraryCharts', () => {
     });
   });
 
+  describe('When no valid fields found', () => {
+    beforeEach(() => {
+      props = {
+        aggregations: fromJS({
+          all: {types: {buckets: [
+            {key: 't1', filtered: {doc_count: 5}}, // eslint-disable-line camelcase
+            {key: 't2', filtered: {doc_count: 1}}, // eslint-disable-line camelcase
+            {key: 't3', filtered: {doc_count: 10}}, // eslint-disable-line camelcase
+            {key: 'missing', filtered: {doc_count: 13}} // eslint-disable-line camelcase
+          ]}}
+        }),
+        fields: fromJS([{type: 'not-valid'}]),
+        collection: fromJS({filters: []}),
+        templates: fromJS([
+          {_id: 't1', name: 't1name'},
+          {_id: 't2', name: 't2name'},
+          {_id: 't3', name: 't3name'}
+        ])
+      };
+    });
+
+    it('should render templates types on LibraryChart', () => {
+      render();
+      expect(component.find(LibraryChart).length).toBe(1);
+      const LibraryChartElement = component.find(LibraryChart);
+
+      expect(LibraryChartElement.props().options[0]).toEqual({label: 't1name', results: 5});
+      expect(LibraryChartElement.props().options[1]).toEqual({label: 't2name', results: 1});
+      expect(LibraryChartElement.props().options[2]).toEqual({label: 't3name', results: 10});
+    });
+  });
+
   describe('When fields found', () => {
     beforeEach(() => {
       props = {

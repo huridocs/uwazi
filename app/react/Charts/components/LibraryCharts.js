@@ -47,6 +47,17 @@ export class LibraryCharts extends Component {
     return fields;
   }
 
+  sortFields(field) {
+    field.options.sort((a, b) => {
+      if (a.results === b.results) {
+        return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+      }
+
+      return b.results - a.results;
+    });
+    return field;
+  }
+
   render() {
     let fields = [];
 
@@ -56,19 +67,10 @@ export class LibraryCharts extends Component {
       if (this.props.fields.size) {
         fields = parseWithAggregations(this.props.fields.toJS(), this.aggregations)
         .filter(field => (field.type === 'select' || field.type === 'multiselect') && field.options.length)
-        .map(field => {
-          field.options.sort((a, b) => {
-            if (a.results === b.results) {
-              return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
-            }
-
-            return b.results - a.results;
-          });
-          return field;
-        });
-      } else {
-        fields = this.conformDocumentTypesToFields();
+        .map(this.sortFields);
       }
+
+      fields = fields.length ? fields : this.conformDocumentTypesToFields();
     }
 
     return (
