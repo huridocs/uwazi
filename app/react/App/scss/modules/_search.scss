@@ -786,18 +786,13 @@ label.multiselectItem-label {
     border-bottom: 1px solid $c-grey-light;
   }
   a {
-    position: relative;
     margin-right: 15px;
-    &:after {
-      content: '-';
-      position: absolute;
-      right: -9px;
-    }
   }
   
   b {
-    color: #9a9b02;
-    background-color: transparentize(yellow, 0.4);
-    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
+    font-weight: normal;
+    color: #333300;
+    background-color: transparentize(yellow, 0.8);
+    // box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }
