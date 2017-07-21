@@ -47,11 +47,9 @@ export class Attachment extends Component {
     const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
-    let name = <div className="item-info">
-                 <div className="item-name">{file.originalname}</div>
-               </div>;
+    let name = <span>{file.originalname}</span>;
 
-    let buttons = <div className="item-shortcut-group">
+    let buttons = <div>
                     <NeedAuthorization roles={['admin', 'editor']}>
                       <ShowIf if={!this.props.readOnly}>
                         <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
@@ -71,11 +69,13 @@ export class Attachment extends Component {
                         <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
                       </ShowIf>
                     </NeedAuthorization>
+                    {/*
                     <a className="item-shortcut btn btn-default"
                       href={item.downloadHref}
                       target="_blank">
                       <i className="fa fa-download"></i>
                     </a>
+                    */}
                   </div>;
 
     if (this.props.beingEdited && !this.props.readOnly) {
@@ -96,41 +96,30 @@ export class Attachment extends Component {
 
 
     return (
-      <div className={`item highlight-hover ${item.itemClassName}`}>
+      <code>
 
-        {name}
-
-        <ShowIf if={Boolean(sizeString)}>
-          <div className="item-metadata">
-            <dl>
-              <dt>{t('System', 'Size')}</dt>
-              <dd>{sizeString}</dd>
-            </dl>
-          </div>
-        </ShowIf>
-
-        <div className="item-actions">
-          <div className="item-label-group">
-            <span className={`item-type item-type-${item.typeClassName}`}>
-              <i className={`fa fa-${item.icon} item-type__icon`}></i>
-              <span className="item-type__name">{this.getExtension(file.filename)}</span>
-              <ShowIf if={isSourceDocument}>
-                <span className="label label-success">
-                  <ShowIf if={!this.props.readOnly}>
-                    <span>
-                      &nbsp;
-                      <i className="fa fa-arrow-left"></i>
-                      <span>You are reading this document</span>
-                    </span>
-                  </ShowIf>
-                </span>
-              </ShowIf>
+        <a className="download-thumbnail" href={item.downloadHref}>
+          <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
+            <span>
+              <i className="fa fa-file-pdf-o"></i> pdf
             </span>
-          </div>
-
+          </ShowIf>
+          <ShowIf if={this.getExtension(file.filename) === 'png' ||
+              this.getExtension(file.filename) === 'gif' ||
+              this.getExtension(file.filename) === 'jpg'}>
+              <img src ={item.downloadHref} />
+          </ShowIf>
+        </a>
+        <span>
+          <ShowIf if={isSourceDocument && !this.props.readOnly}>
+            <i className="fa fa-circle label-success"></i>
+          </ShowIf>
+          {name}
+        </span>
+        <div className="download-buttons">
           {buttons}
         </div>
-      </div>
+      </code>
     );
   }
 }

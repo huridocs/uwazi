@@ -154,25 +154,28 @@ export class DocumentSidePanel extends Component {
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
-              <li>
+              {/*<li>
                 <TabLink to="attachments">
                   <i className="fa fa-download"></i>
                   <span className="connectionsNumber">{attachments.length}</span>
                   <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
                 </TabLink>
-              </li>
+              </li>*/}
             </ul>
           </Tabs>
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
-          <MetadataFormButtons
-            delete={this.deleteDocument.bind(this)}
-            data={this.props.doc}
-            formStatePath={this.props.formPath}
-            entityBeingEdited={docBeingEdited}
-            includeViewButton={!docBeingEdited && readOnly}
-            storeKey={this.props.storeKey}
-          />
+          <div className="sidepanel-footer">
+            <UploadAttachment entityId={doc.get('_id')}/>
+            <MetadataFormButtons
+              delete={this.deleteDocument.bind(this)}
+              data={this.props.doc}
+              formStatePath={this.props.formPath}
+              entityBeingEdited={docBeingEdited}
+              includeViewButton={!docBeingEdited && readOnly}
+              storeKey={this.props.storeKey}
+            />
+          </div>
         </ShowIf>
 
         <NeedAuthorization roles={['admin', 'editor']}>
@@ -217,6 +220,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
+
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="text-search">
@@ -246,7 +250,23 @@ export class DocumentSidePanel extends Component {
                   return <EntityForm storeKey={this.props.storeKey} />;
                 }
 
-                return <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />;
+                return (
+                  <div>
+                    <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />
+                    <div className="view">
+                      <dl>
+                        <dt>{attachments.length} Downloads</dt>
+                        <dd>
+                          <AttachmentsList files={fromJS(attachments)}
+                            readOnly={readOnly}
+                            isDocumentAttachments={true}
+                            parentId={doc.get('_id')}
+                            parentSharedId={doc.get('sharedId')} />
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                );
               })()}
             </TabContent>
             <TabContent for="references">
