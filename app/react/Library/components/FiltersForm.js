@@ -108,7 +108,11 @@ export class FiltersForm extends Component {
                           <input
                             id={property.name + 'strict'}
                             type='checkbox'
-                            onChange={() => this.props.activateFilter(property.name, true, fields)}
+                            onChange={() => {
+                              this.autoSearch = true;
+                              this.props.activateFilter(property.name, true, fields);
+                            }
+                          }
                           />
                         </Field>
                         <label htmlFor={property.name + 'strict'}>
