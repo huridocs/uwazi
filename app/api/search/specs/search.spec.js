@@ -232,9 +232,10 @@ describe('search', () => {
         Promise.all([
           search.search({types: [ids.templateMetadata1]}, 'en'),
           search.search({types: [ids.templateMetadata2]}, 'en'),
-          search.search({types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
+          search.search({types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en'),
+          search.search({types: [ids.templateMetadata1], unpublished: true}, 'en', {_id: 'user'})
         ])
-        .then(([template1, template2, both]) => {
+        .then(([template1, template2, both, template1Unpublished]) => {
           const template1Aggs = template1.aggregations.all.select1.buckets;
           expect(template1Aggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(1);
@@ -246,6 +247,10 @@ describe('search', () => {
           const bothAggs = both.aggregations.all.select1.buckets;
           expect(bothAggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(bothAggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(2);
+
+          const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
+          expect(template1UnpubishedAggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(0);
+          expect(template1UnpubishedAggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(0);
           done();
         })
         .catch(catchErrors(done));

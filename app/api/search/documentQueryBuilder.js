@@ -128,7 +128,7 @@ export default function () {
 
     unpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
-      baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
+      aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
       return this;
     },
 
@@ -288,7 +288,7 @@ export default function () {
           match = this.nestedrangeFilter(filters, property);
         }
 
-        baseQuery.query.bool.must.push(match);
+        baseQuery.query.bool.filter.push(match);
         baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       });
       return this;
@@ -304,7 +304,7 @@ export default function () {
           filtered: {
             filter: {
               bool: {
-                must: filters
+                filter: filters
               }
             }
           }
@@ -379,7 +379,7 @@ export default function () {
     aggregations(properties) {
       properties.forEach((property) => {
         let path = `metadata.${property.name}.raw`;
-        let filters = baseQuery.query.bool.must.filter((match) => {
+        let filters = baseQuery.query.bool.filter.filter((match) => {
           return !match.terms || match.terms && !match.terms[path];
         });
 
@@ -408,7 +408,7 @@ export default function () {
 
       if (templates.length) {
         let match = {terms: {template: templates}};
-        baseQuery.query.bool.must.push(match);
+        baseQuery.query.bool.filter.push(match);
       }
       return this;
     },
