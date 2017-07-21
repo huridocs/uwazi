@@ -1,4 +1,19 @@
 import 'isomorphic-fetch';
+import rison from 'rison';
+
+const attemptRisonDecode = (string) => {
+  const errcb = function (e) {
+    throw Error('rison decoder error: ' + e);
+  };
+
+  const risonParser = new rison.parser(errcb); // eslint-disable-line new-cap
+  risonParser.error = function (message) {
+    this.message = message;
+    return;
+  };
+
+  risonParser.parse(string);
+};
 
 export function toUrlParams(_data) {
   let data = Object.assign({}, _data);
@@ -14,7 +29,19 @@ export function toUrlParams(_data) {
     if (typeof data[key] === 'object') {
       data[key] = JSON.stringify(data[key]);
     }
-    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+
+    let encodedValue = encodeURIComponent(data[key]);
+
+    if (encodeURIComponent(key) === 'q') {
+      try {
+        attemptRisonDecode(data[key]);
+        encodedValue = data[key];
+      } catch (err) {
+        encodedValue = encodeURIComponent(data[key]);
+      }
+    }
+
+    return encodeURIComponent(key) + '=' + encodedValue;
   }).filter((param) => param).join('&');
 }
 

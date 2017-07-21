@@ -9,6 +9,7 @@ import rison from 'rison';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import {api as entitiesAPI} from 'app/Entities';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
+import {toUrlParams} from 'shared/JSONRequest';
 
 export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
@@ -93,7 +94,7 @@ export function processFilters(readOnlySearch, filters, limit) {
   return search;
 }
 
-export function encodeSearch(search) {
+export function encodeSearch(search, appendQ = true) {
   Object.keys(search).forEach((key) => {
     if (search[key] && search[key].length === 0) {
       delete search[key];
@@ -107,7 +108,8 @@ export function encodeSearch(search) {
       delete search[key];
     }
   });
-  return '?q=' + rison.encode(search);
+
+  return appendQ ? '?q=' + rison.encode(search) : rison.encode(search);
 }
 
 export function searchDocuments(readOnlySearch, storeKey, limit) {
@@ -122,7 +124,10 @@ export function searchDocuments(readOnlySearch, storeKey, limit) {
 
     const pathname = browserHistory.getCurrentLocation().pathname;
     const path = (pathname + '/').replace(/\/\//g, '/');
-    browserHistory.push(path + encodeSearch(search));
+    const query = browserHistory.getCurrentLocation().query || {};
+
+    query.q = encodeSearch(search, false);
+    browserHistory.push(path + toUrlParams(query));
   };
 }
 
