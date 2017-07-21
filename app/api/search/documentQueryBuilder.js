@@ -129,7 +129,6 @@ export default function () {
     unpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
       aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
-      //aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       return this;
     },
 
