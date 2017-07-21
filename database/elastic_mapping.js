@@ -21,6 +21,10 @@ let config = {
         tokenizer: {
           tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding']
+        },
+        sorter: {
+          tokenizer: 'keyword',
+          filter: ['lowercase', 'asciifolding', 'trim']
         }
       }
     }
@@ -63,7 +67,7 @@ let config = {
             omit_norms: true,
             analyzer: 'tokenizer',
             fields: {
-              raw: {type: 'keyword'}
+              raw: {type: 'text', fielddata: true, analyzer: 'sorter'}
             }
           }
         }
