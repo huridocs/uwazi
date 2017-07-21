@@ -377,14 +377,26 @@
   }
 }
 
+.switcher-wrapper {
+  float:right;
+  span {
+    font-family: $f-regular;
+    font-size: $f-size-xs;
+    color: $c-grey;
+  }
+  span.is-active {
+    color: $c-grey-dark;
+  }
+}
 
 .switcher {
-  $switcher-height: 8px;
+  $switcher-height: 9px;
   position: relative;
   display: inline-block;
   width: 16px;
   height: $switcher-height;
-  margin-left: 6px;
+  margin: 0 3px;
+  top: 1px;
   background-color: $c-grey-light;
   border-radius: $switcher-height / 2;
   cursor: pointer;
@@ -397,11 +409,10 @@
     left: 2px;
     width: $switcher-height - 4;
     height: $switcher-height - 4;
-    background: $c-white;
+    background: $c-grey-dark;
     border-radius: 50%;
   }
   .search__filter.is-active & {
-    background-color: $c-success;
     &:after {
       left: auto;
       right: 2px;
@@ -432,7 +443,7 @@
 }
 
 .multiselectChild {
-  padding-left: 22px;
+  padding: 0 24px;
 }
 
 .multiselectLabel {
@@ -490,7 +501,7 @@
   font-weight: 300;
   line-height: 24px;
   height: 24px;
-  padding-right: 24px;
+  padding-right: 9px;
   color: $c-grey-dark;
 }
 
@@ -509,11 +520,6 @@
   &:hover {
     border-color: $c-black;
     cursor: pointer;
-  }
-
-  .multiselectItem-results & {
-    position: absolute;
-    top: 1px;
   }
 }
 

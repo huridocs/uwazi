@@ -79,7 +79,11 @@ export class FiltersForm extends Component {
                     <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
+                      <div className="switcher-wrapper">
+                        <span className="is-active">AND</span>
+                        <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                        <span>OR</span>
+                      </div>
                     </li>
                     <li className="wide">
                       <MultiSelect
@@ -119,7 +123,6 @@ export class FiltersForm extends Component {
                             <span>&nbsp;Strict mode</span>
                         </label>
                       </div>
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </li>
                     <li className="wide">
                       <NestedMultiselect
@@ -143,7 +146,6 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                   </li>
                   <li className="wide">
                     <DateRange
@@ -166,7 +168,6 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                   </li>
                   <li className="wide">
                     <NumericRange
@@ -188,7 +189,6 @@ export class FiltersForm extends Component {
                     <label>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </label>
                   </li>
                   <li className="wide">
