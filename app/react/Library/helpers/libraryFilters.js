@@ -56,7 +56,8 @@ export function URLQueryToState(query, templates, thesauris) {
 }
 
 export function parseWithAggregations(filters, aggregations) {
-  return filters.map((property) => {
+  return filters.map((_property) => {
+    let property = Object.assign({}, _property);
     if (property.content) {
       property.options = property.options.map((option) => {
         let aggregation;

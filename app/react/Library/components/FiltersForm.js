@@ -53,8 +53,8 @@ export class FiltersForm extends Component {
     const aggregations = this.props.aggregations.toJS();
 
     let translationContext = documentTypes.get(0);
-
-    const fields = libraryHelper.parseWithAggregations(this.props.fields.toJS(), aggregations)
+    const allFields = this.props.fields.toJS();
+    const fields = libraryHelper.parseWithAggregations(allFields.slice(0), aggregations)
     .filter((field) => field.type !== 'select' && field.type !== 'multiselect' || field.options.length);
     const model = this.props.storeKey + '.search';
     return (
@@ -79,7 +79,7 @@ export class FiltersForm extends Component {
                     <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </li>
                     <li className="wide">
                       <MultiSelect
@@ -88,7 +88,7 @@ export class FiltersForm extends Component {
                         options={this.translatedOptions(property)}
                         optionsValue="id" onChange={(options) => {
                           this.autoSearch = true;
-                          this.props.activateFilter(property.name, !!options.length, fields);
+                          this.props.activateFilter(property.name, !!options.length, allFields);
                         }}
                       />
                     </li>
@@ -110,7 +110,7 @@ export class FiltersForm extends Component {
                             type='checkbox'
                             onChange={() => {
                               this.autoSearch = true;
-                              this.props.activateFilter(property.name, true, fields);
+                              this.props.activateFilter(property.name, true, allFields);
                             }
                           }
                           />
@@ -119,7 +119,7 @@ export class FiltersForm extends Component {
                             <span>&nbsp;Strict mode</span>
                         </label>
                       </div>
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </li>
                     <li className="wide">
                       <NestedMultiselect
@@ -128,7 +128,7 @@ export class FiltersForm extends Component {
                         onChange={(options) => {
                           this.autoSearch = true;
                           let active = Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false);
-                          this.props.activateFilter(property.name, active, fields);
+                          this.props.activateFilter(property.name, active, allFields);
                         }}
                       />
                     </li>
@@ -143,14 +143,14 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                   </li>
                   <li className="wide">
                     <DateRange
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
                         this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to), fields);
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
                       }}
                       format={this.props.dateFormat}
                     />
@@ -166,13 +166,13 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                   </li>
                   <li className="wide">
                     <NumericRange
                       model={`.filters.${property.name}`}
                       onChange={(val) => {
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to), fields);
+                        this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
                       }}
                     />
                   </li>
@@ -188,13 +188,13 @@ export class FiltersForm extends Component {
                     <label>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </label>
                   </li>
                   <li className="wide">
                     <input className="form-control" onChange={(e) => {
                       this.autoSearch = true;
-                      this.props.activateFilter(property.name, !!e.target.value, fields);
+                      this.props.activateFilter(property.name, !!e.target.value, allFields);
                     }} />
                   </li>
                 </ul>
