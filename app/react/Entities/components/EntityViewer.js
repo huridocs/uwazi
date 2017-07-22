@@ -97,13 +97,6 @@ export class EntityViewer extends Component {
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
-              <li>
-                <TabLink to="attachments">
-                  <i className="fa fa-download"></i>
-                  <span className="connectionsNumber">{attachments.length}</span>
-                  <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
-                </TabLink>
-              </li>
             </ul>
           </Tabs>
         </div>
@@ -112,12 +105,16 @@ export class EntityViewer extends Component {
 
           <Tabs selectedTab={selectedTab}>
             <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
-              <div className="document">
+              <div className="entity-metadata">
                 {(() => {
                   if (entityBeingEdited) {
                     return <EntityForm/>;
                   }
-                  return <ShowMetadata entity={entity} showTitle={false} showType={false} />;
+                  return <div>
+                    <ShowMetadata entity={entity} showTitle={false} showType={false} />
+                    <AttachmentsList files={Immutable(attachments)}
+                                      parentId={entity._id} />
+                  </div>;
                 })()}
               </div>
             </TabContent>
@@ -128,11 +125,16 @@ export class EntityViewer extends Component {
         </main>
 
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
-          <MetadataFormButtons
-            delete={this.deleteEntity.bind(this)}
-            data={this.props.rawEntity}
-            formStatePath='entityView.entityForm'
-            entityBeingEdited={entityBeingEdited} />
+          <div className="sidepanel-footer">
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <UploadAttachment entityId={entity._id}/>
+            </NeedAuthorization>
+            <MetadataFormButtons
+              delete={this.deleteEntity.bind(this)}
+              data={this.props.rawEntity}
+              formStatePath='entityView.entityForm'
+              entityBeingEdited={entityBeingEdited} />
+          </div>
         </ShowIf>
 
         <SidePanel className={'entity-connections entity-' + this.props.tab} open={this.props.sidepanelOpen}>
@@ -149,22 +151,13 @@ export class EntityViewer extends Component {
             </div>
           </ShowIf>
 
-          <NeedAuthorization roles={['admin', 'editor']}>
-            <ShowIf if={this.props.tab === 'attachments'}>
-              <div className="sidepanel-footer">
-                <UploadAttachment entityId={entity._id}/>
-              </div>
-            </ShowIf>
-          </NeedAuthorization>
-
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
                 <ConnectionsGroups />
               </TabContent>
               <TabContent for="attachments">
-                <AttachmentsList files={Immutable(attachments)}
-                                 parentId={entity._id} />
+                
               </TabContent>
             </Tabs>
           </div>

@@ -8,6 +8,7 @@
   color: $c-grey-dark;
 	border-radius: 0;
 	width: 100%;
+	overflow: hidden;
 	&:not(:first-of-type) {
 		border-top: 1px solid $c-grey-lighten;
 	}
@@ -74,7 +75,27 @@
 	}
 }
 
-.attachment .input-group {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-  font-size: 90%;
+.attachment {
+  .form-group {
+    margin: 0;
+  }
+  .input-group {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 90%;
+  }
+}
+
+.entity-viewer {
+	@media(min-width: 1024px) {
+		.attachments-list {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+	  .attachment {
+	    border: 1px solid $c-grey-lighten;
+			width: 49%;
+			margin-bottom: 1%;
+	  }
+	}
 }

@@ -30,22 +30,24 @@ export class AttachmentsList extends Component {
     const {parentId, parentSharedId, isDocumentAttachments, readOnly} = this.props;
     const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
 
-    return <div className="item-group">
+    return <div>
       <h2>{t('System', 'Downloads')}</h2>
-      {sortedFiles.map((file, index) => {
-        const isSourceDocument = isDocumentAttachments && index === 0;
+      <div className="attachments-list">
+        {sortedFiles.map((file, index) => {
+          const isSourceDocument = isDocumentAttachments && index === 0;
 
-        if (isSourceDocument) {
-          file._id = parentId;
-        }
+          if (isSourceDocument) {
+            file._id = parentId;
+          }
 
-        return <Attachment key={index}
-                           file={file}
-                           parentId={parentId}
-                           readOnly={readOnly}
-                           parentSharedId={parentSharedId}
-                           isSourceDocument={isSourceDocument}/>;
-      })}
+          return <Attachment key={index}
+                             file={file}
+                             parentId={parentId}
+                             readOnly={readOnly}
+                             parentSharedId={parentSharedId}
+                             isSourceDocument={isSourceDocument}/>;
+        })}
+      </div>
     </div>;
   }
 }
