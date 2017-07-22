@@ -127,7 +127,9 @@ export class EntityViewer extends Component {
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <div className="sidepanel-footer">
             <NeedAuthorization roles={['admin', 'editor']}>
-              <UploadAttachment entityId={entity._id}/>
+              <ShowIf if={!entityBeingEdited}>
+                <UploadAttachment entityId={entity._id}/>
+              </ShowIf>
             </NeedAuthorization>
             <MetadataFormButtons
               delete={this.deleteEntity.bind(this)}

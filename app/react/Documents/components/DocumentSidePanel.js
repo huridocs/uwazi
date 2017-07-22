@@ -160,7 +160,9 @@ export class DocumentSidePanel extends Component {
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
             <NeedAuthorization roles={['admin', 'editor']}>
-              <UploadAttachment entityId={doc.get('_id')}/>
+              <ShowIf if={!docBeingEdited}>
+                <UploadAttachment entityId={doc.get('_id')}/>
+              </ShowIf>
             </NeedAuthorization>
             <MetadataFormButtons
               delete={this.deleteDocument.bind(this)}
