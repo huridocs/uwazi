@@ -1,0 +1,80 @@
+.attachment {
+	display: flex;
+	align-items: center;
+	height: 64px;
+  padding: 0 15px;
+  margin-bottom: 10px;
+	background: $c-white;
+  color: $c-grey-dark;
+	border-radius: 0;
+	width: 100%;
+	&:not(:first-of-type) {
+		border-top: 1px solid $c-grey-lighten;
+	}
+}
+
+.attachment-link {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	text-decoration: none !important;
+}
+
+.attachment-thumbnail {
+	height: $header-height;
+	width: $header-height;
+	min-width: $header-height;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: $c-grey-lighten;
+	color: $c-grey !important;
+	margin-right: 15px;
+	border: 1px solid $c-grey-light !important;
+	
+	.attachment-link:hover & {
+		border-color: $c-grey !important;
+	}
+	
+	.fa {
+		font-size: 18px;
+	}
+	img {
+		max-width: 100%;
+	}
+}
+
+.attachment-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 0; // flex overflow-hidden hack
+	span {
+		font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+		font-size: 90%;
+		color: $c-black;
+		border-bottom: 1px dotted $c-grey;
+		
+		.attachment-link:hover & {
+			border-color: $c-grey-dark;
+		}
+	}
+}
+
+.attachment-buttons {
+	width: 75px;
+  text-align: right;
+	white-space: nowrap;
+	
+	.item-shortcut {
+		opacity: 1 !important;
+		border-style: solid !important;
+		top: 0;
+	}
+}
+
+.attachment .input-group {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 90%;
+}

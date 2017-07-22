@@ -44,82 +44,82 @@ export class Attachment extends Component {
 
   render() {
     const {file, parentId, parentSharedId, model, isSourceDocument} = this.props;
-    const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
-    let name = <span>{file.originalname}</span>;
+    let name = <a className="attachment-link" href={item.downloadHref}>
+      <div className="attachment-thumbnail">
+        <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
+          <span><i className="fa fa-file-pdf-o"></i> pdf</span>
+        </ShowIf>
+        <ShowIf if={this.getExtension(file.filename) === 'png' ||
+          this.getExtension(file.filename) === 'gif' ||
+          this.getExtension(file.filename) === 'jpg'}>
+            <img src ={item.downloadHref} />
+        </ShowIf>
+      </div>
+      <span className="attachment-name">
+        <span>{file.originalname}</span>
+      </span>
+    </a>;
 
     let buttons = <div>
                     <NeedAuthorization roles={['admin', 'editor']}>
-                      <ShowIf if={!this.props.readOnly}>
-                        <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
-                          <i className="fa fa-pencil"></i>
-                        </a>
-                      </ShowIf>
+                      <div className="attachment-buttons">
+                        <ShowIf if={!this.props.readOnly}>
+                          <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
+                            <i className="fa fa-pencil"></i>
+                          </a>
+                        </ShowIf>
+                        <ShowIf if={item.deletable && !this.props.readOnly}>
+                          <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
+                            <i className="fa fa-trash"></i>
+                          </a>
+                        </ShowIf>
+                        <ShowIf if={item.replaceable && !this.props.readOnly}>
+                          <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
+                        </ShowIf>
+                      </div>
                     </NeedAuthorization>
-                    <NeedAuthorization roles={['admin', 'editor']}>
-                      <ShowIf if={item.deletable && !this.props.readOnly}>
-                        <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
-                          <i className="fa fa-trash"></i>
-                        </a>
-                      </ShowIf>
-                    </NeedAuthorization>
-                    <NeedAuthorization roles={['admin', 'editor']}>
-                      <ShowIf if={item.replaceable && !this.props.readOnly}>
-                        <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
-                      </ShowIf>
-                    </NeedAuthorization>
-                    {/*
-                    <a className="item-shortcut btn btn-default"
-                      href={item.downloadHref}
-                      target="_blank">
-                      <i className="fa fa-download"></i>
-                    </a>
-                    */}
                   </div>;
 
     if (this.props.beingEdited && !this.props.readOnly) {
-      name = <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>;
-      buttons = <div className="item-shortcut-group">
-                  <NeedAuthorization roles={['admin', 'editor']}>
-                    <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
-                      <i className="fa fa-close"></i>
-                    </a>
-                  </NeedAuthorization>
-                  <NeedAuthorization roles={['admin', 'editor']}>
-                    <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model)}>
-                      <i className="fa fa-floppy-o"></i>
-                    </a>
-                  </NeedAuthorization>
+      name = <div className="attachment-link">
+        <div className="attachment-thumbnail">
+          <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
+            <span><i className="fa fa-file-pdf-o"></i> pdf</span>
+          </ShowIf>
+          <ShowIf if={this.getExtension(file.filename) === 'png' ||
+            this.getExtension(file.filename) === 'gif' ||
+            this.getExtension(file.filename) === 'jpg'}>
+              <img src ={item.downloadHref} />
+          </ShowIf>
+        </div>
+        <span className="attachment-name">
+          <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>
+        </span>
+      </div>;
+      buttons = <div className="attachment-buttons">
+                  <div className="item-shortcut-group">
+                    <NeedAuthorization roles={['admin', 'editor']}>
+                      <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
+                        <i className="fa fa-close"></i>
+                      </a>
+                    </NeedAuthorization>
+                    <NeedAuthorization roles={['admin', 'editor']}>
+                      <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model)}>
+                        <i className="fa fa-floppy-o"></i>
+                      </a>
+                    </NeedAuthorization>
+                  </div>
                 </div>;
     }
 
 
     return (
-      <code>
-
-        <a className="download-thumbnail" href={item.downloadHref}>
-          <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
-            <span>
-              <i className="fa fa-file-pdf-o"></i> pdf
-            </span>
-          </ShowIf>
-          <ShowIf if={this.getExtension(file.filename) === 'png' ||
-              this.getExtension(file.filename) === 'gif' ||
-              this.getExtension(file.filename) === 'jpg'}>
-              <img src ={item.downloadHref} />
-          </ShowIf>
-        </a>
-        <span>
-          <ShowIf if={isSourceDocument && !this.props.readOnly}>
-            <i className="fa fa-circle label-success"></i>
-          </ShowIf>
-          {name}
-        </span>
-        <div className="download-buttons">
-          {buttons}
-        </div>
-      </code>
+      <div className="attachment">
+        {name}
+        {buttons}
+      </div>
     );
   }
 }

@@ -154,19 +154,14 @@ export class DocumentSidePanel extends Component {
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
               </li>
-              {/*<li>
-                <TabLink to="attachments">
-                  <i className="fa fa-download"></i>
-                  <span className="connectionsNumber">{attachments.length}</span>
-                  <span className="tab-link-tooltip">{t('System', 'Attachments')}</span>
-                </TabLink>
-              </li>*/}
             </ul>
           </Tabs>
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
-            <UploadAttachment entityId={doc.get('_id')}/>
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <UploadAttachment entityId={doc.get('_id')}/>
+            </NeedAuthorization>
             <MetadataFormButtons
               delete={this.deleteDocument.bind(this)}
               data={this.props.doc}
@@ -253,18 +248,11 @@ export class DocumentSidePanel extends Component {
                 return (
                   <div>
                     <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />
-                    <div className="view">
-                      <dl>
-                        <dt>{attachments.length} Downloads</dt>
-                        <dd>
-                          <AttachmentsList files={fromJS(attachments)}
-                            readOnly={readOnly}
-                            isDocumentAttachments={true}
-                            parentId={doc.get('_id')}
-                            parentSharedId={doc.get('sharedId')} />
-                        </dd>
-                      </dl>
-                    </div>
+                    <AttachmentsList files={fromJS(attachments)}
+                      readOnly={readOnly}
+                      isDocumentAttachments={true}
+                      parentId={doc.get('_id')}
+                      parentSharedId={doc.get('sharedId')} />
                   </div>
                 );
               })()}

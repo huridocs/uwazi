@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import {advancedSort} from 'app/utils/advancedSort';
+import {t} from 'app/I18N';
 
 import Attachment from 'app/Attachments/components/Attachment';
 
@@ -30,6 +31,7 @@ export class AttachmentsList extends Component {
     const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
 
     return <div className="item-group">
+      <h2>{t('System', 'Downloads')}</h2>
       {sortedFiles.map((file, index) => {
         const isSourceDocument = isDocumentAttachments && index === 0;
 
