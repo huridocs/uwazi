@@ -56,7 +56,7 @@ describe('search filters path', () => {
       .wait(searchRequestTime + 200)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
-        expect(text).toBe('Thanos');
+        expect(text).toBe('Daneryl');
         done();
       })
       .catch(catchErrors(done));
