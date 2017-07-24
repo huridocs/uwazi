@@ -199,6 +199,9 @@ export default function () {
 
       let value = filters[property].value;
       let properties = value.properties;
+      if (!properties) {
+        return;
+      }
       let keys = Object.keys(properties).filter((key) => {
         return properties[key].any ||
           properties[key].values;
@@ -288,8 +291,10 @@ export default function () {
           match = this.nestedrangeFilter(filters, property);
         }
 
-        baseQuery.query.bool.filter.push(match);
-        baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
+        if (match) {
+          baseQuery.query.bool.filter.push(match);
+          baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must.push(match);
+        }
       });
       return this;
     },
@@ -380,7 +385,7 @@ export default function () {
       properties.forEach((property) => {
         let path = `metadata.${property.name}.raw`;
         let filters = baseQuery.query.bool.filter.filter((match) => {
-          return !match.terms || match.terms && !match.terms[path];
+          return match && (!match.terms || match.terms && !match.terms[path]);
         });
 
         if (property.nested) {

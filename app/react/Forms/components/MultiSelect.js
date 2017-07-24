@@ -59,7 +59,7 @@ export default class MultiSelect extends Component {
         sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
       }
 
-      if (sorting === 0 && typeof options[0].results !== 'undefined') {
+      if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
         sorting = a.results > b.results ? -1 : 1;
       }
 
