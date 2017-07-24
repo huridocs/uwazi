@@ -116,7 +116,7 @@ describe('search', () => {
       });
 
       it('should perform the search on unpublished documents also', (done) => {
-        search.searchSnippets('unpublished', 'unpublishedSharedId'.toLowerCase(), 'en')
+        search.searchSnippets('unpublished', 'unpublishedSharedId', 'en')
         .then((snippets) => {
           expect(snippets.length).toBe(1);
           done();
@@ -237,20 +237,20 @@ describe('search', () => {
         ])
         .then(([template1, template2, both, template1Unpublished]) => {
           const template1Aggs = template1.aggregations.all.select1.buckets;
-          expect(template1Aggs.find((a) => a.key === 'selectValue1'.toLowerCase()).filtered.doc_count).toBe(2);
-          expect(template1Aggs.find((a) => a.key === 'selectValue2'.toLowerCase()).filtered.doc_count).toBe(1);
+          expect(template1Aggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(1);
 
           const template2Aggs = template2.aggregations.all.select1.buckets;
-          expect(template2Aggs.find((a) => a.key === 'selectValue1'.toLowerCase()).filtered.doc_count).toBe(0);
-          expect(template2Aggs.find((a) => a.key === 'selectValue2'.toLowerCase()).filtered.doc_count).toBe(1);
+          expect(template2Aggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(0);
+          expect(template2Aggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.select1.buckets;
-          expect(bothAggs.find((a) => a.key === 'selectValue1'.toLowerCase()).filtered.doc_count).toBe(2);
-          expect(bothAggs.find((a) => a.key === 'selectValue2'.toLowerCase()).filtered.doc_count).toBe(2);
+          expect(bothAggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(2);
+          expect(bothAggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(2);
 
           const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
-          expect(template1UnpubishedAggs.find((a) => a.key === 'selectValue1'.toLowerCase()).filtered.doc_count).toBe(0);
-          expect(template1UnpubishedAggs.find((a) => a.key === 'selectValue2'.toLowerCase()).filtered.doc_count).toBe(0);
+          expect(template1UnpubishedAggs.find((a) => a.key === 'selectValue1').filtered.doc_count).toBe(0);
+          expect(template1UnpubishedAggs.find((a) => a.key === 'selectValue2').filtered.doc_count).toBe(0);
           done();
         })
         .catch(catchErrors(done));
@@ -267,21 +267,21 @@ describe('search', () => {
         ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
-          expect(template1Aggs.find((a) => a.key === 'multiValue1'.toLowerCase()).filtered.doc_count).toBe(2);
-          expect(template1Aggs.find((a) => a.key === 'multiValue2'.toLowerCase()).filtered.doc_count).toBe(2);
+          expect(template1Aggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(2);
 
           const template2Aggs = template2.aggregations.all.multiselect1.buckets;
-          expect(template2Aggs.find((a) => a.key === 'multiValue1'.toLowerCase()).filtered.doc_count).toBe(0);
-          expect(template2Aggs.find((a) => a.key === 'multiValue2'.toLowerCase()).filtered.doc_count).toBe(1);
+          expect(template2Aggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(0);
+          expect(template2Aggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.multiselect1.buckets;
-          expect(bothAggs.find((a) => a.key === 'multiValue1'.toLowerCase()).filtered.doc_count).toBe(2);
-          expect(bothAggs.find((a) => a.key === 'multiValue2'.toLowerCase()).filtered.doc_count).toBe(3);
+          expect(bothAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(bothAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all.types.buckets;
-          expect(filteredAggs.find((a) => a.key === 'multiValue1'.toLowerCase()).filtered.doc_count).toBe(2);
-          expect(filteredAggs.find((a) => a.key === 'multiValue2'.toLowerCase()).filtered.doc_count).toBe(3);
+          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
           expect(templateAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
 
@@ -343,11 +343,11 @@ describe('search', () => {
 
             expect(value3.rows.length).toBe(2);
             expect(value3.rows.find((r) => r.title === 'metadata1')).toBeDefined();
-            expect(value3.rows.find((r) => r.title === 'metadata4')).toBeDefined();
+            expect(value3.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
 
             expect(value35.rows.length).toBe(3);
             expect(value35.rows.find((r) => r.title === 'metadata1')).toBeDefined();
-            expect(value35.rows.find((r) => r.title === 'metadata4')).toBeDefined();
+            expect(value35.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
             expect(value35.rows.find((r) => r.title === 'metadata5')).toBeDefined();
 
             done();
@@ -376,21 +376,21 @@ describe('search', () => {
       });
     });
 
-    it('should sort if sort is present', (done) => {
+    it('should sort (ignoring case and leading whitespaces) if sort is present', (done) => {
       Promise.all([
         search.search({types: [ids.templateMetadata1, ids.templateMetadata2], order: 'asc', sort: 'title'}, 'en'),
         search.search({types: [ids.templateMetadata1, ids.templateMetadata2], order: 'desc', sort: 'title'}, 'en')
       ])
       .then(([asc, desc]) => {
         expect(asc.rows[0].title).toBe('metadata1');
-        expect(asc.rows[1].title).toBe('metadata2');
-        expect(asc.rows[2].title).toBe('metadata3');
-        expect(asc.rows[3].title).toBe('metadata4');
+        expect(asc.rows[1].title).toBe('Metadata2');
+        expect(asc.rows[2].title).toBe('metádata3');
+        expect(asc.rows[3].title).toBe(' Metadáta4');
 
         expect(desc.rows[0].title).toBe('metadata5');
-        expect(desc.rows[1].title).toBe('metadata4');
-        expect(desc.rows[2].title).toBe('metadata3');
-        expect(desc.rows[3].title).toBe('metadata2');
+        expect(desc.rows[1].title).toBe(' Metadáta4');
+        expect(desc.rows[2].title).toBe('metádata3');
+        expect(desc.rows[3].title).toBe('Metadata2');
         done();
       })
       .catch(catchErrors(done));

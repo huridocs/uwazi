@@ -22,7 +22,7 @@ let config = {
           tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding']
         },
-        sorter: {
+        string_sorter: {
           tokenizer: 'keyword',
           filter: ['lowercase', 'asciifolding', 'trim']
         }
@@ -67,7 +67,8 @@ let config = {
             omit_norms: true,
             analyzer: 'tokenizer',
             fields: {
-              raw: {type: 'text', fielddata: true, analyzer: 'sorter'}
+              raw: {type: 'keyword'},
+              sort: {type: 'text', fielddata: true, analyzer: 'string_sorter'}
             }
           }
         }
@@ -81,7 +82,13 @@ let config = {
         double_fields: {
           match: '*',
           match_mapping_type: 'double',
-          mapping: {type: 'double', doc_values: true}
+          mapping: {
+            type: 'double',
+            doc_values: true,
+            fields: {
+              sort: {type: 'double'}
+            }
+          }
         }
       }, {
         byte_fields: {
@@ -109,7 +116,8 @@ let config = {
             type: 'long',
             doc_values: true,
             fields: {
-              raw: {type: 'long', index: 'not_analyzed'}
+              raw: {type: 'long', index: 'not_analyzed'},
+              sort: {type: 'long'}
             }
           }
         }
