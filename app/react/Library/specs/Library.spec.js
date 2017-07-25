@@ -6,8 +6,8 @@ import searchAPI from 'app/Search/SearchAPI';
 import libraryHelpers from '../helpers/libraryFilters';
 import Library from 'app/Library/Library';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryCharts from 'app/Charts/components/LibraryCharts';
-import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
+// import LibraryCharts from 'app/Charts/components/LibraryCharts';
+// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
@@ -43,18 +43,18 @@ describe('Library', () => {
   it('should render the DocumentsList (by default)', () => {
     expect(component.find(DocumentsList).length).toBe(1);
     expect(component.find(DocumentsList).props().storeKey).toBe('library');
-    expect(component.find(ListChartToggleButtons).props().active).toBe('list');
+    // expect(component.find(ListChartToggleButtons).props().active).toBe('list');
   });
 
-  it('should render the LibraryCharts (if query type is chart)', () => {
-    props.location.query.view = 'chart';
-    component = shallow(<Library {...props}/>, {context});
+  // it('should render the LibraryCharts (if query type is chart)', () => {
+  //   props.location.query.view = 'chart';
+  //   component = shallow(<Library {...props}/>, {context});
 
-    expect(component.find(DocumentsList).length).toBe(0);
-    expect(component.find(LibraryCharts).length).toBe(1);
-    expect(component.find(LibraryCharts).props().storeKey).toBe('library');
-    expect(component.find(ListChartToggleButtons).props().active).toBe('chart');
-  });
+  //   expect(component.find(DocumentsList).length).toBe(0);
+  //   expect(component.find(LibraryCharts).length).toBe(1);
+  //   expect(component.find(LibraryCharts).props().storeKey).toBe('library');
+  //   expect(component.find(ListChartToggleButtons).props().active).toBe('chart');
+  // });
 
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {

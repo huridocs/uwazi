@@ -7,7 +7,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
+// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
@@ -92,7 +92,7 @@ export default class Uploads extends RouteHandler {
         <UploadsHeader/>
         <main className="document-viewer with-panel">
           <UploadBox />
-          <ListChartToggleButtons active={chartView ? 'chart' : 'list'} />
+          {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
         <LibraryFilters uploadsSection={true} storeKey="uploads"/>
