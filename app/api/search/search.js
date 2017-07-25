@@ -82,7 +82,6 @@ export default {
           let result = hit._source;
           result.snippets = [];
           if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-
             const regex = /\[\[(\d+)\]\]/g;
 
             let highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
@@ -115,6 +114,7 @@ export default {
     .filterById(sharedId)
     .language(language)
     .query();
+
     return elastic.search({index: elasticIndex, body: query})
     .then((response) => {
       if (response.hits.hits.length === 0) {

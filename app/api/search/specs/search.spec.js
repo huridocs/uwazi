@@ -343,11 +343,11 @@ describe('search', () => {
 
             expect(value3.rows.length).toBe(2);
             expect(value3.rows.find((r) => r.title === 'metadata1')).toBeDefined();
-            expect(value3.rows.find((r) => r.title === 'metadata4')).toBeDefined();
+            expect(value3.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
 
             expect(value35.rows.length).toBe(3);
             expect(value35.rows.find((r) => r.title === 'metadata1')).toBeDefined();
-            expect(value35.rows.find((r) => r.title === 'metadata4')).toBeDefined();
+            expect(value35.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
             expect(value35.rows.find((r) => r.title === 'metadata5')).toBeDefined();
 
             done();
@@ -376,21 +376,21 @@ describe('search', () => {
       });
     });
 
-    it('should sort if sort is present', (done) => {
+    it('should sort (ignoring case and leading whitespaces) if sort is present', (done) => {
       Promise.all([
         search.search({types: [ids.templateMetadata1, ids.templateMetadata2], order: 'asc', sort: 'title'}, 'en'),
         search.search({types: [ids.templateMetadata1, ids.templateMetadata2], order: 'desc', sort: 'title'}, 'en')
       ])
       .then(([asc, desc]) => {
         expect(asc.rows[0].title).toBe('metadata1');
-        expect(asc.rows[1].title).toBe('metadata2');
-        expect(asc.rows[2].title).toBe('metadata3');
-        expect(asc.rows[3].title).toBe('metadata4');
+        expect(asc.rows[1].title).toBe('Metadata2');
+        expect(asc.rows[2].title).toBe('metádata3');
+        expect(asc.rows[3].title).toBe(' Metadáta4');
 
         expect(desc.rows[0].title).toBe('metadata5');
-        expect(desc.rows[1].title).toBe('metadata4');
-        expect(desc.rows[2].title).toBe('metadata3');
-        expect(desc.rows[3].title).toBe('metadata2');
+        expect(desc.rows[1].title).toBe(' Metadáta4');
+        expect(desc.rows[2].title).toBe('metádata3');
+        expect(desc.rows[3].title).toBe('Metadata2');
         done();
       })
       .catch(catchErrors(done));

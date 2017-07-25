@@ -140,7 +140,7 @@ export default function () {
 
     sort(property, order = 'desc') {
       let sort = {};
-      sort[`${property}.raw`] = {order, unmapped_type: 'boolean'};
+      sort[`${property}.sort`] = {order, unmapped_type: 'boolean'};
       baseQuery.sort.push(sort);
       return this;
     },
