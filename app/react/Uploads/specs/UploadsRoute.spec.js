@@ -3,6 +3,9 @@ import {shallow} from 'enzyme';
 import rison from 'rison';
 
 import UploadsRoute from 'app/Uploads/UploadsRoute';
+import DocumentsList from 'app/Library/components/DocumentsList';
+// import LibraryCharts from 'app/Charts/components/LibraryCharts';
+// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes.js';
 import {fromJS as Immutable} from 'immutable';
@@ -17,11 +20,7 @@ describe('UploadsRoute', () => {
   let component;
   let instance;
   let context;
-  let props = {
-    location: {
-      query: {}
-    }
-  };
+  let props = {location: {query: {q: '(a:1)'}}};
   let templates = [
     {name: 'Decision', _id: 'abc1', properties: [{name: 'p', filter: true, type: 'text', prioritySorting: true}]},
     {name: 'Ruling', _id: 'abc2', properties: []}
@@ -36,6 +35,22 @@ describe('UploadsRoute', () => {
 
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
   });
+
+  it('should render the DocumentsList (by default)', () => {
+    expect(component.find(DocumentsList).length).toBe(1);
+    expect(component.find(DocumentsList).props().storeKey).toBe('uploads');
+    // expect(component.find(ListChartToggleButtons).props().active).toBe('list');
+  });
+
+  // it('should render the LibraryCharts (if query type is chart)', () => {
+  //   props.location.query.view = 'chart';
+  //   component = shallow(<UploadsRoute {...props}/>, {context});
+
+  //   expect(component.find(DocumentsList).length).toBe(0);
+  //   expect(component.find(LibraryCharts).length).toBe(1);
+  //   expect(component.find(LibraryCharts).props().storeKey).toBe('uploads');
+  //   expect(component.find(ListChartToggleButtons).props().active).toBe('chart');
+  // });
 
   describe('static requestState()', () => {
     it('should request unpublished documents, templates and thesauris', (done) => {
@@ -67,6 +82,24 @@ describe('UploadsRoute', () => {
 
     it('should call setDocuments with the documents', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'uploads'});
+    });
+  });
+
+  describe('componentWillReceiveProps()', () => {
+    beforeEach(() => {
+      instance.superComponentWillReceiveProps = jasmine.createSpy('superComponentWillReceiveProps');
+    });
+
+    it('should update if "q" has changed', () => {
+      const nextProps = {location: {query: {q: '(a:2)'}}};
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.superComponentWillReceiveProps).toHaveBeenCalledWith(nextProps);
+    });
+
+    it('should not update if "q" is the same', () => {
+      const nextProps = {location: {query: {q: '(a:1)'}}};
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.superComponentWillReceiveProps).not.toHaveBeenCalled();
     });
   });
 });

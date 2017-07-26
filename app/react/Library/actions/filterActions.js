@@ -11,10 +11,14 @@ export function filterDocumentTypes(documentTypes, storeKey) {
     const templates = state.templates.toJS();
     const thesauris = state.thesauris.toJS();
 
+    const currentFilters = state[storeKey].filters.toJS().properties;
     let libraryFilters = comonPropertiesHelper.comonProperties(templates, documentTypes)
     .filter((prop) => prop.filter);
-
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
+    libraryFilters.forEach((libraryFilter) => {
+      const currentFilter = currentFilters.find((f) => f.name === libraryFilter.name) || {};
+      libraryFilter.active = currentFilter.active;
+    });
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
@@ -23,11 +27,10 @@ export function filterDocumentTypes(documentTypes, storeKey) {
       currentCriteria: {sort: state[storeKey].search.sort, order: state[storeKey].search.order},
       filteredTemplates: usefulTemplates.map(t => t._id),
       templates: state.templates,
-      selectedSorting: getState()[storeKey].selectedSorting
+      selectedSorting: state[storeKey].selectedSorting
     });
 
-    const search = Object.assign({types: documentTypes}, state.search, {sort, order});
-
+    const search = Object.assign({types: documentTypes}, state[storeKey].search, {sort, order});
     dispatch(libraryActions.searchDocuments(search, storeKey));
   };
 }

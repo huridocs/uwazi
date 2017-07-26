@@ -31,13 +31,13 @@ export default {
     {_id: db.id(), sharedId: 'metadata1', template: templateMetadata1, language: 'es', title: 'metadata1 es', published: true, user: userId,
       metadata: {field1: 'joker', field2: 'bane'}
     },
-    {_id: db.id(), sharedId: 'metadata2', template: templateMetadata1, language: 'en', title: 'metadata2', published: true, user: userId,
+    {_id: db.id(), sharedId: 'metadata2', template: templateMetadata1, language: 'en', title: 'Metadata2', published: true, user: userId,
       metadata: {field1: 'joker', field2: 'penguin', select1: 'selectValue1', multiselect1: ['multiValue1']}
     },
-    {_id: db.id(), sharedId: 'metadata3', template: templateMetadata1, language: 'en', title: 'metadata3', published: true, user: userId,
+    {_id: db.id(), sharedId: 'metadata3', template: templateMetadata1, language: 'en', title: 'metádata3', published: true, user: userId,
       metadata: {select1: 'selectValue2', multiselect1: ['multiValue2']}
     },
-    {_id: db.id(), sharedId: 'metadata3', template: templateMetadata2, language: 'en', title: 'metadata4', published: true, user: userId,
+    {_id: db.id(), sharedId: 'metadata3', template: templateMetadata2, language: 'en', title: ' Metadáta4', published: true, user: userId,
       metadata: {field1: 'bane', field3: 'penguin', select1: 'selectValue2', multiselect1: ['multiValue2'],
         nestedField: [
           {nested1: ['3', '4', '5']}

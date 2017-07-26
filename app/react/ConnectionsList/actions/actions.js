@@ -55,7 +55,7 @@ export function deleteConnection(connection) {
   };
 }
 
-export function loadMoreReferences(limit) {
+export function loadMoreReferences(storeKey, limit) {
   return function (dispatch, getState) {
     const connectionsList = getState().connectionsList;
     dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('limit', limit)));

@@ -80,6 +80,35 @@
   }
 }
 
+.item-group-charts .item {
+  overflow: hidden;
+  width: 100%;
+  margin-right: 0;
+
+  .item-chart-type {
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+
+    button {
+      margin-left: 3px;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      border-radius: 50%;
+      padding: 0;
+      text-align: center;
+    }
+  }
+
+  p {
+    font-weight: 300;
+    font-family: $f-special;
+    padding: 15px;
+    margin: 0;
+  }
+}
+
 
 $item-width: auto;
 $item-padding: 15px;
@@ -220,8 +249,9 @@ $item-padding: 15px;
   display: inline;
   font-size: $f-size-sm;
   b {
-    color: #9a9b02;
-    background-color: transparentize(yellow, 0.4);
+    font-weight: normal;
+    color: #333300;
+    background-color: transparentize(yellow, 0.8);
     box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
   .show-more {
@@ -232,9 +262,9 @@ $item-padding: 15px;
     padding: 2px 15px;
     box-shadow: 0 -6px 9px -4px #fff, 0 -15px 10px -3px #fff;
   }
-  
+
   .item-snippet-wrapper:hover & {
-    border-bottom: 1px solid $c-grey;  
+    border-bottom: 1px solid $c-grey;
   }
 }
 
@@ -383,6 +413,34 @@ $item-padding: 15px;
     flex: 1;
   }
 }
+
+/* Charts */
+.listChart-toggleButtons {
+  position: relative;
+  &.is-list {
+    margin-bottom: 0;
+  }
+  &.is-chart {
+    height: $header-height * 0.88;
+  }
+  .buttons-group {
+    position: absolute;
+    right: 0;
+    height: 28px;
+    margin: 0;
+    z-index: 1;
+
+    button {
+      margin-left: 3px;
+      height: $header-height * 0.88;
+      line-height: $header-height * 0.88;
+      width: $header-height * 0.88;
+      border-radius: 50%;
+      padding: 0;
+      text-align: center;
+    }
+  }
+}
 /** /
 .item-danger {
   border-color: $c-danger-light;
@@ -480,7 +538,7 @@ $item-padding: 15px;
   b {
     color: $c-primary;
   }
-  
+
   &-sort {
     margin: 0 4px;
     @media(max-width: 768px) {
