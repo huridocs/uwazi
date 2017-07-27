@@ -9,7 +9,26 @@ describe('languages', () => {
 
     it('should return a list of all languages for the passed purpose', () => {
       expect(languages.getAll('ISO639_1').length).toBe(31);
-      expect(languages.getAll('ISO639_1')[0]).toBe('ar');
+      expect(languages.getAll('ISO639_1')[5]).toBe('cs');
+      expect(languages.getAll('franc').length).toBe(33);
+      expect(languages.getAll('franc')[5]).toBe('cjk');
+    });
+  });
+
+  describe('get', () => {
+    it('should return a match for the key for the default purpose', () => {
+      expect(languages.get('glg')).toBe('galician');
+      expect(languages.get('lav')).toBe('latvian');
+    });
+
+    it('should return a match for the key for the passed purpose', () => {
+      expect(languages.get('glg', 'ISO639_1')).toBe('gl');
+      expect(languages.get('lav', 'ISO639_1')).toBe('lv');
+    });
+
+    it('should return null for a key in a non supported lang', () => {
+      expect(languages.get('und')).toBe(null);
+      expect(languages.get('und', 'ISO639_1')).toBe(null);
     });
   });
 
@@ -22,6 +41,8 @@ describe('languages', () => {
     it('should return the text language for a specific purpose if selected', () => {
       expect(languages.detect('de que color es el caballo blanco de santiago', 'ISO639_1')).toBe('es');
       expect(languages.detect('what is the colour of the white horse of santiago', 'ISO639_1')).toBe('en');
+      expect(languages.detect('de que color es el caballo blanco de santiago', 'franc')).toBe('spa');
+      expect(languages.detect('what is the colour of the white horse of santiago', 'franc')).toBe('eng');
     });
 
     it('should return other when the language is not supported', () => {
