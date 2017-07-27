@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import languages from '../app/api/search/languages';
+import languages from '../app/api/utils/languages';
 
 let config = {
   settings: {
@@ -160,7 +160,7 @@ let config = {
 };
 
 
-languages.get().forEach((language) => {
+languages.getAll().forEach((language) => {
   config.settings.analysis.analyzer[language] = {
     type: language,
     tokenizer: 'standard',
