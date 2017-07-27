@@ -125,7 +125,7 @@ export class Item extends Component {
       }
 
       if (!doc.file.language || doc.file.language === 'und') {
-        language = <span className="item-documentLanguage">??</span>;
+        language = <span className="item-documentLanguage"><i className="fa fa-question fa-fw" /></span>;
       }
     }
 

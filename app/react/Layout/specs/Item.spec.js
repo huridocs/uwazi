@@ -110,7 +110,7 @@ describe('Item', () => {
     render();
 
     expect(component.find('.item-name').find('.item-documentLanguage').length).toBe(1);
-    expect(component.find('.item-name').find('.item-documentLanguage').text()).toBe('??');
+    expect(component.find('.item-name').find('.item-documentLanguage').text()).toBe('?');
   });
 
   it('should include a template label and custom buttons inside the footer', () => {
