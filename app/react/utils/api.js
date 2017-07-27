@@ -4,9 +4,15 @@ import {APIURL} from '../config.js';
 import {browserHistory} from 'react-router';
 import {notify} from 'app/Notifications/actions/notificationsActions';
 import {store} from 'app/store';
+import loadingBar from 'app/App/LoadingProgressBar';
 
 let cookie;
 let locale;
+
+let doneLoading = (data) => {
+  loadingBar.done();
+  return data;
+};
 
 let handleError = (error) => {
   if (!isClient) {
@@ -34,7 +40,9 @@ let handleError = (error) => {
 
 export default {
   get: (url, data) => {
+    loadingBar.start();
     return request.get(APIURL + url, data, {'Content-language': locale, Cookie: cookie})
+    .then(doneLoading)
     .catch(handleError);
   },
 

@@ -20,6 +20,7 @@ app.use(compression());
 app.use(express.static(path.resolve(__dirname, 'dist')));
 app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/public', express.static(path.resolve(__dirname, 'public')));
+app.use('/nprogress', express.static(path.resolve(__dirname, 'node_modules/nprogress')));
 app.use('/flag-images', express.static(path.resolve(__dirname, 'node_modules/react-flags/vendor/flags')));
 
 require('./app/api/api.js')(app, http);
