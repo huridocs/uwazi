@@ -28,6 +28,15 @@
   zoom: 1;
   cursor: pointer;
 
+  .item-documentLanguage {
+    display: inline-block;
+    background-color: #CCC;
+    color: #FFF;
+    padding: 0 2px;
+    margin-left: 5px;
+    text-transform: uppercase;
+  }
+
   @media (min-width: 640px) and (max-width: 1023px) {
     width: 48%;
     margin: 0 0 15px;

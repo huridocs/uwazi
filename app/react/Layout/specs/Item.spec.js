@@ -84,6 +84,33 @@ describe('Item', () => {
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
     expect(component.find('.item-name').find(Icon.default).props().data).toEqual({_id: 'icon', type: 'Icons'});
+    expect(component.find('.item-name').find('.item-documentLanguage').length).toBe(0);
+  });
+
+  it('should include language tag if file language does not match current language', () => {
+    props.locale = 'es';
+    props.doc = props.doc.set('file', {language: 'eng'});
+
+    render();
+
+    expect(component.find('.item-name').find('.item-documentLanguage').length).toBe(1);
+    expect(component.find('.item-name').find('.item-documentLanguage').text()).toBe('en');
+
+    props.locale = 'es';
+    props.doc = props.doc.set('file', {language: 'not'});
+
+    render();
+
+    expect(component.find('.item-name').find('.item-documentLanguage').length).toBe(1);
+    expect(component.find('.item-name').find('.item-documentLanguage').text()).toBe('not');
+
+    props.locale = 'es';
+    props.doc = props.doc.set('file', {language: 'und'});
+
+    render();
+
+    expect(component.find('.item-name').find('.item-documentLanguage').length).toBe(1);
+    expect(component.find('.item-name').find('.item-documentLanguage').text()).toBe('??');
   });
 
   it('should include a template label and custom buttons inside the footer', () => {
@@ -251,19 +278,21 @@ describe('Item', () => {
     let templates;
     let thesauris;
     let search;
+    let locale;
 
     beforeEach(() => {
       templates = 'templates';
       thesauris = 'thesauris';
+      locale = 'lc';
     });
 
     it('should include templates, thesauris and default sort', () => {
-      expect(mapStateToProps({templates, thesauris}, {})).toEqual({templates, thesauris, search});
+      expect(mapStateToProps({templates, thesauris, locale}, {})).toEqual({templates, thesauris, search, locale});
     });
 
     it('should allow overriding the default sort', () => {
       const ownProps = {searchParams: {sort: 'newSort'}};
-      expect(mapStateToProps({templates, thesauris}, ownProps)).toEqual({templates, thesauris, search: {sort: 'newSort'}});
+      expect(mapStateToProps({templates, thesauris, locale}, ownProps)).toEqual({templates, thesauris, search: {sort: 'newSort'}, locale});
     });
   });
 });

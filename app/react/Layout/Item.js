@@ -6,6 +6,7 @@ import marked from 'app/utils/marked';
 
 import t from '../I18N/t';
 import ShowIf from 'app/App/ShowIf';
+import languages from 'shared/languages';
 
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
@@ -115,6 +116,22 @@ export class Item extends Component {
     return false;
   }
 
+  documentLanguage(doc) {
+    let language = null;
+    if (doc.file) {
+      if (doc.file.language && this.props.locale !== languages.get(doc.file.language, 'ISO639_1')) {
+        let languageString = languages.get(doc.file.language, 'ISO639_1') || doc.file.language;
+        language = <span className="item-documentLanguage">{languageString}</span>;
+      }
+
+      if (!doc.file.language || doc.file.language === 'und') {
+        language = <span className="item-documentLanguage">??</span>;
+      }
+    }
+
+    return language;
+  }
+
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
            templateClassName, buttons, evalPublished} = this.props;
@@ -139,6 +156,7 @@ export class Item extends Component {
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc.title}</span>
+            {this.documentLanguage(doc)}
             {snippet}
           </div>
           {this.getSearchSnipett(doc)}
@@ -178,16 +196,17 @@ Item.propTypes = {
   labels: PropTypes.object,
   className: PropTypes.string,
   templateClassName: PropTypes.string,
-  evalPublished: PropTypes.bool
+  evalPublished: PropTypes.bool,
+  locale: PropTypes.string
 };
 
 Item.defaultProps = {
   search: prioritySortingCriteria()
 };
 
-export const mapStateToProps = ({templates, thesauris}, ownProps) => {
+export const mapStateToProps = ({templates, thesauris, locale}, ownProps) => {
   const search = ownProps.searchParams;
-  return {templates, thesauris, search};
+  return {templates, thesauris, search, locale};
 };
 
 export default connect(mapStateToProps)(Item);
