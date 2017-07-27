@@ -10,7 +10,7 @@ import fixtures, {templateId, userId} from './fixtures';
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
-import languages from 'api/utils/languages';
+import languages from 'shared/languages';
 
 describe('search', () => {
   let result;

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import languages from '../app/api/utils/languages';
+import languages from '../app/shared/languages';
 
 let config = {
   settings: {

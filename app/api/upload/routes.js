@@ -3,7 +3,7 @@ import PDF from './PDF';
 import ID from 'shared/uniqueID';
 import needsAuthorization from '../auth/authMiddleware';
 import {uploadDocumentsPath} from '../config/paths';
-import languages from 'api/utils/languages';
+import languages from 'shared/languages';
 
 import entities from 'api/entities';
 import references from 'api/references';

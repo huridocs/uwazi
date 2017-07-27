@@ -5,7 +5,7 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
-import languages from 'api/utils/languages';
+import languages from 'shared/languages';
 
 function processFiltes(filters, properties) {
   let result = {};
