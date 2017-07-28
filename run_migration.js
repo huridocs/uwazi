@@ -5,9 +5,9 @@ var mongoose = require('mongoose');
 var indexConfig = require('./app/api/config/elasticIndexes.js');
 indexConfig.index = indexConfig.development;
 mongoose.Promise = Promise;
-mongoose.connect(dbConfig.development);
+mongoose.connect(dbConfig.development, {useMongoClient: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  require('./app/api/migrations/reprocess_documents.js');
+  require('./app/api/migrations/assign_file_languages.js');
 });
