@@ -29,14 +29,20 @@
   cursor: pointer;
 
   .item-documentLanguage {
-    display: inline-block;
-    background-color: #CCC;
-    color: #FFF;
-    padding: 0 2px;
-    margin-left: 5px;
-    text-transform: uppercase;
+    color: #666;
+    background-color: #e9e8e5;
+    border-radius: 0;
+    padding: 0 4px;
+    height: 17px;
+    line-height: 18px;
     font-family: "Roboto", sans-serif;
     font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.075em;
+    max-width: 100%;
+    white-space: nowrap;
+    display: inline-block;
+    text-transform: uppercase;
   }
 
   @media (min-width: 640px) and (max-width: 1023px) {

@@ -121,11 +121,11 @@ export class Item extends Component {
     if (doc.file) {
       if (doc.file.language && this.props.locale !== languages.get(doc.file.language, 'ISO639_1')) {
         let languageString = languages.get(doc.file.language, 'ISO639_1') || doc.file.language;
-        language = <span className="item-documentLanguage">{languageString}</span>;
+        language = <span>&nbsp;&nbsp;<span className="item-documentLanguage">{languageString}</span></span>;
       }
 
       if (!doc.file.language || doc.file.language === 'und') {
-        language = <span className="item-documentLanguage"><i className="fa fa-question fa-fw" /></span>;
+        language = <span>&nbsp;&nbsp;<span className="item-documentLanguage"><i className="fa fa-question fa-fw" /></span></span>;
       }
     }
 
