@@ -3,9 +3,8 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
-import fixturesForGroup, {template as templateForGroup,
-                          entityTemplate, template1Id, template2Id,
-                          template3Id, thesauri, relation1, relation2} from './fixturesForGroup';
+import fixturesForGroup, {template1Id, template2Id,
+                          template3Id, relation1, relation2} from './fixturesForGroup';
 
 describe('references', () => {
   beforeEach((done) => {
@@ -153,6 +152,7 @@ describe('references', () => {
         expect(result[0].connectedDocumentPublished).toBe(false);
         expect(result[0].connectedDocumentMetadata).toEqual({data: 'data1'});
         expect(result[0].connectedDocumentCreationDate).toEqual(123);
+        expect(result[0].connectedDocumentFile).toEqual({language: 'spa'});
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
@@ -166,6 +166,7 @@ describe('references', () => {
         expect(result[1].connectedDocumentPublished).toBe(true);
         expect(result[1].connectedDocumentMetadata).toEqual({data: 'data2'});
         expect(result[1].connectedDocumentCreationDate).toEqual(456);
+        expect(result[1].connectedDocumentFile).toBeUndefined();
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
@@ -178,10 +179,12 @@ describe('references', () => {
         expect(result[2].connectedDocumentPublished).toBe(false);
         expect(result[2].connectedDocumentMetadata).toEqual({data: 'data3'});
         expect(result[2].connectedDocumentCreationDate).toEqual(789);
+        expect(result[2].connectedDocumentFile).toEqual({language: 'eng'});
 
         expect(result[3].text).toBe('');
         expect(result[3].connectedDocumentMetadata).toEqual({});
         expect(result[3].connectedDocumentCreationDate).toBeUndefined();
+        expect(result[3].connectedDocumentFile).toBeUndefined();
         done();
       })
       .catch(catchErrors(done));
