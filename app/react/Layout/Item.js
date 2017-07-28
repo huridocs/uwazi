@@ -6,10 +6,10 @@ import marked from 'app/utils/marked';
 
 import t from '../I18N/t';
 import ShowIf from 'app/App/ShowIf';
-import languages from 'shared/languages';
 
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
+import DocumentLanguage from './DocumentLanguage';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
@@ -116,22 +116,6 @@ export class Item extends Component {
     return false;
   }
 
-  documentLanguage(doc) {
-    let language = null;
-    if (doc.file) {
-      if (doc.file.language && this.props.locale !== languages.get(doc.file.language, 'ISO639_1')) {
-        let languageString = languages.get(doc.file.language, 'ISO639_1') || doc.file.language;
-        language = <span>&nbsp;&nbsp;<span className="item-documentLanguage">{languageString}</span></span>;
-      }
-
-      if (!doc.file.language || doc.file.language === 'und') {
-        language = <span>&nbsp;&nbsp;<span className="item-documentLanguage"><i className="fa fa-question fa-fw" /></span></span>;
-      }
-    }
-
-    return language;
-  }
-
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
            templateClassName, buttons, evalPublished} = this.props;
@@ -156,7 +140,7 @@ export class Item extends Component {
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc.title}</span>
-            {this.documentLanguage(doc)}
+            <DocumentLanguage doc={this.props.doc} />
             {snippet}
           </div>
           {this.getSearchSnipett(doc)}

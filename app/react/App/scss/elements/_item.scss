@@ -28,23 +28,6 @@
   zoom: 1;
   cursor: pointer;
 
-  .item-documentLanguage {
-    color: #666;
-    background-color: #e9e8e5;
-    border-radius: 0;
-    padding: 0 4px;
-    height: 17px;
-    line-height: 18px;
-    font-family: "Roboto", sans-serif;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.075em;
-    max-width: 100%;
-    white-space: nowrap;
-    display: inline-block;
-    text-transform: uppercase;
-  }
-
   @media (min-width: 640px) and (max-width: 1023px) {
     width: 48%;
     margin: 0 0 15px;
@@ -196,6 +179,7 @@ $item-padding: 15px;
   margin-right: 5px;
   font-size: 14px;
 }
+
 .item-type__name {
   color: $c-white;
   border-radius: $border-radius;
@@ -211,6 +195,30 @@ $item-padding: 15px;
   white-space: nowrap;
   display: inline-block;
   cursor: default;
+}
+
+.item-type__documentLanguage {
+
+  &:before {
+    content: "\00a0\00a0";
+  }
+
+  > span {
+    color: #666;
+    background-color: #e9e8e5;
+    border-radius: 0;
+    padding: 0 4px;
+    height: 17px;
+    line-height: 18px;
+    font-family: "Roboto", sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.075em;
+    max-width: 100%;
+    white-space: nowrap;
+    display: inline-block;
+    text-transform: uppercase;
+  }
 }
 
 .item-type-empty .item-type__icon  { color: $c-grey; }
