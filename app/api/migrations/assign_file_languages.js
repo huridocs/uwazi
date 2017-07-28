@@ -13,8 +13,8 @@ entities.get({type: 'document'}, {_id: 1})
         return;
       }
 
-      doc.file.fullText = doc.fullText;
-      doc.file.language = languages.detect(doc.fullText, 'franc');
+      doc.file.fullText = doc.file.fullText || doc.fullText;
+      doc.file.language = languages.detect(doc.file.fullText, 'franc');
       delete doc.fullText;
 
       return entities.save(doc)
@@ -25,7 +25,17 @@ entities.get({type: 'document'}, {_id: 1})
   }, {concurrency: 1});
 })
 .then(() => {
-  mongoose.disconnect();
+  entities.db.collection.update({},
+    {$unset: {fullText: true}},
+    {multi: true, safe: true},
+    (err) => {
+      if (err) {
+        throw err;
+      }
+      console.log('FullText deleted from collection\'s root!');
+      mongoose.disconnect();
+    }
+  );
 })
 .catch((e) => {
   console.log(e);
