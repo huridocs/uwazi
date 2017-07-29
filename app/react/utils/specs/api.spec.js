@@ -4,9 +4,12 @@ import backend from 'fetch-mock';
 import {browserHistory} from 'react-router';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 import {store} from 'app/store';
+import loadingBar from 'app/App/LoadingProgressBar';
 
-describe('Login', () => {
+describe('api', () => {
   beforeEach(() => {
+    spyOn(loadingBar, 'start');
+    spyOn(loadingBar, 'done');
     backend.restore();
     backend
     .get(APIURL + 'test_get', JSON.stringify({method: 'GET'}))
@@ -27,6 +30,16 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    it('should start and end the loading bar', (done) => {
+      api.get('test_get')
+      .then(() => {
+        expect(loadingBar.done).toHaveBeenCalled();
+        done();
+      })
+      .catch(done.fail);
+      expect(loadingBar.start).toHaveBeenCalled();
     });
 
     describe('when authorizing', () => {
@@ -54,6 +67,16 @@ describe('Login', () => {
       })
       .catch(done.fail);
     });
+
+    it('should start and end the loading bar', (done) => {
+      api.post('test_post', {data: 'post'})
+      .then(() => {
+        expect(loadingBar.done).toHaveBeenCalled();
+        done();
+      })
+      .catch(done.fail);
+      expect(loadingBar.start).toHaveBeenCalled();
+    });
   });
 
   describe('DELETE', () => {
@@ -64,6 +87,16 @@ describe('Login', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    it('should start and end the loading bar', (done) => {
+      api.delete('test_delete', {data: 'delete'})
+      .then(() => {
+        expect(loadingBar.done).toHaveBeenCalled();
+        done();
+      })
+      .catch(done.fail);
+      expect(loadingBar.start).toHaveBeenCalled();
     });
   });
 
@@ -97,6 +130,14 @@ describe('Login', () => {
       .catch(() => {
         expect(store.dispatch).toHaveBeenCalledWith('notify action');
         expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'danger');
+        done();
+      });
+    });
+
+    it('should end the loading bar', (done) => {
+      api.get('error_url')
+      .catch(() => {
+        expect(loadingBar.done).toHaveBeenCalled();
         done();
       });
     });

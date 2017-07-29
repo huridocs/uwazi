@@ -49,7 +49,6 @@ class Root extends Component {
           <script src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
           <script src='/nprogress/nprogress.js'></script>
           <link rel='stylesheet' href='/nprogress/nprogress.css'/>
-
         </body>
       </html>
     );

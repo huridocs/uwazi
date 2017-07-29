@@ -19,6 +19,8 @@ let handleError = (error) => {
     return Promise.reject(error);
   }
 
+  doneLoading();
+
   if (error.status === 401) {
     browserHistory.replace('/login');
     return Promise.reject(error);
@@ -47,12 +49,16 @@ export default {
   },
 
   post: (url, data) => {
+    loadingBar.start();
     return request.post(APIURL + url, data, {'Content-language': locale})
+    .then(doneLoading)
     .catch(handleError);
   },
 
   delete: (url, data) => {
+    loadingBar.start();
     return request.delete(APIURL + url, data, {'Content-language': locale})
+    .then(doneLoading)
     .catch(handleError);
   },
 

@@ -1,22 +1,27 @@
 import {isClient} from 'app/utils';
 
-let requests = 0;
+const loadingProgressBar = {
+  requests: 0,
 
-export default {
   start: () => {
     if (isClient && window.NProgress) {
-      window.NProgress.configure({showSpinner: false, easing: 'ease', speed: 1000, parent: '.app-content'});
+      window.NProgress.configure({showSpinner: false, easing: 'ease', speed: 800, parent: '.app-content', minimum: 0.2});
       window.NProgress.start();
-      requests += 1;
+      loadingProgressBar.requests += 1;
     }
   },
 
   done: () => {
     if (isClient && window.NProgress) {
-      requests -= 1;
-      if (requests <= 0) {
+      loadingProgressBar.requests -= 1;
+      if (loadingProgressBar.requests <= 0) {
         window.NProgress.done();
+        return;
       }
+
+      window.NProgress.inc(0.1);
     }
   }
 };
+
+export default loadingProgressBar;
