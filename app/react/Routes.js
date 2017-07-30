@@ -3,6 +3,7 @@ import {Route, IndexRoute} from 'react-router';
 
 import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
+import {isClient} from 'app/utils';
 
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
@@ -47,6 +48,12 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import Library from 'app/Library/Library';
 
 import store from './store';
+
+function pageView() {
+  if (isClient && window.ga) {
+    window.ga('send', 'pageview');
+  }
+}
 
 function getIndexRoute(nextState, callBack) {
   let indexRoute = {
@@ -103,13 +110,13 @@ const routes =
       </Route>
       <Route path='filters' component={FiltersForm} />
     </Route>
-    <Route path='library' component={Library} />
+    <Route path='library' component={Library} onEnter={pageView}/>
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
     <Route path='setpassword/:key' component={ResetPassword} />
-    <Route path='document/:documentId' component={ViewDocument} />
-    <Route path='entity/:entityId' component={EntityView} />
-    <Route path='page/:pageId' component={PageView} />
+    <Route path='document/:documentId' component={ViewDocument} onEnter={pageView}/>
+    <Route path='entity/:entityId' component={EntityView} onEnter={pageView}/>
+    <Route path='page/:pageId' component={PageView} onEnter={pageView}/>
     <Route path='404' component={NoMatch} />
   </Route>
 ;
