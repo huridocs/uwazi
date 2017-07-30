@@ -121,7 +121,9 @@ export function multipleUpdate(_entities, values) {
       if (values.icon) {
         entity.icon = values.icon;
       }
-      entity.template = values.template;
+      if (values.template) {
+        entity.template = values.template;
+      }
       return entity;
     });
 
