@@ -9,7 +9,6 @@ import * as types from '../actionTypes';
 import * as routeActions from 'app/Viewer/actions/routeActions';
 import {mockID} from 'shared/uniqueID.js';
 import {api} from 'app/Entities';
-import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 
 import Immutable from 'immutable';
 
