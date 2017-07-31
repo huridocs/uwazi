@@ -3,7 +3,6 @@ import {Route, IndexRoute} from 'react-router';
 
 import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
-import {isClient} from 'app/utils';
 
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
@@ -48,11 +47,10 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import Library from 'app/Library/Library';
 
 import store from './store';
+import {trackPage} from 'app/App/GoogleAnalytics';
 
-function pageView() {
-  if (isClient && window.ga) {
-    window.ga('send', 'pageview');
-  }
+function onEnter() {
+  trackPage();
 }
 
 function getIndexRoute(nextState, callBack) {
@@ -110,13 +108,13 @@ const routes =
       </Route>
       <Route path='filters' component={FiltersForm} />
     </Route>
-    <Route path='library' component={Library} onEnter={pageView}/>
+    <Route path='library' component={Library} onEnter={onEnter}/>
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
     <Route path='setpassword/:key' component={ResetPassword} />
-    <Route path='document/:documentId' component={ViewDocument} onEnter={pageView}/>
-    <Route path='entity/:entityId' component={EntityView} onEnter={pageView}/>
-    <Route path='page/:pageId' component={PageView} onEnter={pageView}/>
+    <Route path='document/:documentId' component={ViewDocument} onEnter={onEnter}/>
+    <Route path='entity/:entityId' component={EntityView} onEnter={onEnter}/>
+    <Route path='page/:pageId' component={PageView} onEnter={onEnter}/>
     <Route path='404' component={NoMatch} />
   </Route>
 ;

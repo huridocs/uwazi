@@ -3,6 +3,12 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {isClient} from 'app/utils';
 
+export function trackPage() {
+  if (isClient && window.ga) {
+    window.ga('send', 'pageview');
+  }
+}
+
 export class GoogleAnalytics extends Component {
 
   constructor(props) {
@@ -13,7 +19,7 @@ export class GoogleAnalytics extends Component {
     /*eslint-disable */
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
     window.ga('create', props.analyticsTrackingId, 'auto');
-    window.ga('send', 'pageview');
+    trackPage();
     /*eslint-enable */
   }
 
