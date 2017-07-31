@@ -253,21 +253,19 @@ describe('Item', () => {
     let templates;
     let thesauris;
     let search;
-    let locale;
 
     beforeEach(() => {
       templates = 'templates';
       thesauris = 'thesauris';
-      locale = 'lc';
     });
 
     it('should include templates, thesauris and default sort', () => {
-      expect(mapStateToProps({templates, thesauris, locale}, {})).toEqual({templates, thesauris, search, locale});
+      expect(mapStateToProps({templates, thesauris}, {})).toEqual({templates, thesauris, search});
     });
 
     it('should allow overriding the default sort', () => {
       const ownProps = {searchParams: {sort: 'newSort'}};
-      expect(mapStateToProps({templates, thesauris, locale}, ownProps)).toEqual({templates, thesauris, search: {sort: 'newSort'}, locale});
+      expect(mapStateToProps({templates, thesauris}, ownProps)).toEqual({templates, thesauris, search: {sort: 'newSort'}});
     });
   });
 });

@@ -180,17 +180,16 @@ Item.propTypes = {
   labels: PropTypes.object,
   className: PropTypes.string,
   templateClassName: PropTypes.string,
-  evalPublished: PropTypes.bool,
-  locale: PropTypes.string
+  evalPublished: PropTypes.bool
 };
 
 Item.defaultProps = {
   search: prioritySortingCriteria()
 };
 
-export const mapStateToProps = ({templates, thesauris, locale}, ownProps) => {
+export const mapStateToProps = ({templates, thesauris}, ownProps) => {
   const search = ownProps.searchParams;
-  return {templates, thesauris, search, locale};
+  return {templates, thesauris, search};
 };
 
 export default connect(mapStateToProps)(Item);
