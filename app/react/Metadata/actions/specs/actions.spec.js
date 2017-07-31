@@ -7,6 +7,8 @@ import thunk from 'redux-thunk';
 import {APIURL} from 'app/config.js';
 import * as types from '../actionTypes';
 import * as routeActions from 'app/Viewer/actions/routeActions';
+import {mockID} from 'shared/uniqueID.js';
+import {api} from 'app/Entities';
 
 import Immutable from 'immutable';
 
@@ -22,7 +24,6 @@ describe('Metadata Actions', () => {
       let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-
       let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: ''}};
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
@@ -143,6 +144,7 @@ describe('Metadata Actions', () => {
       ]};
 
       let expectedModel = {
+        template: '1',
         metadata: {
           year: '',
           powers: [],
@@ -154,6 +156,28 @@ describe('Metadata Actions', () => {
       let dispatch = jasmine.createSpy('dispatch');
       actions.loadTemplate('formNamespace', template)(dispatch);
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedModel);
+    });
+  });
+
+  describe('multipleUpdate', () => {
+    it('should update selected entities with the given metadata and template', (done) => {
+      mockID();
+      spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
+      let entities = Immutable.fromJS([{sharedId: '1'}, {sharedId: '2'}]);
+      const metadata = {text: 'something new'};
+      const template = 'template';
+
+      const store = mockStore({});
+      store.dispatch(actions.multipleUpdate(entities, {template, metadata}))
+      .then((docs) => {
+        expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], {template, metadata});
+        expect(docs[0].metadata).toEqual(metadata);
+        expect(docs[0].template).toEqual('template');
+        expect(docs[1].metadata).toEqual(metadata);
+        expect(docs[1].template).toEqual('template');
+      })
+      .then(done)
+      .catch(done.fail);
     });
   });
 
