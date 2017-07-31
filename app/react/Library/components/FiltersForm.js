@@ -81,13 +81,24 @@ export class FiltersForm extends Component {
                       {property.required ? <span className="required">*</span> : ''}
                       <div className="switcher-wrapper">
                         <span className="is-active">AND</span>
-                        <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, fields)}></figure>
+                        <Field model={`.filters.${property.name}.and`}>
+                          <input
+                            id={property.name + 'strict'}
+                            type='checkbox'
+                            onChange={() => {
+                              this.autoSearch = true;
+                              this.props.activateFilter(property.name, true, allFields);
+                            }
+                          }
+                          />
+                          <label htmlFor={property.name + 'strict'} className="switcher"></label>
+                        </Field>
                         <span>OR</span>
                       </div>
                     </li>
                     <li className="wide">
                       <MultiSelect
-                        model={`.filters.${property.name}`}
+                        model={`.filters.${property.name}.values`}
                         prefix={property.name}
                         options={this.translatedOptions(property)}
                         optionsValue="id" onChange={(options) => {

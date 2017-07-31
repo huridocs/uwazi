@@ -33,10 +33,10 @@ export function URLQueryToState(query, templates, thesauris) {
     if (filters[property.name]) {
       property.active = true;
     }
-    let defaultValue = '';
+    let defaultValue = {};
 
     if (property.type === 'select' || property.type === 'multiselect') {
-      defaultValue = [];
+      defaultValue = {values: []};
     }
 
     if (property.type === 'nested'

@@ -162,9 +162,20 @@ export default function () {
     },
 
     multiselectFilter(filters, property) {
-      let values = filters[property].value;
+      const filterValue = filters[property].value;
+      const values = filterValue.values;
       let match = {terms: {}};
       match.terms[`metadata.${property}.raw`] = values;
+
+      if (filterValue.and) {
+        match = {bool: {must: []}};
+        match.bool.must = values.map((value) => {
+          let m = {term: {}};
+          m.term[`metadata.${property}.raw`] = value;
+          return m;
+        });
+      }
+
       return match;
     },
 
@@ -340,7 +351,9 @@ export default function () {
         let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must) {
             match.bool.must = match.bool.must.filter((nestedMatcher) => {
-              return !nestedMatcher.nested.query.bool.must[0].terms || !nestedMatcher.nested.query.bool.must[0].terms[path];
+              return !nestedMatcher.nested ||
+              !nestedMatcher.nested.query.bool.must[0].terms ||
+              !nestedMatcher.nested.query.bool.must[0].terms[path];
             });
 
             if (!match.bool.must.length) {
