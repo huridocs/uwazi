@@ -98,7 +98,8 @@ describe('Item', () => {
     beforeEach(() => {
       props.doc = props.doc.set('metadata', {
         sex: 'female',
-        age: 25
+        age: 25,
+        markdown: 'SomeMarkdown'
       });
       props.thesauris = Immutable([{_id: 't1'}]);
     });
@@ -115,13 +116,15 @@ describe('Item', () => {
         _id: 'templateId',
         properties: [
           {name: 'sex', label: 'sexLabel', showInCard: true},
-          {name: 'age', label: 'ageLabel'}
+          {name: 'age', label: 'ageLabel'},
+          {name: 'markdown', label: 'markdownLabel', type: 'markdown', showInCard: true}
         ]
       }]);
 
       render();
       expect(component.find('.item-metadata').text()).toContain('sexLabel');
       expect(component.find('.item-metadata').text()).toContain('female');
+      expect(component.find('.item-metadata').html()).toContain('<p>SomeMarkdown</p>');
       expect(component.find('.item-metadata').text()).not.toContain('ageLabel');
     });
 
