@@ -19,7 +19,7 @@ entities.get({type: 'document'}, {_id: 1})
 
       return entities.save(doc)
       .then(() => {
-        console.log(doc.title + ' Migrated !');
+        console.log(doc.title + ' Migrated!');
       });
     });
   }, {concurrency: 1});
