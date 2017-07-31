@@ -112,20 +112,6 @@ export function encodeSearch(search, appendQ = true) {
   return appendQ ? '?q=' + rison.encode(search) : rison.encode(search);
 }
 
-export function refreshAggregations(storeKey = 'library') {
-  return function (dispatch, getState) {
-    const filters = getState()[storeKey].filters.toJS();
-    const limit = 0;
-    const search = processFilters(getState()[storeKey].search, filters, limit);
-    setTimeout(() => {
-      api.search(search)
-      .then((result) => {
-        dispatch(actions.set('aggregations', result.aggregations));
-      });
-    }, 2000);
-  };
-}
-
 export function searchDocuments(readOnlySearch, storeKey, limit) {
   return function (dispatch, getState) {
     const filters = getState()[storeKey].filters.toJS();
@@ -171,7 +157,6 @@ export function saveDocument(doc, formKey) {
   return function (dispatch) {
     return documents.api.save(doc)
     .then((updatedDoc) => {
-      dispatch(refreshAggregations())
       dispatch(notify('Document updated', 'success'));
       dispatch(formActions.reset(formKey));
       dispatch(updateEntity(updatedDoc));
