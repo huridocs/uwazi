@@ -34,6 +34,8 @@ import instanceModel from 'api/odm';
   *             type: string
   *           mimetype:
   *             type: string
+  *           language:
+  *             type: string
   *           size:
   *             type: integer
   *       icon:
