@@ -12,8 +12,8 @@ import {t} from 'app/I18N';
 
 export class SearchBar extends Component {
 
-  getSuggestions(e) {
-    this.props.getSuggestions(e.target.value);
+  getSuggestions(/*e*/) {
+    //this.props.getSuggestions(e.target.value);
   }
 
   closeSuggestions() {
