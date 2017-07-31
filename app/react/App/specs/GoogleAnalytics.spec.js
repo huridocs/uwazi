@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {GoogleAnalytics, trackPage} from '../GoogleAnalytics';
 
-fdescribe('GoogleAnalytics', () => {
+describe('GoogleAnalytics', () => {
   let component;
   let props;
 
@@ -54,8 +54,10 @@ fdescribe('GoogleAnalytics', () => {
     });
 
     describe('if ga is not defined does nothing', () => {
-      delete window.ga;
-      trackPage();
+      it('should do nothing', () => {
+        delete window.ga;
+        expect(trackPage).not.toThrow();
+      });
     });
   });
 });
