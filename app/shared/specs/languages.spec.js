@@ -9,9 +9,9 @@ describe('languages', () => {
 
     it('should return a list of all languages for the passed purpose', () => {
       expect(languages.getAll('ISO639_1').length).toBe(31);
-      expect(languages.getAll('ISO639_1')[5]).toBe('cs');
+      expect(languages.getAll('ISO639_1')[5]).toBe(languages.data[7].ISO639_1);
       expect(languages.getAll('franc').length).toBe(33);
-      expect(languages.getAll('franc')[5]).toBe('cjk');
+      expect(languages.getAll('franc')[5]).toBe(languages.data[5].franc);
     });
   });
 
