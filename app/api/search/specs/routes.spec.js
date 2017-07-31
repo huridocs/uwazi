@@ -76,19 +76,4 @@ describe('search routes', () => {
       .catch(catchErrors(done));
     });
   });
-
-  describe('/api/search/match_title', () => {
-    it('should search search by title and return the results', (done) => {
-      spyOn(search, 'matchTitle').and.returnValue(new Promise((resolve) => resolve('results')));
-      let req = {query: {searchTerm: 'test'}, language: 'es'};
-
-      routes.get('/api/search/match_title', req)
-      .then((response) => {
-        expect(response).toEqual('results');
-        expect(search.matchTitle).toHaveBeenCalledWith('test', 'es');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
 });

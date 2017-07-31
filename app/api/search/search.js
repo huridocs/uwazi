@@ -109,7 +109,7 @@ export default {
 
   searchSnippets(searchTerm, sharedId, language) {
     let query = queryBuilder()
-    .fullTextSearch(searchTerm, [], true, 9999)
+    .fullTextSearch(searchTerm, ['fullText'], 9999)
     .includeUnpublished()
     .filterById(sharedId)
     .language(language)
@@ -134,29 +134,6 @@ export default {
           text: snippet.replace(regex, ''),
           page: matches ? Number(matches[1]) : 0
         };
-      });
-    });
-  },
-
-  matchTitle(searchTerm, language) {
-    if (searchTerm === '') {
-      return Promise.resolve([]);
-    }
-
-    let query = queryBuilder()
-    .fullTextSearch(searchTerm, ['title'], false)
-    .highlight(['title'])
-    .language(language)
-    .limit(5)
-    .query();
-
-    return elastic.search({index: elasticIndex, body: query})
-    .then((response) => {
-      return response.hits.hits.map((hit) => {
-        let result = hit._source;
-        result._id = hit._id;
-        result.title = hit.highlight.title[0];
-        return result;
       });
     });
   },
