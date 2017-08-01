@@ -6,7 +6,6 @@ import {bindActionCreators} from 'redux';
 import filesize from 'filesize';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import t from 'app/I18N/t';
 
 import {deleteAttachment, renameAttachment, loadForm, submitForm, resetForm} from '../actions/actions';
 import UploadButton from 'app/Metadata/components/UploadButton';
@@ -42,22 +41,27 @@ export class Attachment extends Component {
     return options;
   }
 
+  conformThumbnail(file, item) {
+    const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
+    return (
+      <div className="attachment-thumbnail">
+        <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
+          <span><i className="fa fa-file-pdf-o"></i> pdf</span>
+        </ShowIf>
+        <ShowIf if={acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename)) !== -1}>
+          <img src={item.downloadHref} />
+        </ShowIf>
+      </div>
+    );
+  }
+
   render() {
     const {file, parentId, parentSharedId, model, isSourceDocument} = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
     let name = <a className="attachment-link" href={item.downloadHref}>
-                <div className="attachment-thumbnail">
-                  <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
-                    <span><i className="fa fa-file-pdf-o"></i> pdf</span>
-                  </ShowIf>
-                  <ShowIf if={this.getExtension(file.filename) === 'png' ||
-                    this.getExtension(file.filename) === 'gif' ||
-                    this.getExtension(file.filename) === 'jpg'}>
-                      <img src ={item.downloadHref} />
-                  </ShowIf>
-                </div>
+                {this.conformThumbnail(file, item)}
                 <span className="attachment-name">
                   <span>{file.originalname}</span>
                   <ShowIf if={Boolean(sizeString)}>
@@ -88,16 +92,7 @@ export class Attachment extends Component {
 
     if (this.props.beingEdited && !this.props.readOnly) {
       name = <div className="attachment-link">
-              <div className="attachment-thumbnail">
-                <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
-                  <span><i className="fa fa-file-pdf-o"></i> pdf</span>
-                </ShowIf>
-                <ShowIf if={this.getExtension(file.filename) === 'png' ||
-                  this.getExtension(file.filename) === 'gif' ||
-                  this.getExtension(file.filename) === 'jpg'}>
-                    <img src ={item.downloadHref} />
-                </ShowIf>
-              </div>
+              {this.conformThumbnail(file, item)}
               <span className="attachment-name">
                 <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>
               </span>
