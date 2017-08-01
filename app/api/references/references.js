@@ -1,6 +1,6 @@
 import templatesAPI from 'api/templates';
 import relationTypesAPI from 'api/relationtypes/relationtypes';
-import entities from 'api/entities';
+import entities from '../entities';
 
 import model from './connectionsModel.js';
 
@@ -161,8 +161,10 @@ export default {
         sourceType: 'metadata',
         sourceDocument: entity.sharedId,
         targetDocument: item.value,
-        sourceProperty: item.property
+        sourceProperty: item.property,
+        sourceTemplate: entity.template
       }, language));
+
 
       return Promise.all(deletes.concat(creates));
     });

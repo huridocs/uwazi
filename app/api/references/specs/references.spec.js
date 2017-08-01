@@ -1,10 +1,10 @@
+/* eslint-disable max-nested-callbacks */
 import references from '../references.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
-import fixturesForGroup, {template1Id, template2Id,
-                          template3Id, relation1, relation2} from './fixturesForGroup';
+import fixturesForGroup, {template1Id, template2Id, template3Id, relation1, relation2} from './fixturesForGroup';
 
 describe('references', () => {
   beforeEach((done) => {
@@ -63,6 +63,7 @@ describe('references', () => {
 
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceType).toBe('metadata');
+        expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceTemplate.toString()).toBe(template.toString());
         expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
@@ -123,7 +124,8 @@ describe('references', () => {
 
           expect(refs.find((ref) => ref.targetDocument === value1ID)._id).not.toBe(generatedIds[0]);
           expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString()).toBe(generatedIds[1].toString());
+          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString())
+          .toBe(generatedIds[1].toString());
           expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
           expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
 
