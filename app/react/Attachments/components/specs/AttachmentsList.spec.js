@@ -1,9 +1,11 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS as Immutable} from 'immutable';
+import {NeedAuthorization} from 'app/Auth';
 
 import {AttachmentsList} from '../AttachmentsList';
 import Attachment from '../Attachment';
+import UploadAttachment from '../UploadAttachment';
 
 describe('AttachmentsList', () => {
   let component;
@@ -44,6 +46,12 @@ describe('AttachmentsList', () => {
     expect(component.find(Attachment).at(0).props().readOnly).toBe(false);
   });
 
+  it('should include and authorized UploadAttachment button', () => {
+    render();
+    expect(component.find(UploadAttachment).props().entityId).toBe('parentId');
+    expect(component.find(UploadAttachment).parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(component.find(UploadAttachment).parent().parent().props().roles).toEqual(['admin', 'editor']);
+  });
 
   describe('when files is empty', () => {
     it('should render nothing', () => {
