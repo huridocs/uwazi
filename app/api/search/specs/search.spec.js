@@ -10,7 +10,7 @@ import fixtures, {templateId, userId} from './fixtures';
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
-import languages from '../languages';
+import languages from 'shared/languages';
 
 describe('search', () => {
   let result;
@@ -489,20 +489,15 @@ describe('search', () => {
           _id: 'asd1',
           type: 'document',
           title: 'Batman indexes',
-          fullText: 'text'
+          file: {fullText: 'text'}
         };
 
         search.index(entity)
         .then(() => {
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {
-            type: 'document',
-            title: 'Batman indexes'
-          }});
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {type: 'document', title: 'Batman indexes', file: {}}});
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {
-            fullText_english: 'text'
-          }});
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {fullText_english: 'text'}});
           done();
         })
         .catch(done.fail);
@@ -535,19 +530,19 @@ describe('search', () => {
         spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
         spyOn(languages, 'detect').and.returnValue('english');
         const toIndexDocs = [
-          {_id: 'id1', title: 'test1', fullText: 'text1'},
-          {_id: 'id2', title: 'test2', fullText: 'text2'}
+          {_id: 'id1', title: 'test1', file: {fullText: 'text1'}},
+          {_id: 'id2', title: 'test2', file: {fullText: 'text2'}}
         ];
 
         search.bulkIndex(toIndexDocs, 'index')
         .then(() => {
           expect(elastic.bulk).toHaveBeenCalledWith({body: [
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
-            {title: 'test1'},
+            {title: 'test1', file: {}},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
             {fullText_english: 'text1'},
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
-            {title: 'test2'},
+            {title: 'test2', file: {}},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
             {fullText_english: 'text2'}
           ]});

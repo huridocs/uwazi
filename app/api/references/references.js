@@ -24,6 +24,7 @@ let normalizeConnectedDocumentData = (connection, connectedDocument) => {
   connection.connectedDocumentPublished = Boolean(connectedDocument.published);
   connection.connectedDocumentMetadata = connectedDocument.metadata || {};
   connection.connectedDocumentCreationDate = connectedDocument.creationDate;
+  connection.connectedDocumentFile = connectedDocument.file;
   return connection;
 };
 

@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {fromJS as Immutable} from 'immutable';
 
 import {I18NLink} from 'app/I18N';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
 import marked from 'app/utils/marked';
 import {Icon} from 'app/Layout/Icon';
-import {TemplateLabel} from 'app/Layout';
+import {TemplateLabel, DocumentLanguage} from 'app/Layout';
 
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
 import {caseTemplate, matterTemplate} from 'app/Timeline/utils/timelineFixedData';
@@ -55,7 +56,10 @@ export class ShowMetadata extends Component {
       if (showTitle) {
         title = <div>
                   <Icon className="item-icon item-icon-center" data={entity.icon} />
-                  <h1 className="item-name">{entity.title}</h1>
+                  <h1 className="item-name">
+                    {entity.title}
+                    <DocumentLanguage doc={Immutable(entity)} />
+                  </h1>
                 </div>;
       }
       const type = showType ? <TemplateLabel template={entity.template}/> : '';

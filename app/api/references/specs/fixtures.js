@@ -50,8 +50,9 @@ export default {
     }]}
   ],
   entities: [
-    {sharedId: 'source1', language: 'es', title: 'source1 title', type: 'document', template: 'template3_id', icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123}, {sharedId: 'doc3', language: 'es', title: 'doc3 title', type: 'entity', template: 'template1_id', published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
-    {sharedId: 'doc4', language: 'es', title: 'doc4 title', type: 'document', template: 'template1_id', metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'source1', language: 'es', title: 'source1 title', type: 'document', template: 'template3_id', file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {sharedId: 'doc3', language: 'es', title: 'doc3 title', type: 'entity', template: 'template1_id', published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {sharedId: 'doc4', language: 'es', title: 'doc4 title', type: 'document', template: 'template1_id', file: {language: 'eng'}, metadata: {data: 'data3'}, creationDate: 789},
     {sharedId: 'doc5', language: 'es', title: 'doc5 title', type: 'document', template: 'template2_id'},
     {sharedId: selectValueID, language: 'es', title: 'selectValue', type: 'entity'},
     {sharedId: value1ID, language: 'es', title: 'value1', type: 'entity'},

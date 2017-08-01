@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import uploadRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
@@ -41,24 +42,24 @@ describe('upload routes', () => {
   });
 
   describe('POST/upload', () => {
-    //temporary test for the conversion, probably this will go on another
+    // Temporary test for PDF conversion. This should probably go elsewhere?
     it('should process the document after upload', (done) => {
       routes.post('/api/upload', req)
       .then(() => {
         setTimeout(() => {
           return Promise.all([
-            documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
-            documents.get({sharedId: 'id', language: 'en'}, '+fullText')
+            documents.get({sharedId: 'id', language: 'es'}, '+file.fullText'),
+            documents.get({sharedId: 'id', language: 'en'}, '+file.fullText')
           ])
           .then(([docES, docEN]) => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
             expect(docEN[0].processed).toBe(true);
-            expect(docEN[0].fullText).toMatch(/Test\[\[1\]\] file/);
+            expect(docEN[0].file.fullText).toMatch(/Test\[\[1\]\] file/);
             expect(docEN[0].language).toBe('en');
 
             expect(docES[0].processed).toBe(true);
-            expect(docES[0].fullText).toMatch(/Test\[\[1\]\] file/);
+            expect(docES[0].file.fullText).toMatch(/Test\[\[1\]\] file/);
             expect(docES[0].language).toBe('es');
             done();
           })
@@ -67,6 +68,54 @@ describe('upload routes', () => {
       })
       .catch(catchErrors(done));
     });
+
+    describe('Language detection', () => {
+      it('should detect English documents and store the result', (done) => {
+        file.filename = 'eng.pdf';
+        file.path = __dirname + '/uploads/eng.pdf';
+
+        routes.post('/api/upload', req)
+        .then(() => {
+          setTimeout(() => {
+            return Promise.all([
+              documents.get({sharedId: 'id', language: 'es'}, '+file.fullText'),
+              documents.get({sharedId: 'id', language: 'en'}, '+file.fullText')
+            ])
+            .then(([docES, docEN]) => {
+              expect(docEN[0].file.language).toBe('eng');
+              expect(docES[0].file.language).toBe('eng');
+              done();
+            })
+            .catch(catchErrors(done));
+          }, 1000);
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should detect Spanish documents and store the result', (done) => {
+        file.filename = 'spn.pdf';
+        file.path = __dirname + '/uploads/spn.pdf';
+
+        routes.post('/api/upload', req)
+        .then(() => {
+          setTimeout(() => {
+            return Promise.all([
+              documents.get({sharedId: 'id', language: 'es'}, '+file.fullText'),
+              documents.get({sharedId: 'id', language: 'en'}, '+file.fullText')
+            ])
+            .then(([docES, docEN]) => {
+              expect(docEN[0].file.language).toBe('spa');
+              expect(docES[0].file.language).toBe('spa');
+              done();
+            })
+            .catch(catchErrors(done));
+          }, 1000);
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    // -----------------------------------------------------------------------
 
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {

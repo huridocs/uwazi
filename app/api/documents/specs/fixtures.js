@@ -8,7 +8,7 @@ const referenceId = db.id();
 export default {
   entities: [
     {_id: batmanFinishesId, sharedId: 'shared', template: templateId, language: 'en', title: 'Batman finishes', published: true, user: {username: 'username'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf', originalname: 'Batman original.jpg'}},
-    {_id: db.id(), sharedId: 'shared', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, user: {username: 'username'}, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf'}},
+    {_id: db.id(), sharedId: 'shared', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, user: {username: 'username'}, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf', fullText: 'fullText'}},
     {
       _id: db.id(), sharedId: 'shared', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'},
       user: {username: 'username'}
