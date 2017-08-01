@@ -41,6 +41,7 @@ describe('Metadata Actions', () => {
         doc = {title: 'test'};
         templates = [{
           _id: 'templateId1',
+          name: 'first',
           isEntity: true,
           properties: [
             {name: 'test'},
@@ -50,6 +51,7 @@ describe('Metadata Actions', () => {
           ]
         }, {
           _id: 'templateId2',
+          name: 'last',
           properties: [
             {name: 'test'},
             {name: 'newProp'},
