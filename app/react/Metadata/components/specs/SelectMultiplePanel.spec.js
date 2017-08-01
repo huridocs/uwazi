@@ -126,13 +126,13 @@ describe('SelectMultiplePanel', () => {
       state = {};
       ownProps = {state: {}};
       ownProps.templates = Immutable.fromJS([
-        {_id: '1', properties: [
+        {_id: '1', name: 'first', properties: [
           {name: 'year', type: 'numeric'},
           {name: 'powers', content: '1', type: 'multiselect'},
           {name: 'enemies', content: '2', type: 'multiselect'},
           {name: 'color', type: 'text', required: true}
         ]},
-        {_id: '2', properties: [
+        {_id: '2', name: 'last', properties: [
           {name: 'year', type: 'date'},
           {name: 'powers', content: '1', type: 'multiselect'},
           {name: 'enemies', content: '3', type: 'multiselect'},
@@ -142,15 +142,50 @@ describe('SelectMultiplePanel', () => {
       ownProps.entitiesSelected = Immutable.fromJS([{title: 'A rude awakening', template: '1'}, {title: 'A falling star', template: '2'}]);
     });
 
-    it('should select templateOptions according to entity type', () => {
-      let expectedTemplate = {
-        _id: '',
-        properties: [
-          {name: 'powers', content: '1', type: 'multiselect'},
-          {name: 'color', type: 'text', required: true}
-        ]
-      };
-      expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
+    describe('when templates are diferent', () => {
+      it('should return a template with the common properties and a blank template', () => {
+        let expectedTemplate = {
+          _id: '',
+          properties: [
+            {name: 'powers', content: '1', type: 'multiselect'},
+            {name: 'color', type: 'text', required: true}
+          ]
+        };
+        expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
+      });
+    });
+
+    describe('when templates are the same', () => {
+      it('should return the template', () => {
+        ownProps.entitiesSelected = Immutable.fromJS([{title: 'A rude awakening', template: '1'}, {title: 'A falling star', template: '1'}]);
+        let expectedTemplate = {
+          _id: '1',
+          properties: [
+            {name: 'year', type: 'numeric'},
+            {name: 'powers', content: '1', type: 'multiselect'},
+            {name: 'enemies', content: '2', type: 'multiselect'},
+            {name: 'color', type: 'text', required: true}
+          ]
+        };
+        expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
+      });
+
+      describe('undefined template', () => {
+        it('should return the first template', () => {
+          ownProps.entitiesSelected = Immutable.fromJS([{title: 'A rude awakening'}, {title: 'A falling star'}]);
+          let expectedTemplate = {
+            _id: '1',
+            name: 'first',
+            properties: [
+              {name: 'year', type: 'numeric'},
+              {name: 'powers', content: '1', type: 'multiselect'},
+              {name: 'enemies', content: '2', type: 'multiselect'},
+              {name: 'color', type: 'text', required: true}
+            ]
+          };
+          expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
+        });
+      });
     });
   });
 });

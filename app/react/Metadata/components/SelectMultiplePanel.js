@@ -15,17 +15,33 @@ import {Select as SimpleSelect} from 'app/Forms';
 import {fromJS} from 'immutable';
 import {createSelector} from 'reselect';
 import {wrapDispatch} from 'app/Multireducer';
+import {advancedSort} from 'app/utils/advancedSort';
 
 import {TemplateLabel, SidePanel} from 'app/Layout';
 
-const commonTemplate = createSelector(
+const sortedTemplates = createSelector(
   s => s.templates,
+  (templates) => {
+    return advancedSort(templates.toJS(), {property: 'name'});
+  }
+);
+
+const commonTemplate = createSelector(
+  sortedTemplates,
   s => s.entitiesSelected,
   (templates, entitiesSelected) => {
     const selectedTemplates = entitiesSelected.map((entity) => entity.get('template'))
     .filter((type, index, _types) => _types.indexOf(type) === index);
-    const properties = comonProperties(templates.toJS(), selectedTemplates);
+    const properties = comonProperties(templates, selectedTemplates);
     let _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
+
+    const withoutTemplate = entitiesSelected.reduce((memo, entity) => {
+      return memo && !entity.get('template');
+    }, true);
+
+    if (withoutTemplate) {
+      return fromJS(templates.filter((template) => template.isEntity !== true)[0]);
+    }
     return fromJS({_id, properties});
   }
 );

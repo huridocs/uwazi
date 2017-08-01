@@ -5,6 +5,7 @@ import {APIURL} from 'app/config.js';
 import * as types from './actionTypes';
 import {api as entitiesAPI} from 'app/Entities';
 import {notify} from 'app/Notifications';
+import {advancedSort} from 'app/utils/advancedSort';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -40,13 +41,15 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
     let entity = Object.assign({}, onlyReadEntity);
     //
 
+    const sortedTemplates = advancedSort(templates, {property: 'name'});
+
     if (!entity.template) {
-      entity.template = templates[0]._id;
-      if (entity.type === 'document' && templates.find(t => !t.isEntity)) {
-        entity.template = templates.find(t => !t.isEntity)._id;
+      entity.template = sortedTemplates[0]._id;
+      if (entity.type === 'document' && sortedTemplates.find(t => !t.isEntity)) {
+        entity.template = sortedTemplates.find(t => !t.isEntity)._id;
       }
-      if (entity.type === 'entity' && templates.find(t => t.isEntity)) {
-        entity.template = templates.find(t => t.isEntity)._id;
+      if (entity.type === 'entity' && sortedTemplates.find(t => t.isEntity)) {
+        entity.template = sortedTemplates.find(t => t.isEntity)._id;
       }
     }
 
@@ -54,7 +57,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
       entity.metadata = {};
     }
 
-    let template = templates.find((t) => t._id === entity.template);
+    let template = sortedTemplates.find((t) => t._id === entity.template);
     resetMetadata(entity.metadata, template, {resetExisting: false});
 
     dispatch(formActions.reset(form));
@@ -82,7 +85,7 @@ export function changeTemplate(form, templateId) {
 
 export function loadTemplate(form, template) {
   return function (dispatch) {
-    let data = {metadata: {}};
+    let data = {template: template._id, metadata: {}};
     resetMetadata(data.metadata, template, {resetExisting: true});
     dispatch(formActions.load(form, data));
     dispatch(formActions.setPristine(form));
@@ -117,6 +120,9 @@ export function multipleUpdate(_entities, values) {
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
         entity.icon = values.icon;
+      }
+      if (values.template) {
+        entity.template = values.template;
       }
       return entity;
     });
