@@ -44,23 +44,27 @@ export class Attachment extends Component {
 
   render() {
     const {file, parentId, parentSharedId, model, isSourceDocument} = this.props;
+    const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
     let name = <a className="attachment-link" href={item.downloadHref}>
-      <div className="attachment-thumbnail">
-        <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
-          <span><i className="fa fa-file-pdf-o"></i> pdf</span>
-        </ShowIf>
-        <ShowIf if={this.getExtension(file.filename) === 'png' ||
-          this.getExtension(file.filename) === 'gif' ||
-          this.getExtension(file.filename) === 'jpg'}>
-            <img src ={item.downloadHref} />
-        </ShowIf>
-      </div>
-      <span className="attachment-name">
-        <span>{file.originalname}</span>
-      </span>
-    </a>;
+                <div className="attachment-thumbnail">
+                  <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
+                    <span><i className="fa fa-file-pdf-o"></i> pdf</span>
+                  </ShowIf>
+                  <ShowIf if={this.getExtension(file.filename) === 'png' ||
+                    this.getExtension(file.filename) === 'gif' ||
+                    this.getExtension(file.filename) === 'jpg'}>
+                      <img src ={item.downloadHref} />
+                  </ShowIf>
+                </div>
+                <span className="attachment-name">
+                  <span>{file.originalname}</span>
+                  <ShowIf if={Boolean(sizeString)}>
+                    <span className="attachment-size">{sizeString}</span>
+                  </ShowIf>
+                </span>
+               </a>;
 
     let buttons = <div>
                     <NeedAuthorization roles={['admin', 'editor']}>
@@ -84,20 +88,21 @@ export class Attachment extends Component {
 
     if (this.props.beingEdited && !this.props.readOnly) {
       name = <div className="attachment-link">
-        <div className="attachment-thumbnail">
-          <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
-            <span><i className="fa fa-file-pdf-o"></i> pdf</span>
-          </ShowIf>
-          <ShowIf if={this.getExtension(file.filename) === 'png' ||
-            this.getExtension(file.filename) === 'gif' ||
-            this.getExtension(file.filename) === 'jpg'}>
-              <img src ={item.downloadHref} />
-          </ShowIf>
-        </div>
-        <span className="attachment-name">
-          <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>
-        </span>
-      </div>;
+              <div className="attachment-thumbnail">
+                <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
+                  <span><i className="fa fa-file-pdf-o"></i> pdf</span>
+                </ShowIf>
+                <ShowIf if={this.getExtension(file.filename) === 'png' ||
+                  this.getExtension(file.filename) === 'gif' ||
+                  this.getExtension(file.filename) === 'jpg'}>
+                    <img src ={item.downloadHref} />
+                </ShowIf>
+              </div>
+              <span className="attachment-name">
+                <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>
+              </span>
+             </div>;
+
       buttons = <div className="attachment-buttons">
                   <div className="item-shortcut-group">
                     <NeedAuthorization roles={['admin', 'editor']}>

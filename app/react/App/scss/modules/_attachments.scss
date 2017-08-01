@@ -1,7 +1,7 @@
 .attachment {
 	display: flex;
 	align-items: center;
-	height: 64px;
+	min-height: 64px;
   padding: 0 15px;
   margin-bottom: 10px;
 	background: $c-white;
@@ -33,11 +33,11 @@
 	color: $c-grey !important;
 	margin-right: 15px;
 	border: 1px solid $c-grey-light !important;
-	
+
 	.attachment-link:hover & {
 		border-color: $c-grey !important;
 	}
-	
+
 	.fa {
 		font-size: 18px;
 	}
@@ -56,9 +56,16 @@
 		font-size: 90%;
 		color: $c-black;
 		border-bottom: 1px dotted $c-grey;
-		
+
 		.attachment-link:hover & {
 			border-color: $c-grey-dark;
+		}
+
+		&.attachment-size {
+			display: block;
+			color: $c-grey;
+			border-bottom: none;
+			margin-top: 5px;
 		}
 	}
 }
@@ -67,7 +74,7 @@
 	width: 75px;
   text-align: right;
 	white-space: nowrap;
-	
+
 	.item-shortcut {
 		opacity: 1 !important;
 		border-style: solid !important;
