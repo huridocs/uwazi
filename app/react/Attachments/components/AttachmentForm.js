@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {Form, Field} from 'react-redux-form';
 
 import {FormGroup} from 'app/ReactReduxForms';
-import t from 'app/I18N/t';
 
 export class AttachmentForm extends Component {
   render() {
