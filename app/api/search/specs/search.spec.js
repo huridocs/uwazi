@@ -453,22 +453,28 @@ describe('search', () => {
   });
 
   describe('index', () => {
-    it('should index the document', (done) => {
+    it('should index the document (omitting pdfInfo)', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());
 
       const entity = {
         _id: 'asd1',
         type: 'document',
-        title: 'Batman indexes'
+        title: 'Batman indexes',
+        pdfInfo: 'Should not be included'
       };
 
       search.index(entity)
       .then(() => {
         expect(elastic.index)
-        .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {
-          type: 'document',
-          title: 'Batman indexes'
-        }});
+        .toHaveBeenCalledWith({
+          index: elasticIndex,
+          type: 'entity',
+          id: 'asd1',
+          body: {
+            type: 'document',
+            title: 'Batman indexes'
+          }
+        });
         done();
       })
       .catch(done.fail);
@@ -508,8 +514,8 @@ describe('search', () => {
     it('should update docs using the bulk functionality', (done) => {
       spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
       const toIndexDocs = [
-        {_id: 'id1', title: 'test1'},
-        {_id: 'id2', title: 'test2'}
+        {_id: 'id1', title: 'test1', pdfInfo: 'Should not be included'},
+        {_id: 'id2', title: 'test2', pdfInfo: 'Should not be included'}
       ];
 
       search.bulkIndex(toIndexDocs)
