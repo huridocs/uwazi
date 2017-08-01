@@ -37,8 +37,8 @@ describe('Attachment', () => {
 
   it('should render originalname of the attachment', () => {
     render();
-    expect(component.find('.item').length).toBe(1);
-    expect(component.find('.item').at(0).text()).toContain('Human name 1');
+    expect(component.find('.attachment-name').length).toBe(1);
+    expect(component.find('.attachment-name').text()).toContain('Human name 1');
   });
 
   describe('when its being edited (and not readOnly)', () => {
@@ -86,9 +86,9 @@ describe('Attachment', () => {
 
   it('should include an authorized delete button for each file', () => {
     render();
-    const deleteButton = component.find('.item').find('a').at(1);
+    const deleteButton = component.find('.attachment-buttons').find('a').at(1);
 
-    expect(deleteButton.parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(deleteButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
     expect(deleteButton.parent().props().if).toBe(true);
 
     deleteButton.simulate('click');
@@ -101,7 +101,7 @@ describe('Attachment', () => {
   it('should not render the replace button', () => {
     render();
 
-    const replaceButton = component.find('.item').find(UploadButton);
+    const replaceButton = component.find('.attachment').find(UploadButton);
     expect(replaceButton.parent().props().if).toBe(false);
   });
 
@@ -112,27 +112,25 @@ describe('Attachment', () => {
 
     it('should not render the delete button on the first item', () => {
       render();
-      const deleteButton = component.find('.item').find('a').at(1);
+      const deleteButton = component.find('.attachment-buttons').find('a').at(1);
       expect(deleteButton.parent().props().if).toBe(false);
     });
 
     it('should include an authorized replace button on the first item', () => {
       render();
-      const replaceButton = component.find('.item').at(0).find(UploadButton);
+      const replaceButton = component.find('.attachment-buttons').find(UploadButton);
 
       expect(replaceButton.props().documentId).toBe(props.parentId);
       expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
-      expect(replaceButton.parent().parent().is(NeedAuthorization)).toBe(true);
+      expect(replaceButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
       expect(replaceButton.parent().props().if).toBe(true);
     });
   });
 
 
-  it('should include a download button', () => {
+  it('should allow downloading the attachment', () => {
     render();
-    const downloadButton = component.find('.item').find('a').at(2);
-
-    expect(downloadButton.props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
+    expect(component.find('.attachment-link').props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
   });
 
   describe('mapStateToProps', () => {
