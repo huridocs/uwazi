@@ -25,7 +25,7 @@ import SidePanel from 'app/Layout/SidePanel';
 
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import {AttachmentsList, UploadAttachment} from 'app/Attachments';
+import {AttachmentsList} from 'app/Attachments';
 
 export class EntityViewer extends Component {
 
@@ -126,11 +126,6 @@ export class EntityViewer extends Component {
 
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <div className="sidepanel-footer">
-            <NeedAuthorization roles={['admin', 'editor']}>
-              <ShowIf if={!entityBeingEdited}>
-                <UploadAttachment entityId={entity._id}/>
-              </ShowIf>
-            </NeedAuthorization>
             <MetadataFormButtons
               delete={this.deleteEntity.bind(this)}
               data={this.props.rawEntity}
@@ -157,9 +152,6 @@ export class EntityViewer extends Component {
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
                 <ConnectionsGroups />
-              </TabContent>
-              <TabContent for="attachments">
-                
               </TabContent>
             </Tabs>
           </div>

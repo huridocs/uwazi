@@ -7,7 +7,6 @@ import {t} from 'app/I18N';
 import {browserHistory} from 'react-router';
 
 import AttachmentsList from 'app/Attachments/components/AttachmentsList';
-import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
@@ -159,11 +158,6 @@ export class DocumentSidePanel extends Component {
         </div>
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
-            <NeedAuthorization roles={['admin', 'editor']}>
-              <ShowIf if={!docBeingEdited}>
-                <UploadAttachment entityId={doc.get('_id')}/>
-              </ShowIf>
-            </NeedAuthorization>
             <MetadataFormButtons
               delete={this.deleteDocument.bind(this)}
               data={this.props.doc}
@@ -208,15 +202,6 @@ export class DocumentSidePanel extends Component {
             </div>
           </ShowIf>
         </NeedAuthorization>
-
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'attachments' && !this.props.isTargetDoc && !readOnly}>
-            <div className="sidepanel-footer">
-              <UploadAttachment entityId={doc.get('_id')}/>
-            </div>
-          </ShowIf>
-        </NeedAuthorization>
-
 
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
@@ -271,13 +256,6 @@ export class DocumentSidePanel extends Component {
                 readOnly={readOnly}
                 referencesSection="connections"
                 useSourceTargetIcons={false} />
-            </TabContent>
-            <TabContent for="attachments">
-              <AttachmentsList files={fromJS(attachments)}
-                readOnly={readOnly}
-                isDocumentAttachments={true}
-                parentId={doc.get('_id')}
-                parentSharedId={doc.get('sharedId')} />
             </TabContent>
           </Tabs>
         </div>
