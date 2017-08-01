@@ -53,14 +53,13 @@ describe('mobile somke test,', () => {
   });
 
   describe('Entity view', () => {
-    it('should show attachments panel when clicking on attachments tab', (done) => {
+    it('should show attachments', (done) => {
       nightmare
       .gotoLibrary()
       .waitToClick('#app > div.content > header > i')
       .waitToClick(selectors.libraryView.firstEntityViewButton)
-      .waitToClick(selectors.entityView.sidePanelAttachmentsTab)
-      .wait(selectors.entityView.sidePanelFirstAttachmentTitle)
-      .getInnerText(selectors.entityView.sidePanelFirstAttachmentTitle)
+      .wait(selectors.entityView.firstAttachmentTitle)
+      .getInnerText(selectors.entityView.firstAttachmentTitle)
       .then(attachmentName => {
         expect(attachmentName).toBeDefined();
         done();
