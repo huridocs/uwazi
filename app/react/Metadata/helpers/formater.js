@@ -132,12 +132,12 @@ export default {
         return Object.assign(this.daterange(property, value, showInCard), {type: property.type});
       }
 
-      if (property.type === 'multidate' && value) {
-        return Object.assign(this.multidate(property, value, showInCard), {type: property.type});
+      if (property.type === 'multidate') {
+        return Object.assign(this.multidate(property, value || [], showInCard), {type: property.type});
       }
 
-      if (property.type === 'multidaterange' && value) {
-        return Object.assign(this.multidaterange(property, value, showInCard), {type: property.type});
+      if (property.type === 'multidaterange') {
+        return Object.assign(this.multidaterange(property, value || [], showInCard), {type: property.type});
       }
 
       if (property.type === 'markdown' && value) {
