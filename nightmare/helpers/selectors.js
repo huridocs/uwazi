@@ -36,6 +36,7 @@ export default {
     dictionaryNameForm:             '#thesauriName',
     connectionNameForm:             '#relationTypeName',
     entityNameForm:                 '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
+    entityBodyForm:                 '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
     documentTemplateNameForm:       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
     deleteButtonConfirmation:       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     translationsButton:             '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(6)',
