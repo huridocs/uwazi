@@ -103,11 +103,13 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-between;
+      padding: 0 15px;
 		}
 	  .attachment {
 	    border: 1px solid $c-grey-lighten;
 			width: 49%;
 			margin-bottom: 1%;
+      padding: 0 7px;
 	  }
 	}
 }
