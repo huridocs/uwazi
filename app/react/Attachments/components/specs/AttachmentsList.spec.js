@@ -24,12 +24,13 @@ describe('AttachmentsList', () => {
       parentSharedId: 'parentSharedId',
       isDocumentAttachments: false,
       readOnly: false,
-      storeKey: 'storeKey'
+      storeKey: 'storeKey',
+      user: Immutable({})
     };
   });
 
   let render = () => {
-    component = shallow(<AttachmentsList {...props} />);
+    component = shallow(<AttachmentsList {...props}/>);
   };
 
   it('should render a sorted list of attachments (files)', () => {
@@ -73,10 +74,18 @@ describe('AttachmentsList', () => {
   });
 
   describe('when files is empty', () => {
-    it('should render nothing', () => {
+    it('should render nothing if user not logged in', () => {
       props.files = Immutable([]);
       render();
-      expect(component.find(Attachment).length).toBe(0);
+      expect(component.node).toBe(null);
+    });
+
+    it('should add button in Downloads section', () => {
+      props.files = Immutable([]);
+      props.user = Immutable({_id: 'user'});
+      render();
+      expect(component.text()).toContain('Downloads');
+      expect(component.find(UploadAttachment).length).toBe(1);
     });
   });
 

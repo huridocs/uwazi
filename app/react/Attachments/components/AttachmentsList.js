@@ -41,6 +41,11 @@ export class AttachmentsList extends Component {
                                 </div>
                                </NeedAuthorization>;
     }
+
+    if (!sortedFiles.length && !this.props.user.get('_id')) {
+      return null;
+    }
+
     return (
       <div>
         <h2>{t('System', 'Downloads')}</h2>
@@ -77,15 +82,17 @@ AttachmentsList.propTypes = {
   isTargetDoc: PropTypes.bool,
   deleteAttachment: PropTypes.func,
   loadForm: PropTypes.func,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
+  user: PropTypes.object
 };
 
 AttachmentsList.contextTypes = {
   confirm: PropTypes.func
 };
 
-function mapStateToProps() {
+function mapStateToProps({user}) {
   return {
+    user,
     progress: null,
     model: 'documentViewer.sidepanel.attachment'
   };
