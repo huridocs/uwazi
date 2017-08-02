@@ -1,5 +1,6 @@
 import {fromJS as Immutable} from 'immutable';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
+import * as metadataTypes from 'app/Metadata/actions/actionTypes';
 
 const getId = (state, setInArray) => {
   return state.getIn(setInArray.concat(['_id']));
@@ -41,6 +42,11 @@ export default function manageAttachmentsReducer(originalReducer, {useDefaults =
 
         return a;
       }));
+    }
+
+    if (action.type === metadataTypes.REUPLOAD_COMPLETE && getId(state, setInArray) === action.doc) {
+      const newState = state.setIn(setInArray.concat(['file', 'originalname']), action.file.name);
+      return newState.setIn(setInArray.concat(['file', 'size']), action.file.size);
     }
 
     return originalReducer(state, action);
