@@ -47,6 +47,11 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import Library from 'app/Library/Library';
 
 import store from './store';
+import {trackPage} from 'app/App/GoogleAnalytics';
+
+function onEnter() {
+  trackPage();
+}
 
 function getIndexRoute(nextState, callBack) {
   let indexRoute = {
@@ -103,13 +108,13 @@ const routes =
       </Route>
       <Route path='filters' component={FiltersForm} />
     </Route>
-    <Route path='library' component={Library} />
+    <Route path='library' component={Library} onEnter={onEnter}/>
     <Route path='uploads' component={Uploads} />
     <Route path='login' component={Login} />
     <Route path='setpassword/:key' component={ResetPassword} />
-    <Route path='document/:documentId' component={ViewDocument} />
-    <Route path='entity/:entityId' component={EntityView} />
-    <Route path='page/:pageId' component={PageView} />
+    <Route path='document/:documentId' component={ViewDocument} onEnter={onEnter}/>
+    <Route path='entity/:entityId' component={EntityView} onEnter={onEnter}/>
+    <Route path='page/:pageId' component={PageView} onEnter={onEnter}/>
     <Route path='404' component={NoMatch} />
   </Route>
 ;

@@ -4,7 +4,7 @@ export default {
   settingsView: {
     liElementsOfSection:            '#app > div.content > div > div > div.settings-content > div > ul > li',
     firstEditButton:                '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(1) > div > a > i',
-    collectionNameForm:             '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div > input',
+    collectionNameForm:             '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(1) > input',
     settingsHeader:                 '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
     logoutButton:                   '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     accountButton:                  '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(1)',

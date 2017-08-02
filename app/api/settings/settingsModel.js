@@ -26,6 +26,7 @@ const settingsSchema = new mongoose.Schema({
   links: [linksSchema],
   filters: [filtersSchema],
   mailerConfig: String,
+  analyticsTrackingId: String,
   dateFormat: String
 });
 
