@@ -237,9 +237,10 @@ export class DocumentSidePanel extends Component {
                     <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />
                     <AttachmentsList files={fromJS(attachments)}
                       readOnly={readOnly}
-                      isDocumentAttachments={true}
+                      isDocumentAttachments={Boolean(doc.get('file'))}
                       parentId={doc.get('_id')}
-                      parentSharedId={doc.get('sharedId')} />
+                      parentSharedId={doc.get('sharedId')}
+                      storeKey={this.props.storeKey}/>
                   </div>
                 );
               })()}
