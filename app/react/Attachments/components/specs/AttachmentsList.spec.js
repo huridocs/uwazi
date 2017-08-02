@@ -43,6 +43,7 @@ describe('AttachmentsList', () => {
     render();
     expect(component.find(Attachment).at(0).props().parentId).toBe('parentId');
     expect(component.find(Attachment).at(0).props().parentSharedId).toBe('parentSharedId');
+    expect(component.find(Attachment).at(0).props().storeKey).toBe('storeKey');
     expect(component.find(Attachment).at(0).props().isSourceDocument).toBe(false);
     expect(component.find(Attachment).at(0).props().readOnly).toBe(false);
   });

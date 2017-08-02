@@ -6,7 +6,6 @@ import {advancedSort} from 'app/utils/advancedSort';
 import {t} from 'app/I18N';
 
 import {NeedAuthorization} from 'app/Auth';
-import ShowIf from 'app/App/ShowIf';
 import Attachment from 'app/Attachments/components/Attachment';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 
@@ -57,6 +56,7 @@ export class AttachmentsList extends Component {
                                file={file}
                                parentId={parentId}
                                readOnly={forcedReadOnly}
+                               storeKey={storeKey}
                                parentSharedId={parentSharedId}
                                isSourceDocument={isSourceDocument}/>;
           })}
