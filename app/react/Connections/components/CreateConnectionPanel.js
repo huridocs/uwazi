@@ -7,14 +7,20 @@ import {closePanel} from '../actions/uiActions';
 import {setRelationType, setTargetDocument} from '../actions/actions';
 
 import SidePanel from 'app/Layout/SidePanel';
-import {Select} from 'app/Forms';
-
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
 import ActionButton from './ActionButton';
 import ShowIf from 'app/App/ShowIf';
 
 export class CreateConnectionPanel extends Component {
+  renderCheckType(relationType) {
+    if (this.props.connection.get('relationType') === relationType.get('_id')) {
+      return <i className="fa fa-check"></i>;
+    }
+
+    return <i className="fa fa-square-o"></i>;
+  }
+
   render() {
     const {uiState, searchResults} = this.props;
     const connection = this.props.connection.toJS();
@@ -29,33 +35,14 @@ export class CreateConnectionPanel extends Component {
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
 
           <ul className="connections-list">
-            <li><i className="fa fa-square-o"></i> Voto separado</li>
-            <li><i className="fa fa-square-o"></i> Corte</li>
-            <li><i className="fa fa-square-o"></i> Comisión</li>
-            <li><i className="fa fa-square-o"></i> Firmante</li>
-            <li><i className="fa fa-square-o"></i> Voto separado</li>
-            <li><i className="fa fa-square-o"></i> Corte</li>
-            <li><i className="fa fa-square-o"></i> Comisión</li>
-            <li><i className="fa fa-square-o"></i> Firmante</li>
-            <li><i className="fa fa-square-o"></i> Voto separado</li>
-            <li><i className="fa fa-square-o"></i> Corte</li>
-            <li><i className="fa fa-square-o"></i> Comisión</li>
-            <li><i className="fa fa-square-o"></i> Firmante</li>
-            <li><i className="fa fa-square-o"></i> Voto separado</li>
-            <li><i className="fa fa-square-o"></i> Corte</li>
-            <li><i className="fa fa-square-o"></i> Comisión</li>
-            <li><i className="fa fa-square-o"></i> Firmante</li>
+            {this.props.relationTypes.map((relationType) => {
+              return <li onClick={() => this.props.setRelationType(relationType.get('_id'))} key={relationType.get('_id')}>
+                {this.renderCheckType(relationType)}
+                {relationType.get('name')}
+              </li>;
+            })}
           </ul>
 
-          {/*
-          <Select
-            value={connection.relationType}
-            placeholder="Connection type..."
-            optionsValue="_id"
-            optionsLabel="name"
-            options={this.props.relationTypes.toJS()}
-            onChange={e => this.props.setRelationType(e.target.value)}/>
-            */}
           <div className="search-form">
             <SearchForm connectionType={connection.type}/>
           </div>

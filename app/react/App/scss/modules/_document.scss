@@ -148,10 +148,18 @@ mark, .mark {
   border-bottom: 1px solid $c-grey-lighten;
   overflow-y: scroll;
   max-height: 150px;
+
+  li {
+    cursor: pointer;
+  }
   
   .fa {
     width: 20px;
     color: $c-grey-light;
+  }
+
+  .fa.fa-check {
+    color: $c-success;
   }
 }
 
@@ -192,12 +200,12 @@ mark, .mark {
     padding: 5px 0 5px 25px;
     margin: 0 15px !important;
     border-color: $c-grey-light !important;
-    
+
     .item-name {
       font-family: $f-regular;
       color: $c-grey-dark;
     }
-    
+
     &::after {
       content: '\F096';
       font-family: FontAwesome;
@@ -218,7 +226,7 @@ mark, .mark {
         content: '\f00c';
         color: $c-success;
       }
-      
+
       .item-name {
         color: $c-black;
       }
