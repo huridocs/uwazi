@@ -23,22 +23,22 @@ export function uploadAttachment(entityId, file, __reducerKey) {
   };
 }
 
-export function renameAttachment(entityId, form, file) {
+export function renameAttachment(entityId, form, __reducerKey, file) {
   return function (dispatch) {
     return api.post('attachments/rename', {entityId, _id: file._id, originalname: file.originalname})
     .then(renamedFile => {
-      dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: renamedFile.json});
+      dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: renamedFile.json, __reducerKey});
       dispatch(formActions.reset(form));
       dispatch(notify('Attachment renamed', 'success'));
     });
   };
 }
 
-export function deleteAttachment(entityId, attachment) {
+export function deleteAttachment(entityId, attachment, __reducerKey) {
   return function (dispatch) {
     return api.delete('attachments/delete', {entityId, filename: attachment.filename})
     .then(() => {
-      dispatch({type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment});
+      dispatch({type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment, __reducerKey});
       dispatch(notify('Attachment deleted', 'success'));
     });
   };

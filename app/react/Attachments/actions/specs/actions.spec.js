@@ -72,10 +72,10 @@ describe('Attachments actions', () => {
     });
 
     it('should call on attachments/rename, with entity, file id and originalname', () => {
-      store.dispatch(actions.renameAttachment('id', 'form', {_id: 'fid', originalname: 'originalname'}));
+      store.dispatch(actions.renameAttachment('id', 'form', 'storeKey', {_id: 'fid', originalname: 'originalname'}));
 
       const expectedActions = [
-        {type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file'},
+        {type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file', __reducerKey: 'storeKey'},
         {type: 'formReset', value: 'form'},
         {type: 'NOTIFY', notification: {message: 'Attachment renamed', type: 'success', id: 'unique_id'}}
       ];
@@ -92,10 +92,10 @@ describe('Attachments actions', () => {
     });
 
     it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', () => {
-      store.dispatch(actions.deleteAttachment('id', {filename: 'filename'}));
+      store.dispatch(actions.deleteAttachment('id', {filename: 'filename'}, 'storeKey'));
 
       const expectedActions = [
-        {type: types.ATTACHMENT_DELETED, entity: 'id', file: {filename: 'filename'}},
+        {type: types.ATTACHMENT_DELETED, entity: 'id', file: {filename: 'filename'}, __reducerKey: 'storeKey'},
         {type: 'NOTIFY', notification: {message: 'Attachment deleted', type: 'success', id: 'unique_id'}}
       ];
 
