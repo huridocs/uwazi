@@ -3,7 +3,7 @@ const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
 const sourceDocument = db.id();
-const entityTemplate = db.id();
+const templateWithoutProperties = db.id();
 const selectValueID = db.id().toString()
 const value1ID = db.id().toString()
 const value2ID = db.id().toString()
@@ -23,17 +23,16 @@ export default {
     {_id: inbound, type: 'reference', title: 'indound_reference_1', sourceDocument: value2ID, targetDocument: 'entity_id', sourceType: 'metadata', sourceProperty: 'selectName'},
   ],
   templates: [
-    //entitytemplate
-    {_id: entityTemplate},
+    {_id: templateWithoutProperties},
     {_id: template, properties: [{
       name: 'selectName',
       type: 'select',
-      content: entityTemplate
+      content: templateWithoutProperties
     },
     {
       name: 'multiSelectName',
       type: 'multiselect',
-      content: entityTemplate
+      content: templateWithoutProperties
     },
     {
       name: 'dictionarySelect',
@@ -76,5 +75,6 @@ export {
   selectValueID,
   value1ID,
   value2ID,
-  templateChangingNames
+  templateChangingNames,
+  templateWithoutProperties
 };

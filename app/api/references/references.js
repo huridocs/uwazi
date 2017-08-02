@@ -190,6 +190,7 @@ export default {
         }
       });
       let deletedProperties = [];
+      currentTemplate.properties = currentTemplate.properties || [];
       currentTemplate.properties.forEach((property) => {
         if (!changedTemplate.properties.find(p => p.id === property.id)) {
           deletedProperties.push(property.name);

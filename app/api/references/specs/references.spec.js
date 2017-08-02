@@ -4,7 +4,8 @@ import connectionsModel from '../connectionsModel.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound, templateChangingNames} from './fixtures.js';
+import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument} from './fixtures.js';
+import {inbound, templateChangingNames, templateWithoutProperties} from './fixtures.js';
 import fixturesForGroup, {template1Id, template2Id, template3Id, relation1, relation2} from './fixturesForGroup';
 
 describe('references', () => {
@@ -378,8 +379,20 @@ describe('references', () => {
   describe('updateMetadataConnections', () => {
     it('should not throw when passed template has no properties', (done) => {
       spyOn(connectionsModel.db, 'updateMany');
-      const templateWithoutProperties = {_id: templateChangingNames};
-      references.updateMetadataConnections(templateWithoutProperties)
+      const changedTemplateWithoutProperties = {_id: templateChangingNames};
+      references.updateMetadataConnections(changedTemplateWithoutProperties)
+      .then(() => {
+        done('this is only to check that do not throw an error');
+      })
+      .catch((e) => {
+        done.fail('should not fail', e);
+      });
+    });
+
+    it('should not throw when old template', (done) => {
+      spyOn(connectionsModel.db, 'updateMany');
+      const changedTemplateWithoutProperties = {_id: templateWithoutProperties, properties: []};
+      references.updateMetadataConnections(changedTemplateWithoutProperties)
       .then(() => {
         done('this is only to check that do not throw an error');
       })

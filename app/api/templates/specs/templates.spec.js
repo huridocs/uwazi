@@ -8,7 +8,7 @@ import translations from 'api/i18n/translations';
 import db from 'api/utils/testing_db';
 import fixtures, {templateToBeEditedId, templateToBeDeleted, templateWithContents} from './fixtures.js';
 
-fdescribe('templates', () => {
+describe('templates', () => {
   beforeEach((done) => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures, (err) => {
