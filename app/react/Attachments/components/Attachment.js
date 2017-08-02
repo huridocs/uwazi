@@ -16,7 +16,7 @@ export class Attachment extends Component {
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
-        this.props.deleteAttachment(this.props.parentId, attachment);
+        this.props.deleteAttachment(this.props.parentId, attachment, this.props.storeKey);
       },
       title: 'Confirm delete',
       message: 'Are you sure you want to delete this attachment?'
@@ -56,7 +56,7 @@ export class Attachment extends Component {
   }
 
   render() {
-    const {file, parentId, parentSharedId, model, isSourceDocument} = this.props;
+    const {file, parentId, parentSharedId, model, isSourceDocument, storeKey} = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
@@ -84,7 +84,7 @@ export class Attachment extends Component {
                           </a>
                         </ShowIf>
                         <ShowIf if={item.replaceable && !this.props.readOnly}>
-                          <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
+                          <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
                         </ShowIf>
                       </div>
                     </NeedAuthorization>
@@ -94,7 +94,7 @@ export class Attachment extends Component {
       name = <div className="attachment-link">
               {this.conformThumbnail(file, item)}
               <span className="attachment-name">
-                <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>
+                <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}/>
               </span>
              </div>;
 
@@ -106,7 +106,7 @@ export class Attachment extends Component {
                       </a>
                     </NeedAuthorization>
                     <NeedAuthorization roles={['admin', 'editor']}>
-                      <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model)}>
+                      <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model, storeKey)}>
                         <i className="fa fa-floppy-o"></i>
                       </a>
                     </NeedAuthorization>
@@ -127,6 +127,7 @@ export class Attachment extends Component {
 Attachment.propTypes = {
   file: PropTypes.object,
   parentId: PropTypes.string,
+  storeKey: PropTypes.string,
   model: PropTypes.string,
   parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,

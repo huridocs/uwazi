@@ -18,6 +18,7 @@ describe('Attachment', () => {
     props = {
       file,
       parentId: 'parentId',
+      storeKey: 'storeKey',
       model: 'model',
       parentSharedId: 'parentSharedId',
       deleteAttachment: jasmine.createSpy('deleteAttachment'),
@@ -47,7 +48,7 @@ describe('Attachment', () => {
       props.readOnly = false;
     });
 
-    it('should render an edition form that renames on submit', () => {
+    it('should have an edition form that renames on submit', () => {
       render();
 
       expect(component.find(AttachmentForm).length).toBe(1);
@@ -56,10 +57,10 @@ describe('Attachment', () => {
       const submit = component.find(AttachmentForm).props().onSubmit;
       submit();
 
-      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model');
+      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model', 'storeKey');
     });
 
-    it('should render a cancel edit button', () => {
+    it('should have a cancel edit button', () => {
       render();
 
       const cancelButton = component.find('.item-shortcut-group').find('a').at(0);
@@ -71,7 +72,7 @@ describe('Attachment', () => {
       expect(props.resetForm).toHaveBeenCalledWith('model');
     });
 
-    it('should render a save edit button that submits form', () => {
+    it('should have a save edit button that submits form', () => {
       render();
 
       const saveButton = component.find('.item-shortcut-group').find('a.item-shortcut.btn-success');
@@ -80,7 +81,7 @@ describe('Attachment', () => {
 
       saveButton.simulate('click');
 
-      expect(props.submitForm).toHaveBeenCalledWith('model');
+      expect(props.submitForm).toHaveBeenCalledWith('model', 'storeKey');
     });
   });
 
@@ -95,7 +96,7 @@ describe('Attachment', () => {
     expect(context.confirm).toHaveBeenCalled();
 
     context.confirm.calls.argsFor(0)[0].accept();
-    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file);
+    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
   });
 
   it('should not render the replace button', () => {
@@ -121,6 +122,7 @@ describe('Attachment', () => {
       const replaceButton = component.find('.attachment-buttons').find(UploadButton);
 
       expect(replaceButton.props().documentId).toBe(props.parentId);
+      expect(replaceButton.props().storeKey).toBe('storeKey');
       expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
       expect(replaceButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
       expect(replaceButton.parent().props().if).toBe(true);
