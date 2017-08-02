@@ -37,6 +37,12 @@ Nightmare.action('gotoLibrary', function (done) {
   .then(done);
 });
 
+Nightmare.action('countFiltersResults', function (done) {
+  this.evaluate_now(() => {
+    return document.querySelectorAll('.item-entity').length;
+  }, done);
+});
+
 Nightmare.action('goToUploads', function (done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.uploadsNavButton)

@@ -60,6 +60,7 @@ export function parseWithAggregations(filters, aggregations) {
     let property = Object.assign({}, _property);
     if (property.content) {
       property.options = property.options.map((option) => {
+        option.results = 0;
         let aggregation;
         if (aggregations.all && aggregations.all[property.name]) {
           aggregation = aggregations.all[property.name].buckets
@@ -71,7 +72,7 @@ export function parseWithAggregations(filters, aggregations) {
         }
 
         return option;
-      }).filter((option) => option.results);
+      });
     }
 
     return property;

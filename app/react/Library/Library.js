@@ -44,7 +44,6 @@ export default class Library extends RouteHandler {
     return api.search(query)
     .then((documents) => {
       const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS(), globalResources.thesauris.toJS());
-      console.log(filterState);
       return {
         library: {
           documents,
@@ -57,7 +56,6 @@ export default class Library extends RouteHandler {
   }
 
   setReduxState(state) {
-    console.log(state);
     const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
     dispatch(setDocuments(state.library.documents));
     dispatch(actions.set('aggregations', state.library.aggregations));

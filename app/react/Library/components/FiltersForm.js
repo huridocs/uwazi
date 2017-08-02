@@ -7,6 +7,7 @@ import {Field, Form} from 'react-redux-form';
 import {is} from 'immutable';
 
 import {MultiSelect, DateRange, NestedMultiselect, NumericRange} from 'app/ReactReduxForms';
+import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -79,22 +80,23 @@ export class FiltersForm extends Component {
                     <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
+                      <ShowIf if={property.type === 'multiselect'}>
                       <div className="switcher-wrapper">
-                        <span className="is-active">AND</span>
+                        <span className="is-active">{t('System', 'Filters AND operator')}</span>
                         <Field model={`.filters.${property.name}.and`}>
                           <input
                             id={property.name + 'strict'}
                             type='checkbox'
                             onChange={() => {
                               this.autoSearch = true;
-                              this.props.activateFilter(property.name, true, allFields);
                             }
                           }
                           />
                           <label htmlFor={property.name + 'strict'} className="switcher"></label>
                         </Field>
-                        <span>OR</span>
+                        <span>{t('System', 'Filters OR operator')}</span>
                       </div>
+                      </ShowIf>
                     </li>
                     <li className="wide">
                       <MultiSelect

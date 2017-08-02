@@ -12,7 +12,7 @@ import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
 import languages from 'shared/languages';
 
-describe('search', () => {
+fdescribe('search', () => {
   let result;
   beforeEach((done) => {
     result = elasticResult().withDocs([
@@ -262,12 +262,12 @@ describe('search', () => {
     });
 
     describe('multiselect aggregations', () => {
-      it('should return aggregations of multiselect fields when filtering by types', (done) => {
+      it('should return aggregations of multiselect fields', (done) => {
         Promise.all([
           search.search({types: [ids.templateMetadata1]}, 'en'),
           search.search({types: [ids.templateMetadata2]}, 'en'),
           search.search({types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en'),
-          search.search({filters: {multiselect1: ['multiValue2']}, types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
+          search.search({filters: {multiselect1: {values: ['multiValue2'], and: false}}, types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
         ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
@@ -292,6 +292,26 @@ describe('search', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+
+      describe('AND falg', () => {
+        it('should restrict the results to those who have all values of the filter', (done) => {
+          search.search(
+            {
+              filters: {multiselect1: {values: ['multiValue1', 'multiValue2'], and: true}},
+              types: [ids.templateMetadata1, ids.templateMetadata2]
+            }, 'en')
+          .then((filtered) => {
+            const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
+            const templateAggs = filtered.aggregations.all.types.buckets;
+            expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(1);
+            expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+            expect(templateAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
+
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
 
       describe('nested', () => {
@@ -349,10 +369,8 @@ describe('search', () => {
             expect(value3.rows.find((r) => r.title === 'metadata1')).toBeDefined();
             expect(value3.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
 
-            expect(value35.rows.length).toBe(3);
-            expect(value35.rows.find((r) => r.title === 'metadata1')).toBeDefined();
+            expect(value35.rows.length).toBe(1);
             expect(value35.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
-            expect(value35.rows.find((r) => r.title === 'metadata5')).toBeDefined();
 
             done();
           })

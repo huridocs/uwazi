@@ -5,8 +5,11 @@ import createNightmare from '../helpers/nightmare';
 
 const searchRequestTime = 500;
 selectors.libraryView.filters = {
+  firstPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
+  secondPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name',
   sixthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
+  superPowersAndOrSwitch: '#filtersForm > div:nth-child(1) > ul > li:nth-child(1) > div > div > label',
   searchButton: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-footer > button',
   planetsConqueredFrom: '#filtersForm div.Numeric__From > input',
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
@@ -16,7 +19,7 @@ selectors.libraryView.filters = {
 
 const nightmare = createNightmare().gotoLibrary();
 
-describe('search filters path', () => {
+fdescribe('search filters path', () => {
   describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
       nightmare
@@ -76,6 +79,25 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    describe('AND switch', () => {
+      it('should filter entities having all the values selected', (done) => {
+        nightmare
+        .waitToClick(selectors.libraryView.resetFilters)
+        .waitToClick(selectors.libraryView.superVillianType)
+        .wait(searchRequestTime)
+        .waitToClick(selectors.libraryView.filters.firstPower)
+        .waitToClick(selectors.libraryView.filters.secondPower)
+        .waitToClick(selectors.libraryView.filters.superPowersAndOrSwitch)
+        .wait(searchRequestTime + 200)
+        .countFiltersResults()
+        .then((resutls) => {
+          expect(resutls).toBe(2);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 
