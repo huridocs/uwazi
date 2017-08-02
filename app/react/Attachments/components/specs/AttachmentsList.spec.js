@@ -55,6 +55,22 @@ describe('AttachmentsList', () => {
     expect(component.find(UploadAttachment).parent().parent().props().roles).toEqual(['admin', 'editor']);
   });
 
+  describe('When parent is Target Document', () => {
+    beforeEach(() => {
+      props.isTargetDoc = true;
+      render();
+    });
+
+    it('should treat all Attachments as read only', () => {
+      expect(component.find(Attachment).at(0).props().readOnly).toBe(true);
+      expect(component.find(Attachment).at(1).props().readOnly).toBe(true);
+    });
+
+    it('should not include an UploadAttachment button', () => {
+      expect(component.find(UploadAttachment).length).toBe(0);
+    });
+  });
+
   describe('when files is empty', () => {
     it('should render nothing', () => {
       props.files = Immutable([]);

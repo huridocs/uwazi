@@ -6,6 +6,7 @@ import {advancedSort} from 'app/utils/advancedSort';
 import {t} from 'app/I18N';
 
 import {NeedAuthorization} from 'app/Auth';
+import ShowIf from 'app/App/ShowIf';
 import Attachment from 'app/Attachments/components/Attachment';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 
@@ -31,7 +32,16 @@ export class AttachmentsList extends Component {
   render() {
     const {parentId, parentSharedId, isDocumentAttachments, readOnly, storeKey} = this.props;
     const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
+    const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
+    let uploadAttachmentButton = null;
+    if (!this.props.isTargetDoc) {
+      uploadAttachmentButton = <NeedAuthorization roles={['admin', 'editor']}>
+                                <div className="attachment-add">
+                                  <UploadAttachment entityId={this.props.parentId} storeKey={storeKey}/>
+                                </div>
+                               </NeedAuthorization>;
+    }
     return (
       <div>
         <h2>{t('System', 'Downloads')}</h2>
@@ -46,16 +56,12 @@ export class AttachmentsList extends Component {
             return <Attachment key={index}
                                file={file}
                                parentId={parentId}
-                               readOnly={readOnly}
+                               readOnly={forcedReadOnly}
                                parentSharedId={parentSharedId}
                                isSourceDocument={isSourceDocument}/>;
           })}
         </div>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <div className="attachment-add">
-            <UploadAttachment entityId={this.props.parentId} storeKey={storeKey}/>
-          </div>
-        </NeedAuthorization>
+        {uploadAttachmentButton}
       </div>
     );
   }
@@ -68,6 +74,7 @@ AttachmentsList.propTypes = {
   parentSharedId: PropTypes.string,
   isDocumentAttachments: PropTypes.bool,
   readOnly: PropTypes.bool,
+  isTargetDoc: PropTypes.bool,
   deleteAttachment: PropTypes.func,
   loadForm: PropTypes.func,
   storeKey: PropTypes.string
