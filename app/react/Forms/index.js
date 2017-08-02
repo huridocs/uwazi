@@ -13,6 +13,7 @@ import IconSelector from './components/IconSelector';
 import Numeric from './components/Numeric';
 import NumericRange from './components/NumericRange';
 import RadioButtons from './components/RadioButtons';
+import Switcher from './components/Switcher';
 
 export {
   Select,
@@ -29,5 +30,6 @@ export {
   MultiDateRange,
   DropdownList,
   IconSelector,
-  RadioButtons
+  RadioButtons,
+  Switcher
 };

@@ -36,7 +36,7 @@ export function URLQueryToState(query, templates, thesauris) {
     let defaultValue = {};
 
     if (property.type === 'select' || property.type === 'multiselect') {
-      defaultValue = {values: []};
+      defaultValue = {values: [], and: false};
     }
 
     if (property.type === 'nested'

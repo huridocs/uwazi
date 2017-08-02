@@ -6,7 +6,7 @@ import {wrapDispatch} from 'app/Multireducer';
 import {Field, Form} from 'react-redux-form';
 import {is} from 'immutable';
 
-import {MultiSelect, DateRange, NestedMultiselect, NumericRange} from 'app/ReactReduxForms';
+import {MultiSelect, DateRange, NestedMultiselect, NumericRange, Switcher} from 'app/ReactReduxForms';
 import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
@@ -82,19 +82,9 @@ export class FiltersForm extends Component {
                       {property.required ? <span className="required">*</span> : ''}
                       <ShowIf if={property.type === 'multiselect'}>
                       <div className="switcher-wrapper">
-                        <span className="is-active">{t('System', 'Filters AND operator')}</span>
-                        <Field model={`.filters.${property.name}.and`}>
-                          <input
-                            id={property.name + 'strict'}
-                            type='checkbox'
-                            onChange={() => {
-                              this.autoSearch = true;
-                            }
-                          }
-                          />
-                          <label htmlFor={property.name + 'strict'} className="switcher"></label>
-                        </Field>
-                        <span>{t('System', 'Filters OR operator')}</span>
+                        <Switcher model={`.filters.${property.name}.and`} prefix={property.name} onChange={() => {
+                          this.autoSearch = true;
+                        }}/>
                       </div>
                       </ShowIf>
                     </li>
