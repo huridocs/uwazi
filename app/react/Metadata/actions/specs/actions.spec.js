@@ -203,17 +203,16 @@ describe('Metadata Actions', () => {
       //
 
       store = mockStore({locale: 'es'});
-      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId'));
+      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
     });
 
-    it('should upload the file while dispatching the upload progress', () => {
+    it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
       const expectedActions = [
         {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
-        {type: types.REUPLOAD_COMPLETE, doc: 'abc1'}
+        {type: types.REUPLOAD_COMPLETE, doc: 'abc1', file: {name: 'filename'}, __reducerKey: 'storeKey'}
       ];
-
 
       expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
