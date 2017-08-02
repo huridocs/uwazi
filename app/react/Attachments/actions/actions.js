@@ -6,7 +6,7 @@ import {actions as formActions} from 'react-redux-form';
 
 import * as types from './actionTypes';
 
-export function uploadAttachment(entityId, file) {
+export function uploadAttachment(entityId, file, __reducerKey) {
   return function (dispatch) {
     dispatch({type: types.START_UPLOAD_ATTACHMENT, entity: entityId});
     superagent.post(APIURL + 'attachments/upload')
@@ -17,7 +17,7 @@ export function uploadAttachment(entityId, file) {
       dispatch({type: types.ATTACHMENT_PROGRESS, entity: entityId, progress: Math.floor(data.percent)});
     })
     .on('response', (result) => {
-      dispatch({type: types.ATTACHMENT_COMPLETE, entity: entityId, file: JSON.parse(result.text)});
+      dispatch({type: types.ATTACHMENT_COMPLETE, entity: entityId, file: JSON.parse(result.text), __reducerKey});
     })
     .end();
   };

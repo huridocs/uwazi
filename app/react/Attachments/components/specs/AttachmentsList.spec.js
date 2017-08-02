@@ -23,7 +23,8 @@ describe('AttachmentsList', () => {
       parentId: 'parentId',
       parentSharedId: 'parentSharedId',
       isDocumentAttachments: false,
-      readOnly: false
+      readOnly: false,
+      storeKey: 'storeKey'
     };
   });
 
@@ -49,6 +50,7 @@ describe('AttachmentsList', () => {
   it('should include and authorized UploadAttachment button', () => {
     render();
     expect(component.find(UploadAttachment).props().entityId).toBe('parentId');
+    expect(component.find(UploadAttachment).props().storeKey).toBe('storeKey');
     expect(component.find(UploadAttachment).parent().parent().is(NeedAuthorization)).toBe(true);
     expect(component.find(UploadAttachment).parent().parent().props().roles).toEqual(['admin', 'editor']);
   });

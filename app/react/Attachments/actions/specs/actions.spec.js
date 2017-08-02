@@ -48,10 +48,10 @@ describe('Attachments actions', () => {
         {type: types.START_UPLOAD_ATTACHMENT, entity: 'id'},
         {type: types.ATTACHMENT_PROGRESS, entity: 'id', progress: 55},
         {type: types.ATTACHMENT_PROGRESS, entity: 'id', progress: 65},
-        {type: types.ATTACHMENT_COMPLETE, entity: 'id', file: {text: 'file'}}
+        {type: types.ATTACHMENT_COMPLETE, entity: 'id', file: {text: 'file'}, __reducerKey: 'storeKey'}
       ];
 
-      store.dispatch(actions.uploadAttachment('id', file));
+      store.dispatch(actions.uploadAttachment('id', file, 'storeKey'));
       expect(mockUpload.field).toHaveBeenCalledWith('entityId', 'id');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 

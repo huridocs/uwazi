@@ -29,7 +29,7 @@ export class AttachmentsList extends Component {
   }
 
   render() {
-    const {parentId, parentSharedId, isDocumentAttachments, readOnly} = this.props;
+    const {parentId, parentSharedId, isDocumentAttachments, readOnly, storeKey} = this.props;
     const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
 
     return (
@@ -53,7 +53,7 @@ export class AttachmentsList extends Component {
         </div>
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="attachment-add">
-            <UploadAttachment entityId={this.props.parentId} />
+            <UploadAttachment entityId={this.props.parentId} storeKey={storeKey}/>
           </div>
         </NeedAuthorization>
       </div>
@@ -69,7 +69,8 @@ AttachmentsList.propTypes = {
   isDocumentAttachments: PropTypes.bool,
   readOnly: PropTypes.bool,
   deleteAttachment: PropTypes.func,
-  loadForm: PropTypes.func
+  loadForm: PropTypes.func,
+  storeKey: PropTypes.string
 };
 
 AttachmentsList.contextTypes = {

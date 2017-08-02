@@ -9,7 +9,7 @@ import {uploadAttachment} from '../actions/actions';
 export class UploadAttachment extends Component {
   onChange(e) {
     let file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entityId, file);
+    this.props.uploadAttachment(this.props.entityId, file, this.props.storeKey);
   }
 
   renderUploadButton() {
@@ -42,7 +42,8 @@ export class UploadAttachment extends Component {
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
   entityId: PropTypes.string,
-  progress: PropTypes.object
+  progress: PropTypes.object,
+  storeKey: PropTypes.string
 };
 
 export function mapStateToProps({attachments}) {
