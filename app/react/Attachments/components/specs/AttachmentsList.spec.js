@@ -1,9 +1,11 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS as Immutable} from 'immutable';
+import {NeedAuthorization} from 'app/Auth';
 
 import {AttachmentsList} from '../AttachmentsList';
 import Attachment from '../Attachment';
+import UploadAttachment from '../UploadAttachment';
 
 describe('AttachmentsList', () => {
   let component;
@@ -21,12 +23,14 @@ describe('AttachmentsList', () => {
       parentId: 'parentId',
       parentSharedId: 'parentSharedId',
       isDocumentAttachments: false,
-      readOnly: false
+      readOnly: false,
+      storeKey: 'storeKey',
+      user: Immutable({})
     };
   });
 
   let render = () => {
-    component = shallow(<AttachmentsList {...props} />);
+    component = shallow(<AttachmentsList {...props}/>);
   };
 
   it('should render a sorted list of attachments (files)', () => {
@@ -40,16 +44,48 @@ describe('AttachmentsList', () => {
     render();
     expect(component.find(Attachment).at(0).props().parentId).toBe('parentId');
     expect(component.find(Attachment).at(0).props().parentSharedId).toBe('parentSharedId');
+    expect(component.find(Attachment).at(0).props().storeKey).toBe('storeKey');
     expect(component.find(Attachment).at(0).props().isSourceDocument).toBe(false);
     expect(component.find(Attachment).at(0).props().readOnly).toBe(false);
   });
 
+  it('should include and authorized UploadAttachment button', () => {
+    render();
+    expect(component.find(UploadAttachment).props().entityId).toBe('parentId');
+    expect(component.find(UploadAttachment).props().storeKey).toBe('storeKey');
+    expect(component.find(UploadAttachment).parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(component.find(UploadAttachment).parent().parent().props().roles).toEqual(['admin', 'editor']);
+  });
+
+  describe('When parent is Target Document', () => {
+    beforeEach(() => {
+      props.isTargetDoc = true;
+      render();
+    });
+
+    it('should treat all Attachments as read only', () => {
+      expect(component.find(Attachment).at(0).props().readOnly).toBe(true);
+      expect(component.find(Attachment).at(1).props().readOnly).toBe(true);
+    });
+
+    it('should not include an UploadAttachment button', () => {
+      expect(component.find(UploadAttachment).length).toBe(0);
+    });
+  });
 
   describe('when files is empty', () => {
-    it('should render nothing', () => {
+    it('should render nothing if user not logged in', () => {
       props.files = Immutable([]);
       render();
-      expect(component.find(Attachment).length).toBe(0);
+      expect(component.node).toBe(null);
+    });
+
+    it('should add button in Downloads section', () => {
+      props.files = Immutable([]);
+      props.user = Immutable({_id: 'user'});
+      render();
+      expect(component.text()).toContain('Downloads');
+      expect(component.find(UploadAttachment).length).toBe(1);
     });
   });
 

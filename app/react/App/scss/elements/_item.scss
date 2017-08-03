@@ -513,6 +513,7 @@ $item-padding: 15px;
 }
 
 .label-default,
+.label-primary,
 .label-info,
 .label-success,
 .label-warning,
@@ -521,6 +522,7 @@ $item-padding: 15px;
   padding: 0;
 }
 
+.label-primary,
 .label-success,
 .label-warning,
 .label-danger {
@@ -537,6 +539,10 @@ $item-padding: 15px;
 
 .label-info {
   color: $c-grey;
+}
+
+.label-primary {
+  color: $c-bootstrap-primary;
 }
 
 .label-success {

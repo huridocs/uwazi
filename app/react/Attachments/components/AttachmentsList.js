@@ -3,8 +3,11 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import {advancedSort} from 'app/utils/advancedSort';
+import {t} from 'app/I18N';
 
+import {NeedAuthorization} from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
+import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 
 export class AttachmentsList extends Component {
   getExtension(filename) {
@@ -26,25 +29,46 @@ export class AttachmentsList extends Component {
   }
 
   render() {
-    const {parentId, parentSharedId, isDocumentAttachments, readOnly} = this.props;
+    const {parentId, parentSharedId, isDocumentAttachments, readOnly, storeKey} = this.props;
     const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
+    const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
-    return <div className="item-group">
-      {sortedFiles.map((file, index) => {
-        const isSourceDocument = isDocumentAttachments && index === 0;
+    let uploadAttachmentButton = null;
+    if (!this.props.isTargetDoc) {
+      uploadAttachmentButton = <NeedAuthorization roles={['admin', 'editor']}>
+                                <div className="attachment-add">
+                                  <UploadAttachment entityId={this.props.parentId} storeKey={storeKey}/>
+                                </div>
+                               </NeedAuthorization>;
+    }
 
-        if (isSourceDocument) {
-          file._id = parentId;
-        }
+    if (!sortedFiles.length && !this.props.user.get('_id')) {
+      return null;
+    }
 
-        return <Attachment key={index}
-                           file={file}
-                           parentId={parentId}
-                           readOnly={readOnly}
-                           parentSharedId={parentSharedId}
-                           isSourceDocument={isSourceDocument}/>;
-      })}
-    </div>;
+    return (
+      <div>
+        <h2>{t('System', 'Downloads')}</h2>
+        <div className="attachments-list">
+          {sortedFiles.map((file, index) => {
+            const isSourceDocument = isDocumentAttachments && index === 0;
+
+            if (isSourceDocument) {
+              file._id = parentId;
+            }
+
+            return <Attachment key={index}
+                               file={file}
+                               parentId={parentId}
+                               readOnly={forcedReadOnly}
+                               storeKey={storeKey}
+                               parentSharedId={parentSharedId}
+                               isSourceDocument={isSourceDocument}/>;
+          })}
+        </div>
+        {uploadAttachmentButton}
+      </div>
+    );
   }
 }
 
@@ -55,16 +79,20 @@ AttachmentsList.propTypes = {
   parentSharedId: PropTypes.string,
   isDocumentAttachments: PropTypes.bool,
   readOnly: PropTypes.bool,
+  isTargetDoc: PropTypes.bool,
   deleteAttachment: PropTypes.func,
-  loadForm: PropTypes.func
+  loadForm: PropTypes.func,
+  storeKey: PropTypes.string,
+  user: PropTypes.object
 };
 
 AttachmentsList.contextTypes = {
   confirm: PropTypes.func
 };
 
-function mapStateToProps() {
+function mapStateToProps({user}) {
   return {
+    user,
     progress: null,
     model: 'documentViewer.sidepanel.attachment'
   };

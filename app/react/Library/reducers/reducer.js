@@ -8,7 +8,7 @@ import {multireducer} from 'app/Multireducer';
 import {isClient} from 'app/utils';
 
 import {modelReducer, formReducer} from 'react-redux-form';
-
+import manageAttachmentsReducer from 'app/Attachments/reducers/manageAttachmentsReducer';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 let templates = null;
@@ -24,7 +24,7 @@ export default (storeKey) => {
   return combineReducers({
     aggregations: multireducer(createReducer('aggregations', {}), storeKey),
     documents: multireducer(documents, storeKey),
-    ui: multireducer(libraryUI, storeKey),
+    ui: multireducer(manageAttachmentsReducer(libraryUI, {useDefaults: false, setInArray: ['selectedDocuments', 0]}), storeKey),
     filters: multireducer(libraryFilters, storeKey),
     search: modelReducer(storeKey + '.search', defaultSearch),
     searchForm: formReducer(storeKey + '.search', defaultSearch),

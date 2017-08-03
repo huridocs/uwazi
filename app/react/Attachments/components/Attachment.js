@@ -6,7 +6,6 @@ import {bindActionCreators} from 'redux';
 import filesize from 'filesize';
 import {NeedAuthorization} from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import t from 'app/I18N/t';
 
 import {deleteAttachment, renameAttachment, loadForm, submitForm, resetForm} from '../actions/actions';
 import UploadButton from 'app/Metadata/components/UploadButton';
@@ -17,7 +16,7 @@ export class Attachment extends Component {
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
-        this.props.deleteAttachment(this.props.parentId, attachment);
+        this.props.deleteAttachment(this.props.parentId, attachment, this.props.storeKey);
       },
       title: 'Confirm delete',
       message: 'Are you sure you want to delete this attachment?'
@@ -42,94 +41,85 @@ export class Attachment extends Component {
     return options;
   }
 
+  conformThumbnail(file, item) {
+    const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
+    let thumbnail = null;
+
+    if (this.getExtension(file.filename) === 'pdf') {
+      thumbnail = <span><i className="fa fa-file-pdf-o"></i> pdf</span>;
+    }
+
+    if (acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename.toLowerCase())) !== -1) {
+      thumbnail = <img src={item.downloadHref} />;
+    }
+
+    return <div className="attachment-thumbnail">{thumbnail}</div>;
+  }
+
   render() {
-    const {file, parentId, parentSharedId, model, isSourceDocument} = this.props;
+    const {file, parentId, parentSharedId, model, isSourceDocument, storeKey} = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
 
-    let name = <div className="item-info">
-                 <div className="item-name">{file.originalname}</div>
-               </div>;
+    let name = <a className="attachment-link" href={item.downloadHref}>
+                {this.conformThumbnail(file, item)}
+                <span className="attachment-name">
+                  <span>{file.originalname}</span>
+                  <ShowIf if={Boolean(sizeString)}>
+                    <span className="attachment-size">{sizeString}</span>
+                  </ShowIf>
+                </span>
+               </a>;
 
-    let buttons = <div className="item-shortcut-group">
+    let buttons = <div>
                     <NeedAuthorization roles={['admin', 'editor']}>
-                      <ShowIf if={!this.props.readOnly}>
-                        <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
-                          <i className="fa fa-pencil"></i>
-                        </a>
-                      </ShowIf>
+                      <div className="attachment-buttons">
+                        <ShowIf if={!this.props.readOnly}>
+                          <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
+                            <i className="fa fa-pencil"></i>
+                          </a>
+                        </ShowIf>
+                        <ShowIf if={item.deletable && !this.props.readOnly}>
+                          <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
+                            <i className="fa fa-trash"></i>
+                          </a>
+                        </ShowIf>
+                        <ShowIf if={item.replaceable && !this.props.readOnly}>
+                          <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
+                        </ShowIf>
+                      </div>
                     </NeedAuthorization>
-                    <NeedAuthorization roles={['admin', 'editor']}>
-                      <ShowIf if={item.deletable && !this.props.readOnly}>
-                        <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
-                          <i className="fa fa-trash"></i>
-                        </a>
-                      </ShowIf>
-                    </NeedAuthorization>
-                    <NeedAuthorization roles={['admin', 'editor']}>
-                      <ShowIf if={item.replaceable && !this.props.readOnly}>
-                        <UploadButton documentId={parentId} documentSharedId={parentSharedId} />
-                      </ShowIf>
-                    </NeedAuthorization>
-                    <a className="item-shortcut btn btn-default"
-                      href={item.downloadHref}
-                      target="_blank">
-                      <i className="fa fa-download"></i>
-                    </a>
                   </div>;
 
     if (this.props.beingEdited && !this.props.readOnly) {
-      name = <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model)}/>;
-      buttons = <div className="item-shortcut-group">
-                  <NeedAuthorization roles={['admin', 'editor']}>
-                    <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
-                      <i className="fa fa-close"></i>
-                    </a>
-                  </NeedAuthorization>
-                  <NeedAuthorization roles={['admin', 'editor']}>
-                    <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model)}>
-                      <i className="fa fa-floppy-o"></i>
-                    </a>
-                  </NeedAuthorization>
+      name = <div className="attachment-link">
+              {this.conformThumbnail(file, item)}
+              <span className="attachment-name">
+                <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}/>
+              </span>
+             </div>;
+
+      buttons = <div className="attachment-buttons">
+                  <div className="item-shortcut-group">
+                    <NeedAuthorization roles={['admin', 'editor']}>
+                      <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
+                        <i className="fa fa-close"></i>
+                      </a>
+                    </NeedAuthorization>
+                    <NeedAuthorization roles={['admin', 'editor']}>
+                      <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model, storeKey)}>
+                        <i className="fa fa-floppy-o"></i>
+                      </a>
+                    </NeedAuthorization>
+                  </div>
                 </div>;
     }
 
 
     return (
-      <div className={`item highlight-hover ${item.itemClassName}`}>
-
+      <div className="attachment">
         {name}
-
-        <ShowIf if={Boolean(sizeString)}>
-          <div className="item-metadata">
-            <dl>
-              <dt>{t('System', 'Size')}</dt>
-              <dd>{sizeString}</dd>
-            </dl>
-          </div>
-        </ShowIf>
-
-        <div className="item-actions">
-          <div className="item-label-group">
-            <span className={`item-type item-type-${item.typeClassName}`}>
-              <i className={`fa fa-${item.icon} item-type__icon`}></i>
-              <span className="item-type__name">{this.getExtension(file.filename)}</span>
-              <ShowIf if={isSourceDocument}>
-                <span className="label label-success">
-                  <ShowIf if={!this.props.readOnly}>
-                    <span>
-                      &nbsp;
-                      <i className="fa fa-arrow-left"></i>
-                      <span>You are reading this document</span>
-                    </span>
-                  </ShowIf>
-                </span>
-              </ShowIf>
-            </span>
-          </div>
-
-          {buttons}
-        </div>
+        {buttons}
       </div>
     );
   }
@@ -138,6 +128,7 @@ export class Attachment extends Component {
 Attachment.propTypes = {
   file: PropTypes.object,
   parentId: PropTypes.string,
+  storeKey: PropTypes.string,
   model: PropTypes.string,
   parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,

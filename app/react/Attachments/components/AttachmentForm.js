@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {Form, Field} from 'react-redux-form';
 
 import {FormGroup} from 'app/ReactReduxForms';
-import t from 'app/I18N/t';
 
 export class AttachmentForm extends Component {
   render() {
@@ -13,14 +12,9 @@ export class AttachmentForm extends Component {
     return (
       <Form id='attachmentForm' model={model} onSubmit={this.props.onSubmit} validators={validators}>
         <FormGroup model={model} field={'originalname'}>
-          <ul className="search__filter">
-            <li><label>{t('System', 'Filename label', 'Filename')} <span className="required">*</span></label></li>
-            <li className="wide">
-              <Field model={'.originalname'}>
-                <input className="form-control"/>
-              </Field>
-            </li>
-          </ul>
+          <Field model={'.originalname'}>
+            <input className="form-control"/>
+          </Field>
         </FormGroup>
       </Form>
     );

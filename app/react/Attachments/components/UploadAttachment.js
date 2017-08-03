@@ -9,14 +9,13 @@ import {uploadAttachment} from '../actions/actions';
 export class UploadAttachment extends Component {
   onChange(e) {
     let file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entityId, file);
+    this.props.uploadAttachment(this.props.entityId, file, this.props.storeKey);
   }
 
   renderUploadButton() {
     return (
-      <label htmlFor="upload-attachment-input" className="btn btn-success">
-        <i className="fa fa-paperclip"></i>
-        <span className="btn-label">{t('System', 'Add')}</span>
+      <label htmlFor="upload-attachment-input" className="btn btn-success btn-xs add">
+        <span className="btn-label"><i className="fa fa-paperclip"></i>&nbsp;&nbsp;{t('System', 'Add file')}</span>
         <input onChange={this.onChange.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
       </label>
     );
@@ -25,8 +24,8 @@ export class UploadAttachment extends Component {
   renderProgress(progress) {
     return (
       <div className="btn btn-default btn-disabled">
-        <span>{progress}%</span>
         <span className="btn-label">{t('System', 'Uploading')}</span>
+        <span>&nbsp;&nbsp;{progress}%</span>
       </div>
     );
   }
@@ -43,7 +42,8 @@ export class UploadAttachment extends Component {
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
   entityId: PropTypes.string,
-  progress: PropTypes.object
+  progress: PropTypes.object,
+  storeKey: PropTypes.string
 };
 
 export function mapStateToProps({attachments}) {

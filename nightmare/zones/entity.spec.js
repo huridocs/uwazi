@@ -25,14 +25,12 @@ describe('Entity zone', () => {
       nightmare
       .editEntityFromEntityViewer()
       .write(selectors.entityView.metadataFormTitle, ' (Dr. Langstrom)')
-      // TEMPLATE change is not working for the current implementation!!!
-      // .select(selectors.entityView.metadataFormType, '58ad7d240d44252fee4e61fb')
+      .select(selectors.entityView.metadataFormType, '58ad7d240d44252fee4e61fb')
       .saveEntityFromEntityViewer()
       .getInnerText(selectors.entityView.contentHeader)
       .then(headerText => {
         expect(headerText).toContain('Man-bat (Dr. Langstrom)');
-        // TEMPLATE change is not working for the current implementation!!!
-        // expect(headerText).toContain('Super Villain');
+        expect(headerText).toContain('Super Villian');
         done();
       });
     });
@@ -52,18 +50,20 @@ describe('Entity zone', () => {
           whoIsHe: '#metadataForm > div:nth-child(4) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
         },
         viewer: {
-          realName: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(1) > dd',
-          age: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(2) > dd',
-          knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(3) > dd > a',
-          mainSuperpower: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(4) > dd',
-          superpowers: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(5) > dd > ul',
-          firstSight: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(6) > dd',
-          whoIsHe: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(7) > dd > div > p'
+          realName: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
+          age: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(2) > dd',
+          knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(3) > dd > a',
+          mainSuperpower: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(4) > dd',
+          superpowers: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(5) > dd > ul',
+          firstSight: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(6) > dd',
+          whoIsHe: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(7) > dd > div > p'
         }
       };
 
       nightmare
       .editEntityFromEntityViewer()
+      .select(selectors.entityView.metadataFormType, '58f0aed2e147e720856a0741')
+      .wait(selectors.manBatEntity.form.realName)
       .write(selectors.manBatEntity.form.realName, 'Dr. Kirk Langstrom')
       .write(selectors.manBatEntity.form.age, '39')
       .select(selectors.manBatEntity.form.knownAccomplices, 'o184buh2w179o1or')

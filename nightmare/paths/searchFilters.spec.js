@@ -3,7 +3,7 @@ import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
-const searchRequestTime = 300;
+const searchRequestTime = 500;
 selectors.libraryView.filters = {
   sixthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
