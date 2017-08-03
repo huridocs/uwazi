@@ -19,6 +19,36 @@ const storage = multer.diskStorage({
   }
 });
 
+const processSingleLanguage = (entity, req) => {
+  const addedFile = req.files[0];
+  addedFile._id = mongoose.Types.ObjectId();
+
+  entity.attachments = entity.attachments || [];
+  entity.attachments.push(addedFile);
+  return Promise.all([addedFile, entities.saveMultiple([entity])]);
+};
+
+const processAllLanguages = (entity, req) => {
+  return processSingleLanguage(entity, req)
+  .then(([addedFile]) => {
+    return Promise.all([addedFile, entities.get({sharedId: entity.sharedId, _id: {$ne: entity._id}})]);
+  })
+  .then(([addedFile, sharedEntities]) => {
+    const genericAddedFile = Object.assign({}, addedFile);
+    delete genericAddedFile._id;
+
+    const additionalLanguageUpdates = [];
+
+    sharedEntities.forEach(sharedEntity => {
+      const entityUpdate = {_id: sharedEntity, attachments: sharedEntity.attachments || []};
+      entityUpdate.attachments.push(genericAddedFile);
+      additionalLanguageUpdates.push(entities.saveMultiple([entityUpdate]));
+    });
+
+    return Promise.all([addedFile, additionalLanguageUpdates]);
+  });
+};
+
 export default (app) => {
   let upload = multer({storage});
 
@@ -33,19 +63,11 @@ export default (app) => {
   });
 
   app.post('/api/attachments/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
-    let addedFile;
-
     return entities.getById(req.body.entityId)
     .then(entity => {
-      entity.attachments = entity.attachments || [];
-
-      addedFile = req.files[0];
-      addedFile._id = mongoose.Types.ObjectId();
-
-      entity.attachments.push(addedFile);
-      return entities.saveMultiple([entity]);
+      return req.body.allLanguages ? processAllLanguages(entity, req) : processSingleLanguage(entity, req);
     })
-    .then(() => {
+    .then(([addedFile]) => {
       res.json(addedFile);
     })
     .catch(error => res.json({error}));
