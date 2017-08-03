@@ -25,15 +25,15 @@ describe('SearchBar', () => {
   });
 
   describe('input', () => {
-    //describe('onChange', () => {
-      //it('should call debounced function getSuggestions', () => {
-        //jasmine.clock().install();
-        //component.find('input').simulate('change', {target: {value: 'Find my document'}});
-        //jasmine.clock().tick(400);
-        //expect(props.getSuggestions).toHaveBeenCalledWith('Find my document');
-        //jasmine.clock().uninstall();
-      //});
-    //});
+    describe('onChange', () => {
+      it('should call debounced function getSuggestions', () => {
+        jasmine.clock().install();
+        component.find('input').simulate('change', {target: {value: 'Find my document'}});
+        jasmine.clock().tick(400);
+        expect(props.getSuggestions).toHaveBeenCalledWith('Find my document');
+        jasmine.clock().uninstall();
+      });
+    });
 
     describe('onBlur', () => {
       it('should call hideSuggestions', () => {
