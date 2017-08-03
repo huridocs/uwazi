@@ -139,28 +139,6 @@ $c-sidebar: $c-white;
       display: none;
     }
 
-    &:after {
-      content: '\f00c';
-      font-family: FontAwesome;
-      position: absolute;
-      top: 60%;
-      left: 50%;
-      font-size: 40px;
-      color: $c-success;
-      opacity: 0;
-      transform: translateX(-50%) translateY(-50%);
-      transition: 225ms all;
-    }
-
-    &.is-selected {
-      border-color: $c-grey-light;
-      background: $c-primary-lighten;
-      &:after {
-        opacity: 1;
-        top: 50%;
-      }
-    }
-
     &.relationship-hover,
     &.highlight-hover:hover {
       box-shadow: inset 0 0 0 1px $c-grey-light;

@@ -32,12 +32,6 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.get('/api/search/match_title', (req, res) => {
-    return search.matchTitle(req.query.searchTerm, req.language)
-    .then(results => res.json(results))
-    .catch(res.error);
-  });
-
   app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res) => {
     search.getUploadsByUser(req.user, req.language)
     .then(response => res.json({rows: response}))

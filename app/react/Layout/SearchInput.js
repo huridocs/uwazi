@@ -3,11 +3,9 @@ import React, {Component} from 'react';
 export class SearchInput extends Component {
   render() {
     return (
-      <div className="input-group">
-        <input type="text" className="form-control" {...this.props}/>
-        <span className="input-group-addon">
-          <i className="fa fa-search"></i>
-        </span>
+      <div className="form-group">
+        <i className="fa fa-search"></i>
+        <input type="text" className="form-control" placeholder="Search" {...this.props}/>
       </div>
     );
   }

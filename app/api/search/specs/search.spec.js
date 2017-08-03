@@ -419,43 +419,6 @@ describe('search', () => {
     });
   });
 
-  describe('matchTitle', () => {
-    it('should perform a search by title with highlighted titles', (done) => {
-      result = elasticResult().withDocs([
-        {title: 'doc1', _id: 'id1'},
-        {title: 'doc2', _id: 'id2'}
-      ])
-      .withHighlights([{title: ['doc1 highlighted']}, {title: ['doc2 highlighted']}])
-      .toObject();
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-
-      search.matchTitle('term', 'es')
-      .then((results) => {
-        let query = queryBuilder().fullTextSearch('term', ['title'], false).highlight(['title']).language('es').limit(5).query();
-        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: query});
-        expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should return empty array if searchTerm is empty and not an error', (done) => {
-      result = elasticResult().withDocs([
-        {title: 'doc1', _id: 'id1'},
-        {title: 'doc2', _id: 'id2'}
-      ])
-      .toObject();
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-
-      search.matchTitle('', 'es')
-      .then((results) => {
-        expect(results).toEqual([]);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
   describe('index', () => {
     it('should index the document (omitting pdfInfo)', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());

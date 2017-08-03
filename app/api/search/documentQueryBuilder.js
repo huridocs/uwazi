@@ -60,16 +60,19 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title'], includeFullText = true, number_of_fragments = 1, type = 'fvh') {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh') {
       if (term) {
         let should = [];
 
-        if (fieldsToSearch.length) {
+        const includeFullText = fieldsToSearch.find((field) => field === 'fullText');
+        const fields = fieldsToSearch.filter((field) => field !== 'fullText');
+
+        if (fields.length) {
           should.push({
             multi_match: {
               query: term,
               type: 'phrase_prefix',
-              fields: fieldsToSearch
+              fields
             }
           });
         }
