@@ -4,14 +4,22 @@ import {APIURL} from '../config.js';
 import {browserHistory} from 'react-router';
 import {notify} from 'app/Notifications/actions/notificationsActions';
 import {store} from 'app/store';
+import loadingBar from 'app/App/LoadingProgressBar';
 
 let cookie;
 let locale;
+
+let doneLoading = (data) => {
+  loadingBar.done();
+  return data;
+};
 
 let handleError = (error) => {
   if (!isClient) {
     return Promise.reject(error);
   }
+
+  doneLoading();
 
   if (error.status === 401) {
     browserHistory.replace('/login');
@@ -34,17 +42,23 @@ let handleError = (error) => {
 
 export default {
   get: (url, data) => {
+    loadingBar.start();
     return request.get(APIURL + url, data, {'Content-language': locale, Cookie: cookie})
+    .then(doneLoading)
     .catch(handleError);
   },
 
   post: (url, data) => {
+    loadingBar.start();
     return request.post(APIURL + url, data, {'Content-language': locale})
+    .then(doneLoading)
     .catch(handleError);
   },
 
   delete: (url, data) => {
+    loadingBar.start();
     return request.delete(APIURL + url, data, {'Content-language': locale})
+    .then(doneLoading)
     .catch(handleError);
   },
 

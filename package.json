@@ -68,6 +68,7 @@
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^4.0.1",
+    "nprogress": "^0.2.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pdfjs-dist": "1.6.304",
