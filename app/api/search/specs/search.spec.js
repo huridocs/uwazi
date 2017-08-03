@@ -176,13 +176,17 @@ describe('search', () => {
         search.search({types: [ids.template1]}, 'es'),
         search.search({types: [ids.template2]}, 'es'),
         search.search({types: [ids.template1]}, 'en'),
-        search.search({types: [ids.template1, ids.template2]}, 'en')
+        search.search({types: [ids.template1, ids.template2]}, 'en'),
+        search.search({types: ['missing']}, 'en'),
+        search.search({types: [ids.template1, 'missing']}, 'en')
       ])
-      .then(([template1es, template2es, template1en, allTemplatesEn]) => {
+      .then(([template1es, template2es, template1en, allTemplatesEn, onlyMissing, template1AndMissing]) => {
         expect(template1es.rows.length).toBe(2);
         expect(template1en.rows.length).toBe(2);
         expect(template2es.rows.length).toBe(1);
         expect(allTemplatesEn.rows.length).toBe(3);
+        expect(onlyMissing.rows.length).toBe(1);
+        expect(template1AndMissing.rows.length).toBe(3);
         done();
       })
       .catch(catchErrors(done));

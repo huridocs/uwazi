@@ -13,6 +13,7 @@ export default function () {
     query: {
       bool: {
         must: [],
+        must_not: [],
         filter: [
           {term: {published: true}}
         ]
@@ -401,12 +402,27 @@ export default function () {
       if (templates.includes('missing')) {
         let _templates = templates.filter((t) => t !== 'missing');
         let match = {
-          or: {
-            filters: [
-              {missing: {field: 'template'}},
-              {terms: {template: _templates}}
+          bool: {
+            should: [
+              {
+                bool: {
+                  must_not: [
+                    {
+                      exists: {
+                        field: 'template'
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                terms: {
+                  template: _templates
+                }
+              }
             ]
-          }};
+          }
+        };
         baseQuery.query.bool.filter.push(match);
         return this;
       }
