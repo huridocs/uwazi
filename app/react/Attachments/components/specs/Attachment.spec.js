@@ -99,6 +99,25 @@ describe('Attachment', () => {
     expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
   });
 
+  it('should hold a thumbnail for PDFs and valid images', () => {
+    props.file.filename = 'document.pdf';
+    render();
+    expect(component.find('.attachment-thumbnail i').props().className).toContain('fa-file-pdf-o');
+    expect(component.find('.attachment-thumbnail > span').text()).toBe(' pdf');
+
+    props.file.filename = 'image.jpg';
+    render();
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.jpg');
+
+    props.file.filename = 'image.JPG';
+    render();
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.JPG');
+
+    props.file.filename = 'image.doc';
+    render();
+    expect(component.find('.attachment-thumbnail').children().length).toBe(0);
+  });
+
   it('should not render the replace button', () => {
     render();
 
@@ -144,23 +163,5 @@ describe('Attachment', () => {
       ownProps = {file: {_id: 'otherId'}};
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(false);
     });
-
-    //it('should return hasError true when pristine and invalid', () => {
-      //let state = {namespace: {$form: {model: 'namespace'}, field: {pristine: false, valid: false}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-
-      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: false, valid: false}}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-    //});
-
-    //it('should return hasError true when submitFailed and valid false and has not been touched', () => {
-      //let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true, valid: false, pristine: true}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-    //});
-
-    //it('should return hasError false when submitFailed with no errors', () => {
-      //let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(false);
-    //});
   });
 });

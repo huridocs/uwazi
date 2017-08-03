@@ -43,16 +43,17 @@ export class Attachment extends Component {
 
   conformThumbnail(file, item) {
     const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
-    return (
-      <div className="attachment-thumbnail">
-        <ShowIf if={this.getExtension(file.filename) === 'pdf'}>
-          <span><i className="fa fa-file-pdf-o"></i> pdf</span>
-        </ShowIf>
-        <ShowIf if={acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename)) !== -1}>
-          <img src={item.downloadHref} />
-        </ShowIf>
-      </div>
-    );
+    let thumbnail = null;
+
+    if (this.getExtension(file.filename) === 'pdf') {
+      thumbnail = <span><i className="fa fa-file-pdf-o"></i> pdf</span>;
+    }
+
+    if (acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename.toLowerCase())) !== -1) {
+      thumbnail = <img src={item.downloadHref} />;
+    }
+
+    return <div className="attachment-thumbnail">{thumbnail}</div>;
   }
 
   render() {
