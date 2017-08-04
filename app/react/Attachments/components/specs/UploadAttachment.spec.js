@@ -4,7 +4,7 @@ import {fromJS as Immutable} from 'immutable';
 
 import {UploadAttachment} from '../UploadAttachment';
 
-fdescribe('UploadAttachment', () => {
+describe('UploadAttachment', () => {
   let component;
   let props;
   let e;
