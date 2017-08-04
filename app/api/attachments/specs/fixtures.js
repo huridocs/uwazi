@@ -10,7 +10,7 @@ const attachmentToEdit = db.id();
 
 export default {
   entities: [
-    {_id: toDeleteId, attachments: [{filename: 'other.doc'}, {filename: 'toDelete.txt', originalname: 'common name 1.not'}]},
+    {sharedId: toDeleteId.toString(), _id: toDeleteId, attachments: [{filename: 'other.doc'}, {filename: 'toDelete.txt', originalname: 'common name 1.not'}]},
     {sharedId, _id: entityId, file: {originalname: 'source doc', filename: 'filename'}, attachments: [{_id: db.id(), originalname: 'o1', filename: 'other.doc'}, {_id: attachmentToEdit, filename: 'match.doc', originalname: 'common name 2.not'}]},
     {sharedId, _id: entityIdEn, file: {originalname: 'source doc', filename: 'filenameEn'}, attachments: [{_id: db.id(), originalname: 'o1', filename: 'otherEn.doc'}]},
     {sharedId, _id: entityIdPt, file: {originalname: 'source doc', filename: 'filenamePt'}}

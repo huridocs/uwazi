@@ -182,7 +182,7 @@ describe('Attachments Routes', () => {
       expect(routes.delete('/api/attachments/delete', {query: {entityId: 'a'}})).toNeedAuthorization();
     });
 
-    it('should remove the passed file from attachments and delte the local file', (done) => {
+    fit('should remove the passed file from attachments and delte the local file', (done) => {
       expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
       routes.delete('/api/attachments/delete', req)
       .then(response => {
@@ -194,6 +194,25 @@ describe('Attachments Routes', () => {
         expect(dbEntity.attachments.length).toBe(1);
         expect(dbEntity.attachments[0].filename).toBe('other.doc');
         expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(false);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    fit('should not delte the local file if other siblings are using it', (done) => {
+      expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
+      const sibling = {sharedId: toDeleteId.toString(), attachments: [{filename: 'toDelete.txt', originalname: 'common name 1.not'}]};
+      entities.saveMultiple([sibling])
+      .then(() => {
+        return routes.delete('/api/attachments/delete', req);
+      })
+      .then(response => {
+        return Promise.all([response, entities.getById(req.query.entityId)]);
+      })
+      .then(([response, dbEntity]) => {
+        expect(response._id.toString()).toBe(toDeleteId.toString());
+        expect(dbEntity.attachments.length).toBe(1);
+        expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
         done();
       })
       .catch(done.fail);

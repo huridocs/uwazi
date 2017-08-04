@@ -33,14 +33,14 @@ const processAllLanguages = (entity, req) => {
   .then(([addedFile]) => {
     return Promise.all([addedFile, entities.get({sharedId: entity.sharedId, _id: {$ne: entity._id}})]);
   })
-  .then(([addedFile, sharedEntities]) => {
+  .then(([addedFile, siblings]) => {
     const genericAddedFile = Object.assign({}, addedFile);
     delete genericAddedFile._id;
 
     const additionalLanguageUpdates = [];
 
-    sharedEntities.forEach(sharedEntity => {
-      const entityUpdate = {_id: sharedEntity._id, attachments: sharedEntity.attachments || []};
+    siblings.forEach(sibling => {
+      const entityUpdate = {_id: sibling._id, attachments: sibling.attachments || []};
       entityUpdate.attachments.push(genericAddedFile);
       additionalLanguageUpdates.push(entities.saveMultiple([entityUpdate]));
     });
@@ -105,10 +105,17 @@ export default (app) => {
     return entities.getById(req.query.entityId)
     .then(entity => {
       entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
-      return entities.saveMultiple([entity]);
+      return Promise.all([entities.saveMultiple([entity]), entities.get({sharedId: entity.sharedId, _id: {$ne: entity._id}}, {attachments: 1})]);
     })
-    .then(response => {
-      return new Promise((resolve, reject) => {
+    .then(([response, siblings]) => {
+      const shouldUnlink = siblings.reduce((memo, sibling) => {
+        if (sibling.attachments && sibling.attachments.find(a => a.filename === req.query.filename)) {
+          return false;
+        }
+        return memo;
+      }, true);
+
+      return !shouldUnlink ? res.json(response[0]) : new Promise((resolve, reject) => {
         fs.unlink(attachmentsPath + req.query.filename, (err) => {
           if (err) {
             reject(err);

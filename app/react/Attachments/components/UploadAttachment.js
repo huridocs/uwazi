@@ -22,7 +22,7 @@ export class UploadAttachment extends Component {
     return (
       <div>
         <label htmlFor="upload-attachment-input" className="btn btn-success btn-xs add">
-          <span className="btn-label"><i className="fa fa-paperclip"></i>&nbsp;&nbsp;{t('System', 'Add')}</span>
+          <span className="btn-label"><i className="fa fa-paperclip"></i>&nbsp;&nbsp;{t('System', 'Add file')}</span>
           <input onChange={this.onChangeSingle.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
         </label>
         &nbsp;
