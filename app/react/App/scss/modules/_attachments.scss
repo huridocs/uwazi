@@ -17,6 +17,9 @@
 .attachment-add {
   padding: 0 15px;
   margin-bottom: 10px;
+  label:not(:first-child) {
+    margin-left: 4px;
+	}
 }
 
 .attachment-link {
