@@ -80,7 +80,7 @@ describe('Attachments Routes', () => {
     });
 
     it('should add the uploaded file to all shared entities and return the file, incluiding its new ID', (done) => {
-      req.body.allLanguages = true;
+      req.body.allLanguages = 'true';
 
       routes.post('/api/attachments/upload', req)
       .then(addedFile => {

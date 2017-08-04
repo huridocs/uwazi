@@ -7,17 +7,30 @@ import t from 'app/I18N/t';
 import {uploadAttachment} from '../actions/actions';
 
 export class UploadAttachment extends Component {
-  onChange(e) {
+  onChangeSingle(e) {
     let file = e.target.files[0];
     this.props.uploadAttachment(this.props.entityId, file, this.props.storeKey);
   }
 
+  // TEST!!!!
+  onChangeAll(e) {
+    let file = e.target.files[0];
+    this.props.uploadAttachment(this.props.entityId, file, this.props.storeKey, {allLanguages: true});
+  }
+
   renderUploadButton() {
     return (
-      <label htmlFor="upload-attachment-input" className="btn btn-success btn-xs add">
-        <span className="btn-label"><i className="fa fa-paperclip"></i>&nbsp;&nbsp;{t('System', 'Add file')}</span>
-        <input onChange={this.onChange.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
-      </label>
+      <div>
+        <label htmlFor="upload-attachment-input" className="btn btn-success btn-xs add">
+          <span className="btn-label"><i className="fa fa-paperclip"></i>&nbsp;&nbsp;{t('System', 'Add')}</span>
+          <input onChange={this.onChangeSingle.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
+        </label>
+        &nbsp;
+        <label htmlFor="upload-attachment-all-input" className="btn btn-success btn-xs add">
+          <span className="btn-label"><i className="fa fa-link"></i>&nbsp;&nbsp;{t('System', 'Add to all languages')}</span>
+          <input onChange={this.onChangeAll.bind(this)} type="file" id="upload-attachment-all-input" style={{display: 'none'}} />
+        </label>
+      </div>
     );
   }
 
