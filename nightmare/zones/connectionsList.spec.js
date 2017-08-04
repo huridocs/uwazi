@@ -5,7 +5,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-fdescribe('ConnectionsList zone', () => {
+describe('ConnectionsList zone', () => {
   describe('metadata editing', () => {
     it('should log in as admin and go into the entity viewer for the desired entity', (done) => {
       const entityTitle = 'Man-bat';
