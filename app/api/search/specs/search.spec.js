@@ -420,7 +420,7 @@ describe('search', () => {
   });
 
   describe('index', () => {
-    it('should index the document (omitting pdfInfo)', (done) => {
+    it('should index the document (omitting pdfInfo), without side effects on the sent element', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());
 
       const entity = {
@@ -432,6 +432,7 @@ describe('search', () => {
 
       search.index(entity)
       .then(() => {
+        expect(entity._id).toBe('asd1');
         expect(elastic.index)
         .toHaveBeenCalledWith({
           index: elasticIndex,
