@@ -40,9 +40,9 @@ const processAllLanguages = (entity, req) => {
     const additionalLanguageUpdates = [];
 
     siblings.forEach(sibling => {
-      const entityUpdate = {_id: sibling._id, attachments: sibling.attachments || []};
-      entityUpdate.attachments.push(genericAddedFile);
-      additionalLanguageUpdates.push(entities.saveMultiple([entityUpdate]));
+      sibling.attachments = sibling.attachments || [];
+      sibling.attachments.push(genericAddedFile);
+      additionalLanguageUpdates.push(entities.saveMultiple([sibling]));
     });
 
     return Promise.all([addedFile, additionalLanguageUpdates]);
