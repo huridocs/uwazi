@@ -182,7 +182,7 @@ describe('Attachments Routes', () => {
       expect(routes.delete('/api/attachments/delete', {query: {entityId: 'a'}})).toNeedAuthorization();
     });
 
-    fit('should remove the passed file from attachments and delte the local file', (done) => {
+    it('should remove the passed file from attachments and delte the local file', (done) => {
       expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
       routes.delete('/api/attachments/delete', req)
       .then(response => {
@@ -199,7 +199,7 @@ describe('Attachments Routes', () => {
       .catch(done.fail);
     });
 
-    fit('should not delte the local file if other siblings are using it', (done) => {
+    it('should not delte the local file if other siblings are using it', (done) => {
       expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
       const sibling = {sharedId: toDeleteId.toString(), attachments: [{filename: 'toDelete.txt', originalname: 'common name 1.not'}]};
       entities.saveMultiple([sibling])
