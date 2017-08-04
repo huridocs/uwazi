@@ -94,19 +94,21 @@ describe('Attachments Routes', () => {
         expect(dbEntity.attachments.length).toBe(3);
         expect(dbEntity.attachments[2].filename).toBe(file.filename);
         expect(dbEntity.attachments[2].originalname).toBe(file.originalname);
+        expect(dbEntity.attachments[2]._id.toString()).toBe(addedFile._id.toString());
         expect(addedFile.filename).toBe('mockfile.doc');
-        expect(addedFile._id.toString()).toBe(dbEntity.attachments[2]._id.toString());
 
         expect(dbEntityEn.attachments.length).toBe(2);
         expect(dbEntityEn.attachments[0].filename).toBe('otherEn.doc');
         expect(dbEntityEn.file.filename).toBe('filenameEn');
         expect(dbEntityEn.attachments[1].filename).toBe(file.filename);
         expect(dbEntityEn.attachments[1].originalname).toBe(file.originalname);
+        expect(dbEntityEn.attachments[1]._id.toString()).not.toBe(addedFile._id.toString());
 
         expect(dbEntityPt.attachments.length).toBe(1);
         expect(dbEntityPt.file.filename).toBe('filenamePt');
         expect(dbEntityPt.attachments[0].filename).toBe(file.filename);
         expect(dbEntityPt.attachments[0].originalname).toBe(file.originalname);
+        expect(dbEntityPt.attachments[0]._id.toString()).not.toBe(addedFile._id.toString());
 
         done();
       })
@@ -187,6 +189,8 @@ describe('Attachments Routes', () => {
         return Promise.all([response, entities.getById(req.query.entityId)]);
       })
       .then(([response, dbEntity]) => {
+        expect(response._id.toString()).toBe(toDeleteId.toString());
+        expect(response.attachments.length).toBe(1);
         expect(dbEntity.attachments.length).toBe(1);
         expect(dbEntity.attachments[0].filename).toBe('other.doc');
         expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(false);

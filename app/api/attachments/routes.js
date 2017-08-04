@@ -28,10 +28,10 @@ const processSingleLanguage = (entity, req) => {
   return Promise.all([addedFile, entities.saveMultiple([entity])]);
 };
 
-const processAllLanguages = (entityId, entity, req) => {
+const processAllLanguages = (entity, req) => {
   return processSingleLanguage(entity, req)
   .then(([addedFile]) => {
-    return Promise.all([addedFile, entities.get({sharedId: entity.sharedId, _id: {$ne: entityId}})]);
+    return Promise.all([addedFile, entities.get({sharedId: entity.sharedId, _id: {$ne: entity._id}})]);
   })
   .then(([addedFile, sharedEntities]) => {
     const genericAddedFile = Object.assign({}, addedFile);
@@ -65,7 +65,7 @@ export default (app) => {
   app.post('/api/attachments/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
     return entities.getById(req.body.entityId)
     .then(entity => {
-      return req.body.allLanguages === 'true' ? processAllLanguages(req.body.entityId, entity, req) :
+      return req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
                                                 processSingleLanguage(entity, req);
     })
     .then(([addedFile]) => {
