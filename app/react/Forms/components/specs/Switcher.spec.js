@@ -22,7 +22,7 @@ describe('Switcher', () => {
   it('should render an input with the value and prefix passed', () => {
     render();
     let input = component.find('input');
-    expect(input.props().value).toBe(true);
+    expect(input.props().checked).toBe(true);
     expect(input.props().id).toBe('myswitcher');
     let label = component.find('label');
     expect(label.props().htmlFor).toBe('myswitcher');
