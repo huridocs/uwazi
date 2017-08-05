@@ -466,13 +466,8 @@ describe('entities', () => {
   });
 
   describe('delete', () => {
-    beforeEach(() => {
-      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
-      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
-    });
-
     describe('when the original file does not exist', () => {
-      it('should delete the entiti and not throw an error', (done) => {
+      it('should delete the entity and not throw an error', (done) => {
         entities.delete('shared1')
         .then(() => entities.get({sharedId: 'shared1'}))
         .then((response) => {
@@ -516,6 +511,12 @@ describe('entities', () => {
     });
 
     it('should delete the original file', (done) => {
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf');
+      fs.writeFileSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf');
+
+      expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(true);
+      expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014cc1.pdf')).toBe(true);
+
       entities.delete('shared')
       .then(() => {
         expect(fs.existsSync('./uploaded_documents/8202c463d6158af8065022d9b5014ccb.pdf')).toBe(false);

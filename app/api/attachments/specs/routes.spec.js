@@ -6,7 +6,7 @@ import paths, {attachmentsPath} from '../../config/paths';
 
 import entities from '../../entities';
 import attachmentsRoutes from '../routes';
-import fixtures, {entityId, toDeleteId, attachmentToEdit} from './fixtures';
+import fixtures, {entityId, entityIdEn, entityIdPt, toDeleteId, attachmentToEdit} from './fixtures';
 import db from 'api/utils/testing_db';
 
 describe('Attachments Routes', () => {
@@ -73,6 +73,43 @@ describe('Attachments Routes', () => {
         expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
         expect(addedFile.filename).toBe('mockfile.doc');
         expect(addedFile._id).toBeDefined();
+        expect(addedFile._id.toString()).toBe(dbEntity.attachments[2]._id.toString());
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should add the uploaded file to all shared entities and return the file, incluiding its new ID', (done) => {
+      req.body.allLanguages = 'true';
+
+      routes.post('/api/attachments/upload', req)
+      .then(addedFile => {
+        return Promise.all([addedFile, entities.get({sharedId: 'sharedId'})]);
+      })
+      .then(([addedFile, dbEntities]) => {
+        const dbEntity = dbEntities.find(e => e._id.toString() === entityId.toString());
+        const dbEntityEn = dbEntities.find(e => e._id.toString() === entityIdEn.toString());
+        const dbEntityPt = dbEntities.find(e => e._id.toString() === entityIdPt.toString());
+
+        expect(dbEntity.attachments.length).toBe(3);
+        expect(dbEntity.attachments[2].filename).toBe(file.filename);
+        expect(dbEntity.attachments[2].originalname).toBe(file.originalname);
+        expect(dbEntity.attachments[2]._id.toString()).toBe(addedFile._id.toString());
+        expect(addedFile.filename).toBe('mockfile.doc');
+
+        expect(dbEntityEn.attachments.length).toBe(2);
+        expect(dbEntityEn.attachments[0].filename).toBe('otherEn.doc');
+        expect(dbEntityEn.file.filename).toBe('filenameEn');
+        expect(dbEntityEn.attachments[1].filename).toBe(file.filename);
+        expect(dbEntityEn.attachments[1].originalname).toBe(file.originalname);
+        expect(dbEntityEn.attachments[1]._id.toString()).not.toBe(addedFile._id.toString());
+
+        expect(dbEntityPt.attachments.length).toBe(1);
+        expect(dbEntityPt.file.filename).toBe('filenamePt');
+        expect(dbEntityPt.attachments[0].filename).toBe(file.filename);
+        expect(dbEntityPt.attachments[0].originalname).toBe(file.originalname);
+        expect(dbEntityPt.attachments[0]._id.toString()).not.toBe(addedFile._id.toString());
+
         done();
       })
       .catch(catchErrors(done));
@@ -152,9 +189,30 @@ describe('Attachments Routes', () => {
         return Promise.all([response, entities.getById(req.query.entityId)]);
       })
       .then(([response, dbEntity]) => {
+        expect(response._id.toString()).toBe(toDeleteId.toString());
+        expect(response.attachments.length).toBe(1);
         expect(dbEntity.attachments.length).toBe(1);
         expect(dbEntity.attachments[0].filename).toBe('other.doc');
         expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(false);
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should not delte the local file if other siblings are using it', (done) => {
+      expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
+      const sibling = {sharedId: toDeleteId.toString(), attachments: [{filename: 'toDelete.txt', originalname: 'common name 1.not'}]};
+      entities.saveMultiple([sibling])
+      .then(() => {
+        return routes.delete('/api/attachments/delete', req);
+      })
+      .then(response => {
+        return Promise.all([response, entities.getById(req.query.entityId)]);
+      })
+      .then(([response, dbEntity]) => {
+        expect(response._id.toString()).toBe(toDeleteId.toString());
+        expect(dbEntity.attachments.length).toBe(1);
+        expect(fs.existsSync(paths.attachmentsPath + 'toDelete.txt')).toBe(true);
         done();
       })
       .catch(done.fail);

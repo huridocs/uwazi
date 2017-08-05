@@ -142,7 +142,8 @@ export default {
     return entities.countByTemplate(templateId);
   },
 
-  index(entity) {
+  index(_entity) {
+    const entity = Object.assign({}, _entity);
     const id = entity._id.toString();
     delete entity._id;
     delete entity._rev;
