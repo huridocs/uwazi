@@ -16,7 +16,7 @@ let NumericRange = (props) => <Control.select component={forms.NumericRange} {..
 let DropdownList = (props) => <Control.select component={forms.DropdownList} {...props}/>;
 let IconSelector = (props) => <Control.select component={forms.IconSelector} {...props}/>;
 let RadioButtons = (props) => <Control.select component={forms.RadioButtons} {...props}/>;
-let Switcher = (props) => <Control.checkbox component={forms.Switcher} {...props}/>;
+let Switcher = (props) => <Control.select component={forms.Switcher} {...props}/>;
 let FormGroup = forms.FormGroup;
 
 export {

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {t} from 'app/I18N';
 
-export default class DatePicker extends Component {
+export default class Switcher extends Component {
 
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ export default class DatePicker extends Component {
 
 }
 
-DatePicker.propTypes = {
+Switcher.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.bool,
   prefix: PropTypes.string

@@ -81,11 +81,9 @@ export class FiltersForm extends Component {
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
                       <ShowIf if={property.type === 'multiselect'}>
-                      <div className="switcher-wrapper">
                         <Switcher model={`.filters.${property.name}.and`} prefix={property.name} onChange={() => {
                           this.autoSearch = true;
                         }}/>
-                      </div>
                       </ShowIf>
                     </li>
                     <li className="wide">
