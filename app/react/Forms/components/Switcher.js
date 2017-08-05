@@ -15,7 +15,7 @@ export default class Switcher extends Component {
         <input
           id={this.props.prefix + 'switcher'}
           type='checkbox'
-          checked={this.props.value}
+          checked={this.props.value || false}
           onChange={this.onChange.bind(this)}
         />
         <label htmlFor={this.props.prefix + 'switcher'} className="switcher"></label>
