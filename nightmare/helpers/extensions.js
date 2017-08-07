@@ -210,6 +210,62 @@ Nightmare.action('selectText', function (selector, done) {
 //this.write(selectors.libraryView.searchInput, itemName)
 //.type(selectors.libraryView.searchInput, '\u000d')
 //.wait(selectors.libraryView.anyItemSnippet)
+Nightmare.action('clickCardOnLibrary', function (itemName, done) {
+  this.evaluate((nameToFind) => {
+    let cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.click();
+    }
+  }, itemName)
+  .then(done);
+});
+
+Nightmare.action('getResultsAsJson', function (done) {
+  this.evaluate_now(() => {
+    let normalizedCards = [];
+    let cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
+    cards.forEach((card) => {
+      normalizedCards.push({
+        title: card.querySelector('.item-name span').innerText,
+        connectionType: card.querySelector('.item-connection span').innerText
+      });
+    });
+    return normalizedCards;
+  }, done);
+});
+
+Nightmare.action('openEntityFromLibrary', function (itemName, done) {
+  this.evaluate((nameToFind) => {
+    let cards = document.querySelectorAll('.main-wrapper div.item-entity');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.querySelector('a').click();
+    }
+  }, itemName)
+  .wait(elementToSelect => {
+    return document.querySelector(elementToSelect).innerText;
+  }, selectors.entityView.contentHeaderTitle)
+  .then(done);
+});
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
@@ -219,7 +275,7 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
       if (found) {
         return;
       }
-      if (card.innerText.match(nameToFind)) {
+      if (card.querySelector('.item-name span').innerText.match(nameToFind)) {
         found = card;
       }
     });

@@ -1,6 +1,6 @@
 import templatesAPI from 'api/templates';
 import relationTypesAPI from 'api/relationtypes/relationtypes';
-import entities from 'api/entities';
+import entities from '../entities';
 
 import model from './connectionsModel.js';
 
@@ -34,8 +34,8 @@ function excludeRefs(template) {
 }
 
 export default {
-  get() {
-    return model.get();
+  get(query) {
+    return model.get(query);
   },
 
   getById(id) {
@@ -161,18 +161,53 @@ export default {
         sourceType: 'metadata',
         sourceDocument: entity.sharedId,
         targetDocument: item.value,
-        sourceProperty: item.property
+        sourceProperty: item.property,
+        sourceTemplate: entity.template
       }, language));
+
 
       return Promise.all(deletes.concat(creates));
     });
   },
 
-  delete(id) {
-    return model.delete(id);
+  delete(condition) {
+    return model.delete(condition);
   },
 
   deleteTextReferences(sharedId, language) {
     return model.delete({sourceDocument: sharedId, language});
+  },
+
+  updateMetadataConnections(changedTemplate) {
+    changedTemplate.properties = changedTemplate.properties || [];
+    return templatesAPI.getById(changedTemplate._id)
+    .then((currentTemplate) => {
+      let changedProperties = {};
+      changedTemplate.properties.forEach((property) => {
+        let currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+        if (currentProperty && currentProperty.name !== property.name) {
+          changedProperties[currentProperty.name] = property.name;
+        }
+      });
+      let deletedProperties = [];
+      currentTemplate.properties = currentTemplate.properties || [];
+      currentTemplate.properties.forEach((property) => {
+        if (!changedTemplate.properties.find(p => p.id === property.id)) {
+          deletedProperties.push(property.name);
+        }
+      });
+
+      let queries = Object.keys(changedProperties).map((oldPropertyName) => {
+        return model.db.updateMany(
+          {sourceType: 'metadata', sourceTemplate: currentTemplate._id, sourceProperty: oldPropertyName},
+          {$set: {sourceProperty: changedProperties[oldPropertyName]}});
+      });
+
+      deletedProperties.forEach((deletedProperty) => {
+        queries.push(this.delete({sourceType: 'metadata', sourceTemplate: currentTemplate._id, sourceProperty: deletedProperty}));
+      });
+
+      return Promise.all(queries);
+    });
   }
 };

@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import templates from 'api/templates/templates.js';
 import entities from 'api/entities/entities.js';
+import references from 'api/references/references';
 import documents from 'api/documents/documents.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
@@ -49,7 +50,7 @@ describe('templates', () => {
     });
 
     describe('when property content changes', () => {
-      it('should removeValuesFromEntities', (done) => {
+      it('should remove the values from the entities and update them', (done) => {
         spyOn(translations, 'updateContext');
         spyOn(entities, 'removeValuesFromEntities');
         spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
@@ -60,6 +61,33 @@ describe('templates', () => {
         templates.save(changedTemplate)
         .then(() => {
           expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({select: '', multiselect: []}, templateWithContents);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should update metadata connections', (done) => {
+        spyOn(translations, 'updateContext');
+        spyOn(entities, 'removeValuesFromEntities');
+        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
+        spyOn(references, 'updateMetadataConnections').and.returnValue(Promise.resolve());
+        const changedTemplate = {
+          _id: templateWithContents, name: 'changed', properties: [
+            {id: '1', type: 'select', content: 'new_thesauri', label: 'the select'},
+            {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'the multiselect'}
+          ]
+        };
+
+        const sanitizedTemplate = {
+          _id: templateWithContents, name: 'changed', properties: [
+            {id: '1', type: 'select', content: 'new_thesauri', label: 'the select', name: 'the_select'},
+            {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'the multiselect', name: 'the_multiselect'}
+          ]
+        };
+
+        templates.save(changedTemplate)
+        .then(() => {
+          expect(references.updateMetadataConnections).toHaveBeenCalledWith(sanitizedTemplate);
           done();
         })
         .catch(catchErrors(done));

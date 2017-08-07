@@ -5,6 +5,7 @@ import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
 import instanceModel from 'api/odm';
 import templatesModel from './templatesModel.js';
+import references from 'api/references/references';
 import entities from 'api/entities';
 
 const model = instanceModel(templatesModel);
@@ -86,6 +87,7 @@ export default {
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
       .then(() => entities.updateMetadataProperties(template))
+      .then(() => references.updateMetadataConnections(template))
       .then(() => save(template));
     }
 
@@ -116,12 +118,12 @@ export default {
     .then(() => {
       return model.delete(template._id);
     })
-    .then((response) => {
+    .then(() => {
       return {ok: true};
     });
   },
 
-  countByTemplate(templateId) {
+  countByTemplate() {
     return Promise.resolve(0);
     //return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
     //.then((response) => {
