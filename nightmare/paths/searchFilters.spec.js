@@ -19,7 +19,7 @@ selectors.libraryView.filters = {
 
 const nightmare = createNightmare().gotoLibrary();
 
-fdescribe('search filters path', () => {
+describe('search filters path', () => {
   describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
       nightmare
