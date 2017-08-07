@@ -12,7 +12,7 @@ import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
 import languages from 'shared/languages';
 
-fdescribe('search', () => {
+describe('search', () => {
   let result;
   beforeEach((done) => {
     result = elasticResult().withDocs([
