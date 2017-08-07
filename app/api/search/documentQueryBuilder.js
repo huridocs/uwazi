@@ -162,9 +162,20 @@ export default function () {
     },
 
     multiselectFilter(filters, property) {
-      let values = filters[property].value;
+      const filterValue = filters[property].value;
+      const values = filterValue.values;
       let match = {terms: {}};
       match.terms[`metadata.${property}.raw`] = values;
+
+      if (filterValue.and) {
+        match = {bool: {must: []}};
+        match.bool.must = values.map((value) => {
+          let m = {term: {}};
+          m.term[`metadata.${property}.raw`] = value;
+          return m;
+        });
+      }
+
       return match;
     },
 
@@ -242,26 +253,43 @@ export default function () {
       });
 
       match.bool.must = keys.map((key) => {
-        let nestedmatch = {
-          nested: {
-            path: `metadata.${property}`,
-            query: {
-              bool: {
-                must: [
-                ]
+        let nestedmatch;
+        if (properties[key].any) {
+          nestedmatch = {
+            nested: {
+              path: `metadata.${property}`,
+              query: {
+                bool: {
+                  must: [
+                  ]
+                }
               }
             }
-          }
-        };
+          };
 
-        if (properties[key].any) {
           nestedmatch.nested.query.bool.must[0] = {exists: {field: `metadata.${property}.${key}`}};
           return nestedmatch;
         }
 
-        let terms = {terms: {}};
-        terms.terms[`metadata.${property}.${key}.raw`] = properties[key].values;
-        nestedmatch.nested.query.bool.must[0] = terms;
+
+        nestedmatch = {bool: {must: []}};
+
+        nestedmatch.bool.must = properties[key].values.map((val) => {
+          let _match = {
+            nested: {
+              path: `metadata.${property}`,
+              query: {
+                bool: {
+                  must: [
+                    {term: {}}
+                  ]
+                }
+              }
+            }
+          };
+          _match.nested.query.bool.must[0].term[`metadata.${property}.${key}.raw`] = val;
+          return _match;
+        });
         return nestedmatch;
       });
 
@@ -338,16 +366,17 @@ export default function () {
 
         let path = `metadata.${property.name}.${prop.key}.raw`;
         let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
-          if (match.bool && match.bool.must) {
+          if (match.bool && match.bool.must && match.bool.must[0].nested) {
             match.bool.must = match.bool.must.filter((nestedMatcher) => {
-              return !nestedMatcher.nested.query.bool.must[0].terms || !nestedMatcher.nested.query.bool.must[0].terms[path];
+              return !nestedMatcher.nested ||
+              !nestedMatcher.nested.query.bool.must[0].terms ||
+              !nestedMatcher.nested.query.bool.must[0].terms[path];
             });
 
             if (!match.bool.must.length) {
               return;
             }
           }
-
           return match;
         }).filter((f) => f);
 
@@ -393,7 +422,8 @@ export default function () {
         });
 
         if (property.nested) {
-          return baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, filters);
+          baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, filters);
+          return;
         }
 
         baseQuery.aggregations.all.aggregations[property.name] = this.aggregation(path, filters);

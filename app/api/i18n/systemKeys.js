@@ -65,6 +65,8 @@ export default [
 {key: 'Entity types', label: 'Entity types'},
 {key: 'Filename label', label: 'filename'},
 {key: 'Filters', label: 'Filters'},
+{key: 'Filters AND operator', label: 'AND'},
+{key: 'Filters OR operator', label: 'OR'},
 {key: 'Flag', label: 'Flag'},
 {key: 'Forgot Password?', label: 'Forgot Password?'},
 {key: 'Google Analytics ID', label: 'Google Analytics ID'},

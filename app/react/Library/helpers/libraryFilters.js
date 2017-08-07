@@ -33,10 +33,10 @@ export function URLQueryToState(query, templates, thesauris) {
     if (filters[property.name]) {
       property.active = true;
     }
-    let defaultValue = '';
+    let defaultValue = {};
 
     if (property.type === 'select' || property.type === 'multiselect') {
-      defaultValue = [];
+      defaultValue = {};
     }
 
     if (property.type === 'nested'
@@ -60,6 +60,7 @@ export function parseWithAggregations(filters, aggregations) {
     let property = Object.assign({}, _property);
     if (property.content) {
       property.options = property.options.map((option) => {
+        option.results = 0;
         let aggregation;
         if (aggregations.all && aggregations.all[property.name]) {
           aggregation = aggregations.all[property.name].buckets
@@ -71,7 +72,7 @@ export function parseWithAggregations(filters, aggregations) {
         }
 
         return option;
-      }).filter((option) => option.results);
+      });
     }
 
     return property;
