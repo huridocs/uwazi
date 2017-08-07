@@ -5,21 +5,29 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-describe('ConnectionsList zone', () => {
-  describe('metadata editing', () => {
-    it('should log in as admin and go into the entity viewer for the desired entity', (done) => {
-      const entityTitle = 'Man-bat';
+selectors.doc = {
+  form: {
+    knownAccomplices: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > select'
+  }
+};
 
-      nightmare
-      .login('admin', 'admin')
-      .openEntityFromLibrary(entityTitle)
-      .getInnerText(selectors.entityView.contentHeader)
-      .then(headerText => {
-        expect(headerText).toContain(entityTitle);
-        done();
-      })
-      .catch(catchErrors(done));
-    }, 10000);
+fdescribe('ConnectionsList zone', () => {
+  it('should log in as admin', (done) => {
+    nightmare
+    .login('admin', 'admin')
+    .wait(selectors.libraryView.libraryFirstDocument)
+    .then(() => {
+      done();
+    })
+    .catch(catchErrors(done));
+  }, 10000);
+
+  it('should create some connections via editing selects/multiselects in metadata', (done) => {
+    nightmare
+    .clickCardOnLibrary('Man-bat')
+    .click(selectors.libraryView.editEntityButton)
+    .select(selectors.doc.form.knownAccomplices, '86raxe05i4uf2yb9')
+    .then(done);
   });
 
   describe('closing browser', () => {

@@ -210,6 +210,25 @@ Nightmare.action('selectText', function (selector, done) {
 //this.write(selectors.libraryView.searchInput, itemName)
 //.type(selectors.libraryView.searchInput, '\u000d')
 //.wait(selectors.libraryView.anyItemSnippet)
+Nightmare.action('clickCardOnLibrary', function (itemName, done) {
+  this.evaluate((nameToFind) => {
+    let cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
+    let found = false;
+    cards.forEach((card) => {
+      if (found) {
+        return;
+      }
+      if (card.innerText.match(nameToFind)) {
+        found = card;
+      }
+    });
+
+    if (found) {
+      found.click();
+    }
+  }, itemName)
+  .then(done);
+});
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
