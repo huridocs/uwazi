@@ -45,6 +45,7 @@
 }
 
 .FiltersForm-list {
+  padding-bottom: 85px;
   .panel-heading {
     height: 50px;
     padding: 0 15px;
@@ -65,7 +66,7 @@
 }
 .FiltersForm-constructor {
   padding-left: 30px;
-  border-left: 1px solid $c-grey;  
+  border-left: 1px solid $c-grey-light;  
   
   .no-properties {
     display: none;

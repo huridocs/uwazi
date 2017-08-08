@@ -16,35 +16,11 @@
     align-items: center;
     -webkit-justify-content: space-between;
     justify-content: space-between;
-    line-height: 23px;
+    line-height: 24px;
     border-color: $c-grey-light;
     border-left-color: transparent;
     outline: none;
     box-shadow: none;
-
-    &.active:hover,
-    &.active:focus {
-      background: $c-grey-lighten;
-    }
-
-    &.active,
-    &.active:hover,
-    &.active:focus {
-      color: $c-black;
-      background-color: $c-white;
-      cursor: default;
-
-      &:before {
-        content: '';
-        display: block;
-        width: 5px;
-        background: $c-theme;
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-      }
-    }
 }
 
 .list-group-item-actions {
