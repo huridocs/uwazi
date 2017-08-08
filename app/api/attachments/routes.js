@@ -23,9 +23,9 @@ const processSingleLanguage = (entity, req) => {
   const addedFile = req.files[0];
   addedFile._id = mongoose.Types.ObjectId();
 
-  entity.attachments = entity.attachments || [];
-  entity.attachments.push(addedFile);
-  return Promise.all([addedFile, entities.saveMultiple([entity])]);
+  const toUpdate = {_id: entity._id, attachments: entity.attachments || []};
+  toUpdate.attachments.push(addedFile);
+  return Promise.all([addedFile, entities.saveMultiple([toUpdate])]);
 };
 
 const processAllLanguages = (entity, req) => {
@@ -40,9 +40,9 @@ const processAllLanguages = (entity, req) => {
     const additionalLanguageUpdates = [];
 
     siblings.forEach(sibling => {
-      sibling.attachments = sibling.attachments || [];
-      sibling.attachments.push(genericAddedFile);
-      additionalLanguageUpdates.push(entities.saveMultiple([sibling]));
+      const toUpdate = {_id: sibling._id, attachments: sibling.attachments || []};
+      toUpdate.attachments.push(genericAddedFile);
+      additionalLanguageUpdates.push(entities.saveMultiple([toUpdate]));
     });
 
     return Promise.all([addedFile, additionalLanguageUpdates]);
