@@ -108,10 +108,8 @@ export default {
 
   saveMultiple(docs) {
     return model.save(docs)
-    .then((response) => {
-      Promise.all(docs.map((d) => search.index(d)));
-      return response;
-    });
+    .then(response => Promise.all(response.concat(response.map((d) => search.index(d)))))
+    .then(response => response);
   },
 
   multipleUpdate(ids, values, params) {
