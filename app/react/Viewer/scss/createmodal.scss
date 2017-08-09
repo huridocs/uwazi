@@ -20,10 +20,10 @@
       transition: 225ms all;
     }
     &.is-selected {
-      background: $c-primary-lighten;
-      color: $c-primary-light;
+      background: $c-theme-lighten;
+      color: $c-theme-light;
       border-color: transparent;
-      box-shadow: inset 0 0 0 1px $c-primary-light;
+      box-shadow: inset 0 0 0 1px $c-theme-light;
       &:after {
         top: 50%;
         transform: translateY(-50%);

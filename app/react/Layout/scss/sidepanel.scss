@@ -96,7 +96,7 @@ $c-sidebar: $c-white;
 
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
-      color: $c-primary;
+      color: $c-theme;
     }
 
     .itemGroup-title {
@@ -108,7 +108,7 @@ $c-sidebar: $c-white;
     }
 
     &:hover .multiselectItem-action {
-      border-color: $c-primary;
+      border-color: $c-theme;
     }
 
     .multiselectItem-results {
@@ -145,7 +145,7 @@ $c-sidebar: $c-white;
     }
 
     &.relationship-active {
-      box-shadow: inset 0 0 0 1px $c-bootstrap-primary, inset 0 0 0 4px transparentize($c-bootstrap-primary, 0.7);
+      box-shadow: inset 0 0 0 1px $c-primary, inset 0 0 0 4px transparentize($c-primary, 0.7);
     }
   }
   @media(min-width: 1024px) {

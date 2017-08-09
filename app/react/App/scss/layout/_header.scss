@@ -11,7 +11,7 @@ header {
   @if $theme == light {
     background: $c-white;
   } @else {
-    background: $c-primary;
+    background: $c-theme;
   }
 
   h1 {
@@ -86,7 +86,7 @@ header {
       @if $theme == light {
         border-top: 1px solid $c-grey-light;
       } @else {
-        border-top: 1px solid $c-primary-dark;
+        border-top: 1px solid $c-theme-dark;
       }
     }
   }
@@ -139,7 +139,7 @@ header {
     background: $c-white;
   } @else {
     color: $c-white;
-    background: $c-primary;
+    background: $c-theme;
   }
   &:hover,
   &:active,
@@ -147,10 +147,10 @@ header {
   .menuNav-item.is-active & {
     @if $theme == light {
       background: $c-white;
-      border-color: $c-primary;
+      border-color: $c-theme;
     } @else {
       color: $c-white;
-      background: $c-primary;
+      background: $c-theme;
       border-color: $c-white;
     }
   }
@@ -168,14 +168,14 @@ header {
     @if $theme == light {
       border-bottom: 1px solid $c-grey-light;
     } @else {
-      border-bottom: 1px solid $c-primary-dark;
+      border-bottom: 1px solid $c-theme-dark;
     }
   }
   .menuActions .menuNav-item:not(:last-child) {
     @if $theme == light {
       border-right: 1px solid $c-grey-light;
     } @else {
-      border-right: 1px solid $c-primary-dark;
+      border-right: 1px solid $c-theme-dark;
     }
   }
 }
@@ -212,11 +212,11 @@ header {
 .menuNav-I18NMenu {
   display: flex;
   text-transform: uppercase;
-  border-top: 1px solid $c-primary-dark;
+  border-top: 1px solid $c-theme-dark;
   @media(min-width: 1024px) {
     float: left;
     border-top: 0;
-    border-right: 1px solid $c-primary-dark;
+    border-right: 1px solid $c-theme-dark;
   }
   
   .menuNav-btn {
