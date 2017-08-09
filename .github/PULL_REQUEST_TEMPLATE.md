@@ -13,9 +13,9 @@ PR check list:
 QA check list:
 
 - [ ] Smoke test the functionality described in the issue
-- [ ] Smoke test potential collaterals
+- [ ] Test for side effects
 - [ ] UI responsiveness
-- [ ] Tested in a browser other than chrome
-- [ ] Code review ?
+- [ ] Cross browser testing
+- [ ] Code review
 
 NOTE: Make sure the build passes.
