@@ -40,7 +40,7 @@ export class NavlinksSettings extends Component {
               </div>
             </div>
             <ul className="list-group">
-              <li>
+              <li className="list-group-item">
                 <div className="alert alert-info">
                   <i className="fa fa-lightbulb-o"></i>
                   From here you control the Menu navigation links.<br /><br />
