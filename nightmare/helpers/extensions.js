@@ -142,6 +142,36 @@ Nightmare.action('isVisible', function (selector, done) {
   }, done, selector);
 });
 
+Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
+  this.wait((title) => {
+    let cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
+
+    let found = false;
+
+    cards.forEach((card) => {
+      if (card.querySelector('.item-name span').innerText.toLowerCase().match(title.toLowerCase())) {
+        found = true;
+      }
+    });
+
+    return found;
+  }, cardTitle)
+  .then(done);
+});
+
+Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
+  this.wait((cardSelector, cardStatus) => {
+    let cardLabel = document.querySelector(cardSelector + ' .label');
+
+    if (cardLabel) {
+      return cardLabel.innerText.match(cardStatus);
+    }
+
+    return false;
+  }, selector, statusText)
+  .then(done);
+});
+
 Nightmare.action('manageItemFromList', function (liElement, targetText, action, done) {
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;
@@ -233,12 +263,14 @@ Nightmare.action('clickCardOnLibrary', function (itemName, done) {
 Nightmare.action('getResultsAsJson', function (done) {
   this.evaluate_now(() => {
     let normalizedCards = [];
-    let cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
+    let cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
     cards.forEach((card) => {
-      normalizedCards.push({
-        title: card.querySelector('.item-name span').innerText,
-        connectionType: card.querySelector('.item-connection span').innerText
-      });
+      let normalized = {};
+      normalized.title = card.querySelector('.item-name span').innerText;
+      if (card.querySelector('.item-connection span')) {
+        normalized.connectionType = card.querySelector('.item-connection span').innerText;
+      }
+      normalizedCards.push(normalized);
     });
     return normalizedCards;
   }, done);

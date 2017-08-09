@@ -1,7 +1,10 @@
+/*eslint no-console: 0*/
 import Nightmare from 'nightmare';
 import realMouse from 'nightmare-real-mouse';
+import nightmareUpload from 'nightmare-upload';
 
 realMouse(Nightmare);
+nightmareUpload(Nightmare);
 
 export default function createNightmare(width = 1100, height = 600) {
   const nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(width, height);
