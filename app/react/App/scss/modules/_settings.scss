@@ -103,6 +103,24 @@
   }
 }
 
+.settings-content {
+  padding: 15px;
+  
+  .panel-heading {
+    background-color: transparent;
+    font-size: $f-size-xl;
+    font-weight: 300;
+    
+    input {
+      font-size: $f-size-xl;
+    }
+  }
+  
+  .list-group-item:last-of-type {
+    border-bottom: 0;
+  }
+}
+
 .settings-footer {
   position: fixed;
   bottom: 0;
@@ -199,8 +217,9 @@
     display: flex;
     -webkit-align-items: center;
     align-items: center;
-    padding-top: 9px;
-    padding-bottom: 9px;
+    padding-top: 12px;
+    padding-bottom: 13px;
+    padding-left: 2px;
     .form-group, input {
       margin: 0;
     }
