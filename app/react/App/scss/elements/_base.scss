@@ -7,11 +7,11 @@ body {
 }
 
 a {
-  color: $c-primary;
+  color: $c-theme;
 }
 
 a:hover, a:focus {
-  color: $c-primary-dark;
+  color: $c-theme-dark;
 }
 
 label {

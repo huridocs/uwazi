@@ -5,6 +5,20 @@
   transition: all 100ms;
 }
 
+@mixin btn ($color, $colorHover) {
+  background: $color;
+  border-color: $color;
+  
+  &:hover,
+  &:focus {
+    background: $colorHover;
+  }
+}
+
+.btn-primary {
+  @include btn($c-primary, $c-primary-dark);
+}
+
 .btn-default.btn-disabled {
   &, &:hover, &:focus, &:active {
     cursor: default;
