@@ -9,6 +9,7 @@ import ShowIf from 'app/App/ShowIf';
 
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
+import DocumentLanguage from './DocumentLanguage';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
@@ -31,7 +32,7 @@ export class Item extends Component {
       if (property.value && String(property.value).length || property.markdown) {
         let dlClassName = 'item-property-default';
 
-        let value = property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
+        let value = property.value && property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
 
         if (property.markdown) {
           dlClassName = 'item-property-markdown';
@@ -43,7 +44,7 @@ export class Item extends Component {
           dlClassName = 'item-property-date';
         }
 
-        if (property.value.map && (property.type === 'multidate' || property.type === 'multidaterange')) {
+        if ((property.type === 'multidate' || property.type === 'multidaterange') && property.value.map) {
           value = <span dangerouslySetInnerHTML={{__html: property.value.map(d => d.value).join('<br />')}}></span>;
         }
 
@@ -139,6 +140,7 @@ export class Item extends Component {
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc.title}</span>
+            <DocumentLanguage doc={this.props.doc} />
             {snippet}
           </div>
           {this.getSearchSnipett(doc)}

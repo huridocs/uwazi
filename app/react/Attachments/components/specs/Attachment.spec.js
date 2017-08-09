@@ -18,6 +18,7 @@ describe('Attachment', () => {
     props = {
       file,
       parentId: 'parentId',
+      storeKey: 'storeKey',
       model: 'model',
       parentSharedId: 'parentSharedId',
       deleteAttachment: jasmine.createSpy('deleteAttachment'),
@@ -37,8 +38,8 @@ describe('Attachment', () => {
 
   it('should render originalname of the attachment', () => {
     render();
-    expect(component.find('.item').length).toBe(1);
-    expect(component.find('.item').at(0).text()).toContain('Human name 1');
+    expect(component.find('.attachment-name').length).toBe(1);
+    expect(component.find('.attachment-name').text()).toContain('Human name 1');
   });
 
   describe('when its being edited (and not readOnly)', () => {
@@ -47,7 +48,7 @@ describe('Attachment', () => {
       props.readOnly = false;
     });
 
-    it('should render an edition form that renames on submit', () => {
+    it('should have an edition form that renames on submit', () => {
       render();
 
       expect(component.find(AttachmentForm).length).toBe(1);
@@ -56,10 +57,10 @@ describe('Attachment', () => {
       const submit = component.find(AttachmentForm).props().onSubmit;
       submit();
 
-      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model');
+      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model', 'storeKey');
     });
 
-    it('should render a cancel edit button', () => {
+    it('should have a cancel edit button', () => {
       render();
 
       const cancelButton = component.find('.item-shortcut-group').find('a').at(0);
@@ -71,7 +72,7 @@ describe('Attachment', () => {
       expect(props.resetForm).toHaveBeenCalledWith('model');
     });
 
-    it('should render a save edit button that submits form', () => {
+    it('should have a save edit button that submits form', () => {
       render();
 
       const saveButton = component.find('.item-shortcut-group').find('a.item-shortcut.btn-success');
@@ -80,28 +81,47 @@ describe('Attachment', () => {
 
       saveButton.simulate('click');
 
-      expect(props.submitForm).toHaveBeenCalledWith('model');
+      expect(props.submitForm).toHaveBeenCalledWith('model', 'storeKey');
     });
   });
 
   it('should include an authorized delete button for each file', () => {
     render();
-    const deleteButton = component.find('.item').find('a').at(1);
+    const deleteButton = component.find('.attachment-buttons').find('a').at(1);
 
-    expect(deleteButton.parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(deleteButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
     expect(deleteButton.parent().props().if).toBe(true);
 
     deleteButton.simulate('click');
     expect(context.confirm).toHaveBeenCalled();
 
     context.confirm.calls.argsFor(0)[0].accept();
-    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file);
+    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
+  });
+
+  it('should hold a thumbnail for PDFs and valid images', () => {
+    props.file.filename = 'document.pdf';
+    render();
+    expect(component.find('.attachment-thumbnail i').props().className).toContain('fa-file-pdf-o');
+    expect(component.find('.attachment-thumbnail > span').text()).toBe(' pdf');
+
+    props.file.filename = 'image.jpg';
+    render();
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.jpg');
+
+    props.file.filename = 'image.JPG';
+    render();
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.JPG');
+
+    props.file.filename = 'image.doc';
+    render();
+    expect(component.find('.attachment-thumbnail').children().length).toBe(0);
   });
 
   it('should not render the replace button', () => {
     render();
 
-    const replaceButton = component.find('.item').find(UploadButton);
+    const replaceButton = component.find('.attachment').find(UploadButton);
     expect(replaceButton.parent().props().if).toBe(false);
   });
 
@@ -112,27 +132,26 @@ describe('Attachment', () => {
 
     it('should not render the delete button on the first item', () => {
       render();
-      const deleteButton = component.find('.item').find('a').at(1);
+      const deleteButton = component.find('.attachment-buttons').find('a').at(1);
       expect(deleteButton.parent().props().if).toBe(false);
     });
 
     it('should include an authorized replace button on the first item', () => {
       render();
-      const replaceButton = component.find('.item').at(0).find(UploadButton);
+      const replaceButton = component.find('.attachment-buttons').find(UploadButton);
 
       expect(replaceButton.props().documentId).toBe(props.parentId);
+      expect(replaceButton.props().storeKey).toBe('storeKey');
       expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
-      expect(replaceButton.parent().parent().is(NeedAuthorization)).toBe(true);
+      expect(replaceButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
       expect(replaceButton.parent().props().if).toBe(true);
     });
   });
 
 
-  it('should include a download button', () => {
+  it('should allow downloading the attachment', () => {
     render();
-    const downloadButton = component.find('.item').find('a').at(2);
-
-    expect(downloadButton.props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
+    expect(component.find('.attachment-link').props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
   });
 
   describe('mapStateToProps', () => {
@@ -144,23 +163,5 @@ describe('Attachment', () => {
       ownProps = {file: {_id: 'otherId'}};
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(false);
     });
-
-    //it('should return hasError true when pristine and invalid', () => {
-      //let state = {namespace: {$form: {model: 'namespace'}, field: {pristine: false, valid: false}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-
-      //state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: false, valid: false}}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-    //});
-
-    //it('should return hasError true when submitFailed and valid false and has not been touched', () => {
-      //let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true, valid: false, pristine: true}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(true);
-    //});
-
-    //it('should return hasError false when submitFailed with no errors', () => {
-      //let state = {namespace: {$form: {model: 'namespace'}, field: {submitFailed: true}}};
-      //expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).hasError).toBe(false);
-    //});
   });
 });

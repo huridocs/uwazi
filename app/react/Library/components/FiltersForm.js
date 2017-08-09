@@ -6,7 +6,8 @@ import {wrapDispatch} from 'app/Multireducer';
 import {Field, Form} from 'react-redux-form';
 import {is} from 'immutable';
 
-import {MultiSelect, DateRange, NestedMultiselect, NumericRange} from 'app/ReactReduxForms';
+import {MultiSelect, DateRange, NestedMultiselect, NumericRange, Switcher} from 'app/ReactReduxForms';
+import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
@@ -79,11 +80,15 @@ export class FiltersForm extends Component {
                     <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
+                      <ShowIf if={property.type === 'multiselect'}>
+                        <Switcher model={`.filters.${property.name}.and`} prefix={property.name} onChange={() => {
+                          this.autoSearch = true;
+                        }}/>
+                      </ShowIf>
                     </li>
                     <li className="wide">
                       <MultiSelect
-                        model={`.filters.${property.name}`}
+                        model={`.filters.${property.name}.values`}
                         prefix={property.name}
                         options={this.translatedOptions(property)}
                         optionsValue="id" onChange={(options) => {
@@ -119,7 +124,6 @@ export class FiltersForm extends Component {
                             <span>&nbsp;Strict mode</span>
                         </label>
                       </div>
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </li>
                     <li className="wide">
                       <NestedMultiselect
@@ -143,7 +147,6 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                   </li>
                   <li className="wide">
                     <DateRange
@@ -166,7 +169,6 @@ export class FiltersForm extends Component {
                   <li>
                     {t(translationContext, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
-                    <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                   </li>
                   <li className="wide">
                     <NumericRange
@@ -188,7 +190,6 @@ export class FiltersForm extends Component {
                     <label>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <figure className="switcher" onClick={() => this.props.toggleFilter(property.name, allFields)}></figure>
                     </label>
                   </li>
                   <li className="wide">

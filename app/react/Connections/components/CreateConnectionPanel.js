@@ -7,14 +7,20 @@ import {closePanel} from '../actions/uiActions';
 import {setRelationType, setTargetDocument} from '../actions/actions';
 
 import SidePanel from 'app/Layout/SidePanel';
-import {Select} from 'app/Forms';
-
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
 import ActionButton from './ActionButton';
 import ShowIf from 'app/App/ShowIf';
 
 export class CreateConnectionPanel extends Component {
+  renderCheckType(relationType) {
+    if (this.props.connection.get('relationType') === relationType.get('_id')) {
+      return <i className="fa fa-check"></i>;
+    }
+
+    return <i className="fa fa-square-o"></i>;
+  }
+
   render() {
     const {uiState, searchResults} = this.props;
     const connection = this.props.connection.toJS();
@@ -28,45 +34,39 @@ export class CreateConnectionPanel extends Component {
           <h1>Create {typeLabel}</h1>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
 
-          <div className="relationship-steps">
-            <h2>Connection type<small>1</small></h2>
+          <ul className="connections-list">
+            {this.props.relationTypes.map((relationType) => {
+              return <li onClick={() => this.props.setRelationType(relationType.get('_id'))} key={relationType.get('_id')}>
+                {this.renderCheckType(relationType)}
+                {relationType.get('name')}
+              </li>;
+            })}
+          </ul>
+
+          <div className="search-form">
+            <SearchForm connectionType={connection.type}/>
           </div>
-
-          <Select
-            value={connection.relationType}
-            placeholder="Connection type..."
-            optionsValue="_id"
-            optionsLabel="name"
-            options={this.props.relationTypes.toJS()}
-            onChange={e => this.props.setRelationType(e.target.value)}/>
-
-        <div className="relationship-steps">
-          <h2>Select document or entity<small>2</small></h2>
         </div>
-        <div className="form-group">
-          <SearchForm connectionType={connection.type}/>
+
+        <div className="sidepanel-footer">
+          <ShowIf if={connection.type !== 'targetRanged'}>
+            <ActionButton action="save" onCreate={(reference) => {
+              this.props.onCreate(reference, pdfInfo);
+            }}/>
+          </ShowIf>
+          <ShowIf if={connection.type === 'targetRanged'}>
+            <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
+          </ShowIf>
         </div>
-      </div>
 
-      <div className="sidepanel-footer">
-        <ShowIf if={connection.type !== 'targetRanged'}>
-          <ActionButton action="save" onCreate={(reference) => {
-            this.props.onCreate(reference, pdfInfo);
-          }}/>
-        </ShowIf>
-        <ShowIf if={connection.type === 'targetRanged'}>
-          <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
-        </ShowIf>
-      </div>
-
-      <div className="sidepanel-body">
-        <SearchResults
-          results={searchResults}
-          searching={uiState.get('searching')}
-          selected={connection.targetDocument}
-          onClick={this.props.setTargetDocument}/>
-      </div>
-    </SidePanel>
+        <div className="sidepanel-body">
+          <SearchResults
+            results={searchResults}
+            searching={uiState.get('searching')}
+            selected={connection.targetDocument}
+            onClick={this.props.setTargetDocument}/>
+        </div>
+      </SidePanel>
     );
   }
 }

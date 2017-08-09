@@ -1,11 +1,12 @@
+/* eslint-disable max-nested-callbacks */
 import references from '../references.js';
+import connectionsModel from '../connectionsModel.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument, inbound} from './fixtures.js';
-import fixturesForGroup, {template as templateForGroup,
-                          entityTemplate, template1Id, template2Id,
-                          template3Id, thesauri, relation1, relation2} from './fixturesForGroup';
+import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument} from './fixtures.js';
+import {inbound, templateChangingNames, templateWithoutProperties} from './fixtures.js';
+import fixturesForGroup, {template1Id, template2Id, template3Id, relation1, relation2} from './fixturesForGroup';
 
 describe('references', () => {
   beforeEach((done) => {
@@ -64,6 +65,7 @@ describe('references', () => {
 
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceType).toBe('metadata');
+        expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceTemplate.toString()).toBe(template.toString());
         expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
@@ -124,7 +126,8 @@ describe('references', () => {
 
           expect(refs.find((ref) => ref.targetDocument === value1ID)._id).not.toBe(generatedIds[0]);
           expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString()).toBe(generatedIds[1].toString());
+          expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString())
+          .toBe(generatedIds[1].toString());
           expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
           expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
 
@@ -153,6 +156,7 @@ describe('references', () => {
         expect(result[0].connectedDocumentPublished).toBe(false);
         expect(result[0].connectedDocumentMetadata).toEqual({data: 'data1'});
         expect(result[0].connectedDocumentCreationDate).toEqual(123);
+        expect(result[0].connectedDocumentFile).toEqual({language: 'spa'});
 
         expect(result[1].inbound).toBe(false);
         expect(result[1].sourceDocument).toBe('source2');
@@ -166,6 +170,7 @@ describe('references', () => {
         expect(result[1].connectedDocumentPublished).toBe(true);
         expect(result[1].connectedDocumentMetadata).toEqual({data: 'data2'});
         expect(result[1].connectedDocumentCreationDate).toEqual(456);
+        expect(result[1].connectedDocumentFile).toBeUndefined();
 
         expect(result[2].inbound).toBe(false);
         expect(result[2].sourceDocument).toBe('source2');
@@ -178,10 +183,12 @@ describe('references', () => {
         expect(result[2].connectedDocumentPublished).toBe(false);
         expect(result[2].connectedDocumentMetadata).toEqual({data: 'data3'});
         expect(result[2].connectedDocumentCreationDate).toEqual(789);
+        expect(result[2].connectedDocumentFile).toEqual({language: 'eng'});
 
         expect(result[3].text).toBe('');
         expect(result[3].connectedDocumentMetadata).toEqual({});
         expect(result[3].connectedDocumentCreationDate).toBeUndefined();
+        expect(result[3].connectedDocumentFile).toBeUndefined();
         done();
       })
       .catch(catchErrors(done));
@@ -366,6 +373,87 @@ describe('references', () => {
         expect(results.filter(r => r.sourceDocument === 'source2')[0].language).toBe('en');
         done();
       });
+    });
+  });
+
+  describe('updateMetadataConnections', () => {
+    it('should not throw when passed template has no properties', (done) => {
+      spyOn(connectionsModel.db, 'updateMany');
+      const changedTemplateWithoutProperties = {_id: templateChangingNames};
+      references.updateMetadataConnections(changedTemplateWithoutProperties)
+      .then(() => {
+        done('this is only to check that do not throw an error');
+      })
+      .catch((e) => {
+        done.fail('should not fail', e);
+      });
+    });
+
+    it('should not throw when old template', (done) => {
+      spyOn(connectionsModel.db, 'updateMany');
+      const changedTemplateWithoutProperties = {_id: templateWithoutProperties, properties: []};
+      references.updateMetadataConnections(changedTemplateWithoutProperties)
+      .then(() => {
+        done('this is only to check that do not throw an error');
+      })
+      .catch((e) => {
+        done.fail('should not fail', e);
+      });
+    });
+
+    it('should do nothing when there is no changed or deleted properties', (done) => {
+      spyOn(connectionsModel.db, 'updateMany');
+      const unchangedTemplate = {_id: templateChangingNames, properties: [
+        {id: '1', type: 'text', name: 'property1'},
+        {id: '2', type: 'text', name: 'property2'},
+        {id: '3', type: 'text', name: 'property3'},
+        {type: 'text', label: 'new property'}
+      ]};
+
+      references.updateMetadataConnections(unchangedTemplate)
+      .then(() => {
+        expect(connectionsModel.db.updateMany).not.toHaveBeenCalled();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should update sourceProperty on all connections with the previous one and belonging to the template', (done) => {
+      const changedTemplate = {_id: templateChangingNames, properties: [
+        {id: '1', type: 'text', name: 'new_name1'},
+        {id: '2', type: 'text', name: 'new_name2'},
+        {id: '3', type: 'text', name: 'property3'}
+      ]};
+
+      references.updateMetadataConnections(changedTemplate)
+      .then(() => references.get({sourceType: 'metadata'}))
+      .then((metadataReferences) => {
+        expect(metadataReferences.length).toBe(5);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'new_name1').length).toBe(2);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'new_name2').length).toBe(1);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'property3').length).toBe(1);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'selectName').length).toBe(1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should delete connections of removed properties', (done) => {
+      const changedTemplate = {_id: templateChangingNames, properties: [
+        {id: '2', type: 'text', name: 'new_name2'}
+      ]};
+
+      references.updateMetadataConnections(changedTemplate)
+      .then(() => references.get({sourceType: 'metadata'}))
+      .then((metadataReferences) => {
+        expect(metadataReferences.length).toBe(2);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'property1').length).toBe(0);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'new_name2').length).toBe(1);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'property3').length).toBe(0);
+        expect(metadataReferences.filter((r) => r.sourceProperty === 'selectName').length).toBe(1);
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 });

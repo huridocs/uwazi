@@ -10,7 +10,7 @@ import fixtures, {templateId, userId} from './fixtures';
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
-import languages from '../languages';
+import languages from 'shared/languages';
 
 describe('search', () => {
   let result;
@@ -176,13 +176,17 @@ describe('search', () => {
         search.search({types: [ids.template1]}, 'es'),
         search.search({types: [ids.template2]}, 'es'),
         search.search({types: [ids.template1]}, 'en'),
-        search.search({types: [ids.template1, ids.template2]}, 'en')
+        search.search({types: [ids.template1, ids.template2]}, 'en'),
+        search.search({types: ['missing']}, 'en'),
+        search.search({types: [ids.template1, 'missing']}, 'en')
       ])
-      .then(([template1es, template2es, template1en, allTemplatesEn]) => {
+      .then(([template1es, template2es, template1en, allTemplatesEn, onlyMissing, template1AndMissing]) => {
         expect(template1es.rows.length).toBe(2);
         expect(template1en.rows.length).toBe(2);
         expect(template2es.rows.length).toBe(1);
         expect(allTemplatesEn.rows.length).toBe(3);
+        expect(onlyMissing.rows.length).toBe(1);
+        expect(template1AndMissing.rows.length).toBe(3);
         done();
       })
       .catch(catchErrors(done));
@@ -258,12 +262,12 @@ describe('search', () => {
     });
 
     describe('multiselect aggregations', () => {
-      it('should return aggregations of multiselect fields when filtering by types', (done) => {
+      it('should return aggregations of multiselect fields', (done) => {
         Promise.all([
           search.search({types: [ids.templateMetadata1]}, 'en'),
           search.search({types: [ids.templateMetadata2]}, 'en'),
           search.search({types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en'),
-          search.search({filters: {multiselect1: ['multiValue2']}, types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
+          search.search({filters: {multiselect1: {values: ['multiValue2'], and: false}}, types: [ids.templateMetadata1, ids.templateMetadata2]}, 'en')
         ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
@@ -288,6 +292,26 @@ describe('search', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+
+      describe('AND falg', () => {
+        it('should restrict the results to those who have all values of the filter', (done) => {
+          search.search(
+            {
+              filters: {multiselect1: {values: ['multiValue1', 'multiValue2'], and: true}},
+              types: [ids.templateMetadata1, ids.templateMetadata2]
+            }, 'en')
+          .then((filtered) => {
+            const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
+            const templateAggs = filtered.aggregations.all.types.buckets;
+            expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(1);
+            expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+            expect(templateAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
+
+            done();
+          })
+          .catch(catchErrors(done));
+        });
       });
 
       describe('nested', () => {
@@ -345,10 +369,8 @@ describe('search', () => {
             expect(value3.rows.find((r) => r.title === 'metadata1')).toBeDefined();
             expect(value3.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
 
-            expect(value35.rows.length).toBe(3);
-            expect(value35.rows.find((r) => r.title === 'metadata1')).toBeDefined();
+            expect(value35.rows.length).toBe(1);
             expect(value35.rows.find((r) => r.title === ' Metadáta4')).toBeDefined();
-            expect(value35.rows.find((r) => r.title === 'metadata5')).toBeDefined();
 
             done();
           })
@@ -415,45 +437,8 @@ describe('search', () => {
     });
   });
 
-  describe('matchTitle', () => {
-    it('should perform a search by title with highlighted titles', (done) => {
-      result = elasticResult().withDocs([
-        {title: 'doc1', _id: 'id1'},
-        {title: 'doc2', _id: 'id2'}
-      ])
-      .withHighlights([{title: ['doc1 highlighted']}, {title: ['doc2 highlighted']}])
-      .toObject();
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-
-      search.matchTitle('term', 'es')
-      .then((results) => {
-        let query = queryBuilder().fullTextSearch('term', ['title'], false).highlight(['title']).language('es').limit(5).query();
-        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: query});
-        expect(results).toEqual([{_id: 'id1', title: 'doc1 highlighted'}, {_id: 'id2', title: 'doc2 highlighted'}]);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should return empty array if searchTerm is empty and not an error', (done) => {
-      result = elasticResult().withDocs([
-        {title: 'doc1', _id: 'id1'},
-        {title: 'doc2', _id: 'id2'}
-      ])
-      .toObject();
-      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
-
-      search.matchTitle('', 'es')
-      .then((results) => {
-        expect(results).toEqual([]);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
   describe('index', () => {
-    it('should index the document (omitting pdfInfo)', (done) => {
+    it('should index the document (omitting pdfInfo), without side effects on the sent element', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());
 
       const entity = {
@@ -465,6 +450,7 @@ describe('search', () => {
 
       search.index(entity)
       .then(() => {
+        expect(entity._id).toBe('asd1');
         expect(elastic.index)
         .toHaveBeenCalledWith({
           index: elasticIndex,
@@ -489,20 +475,15 @@ describe('search', () => {
           _id: 'asd1',
           type: 'document',
           title: 'Batman indexes',
-          fullText: 'text'
+          file: {fullText: 'text'}
         };
 
         search.index(entity)
         .then(() => {
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {
-            type: 'document',
-            title: 'Batman indexes'
-          }});
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {type: 'document', title: 'Batman indexes', file: {}}});
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {
-            fullText_english: 'text'
-          }});
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {fullText_english: 'text'}});
           done();
         })
         .catch(done.fail);
@@ -535,19 +516,19 @@ describe('search', () => {
         spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
         spyOn(languages, 'detect').and.returnValue('english');
         const toIndexDocs = [
-          {_id: 'id1', title: 'test1', fullText: 'text1'},
-          {_id: 'id2', title: 'test2', fullText: 'text2'}
+          {_id: 'id1', title: 'test1', file: {fullText: 'text1'}},
+          {_id: 'id2', title: 'test2', file: {fullText: 'text2'}}
         ];
 
         search.bulkIndex(toIndexDocs, 'index')
         .then(() => {
           expect(elastic.bulk).toHaveBeenCalledWith({body: [
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
-            {title: 'test1'},
+            {title: 'test1', file: {}},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
             {fullText_english: 'text1'},
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
-            {title: 'test2'},
+            {title: 'test2', file: {}},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
             {fullText_english: 'text2'}
           ]});

@@ -139,6 +139,116 @@ mark, .mark {
   }
 }
 
-.create-reference .form-group {
-  margin-bottom: 15px;
+.connections-list {
+  list-style-type: none;
+  line-height: 24px;
+  padding: 15px;
+  margin: 0 -15px;
+  color: $c-grey-dark;
+  border-bottom: 1px solid $c-grey-lighten;
+  overflow-y: scroll;
+  max-height: 150px;
+
+  li {
+    cursor: pointer;
+  }
+  
+  .fa {
+    width: 20px;
+    color: $c-grey-light;
+  }
+
+  .fa.fa-check {
+    color: $c-success;
+  }
+}
+
+.search-form {
+  .form-group {
+    position: relative;
+    margin: 0 -15px;
+    .fa {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      color: $c-black;
+      cursor: pointer;
+    }
+  }
+  .form-control {
+    padding-left: 40px;
+    height: $header-height;
+    line-height: $header-height;
+    border-radius: 0;
+    border: 0;
+    color: $c-black;
+    box-shadow: none !important;
+    @include placeholder($c-black);
+
+    &:focus {
+      background: transparent;
+      @include placeholder(transparent);
+    }
+  }
+}
+
+.create-reference {
+  .item {
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    min-height: auto;
+    padding: 5px 0 5px 25px;
+    margin: 0 15px !important;
+    border-color: $c-grey-light !important;
+
+    .item-name {
+      font-family: $f-regular;
+      color: $c-grey-dark;
+    }
+
+    &::after {
+      content: '\F096';
+      font-family: FontAwesome;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      font-size: $f-size-lg;
+      color: $c-grey-light;
+      transform: translateY(-50%);
+    }
+
+    &.is-selected {
+      box-shadow: none;
+      font-weight: bold;
+      &:after {
+        content: '\f00c';
+        color: $c-success;
+      }
+
+      .item-name {
+        color: $c-black;
+      }
+    }
+  }
+  .item-info {
+    padding: 0;
+  }
+  .item-actions {
+    position: relative;
+    height: auto;
+    padding: 0;
+    margin-left: 15px;
+  }
+  .item-type {
+    width: auto;
+    max-width: 75px;
+  }
+  .cs-loader-container{
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+    overflow: hidden;
+  }
 }

@@ -5,7 +5,7 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
-import languages from './languages';
+import languages from 'shared/languages';
 
 function processFiltes(filters, properties) {
   let result = {};
@@ -109,7 +109,7 @@ export default {
 
   searchSnippets(searchTerm, sharedId, language) {
     let query = queryBuilder()
-    .fullTextSearch(searchTerm, [], true, 9999)
+    .fullTextSearch(searchTerm, ['fullText'], 9999)
     .includeUnpublished()
     .filterById(sharedId)
     .language(language)
@@ -138,34 +138,12 @@ export default {
     });
   },
 
-  matchTitle(searchTerm, language) {
-    if (searchTerm === '') {
-      return Promise.resolve([]);
-    }
-
-    let query = queryBuilder()
-    .fullTextSearch(searchTerm, ['title'], false)
-    .highlight(['title'])
-    .language(language)
-    .limit(5)
-    .query();
-
-    return elastic.search({index: elasticIndex, body: query})
-    .then((response) => {
-      return response.hits.hits.map((hit) => {
-        let result = hit._source;
-        result._id = hit._id;
-        result.title = hit.highlight.title[0];
-        return result;
-      });
-    });
-  },
-
   countByTemplate(templateId) {
     return entities.countByTemplate(templateId);
   },
 
-  index(entity) {
+  index(_entity) {
+    const entity = Object.assign({}, _entity);
     const id = entity._id.toString();
     delete entity._id;
     delete entity._rev;
@@ -173,12 +151,12 @@ export default {
 
     const body = entity;
     let fullTextIndex = Promise.resolve();
-    if (entity.fullText) {
+    if (entity.file && entity.file.fullText) {
       const fullText = {};
-      const language = languages.detect(entity.fullText);
-      fullText['fullText_' + language] = entity.fullText;
+      const language = languages.detect(entity.file.fullText);
+      fullText['fullText_' + language] = entity.file.fullText;
       fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
-      delete entity.fullText;
+      delete entity.file.fullText;
     }
     return Promise.all([
       elastic.index({index: elasticIndex, type: 'entity', id, body}),
@@ -205,16 +183,16 @@ export default {
       body.push(action);
       body.push(_doc);
 
-      if (doc.fullText) {
+      if (doc.file && doc.file.fullText) {
         action = {};
         action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id};
         body.push(action);
 
         const fullText = {};
-        const language = languages.detect(doc.fullText);
-        fullText['fullText_' + language] = doc.fullText;
+        const language = languages.detect(doc.file.fullText);
+        fullText['fullText_' + language] = doc.file.fullText;
         body.push(fullText);
-        delete doc.fullText;
+        delete doc.file.fullText;
       }
     });
 

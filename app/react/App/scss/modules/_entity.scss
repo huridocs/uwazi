@@ -25,6 +25,12 @@
   }
 }
 
+.entity-metadata {
+  max-width: 960px;
+  margin: auto;
+  padding-bottom: 120px;
+}
+
 .entity-connections {
   z-index: 6;
   top: 0;
@@ -62,7 +68,7 @@
   li {
     display: -webkit-flex;
     display: flex;
-    padding: 10px 15px;
+    padding: 7px 0;
     -webkit-justify-content: space-between;
     justify-content: space-between;
   }

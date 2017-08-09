@@ -3,6 +3,8 @@ import PDF from './PDF';
 import ID from 'shared/uniqueID';
 import needsAuthorization from '../auth/authMiddleware';
 import {uploadDocumentsPath} from '../config/paths';
+import languages from 'shared/languages';
+
 import entities from 'api/entities';
 import references from 'api/references';
 
@@ -57,7 +59,8 @@ export default (app) => {
 
       const docs = _docs.map((doc) => {
         doc.processed = true;
-        doc.fullText = conversion.fullText;
+        doc.file.fullText = conversion.fullText;
+        doc.file.language = languages.detect(conversion.fullText, 'franc');
         doc.toc = [];
         return doc;
       });

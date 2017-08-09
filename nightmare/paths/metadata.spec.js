@@ -202,7 +202,7 @@ describe('metadata path', () => {
 
     it('should create a new entity', (done) => {
       nightmare
-      //.wait(selectors.settingsView.entityNameForm)
+      .wait(selectors.settingsView.entityBodyForm)
       .write(selectors.settingsView.entityNameForm, 'e2e test entity')
       .click(selectors.settingsView.saveEntityButton)
       .waitToClick('.alert.alert-success')

@@ -3,6 +3,7 @@ import instanceModel from 'api/odm';
 
 const connectionSchema = new mongoose.Schema({
   sourceDocument: {type: String, index: true},
+  sourceTemplate: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
   sourceProperty: String,
   sourceType: String,
   relationType: String,

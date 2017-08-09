@@ -37,9 +37,9 @@ describe('attachments path', () => {
       .catch(catchErrors(done));
     });
 
-    it('should show the source document as attachment in the attachments tab', (done) => {
+    it('should show the source document as file in the Downloads section', (done) => {
       nightmare
-      .waitToClick(selectors.documentView.sidePanelAttachmentsTab)
+      .waitToClick(selectors.documentView.sidePanelInfoTab)
       .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
       .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
       .then(attachmentName => {
@@ -113,11 +113,10 @@ describe('attachments path', () => {
       .catch(catchErrors(done));
     });
 
-    it('should show the first attachment in the attachments tab', (done) => {
+    it('should show the first attachment in the main entity view', (done) => {
       nightmare
-      .waitToClick(selectors.entityView.sidePanelAttachmentsTab)
-      .wait(selectors.entityView.sidePanelFirstAttachmentTitle)
-      .evaluate(getInnerText, selectors.entityView.sidePanelFirstAttachmentTitle)
+      .wait(selectors.entityView.firstAttachmentTitle)
+      .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
       .then(attachmentName => {
         expect(attachmentName).toBe('ManBatCv3.jpg');
         done();
@@ -127,7 +126,7 @@ describe('attachments path', () => {
 
     it('should allow entering edit mode for the title, keeping the original text as first value', (done) => {
       nightmare
-      .waitToClick(selectors.entityView.sidePanelFirstAttachmentEditTitleButton)
+      .waitToClick(selectors.entityView.firstAttachmentEditTitleButton)
       .wait(selectors.entityView.attachmentFormInput)
       .evaluate(getValue, selectors.entityView.attachmentFormInput)
       .then(inputValue => {
@@ -142,8 +141,8 @@ describe('attachments path', () => {
       .clearInput(selectors.entityView.attachmentFormInput)
       .insert(selectors.entityView.attachmentFormInput, 'Only known picture.jpg')
       .waitToClick(selectors.entityView.attachmentFormSubmit)
-      .wait(selectors.entityView.sidePanelFirstAttachmentTitle)
-      .evaluate(getInnerText, selectors.entityView.sidePanelFirstAttachmentTitle)
+      .wait(selectors.entityView.firstAttachmentTitle)
+      .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
       .then(attachmentName => {
         expect(attachmentName).toBe('Only known picture.jpg');
         done();

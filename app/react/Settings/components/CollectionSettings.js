@@ -20,6 +20,7 @@ export class CollectionSettings extends Component {
       siteName: props.settings.site_name || '',
       homePage: props.settings.home_page || '',
       mailerConfig: props.settings.mailerConfig || '',
+      analyticsTrackingId: props.settings.analyticsTrackingId || '',
       customLandingpage: !!props.settings.home_page,
       dateFormat: props.settings.dateFormat,
       dateSeparator
@@ -64,6 +65,12 @@ export class CollectionSettings extends Component {
     this.props.setSettings(settings);
   }
 
+  changeAnalyticsTrackingId(e) {
+    this.setState({analyticsTrackingId: e.target.value});
+    let settings = Object.assign(this.props.settings, {analyticsTrackingId: e.target.value});
+    this.props.setSettings(settings);
+  }
+
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
     let settings = Object.assign(this.props.settings, {home_page: e.target.value});  // eslint-disable-line camelcase
@@ -97,6 +104,7 @@ export class CollectionSettings extends Component {
     settings.home_page = this.state.homePage;  // eslint-disable-line camelcase
     settings.site_name = this.state.siteName;  // eslint-disable-line camelcase
     settings.mailerConfig = this.state.mailerConfig;
+    settings.analyticsTrackingId = this.state.analyticsTrackingId;
     SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated'), 'success');
@@ -184,6 +192,14 @@ export class CollectionSettings extends Component {
               </ul>
               <p>This setting takes precedence over all other mailer configuration.
                  If left blank, then the configuration file in /api/config/mailer.js will be used.</p>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Google Analytics ID')}</label>
+              <input name="analyticsTrackingId"
+                        onChange={this.changeAnalyticsTrackingId.bind(this)}
+                        value={this.state.analyticsTrackingId}
+                        type="text"
+                        className="form-control"/>
             </div>
             <div className="form-group">
               <label className="form-group-label">{t('System', 'Date format')}</label>

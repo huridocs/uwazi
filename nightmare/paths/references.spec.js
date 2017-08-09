@@ -43,7 +43,7 @@ describe('references path', () => {
       .selectText(selectors.documentView.documentPageFirstParagraph)
       .waitToClick(selectors.documentView.createParagraphLinkButton)
       .wait(selectors.documentView.createReferenceSidePanelIsActive)
-      .select(selectors.documentView.createReferenceSidePanelSelect, selectors.documentView.createReferenceSidePanelSelectFirstValue)
+      .waitToClick(selectors.documentView.createReferenceSidePanelSelectFirstType)
       .write(selectors.documentView.createReferenceSidePanelInput, 'home')
       .wait(3000)
       .waitToClick(selectors.documentView.createReferenceSidePanelFirstSearchSuggestion)

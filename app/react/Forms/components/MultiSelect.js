@@ -78,6 +78,10 @@ export default class MultiSelect extends Component {
     prefix = prefix || '';
 
     let options = this.props.options.slice();
+    let totalOptions = options = options.filter((option) => {
+      let notDefined;
+      return option.results === notDefined || option.results > 0 || this.checked(option[optionsValue]);
+    });
 
     if (this.state.filter) {
       options = options.filter((opt) => {
@@ -141,10 +145,10 @@ export default class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.showAll}>
+          <ShowIf if={totalOptions.length > this.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
-              <span>{this.state.showAll ? t('System', 'x less') : this.props.options.length - this.optionsToShow + t('System', 'x more')}</span>
+              <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.optionsToShow + t('System', 'x more')}</span>
             </button>
           </ShowIf>
         </li>

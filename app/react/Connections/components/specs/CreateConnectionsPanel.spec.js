@@ -8,7 +8,6 @@ import SidePanel from 'app/Layout/SidePanel';
 import SearchForm from '../SearchForm';
 import ActionButton from '../ActionButton';
 import SearchResults from '../SearchResults';
-import {Select} from 'app/Forms';
 
 describe('CreateConnectionPanel', () => {
   let component;
@@ -23,7 +22,7 @@ describe('CreateConnectionPanel', () => {
         targetDocument: 'targetId'
       }),
       pdfInfo: Immutable([]),
-      relationTypes: Immutable([{_id: 'rt1'}, {_id: 'rt2'}]),
+      relationTypes: Immutable([{_id: 'rt1', name: 'relationType1'}, {_id: 'rt2', name: 'relationType2'}]),
       searchResults: Immutable([{_id: 'sr1'}, {_id: 'sr2'}]),
       uiState: Immutable({searching: true}),
       setRelationType: jasmine.createSpy('setRelationType'),
@@ -39,13 +38,42 @@ describe('CreateConnectionPanel', () => {
 
   it('should allow to select the connection types and set its value', () => {
     render();
-    const select = component.find(Select);
+    const options = component.find('.connections-list li');
 
-    expect(select.props().options).toEqual(props.relationTypes.toJS());
-    expect(select.props().value).toBe('rt3');
+    expect(options.at(0).text()).toBe('relationType1');
+    expect(options.at(1).text()).toBe('relationType2');
 
-    select.simulate('change', {target: {value: 'newValue'}});
-    expect(props.setRelationType).toHaveBeenCalledWith('newValue');
+    options.at(0).simulate('click');
+    expect(props.setRelationType).toHaveBeenCalledWith('rt1');
+
+    options.at(1).simulate('click');
+    expect(props.setRelationType).toHaveBeenCalledWith('rt2');
+  });
+
+  it('should mark the connnection type passed', () => {
+    props.connection = Immutable({
+      relationType: 'rt1',
+      type: 'basic',
+      sourceDocument: 'sourceId',
+      targetDocument: 'targetId'
+    });
+
+    render();
+    let options = component.find('.connections-list li');
+    expect(options.at(0).find('i').props().className).toBe('fa fa-check');
+    expect(options.at(1).find('i').props().className).not.toBe('fa fa-check');
+
+    props.connection = Immutable({
+      relationType: 'rt2',
+      type: 'basic',
+      sourceDocument: 'sourceId',
+      targetDocument: 'targetId'
+    });
+
+    render();
+    options = component.find('.connections-list li');
+    expect(options.at(0).find('i').props().className).not.toBe('fa fa-check');
+    expect(options.at(1).find('i').props().className).toBe('fa fa-check');
   });
 
   it('should have a search form with the connection type', () => {

@@ -43,22 +43,28 @@ describe('Attachments actions', () => {
       expect(store.getActions()).toEqual([{type: types.START_UPLOAD_ATTACHMENT, entity: 'id'}]);
     });
 
-    it('should create upload the file while dispatching the upload progress', () => {
+    it('should upload the file while dispatching the upload progress', () => {
       const expectedActions = [
         {type: types.START_UPLOAD_ATTACHMENT, entity: 'id'},
         {type: types.ATTACHMENT_PROGRESS, entity: 'id', progress: 55},
         {type: types.ATTACHMENT_PROGRESS, entity: 'id', progress: 65},
-        {type: types.ATTACHMENT_COMPLETE, entity: 'id', file: {text: 'file'}}
+        {type: types.ATTACHMENT_COMPLETE, entity: 'id', file: {text: 'file'}, __reducerKey: 'storeKey'}
       ];
 
-      store.dispatch(actions.uploadAttachment('id', file));
+      store.dispatch(actions.uploadAttachment('id', file, 'storeKey'));
       expect(mockUpload.field).toHaveBeenCalledWith('entityId', 'id');
+      expect(mockUpload.field).toHaveBeenCalledWith('allLanguages', false);
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
       mockUpload.emit('progress', {percent: 55.1});
       mockUpload.emit('progress', {percent: 65});
       mockUpload.emit('response', {text: '{"text": "file"}'});
       expect(store.getActions()).toEqual(expectedActions);
+    });
+
+    it('should upload the file to all languages if option passed', () => {
+      store.dispatch(actions.uploadAttachment('id', file, 'storeKey', {allLanguages: true}));
+      expect(mockUpload.field).toHaveBeenCalledWith('allLanguages', true);
     });
   });
 
@@ -72,10 +78,10 @@ describe('Attachments actions', () => {
     });
 
     it('should call on attachments/rename, with entity, file id and originalname', () => {
-      store.dispatch(actions.renameAttachment('id', 'form', {_id: 'fid', originalname: 'originalname'}));
+      store.dispatch(actions.renameAttachment('id', 'form', 'storeKey', {_id: 'fid', originalname: 'originalname'}));
 
       const expectedActions = [
-        {type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file'},
+        {type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file', __reducerKey: 'storeKey'},
         {type: 'formReset', value: 'form'},
         {type: 'NOTIFY', notification: {message: 'Attachment renamed', type: 'success', id: 'unique_id'}}
       ];
@@ -92,10 +98,10 @@ describe('Attachments actions', () => {
     });
 
     it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', () => {
-      store.dispatch(actions.deleteAttachment('id', {filename: 'filename'}));
+      store.dispatch(actions.deleteAttachment('id', {filename: 'filename'}, 'storeKey'));
 
       const expectedActions = [
-        {type: types.ATTACHMENT_DELETED, entity: 'id', file: {filename: 'filename'}},
+        {type: types.ATTACHMENT_DELETED, entity: 'id', file: {filename: 'filename'}, __reducerKey: 'storeKey'},
         {type: 'NOTIFY', notification: {message: 'Attachment deleted', type: 'success', id: 'unique_id'}}
       ];
 

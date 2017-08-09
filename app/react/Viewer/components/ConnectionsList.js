@@ -92,7 +92,8 @@ export class ConnectionsList extends Component {
               template: reference.connectedDocumentTemplate,
               metadata: reference.connectedDocumentMetadata,
               creationDate: reference.connectedDocumentCreationDate,
-              published: reference.connectedDocumentPublished
+              published: reference.connectedDocumentPublished,
+              file: reference.connectedDocumentFile
             });
 
 

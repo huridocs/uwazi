@@ -11,6 +11,7 @@ import Notifications from 'app/Notifications';
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
+import GoogleAnalytics from './GoogleAnalytics';
 
 class App extends Component {
 
@@ -73,6 +74,7 @@ class App extends Component {
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
             {this.props.children}
+            <GoogleAnalytics/>
           </div>
         </div>
       </div>

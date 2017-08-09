@@ -239,14 +239,8 @@ export function loadMoreDocuments(storeKey, amount) {
   };
 }
 
-export function getSuggestions(searchTerm) {
-  return (dispatch) => {
-    return api.getSuggestions(searchTerm)
-    .then((suggestions) => {
-      dispatch(setSuggestions(suggestions));
-      dispatch(showSuggestions());
-    });
-  };
+export function getSuggestions() {
+  return {type: 'GET_SUGGESTIONS'};
 }
 
 export function getDocumentReferences(documentId, storeKey) {

@@ -34,6 +34,8 @@ import instanceModel from 'api/odm';
   *             type: string
   *           mimetype:
   *             type: string
+  *           language:
+  *             type: string
   *           size:
   *             type: integer
   *       icon:
@@ -99,7 +101,9 @@ const entitySchema = new mongoose.Schema({
     originalname: String,
     filename: String,
     mimetype: String,
-    size: Number
+    size: Number,
+    fullText: {type: mongoose.Schema.Types.Mixed, select: false},
+    language: String
   },
   icon: new mongoose.Schema({
     _id: String,
@@ -121,7 +125,6 @@ const entitySchema = new mongoose.Schema({
     size: Number
   }],
   creationDate: Number,
-  fullText: {type: mongoose.Schema.Types.Mixed, select: false},
   processed: Boolean,
   uploaded: Boolean,
   published: Boolean,

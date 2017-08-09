@@ -19,6 +19,36 @@ const storage = multer.diskStorage({
   }
 });
 
+const processSingleLanguage = (entity, req) => {
+  const addedFile = req.files[0];
+  addedFile._id = mongoose.Types.ObjectId();
+
+  entity.attachments = entity.attachments || [];
+  entity.attachments.push(addedFile);
+  return Promise.all([addedFile, entities.saveMultiple([entity])]);
+};
+
+const processAllLanguages = (entity, req) => {
+  return processSingleLanguage(entity, req)
+  .then(([addedFile]) => {
+    return Promise.all([addedFile, entities.get({sharedId: entity.sharedId, _id: {$ne: entity._id}})]);
+  })
+  .then(([addedFile, siblings]) => {
+    const genericAddedFile = Object.assign({}, addedFile);
+    delete genericAddedFile._id;
+
+    const additionalLanguageUpdates = [];
+
+    siblings.forEach(sibling => {
+      sibling.attachments = sibling.attachments || [];
+      sibling.attachments.push(genericAddedFile);
+      additionalLanguageUpdates.push(entities.saveMultiple([sibling]));
+    });
+
+    return Promise.all([addedFile, additionalLanguageUpdates]);
+  });
+};
+
 export default (app) => {
   let upload = multer({storage});
 
@@ -33,19 +63,12 @@ export default (app) => {
   });
 
   app.post('/api/attachments/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
-    let addedFile;
-
     return entities.getById(req.body.entityId)
     .then(entity => {
-      entity.attachments = entity.attachments || [];
-
-      addedFile = req.files[0];
-      addedFile._id = mongoose.Types.ObjectId();
-
-      entity.attachments.push(addedFile);
-      return entities.saveMultiple([entity]);
+      return req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
+                                                processSingleLanguage(entity, req);
     })
-    .then(() => {
+    .then(([addedFile]) => {
       res.json(addedFile);
     })
     .catch(error => res.json({error}));
@@ -82,10 +105,17 @@ export default (app) => {
     return entities.getById(req.query.entityId)
     .then(entity => {
       entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
-      return entities.saveMultiple([entity]);
+      return Promise.all([entities.saveMultiple([entity]), entities.get({sharedId: entity.sharedId, _id: {$ne: entity._id}}, {attachments: 1})]);
     })
-    .then(response => {
-      return new Promise((resolve, reject) => {
+    .then(([response, siblings]) => {
+      const shouldUnlink = siblings.reduce((memo, sibling) => {
+        if (sibling.attachments && sibling.attachments.find(a => a.filename === req.query.filename)) {
+          return false;
+        }
+        return memo;
+      }, true);
+
+      return !shouldUnlink ? res.json(response[0]) : new Promise((resolve, reject) => {
         fs.unlink(attachmentsPath + req.query.filename, (err) => {
           if (err) {
             reject(err);

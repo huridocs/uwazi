@@ -17,7 +17,7 @@ export class MetadataFormButtons extends Component {
     const data = this.props.data.toJS();
 
     return (
-      <div className="sidepanel-footer">
+      <span>
         <ShowIf if={this.props.includeViewButton}>
           <I18NLink to={`${data.type}/${data.sharedId}`}>
             <button className="edit-metadata btn btn-primary">
@@ -57,7 +57,7 @@ export class MetadataFormButtons extends Component {
             </button>
           </ShowIf>
         </NeedAuthorization>
-      </div>
+      </span>
     );
   }
 }

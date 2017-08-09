@@ -4,6 +4,7 @@ import {fromJS as Immutable} from 'immutable';
 import {Item, mapStateToProps} from '../Item';
 
 import {RowList, ItemFooter} from '../Lists';
+import DocumentLanguage from '../DocumentLanguage';
 import TemplateLabel from '../TemplateLabel';
 import PrintDate from '../PrintDate';
 import * as Icon from '../Icon';
@@ -84,6 +85,7 @@ describe('Item', () => {
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
     expect(component.find('.item-name').find(Icon.default).props().data).toEqual({_id: 'icon', type: 'Icons'});
+    expect(component.find('.item-name').find(DocumentLanguage).props().doc).toBe(props.doc);
   });
 
   it('should include a template label and custom buttons inside the footer', () => {
@@ -96,7 +98,8 @@ describe('Item', () => {
     beforeEach(() => {
       props.doc = props.doc.set('metadata', {
         sex: 'female',
-        age: 25
+        age: 25,
+        markdown: 'SomeMarkdown'
       });
       props.thesauris = Immutable([{_id: 't1'}]);
     });
@@ -113,13 +116,15 @@ describe('Item', () => {
         _id: 'templateId',
         properties: [
           {name: 'sex', label: 'sexLabel', showInCard: true},
-          {name: 'age', label: 'ageLabel'}
+          {name: 'age', label: 'ageLabel'},
+          {name: 'markdown', label: 'markdownLabel', type: 'markdown', showInCard: true}
         ]
       }]);
 
       render();
       expect(component.find('.item-metadata').text()).toContain('sexLabel');
       expect(component.find('.item-metadata').text()).toContain('female');
+      expect(component.find('.item-metadata').html()).toContain('<p>SomeMarkdown</p>');
       expect(component.find('.item-metadata').text()).not.toContain('ageLabel');
     });
 

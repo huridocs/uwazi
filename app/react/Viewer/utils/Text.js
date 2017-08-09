@@ -139,8 +139,6 @@ export default function (container) {
                ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
       });
 
-      //console.log(toRender);
-
       toRender.forEach((reference) => {
         if (!container.innerHTML) {
           throw new Error('Container does not have any html yet, make sure you are loading the html before the references');

@@ -2,6 +2,7 @@ Fixes issue #
 
 PR check list:
 
+- [ ] Rebase current DEV branch
 - [ ] Client test
 - [ ] Server test
 - [ ] End-to-end test

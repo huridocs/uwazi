@@ -30,7 +30,7 @@ describe('documents', () => {
         documents.get({sharedId: 'shared'})
         .then((docs) => {
           expect(docs[1].title).toBe('Penguin almost done');
-          expect(docs[1].fullText).not.toBeDefined();
+          expect(docs[1].file.fullText).not.toBeDefined();
           expect(docs[0].title).toBe('Batman finishes');
           done();
         })

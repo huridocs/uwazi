@@ -92,7 +92,7 @@ export function loadTemplate(form, template) {
   };
 }
 
-export function reuploadDocument(docId, file, docSharedId) {
+export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
   return function (dispatch, getState) {
     dispatch({type: types.START_REUPLOAD_DOCUMENT, doc: docId});
     superagent.post(APIURL + 'reupload')
@@ -103,7 +103,7 @@ export function reuploadDocument(docId, file, docSharedId) {
       dispatch({type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent)});
     })
     .on('response', () => {
-      dispatch({type: types.REUPLOAD_COMPLETE, doc: docId});
+      dispatch({type: types.REUPLOAD_COMPLETE, doc: docId, file, __reducerKey});
 
       requestViewerState(docSharedId, getState().locale)
       .then(state => {

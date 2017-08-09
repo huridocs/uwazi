@@ -39,7 +39,7 @@ export class UploadButton extends Component {
     let file = e.target.files[0];
     this.context.confirm({
       accept: () => {
-        this.props.reuploadDocument(this.props.documentId, file, this.props.documentSharedId);
+        this.props.reuploadDocument(this.props.documentId, file, this.props.documentSharedId, this.props.storeKey);
       },
       title: 'Confirm upload',
       message: 'Are you sure you want to upload a new document?\n\n' +
@@ -124,7 +124,8 @@ UploadButton.propTypes = {
   reuploadDocument: PropTypes.func,
   documentId: PropTypes.string,
   documentSharedId: PropTypes.string,
-  progress: PropTypes.object
+  progress: PropTypes.object,
+  storeKey: PropTypes.string
 };
 
 UploadButton.contextTypes = {
