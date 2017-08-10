@@ -102,23 +102,25 @@ export class FiltersForm extends Component {
                   {t('System', 'Filters')}
                 </div>
                 <div className="panel-body">
-                  <div className="col-sm-9">
-                    <DragAndDropContainer
-                      id="active"
-                      onChange={this.activesChange.bind(this)}
-                      renderItem={this.renderItem.bind(this)}
-                      items={this.state.activeFilters}
-                      />
-                  </div>
-                  <div className="col-sm-3">
-                    <div className="FiltersForm-constructor">
-                      <div><i>Document and entities</i></div>
+                  <div className="row">
+                    <div className="col-sm-9">
                       <DragAndDropContainer
-                        id="inactive"
-                        onChange={this.unactivesChange.bind(this)}
+                        id="active"
+                        onChange={this.activesChange.bind(this)}
                         renderItem={this.renderItem.bind(this)}
-                        items={this.state.inactiveFilters}
+                        items={this.state.activeFilters}
                         />
+                    </div>
+                    <div className="col-sm-3">
+                      <div className="FiltersForm-constructor">
+                        <div><i>Document and entities</i></div>
+                        <DragAndDropContainer
+                          id="inactive"
+                          onChange={this.unactivesChange.bind(this)}
+                          renderItem={this.renderItem.bind(this)}
+                          items={this.state.inactiveFilters}
+                          />
+                      </div>
                     </div>
                   </div>
                 </div>
