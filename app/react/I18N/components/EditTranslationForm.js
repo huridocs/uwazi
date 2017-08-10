@@ -67,7 +67,7 @@ export class EditTranslationForm extends Component {
             onSubmit={this.props.saveTranslations}>
             <div className="panel panel-default">
               <div className="panel-heading">
-                {contextName}
+                {t('System', 'Translations')} <i className="fa fa-angle-right"></i> {contextName}
               </div>
               <ul className="list-group">
                 {(() => {

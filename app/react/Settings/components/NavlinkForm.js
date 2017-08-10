@@ -4,6 +4,7 @@ import {findDOMNode} from 'react-dom';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {DragSource, DropTarget} from 'react-dnd';
+import {isClient} from 'app/utils';
 
 import {Field} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
@@ -70,6 +71,7 @@ export const LinkTarget = {
 export class NavlinkForm extends Component {
   render() {
     const {link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState} = this.props;
+    const hostname = isClient ? window.location.origin : '';
 
     let className = 'list-group-item' + (isDragging ? ' dragging' : '');
     let titleClass = 'input-group';
@@ -118,7 +120,7 @@ export class NavlinkForm extends Component {
                 <div className="col-sm-8">
                   <div className="input-group">
                     <span className="input-group-addon">
-                      URL
+                      {hostname}
                     </span>
                     <Field model={`settings.navlinksData.links[${index}].url`}>
                       <input className="form-control" />

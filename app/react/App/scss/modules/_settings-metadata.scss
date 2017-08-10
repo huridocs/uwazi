@@ -27,6 +27,11 @@
   }
 }
 
+.metadataTemplate-list {
+  padding-bottom: 85px;
+  margin: 0;
+}
+
 .metadata {
   @include draggable;
 }

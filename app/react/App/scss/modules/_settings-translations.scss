@@ -12,7 +12,11 @@
 .TranslationsList {
   .item-type {
     display: inline-block;
-    width: 90px;
+    max-width: 90px;
+    width: auto;
+    margin-right: 15px;
+    position: relative;
+    top: 3px;
   }
   .item-type__name {
     max-width: 100%;

@@ -117,13 +117,30 @@ export class CollectionSettings extends Component {
 
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Collection settings')}</div>
+        <div className="panel-heading">{t('System', 'Collection')}</div>
         <div className="panel-body">
           <form onSubmit={this.updateSettings.bind(this)}>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
+            <div className="form-group">
+              <label className="form-group-label">{t('System', 'Date format')}</label>
+              <div>{t('System', 'Separator')}</div>
+              <RadioButtons
+                options={this.dateFormatSeparatorOptions()}
+                value={this.state.dateSeparator}
+                onChange={this.changeDateFormatSeparator.bind(this)}
+              />
+              <div>{t('System', 'Order')}</div>
+              <RadioButtons
+                options={this.dateFormatOptions(this.state.dateSeparator)}
+                value={this.state.dateFormat}
+                onChange={this.changeDateFormat.bind(this)}
+                renderLabel={this.renderDateFormatLabel}
+              />
+            </div>
+            <h2>{t('System', 'Advanced settings')}</h2>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Landing page')}</label>
               <div className="radio">
@@ -165,15 +182,25 @@ export class CollectionSettings extends Component {
             </div>
             <div className="alert alert-info">
               <i className="fa fa-home"></i>
-              <p>The landing page is the first thing users will see when visiting your Uwazi instance.
-              You can use any URL from your Uwazi instance as a landing page, examples:</p>
+              <div>
+                The landing page is the first thing users will see when visiting your Uwazi instance.<br />
+              You can use any URL from your Uwazi instance as a landing page, examples:
               <ul>
                 <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
                 <li>Library results: /library/?searchTerm=test</li>
                 <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
                 <li>A document: /document/4y9i99fadjp833di</li>
               </ul>
-              <p>Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.</p>
+              Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.
+            </div>
+          </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Google Analytics ID')}</label>
+              <input name="analyticsTrackingId"
+                        onChange={this.changeAnalyticsTrackingId.bind(this)}
+                        value={this.state.analyticsTrackingId}
+                        type="text"
+                        className="form-control"/>
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
@@ -185,37 +212,13 @@ export class CollectionSettings extends Component {
                         rows="5"/>
             </div>
             <div className="alert alert-info">
-              <i className="fa fa-lightbulb-o"></i>
-              <p>This is a JSON configuration object that should match the options values required by Nodemailer, as explained in:</p>
-              <ul>
-                <li><a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a></li>
-              </ul>
-              <p>This setting takes precedence over all other mailer configuration.
-                 If left blank, then the configuration file in /api/config/mailer.js will be used.</p>
-            </div>
-            <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Google Analytics ID')}</label>
-              <input name="analyticsTrackingId"
-                        onChange={this.changeAnalyticsTrackingId.bind(this)}
-                        value={this.state.analyticsTrackingId}
-                        type="text"
-                        className="form-control"/>
-            </div>
-            <div className="form-group">
-              <label className="form-group-label">{t('System', 'Date format')}</label>
-              <div>{t('System', 'Separator')}</div>
-              <RadioButtons
-                options={this.dateFormatSeparatorOptions()}
-                value={this.state.dateSeparator}
-                onChange={this.changeDateFormatSeparator.bind(this)}
-              />
-              <div>{t('System', 'Order')}</div>
-              <RadioButtons
-                options={this.dateFormatOptions(this.state.dateSeparator)}
-                value={this.state.dateFormat}
-                onChange={this.changeDateFormat.bind(this)}
-                renderLabel={this.renderDateFormatLabel}
-              />
+              <i className="fa fa-envelope"></i>
+              <div>
+                This is a JSON configuration object that should match the options values required by Nodemailer,
+                as explained in <a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a><br />
+                This setting takes precedence over all other mailer configuration.<br />
+                If left blank, then the configuration file in /api/config/mailer.js will be used.
+              </div>
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">
