@@ -117,7 +117,7 @@ export class CollectionSettings extends Component {
 
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Collection settings')}</div>
+        <div className="panel-heading">{t('System', 'Collection')}</div>
         <div className="panel-body">
           <form onSubmit={this.updateSettings.bind(this)}>
             <div className="form-group">
