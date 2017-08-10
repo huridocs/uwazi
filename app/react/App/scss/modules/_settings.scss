@@ -3,7 +3,7 @@
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
-  overflow-y: hidden;
+  overflow: auto;
 }
 
 .settings-navigation,
