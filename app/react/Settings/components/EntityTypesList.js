@@ -26,7 +26,7 @@ export class EntityTypesList extends Component {
         accept: () => {},
         noCancel: true,
         title: 'Cannot delete document type: ' + template.name,
-        message: 'This document type has associated documnets and cannot be deleted.'
+        message: 'This document type has associated documents and cannot be deleted.'
       });
     });
   }
