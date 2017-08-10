@@ -99,7 +99,7 @@ export class FiltersForm extends Component {
             <div className="FiltersForm-list">
               <div className="panel panel-default">
                 <div className="panel-heading">
-                  Filtrable types
+                  {t('System', 'Filters')}
                 </div>
                 <div className="panel-body">
                   <div className="col-sm-9">
