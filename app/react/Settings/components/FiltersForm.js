@@ -31,30 +31,46 @@ export class FiltersForm extends Component {
     this.state = {activeFilters, inactiveFilters};
   }
 
-  renderItem(item) {
+  renderGroup(group) {
+    let onChange = (items) => {
+      group.items = items;
+      this.setState(this.state);
+    };
+
+    let nameChange = (e) => {
+      let name = e.target.value;
+      group.name = name;
+      this.setState(this.state);
+    };
+
+    return <div>
+            <div className="input-group">
+              <input type="text" className="form-control" value={group.name} onChange={nameChange.bind(this)} />
+              <span className="input-group-btn">
+                <button className="btn btn-danger" onClick={this.removeGroup.bind(this, group)} disabled={group.items.length}>
+                  <i className="fa fa-trash"></i>
+                </button>
+              </span>
+            </div>
+            <DragAndDropContainer id={group.id} onChange={onChange.bind(this)} renderItem={this.renderActiveItems.bind(this)} items={group.items}/>
+          </div>;
+  }
+
+  renderActiveItems(item) {
     if (item.items) {
-      let onChange = (items) => {
-        item.items = items;
-        this.setState(this.state);
-      };
+      return this.renderGroup(item);
+    }
+    return <div>
+            <span>{item.name}</span>
+            <button className="btn btn-xs btn-danger" onClick={this.removeItem.bind(this, item)}>
+              <i className="fa fa-trash"></i>
+            </button>
+          </div>;
+  }
 
-      let nameChange = (e) => {
-        let name = e.target.value;
-        item.name = name;
-        this.setState(this.state);
-      };
-
-      return <div>
-              <div className="input-group">
-                <input type="text" className="form-control" value={item.name} onChange={nameChange.bind(this)} />
-                <span className="input-group-btn">
-                  <button className="btn btn-danger" onClick={this.removeGroup.bind(this, item)} disabled={item.items.length}>
-                    <i className="fa fa-trash"></i>
-                  </button>
-                </span>
-              </div>
-              <DragAndDropContainer id={item.id} onChange={onChange.bind(this)} renderItem={this.renderItem.bind(this)} items={item.items}/>
-            </div>;
+  renderInactiveItems(item) {
+    if (item.items) {
+      return this.renderGroup(item);
     }
     return <div>
             <span>{item.name}</span>
@@ -94,6 +110,23 @@ export class FiltersForm extends Component {
     this.setState({activeFilters});
   }
 
+  removeItem(item) {
+    let removeItemFunction = (items) => {
+      return items
+      .filter((_item) => _item.id !== item.id)
+      .map((_item) => {
+        if (_item.items) {
+          _item.items = removeItemFunction(_item.items);
+        }
+        return _item;
+      });
+    };
+
+    let activeFilters = removeItemFunction(this.state.activeFilters);
+    this.state.inactiveFilters.push(item);
+    this.setState({activeFilters, inactiveFilters: this.state.inactiveFilters});
+  }
+
   render() {
     return <div className="FiltersForm">
             <div className="FiltersForm-list">
@@ -107,7 +140,7 @@ export class FiltersForm extends Component {
                       <DragAndDropContainer
                         id="active"
                         onChange={this.activesChange.bind(this)}
-                        renderItem={this.renderItem.bind(this)}
+                        renderItem={this.renderActiveItems.bind(this)}
                         items={this.state.activeFilters}
                         />
                     </div>
@@ -117,7 +150,7 @@ export class FiltersForm extends Component {
                         <DragAndDropContainer
                           id="inactive"
                           onChange={this.unactivesChange.bind(this)}
-                          renderItem={this.renderItem.bind(this)}
+                          renderItem={this.renderInactiveItems.bind(this)}
                           items={this.state.inactiveFilters}
                           />
                       </div>
