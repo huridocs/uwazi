@@ -381,11 +381,13 @@
   float:right;
   span {
     font-family: $f-regular;
-    font-size: $f-size-xs;
+    font-size: $f-size-sm;
+    letter-spacing: 0.1em;
     color: $c-grey;
   }
   span.is-active {
-    color: $c-grey-dark;
+    color: $c-primary;
+    font-weight: bold;
   }
 
   div {
@@ -401,29 +403,28 @@
   $switcher-height: 9px;
   position: relative;
   display: inline-block;
-  width: 16px;
+  width: 20px;
   height: $switcher-height;
   margin: 0 3px;
-  top: 1px;
-  background-color: $c-grey-light;
+  background-color: lighten($c-primary, 10%);
   border-radius: $switcher-height / 2;
+  border: 1px solid $c-primary;
   cursor: pointer;
 
   &:after {
     content: '';
     display: block;
     position: absolute;
-    top: 2px;
-    right: 2px;
-    width: $switcher-height - 4;
-    height: $switcher-height - 4;
-    background: $c-grey-dark;
+    right: 0;
+    width: $switcher-height - 2;
+    height: $switcher-height - 2;
+    background-color: $c-white;
     border-radius: 50%;
   }
   :checked + & {
     &:after {
       right: auto;
-      left: 2px;
+      left: 0;
     }
   }
 }
