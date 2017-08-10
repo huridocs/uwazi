@@ -116,6 +116,13 @@
     }
   }
   
+  h2 {
+    padding: 16px 0;
+    font-size: $f-size-lg;
+    font-weight: 300;
+    border-bottom: 1px solid $c-grey-light;
+  }
+  
   .list-group-item:last-of-type {
     border-bottom: 0;
   }
