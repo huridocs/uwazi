@@ -204,8 +204,8 @@ $item-padding: 15px;
   }
 
   > span {
-    color: #666;
-    background-color: #e9e8e5;
+    color: $c-grey-dark;
+    background-color: $c-grey-lighten;
     border-radius: 0;
     padding: 0 4px;
     height: 17px;
@@ -280,12 +280,12 @@ $item-padding: 15px;
     box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
   .show-more {
-    background: #fff;
+    background: $c-white;
     position: absolute;
     left: 0;
     right: 0;
     padding: 2px 15px;
-    box-shadow: 0 -6px 9px -4px #fff, 0 -15px 10px -3px #fff;
+    box-shadow: 0 -6px 9px -4px $c-white, 0 -15px 10px -3px $c-white;
   }
 
   .item-snippet-wrapper:hover & {

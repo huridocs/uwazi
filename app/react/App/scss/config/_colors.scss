@@ -1,10 +1,10 @@
 $theme:               dark;
 
-$c-grey: 				      #D0CDC6;
+$c-grey: 				      #aeaeb8;
 $c-white: 				    lighten($c-grey, 100%);
-$c-grey-lighten:      lighten($c-grey, 18%);
-$c-grey-light:        lighten($c-grey, 11%);
-$c-grey-dark: 				darken($c-grey, 40%);
+$c-grey-lighten:      lighten($c-grey, 25%);
+$c-grey-light:        lighten($c-grey, 15%);
+$c-grey-dark: 				darken($c-grey, 25%);
 $c-black: 				    #444444;
 
 $c-theme:             #607d8b;
@@ -34,7 +34,7 @@ $c-type-18:           #607D8B;
 
 $c-background:        #FCFCFC;
 
-$c-primary:           #2d5ebb;
+$c-primary:           #2b56c1;
 $c-primary-light:     lighten($c-primary, 40%);
 $c-primary-dark:      darken($c-primary, 10%);
 $c-info:              $c-type-7;
