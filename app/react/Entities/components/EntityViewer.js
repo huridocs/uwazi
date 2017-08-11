@@ -112,6 +112,9 @@ export class EntityViewer extends Component {
                   }
                   return <div>
                     <ShowMetadata entity={entity} showTitle={false} showType={false} />
+                    <div className="blank-state">
+                      <span>BLANK STATE</span>
+                    </div>
                     <AttachmentsList files={Immutable(attachments)}
                                       parentId={entity._id} />
                   </div>;
@@ -119,6 +122,9 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="connections">
+              <div className="blank-state">
+                <span>BLANK STATE</span>
+              </div>
               <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
             </TabContent>
           </Tabs>
@@ -151,6 +157,9 @@ export class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
+                <div className="blank-state">
+                  <span>BLANK STATE</span>
+                </div>
                 <ConnectionsGroups />
               </TabContent>
             </Tabs>
