@@ -7,7 +7,6 @@ import instanceModel from 'api/odm';
 import templatesModel from './templatesModel.js';
 import references from 'api/references/references';
 import entities from 'api/entities';
-import settings from 'api/settings';
 
 const model = instanceModel(templatesModel);
 
@@ -119,10 +118,7 @@ export default {
       return model.delete(template._id);
     })
     .then(() => {
-      return settings.removeTemplateFromFilters(template._id);
-    })
-    .then(() => {
-      return {ok: true};
+      return template;
     });
   },
 
