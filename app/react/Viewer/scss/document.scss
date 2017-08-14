@@ -49,7 +49,7 @@
       cursor: pointer;
     }
     &.is-active {
-      background: $c-primary-light;
+      background: $c-theme-light;
       padding: 4px 0 0;
       span {
         opacity: 1;
@@ -127,7 +127,7 @@
   position: absolute;
   right: -30px;
   transform: translateX(100%) translateY(-30%);
-  background: $c-primary-lighten !important;
+  background: $c-theme-lighten !important;
   border: 1px solid $c-grey !important;
   color: $c-black !important;
   padding: 5px 10px;

@@ -47,7 +47,7 @@ let config = {
         }
       }, {
         fullText_other: {
-          match: 'fullText',
+          match: 'fullText_other',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
@@ -113,11 +113,11 @@ let config = {
           match: '*',
           match_mapping_type: 'long',
           mapping: {
-            type: 'long',
+            type: 'double',
             doc_values: true,
             fields: {
-              raw: {type: 'long', index: 'not_analyzed'},
-              sort: {type: 'long'}
+              raw: {type: 'double', index: 'not_analyzed'},
+              sort: {type: 'double'}
             }
           }
         }
@@ -144,6 +144,14 @@ let config = {
       properties: {
         '@timestamp': {type: 'date', doc_values: true},
         '@version': {type: 'string', index: 'not_analyzed', doc_values: true},
+        creationDate: {
+          type: 'long',
+          doc_values: true,
+          fields: {
+            raw: {type: 'long', index: 'not_analyzed'},
+            sort: {type: 'long'}
+          }
+        },
         geoip: {
           type: 'object',
           dynamic: true,

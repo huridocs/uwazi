@@ -19,13 +19,16 @@ const storage = multer.diskStorage({
   }
 });
 
+const assignAttachment = (entity, addedFile) => {
+  const conformedEntity = {_id: entity._id, attachments: entity.attachments || []};
+  conformedEntity.attachments.push(addedFile);
+  return conformedEntity;
+};
+
 const processSingleLanguage = (entity, req) => {
   const addedFile = req.files[0];
   addedFile._id = mongoose.Types.ObjectId();
-
-  entity.attachments = entity.attachments || [];
-  entity.attachments.push(addedFile);
-  return Promise.all([addedFile, entities.saveMultiple([entity])]);
+  return Promise.all([addedFile, entities.saveMultiple([assignAttachment(entity, addedFile)])]);
 };
 
 const processAllLanguages = (entity, req) => {
@@ -40,9 +43,7 @@ const processAllLanguages = (entity, req) => {
     const additionalLanguageUpdates = [];
 
     siblings.forEach(sibling => {
-      sibling.attachments = sibling.attachments || [];
-      sibling.attachments.push(genericAddedFile);
-      additionalLanguageUpdates.push(entities.saveMultiple([sibling]));
+      additionalLanguageUpdates.push(entities.saveMultiple([assignAttachment(sibling, genericAddedFile)]));
     });
 
     return Promise.all([addedFile, additionalLanguageUpdates]);

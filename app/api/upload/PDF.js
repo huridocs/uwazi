@@ -40,8 +40,11 @@ export default class PDF extends EventEmitter {
             resolve(texts.join(''));
           })
           .catch((error) => {
-            resolve(error);
+            reject(error);
           });
+        })
+        .catch((error) => {
+          reject(error);
         });
       });
     });

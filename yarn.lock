@@ -5131,6 +5131,12 @@ nightmare-real-mouse@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/nightmare-real-mouse/-/nightmare-real-mouse-1.0.0.tgz#d16e15103d77dfe35a088181d8b3c02429693612"
 
+nightmare-upload@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/nightmare-upload/-/nightmare-upload-0.1.1.tgz#c9d47c14818f57ff47bf49fd19d11eec71937ada"
+  dependencies:
+    debug "^2.2.0"
+
 nightmare@2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/nightmare/-/nightmare-2.9.0.tgz#1aed57dba60412eb3d3eb83202522c3461993df9"

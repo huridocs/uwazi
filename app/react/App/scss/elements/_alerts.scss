@@ -12,15 +12,17 @@
 }
 
 .alert {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  width: 100%;
   position: relative;
-  padding-left: 45px;
   border-radius: 0;
 
   .fa:first-child {
     font-size: 24px;
-    position: absolute;
-    left: 15px;
-    transform: translateY(-3px);
+    margin-right: 15px;
   }
   .fa-close {
     position: absolute;
@@ -62,14 +64,6 @@
   .fa:first-child,
   .alert-title {
     color: $c-danger;
-  }
-}
-
-.panel-body {
-  .alert {
-    margin: 0 0 80px;
-    width: 100%;
-    left: 0;
   }
 }
 

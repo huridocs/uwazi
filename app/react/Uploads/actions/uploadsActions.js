@@ -25,6 +25,7 @@ export function createDocument(newDoc) {
     return api.post('documents', newDoc)
     .then((response) => {
       let doc = response.json;
+      dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId});
       dispatch({type: types.ELEMENT_CREATED, doc});
       return doc;
     });
@@ -33,7 +34,6 @@ export function createDocument(newDoc) {
 
 export function uploadDocument(docId, file) {
   return function (dispatch) {
-    dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc: docId});
     superagent.post(APIURL + 'upload')
     .set('Accept', 'application/json')
     .field('document', docId)

@@ -109,9 +109,9 @@ export default {
   saveMultiple(docs) {
     return model.save(docs)
     .then((response) => {
-      Promise.all(docs.map((d) => search.index(d)));
-      return response;
-    });
+      return Promise.all(response, search.indexEntities({_id: {$in: response.map(d => d._id)}}, '+file.fullText'));
+    })
+    .then(response => response);
   },
 
   multipleUpdate(ids, values, params) {

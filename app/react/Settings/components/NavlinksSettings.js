@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Form} from 'react-redux-form';
+import {isClient} from 'app/utils';
 
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -22,6 +23,7 @@ export class NavlinksSettings extends Component {
   render() {
     const {collection, links} = this.props;
     const nameGroupClass = 'template-name';
+    const hostname = isClient ? window.location.origin : '';
 
     const payload = {_id: collection.get('_id'), _rev: collection.get('_rev'), links};
 
@@ -40,12 +42,13 @@ export class NavlinksSettings extends Component {
               </div>
             </div>
             <ul className="list-group">
-              <li>
+              <li className="list-group-item">
                 <div className="alert alert-info">
-                  <i className="fa fa-lightbulb-o"></i>
-                  From here you control the Menu navigation links.<br /><br />
-                  Use only relative URLs (starting with a /) and not fully formed URLs like http://www.google.com.<br />
-                  If you copied a page universal URL, be sure to delete the first part (http://yourdomain.com).
+                  <i className="fa fa-info-circle"></i>
+                  <div>
+                    Use only relative URLs (starting with a /) and not fully formed URLs like http://www.google.com.<br />
+                    If you copied a page universal URL, be sure to delete the first part ({hostname}).
+                  </div>
                 </div>
               </li>
               {links.map((link, i) => {

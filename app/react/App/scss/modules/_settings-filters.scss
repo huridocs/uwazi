@@ -45,27 +45,11 @@
 }
 
 .FiltersForm-list {
-  .panel-heading {
-    height: 50px;
-    padding: 0 15px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-    
-    .btn {
-      margin-left: 5px;
-    }
-  }
-  .input-group {
-    margin-bottom: 15px;
-  }
+  padding-bottom: 85px;
 }
 .FiltersForm-constructor {
   padding-left: 30px;
-  border-left: 1px solid $c-grey;  
+  border-left: 1px solid $c-grey-light;  
   
   .no-properties {
     display: none;

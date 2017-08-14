@@ -42,18 +42,19 @@ describe('uploadsActions', () => {
       it('should create a document', (done) => {
         backend.restore();
         backend
-        .post(APIURL + 'documents', {body: JSON.stringify({_id: 'test'})});
+        .post(APIURL + 'documents', {body: JSON.stringify({_id: 'test', sharedId: 'sharedId'})});
 
         let newDoc = {name: 'doc'};
         const store = mockStore({});
 
         const expectedActions = [
-          {type: types.ELEMENT_CREATED, doc: {_id: 'test'}}
+          {type: types.NEW_UPLOAD_DOCUMENT, doc: 'sharedId'},
+          {type: types.ELEMENT_CREATED, doc: {_id: 'test', sharedId: 'sharedId'}}
         ];
 
         store.dispatch(actions.createDocument(newDoc))
         .then((createdDoc) => {
-          expect(createdDoc).toEqual({_id: 'test'});
+          expect(createdDoc).toEqual({_id: 'test', sharedId: 'sharedId'});
           expect(backend.lastOptions().body).toEqual(JSON.stringify({name: 'doc'}));
           expect(store.getActions()).toEqual(expectedActions);
           done();
@@ -70,7 +71,6 @@ describe('uploadsActions', () => {
         spyOn(superagent, 'post').and.returnValue(mockUpload);
 
         const expectedActions = [
-          {type: types.NEW_UPLOAD_DOCUMENT, doc: 'abc1'},
           {type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 55},
           {type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 65},
           {type: types.UPLOAD_COMPLETE, doc: 'abc1'}

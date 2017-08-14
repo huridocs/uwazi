@@ -8,10 +8,12 @@ body {
 
 a {
   color: $c-primary;
-}
-
-a:hover, a:focus {
-  color: $c-primary-dark;
+  
+  &:hover,
+  &:focus,
+  &:active {
+    color: $c-primary-dark;
+  }
 }
 
 label {

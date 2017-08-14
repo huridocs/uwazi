@@ -85,6 +85,33 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', (done) => {
+      let partialDoc = {_id: batmanFinishesId, sharedId: 'shared', title: 'Updated title'};
+      entities.save(partialDoc, {language: 'en'})
+      .then(() => {
+        return entities.getById(batmanFinishesId);
+      })
+      .then(savedEntity => {
+        const expectedIndex = {
+          _id: batmanFinishesId,
+          sharedId: 'shared',
+          type: 'entity',
+          template: templateId,
+          language: 'en',
+          title: 'Updated title',
+          published: true,
+          metadata: {property1: 'value1'},
+          file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}
+        };
+
+        expect(savedEntity.title).toBe('Updated title');
+        expect(savedEntity.metadata).toEqual({property1: 'value1'});
+        expect(search.index).toHaveBeenCalledWith(expectedIndex);
+        done();
+      })
+      .catch(done.fail);
+    });
+
     describe('when other languages have no metadata', () => {
       it('should replicate metadata being saved', (done) => {
         let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {text: 'newMetadata'}, template: templateId};
@@ -356,6 +383,30 @@ describe('entities', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+  });
+
+  describe('saveMultiple()', () => {
+    it('should allow partial saves with correct full indexing', (done) => {
+      let partialDoc = {_id: batmanFinishesId, sharedId: 'shared', title: 'Updated title'};
+      let partialDoc2 = {_id: syncPropertiesEntityId, sharedId: 'shared', title: 'Updated title 2'};
+      spyOn(search, 'indexEntities');
+      entities.saveMultiple([partialDoc, partialDoc2])
+      .then(response => {
+        return Promise.all([response, entities.getById(batmanFinishesId)]);
+      })
+      .then(([response, savedEntity]) => {
+        const expectedQuery = {
+          _id: {$in: [batmanFinishesId, syncPropertiesEntityId]}
+        };
+
+        expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
+        expect(savedEntity.title).toBe('Updated title');
+        expect(savedEntity.metadata).toEqual({property1: 'value1'});
+        expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+file.fullText');
+        done();
+      })
+      .catch(done.fail);
     });
   });
 
