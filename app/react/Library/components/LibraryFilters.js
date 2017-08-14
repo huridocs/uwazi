@@ -30,6 +30,21 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
+          <div className="blank-state">
+            <i className="fa fa-filters"></i>
+            <h4>No Filters</h4>
+            <p>You should create some templates and properties for the documents,
+              so we can analyze them and show some filters here.</p>
+            <p>
+              <a className="btn btn-primary btn-xs" href="#">
+                <i className="fa fa-plus"></i> Document type
+              </a>
+              <a className="btn btn-primary btn-xs" href="#">
+                <i className="fa fa-plus"></i> Entity type
+              </a>
+            </p>
+            <a href="#" target="_blank">Learn more</a>
+          </div>
           <p className="sidepanel-title">{t('System', 'Filters')}</p>
           <div className="documentTypes-selector nested-selector">
             <DocumentTypesList storeKey={this.props.storeKey}/>

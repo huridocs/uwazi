@@ -7,7 +7,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
+import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import {enterLibrary, setDocuments, unsetDocuments, initializeFiltersForm} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
@@ -87,6 +87,13 @@ export default class Library extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="library-viewer document-viewer with-panel">
+          <ListChartToggleButtons active={chartView ? 'chart' : 'list'} />
+          <div className="blank-state">
+            <i className="fa fa-search"></i>
+            <h4>No Results</h4>
+            <p>We have look everywhere, but couldn’t find any result to show here.</p>
+            <a href="#" target="_blank">Learn more</a>
+          </div>
           {mainView}
         </main>
         <LibraryFilters storeKey="library"/>

@@ -215,12 +215,18 @@ export class DocumentSidePanel extends Component {
             <TabContent for="text-search">
               <SearchText doc={doc} storeKey={this.props.storeKey} searchTerm={this.props.searchTerm}/>
               <div className="blank-state">
-                <span>BLANK STATE</span>
+                <i className="fa fa-search"></i>
+                <h4>No Keywords to search</h4>
+                <p>Why don't you type in the search box to see some results here?</p>
+                <a href="#" target="_blank">Learn more</a>
               </div>
             </TabContent>
             <TabContent for="toc">
               <div className="blank-state">
-                <span>BLANK STATE</span>
+                <i className="fa fa-font"></i>
+                <h4>No Table of Content</h4>
+                <p>Table of Content allows users to navigate easier throught the document.</p>
+                <a href="#" target="_blank">Learn more</a>
               </div>
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc toc={doc.get('toc')} readOnly={readOnly} />
@@ -249,7 +255,11 @@ export class DocumentSidePanel extends Component {
                   <div>
                     <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />
                     <div className="blank-state">
-                      <span>BLANK STATE</span>
+                      <i className="fa fa-info-circle"></i>
+                      <h4>No Information</h4>
+                      <p>Properties are relevant information that allow users search and learn
+                      basic information about your documents.</p>
+                    <a href="#" target="_blank">Learn more</a>
                     </div>
                     <AttachmentsList files={fromJS(attachments)}
                       readOnly={false}
@@ -264,7 +274,10 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="references">
               <div className="blank-state">
-                <span>BLANK STATE</span>
+                <i className="fa fa-sitemap"></i>
+                <h4>No References</h4>
+                <p>References are parts of this document related with other documents and entities.</p>
+                <a href="#" target="_blank">Learn more</a>
               </div>
               <Connections
                 referencesSection="references"
@@ -274,7 +287,10 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="connections">
               <div className="blank-state">
-                <span>BLANK STATE</span>
+                <i className="fa fa-sitemap"></i>
+                <h4>No Connections</h4>
+                <p>Connections are the direct relationships between this document and other documents and entities.</p>
+                <a href="#" target="_blank">Learn more</a>
               </div>
               <Connections references={connections}
                 readOnly={readOnly}

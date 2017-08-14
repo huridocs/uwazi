@@ -93,6 +93,12 @@ export default class Uploads extends RouteHandler {
         <main className="uploads-viewer document-viewer with-panel">
           <UploadBox />
           {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
+          <div className="blank-state">
+            <i className="fa fa-cloud-upload"></i>
+            <h4>No Uploads</h4>
+            <p>Why don't you start uploading some documents here or creating new entities?</p>
+            <a href="#" target="_blank">Learn more</a>
+          </div>
           {mainView}
         </main>
         <LibraryFilters uploadsSection={true} storeKey="uploads"/>
