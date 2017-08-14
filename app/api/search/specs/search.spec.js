@@ -467,7 +467,7 @@ describe('search', () => {
     });
 
     describe('when document has fullText', () => {
-      it('should index the fullText as child', (done) => {
+      it('should index the fullText as child with proper language', (done) => {
         spyOn(elastic, 'index').and.returnValue(Promise.resolve());
         spyOn(languages, 'detect').and.returnValue('english');
 
@@ -487,6 +487,36 @@ describe('search', () => {
           done();
         })
         .catch(done.fail);
+      });
+
+      describe('when language is not supported (korean in this case)', () => {
+        it('should index the fullText as child as "other" language (so searches can be performed)', (done) => {
+          const entity = {
+            _id: db.id(),
+            sharedId: 'sharedIdOtherLanguage',
+            type: 'document',
+            title: 'Batman indexes',
+            file: {fullText: '조 선말'},
+            language: 'en'
+          };
+
+          search.index(entity)
+          .then(() => {
+            return elastic.indices.refresh();
+          })
+          .then(() => {
+            return search.searchSnippets('조', entity.sharedId, 'en');
+          })
+          .then((snippets) => {
+            expect(snippets.length).toBe(1);
+            return search.searchSnippets('nothing', entity.sharedId, 'en');
+          })
+          .then((snippets) => {
+            expect(snippets.length).toBe(0);
+            done();
+          })
+          .catch(done.fail);
+        });
       });
     });
   });

@@ -47,7 +47,7 @@ let config = {
         }
       }, {
         fullText_other: {
-          match: 'fullText',
+          match: 'fullText_other',
           match_mapping_type: 'string',
           mapping: {
             type: 'text',
