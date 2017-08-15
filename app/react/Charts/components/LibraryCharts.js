@@ -47,6 +47,15 @@ export class LibraryCharts extends Component {
     return fields;
   }
 
+  // TEST!!!
+  translateOptions(property) {
+    property.options = property.options.map((option) => {
+      option.label = t(property.content, option.label);
+      return option;
+    });
+    return property;
+  }
+
   sortFields(field) {
     field.options.sort((a, b) => {
       if (a.results === b.results) {
@@ -67,6 +76,7 @@ export class LibraryCharts extends Component {
       if (this.props.fields.size) {
         fields = parseWithAggregations(this.props.fields.toJS(), this.aggregations)
         .filter(field => (field.type === 'select' || field.type === 'multiselect') && field.options.length)
+        .map(this.translateOptions)
         .map(this.sortFields);
       }
 
@@ -77,7 +87,9 @@ export class LibraryCharts extends Component {
       <div className="documents-list">
         <div className="main-wrapper">
           <div className="item-group item-group-charts">
-            {fields.map((field, index) => <LibraryChart key={index} options={field.options} label={field.label} />)}
+            {fields.map((field, index) => <LibraryChart key={index}
+                                                        options={field.options}
+                                                        label={t(this.props.translationContext, field.label)} />)}
           </div>
         </div>
       </div>
@@ -90,15 +102,20 @@ LibraryCharts.propTypes = {
   fields: PropTypes.object,
   collection: PropTypes.object,
   templates: PropTypes.object,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
+  translationContext: PropTypes.string
 };
 
 export function mapStateToProps(state, props) {
+  const documentTypesExist = props.storeKey && state[props.storeKey].filters.get('documentTypes');
+
   return {
     aggregations: props.storeKey ? state[props.storeKey].aggregations : null,
     fields: props.storeKey ? state[props.storeKey].filters.get('properties') : null,
     collection: state.settings.collection,
-    templates: state.templates
+    templates: state.templates,
+    // TEST!!!
+    translationContext: documentTypesExist ? state[props.storeKey].filters.getIn(['documentTypes', 0]) : null
   };
 }
 
