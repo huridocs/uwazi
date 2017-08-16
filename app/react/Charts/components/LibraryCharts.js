@@ -47,7 +47,6 @@ export class LibraryCharts extends Component {
     return fields;
   }
 
-  // TEST!!!
   translateOptions(property) {
     property.options = property.options.map((option) => {
       option.label = t(property.content, option.label);
