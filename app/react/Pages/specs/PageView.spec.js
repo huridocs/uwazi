@@ -4,8 +4,6 @@ import {actions} from 'app/BasicReducer';
 
 import PageView from '../PageView';
 import api from 'app/Search/SearchAPI';
-import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import PagesAPI from 'app/Pages/PagesAPI';
 import PageViewer from 'app/Pages/components/PageViewer';
 import RouteHandler from 'app/App/RouteHandler';
@@ -25,8 +23,6 @@ describe('PageView', () => {
     });
 
     spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(page));
-    spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve('templates'));
-    spyOn(ThesaurisAPI, 'get').and.returnValue(Promise.resolve('thesauris'));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
       params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number'],
@@ -77,15 +73,6 @@ describe('PageView', () => {
       })
       .catch(done.fail);
     });
-
-    it('should set the state templates and thesauris', (done) => {
-      PageView.requestState({pageId: 'abc2'})
-      .then((response) => {
-        expect(response.templates).toBe('templates');
-        expect(response.thesauris).toBe('thesauris');
-        done();
-      });
-    });
   });
 
   describe('setReduxState()', () => {
@@ -96,10 +83,6 @@ describe('PageView', () => {
           return 'PAGE DATA SET';
         case 'page/itemLists':
           return 'ITEM LISTS DATA SET';
-        case 'templates':
-          return 'TEMPLATES SET';
-        case 'thesauris':
-          return 'THESAURIS SET';
         default:
           return;
         }
@@ -108,8 +91,6 @@ describe('PageView', () => {
       instance.setReduxState({page: {pageView: 'data', itemLists: 'lists'}});
       expect(actions.set).toHaveBeenCalledWith('page/pageView', 'data');
       expect(actions.set).toHaveBeenCalledWith('page/itemLists', 'lists');
-      expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATES SET');
-      expect(context.store.dispatch).toHaveBeenCalledWith('THESAURIS SET');
       expect(context.store.dispatch).toHaveBeenCalledWith('PAGE DATA SET');
       expect(context.store.dispatch).toHaveBeenCalledWith('ITEM LISTS DATA SET');
     });
