@@ -108,7 +108,6 @@
     "wrap-range-text": "^1.0.1"
   },
   "devDependencies": {
-    "nightmare-upload": "^0.1.1",
     "babel-istanbul-loader": "^0.1.0",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-polyfill": "^6.23.0",
@@ -138,7 +137,9 @@
     "karma-webpack": "2.0.2",
     "nightmare": "2.9.0",
     "nightmare-real-mouse": "^1.0.0",
+    "nightmare-upload": "^0.1.1",
     "node-sass": "^3.3.3",
+    "optimize-css-assets-webpack-plugin": "^3.0.0",
     "phantomjs-prebuilt": "^2.1.6",
     "pow-mongodb-fixtures": "^0.14.0",
     "react-addons-test-utils": "15.5.0",
