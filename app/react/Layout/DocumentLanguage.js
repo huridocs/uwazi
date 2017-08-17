@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-import languages from 'shared/languages';
+import getLanguage from 'shared/languagesList';
 import t from '../I18N/t';
 
 export class DocumentLanguage extends Component {
@@ -18,13 +18,13 @@ export class DocumentLanguage extends Component {
       let fileLanguage = doc.getIn(['file', 'language']);
 
       if (fileLanguage && fileLanguage !== 'other') {
-        if (this.props.locale === languages.get(fileLanguage, 'ISO639_1')) {
+        if (this.props.locale === getLanguage(fileLanguage, 'ISO639_1')) {
           return null;
         }
 
         return (
           <span className="item-type__documentLanguage">
-            <span>{languages.get(fileLanguage, 'ISO639_1') || fileLanguage}</span>
+            <span>{getLanguage(fileLanguage, 'ISO639_1') || fileLanguage}</span>
           </span>
         );
       }
