@@ -46,9 +46,9 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
+          <script src='/nprogress.bundle.js'></script>
+          <link rel='stylesheet' href='nprogress.css'/>
           <script src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
-          <script src='/nprogress/nprogress.js'></script>
-          <link rel='stylesheet' href='/nprogress/nprogress.css'/>
         </body>
       </html>
     );

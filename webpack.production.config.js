@@ -3,29 +3,15 @@
 
 var path = require('path');
 var webpack = require('webpack');
-var del = require('del');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var CompressionPlugin = require('compression-webpack-plugin');
-
-class CleanPlugin {
-  constructor(options) {
-    this.options = options;
-  }
-
-  apply () {
-    del.sync(this.options);
-  }
-}
 
 var config = require('./webpack/config');
 
 config.devtool = 'cheap-module-source-map';
 config.context = __dirname;
-config.plugins = [
-  new CleanPlugin(),
+config.plugins = config.plugins.concat([
   new webpack.optimize.OccurrenceOrderPlugin(),
-  new ExtractTextPlugin('style.css'),
   new OptimizeCssAssetsPlugin(),
   new webpack.optimize.UglifyJsPlugin({
     compressor: {
@@ -42,6 +28,6 @@ config.plugins = [
     threshold: 10240,
     minRatio: 0.8
   })
-];
+])
 
 module.exports = config;

@@ -4,14 +4,19 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CleanPlugin = require('./CleanPlugin');
 
 var rootPath = __dirname + '/../';
+
+const extractNprogressCSS = new ExtractTextPlugin('nprogress.css');
+const CoreCss = new ExtractTextPlugin('style.css');
 
 module.exports = {
   context: rootPath,
   devtool: '#eval-source-map',
   entry: {
     main: path.join(rootPath, 'app/react/index.js'),
+    nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
     'pdf.worker': path.join(rootPath, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
   },
   output: {
@@ -20,7 +25,7 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   resolveLoader: {
-    modules: ['node_modules', 'webpackLoaders'],
+    modules: ['node_modules', __dirname + '/webpackLoaders'],
     extensions: ['.js', '.json'],
     mainFields: ['loader', 'main']
   },
@@ -38,7 +43,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract({
+        loader: CoreCss.extract({
           fallback: 'style-loader',
           use: 'css-loader?sourceMap!sass-loader?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
         }),
@@ -48,8 +53,19 @@ module.exports = {
         ]
       },
       {
+        test: /nprogress\.css$/,
+        loader: extractNprogressCSS.extract({
+          fallback: 'style-loader',
+          use: 'css-loader?sourceMap'
+        }),
+        include: [
+          path.join(rootPath, 'app'),
+          path.join(rootPath, 'node_modules/nprogress/')
+        ]
+      },
+      {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract({
+        loader: CoreCss.extract({
           fallback: 'style-loader',
           use: 'css-loader?sourceMap'
         }),
@@ -80,12 +96,13 @@ module.exports = {
         loaders: ['json-loader'],
         include: [
           path.join(rootPath, 'app')
-          //path.join(rootPath, 'node_modules')
         ]
       }
     ]
   },
   plugins: [
-    new ExtractTextPlugin("style.css")
+    new CleanPlugin(__dirname + '/../dist/'),
+    CoreCss,
+    extractNprogressCSS
   ]
 };
