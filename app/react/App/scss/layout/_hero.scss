@@ -1,0 +1,45 @@
+.hero {
+  padding: 120px 0;
+  text-align: center;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  margin: -30px -15px 30px;
+  @if $hero == light {
+    color: $c-black;
+    background-color: $c-grey-light;
+  } @else {
+    color: $c-white;
+    background-color: $c-grey-dark;
+  }
+
+  h1 {
+    font-size: 36px !important;
+    margin-bottom: 15px;
+
+    @if $hero == dark {
+      text-shadow: 3px 3px 35px $c-black;
+    }
+  }
+
+  p {
+    letter-spacing: 0.1em;
+    margin-bottom: 30px;
+    @if $hero == dark {
+      text-shadow: 3px 3px 15px $c-black;
+    }
+  }
+
+  .btn {
+    font-size: $f-size-lg;
+    @if $hero == dark {
+      box-shadow: 3px 3px 15px rgba($c-black, .3);
+    }
+  }
+  .btn:not(:first-of-type) {
+    margin-left: 15px;
+  }
+  .btn .fa {
+    margin-left: 15px;
+  }
+}

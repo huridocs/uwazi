@@ -163,3 +163,13 @@
     width: 100%;
     height: 100%;
 }
+
+.page-viewer .pageSection > *:not(.hero) {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-viewer .pageSection .video-container{
+  padding-bottom: 36%;
+}
