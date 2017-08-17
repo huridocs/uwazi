@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
 import 'bootstrap/dist/css/bootstrap.css';
-import 'font-awesome/css/font-awesome.css';
+//import 'font-awesome/css/font-awesome.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import './scss/styles.scss';
 

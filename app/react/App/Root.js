@@ -48,6 +48,7 @@ class Root extends Component {
           {head.script.toComponent()}
           <script src='/nprogress.bundle.js'></script>
           <link rel='stylesheet' href='nprogress.css'/>
+          <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'/>
           <script src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
         </body>
       </html>
