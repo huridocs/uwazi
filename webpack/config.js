@@ -103,6 +103,7 @@ module.exports = {
   plugins: [
     new CleanPlugin(__dirname + '/../dist/'),
     CoreCss,
-    extractNprogressCSS
+    extractNprogressCSS,
+    new webpack.optimize.ModuleConcatenationPlugin()
   ]
 };
