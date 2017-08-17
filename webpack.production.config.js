@@ -21,6 +21,7 @@ class CleanPlugin {
 var config = require('./webpack/config');
 
 config.devtool = 'cheap-module-source-map';
+config.context = __dirname;
 config.plugins = [
   new CleanPlugin(),
   new webpack.optimize.OccurrenceOrderPlugin(),
