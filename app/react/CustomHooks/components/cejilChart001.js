@@ -88,7 +88,7 @@ export class cejilChart001 extends Component {
     }
 
     return (
-      <div className="markdownViewer item-group-charts" style={{paddingTop: '15px'}}>{output}</div>
+      <div className="item-group-charts" style={{paddingTop: '15px'}}>{output}</div>
     );
   }
 }
