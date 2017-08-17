@@ -58,7 +58,7 @@ export class PageViewer extends Component {
         throw new Error('Invalid  component');
       }
       const Element = CustomHookComponents[props.component];
-      output = <Element className="pageSection customHook" key={index} {...props} />;
+      output = <div className="pageSection customHook" key={index}><Element {...props} /></div>;
     } catch (err) {
       output = this.errorHtml(index);
     }
@@ -106,9 +106,7 @@ export class PageViewer extends Component {
         <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
         <main className="document-viewer page-viewer">
           <div className="main-wrapper">
-            <div className="document">
-              {this.prepareHtml(sections, lists, customHookValues, htmlSplits)}
-            </div>
+            {this.prepareHtml(sections, lists, customHookValues, htmlSplits)}
           </div>
         </main>
       </div>

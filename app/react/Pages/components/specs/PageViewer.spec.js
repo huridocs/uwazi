@@ -85,11 +85,9 @@ describe('PageViewer', () => {
 
       expect(component.find('.pageSection').at(9).props().dangerouslySetInnerHTML.__html).toContain('code');
 
-      expect(component.find(CustomHookComponents.validcomponent).at(0).props())
-      .toEqual({className: 'pageSection customHook', component: 'validcomponent', prop: 'a prop'});
+      expect(component.find(CustomHookComponents.validcomponent).at(0).props()).toEqual({component: 'validcomponent', prop: 'a prop'});
 
-      expect(component.find(CustomHookComponents.validcomponent).at(1).props())
-      .toEqual({className: 'pageSection customHook', component: 'validcomponent'});
+      expect(component.find(CustomHookComponents.validcomponent).at(1).props()).toEqual({component: 'validcomponent'});
 
       expect(component.find('.customHook.error').at(0).text()).toContain('Custom Hook markup error');
     });
