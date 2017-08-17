@@ -6,6 +6,7 @@ var webpack = require('webpack');
 var del = require('del');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+var CompressionPlugin = require('compression-webpack-plugin');
 
 class CleanPlugin {
   constructor(options) {
@@ -32,7 +33,14 @@ config.plugins = [
     }
   }),
   new webpack.optimize.AggressiveMergingPlugin(),
-  new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify('production') } })
+  new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify('production') } }),
+  new CompressionPlugin({
+    asset: "[path].gz[query]",
+    algorithm: "gzip",
+    test: /\.js$|\.css$|\.html$/,
+    threshold: 10240,
+    minRatio: 0.8
+  })
 ];
 
 module.exports = config;

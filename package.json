@@ -111,6 +111,7 @@
     "babel-istanbul-loader": "^0.1.0",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-polyfill": "^6.23.0",
+    "compression-webpack-plugin": "^1.0.0",
     "css-loader": "^0.23.0",
     "del": "^2.0.2",
     "enzyme": "2.5.0",

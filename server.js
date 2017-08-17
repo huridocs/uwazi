@@ -15,6 +15,12 @@ const app = express();
 var http = require('http').Server(app);
 var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 
+app.get('*.js', function (req, res, next) {
+  req.url = req.url + '.gz';
+  res.set('Content-Encoding', 'gzip');
+  next();
+});
+
 app.use(error_handling_middleware);
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, 'dist')));
