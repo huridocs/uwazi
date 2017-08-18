@@ -1,10 +1,10 @@
 .hero {
-  padding: 120px 0;
   text-align: center;
+  background-image: url('https://s3-eu-west-1.amazonaws.com/openreply-enidays/wp-content/uploads/2017/06/LatinXAmerica.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  margin: -30px -15px 30px;
+  margin: 0 -15px 30px;
   @if $hero == light {
     color: $c-black;
     background-color: $c-grey-light;
@@ -15,7 +15,9 @@
 
   h1 {
     font-size: 36px !important;
-    margin-bottom: 15px;
+    padding: 160px 0;
+    margin: 0 auto;
+    max-width: 900px;
 
     @if $hero == dark {
       text-shadow: 3px 3px 35px $c-black;
@@ -41,5 +43,33 @@
   }
   .btn .fa {
     margin-left: 15px;
+  }
+}
+
+.hero-stats {
+  width: 100%;
+  display: flex;
+  
+  a {
+    width: 100%;
+    border-top: 3px solid $c-white;
+    padding: 60px 0;
+    background: transparentize($c-black, .6);
+    @if $hero == light {
+      color: $c-black;
+    } @else {
+      color: $c-white;
+      text-shadow: 3px 3px 15px $c-black;
+    }
+  }
+  
+  h2 {
+    margin: 0;
+    @if $hero == light {
+      color: $c-black;
+    } @else {
+      color: $c-white;
+      text-shadow: 3px 3px 15px $c-black;
+    }
   }
 }

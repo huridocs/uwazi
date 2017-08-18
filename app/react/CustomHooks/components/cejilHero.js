@@ -7,7 +7,8 @@ import Loader from 'app/components/Elements/Loader';
 
 import api from 'app/Search/SearchAPI';
 
-const casesIds = ['58b2f3a35d59f31e1345b48a', '58b2f3a35d59f31e1345b4a4'];
+const processesIds = ['58b2f3a35d59f31e1345b48a'];
+const provisionalMeasuresIds = ['58b2f3a35d59f31e1345b4a4'];
 const documentsIds = ['58b2f3a35d59f31e1345b4ac', '58b2f3a35d59f31e1345b471', '58b2f3a35d59f31e1345b482', '58b2f3a35d59f31e1345b479'];
 
 export class cejilChart001 extends Component {
@@ -36,28 +37,32 @@ export class cejilChart001 extends Component {
   }
 
   render() {
-    const {title = '', subtitle = '', buttons = []} = this.props;
+    const {title = '', buttons = []} = this.props;
 
-    let header = <Loader />;
+    let processesCount;
+    let provisionalMeasuresCount;
+    let documentsCount;
     if (this.state && this.state.data) {
-      const casesCount = this.getCount(casesIds);
-      const documentsCount = this.getCount(documentsIds);
-
-      header = <h1>{title.replace('XX', casesCount).replace('YY', documentsCount)}</h1>;
+      processesCount = this.getCount(processesIds);
+      provisionalMeasuresCount = this.getCount(provisionalMeasuresIds);
+      documentsCount = this.getCount(documentsIds);
     }
 
     return (
       <div className="hero">
-        {header}
-        <p>{subtitle}</p>
-        <div>
-          <I18NLink className="btn btn-primary" to={this.conformLibraryLink(casesIds, 'metadata._ltima_actualizaci_n')}>
+        <h1>{title}</h1>
+        <div className="hero-stats">
+          <I18NLink to={this.conformLibraryLink(processesIds, 'metadata._ltima_actualizaci_n')}>
+            <h2>{processesCount}</h2>
             {buttons[0]}
-            <i className="fa fa-angle-right"></i>
           </I18NLink>
-          <I18NLink className="btn btn-primary" to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
+          <I18NLink to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
+            <h2>{provisionalMeasuresCount}</h2>
             {buttons[1]}
-            <i className="fa fa-angle-right"></i>
+          </I18NLink>
+          <I18NLink to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
+            <h2>{documentsCount}</h2>
+            {buttons[2]}
           </I18NLink>
         </div>
       </div>
