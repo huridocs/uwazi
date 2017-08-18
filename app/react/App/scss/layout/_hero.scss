@@ -15,7 +15,7 @@
 
   h1 {
     font-size: 36px !important;
-    padding: 160px 0;
+    padding: 120px 0;
     margin: 0 auto;
     max-width: 900px;
 
@@ -49,12 +49,22 @@
 .hero-stats {
   width: 100%;
   display: flex;
-  
+
   a {
     width: 100%;
     border-top: 3px solid $c-white;
     padding: 60px 0;
     background: transparentize($c-black, .6);
+
+    &:hover {
+      cursor: pointer;
+      text-decoration: none;
+
+      span {
+        text-decoration: underline;
+      }
+    }
+
     @if $hero == light {
       color: $c-black;
     } @else {
@@ -62,7 +72,7 @@
       text-shadow: 3px 3px 15px $c-black;
     }
   }
-  
+
   h2 {
     margin: 0;
     @if $hero == light {

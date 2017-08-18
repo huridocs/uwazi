@@ -39,13 +39,14 @@ export class cejilChart001 extends Component {
   render() {
     const {title = '', buttons = []} = this.props;
 
-    let processesCount;
-    let provisionalMeasuresCount;
-    let documentsCount;
+    let processesCount = <Loader />;
+    let provisionalMeasuresCount = <Loader />;
+    let documentsCount = <Loader />;
+
     if (this.state && this.state.data) {
-      processesCount = this.getCount(processesIds);
-      provisionalMeasuresCount = this.getCount(provisionalMeasuresIds);
-      documentsCount = this.getCount(documentsIds);
+      processesCount = <h2>{this.getCount(processesIds)}</h2>;
+      provisionalMeasuresCount = <h2>{this.getCount(provisionalMeasuresIds)}</h2>;
+      documentsCount = <h2>{this.getCount(documentsIds)}</h2>;
     }
 
     return (
@@ -53,16 +54,16 @@ export class cejilChart001 extends Component {
         <h1>{title}</h1>
         <div className="hero-stats">
           <I18NLink to={this.conformLibraryLink(processesIds, 'metadata._ltima_actualizaci_n')}>
-            <h2>{processesCount}</h2>
-            {buttons[0]}
+            {processesCount}
+            <span>{buttons[0]}</span>
+          </I18NLink>
+          <I18NLink to={this.conformLibraryLink(provisionalMeasuresIds, 'metadata._ltima_actualizaci_n')}>
+            {provisionalMeasuresCount}
+            <span>{buttons[1]}</span>
           </I18NLink>
           <I18NLink to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
-            <h2>{provisionalMeasuresCount}</h2>
-            {buttons[1]}
-          </I18NLink>
-          <I18NLink to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
-            <h2>{documentsCount}</h2>
-            {buttons[2]}
+            {documentsCount}
+            <span>{buttons[2]}</span>
           </I18NLink>
         </div>
       </div>
