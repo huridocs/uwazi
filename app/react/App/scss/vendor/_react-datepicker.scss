@@ -31,20 +31,20 @@
 }
 .react-datepicker__navigation--years-upcoming {
   top: 0;
-  border-bottom-color: #ccc;
+  border-bottom-color: $c-grey;
 }
 .react-datepicker__navigation--years-previous {
   top: 8px;
-  border-top-color: #ccc;
+  border-top-color: $c-grey;
   
 }
 .react-datepicker__navigation--previous{
   left: 0;
-  border-right-color: #ccc;
+  border-right-color: $c-grey;
 }
 .react-datepicker__navigation--next{
   right: 0;
-  border-left-color: #ccc;
+  border-left-color: $c-grey;
 }
 
 
