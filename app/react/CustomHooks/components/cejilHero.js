@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {I18NLink} from 'app/I18N';
-import Loader from 'app/components/Elements/Loader';
 
 import api from 'app/Search/SearchAPI';
 
@@ -38,15 +37,16 @@ export class cejilChart001 extends Component {
 
   render() {
     const {title = '', buttons = []} = this.props;
+    const Loader = <i className="fa fa-spinner fa-pulse fa-fw"></i>;
 
-    let processesCount = <Loader />;
-    let provisionalMeasuresCount = <Loader />;
-    let documentsCount = <Loader />;
+    let processesCount = Loader;
+    let provisionalMeasuresCount = Loader;
+    let documentsCount = Loader;
 
     if (this.state && this.state.data) {
-      processesCount = <h2>{this.getCount(processesIds)}</h2>;
+      processesCount = this.getCount(processesIds);
       provisionalMeasuresCount = <h2>{this.getCount(provisionalMeasuresIds)}</h2>;
-      documentsCount = <h2>{this.getCount(documentsIds)}</h2>;
+      documentsCount = this.getCount(documentsIds);
     }
 
     return (
@@ -54,15 +54,15 @@ export class cejilChart001 extends Component {
         <h1>{title}</h1>
         <div className="hero-stats">
           <I18NLink to={this.conformLibraryLink(processesIds, 'metadata._ltima_actualizaci_n')}>
-            {processesCount}
+            <h2>{processesCount}</h2>
             <span>{buttons[0]}</span>
           </I18NLink>
           <I18NLink to={this.conformLibraryLink(provisionalMeasuresIds, 'metadata._ltima_actualizaci_n')}>
-            {provisionalMeasuresCount}
+            <h2>{provisionalMeasuresCount}</h2>
             <span>{buttons[1]}</span>
           </I18NLink>
           <I18NLink to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
-            {documentsCount}
+            <h2>{documentsCount}</h2>
             <span>{buttons[2]}</span>
           </I18NLink>
         </div>
