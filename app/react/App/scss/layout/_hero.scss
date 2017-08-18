@@ -1,9 +1,5 @@
 .hero {
   text-align: center;
-  background-image: url('https://s3-eu-west-1.amazonaws.com/openreply-enidays/wp-content/uploads/2017/06/LatinXAmerica.png');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
   margin: 0 -15px 30px;
   @if $hero == light {
     color: $c-black;
@@ -20,7 +16,7 @@
     max-width: 900px;
 
     @if $hero == dark {
-      text-shadow: 3px 3px 35px $c-black;
+      text-shadow: 3px 3px 15px $c-black;
     }
   }
 
@@ -57,6 +53,7 @@
     background: transparentize($c-black, .6);
 
     &:hover {
+      background: transparentize($c-black, .5);
       cursor: pointer;
       text-decoration: none;
 
@@ -79,7 +76,7 @@
       color: $c-black;
     } @else {
       color: $c-white;
-      text-shadow: 3px 3px 15px $c-black;
+      text-shadow: 3px 3px 5px $c-black;
     }
   }
 }
