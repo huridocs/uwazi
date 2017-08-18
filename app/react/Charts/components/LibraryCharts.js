@@ -113,7 +113,6 @@ export function mapStateToProps(state, props) {
     fields: props.storeKey ? state[props.storeKey].filters.get('properties') : null,
     collection: state.settings.collection,
     templates: state.templates,
-    // TEST!!!
     translationContext: documentTypesExist ? state[props.storeKey].filters.getIn(['documentTypes', 0]) : null
   };
 }

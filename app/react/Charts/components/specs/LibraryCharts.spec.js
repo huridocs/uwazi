@@ -193,14 +193,14 @@ describe('LibraryCharts', () => {
   describe('mapStateToProps', () => {
     beforeEach(() => {
       state = {
-        a: {aggregations: 'a', filters: fromJS({properties: 'a'})},
-        b: {aggregations: 'b', filters: fromJS({properties: 'b'})},
+        a: {aggregations: 'a', filters: fromJS({properties: 'a', documentTypes: ['dt1']})},
+        b: {aggregations: 'b', filters: fromJS({properties: 'b', documentTypes: ['dt2']})},
         settings: {collection: 'collection'},
         templates: 'templates'
       };
     });
 
-    it('should return aggregations and fields according to store key', () => {
+    it('should return aggregations, fields and translation context according to store key', () => {
       expect(mapStateToProps(state, {storeKey: 'a'}).aggregations).toBe('a');
       expect(mapStateToProps(state, {storeKey: 'b'}).aggregations).toBe('b');
       expect(mapStateToProps(state, {}).aggregations).toBe(null);
@@ -208,6 +208,10 @@ describe('LibraryCharts', () => {
       expect(mapStateToProps(state, {storeKey: 'a'}).fields).toBe('a');
       expect(mapStateToProps(state, {storeKey: 'b'}).fields).toBe('b');
       expect(mapStateToProps(state, {}).fields).toBe(null);
+
+      expect(mapStateToProps(state, {storeKey: 'a'}).translationContext).toBe('dt1');
+      expect(mapStateToProps(state, {storeKey: 'b'}).translationContext).toBe('dt2');
+      expect(mapStateToProps(state, {}).translationContext).toBe(null);
     });
 
     it('should return collection and templates', () => {
