@@ -276,50 +276,14 @@ describe('templates', () => {
         });
       });
     });
-
-    //describe('when there is a db error', () => {
-    //it('should return the error', (done) => {
-    //spyOn(translations, 'updateContext');
-    //spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-    //let badTemplate = {_id: 'c08ef2532f0bd008ac5174b45e033c93', _rev: 'bad_rev', name: ''};
-    //templates.save(badTemplate)
-    //.then(() => {
-    //done.fail('should return an error');
-    //})
-    //.catch((error) => {
-    //expect(error.json.error).toBe('bad_request');
-    //done();
-    //});
-    //});
-    //});
   });
-
-  //describe('countByTemplate', () => {
-  //it('should return how many documents using the template passed', (done) => {
-  //templates.countByTemplate('template1')
-  //.then((count) => {
-  //expect(count).toBe(2);
-  //done();
-  //})
-  //.catch(done.fail);
-  //});
-
-  //it('should return 0 when no count found', (done) => {
-  //templates.countByTemplate('newTemplate')
-  //.then((count) => {
-  //expect(count).toBe(0);
-  //done();
-  //})
-  //.catch(done.fail);
-  //});
-  //});
 
   describe('delete', () => {
     it('should delete a template when no document is using it', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
       return templates.delete({_id: templateToBeDeleted})
       .then((response) => {
-        expect(response.ok).toBe(true);
+        expect(response).toEqual({_id: templateToBeDeleted});
         return templates.get();
       })
       .then((allTemplates) => {

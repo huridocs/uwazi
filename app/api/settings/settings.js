@@ -48,6 +48,19 @@ function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
   return translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values);
 }
 
+function removeTemplate(filters, templateId) {
+  let filterTemplate = (_filter) => _filter.id !== templateId;
+  return filters
+  .filter(filterTemplate)
+  .map((_filter) => {
+    if (_filter.items) {
+      _filter.items = removeTemplate(_filter.items, templateId);
+    }
+
+    return _filter;
+  });
+}
+
 export default {
   get() {
     return model.get().then(settings => settings[0] || {});
@@ -62,6 +75,18 @@ export default {
         settings._id = currentSettings._id;
         return model.save(settings);
       });
+    });
+  },
+
+  removeTemplateFromFilters(templateId) {
+    return this.get()
+    .then((settings) => {
+      if (!settings.filters) {
+        return;
+      }
+
+      settings.filters = removeTemplate(settings.filters, templateId);
+      return this.save(settings);
     });
   }
 };

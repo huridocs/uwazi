@@ -1,4 +1,5 @@
 import templates from './templates';
+import settings from 'api/settings';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
@@ -18,10 +19,15 @@ export default app => {
   });
 
   app.delete('/api/templates', needsAuthorization(), (req, res) => {
-    templates.delete(req.query)
-    .then((response) => {
-      res.json(response);
-      req.io.sockets.emit('templateDelete', response);
+    let template = {_id: req.query._id};
+    templates.delete(template)
+    .then(() => {
+      return settings.removeTemplateFromFilters(template._id);
+    })
+    .then((newSettings) => {
+      res.json(template);
+      req.io.sockets.emit('updateSettings', newSettings);
+      req.io.sockets.emit('templateDelete', template);
     })
     .catch(res.error);
   });

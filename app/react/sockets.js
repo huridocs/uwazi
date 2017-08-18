@@ -9,6 +9,10 @@ socket.on('templateDelete', (template) => {
   store.dispatch(actions.remove('templates', {_id: template.id}));
 });
 
+socket.on('updateSettings', (settings) => {
+  store.dispatch(actions.set('settings/collection', settings));
+});
+
 socket.on('thesauriChange', (thesauri) => {
   store.dispatch(actions.update('thesauris', thesauri));
 });

@@ -33,7 +33,7 @@ export class DocumentTypesList extends Component {
     if (item.items) {
       return item.items.reduce((result, _item) => {
         return result && this.checked(_item);
-      }, true);
+      }, item.items.length > 0);
     }
 
     return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
