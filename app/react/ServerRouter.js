@@ -1,34 +1,19 @@
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
-import ReactDOM from 'react-dom';
 import {renderToString} from 'react-dom/server';
-import {browserHistory} from 'react-router';
-import {Router, match, RouterContext} from 'react-router';
+import {match, RouterContext} from 'react-router';
 import Helmet from 'react-helmet';
 import Routes from './Routes';
 import {Provider} from 'react-redux';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import NoMatch from './App/NoMatch';
-import {isClient, getPropsFromRoute} from './utils';
 import store from './store';
 import api from 'app/utils/api';
 import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
-import Perf from 'react-addons-perf';
 import {fromJS as Immutable} from 'immutable';
-
-if (isClient) {
-  window.perf = Perf;
-  ReactDOM.render(
-    <Provider store={store()}>
-      <CustomProvider>
-        <Router history={browserHistory}>{Routes}</Router>
-      </CustomProvider>
-    </Provider>,
-    document.getElementById('root')
-  );
-}
+import {getPropsFromRoute} from './utils';
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
   let componentHtml;
@@ -200,8 +185,8 @@ let allowedRoute = (user = {}, url) => {
   }, false);
 
   return isAdminRoute && isAdmin ||
-         isAuthRoute && (isAdmin || isEditor) ||
-         !isAdminRoute && !isAuthRoute;
+    isAuthRoute && (isAdmin || isEditor) ||
+    !isAdminRoute && !isAuthRoute;
 };
 
 function ServerRouter(req, res) {
