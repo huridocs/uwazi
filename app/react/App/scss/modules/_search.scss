@@ -452,7 +452,7 @@
 }
 
 .multiselectChild {
-  padding: 0 24px;
+  padding: 0 0 0 18px;
 }
 
 .multiselectLabel {
@@ -496,6 +496,7 @@
 
 .multiselectItem-name {
   color: $c-grey-dark;
+  max-width: calc(100% - 50px);
 
   .multiselectItem-label:hover & {
     text-decoration: underline;
@@ -505,25 +506,26 @@
 .multiselectItem-results {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 15px;
   font-size: $f-size;
   font-weight: 300;
+  width: 30px;
   line-height: 24px;
   height: 24px;
-  padding-right: 9px;
+  padding-right: 3px;
   color: $c-grey-dark;
 }
 
 .multiselectItem-action {
   display: inline-block;
-  position: relative;
-  top: -1px;
+  position: absolute;
+  top: 3px;
+  left: 100%;
   font-size: $f-size-sm;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
   text-align: center;
-  margin: 1px 0 0 6px;
   border: 1px solid $c-grey;
   border-radius: $border-radius;
   &:hover {
@@ -548,16 +550,10 @@
   }
 }
 
-label.multiselectItem-label {
-  margin: 0;
-  cursor: pointer;
-  font-size: inherit;
-  text-transform: none;
-  letter-spacing: normal;
-  max-width: 80%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.multiselectItem-label {
+  display: -webkit-flex;
+  display: flex;
+  width: 100%;
 }
 
 .multiselectItem--all {
@@ -632,9 +628,9 @@ label.multiselectItem-label {
   .multiselectLabel-icon:last-of-type  { display: inline-block; }
 
   .multiselectItem {
-    line-height: 24px;
-    padding: 0 6px;
-    margin: 0 -6px;
+    line-height: 1.2em;
+    padding: 5px;
+    margin: 0 -5px;
   }
 
   .multiselectItem-input:not(:checked) + label .multiselectItem-icon:first-of-type { display: inline-block; }
