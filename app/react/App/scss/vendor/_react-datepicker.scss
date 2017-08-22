@@ -67,10 +67,12 @@
 .react-datepicker__delete-icon {
   position: absolute;
   right: 7px;
-  top: 50%;
+  top: 8px;
   background: transparent;
   border: 0;
   padding: 0;
+  height: 16px;
+  width: 16px;
   &:after {
     display: block;
     border-radius: 50%;
@@ -83,7 +85,6 @@
     height: 16px;
     width: 16px;
     line-height: 1;
-    margin: -8px auto 0;
     padding: 2px;
     text-align: center;
   }
@@ -136,7 +137,7 @@
 
 .multidate-range {
   .react-datepicker__delete-icon {
-    top: 38px;
+    top: 30px;
     z-index: 1;
     &:after {
       box-shadow: 0 0 0 3px $c-white;
