@@ -1,9 +1,9 @@
 import {isClient} from 'app/utils';
 let PDFJS;
-//if (isClient) {
-  //PDFJS = require('../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
-  //PDFJS.workerSrc = '/pdf.worker.bundle.js';
-//}
+if (isClient) {
+  PDFJS = require('../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
+  PDFJS.workerSrc = '/pdf.worker.bundle.js';
+}
 
 const extractPageInfo = (page) => {
   return new Promise((resolve) => {
