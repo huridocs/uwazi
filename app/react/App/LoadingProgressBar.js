@@ -1,8 +1,6 @@
 import {isClient} from 'app/utils';
 import Nprogress from 'nprogress';
 
-import 'nprogress/nprogress.css';
-
 if (isClient) {
   window.NProgress = Nprogress;
 }

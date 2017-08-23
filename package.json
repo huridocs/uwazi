@@ -108,6 +108,7 @@
     "wrap-range-text": "^1.0.1"
   },
   "devDependencies": {
+    "assets-webpack-plugin": "^3.5.1",
     "babel-istanbul-loader": "^0.1.0",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-polyfill": "^6.23.0",

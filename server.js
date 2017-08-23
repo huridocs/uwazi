@@ -17,7 +17,8 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 
 app.use(error_handling_middleware);
 app.use(compression());
-app.use(express.static(path.resolve(__dirname, 'dist')));
+var oneYear = 31557600;
+app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: oneYear}));
 app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/public', express.static(path.resolve(__dirname, 'public')));
 app.use('/flag-images', express.static(path.resolve(__dirname, 'node_modules/react-flags/vendor/flags')));

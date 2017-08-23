@@ -8,8 +8,9 @@ var CleanPlugin = require('./CleanPlugin');
 
 var rootPath = __dirname + '/../';
 
-const extractNprogressCSS = new ExtractTextPlugin('nprogress.css');
-const CoreCss = new ExtractTextPlugin('style.css');
+const CoreCss = new ExtractTextPlugin('styles.[contenthash].css');
+var AssetsPlugin = require('assets-webpack-plugin')
+var assetsPluginInstance = new AssetsPlugin({path: path.join(rootPath + '/dist/')})
 
 module.exports = {
   context: rootPath,
@@ -22,7 +23,7 @@ module.exports = {
   output: {
     path: path.join(rootPath, '/dist/'),
     publicPath: '/',
-    filename: '[name].bundle.js'
+    filename: '[name].[chunkhash].js'
   },
   resolveLoader: {
     modules: ['node_modules', __dirname + '/webpackLoaders'],
@@ -53,17 +54,6 @@ module.exports = {
         ]
       },
       {
-        test: /nprogress\.css$/,
-        loader: extractNprogressCSS.extract({
-          fallback: 'style-loader',
-          use: 'css-loader?sourceMap'
-        }),
-        include: [
-          path.join(rootPath, 'app'),
-          path.join(rootPath, 'node_modules/nprogress/')
-        ]
-      },
-      {
         test: /\.css$/,
         loader: CoreCss.extract({
           fallback: 'style-loader',
@@ -73,6 +63,7 @@ module.exports = {
           path.join(rootPath, 'app'),
           path.join(rootPath, 'node_modules/react-datepicker/dist/'),
           path.join(rootPath, 'node_modules/bootstrap/dist/'),
+          path.join(rootPath, 'node_modules/nprogress/'),
           path.join(rootPath, 'node_modules/font-awesome/css/'),
           path.join(rootPath, 'node_modules/pdfjs-dist/web'),
         ]
@@ -121,7 +112,7 @@ module.exports = {
       minChunks: Infinity
     }),
     CoreCss,
-    extractNprogressCSS,
-    new webpack.optimize.ModuleConcatenationPlugin()
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    assetsPluginInstance
   ]
 };

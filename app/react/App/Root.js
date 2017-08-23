@@ -22,7 +22,7 @@ class Root extends Component {
   }
 
   render() {
-    const isDeveloping = process.env.NODE_ENV !== 'production';
+    //const isDeveloping = process.env.NODE_ENV !== 'production';
     const head = this.props.head;
 
     return (
@@ -33,7 +33,7 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link
-            href={isDeveloping ? '/style.css' : '/style.css'}
+            href={this.props.assets.main.css}
             rel="stylesheet"
             type="text/css"
           />
@@ -47,10 +47,10 @@ class Root extends Component {
           {this.renderInitialData()}
           {head.script.toComponent()}
           <link rel='stylesheet' href='https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css'/>
-          <link rel='stylesheet' href='/nprogress.css'/>
-          <script defer src={isDeveloping ? '/manifest.bundle.js' : '/manifest.bundle.js'}></script>
-          <script defer src={isDeveloping ? '/vendor.bundle.js' : '/vendor.bundle.js'}></script>
-          <script defer src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
+          <script defer src={this.props.assets.manifest.js}></script>
+          <script defer src={this.props.assets.nprogress.js}></script>
+          <script defer src={this.props.assets.vendor.js}></script>
+          <script defer src={this.props.assets.main.js}></script>
         </body>
       </html>
     );
@@ -63,7 +63,8 @@ Root.propTypes = {
   initialData: PropTypes.object,
   reduxData: PropTypes.object,
   head: PropTypes.object,
-  content: PropTypes.string
+  content: PropTypes.string,
+  assets: PropTypes.object
 };
 
 export default Root;

@@ -14,6 +14,7 @@ import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import {fromJS as Immutable} from 'immutable';
 import {getPropsFromRoute} from './utils';
+import assets from '../../dist/webpack-assets.json';
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
   let componentHtml;
@@ -50,7 +51,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   }
 
   return '<!doctype html>\n' + renderToString(
-    <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData}/>
+    <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData} assets={assets}/>
   );
 }
 
