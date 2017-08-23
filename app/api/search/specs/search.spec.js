@@ -502,7 +502,7 @@ describe('search', () => {
 
           search.index(entity)
           .then(() => {
-            return elastic.indices.refresh();
+            return elasticTesting.refresh();
           })
           .then(() => {
             return search.searchSnippets('조', entity.sharedId, 'en');
