@@ -64,6 +64,32 @@
   top: 16px;
 }
 
+.react-datepicker__delete-icon {
+  position: absolute;
+  right: 7px;
+  top: 8px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  height: 16px;
+  width: 16px;
+  &:after {
+    display: block;
+    border-radius: 50%;
+    bottom: 0;
+    box-sizing: border-box;
+    color: #fff;
+    content: "\D7";
+    cursor: pointer;
+    font-size: 12px;
+    height: 16px;
+    width: 16px;
+    line-height: 1;
+    padding: 2px;
+    text-align: center;
+  }
+}
+
 
 .react-datepicker__triangle {
   left: 30px;
@@ -87,13 +113,16 @@
 }
 
 
-.react-datepicker__close-icon::after {
-  background: $c-grey-light;
-  color: $c-grey-dark;
-}
-.react-datepicker__close-icon:hover::after {
-  background: $c-danger;
-  color: $c-white;
+.react-datepicker__close-icon,
+.react-datepicker__delete-icon {  
+  &::after {
+    background: $c-grey-light;
+    color: $c-grey-dark;
+  }
+  &:hover::after {
+    background: $c-danger;
+    color: $c-white;
+  }
 }
 
 
@@ -107,8 +136,8 @@
 }
 
 .multidate-range {
-  .react-datepicker__close-icon {
-    top: 38px;
+  .react-datepicker__delete-icon {
+    top: 30px;
     z-index: 1;
     &:after {
       box-shadow: 0 0 0 3px $c-white;
