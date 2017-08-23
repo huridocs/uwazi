@@ -46,10 +46,11 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script src='/nprogress.bundle.js'></script>
-          <link rel='stylesheet' href='nprogress.css'/>
           <link rel='stylesheet' href='https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css'/>
-          <script src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
+          <link rel='stylesheet' href='/nprogress.css'/>
+          <script defer src={isDeveloping ? '/manifest.bundle.js' : '/manifest.bundle.js'}></script>
+          <script defer src={isDeveloping ? '/vendor.bundle.js' : '/vendor.bundle.js'}></script>
+          <script defer src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
         </body>
       </html>
     );

@@ -74,7 +74,7 @@ module.exports = {
           path.join(rootPath, 'node_modules/react-datepicker/dist/'),
           path.join(rootPath, 'node_modules/bootstrap/dist/'),
           path.join(rootPath, 'node_modules/font-awesome/css/'),
-          path.join(rootPath, 'node_modules/pdfjs-dist/web')
+          path.join(rootPath, 'node_modules/pdfjs-dist/web'),
         ]
       },
       {
@@ -102,6 +102,24 @@ module.exports = {
   },
   plugins: [
     new CleanPlugin(__dirname + '/../dist/'),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      chunks: ["main"],
+      minChunks: ({ resource }) => {
+        if (/pdfjs/.test(resource)) {
+          return false;
+        }
+
+        if (/.js$/.test(resource)) {
+          return /node_modules/.test(resource) 
+        }
+      },
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest',
+      chunks: ["main", "vendor", "nprogress", "pdf.worker"],
+      minChunks: Infinity
+    }),
     CoreCss,
     extractNprogressCSS,
     new webpack.optimize.ModuleConcatenationPlugin()

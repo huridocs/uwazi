@@ -6354,6 +6354,10 @@ react-addons-test-utils@15.5.0:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
+react-async-component@^1.0.0-beta.3:
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/react-async-component/-/react-async-component-1.0.0-beta.3.tgz#72f79feecd47c7345dc15e24eec86d81a0ce320c"
+
 react-datepicker@0.46.0:
   version "0.46.0"
   resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-0.46.0.tgz#dd0c58efde9931964a248854e073151374fc937f"
@@ -6448,9 +6452,9 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-redux-form@1.11.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/react-redux-form/-/react-redux-form-1.11.0.tgz#81dd698a01687d81772381f792f7aa474de9ab80"
+react-redux-form@1.14.1:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/react-redux-form/-/react-redux-form-1.14.1.tgz#868567bcd83b269989c10495cf4683898d9711ae"
   dependencies:
     icepick "^1.1.0"
     invariant "~2.2.1"
