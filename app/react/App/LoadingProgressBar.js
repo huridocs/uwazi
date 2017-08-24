@@ -1,4 +1,9 @@
 import {isClient} from 'app/utils';
+import Nprogress from 'nprogress';
+
+if (isClient) {
+  window.NProgress = Nprogress;
+}
 
 const loadingProgressBar = {
   requests: 0,

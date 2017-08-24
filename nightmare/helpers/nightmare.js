@@ -21,6 +21,9 @@ export default function createNightmare(width = 1100, height = 600) {
     if (message.match(/React\.createClass is deprecated|Accessing PropTypes via the main React package is deprecated/)) {
       return;
     }
+    if (message.match(/Unknown prop `storeSubscription`/)) {
+      return;
+    }
     if (type === 'error') {
       fail(message);
     }

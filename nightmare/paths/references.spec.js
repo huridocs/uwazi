@@ -73,8 +73,9 @@ describe('references path', () => {
       .catch(catchErrors(done));
     });
 
-    it('delete the created connection', (done) => {
+    it('should delete the created connection', (done) => {
       nightmare
+      .wait('a.reference')
       .mouseover(selectors.documentView.activeConnection)
       .waitToClick(selectors.documentView.unlinkIcon)
       .waitToClick('.modal-footer .btn-danger')

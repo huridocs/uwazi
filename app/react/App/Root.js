@@ -22,7 +22,7 @@ class Root extends Component {
   }
 
   render() {
-    const isDeveloping = process.env.NODE_ENV !== 'production';
+    //const isDeveloping = process.env.NODE_ENV !== 'production';
     const head = this.props.head;
 
     return (
@@ -33,7 +33,7 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link
-            href={isDeveloping ? '/style.css' : '/style.css'}
+            href={this.props.assets.main.css}
             rel="stylesheet"
             type="text/css"
           />
@@ -46,9 +46,11 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script src={isDeveloping ? '/main.bundle.js' : '/main.bundle.js'}></script>
-          <script src='/nprogress/nprogress.js'></script>
-          <link rel='stylesheet' href='/nprogress/nprogress.css'/>
+          <link rel='stylesheet' href='https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css'/>
+          <script defer src={this.props.assets.manifest.js}></script>
+          <script defer src={this.props.assets.nprogress.js}></script>
+          <script defer src={this.props.assets.vendor.js}></script>
+          <script defer src={this.props.assets.main.js}></script>
         </body>
       </html>
     );
@@ -61,7 +63,8 @@ Root.propTypes = {
   initialData: PropTypes.object,
   reduxData: PropTypes.object,
   head: PropTypes.object,
-  content: PropTypes.string
+  content: PropTypes.string,
+  assets: PropTypes.object
 };
 
 export default Root;

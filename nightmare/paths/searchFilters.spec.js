@@ -10,7 +10,7 @@ selectors.libraryView.filters = {
   sixthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
   superPowersAndOrSwitch: '#filtersForm > div:nth-child(1) > ul > li:nth-child(1) > div > label',
-  searchButton: '#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-footer > button',
+  searchButton: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > button',
   planetsConqueredFrom: '#filtersForm div.Numeric__From > input',
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
   dobFrom: '#filtersForm div.DatePicker__From > div > input',
