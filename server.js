@@ -18,7 +18,13 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 app.use(error_handling_middleware);
 app.use(compression());
 var oneYear = 31557600;
-app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: oneYear}));
+
+var maxage = 0;
+if (app.get('env') === 'production') {
+  maxage = oneYear;
+}
+
+app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: maxage}));
 app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/public', express.static(path.resolve(__dirname, 'public')));
 app.use('/flag-images', express.static(path.resolve(__dirname, 'node_modules/react-flags/vendor/flags')));

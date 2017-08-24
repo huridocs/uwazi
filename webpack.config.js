@@ -1,7 +1,7 @@
 /* eslint-disable */
 'use strict';
 
-var config = require('./webpack/config');
+var config = require('./webpack/config')();
 
 config.context = __dirname;
 

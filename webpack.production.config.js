@@ -6,7 +6,8 @@ var webpack = require('webpack');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 var CompressionPlugin = require('compression-webpack-plugin');
 
-var config = require('./webpack/config');
+var production = true;
+var config = require('./webpack/config')(production);
 
 config.devtool = 'cheap-module-source-map';
 config.context = __dirname;
