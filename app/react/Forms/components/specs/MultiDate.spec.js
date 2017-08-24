@@ -47,7 +47,7 @@ describe('MultiDate', () => {
   describe('removing a date', () => {
     it('should remove the value from the state', () => {
       render();
-      let removeButtons = component.find('.react-datepicker__close-icon');
+      let removeButtons = component.find('.react-datepicker__delete-icon');
       removeButtons.first().simulate('click', {preventDefault: () =>{}});
       expect(component.state().values).toEqual(['1474070400', '1474156800']);
       expect(props.onChange).toHaveBeenCalledWith(['1474070400', '1474156800']);

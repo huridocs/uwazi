@@ -55,7 +55,7 @@ export default class MultiDateRange extends Component {
                       <span>&nbsp;To:&nbsp;</span>
                         <DatePicker format={this.props.format} value={value.to} endOfDay={true} onChange={this.toChange.bind(this, index)}/>
                     </div>
-                    <button className="react-datepicker__close-icon" onClick={this.remove.bind(this, index)}></button>
+                    <button className="react-datepicker__delete-icon" onClick={this.remove.bind(this, index)}></button>
                   </div>
                  </div>;
         });

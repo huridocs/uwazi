@@ -1,8 +1,4 @@
 import PDFObject from '../PDF.js';
-import childProcess from 'child_process';
-import EventEmitter from 'events';
-
-class Events extends EventEmitter {}
 
 describe('PDF', function () {
   let pdf;

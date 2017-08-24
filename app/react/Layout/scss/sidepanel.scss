@@ -167,7 +167,7 @@ $c-sidebar: $c-white;
 
 .sidepanel-body {
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 
   & > *:last-child { // firefox hack (related issue #378)
@@ -205,7 +205,6 @@ $c-sidebar: $c-white;
 
   .fa {
     font-size: $f-size-lg;
-    color: $c-grey-dark;
   }
 }
 .sidepanel-footer {

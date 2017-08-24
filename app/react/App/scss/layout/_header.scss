@@ -5,7 +5,6 @@ header {
   top: 0;
   min-height: $header-height;
   justify-content: space-between;
-  border-bottom: 1px solid $c-grey-light;
   /* Removed for language selector. Check for side-effects!
   /*overflow: hidden;*/
   @if $theme == light {
@@ -128,7 +127,7 @@ header {
 .menuNav-btn {
   display: block;
   border: 0;
-  border-bottom: 2px solid transparent;
+  border-bottom: 4px solid transparent;
   border-radius: 0;
   min-width: $header-height;
   height: $header-height;

@@ -25,7 +25,7 @@ export class DocumentTypesList extends Component {
         accept: () => {},
         noCancel: true,
         title: `${t('System', 'Cannot delete document type title', 'Cannot delete document type:')} ${template.name}`,
-        message: t('System', 'Cannot delete document type message', 'This document type has associated documnets and cannot be deleted.')
+        message: t('System', 'Cannot delete document type message', 'This document type has associated documents and cannot be deleted.')
       });
     });
   }

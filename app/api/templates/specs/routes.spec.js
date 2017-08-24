@@ -41,10 +41,10 @@ describe('templates routes', () => {
   describe('DELETE', () => {
     it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
-      routes.delete('/api/templates', {query: 'template'})
+      routes.delete('/api/templates', {query: {_id: '123'}})
       .then((response) => {
-        expect(templates.delete).toHaveBeenCalledWith('template');
-        expect(response).toBe('ok');
+        expect(templates.delete).toHaveBeenCalledWith({_id: '123'});
+        expect(response).toEqual({_id: '123'});
         done();
       })
       .catch(catchErrors(done));
@@ -54,7 +54,7 @@ describe('templates routes', () => {
       it('should return the error in the response', (done) => {
         spyOn(templates, 'delete').and.returnValue(Promise.reject('error'));
 
-        routes.delete('/api/templates', {})
+        routes.delete('/api/templates', {query: {}})
         .then((response) => {
           expect(response.error).toBe('error');
           done();

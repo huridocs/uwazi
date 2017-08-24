@@ -6,7 +6,7 @@ export default {
 
   date(property, timestamp, showInCard) {
     let value = moment.utc(timestamp, 'X').format('ll');
-    return {label: property.label, name: property.name, value, showInCard};
+    return {label: property.label, name: property.name, value, timestamp, showInCard};
   },
 
   formatDateRange(daterange) {

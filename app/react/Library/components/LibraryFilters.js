@@ -12,10 +12,6 @@ import {t} from 'app/I18N';
 
 export class LibraryFilters extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   reset() {
     this.props.resetFilters(this.props.storeKey);
   }
@@ -51,9 +47,9 @@ LibraryFilters.propTypes = {
   storeKey: PropTypes.string
 };
 
-export function mapStateToProps(state, props) {
+export function mapStateToProps() {
   return {
-    open: state[props.storeKey].ui.get('filtersPanel') && !state[props.storeKey].ui.get('selectedDocuments').size > 0
+    open: true
   };
 }
 

@@ -6,45 +6,6 @@ import {actions} from 'app/BasicReducer';
 import * as uiActions from './uiActions';
 import {actions as connectionsActions} from 'app/Connections';
 
-import {isClient} from 'app/utils';
-
-import {store} from '../../store.js';
-if (isClient) {
-  window.uwazi = {};
-  window.uwazi.moveConnection = (id, leftOffset, right) => {
-    const rightOffset = right || leftOffset;
-    let reference = store.getState().documentViewer.references.toJS().find((r) => r._id === id);
-    let pdfInfo = store.getState().documentViewer.doc.get('pdfInfo').toJS();
-    let movedRef = {
-      _rev: reference._rev,
-      _id: reference._id,
-      sourceRange: reference.sourceRange,
-      targetDocument: reference.targetDocument,
-      targetRange: reference.targetRange,
-      sourceDocument: reference.sourceDocument,
-      relationType: reference.relationType,
-      language: reference.language,
-      type: reference.type
-    };
-
-    movedRef.sourceRange.start += leftOffset;
-    movedRef.sourceRange.end += rightOffset;
-
-    store.dispatch({
-      type: types.REMOVE_REFERENCE,
-      reference: movedRef
-    });
-    return connectionsActions.saveConnection(movedRef, (updatedReference) => {
-      store.dispatch({
-        type: types.ADD_REFERENCE,
-        reference: updatedReference
-      });
-      store.dispatch(uiActions.activateReference(updatedReference, pdfInfo, 'references'));
-    })(store.dispatch, store.getState);
-  };
-}
-
-
 export function setReferences(references) {
   return {
     type: types.SET_REFERENCES,

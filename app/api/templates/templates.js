@@ -106,7 +106,6 @@ export default {
     return model.getById(templateId);
   },
 
-  /// MAL !! deberia hacer un count de documents y entitites ??? revisar
   delete(template) {
     return this.countByTemplate(template._id)
     .then((count) => {
@@ -119,19 +118,12 @@ export default {
       return model.delete(template._id);
     })
     .then(() => {
-      return {ok: true};
+      return template;
     });
   },
 
-  countByTemplate() {
-    return Promise.resolve(0);
-    //return request.get(`${dbURL}/_design/documents/_view/count_by_template?group_level=1&key="${templateId}"`)
-    //.then((response) => {
-    //if (!response.json.rows.length) {
-    //return 0;
-    //}
-    //return response.json.rows[0].value;
-    //});
+  countByTemplate(template) {
+    return entities.countByTemplate(template);
   },
 
   getEntitySelectNames(templateId) {

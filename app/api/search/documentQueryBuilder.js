@@ -100,7 +100,7 @@ export default function () {
                       multi_match: {
                         query: term,
                         type: 'best_fields',
-                        fuzziness: 'AUTO',
+                        fuzziness: 0,
                         fields: ['fullText*']
                       }
                     },

@@ -86,7 +86,7 @@ export class TimelineViewer extends Component {
   getDates(entity, origin) {
     const caseDatesNames = this.props.templates.reduce((names, t) => {
       t.get('properties').forEach(p => {
-        if (p.get('type') === 'multidate') {
+        if (p.get('type') === 'multidate' || p.get('type') === 'date') {
           names.push(p.get('name'));
         }
       });
@@ -95,9 +95,15 @@ export class TimelineViewer extends Component {
 
     return entity.metadata.reduce((dates, metadata) => {
       if (caseDatesNames.indexOf(metadata.name) !== -1) {
-        metadata.value.forEach(date => {
-          dates.push({label: metadata.label, timestamp: date.timestamp, origin});
-        });
+        if (metadata.type === 'date') {
+          dates.push({label: metadata.label, timestamp: metadata.timestamp, origin});
+        }
+
+        if (metadata.type === 'multidate') {
+          metadata.value.forEach(date => {
+            dates.push({label: metadata.label, timestamp: date.timestamp, origin});
+          });
+        }
       }
       return dates;
     }, []);

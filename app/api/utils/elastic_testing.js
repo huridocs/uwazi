@@ -18,5 +18,9 @@ export default {
     .then(() => {
       return elastic.indices.refresh({index: elasticIndex});
     });
+  },
+
+  refresh() {
+    return elastic.indices.refresh({index: elasticIndex});
   }
 };

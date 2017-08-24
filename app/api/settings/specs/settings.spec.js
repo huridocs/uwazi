@@ -111,7 +111,28 @@ describe('settings', () => {
             done();
           })
           .catch(catchErrors(done));
-        })
+        });
+      });
+    });
+  });
+
+  describe('removeTemplateFromFilters', () => {
+    it('should remove the template from the filters', (done) => {
+      let _settings = {
+        filters: [
+          {id: '123'},
+          {
+            id: 'axz',
+            items: [{id: '123'}]
+          }
+        ]
+      };
+      spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
+      spyOn(settings, 'save');
+      settings.removeTemplateFromFilters('123')
+      .then(() => {
+        expect(settings.save).toHaveBeenCalledWith({filters: [{id: 'axz', items: []}]});
+        done();
       });
     });
   });
