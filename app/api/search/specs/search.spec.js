@@ -231,6 +231,21 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
+    it('should filter by fullText, and return template aggregations based on the filter the language and the published status', (done) => {
+      Promise.all([
+        search.search({searchTerm: 'spanish'}, 'es')
+      ])
+      .then(([matches]) => {
+        const matchesAggs = matches.aggregations.all.types.buckets;
+        expect(matchesAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(1);
+        expect(matchesAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
+        expect(matchesAggs.find((a) => a.key === ids.templateMetadata1).filtered.doc_count).toBe(0);
+        expect(matchesAggs.find((a) => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     describe('select aggregations', () => {
       it('should return aggregations of select fields when filtering by types', (done) => {
         Promise.all([
