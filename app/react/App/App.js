@@ -13,6 +13,13 @@ import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
+import {isClient} from 'app/utils';
+import {loadCSS} from 'fg-loadcss';
+
+if (isClient) {
+  loadCSS('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+  loadCSS('https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900');
+}
 
 class App extends Component {
 
