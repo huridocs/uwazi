@@ -45,8 +45,7 @@ export class FiltersForm extends Component {
   shouldComponentUpdate(nextProps) {
     return !is(this.props.fields, nextProps.fields) ||
            !is(this.props.aggregations, nextProps.aggregations) ||
-           !is(this.props.documentTypes, nextProps.documentTypes) ||
-           this.props.search !== nextProps.search;
+           !is(this.props.documentTypes, nextProps.documentTypes);
   }
 
   render() {
@@ -99,7 +98,7 @@ export class FiltersForm extends Component {
                     </li>
                   </ul>
               </FormGroup>
-              );
+            );
           }
           if (property.type === 'nested') {
             return (
@@ -160,7 +159,7 @@ export class FiltersForm extends Component {
                   </li>
                 </ul>
               </FormGroup>
-              );
+            );
           }
           if (property.type === 'numeric') {
             return (
@@ -180,7 +179,7 @@ export class FiltersForm extends Component {
                   </li>
                 </ul>
               </FormGroup>
-              );
+            );
           }
           return (
             <FormGroup key={property.name}>
@@ -201,7 +200,7 @@ export class FiltersForm extends Component {
                 </ul>
               </Field>
             </FormGroup>
-            );
+          );
         })}
         </Form>
       </div>
@@ -227,7 +226,6 @@ export function mapStateToProps(state, props) {
     fields: state[props.storeKey].filters.get('properties'),
     aggregations: state[props.storeKey].aggregations,
     templates: state.templates,
-    search: state[props.storeKey].search,
     documentTypes: state[props.storeKey].filters.get('documentTypes'),
     dateFormat: state.settings.collection.get('dateFormat')
   };
