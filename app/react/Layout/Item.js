@@ -5,7 +5,6 @@ import formater from '../Metadata/helpers/formater';
 import marked from 'app/utils/marked';
 
 import t from '../I18N/t';
-import ShowIf from 'app/App/ShowIf';
 
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
@@ -134,9 +133,7 @@ export class Item extends Component {
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
-            <ShowIf if={evalPublished && !doc.published}>
-              <i className="item-private-icon fa fa-lock"></i>
-            </ShowIf>
+            {evalPublished && !doc.published ? <i className="item-private-icon fa fa-lock"></i> : false }
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc.title}</span>
@@ -150,9 +147,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
-            <ShowIf if={!!doc.template}>
-              <TemplateLabel template={doc.template}/>
-            </ShowIf>
+            {doc.template ? <TemplateLabel template={doc.template}/> : false}
             {this.props.labels}
           </div>
           {buttons}

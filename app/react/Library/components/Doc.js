@@ -82,17 +82,19 @@ export class Doc extends Component {
     }
 
     const buttons = <div>
-                      <ShowIf if={doc.processed || isEntity}>
+                      {doc.processed || isEntity ?
                         <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
                           <i className="fa fa-file-text-o"></i>
-                        </I18NLink>
-                      </ShowIf>
-                      <ShowIf if={(doc.processed || isEntity) && !doc.published && hasTemplate}>
+                        </I18NLink> : false
+                      }
+                      {(doc.processed || isEntity) && !doc.published && hasTemplate ?
                         <button className="item-shortcut btn btn-default btn-hover-success" onClick={this.publish.bind(this)}>
                           <i className="fa fa-paper-plane"></i>
-                        </button>
-                      </ShowIf>
+                        </button> : false
+                      }
                     </div>;
+
+    //return <div>{buttons}</div>;
 
     return <Item onClick={this.onClick.bind(this)}
                  onSnippetClick={this.props.onSnippetClick}
