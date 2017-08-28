@@ -14,7 +14,7 @@ export default class Nested extends Component {
       return '';
     }
 
-    let keys = Object.keys(rows[0]);
+    let keys = Object.keys(rows[0]).sort();
     let result = '| ' + keys.join(' | ') + ' |\n';
     result += '| ' + keys.map(() => '-').join(' | ') + ' |\n';
     result += rows.map((row) => {

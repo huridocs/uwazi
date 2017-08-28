@@ -11,10 +11,7 @@ const propertiesSchema = new mongoose.Schema({
   sortable: Boolean,
   showInCard: Boolean,
   prioritySorting: Boolean,
-  nestedProperties: [{
-    key: String,
-    label: String
-  }]
+  nestedProperties: [String]
 });
 
 const commonPropertiesSchema = new mongoose.Schema({

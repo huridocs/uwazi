@@ -66,40 +66,14 @@ export default {
       {name: 'field2', type: 'text'},
       {name: 'select1', type: 'select'},
       {name: 'multiselect1', type: 'multiselect'},
-      {name: 'nestedField', type: 'nested',
-        nestedProperties: [
-          {
-            label: 'nested 1 label',
-            key: 'nested1',
-            _id: db.id()
-          },
-          {
-            label: 'nested 2 label',
-            key: 'nested2',
-            _id: db.id()
-          }
-        ]
-      }
+      {name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2']}
     ]},
     {_id: templateMetadata2, properties: [
       {name: 'field1', type: 'text'},
       {name: 'field3', type: 'text'},
       {name: 'select1', type: 'select'},
       {name: 'multiselect1', type: 'multiselect'},
-      {name: 'nestedField', type: 'nested',
-        nestedProperties: [
-          {
-            label: 'nested 1 label',
-            key: 'nested1',
-            _id: db.id()
-          },
-          {
-            label: 'nested 2 label',
-            key: 'nested2',
-            _id: db.id()
-          }
-        ]
-      }
+      {name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2']}
     ]}
   ]
 };

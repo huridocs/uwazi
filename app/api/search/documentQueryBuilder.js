@@ -364,7 +364,7 @@ export default function () {
           return result.concat(propFilters);
         }, []);
 
-        let path = `metadata.${property.name}.${prop.key}.raw`;
+        let path = `metadata.${property.name}.${prop}.raw`;
         let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must && match.bool.must[0].nested) {
             match.bool.must = match.bool.must.filter((nestedMatcher) => {
@@ -380,7 +380,7 @@ export default function () {
           return match;
         }).filter((f) => f);
 
-        nestedAggregation.aggregations[prop.key] = {
+        nestedAggregation.aggregations[prop] = {
           terms: {
             field: path,
             size: 9999

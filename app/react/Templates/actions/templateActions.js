@@ -30,15 +30,9 @@ export function addProperty(property = {}, index = 0) {
   };
 }
 
-export function addNestedProperty(propertyIndex) {
+export function setNestedProperties(propertyIndex, properties) {
   return function (dispatch) {
-    dispatch(formActions.push(`template.data.properties[${propertyIndex}].nestedProperties`, {key: '', label: ''}));
-  };
-}
-
-export function removeNestedProperty(propertyIndex, nestedIndex) {
-  return function (dispatch) {
-    dispatch(formActions.remove(`template.data.properties[${propertyIndex}].nestedProperties`, nestedIndex));
+    dispatch(formActions.load(`template.data.properties[${propertyIndex}].nestedProperties`, properties));
   };
 }
 

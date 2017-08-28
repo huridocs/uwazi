@@ -1,6 +1,8 @@
 import moment from 'moment';
 import t from 'app/I18N/t';
 import {advancedSort} from 'app/utils/advancedSort';
+import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
+import {store} from 'app/store';
 
 export default {
 
@@ -87,11 +89,13 @@ export default {
       return {label: property.label, value: '', showInCard};
     }
 
-    let keys = Object.keys(rows[0]);
-    let result = '| ' + keys.join(' | ') + '|\n';
+    let locale = store.getState().locale;
+    let keys = Object.keys(rows[0]).sort();
+    let translatedKeys = keys.map((key) => nestedProperties[key.toLowerCase()] ? nestedProperties[key.toLowerCase()]['key_' + locale] : key);
+    let result = '| ' + translatedKeys.join(' | ') + '|\n';
     result += '| ' + keys.map(() => '-').join(' | ') + '|\n';
     result += rows.map((row) => {
-      return '| ' + keys.map((key) => (row[key] || []).join(',')).join(' | ');
+      return '| ' + keys.map((key) => (row[key] || []).join(', ')).join(' | ');
     }).join('|\n') + '|';
 
     return this.markdown(property, result, showInCard);
