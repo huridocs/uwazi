@@ -11,15 +11,9 @@ export function filterDocumentTypes(documentTypes, storeKey) {
     const templates = state.templates.toJS();
     const thesauris = state.thesauris.toJS();
 
-    const currentFilters = state[storeKey].filters.toJS().properties;
     let libraryFilters = comonPropertiesHelper.comonProperties(templates, documentTypes)
     .filter((prop) => prop.filter);
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
-    libraryFilters.forEach((libraryFilter) => {
-      const currentFilter = currentFilters.find((f) => f.name === libraryFilter.name) || {};
-      //libraryFilter.active = currentFilter.active;
-    });
-    //dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
 
@@ -32,14 +26,14 @@ export function filterDocumentTypes(documentTypes, storeKey) {
 
     const search = Object.assign({types: documentTypes}, state[storeKey].search, {sort, order});
     let filters = {documentTypes, properties: libraryFilters};
-    dispatch(libraryActions.searchDocumentsTest({filters, search}, storeKey));
+    dispatch(libraryActions.searchDocuments({filters, search}, storeKey));
   };
 }
 
 export function resetFilters(storeKey) {
   return function (dispatch, getState) {
     dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: []});
-    libraryActions.searchDocuments(getState()[storeKey].search, storeKey)(dispatch, getState);
+    libraryActions.searchDocuments({search: getState()[storeKey].search}, storeKey)(dispatch, getState);
   };
 }
 
@@ -52,18 +46,5 @@ export function toggleFilter(propertyName, properties) {
       return property;
     });
     dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
-  };
-}
-
-export function activateFilter(propertyName, activate, properties) {
-  return function (dispatch) {
-    //let updatedProperties = properties.map((property) => {
-      //if (property.name === propertyName) {
-        //property.active = activate;
-      //}
-      //return property;
-    //});
-    //dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
-    dispatch({type: 'nothing'});
   };
 }

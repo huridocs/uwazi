@@ -19,20 +19,24 @@ export class FiltersForm extends Component {
 
   constructor(props) {
     super(props);
-    this.search = debounce((values) => {
-      this.props.searchDocuments(values, this.props.storeKey);
+    this.search = debounce((search) => {
+      this.props.searchDocuments({search}, this.props.storeKey);
     }, 400);
+
+    this.activateAutoSearch = () => {
+      this.autoSearch = true;
+    };
   }
 
-  onChange(values) {
+  onChange(search) {
     if (this.autoSearch) {
       this.autoSearch = false;
-      this.search(values, this.props.storeKey);
+      this.search(search, this.props.storeKey);
     }
   }
 
-  submit(values) {
-    this.props.searchDocuments(values, this.props.storeKey);
+  submit(search) {
+    this.props.searchDocuments({search}, this.props.storeKey);
   }
 
   translatedOptions(property) {
@@ -71,7 +75,7 @@ export class FiltersForm extends Component {
 
         <Form model={model} id="filtersForm" onSubmit={this.submit.bind(this)} onChange={this.onChange.bind(this)}>
           {fields.map((property) => {
-            let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
+            let propertyClass = 'search__filter is-active';
             if (property.type === 'select' || property.type === 'multiselect') {
               return (
                 <FormGroup key={property.name}>
@@ -90,10 +94,8 @@ export class FiltersForm extends Component {
                       model={`.filters.${property.name}.values`}
                       prefix={property.name}
                       options={this.translatedOptions(property)}
-                      optionsValue="id" onChange={(options) => {
-                        this.autoSearch = true;
-                        //this.props.activateFilter(property.name, !!options.length, allFields);
-                      }}
+                      optionsValue="id"
+                      onChange={this.activateAutoSearch}
                     />
                   </li>
                 </ul>
@@ -112,11 +114,7 @@ export class FiltersForm extends Component {
                           <input
                             id={property.name + 'strict'}
                             type='checkbox'
-                            onChange={() => {
-                              this.autoSearch = true;
-                              this.props.activateFilter(property.name, true, allFields);
-                            }
-                            }
+                            onChange={this.activateAutoSearch}
                           />
                         </Field>
                         <label htmlFor={property.name + 'strict'}>
@@ -128,11 +126,7 @@ export class FiltersForm extends Component {
                       <NestedMultiselect
                         aggregations={this.props.aggregations}
                         property={property}
-                        onChange={(options) => {
-                          this.autoSearch = true;
-                          let active = Object.keys(options).reduce((res, prop) => res || options[prop].length || options[prop] === true, false);
-                          this.props.activateFilter(property.name, active, allFields);
-                        }}
+                        onChange={this.activateAutoSearch}
                       />
                     </li>
                   </ul>
@@ -150,10 +144,7 @@ export class FiltersForm extends Component {
                     <li className="wide">
                       <DateRange
                         model={`.filters.${property.name}`}
-                        onChange={(val) => {
-                          this.autoSearch = true;
-                          this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
-                        }}
+                        onChange={this.activateAutoSearch}
                         format={this.props.dateFormat}
                       />
                     </li>
@@ -172,9 +163,7 @@ export class FiltersForm extends Component {
                     <li className="wide">
                       <NumericRange
                         model={`.filters.${property.name}`}
-                        onChange={(val) => {
-                          this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
-                        }}
+                        onChange={this.activateAutoSearch}
                       />
                     </li>
                   </ul>
@@ -192,10 +181,7 @@ export class FiltersForm extends Component {
                       </label>
                     </li>
                     <li className="wide">
-                      <input className="form-control" onChange={(e) => {
-                        this.autoSearch = true;
-                        this.props.activateFilter(property.name, !!e.target.value, allFields);
-                      }} />
+                      <input className="form-control" onChange={this.activateAutoSearch} />
                   </li>
                 </ul>
               </Field>

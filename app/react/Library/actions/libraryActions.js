@@ -81,13 +81,32 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
+export function filterIsEmpty(value) {
+  if (value && value.values && !value.values.length) {
+    return true;
+  }
+
+  if (Array.isArray(value) && !value.length) {
+    return true;
+  }
+
+  if (typeof value === 'string' && !value) {
+    return true;
+  }
+
+  if (typeof value === 'object' && !Object.keys(value).length) {
+    return true;
+  }
+
+  return false;
+}
+
 export function processFilters(readOnlySearch, filters, limit) {
   const search = Object.assign({filters: {}}, readOnlySearch);
   search.filters = {};
+
   filters.properties.forEach((property) => {
-    //console.log(readOnlySearch.filters[property.name]);
-    if (readOnlySearch.filters[property.name] && readOnlySearch.filters[property.name].values && readOnlySearch.filters[property.name].values.length) {
-    //if (property.active) {
+    if (!filterIsEmpty(readOnlySearch.filters[property.name])) {
       search.filters[property.name] = readOnlySearch.filters[property.name];
     }
   });
@@ -114,9 +133,19 @@ export function encodeSearch(search, appendQ = true) {
   return appendQ ? '?q=' + rison.encode(search) : rison.encode(search);
 }
 
-export function searchDocumentsTest({filters, search}, storeKey, limit) {
-  return function (dispatch) {
-    const finalSearchParams = processFilters(search, filters, limit);
+export function searchDocuments({search, filters}, storeKey, limit) {
+  return function (dispatch, getState) {
+    let currentFilters;
+    if (filters) {
+      currentFilters = filters;
+    }
+    if (filters && filters.toJS) {
+      currentFilters = filters.toJS();
+    }
+    if (!currentFilters) {
+      currentFilters = getState()[storeKey].filters.toJS();
+    }
+    const finalSearchParams = processFilters(search, currentFilters, limit);
 
     if (search.userSelectedSorting) {
       dispatch(actions.set(storeKey + '.selectedSorting', search));
@@ -127,25 +156,6 @@ export function searchDocumentsTest({filters, search}, storeKey, limit) {
     const query = browserHistory.getCurrentLocation().query || {};
 
     query.q = encodeSearch(finalSearchParams, false);
-    browserHistory.push(path + toUrlParams(query));
-  };
-}
-
-export function searchDocuments(readOnlySearch, storeKey, limit) {
-  return function (dispatch, getState) {
-    const filters = getState()[storeKey].filters.toJS();
-    const search = processFilters(readOnlySearch, filters, limit);
-    //dispatch(hideSuggestions());
-
-    if (readOnlySearch.userSelectedSorting) {
-      dispatch(actions.set(storeKey + '.selectedSorting', readOnlySearch));
-    }
-
-    const pathname = browserHistory.getCurrentLocation().pathname;
-    const path = (pathname + '/').replace(/\/\//g, '/');
-    const query = browserHistory.getCurrentLocation().query || {};
-
-    query.q = encodeSearch(search, false);
     browserHistory.push(path + toUrlParams(query));
   };
 }
@@ -254,7 +264,7 @@ export function deleteEntity(entity) {
 
 export function loadMoreDocuments(storeKey, amount) {
   return function (dispatch, getState) {
-    searchDocuments(getState()[storeKey].search, storeKey, amount)(dispatch, getState);
+    searchDocuments({search: getState()[storeKey].search}, storeKey, amount)(dispatch, getState);
   };
 }
 

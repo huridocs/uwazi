@@ -57,13 +57,13 @@ export default class Library extends RouteHandler {
 
   setReduxState(state) {
     const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
-    dispatch(setDocuments(state.library.documents));
-    dispatch(actions.set('aggregations', state.library.aggregations));
     dispatch(formActions.load('library.search', state.library.search));
     dispatch({type: 'SET_LIBRARY_FILTERS',
       documentTypes: state.library.filters.documentTypes,
       libraryFilters: state.library.filters.properties}
     );
+    dispatch(setDocuments(state.library.documents));
+    dispatch(actions.set('aggregations', state.library.aggregations));
   }
 
   componentWillMount() {

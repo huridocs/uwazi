@@ -41,11 +41,11 @@ export class SearchBar extends Component {
     this.props.change('search.searchTerm', '');
     let search = Object.assign({}, this.props.search);
     search.searchTerm = '';
-    this.props.searchDocuments(search, this.props.storeKey);
+    this.props.searchDocuments({search}, this.props.storeKey);
   }
 
-  search(values) {
-    this.props.searchDocuments(values, this.props.storeKey);
+  search(search) {
+    this.props.searchDocuments({search}, this.props.storeKey);
   }
 
   render() {

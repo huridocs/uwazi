@@ -54,7 +54,6 @@ describe('library helper', () => {
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
       expect(state.properties.length).toBe(1);
-      expect(state.properties[0].active).toBe(true);
       expect(state.search.filters.country).toBe('countryValue');
       expect(state.search.searchTerm).toBe('searchTerm');
       expect(state.search.order).toBe('order');
