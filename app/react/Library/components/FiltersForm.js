@@ -10,7 +10,7 @@ import {MultiSelect, DateRange, NestedMultiselect, NumericRange, Switcher} from 
 import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {searchDocuments} from 'app/Library/actions/libraryActions';
-import {toggleFilter, activateFilter} from 'app/Library/actions/filterActions';
+import {activateFilter} from 'app/Library/actions/filterActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import {t} from 'app/I18N';
 import debounce from 'app/utils/debounce';
@@ -44,14 +44,14 @@ export class FiltersForm extends Component {
 
   shouldComponentUpdate(nextProps) {
     return !is(this.props.fields, nextProps.fields) ||
-           !is(this.props.aggregations, nextProps.aggregations) ||
-           !is(this.props.documentTypes, nextProps.documentTypes);
+      !is(this.props.aggregations, nextProps.aggregations) ||
+      !is(this.props.documentTypes, nextProps.documentTypes);
   }
 
   render() {
     const {templates, documentTypes} = this.props;
-    const aggregations = this.props.aggregations.toJS();
 
+    const aggregations = this.props.aggregations.toJS();
     let translationContext = documentTypes.get(0);
     const allFields = this.props.fields.toJS();
     const fields = libraryHelper.parseWithAggregations(allFields.slice(0), aggregations)
@@ -63,18 +63,18 @@ export class FiltersForm extends Component {
           let activeTypes = templates.filter((template) => documentTypes.includes(template.get('_id')));
           if (activeTypes.size > 0 && fields.length === 0) {
             return <div className="empty-state no-filters">
-                    <i className="fa fa-close"></i>
-                    <span>{t('System', 'No common filters')}</span>
-                  </div>;
+              <i className="fa fa-close"></i>
+              <span>{t('System', 'No common filters')}</span>
+            </div>;
           }
         })()}
 
         <Form model={model} id="filtersForm" onSubmit={this.submit.bind(this)} onChange={this.onChange.bind(this)}>
-        {fields.map((property) => {
-          let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
-          if (property.type === 'select' || property.type === 'multiselect') {
-            return (
-              <FormGroup key={property.name}>
+          {fields.map((property) => {
+            let propertyClass = property.active ? 'search__filter is-active' : 'search__filter';
+            if (property.type === 'select' || property.type === 'multiselect') {
+              return (
+                <FormGroup key={property.name}>
                   <ul className={propertyClass}>
                     <li>
                       {t(translationContext, property.label)}
@@ -83,26 +83,26 @@ export class FiltersForm extends Component {
                         <Switcher model={`.filters.${property.name}.and`} prefix={property.name} onChange={() => {
                           this.autoSearch = true;
                         }}/>
-                      </ShowIf>
-                    </li>
-                    <li className="wide">
-                      <MultiSelect
-                        model={`.filters.${property.name}.values`}
-                        prefix={property.name}
-                        options={this.translatedOptions(property)}
-                        optionsValue="id" onChange={(options) => {
-                          this.autoSearch = true;
-                          this.props.activateFilter(property.name, !!options.length, allFields);
-                        }}
-                      />
-                    </li>
-                  </ul>
+                    </ShowIf>
+                  </li>
+                  <li className="wide">
+                    <MultiSelect
+                      model={`.filters.${property.name}.values`}
+                      prefix={property.name}
+                      options={this.translatedOptions(property)}
+                      optionsValue="id" onChange={(options) => {
+                        this.autoSearch = true;
+                        //this.props.activateFilter(property.name, !!options.length, allFields);
+                      }}
+                    />
+                  </li>
+                </ul>
               </FormGroup>
-            );
-          }
-          if (property.type === 'nested') {
-            return (
-              <FormGroup key={property.name}>
+              );
+            }
+            if (property.type === 'nested') {
+              return (
+                <FormGroup key={property.name}>
                   <ul className={propertyClass}>
                     <li>
                       {t(translationContext, property.label)}
@@ -116,11 +116,11 @@ export class FiltersForm extends Component {
                               this.autoSearch = true;
                               this.props.activateFilter(property.name, true, allFields);
                             }
-                          }
+                            }
                           />
                         </Field>
                         <label htmlFor={property.name + 'strict'}>
-                            <span>&nbsp;Strict mode</span>
+                          <span>&nbsp;Strict mode</span>
                         </label>
                       </div>
                     </li>
@@ -136,72 +136,72 @@ export class FiltersForm extends Component {
                       />
                     </li>
                   </ul>
-              </FormGroup>
-            );
-          }
-          if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'daterange') {
-            return (
-              <FormGroup key={property.name}>
-                <ul className={propertyClass}>
-                  <li>
-                    {t(translationContext, property.label)}
-                    {property.required ? <span className="required">*</span> : ''}
-                  </li>
-                  <li className="wide">
-                    <DateRange
-                      model={`.filters.${property.name}`}
-                      onChange={(val) => {
-                        this.autoSearch = true;
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
-                      }}
-                      format={this.props.dateFormat}
-                    />
-                  </li>
-                </ul>
-              </FormGroup>
-            );
-          }
-          if (property.type === 'numeric') {
-            return (
-              <FormGroup key={property.name}>
-                <ul className={propertyClass}>
-                  <li>
-                    {t(translationContext, property.label)}
-                    {property.required ? <span className="required">*</span> : ''}
-                  </li>
-                  <li className="wide">
-                    <NumericRange
-                      model={`.filters.${property.name}`}
-                      onChange={(val) => {
-                        this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
-                      }}
-                    />
-                  </li>
-                </ul>
-              </FormGroup>
-            );
-          }
-          return (
-            <FormGroup key={property.name}>
-              <Field model={`.filters.${property.name}`} >
-                <ul className={propertyClass}>
-                  <li>
-                    <label>
+                </FormGroup>
+              );
+            }
+            if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'daterange') {
+              return (
+                <FormGroup key={property.name}>
+                  <ul className={propertyClass}>
+                    <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                    </label>
-                  </li>
-                  <li className="wide">
-                    <input className="form-control" onChange={(e) => {
-                      this.autoSearch = true;
-                      this.props.activateFilter(property.name, !!e.target.value, allFields);
-                    }} />
+                    </li>
+                    <li className="wide">
+                      <DateRange
+                        model={`.filters.${property.name}`}
+                        onChange={(val) => {
+                          this.autoSearch = true;
+                          this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
+                        }}
+                        format={this.props.dateFormat}
+                      />
+                    </li>
+                  </ul>
+                </FormGroup>
+              );
+            }
+            if (property.type === 'numeric') {
+              return (
+                <FormGroup key={property.name}>
+                  <ul className={propertyClass}>
+                    <li>
+                      {t(translationContext, property.label)}
+                      {property.required ? <span className="required">*</span> : ''}
+                    </li>
+                    <li className="wide">
+                      <NumericRange
+                        model={`.filters.${property.name}`}
+                        onChange={(val) => {
+                          this.props.activateFilter(property.name, Boolean(val.from || val.to), allFields);
+                        }}
+                      />
+                    </li>
+                  </ul>
+                </FormGroup>
+              );
+            }
+            return (
+              <FormGroup key={property.name}>
+                <Field model={`.filters.${property.name}`} >
+                  <ul className={propertyClass}>
+                    <li>
+                      <label>
+                        {t(translationContext, property.label)}
+                        {property.required ? <span className="required">*</span> : ''}
+                      </label>
+                    </li>
+                    <li className="wide">
+                      <input className="form-control" onChange={(e) => {
+                        this.autoSearch = true;
+                        this.props.activateFilter(property.name, !!e.target.value, allFields);
+                      }} />
                   </li>
                 </ul>
               </Field>
             </FormGroup>
-          );
-        })}
+            );
+          })}
         </Form>
       </div>
     );
@@ -213,7 +213,6 @@ FiltersForm.propTypes = {
   aggregations: PropTypes.object,
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,
-  toggleFilter: PropTypes.func,
   activateFilter: PropTypes.func,
   search: PropTypes.object,
   documentTypes: PropTypes.object,
@@ -232,7 +231,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({searchDocuments: searchDocuments, toggleFilter, activateFilter}, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({searchDocuments: searchDocuments, activateFilter}, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

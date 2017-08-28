@@ -17,9 +17,9 @@ export function filterDocumentTypes(documentTypes, storeKey) {
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
     libraryFilters.forEach((libraryFilter) => {
       const currentFilter = currentFilters.find((f) => f.name === libraryFilter.name) || {};
-      libraryFilter.active = currentFilter.active;
+      //libraryFilter.active = currentFilter.active;
     });
-    dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
+    //dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes, libraryFilters});
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
 
@@ -31,7 +31,8 @@ export function filterDocumentTypes(documentTypes, storeKey) {
     });
 
     const search = Object.assign({types: documentTypes}, state[storeKey].search, {sort, order});
-    dispatch(libraryActions.searchDocuments(search, storeKey));
+    let filters = {documentTypes, properties: libraryFilters};
+    dispatch(libraryActions.searchDocumentsTest({filters, search}, storeKey));
   };
 }
 
@@ -56,12 +57,13 @@ export function toggleFilter(propertyName, properties) {
 
 export function activateFilter(propertyName, activate, properties) {
   return function (dispatch) {
-    let updatedProperties = properties.map((property) => {
-      if (property.name === propertyName) {
-        property.active = activate;
-      }
-      return property;
-    });
-    dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
+    //let updatedProperties = properties.map((property) => {
+      //if (property.name === propertyName) {
+        //property.active = activate;
+      //}
+      //return property;
+    //});
+    //dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
+    dispatch({type: 'nothing'});
   };
 }

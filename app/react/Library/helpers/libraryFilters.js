@@ -29,9 +29,9 @@ export function URLQueryToState(query, templates, thesauris) {
 
   let {searchTerm = '', filters = {}, sort = prioritySortingCriteria.get().sort, order = prioritySortingCriteria.get().order} = query;
   properties = populateOptions(properties, thesauris).map((property) => {
-    if (filters[property.name]) {
-      property.active = true;
-    }
+    //if (filters[property.name]) {
+      //property.active = true;
+    //}
     let defaultValue = {};
 
     if (property.type === 'text') {

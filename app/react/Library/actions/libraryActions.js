@@ -85,7 +85,9 @@ export function processFilters(readOnlySearch, filters, limit) {
   const search = Object.assign({filters: {}}, readOnlySearch);
   search.filters = {};
   filters.properties.forEach((property) => {
-    if (property.active) {
+    //console.log(readOnlySearch.filters[property.name]);
+    if (readOnlySearch.filters[property.name] && readOnlySearch.filters[property.name].values && readOnlySearch.filters[property.name].values.length) {
+    //if (property.active) {
       search.filters[property.name] = readOnlySearch.filters[property.name];
     }
   });
@@ -112,11 +114,28 @@ export function encodeSearch(search, appendQ = true) {
   return appendQ ? '?q=' + rison.encode(search) : rison.encode(search);
 }
 
+export function searchDocumentsTest({filters, search}, storeKey, limit) {
+  return function (dispatch) {
+    const finalSearchParams = processFilters(search, filters, limit);
+
+    if (search.userSelectedSorting) {
+      dispatch(actions.set(storeKey + '.selectedSorting', search));
+    }
+
+    const pathname = browserHistory.getCurrentLocation().pathname;
+    const path = (pathname + '/').replace(/\/\//g, '/');
+    const query = browserHistory.getCurrentLocation().query || {};
+
+    query.q = encodeSearch(finalSearchParams, false);
+    browserHistory.push(path + toUrlParams(query));
+  };
+}
+
 export function searchDocuments(readOnlySearch, storeKey, limit) {
   return function (dispatch, getState) {
     const filters = getState()[storeKey].filters.toJS();
     const search = processFilters(readOnlySearch, filters, limit);
-    dispatch(hideSuggestions());
+    //dispatch(hideSuggestions());
 
     if (readOnlySearch.userSelectedSorting) {
       dispatch(actions.set(storeKey + '.selectedSorting', readOnlySearch));
