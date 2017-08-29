@@ -16,6 +16,7 @@ import {fromJS as Immutable} from 'immutable';
 import {getPropsFromRoute} from './utils';
 import assets from '../../dist/webpack-assets.json';
 
+
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
   let componentHtml;
 
@@ -197,6 +198,9 @@ function ServerRouter(req, res) {
     return;
   }
 
+  const PORT = process.env.PORT;
+  api.APIURL(`http://localhost:${PORT || 3000}/api/`);
+
   api.get('settings')
   .then((response) => {
     let location = req.url;
@@ -206,13 +210,13 @@ function ServerRouter(req, res) {
 
     match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
       if (error) {
-        handleError(error);
+        return handleError(error);
       } else if (redirectLocation) {
-        handleRedirect(res, redirectLocation);
+        return handleRedirect(res, redirectLocation);
       } else if (renderProps) {
-        handleRoute(res, renderProps, req);
+        return handleRoute(res, renderProps, req);
       } else {
-        handle404(res);
+        return handle404(res);
       }
     });
   });
