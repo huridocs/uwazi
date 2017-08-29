@@ -2,13 +2,11 @@ footer {
   margin: 30px 0 0;
   padding: 20px 0 15px;
   text-align: left;
-  font-size: $f-size-sm;
-  color: $c-grey-dark;
-  //background: $c-white;
+  color: $c-grey;
   border-top: 1px solid $c-grey-light;
 
   a {
-    color: $c-grey-dark;
+    color: $c-grey;
   }
 
   @media(min-width: 1024px) {
@@ -101,10 +99,8 @@ footer {
   }
 }
 
+@media(min-width: 1024px) {
 .footer-collection_name {
-  font-family: $f-mono;
-
-  @media(min-width: 1024px) {
     width: auto;
   }
 }
