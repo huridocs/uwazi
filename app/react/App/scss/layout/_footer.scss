@@ -35,6 +35,7 @@ footer {
   &_item {
     display: inline-block;
     padding-left: 15px;
+    position: relative;
     @media(min-width: 1024px) {
       padding: 0 15px;
     }
@@ -57,49 +58,46 @@ footer {
   }
 }
 
-.footer-powered {
-  position: relative;
-  p {
-    margin: 0;
-  }
-  &_title {
-    font-size: 7px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    line-height: 5px;
-  }
-  &_logo {
+.footer-logo img {
+  height: 20px;
+}
+.footer-tooltip {
+  @include tooltip('top');
+  padding: 15px;
+  
+  .footer-nav_item:hover & {
     display: block;
-    font-size: $f-size;
-    font-weight: bold;
-    line-height: 15px;
   }
-  &_tooltip {
-    width: 250px;
-    line-height: 1.2em;
-    display: none;
+  /*width: 250px;
+  line-height: 1.2em;
+  display: block;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  padding: 15px;
+  background-color: transparentize($c-black, .25);
+  color: $c-white;
+  border-radius: $border-radius;
+  text-align: center;
+  &:after {
+    content: '';
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid transparentize($c-black, .25);
     position: absolute;
-    bottom: 100%;
+    top: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    padding: 15px;
-    background-color: transparentize($c-black, .25);
-    color: $c-white;
-    border-radius: $border-radius;
-    text-align: center;
-    &:after {
-      content: '';
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 5px solid transparentize($c-black, .25);
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-    }
+    transform: translateX(-50%);
+  }*/
+  
+  img {
+    margin: 0 0 3px 2px;
+    height: 12px;
   }
-  &:hover &_tooltip {
-    display: block;
+  
+  p {
+    margin-bottom: 0;
   }
 }
 
