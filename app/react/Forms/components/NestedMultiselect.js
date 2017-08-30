@@ -5,6 +5,8 @@ import {MultiSelect} from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
 import advancedSortUtil from 'app/utils/advancedSort';
+import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
+import {store} from 'app/store';
 
 export default class NestedMultiselect extends Component {
 
@@ -78,41 +80,43 @@ export default class NestedMultiselect extends Component {
             </li>
             {(() => {
               return property.nestedProperties.map((prop, index) => {
-                let options = this.getOptions(prop.key);
+                let options = this.getOptions(prop);
                 if (!options.length) {
                   return false;
                 }
+                let locale = store.getState().locale;
+                let label = nestedProperties[prop.toLowerCase()] ? nestedProperties[prop.toLowerCase()]['label_' + locale] : prop;
                 return <li key={index}>
-                        <Field model={`.filters.${property.name}.properties.${prop.key}.any`}>
+                        <Field model={`.filters.${property.name}.properties.${prop}.any`}>
                           <div className="multiselectItem">
                             <input
                               type='checkbox'
                               className="form-control"
                               id={prop.key}
                                className="multiselectItem-input"
-                               onChange={this.selectAnyChange.bind(this, prop.key)}
+                               onChange={this.selectAnyChange.bind(this, prop)}
                             />
-                            <label htmlFor={prop.key} className="multiselectItem-label">
+                            <label htmlFor={prop} className="multiselectItem-label">
                               <i className="multiselectItem-icon fa fa-square-o"></i>
                               <i className="multiselectItem-icon fa fa-check"></i>
-                              <span className="multiselectItem-name"><b>{prop.label}</b></span>
+                              <span className="multiselectItem-name" title={label}><b>{label}</b></span>
                             </label>
                             <span className="multiselectItem-results">
-                              <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, prop.key)}>
-                                <i className={this.state[prop.key] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+                              <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, prop)}>
+                                <i className={this.state[prop] ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
                               </span>
                             </span>
                           </div>
                         </Field>
-                        <ShowIf if={this.state[prop.key]}>
+                        <ShowIf if={this.state[prop]}>
                           <Control.select
-                            model={`.filters.${property.name}.properties.${prop.key}.values`}
-                            prefix={property.name + prop.key}
-                            options={this.getOptions(prop.key)}
-                            onChange={this.onChange.bind(this, prop.key)}
+                            model={`.filters.${property.name}.properties.${prop}.values`}
+                            prefix={property.name + prop}
+                            options={options}
+                            onChange={this.onChange.bind(this, prop)}
                             showAll={true}
                             hideSearch={true}
-                            noSort={true}
+                            sortbyLabel={true}
                             filter={this.state.filter}
                             component={MultiSelect}
                           />

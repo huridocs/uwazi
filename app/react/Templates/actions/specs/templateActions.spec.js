@@ -29,7 +29,7 @@ describe('templateActions', () => {
     dispatch = jasmine.createSpy('dispatch');
     getState = jasmine.createSpy('getState').and.returnValue(formModel);
     spyOn(formActions, 'change');
-    spyOn(formActions, 'push');
+    spyOn(formActions, 'load');
     spyOn(formActions, 'move');
     spyOn(formActions, 'remove');
     spyOn(formActions, 'reset');
@@ -64,17 +64,10 @@ describe('templateActions', () => {
     });
   });
 
-  describe('addNestedProperty()', () => {
+  describe('setNestedProperties()', () => {
     it('should update the property in the index provided', () => {
-      actions.addNestedProperty(0)(dispatch, getState);
-      expect(formActions.push).toHaveBeenCalledWith('template.data.properties[0].nestedProperties', {key: '', label: ''});
-    });
-  });
-
-  describe('removeNestedProperty()', () => {
-    it('should update the property in the index provided', () => {
-      actions.removeNestedProperty(0, 2)(dispatch, getState);
-      expect(formActions.remove).toHaveBeenCalledWith('template.data.properties[0].nestedProperties', 2);
+      actions.setNestedProperties(0, ['123', '456'])(dispatch, getState);
+      expect(formActions.load).toHaveBeenCalledWith('template.data.properties[0].nestedProperties', ['123', '456']);
     });
   });
 

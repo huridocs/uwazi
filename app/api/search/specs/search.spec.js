@@ -475,13 +475,13 @@ describe('search', () => {
           _id: 'asd1',
           type: 'document',
           title: 'Batman indexes',
-          file: {fullText: 'text'}
+          fullText: 'text'
         };
 
         search.index(entity)
         .then(() => {
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {type: 'document', title: 'Batman indexes', file: {}}});
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {type: 'document', title: 'Batman indexes'}});
           expect(elastic.index)
           .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {fullText_english: 'text'}});
           done();
@@ -496,7 +496,7 @@ describe('search', () => {
             sharedId: 'sharedIdOtherLanguage',
             type: 'document',
             title: 'Batman indexes',
-            file: {fullText: '조 선말'},
+            fullText: '조 선말',
             language: 'en'
           };
 
@@ -546,19 +546,19 @@ describe('search', () => {
         spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
         spyOn(languages, 'detect').and.returnValue('english');
         const toIndexDocs = [
-          {_id: 'id1', title: 'test1', file: {fullText: 'text1'}},
-          {_id: 'id2', title: 'test2', file: {fullText: 'text2'}}
+          {_id: 'id1', title: 'test1', fullText: 'text1'},
+          {_id: 'id2', title: 'test2', fullText: 'text2'}
         ];
 
         search.bulkIndex(toIndexDocs, 'index')
         .then(() => {
           expect(elastic.bulk).toHaveBeenCalledWith({body: [
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
-            {title: 'test1', file: {}},
+            {title: 'test1'},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
             {fullText_english: 'text1'},
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
-            {title: 'test2', file: {}},
+            {title: 'test2'},
             {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
             {fullText_english: 'text2'}
           ]});

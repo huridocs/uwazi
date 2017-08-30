@@ -17,5 +17,5 @@ mongoose.connect(dbConfig.development, {useMongoClient: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  require(migrationFile || './app/api/migrations/fix_entity_based_references.js');
+  require(migrationFile || './app/api/migrations/reprocess_documents.js');
 });

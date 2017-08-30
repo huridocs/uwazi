@@ -13,7 +13,7 @@ let pos = 0;
 let spinner = ['|', '/', '-', '\\'];
 
 function migrate(offset, totalRows) {
-  return entities.get({}, '+file.fullText', {skip: offset, limit})
+  return entities.get({}, '+fullText', {skip: offset, limit})
   .then((docsResponse) => {
     if (offset >= totalRows) {
       return;
