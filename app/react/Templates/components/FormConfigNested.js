@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {addNestedProperty, removeNestedProperty} from 'app/Templates/actions/templateActions';
+import {setNestedProperties} from 'app/Templates/actions/templateActions';
+import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties';
 import {Field} from 'react-redux-form';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -10,22 +11,11 @@ export class FormConfigNested extends Component {
 
   constructor(props) {
     super(props);
-    const nestedProperties = props.data.properties[props.index].nestedProperties || [{key: '', label: ''}];
-    this.state = {nestedProperties};
+    props.setNestedProperties(props.index, Object.keys(ViolatedArticlesNestedProperties));
   }
 
   contentValidation() {
     return {required: (val) => val.trim() !== ''};
-  }
-
-  addProperty(e) {
-    e.preventDefault();
-    this.props.addNestedProperty(this.props.index);
-  }
-
-  removeProperty(nestedIndex, e) {
-    e.preventDefault();
-    this.props.removeNestedProperty(this.props.index, nestedIndex);
   }
 
   render() {
@@ -72,39 +62,6 @@ export class FormConfigNested extends Component {
             </i>
           </label>
         </Field>
-
-        <div className="nested-properties well-metadata-creator">
-          <p>Properties</p>
-          {(() => {
-            return this.props.data.properties[index].nestedProperties.map((nestedProp, nestedIndex) => {
-              return <div key={nestedIndex}>
-                <div className="input-group">
-                  <span className="input-group-addon">Key</span>
-                  <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].key`}>
-                    <input className="form-control"/>
-                  </Field>
-                  <span className="input-group-addon">Label</span>
-                  <Field model={`template.data.properties[${index}].nestedProperties[${nestedIndex}].label`}>
-                    <input className="form-control"/>
-                  </Field>
-                  <span className="input-group-btn">
-                    <button className="btn btn-danger" onClick={this.removeProperty.bind(this, nestedIndex)}>
-                      <i className="fa fa-trash"></i>
-                    </button>
-                  </span>
-                </div>
-              </div>;
-            });
-          })()}
-
-          <div>
-            <button className="btn btn-success" onClick={this.addProperty.bind(this)}>
-              <i className="fa fa-plus"></i>
-              <span>Add property</span>
-            </button>
-          </div>
-        </div>
-
         <div className="well-metadata-creator">
           <div>
             <Field model={`template.data.properties[${index}].filter`}>
@@ -133,8 +90,7 @@ FormConfigNested.propTypes = {
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string,
-  addNestedProperty: PropTypes.func,
-  removeNestedProperty: PropTypes.func
+  setNestedProperties: PropTypes.func
 };
 
 export function mapStateToProps(state) {
@@ -145,7 +101,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({addNestedProperty, removeNestedProperty}, dispatch);
+  return bindActionCreators({setNestedProperties}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FormConfigNested);
