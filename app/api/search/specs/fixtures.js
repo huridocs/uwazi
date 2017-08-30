@@ -9,7 +9,7 @@ const userId = db.id();
 
 export default {
   entities: [
-    {_id: batmanFinishesId, sharedId: 'shared', template: templateId,  language: 'en', title: 'Batman finishes', published: true, user: userId},
+    {_id: batmanFinishesId, sharedId: 'shared', template: templateId, language: 'en', title: 'Batman finishes', published: true, user: userId},
     {_id: unpublishedId, sharedId: 'unpublished', template: db.id(), language: 'en', title: 'unpublished', published: false, user: userId},
     {_id: db.id(), sharedId: 'shared', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true},
     {

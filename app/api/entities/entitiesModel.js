@@ -102,9 +102,9 @@ const entitySchema = new mongoose.Schema({
     filename: String,
     mimetype: String,
     size: Number,
-    fullText: {type: mongoose.Schema.Types.Mixed, select: false},
     language: String
   },
+  fullText: {type: mongoose.Schema.Types.Mixed, select: false},
   icon: new mongoose.Schema({
     _id: String,
     label: String,

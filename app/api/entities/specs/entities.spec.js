@@ -55,7 +55,7 @@ describe('entities', () => {
     });
 
     it('should return the newly created document for the passed language', (done) => {
-      let doc = {title: 'the dark knight', file: {fullText: 'the full text!'}};
+      let doc = {title: 'the dark knight', fullText: 'the full text!'};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
@@ -64,7 +64,7 @@ describe('entities', () => {
         expect(createdDocument.title).toBe(doc.title);
         expect(createdDocument.user.equals(user._id)).toBe(true);
         expect(createdDocument.language).toEqual('en');
-        expect(createdDocument.file.fullText).not.toBeDefined();
+        expect(createdDocument.fullText).not.toBeDefined();
         done();
       })
       .catch(catchErrors(done));
@@ -403,7 +403,7 @@ describe('entities', () => {
         expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
         expect(savedEntity.title).toBe('Updated title');
         expect(savedEntity.metadata).toEqual({property1: 'value1'});
-        expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+file.fullText');
+        expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
         done();
       })
       .catch(done.fail);
