@@ -25,6 +25,7 @@ module.exports = function(production) {
     context: rootPath,
     devtool: '#eval-source-map',
     entry: {
+      performance: path.join(rootPath, 'app/react/utils/measure_performance.js'),
       main: path.join(rootPath, 'app/react/index.js'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
       'pdf.worker': path.join(rootPath, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),

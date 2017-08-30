@@ -92,7 +92,7 @@ export class Item extends Component {
 
   getMetadata(doc) {
     doc.metadata = doc.metadata || {};
-    const populatedMetadata = formater.prepareMetadata(doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
+    const populatedMetadata = formater.prepareMetadata(doc, this.props.templates, this.props.thesauris, true).metadata;
 
     if (this.props.additionalMetadata && this.props.additionalMetadata.length) {
       this.props.additionalMetadata.reverse().forEach(metadata => {
@@ -121,7 +121,7 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
-    const metadata = this.getMetadata(doc);
+    const metadata = this.getMetadata.MeasurePerformance(this, doc);
 
     return (
       <RowList.Item

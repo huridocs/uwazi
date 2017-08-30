@@ -16,8 +16,8 @@ import {createSelector} from 'reselect';
 
 import {DocumentSidePanel} from 'app/Documents';
 
-const selectTemplates = createSelector(s => s.templates, templates => templates.toJS());
-const selectThesauris = createSelector(s => s.thesauris, thesauris => thesauris.toJS());
+const selectTemplates = createSelector(s => s.templates, templates => templates);
+const selectThesauris = createSelector(s => s.thesauris, thesauris => thesauris);
 const getSourceDoc = createSelector(s => s.documentViewer.doc, d => d.toJS());
 const getTargetDoc = createSelector(s => s.documentViewer.targetDoc, targetDoc => targetDoc.toJS());
 const getSourceMetadata = createSelector(

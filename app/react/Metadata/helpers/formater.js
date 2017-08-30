@@ -8,7 +8,7 @@ export default {
 
   date(property, timestamp, showInCard) {
     let value = moment.utc(timestamp, 'X').format('ll');
-    return {label: property.label, name: property.name, value, timestamp, showInCard};
+    return {label: property.get('label'), name: property.get('name'), value, timestamp, showInCard};
   },
 
   formatDateRange(daterange) {
@@ -24,69 +24,70 @@ export default {
   },
 
   daterange(property, daterange, showInCard) {
-    return {label: property.label, name: property.name, value: this.formatDateRange(daterange), showInCard};
+    return {label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange), showInCard};
   },
 
   multidate(property, timestamps, showInCard) {
     let value = timestamps.map((timestamp) => {
       return {timestamp: timestamp, value: moment.utc(timestamp, 'X').format('ll')};
     });
-    return {label: property.label, name: property.name, value, showInCard};
+    return {label: property.get('label'), name: property.get('name'), value, showInCard};
   },
 
   multidaterange(property, dateranges, showInCard) {
     let value = dateranges.map((range) => {
       return {value: this.formatDateRange(range)};
     });
-    return {label: property.label, name: property.name, value, showInCard};
+    return {label: property.get('label'), name: property.get('name'), value, showInCard};
   },
 
   getSelectOptions(option, thesauri) {
     let value = '';
     let icon;
     if (option) {
-      value = t(thesauri._id, option.label);
-      icon = option.icon;
+      value = t(thesauri.get('_id'), option.get('label'));
+      icon = option.get('icon');
     }
 
     let url;
-    if (option && thesauri.type === 'template') {
-      url = `/entity/${option.id}`;
+    if (option && thesauri.get('type') === 'template') {
+      url = `/entity/${option.get('id')}`;
     }
 
     return {value, url, icon};
   },
 
   select(property, thesauriValue, thesauris, showInCard) {
-    let thesauri = thesauris.find(thes => thes._id === property.content);
+    let thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
 
-    let option = thesauri.values.find(v => {
-      return v.id.toString() === thesauriValue.toString();
+    let option = thesauri.get('values').find(v => {
+      return v.get('id').toString() === thesauriValue.toString();
     });
 
     const {value, url, icon} = this.getSelectOptions(option, thesauri);
 
-    return {label: property.label, name: property.name, value, icon, url, showInCard};
+    return {label: property.get('label'), name: property.get('name'), value, icon, url, showInCard};
   },
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
-    let thesauri = thesauris.find(thes => thes._id === property.content);
+    let thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
 
     let values = thesauriValues.map((thesauriValue) => {
-      let option = thesauri.values.find(v => {
-        return v.id.toString() === thesauriValue.toString();
+      let option = thesauri.get('values').find(v => {
+        return v.get('id').toString() === thesauriValue.toString();
       });
 
       return this.getSelectOptions(option, thesauri);
     });
 
     const sortedValues = advancedSort(values, {property: 'value'});
-    return {label: property.label, name: property.name, value: sortedValues, showInCard};
+
+    return {label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard};
   },
 
   nested(property, rows, showInCard) {
     if (!rows[0]) {
-      return {label: property.label, value: '', showInCard};
+      return {label: property.get('label'), value: '', showInCard};
     }
 
     let locale = store.getState().locale;
@@ -102,13 +103,13 @@ export default {
   },
 
   markdown(property, value, showInCard) {
-    return {label: property.label, name: property.name, markdown: value, showInCard};
+    return {label: property.get('label'), name: property.get('name'), markdown: value, showInCard};
   },
 
-  prepareMetadata(doc, templates, thesauris) {
-    let template = templates.find(temp => temp._id === doc.template);
+  prepareMetadata(doc, templates, thesauris, onlyForCards = false) {
+    let template = templates.find(temp => temp.get('_id') === doc.template);
 
-    if (!template || !thesauris.length) {
+    if (!template || !thesauris.size) {
       return Object.assign({}, doc, {metadata: [], documentType: ''});
     }
 
@@ -116,45 +117,51 @@ export default {
       doc.metadata = {};
     }
 
-    let metadata = template.properties.map((property) => {
-      let value = doc.metadata[property.name];
-      let showInCard = property.showInCard;
+    let metadata = template.get('properties').map((property) => {
+      let value = doc.metadata[property.get('name')];
+      let showInCard = property.get('showInCard');
 
-      if (property.type === 'select' && value) {
-        return Object.assign(this.select(property, value, thesauris, showInCard), {type: property.type});
+      if (onlyForCards && !showInCard) {
+        return {};
       }
 
-      if (property.type === 'multiselect' && value) {
-        return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type: property.type});
+      const type = property.get('type');
+
+      if (type === 'select' && value) {
+        return Object.assign(this.select(property, value, thesauris, showInCard), {type});
       }
 
-      if (property.type === 'date' && value) {
-        return Object.assign(this.date(property, value, showInCard), {type: property.type});
+      if (type === 'multiselect' && value) {
+        return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type});
       }
 
-      if (property.type === 'daterange' && value) {
-        return Object.assign(this.daterange(property, value, showInCard), {type: property.type});
+      if (type === 'date' && value) {
+        return Object.assign(this.date(property, value, showInCard), {type});
       }
 
-      if (property.type === 'multidate') {
-        return Object.assign(this.multidate(property, value || [], showInCard), {type: property.type});
+      if (type === 'daterange' && value) {
+        return Object.assign(this.daterange(property, value, showInCard), {type});
       }
 
-      if (property.type === 'multidaterange') {
-        return Object.assign(this.multidaterange(property, value || [], showInCard), {type: property.type});
+      if (type === 'multidate') {
+        return Object.assign(this.multidate(property, value || [], showInCard), {type});
       }
 
-      if (property.type === 'markdown' && value) {
-        return Object.assign(this.markdown(property, value, showInCard), {type: property.type});
+      if (type === 'multidaterange') {
+        return Object.assign(this.multidaterange(property, value || [], showInCard), {type});
       }
 
-      if (property.type === 'nested' && value) {
-        return Object.assign(this.nested(property, value, showInCard), {type: property.type});
+      if (type === 'markdown' && value) {
+        return Object.assign(this.markdown(property, value, showInCard), {type});
       }
 
-      return {label: property.label, name: property.name, value, showInCard};
+      if (type === 'nested' && value) {
+        return Object.assign(this.nested(property, value, showInCard), {type});
+      }
+
+      return {label: property.get('label'), name: property.get('name'), value, showInCard};
     });
 
-    return Object.assign({}, doc, {metadata: metadata, documentType: template.name});
+    return Object.assign({}, doc, {metadata: metadata.toJS(), documentType: template.name});
   }
 };

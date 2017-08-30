@@ -25,7 +25,6 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   if (isRedux) {
     initialStore = store(initialData);
   }
-
   // to prevent warnings on some client libs that use window global var
   global.window = {};
   //
