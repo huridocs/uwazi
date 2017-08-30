@@ -13,7 +13,7 @@ export default {
       });
     })
     .then(() => {
-      return search.indexEntities({}, '+file.fullText');
+      return search.indexEntities({}, '+fullText');
     })
     .then(() => {
       return elastic.indices.refresh({index: elasticIndex});
