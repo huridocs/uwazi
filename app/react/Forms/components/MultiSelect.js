@@ -5,6 +5,7 @@ import {remove as removeAccents} from 'diacritics';
 import ShowIf from 'app/App/ShowIf';
 import {Icon} from 'app/Layout/Icon';
 import {t} from 'app/I18N';
+import {advancedSort} from 'app/utils/advancedSort';
 
 export default class MultiSelect extends Component {
 
@@ -59,7 +60,7 @@ export default class MultiSelect extends Component {
         sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
       }
 
-      if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
+      if (!this.props.sortbyLabel && sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
         sorting = a.results > b.results ? -1 : 1;
       }
 
@@ -171,5 +172,6 @@ MultiSelect.propTypes = {
   optionsToShow: PropTypes.number,
   showAll: PropTypes.bool,
   hideSearch: PropTypes.bool,
-  noSort: PropTypes.bool
+  noSort: PropTypes.bool,
+  sortbyLabel: PropTypes.bool
 };

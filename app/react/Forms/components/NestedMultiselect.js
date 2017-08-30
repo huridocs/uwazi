@@ -116,7 +116,7 @@ export default class NestedMultiselect extends Component {
                             onChange={this.onChange.bind(this, prop)}
                             showAll={true}
                             hideSearch={true}
-                            noSort={true}
+                            sortbyLabel={true}
                             filter={this.state.filter}
                             component={MultiSelect}
                           />
