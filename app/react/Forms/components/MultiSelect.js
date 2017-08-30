@@ -5,7 +5,6 @@ import {remove as removeAccents} from 'diacritics';
 import ShowIf from 'app/App/ShowIf';
 import {Icon} from 'app/Layout/Icon';
 import {t} from 'app/I18N';
-import {advancedSort} from 'app/utils/advancedSort';
 
 export default class MultiSelect extends Component {
 
