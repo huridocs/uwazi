@@ -30,7 +30,7 @@ describe('FullTextSearch zone', () => {
     it('should open the snippets tab on the sidePanel', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.libraryFirstDocumentSnippet)
-      .wait(2000)
+      .wait(200)
       .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
       .then(snippet => {
         expect(snippet.toLowerCase()).toContain('batman');
@@ -52,7 +52,7 @@ describe('FullTextSearch zone', () => {
     .waitToClick(selectors.documentView.searchTextTab)
     .write(selectors.documentView.searchTextInput, 'joker')
     .typeEnter(selectors.documentView.searchTextInput)
-    .wait(200)
+    .wait(2000)
     .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
     .then(snippet => {
       expect(snippet.toLowerCase()).toContain('joker');
