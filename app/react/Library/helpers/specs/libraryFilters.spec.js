@@ -15,7 +15,7 @@ describe('library helper', () => {
       {name: 'language', filter: false, type: 'text'}
     ]},
     {_id: '3', properties: [
-      {name: 'author', filter: false, type: 'text'},
+      {name: 'author', filter: false, type: 'select'},
       {name: 'country', filter: true, type: 'text'}
     ]}
   ];
@@ -42,6 +42,7 @@ describe('library helper', () => {
       expect(state.search.sort).toEqual(prioritySortingCriteria.get().sort);
     });
 
+
     it('should return the query transformed to the application state', () => {
       const query = {
         searchTerm: 'searchTerm',
@@ -58,6 +59,18 @@ describe('library helper', () => {
       expect(state.search.searchTerm).toBe('searchTerm');
       expect(state.search.order).toBe('order');
       expect(state.search.sort).toBe('sort');
+    });
+
+    it('should populate filters with default values when they are not set', () => {
+      const query = {
+        searchTerm: 'searchTerm',
+        types: ['1'],
+        filters: {}
+      };
+
+      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      expect(state.search.filters.country).toEqual({});
+      expect(state.search.filters.language).toBe('');
     });
   });
 
