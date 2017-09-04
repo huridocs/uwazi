@@ -28,6 +28,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   // to prevent warnings on some client libs that use window global var
   global.window = {};
   //
+  let start = new Date().getTime();
   try {
     componentHtml = renderToString(
       <Provider store={initialStore}>
@@ -49,6 +50,9 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
     reduxData = initialData;
     data = {};
   }
+
+  console.log('Render');
+  console.log(new Date().getTime() - start);
 
   return '<!doctype html>\n' + renderToString(
     <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData} assets={assets}/>
@@ -92,6 +96,7 @@ function handleRoute(res, renderProps, req) {
     }
 
     let locale;
+    let start = new Date().getTime();
     return api.get('settings').then((response) => {
       let languages = response.json.languages;
       let path = req.url;
@@ -145,6 +150,8 @@ function handleRoute(res, renderProps, req) {
         initialData.templates = globalResources.templates;
         initialData.thesauris = globalResources.thesauris;
         initialData.locale = locale;
+        console.log('initial Data');
+        console.log(new Date().getTime() - start);
         renderPage(initialData, true);
       })
       .catch((error) => {
