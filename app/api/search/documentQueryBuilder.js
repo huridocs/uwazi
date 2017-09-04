@@ -119,6 +119,7 @@ export default function () {
         }
 
         baseQuery.query.bool.must.push({bool: {should}});
+        baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.must.push({bool: {should}});
       }
       return this;
     },
@@ -420,6 +421,8 @@ export default function () {
         let filters = baseQuery.query.bool.filter.filter((match) => {
           return match && (!match.terms || match.terms && !match.terms[path]);
         });
+
+        filters = filters.concat(baseQuery.query.bool.must);
 
         if (property.nested) {
           baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, filters);
