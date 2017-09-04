@@ -106,7 +106,11 @@ export default {
     return {label: property.get('label'), name: property.get('name'), markdown: value, showInCard};
   },
 
-  prepareMetadata(doc, templates, thesauris, onlyForCards = false) {
+  prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
+    return this.prepareMetadata(doc, templates, thesauris, {onlyForCards: true, sortedProperty});
+  },
+
+  prepareMetadata(doc, templates, thesauris, options = {}) {
     let template = templates.find(temp => temp.get('_id') === doc.template);
 
     if (!template || !thesauris.size) {
@@ -117,13 +121,10 @@ export default {
       doc.metadata = {};
     }
 
-    let metadata = template.get('properties').map((property) => {
+    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
+    .map((property) => {
       let value = doc.metadata[property.get('name')];
       let showInCard = property.get('showInCard');
-
-      if (onlyForCards && !showInCard) {
-        return {};
-      }
 
       const type = property.get('type');
 
@@ -163,5 +164,19 @@ export default {
     });
 
     return Object.assign({}, doc, {metadata: metadata.toJS(), documentType: template.name});
+  },
+
+  filterProperties(template, onlyForCards, sortedProperty) {
+    return template.get('properties')
+    .filter((p) => {
+      if (!onlyForCards) {
+        return true;
+      }
+
+      if (p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`) {
+        return true;
+      }
+      return false;
+    });
   }
 };

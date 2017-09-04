@@ -8,7 +8,7 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 // import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
-import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
+import {enterLibrary, setDocuments, unsetDocuments} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
@@ -57,6 +57,7 @@ export default class Library extends RouteHandler {
 
   setReduxState(state) {
     const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
+    dispatch(unsetDocuments());
     dispatch(formActions.load('library.search', state.library.search));
     dispatch({type: 'SET_LIBRARY_FILTERS',
       documentTypes: state.library.filters.documentTypes,

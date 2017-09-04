@@ -19,7 +19,7 @@ export class Item extends Component {
     let sortPropertyInMetadata = false;
 
     const metadata = populatedMetadata
-    .filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
+    //.filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
     .map((property, index) => {
       let isSortingProperty = false;
 
@@ -92,7 +92,7 @@ export class Item extends Component {
 
   getMetadata(doc) {
     doc.metadata = doc.metadata || {};
-    const populatedMetadata = formater.prepareMetadata(doc, this.props.templates, this.props.thesauris, true).metadata;
+    const populatedMetadata = formater.prepareMetadataForCard(doc, this.props.templates, this.props.thesauris, this.props.search.sort).metadata;
 
     if (this.props.additionalMetadata && this.props.additionalMetadata.length) {
       this.props.additionalMetadata.reverse().forEach(metadata => {
@@ -115,13 +115,24 @@ export class Item extends Component {
     return false;
   }
 
+  //componentWillReceiveProps(newProps) {
+    //Object.keys(newProps).forEach((key) => {
+      //if (this.props[key] !== newProps[key]) {
+        ////console.log(newProps[key]);
+        ////console.log(this.props[key]);
+        //console.log(key);
+        //console.log('----------------');
+      //}
+    //});
+  //}
+
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
-           templateClassName, buttons, evalPublished} = this.props;
+      templateClassName, buttons, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
-    const metadata = this.getMetadata.MeasurePerformance(this, doc);
+    const metadata = this.getMetadata(doc);
 
     return (
       <RowList.Item

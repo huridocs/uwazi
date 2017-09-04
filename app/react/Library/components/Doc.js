@@ -94,7 +94,6 @@ export class Doc extends Component {
                       }
                     </div>;
 
-    //return <div>{buttons}</div>;
 
     return <Item onClick={this.onClick.bind(this)}
                  onSnippetClick={this.props.onSnippetClick}

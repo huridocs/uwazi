@@ -55,6 +55,10 @@ export function setDocuments(docs) {
   return {type: types.SET_DOCUMENTS, documents: docs};
 }
 
+export function unsetDocuments() {
+  return {type: types.UNSET_DOCUMENTS};
+}
+
 export function setTemplates(templates, thesauris) {
   return function (dispatch) {
     dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris});
