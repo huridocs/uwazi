@@ -72,12 +72,11 @@ export default (app) => {
     .then(([addedFile]) => {
       res.json(addedFile);
     })
-    .catch(error => res.json({error}));
+    .catch(error => res.json({error}), 500);
   });
 
   app.post('/api/attachments/rename', needsAuthorization(['admin', 'editor']), (req, res) => {
     let renamedAttachment;
-
     return entities.getById(req.body.entityId)
     .then(entity => {
       if (entity._id.toString() === req.body._id) {
