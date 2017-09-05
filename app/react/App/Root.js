@@ -33,7 +33,12 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link
-            href={this.props.assets.main.css}
+            href={this.props.assets.main.css[0]}
+            rel="stylesheet"
+            type="text/css"
+          />
+          <link
+            href={this.props.assets.main.css[1]}
             rel="stylesheet"
             type="text/css"
           />
