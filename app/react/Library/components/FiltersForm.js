@@ -23,6 +23,9 @@ export class FiltersForm extends Component {
       this.props.searchDocuments({search}, this.props.storeKey);
     }, 400);
 
+    this.submit = this.submit.bind(this);
+    this.onChange = this.onChange.bind(this);
+
     this.activateAutoSearch = () => {
       this.autoSearch = true;
     };
@@ -52,14 +55,6 @@ export class FiltersForm extends Component {
       !is(this.props.documentTypes, nextProps.documentTypes);
   }
 
-  componentWillReceiveProps(newProps) {
-    Object.keys(newProps).forEach((key) => {
-      if (!is(this.props[key], newProps[key])) {
-        console.log(key);
-      }
-    });
-  }
-
   render() {
     const {templates, documentTypes} = this.props;
 
@@ -81,7 +76,7 @@ export class FiltersForm extends Component {
           }
         })()}
 
-        <Form model={model} id="filtersForm" onSubmit={this.submit.bind(this)} onChange={this.onChange.bind(this)}>
+        <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           {fields.map((property) => {
             let propertyClass = 'search__filter is-active';
             if (property.type === 'select' || property.type === 'multiselect') {
