@@ -105,7 +105,13 @@ describe('Library', () => {
       expect(dispatchCallsOrder[1]).toBe(actionTypes.UNSET_DOCUMENTS);
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.UNSET_DOCUMENTS, __reducerKey: 'library'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'aggregations/SET', value: aggregations, __reducerKey: 'library'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: actionTypes.INITIALIZE_FILTERS_FORM,
+        documentTypes: 'types',
+        libraryFilters: 'properties',
+        aggregations,
+        __reducerKey: 'library'
+      });
     });
   });
 

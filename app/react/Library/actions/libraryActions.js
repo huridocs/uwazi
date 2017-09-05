@@ -15,6 +15,10 @@ export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
 }
 
+export function initializeFiltersForm(values = {}) {
+  return Object.assign(values, {type: types.INITIALIZE_FILTERS_FORM});
+}
+
 export function selectDocument(doc) {
   let document = doc;
   if (doc.toJS) {

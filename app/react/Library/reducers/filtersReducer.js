@@ -5,7 +5,7 @@ import * as types from 'app/Library/actions/actionTypes';
 const initialState = {properties: [], documentTypes: []};
 
 export default function filters(state = initialState, action = {}) {
-  if (action.type === types.SET_LIBRARY_FILTERS) {
+  if (action.type === types.SET_LIBRARY_FILTERS || action.type === types.INITIALIZE_FILTERS_FORM) {
     return state.set('documentTypes', Immutable.fromJS(action.documentTypes))
     .set('properties', Immutable.fromJS(action.libraryFilters));
   }

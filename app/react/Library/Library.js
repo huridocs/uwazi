@@ -8,12 +8,11 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 // import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
-import {enterLibrary, setDocuments, unsetDocuments} from 'app/Library/actions/libraryActions';
+import {enterLibrary, setDocuments, unsetDocuments, initializeFiltersForm} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {wrapDispatch} from 'app/Multireducer';
@@ -59,12 +58,14 @@ export default class Library extends RouteHandler {
     const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
     dispatch(unsetDocuments());
     dispatch(formActions.load('library.search', state.library.search));
-    dispatch({type: 'SET_LIBRARY_FILTERS',
+
+    dispatch(initializeFiltersForm({
       documentTypes: state.library.filters.documentTypes,
-      libraryFilters: state.library.filters.properties}
-    );
+      libraryFilters: state.library.filters.properties,
+      aggregations: state.library.aggregations
+    }));
+
     dispatch(setDocuments(state.library.documents));
-    dispatch(actions.set('aggregations', state.library.aggregations));
   }
 
   componentWillMount() {
@@ -86,7 +87,6 @@ export default class Library extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="document-viewer with-panel">
-          {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
         <LibraryFilters storeKey="library"/>

@@ -52,6 +52,14 @@ export class FiltersForm extends Component {
       !is(this.props.documentTypes, nextProps.documentTypes);
   }
 
+  componentWillReceiveProps(newProps) {
+    Object.keys(newProps).forEach((key) => {
+      if (!is(this.props[key], newProps[key])) {
+        console.log(key);
+      }
+    });
+  }
+
   render() {
     const {templates, documentTypes} = this.props;
 
