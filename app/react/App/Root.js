@@ -51,6 +51,7 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
+          <script defer src={this.props.assets.performance.js}></script>
           <script defer src={this.props.assets.manifest.js}></script>
           <script defer src={this.props.assets.nprogress.js}></script>
           <script defer src={this.props.assets.vendor.js}></script>
