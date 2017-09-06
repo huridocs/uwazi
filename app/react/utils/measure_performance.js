@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 window.Measures = {
   times: {},
   add(name, time) {

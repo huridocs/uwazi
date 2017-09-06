@@ -14,8 +14,6 @@ describe('aggregationsReducer', () => {
     });
   });
 
-  let libraryFilters = [{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']}];
-
   describe('initializeFiltersForm()', () => {
     it('should set the properties', () => {
       const state = Immutable.fromJS({});
