@@ -211,7 +211,7 @@ export class TimelineViewer extends Component {
     const relatedEntity = references.find(r => r.connectedDocumentTemplate === (isCase ? matterTemplate : caseTemplate));
     if (relatedEntity) {
       fetchRelatedEntity = EntitiesAPI.get(relatedEntity.connectedDocument)
-                           .then(results => formater.prepareMetadata(results[0], this.plainTemplates, this.plainThesauris));
+                           .then(results => formater.prepareMetadata(results[0], this.props.templates, this.props.thesauris));
     }
 
     return fetchRelatedEntity;
