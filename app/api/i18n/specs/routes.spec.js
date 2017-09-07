@@ -26,11 +26,13 @@ describe('i18n translations routes', () => {
 
   describe('POST', () => {
     it('should save the translation', (done) => {
-      spyOn(translations, 'save').and.returnValue(mockRequest);
-      routes.post('/api/translations', {body: {key: 'my new key'}})
+      spyOn(translations, 'save').and.returnValue(Promise.resolve({contexts: [], id: 'saved_translations'}));
+      const emit = jasmine.createSpy('emit');
+      routes.post('/api/translations', {body: {key: 'my new key'}, io: {sockets: {emit}}})
       .then((response) => {
         expect(translations.save).toHaveBeenCalledWith({key: 'my new key'});
-        expect(response).toEqual({translations: 'response'});
+        expect(response).toEqual({contexts: [], id: 'saved_translations'});
+        expect(emit).toHaveBeenCalledWith('translationsChange', {contexts: [], id: 'saved_translations'});
         done();
       })
       .catch(catchErrors(done));
