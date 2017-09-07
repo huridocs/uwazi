@@ -4,6 +4,7 @@ import {renderToString} from 'react-dom/server';
 import {match, RouterContext} from 'react-router';
 import Helmet from 'react-helmet';
 import Routes from './Routes';
+import t from 'app/I18N/t';
 import {Provider} from 'react-redux';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
@@ -28,6 +29,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   // to prevent warnings on some client libs that use window global var
   global.window = {};
   //
+  t.resetCachedTranslation();
   try {
     componentHtml = renderToString(
       <Provider store={initialStore}>
