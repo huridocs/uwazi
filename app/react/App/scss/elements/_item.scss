@@ -307,7 +307,12 @@ $item-padding: 15px;
     margin: 0;
     padding: 3px 0;
     font-size: $f-size-sm;
+
+    &.item-property-markdown {
+      width: 100%;
+    }
   }
+
   dt {
     margin: 6px 0 2px;
     font-style: normal;
