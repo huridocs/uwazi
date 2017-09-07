@@ -41,20 +41,25 @@ export class Icon extends Component {
   render() {
     const {data, className, size} = this.props;
     let html = null;
+    let _data = data;
 
-    if (data && data._id) {
+    if (data && _data.toJS) {
+      _data = _data.toJS();
+    }
+
+    if (_data && _data._id) {
       let icon;
 
-      if (data.type === 'Icons') {
-        icon = <i className={`fa fa-${data._id} ${getFaSize(size)}`}></i>;
+      if (_data.type === 'Icons') {
+        icon = <i className={`fa fa-${_data._id} ${getFaSize(size)}`}></i>;
       }
 
-      if (data.type === 'Flags') {
-        icon = <Flag name={data._id}
+      if (_data.type === 'Flags') {
+        icon = <Flag name={_data._id}
                      format="png"
                      pngSize={getPngSize(size)}
                      shiny={true}
-                     alt={`${data.label} flag`}
+                     alt={`${_data.label} flag`}
                      basePath="/flag-images" />;
       }
 

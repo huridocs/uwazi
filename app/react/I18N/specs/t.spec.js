@@ -7,6 +7,7 @@ describe('t', () => {
   let state;
 
   beforeEach(() => {
+    t.resetCachedTranslation();
     let dictionaries = [
       {
         locale: 'en',

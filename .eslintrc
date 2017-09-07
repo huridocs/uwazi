@@ -235,5 +235,6 @@
     "react/react-in-jsx-scope": 2, // Prevent missing React when using JSX
     "react/self-closing-comp": 0, // Prevent extra closing tags for components without children
     "react/wrap-multilines": 0, // Prevent missing parentheses around multilines JSX
+    "react/jsx-no-bind": 1
   }
 }

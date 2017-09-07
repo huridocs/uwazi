@@ -6,7 +6,7 @@ import translationsModel from './translationsModel.js';
 const model = instanceModel(translationsModel);
 
 function prepareContexts(contexts) {
-  return Promise.all(contexts.map((context) => {
+  return contexts.map((context) => {
     if (context.id === 'System' || context.id === 'Filters' || context.id === 'Menu') {
       context.type = 'Uwazi UI';
     }
@@ -18,20 +18,19 @@ function prepareContexts(contexts) {
     });
 
     context.values = values;
-    return Promise.resolve(context);
-  }));
+    return context;
+  });
 }
 
 export default {
+  prepareContexts,
   get() {
     return model.get()
     .then((response) => {
-      return Promise.all(response.map((translation) => {
-        return prepareContexts(translation.contexts).then((contexts) => {
-          translation.contexts = contexts;
-          return translation;
-        });
-      }));
+      return response.map((translation) => {
+        translation.contexts = prepareContexts(translation.contexts);
+        return translation;
+      });
     });
   },
 

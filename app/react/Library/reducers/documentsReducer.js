@@ -73,6 +73,10 @@ export default function documents(state = initialState, action = {}) {
     return state;
   }
 
+  if (action.type === types.UNSET_DOCUMENTS) {
+    return Immutable.fromJS(initialState);
+  }
+
   if (action.type === types.REMOVE_DOCUMENTS) {
     return action.docs.reduce((_state, doc) => {
       const docIndex = _state.get('rows').findIndex(_doc => {

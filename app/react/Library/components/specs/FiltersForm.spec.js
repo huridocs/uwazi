@@ -25,7 +25,7 @@ describe('FiltersForm', () => {
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm', () => {
       component.find(Form).simulate('submit', {myfilter: true});
-      expect(props.searchDocuments).toHaveBeenCalledWith({myfilter: true}, 'library');
+      expect(props.searchDocuments).toHaveBeenCalledWith({search: {myfilter: true}}, 'library');
     });
   });
 

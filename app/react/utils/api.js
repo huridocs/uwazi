@@ -8,6 +8,7 @@ import loadingBar from 'app/App/LoadingProgressBar';
 
 let cookie;
 let locale;
+let API_URL = APIURL;
 
 let doneLoading = (data) => {
   loadingBar.done();
@@ -43,21 +44,21 @@ let handleError = (error) => {
 export default {
   get: (url, data) => {
     loadingBar.start();
-    return request.get(APIURL + url, data, {'Content-language': locale, Cookie: cookie})
+    return request.get(API_URL + url, data, {'Content-language': locale, Cookie: cookie})
     .then(doneLoading)
     .catch(handleError);
   },
 
   post: (url, data) => {
     loadingBar.start();
-    return request.post(APIURL + url, data, {'Content-language': locale})
+    return request.post(API_URL + url, data, {'Content-language': locale})
     .then(doneLoading)
     .catch(handleError);
   },
 
   delete: (url, data) => {
     loadingBar.start();
-    return request.delete(APIURL + url, data, {'Content-language': locale})
+    return request.delete(API_URL + url, data, {'Content-language': locale})
     .then(doneLoading)
     .catch(handleError);
   },
@@ -68,5 +69,9 @@ export default {
 
   locale(key) {
     locale = key;
+  },
+
+  APIURL(url) {
+    API_URL = url;
   }
 };

@@ -139,8 +139,8 @@ describe('libraryActions', () => {
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
 
-      it('should convert the search and set it to the url query', () => {
-        const query = {
+      it('should convert the search and set it to the url query based on filters on the state', () => {
+        const search = {
           searchTerm: 'batman',
           filters: {
             author: 'batman',
@@ -150,27 +150,36 @@ describe('libraryActions', () => {
             nested: 'nestedValue'
           }
         };
+
         const limit = 'limit';
         spyOn(browserHistory, 'push');
         spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library', query: {view: 'chart'}});
-        actions.searchDocuments(query, storeKey, limit)(dispatch, getState);
-        const expected = Object.assign({}, query);
-        expected.filters = {
-          author: 'batman',
-          date: 'dateValue',
-          select: 'selectValue',
-          multiselect: 'multiValue',
-          nested: 'nestedValue'
-        };
-        expected.types = ['decision'];
-        expected.limit = limit;
+        actions.searchDocuments({search}, storeKey, limit)(dispatch, getState);
 
         expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
       });
 
-      it('should dispatch a HIDE_SUGGESTIONS action', () => {
-        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}}, storeKey)(dispatch, getState);
-        expect(dispatch).toHaveBeenCalledWith({type: types.HIDE_SUGGESTIONS});
+      it('should use passed filters when passed', () => {
+        const search = {
+          searchTerm: 'batman',
+          filters: {
+            author: 'batman',
+            date: 'dateValue',
+            select: 'selectValue',
+            multiselect: {values: []},
+            nested: 'nestedValue'
+          }
+        };
+
+        const filters = store.library.filters;
+
+        const limit = 'limit';
+        spyOn(browserHistory, 'push');
+        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library', query: {view: 'chart'}});
+        actions.searchDocuments({search, filters}, storeKey, limit)(dispatch, getState);
+
+        expect(getState).not.toHaveBeenCalled();
+        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,date:dateValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
       });
 
       it('should set the storeKey selectedSorting if user has selected a custom sorting', () => {
@@ -178,7 +187,9 @@ describe('libraryActions', () => {
           type: 'library.selectedSorting/SET',
           value: {searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}
         };
-        actions.searchDocuments({searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}, storeKey)(dispatch, getState);
+        actions.searchDocuments(
+          {search: {searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}}, storeKey
+        )(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith(expectedDispatch);
       });
     });

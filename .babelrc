@@ -1,6 +1,15 @@
 {
   "presets": ["es2015", "react"],
   "retainLines": "true",
+  "env": {
+    "production": {
+      "plugins": [
+        "transform-react-inline-elements",
+        "transform-react-remove-prop-types",
+        "transform-react-constant-elements",
+      ]
+    }
+  },
   "plugins": [
     "transform-es2015-typeof-symbol",
     "transform-class-properties",

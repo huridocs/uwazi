@@ -52,8 +52,7 @@ export default class NestedMultiselect extends Component {
     this.setState({filter: ''});
   }
 
-  getOptions(prop) {
-    let aggregations = this.props.aggregations.toJS();
+  getOptions(prop, aggregations) {
     if (!aggregations[this.props.property.name]) {
       return [];
     }
@@ -65,6 +64,9 @@ export default class NestedMultiselect extends Component {
 
   render() {
     let property = this.props.property;
+
+    let aggregations = this.props.aggregations.toJS();
+
     return <ul className="multiselect is-active">
             <li className="multiselectActions">
               <div className="form-group">
@@ -80,7 +82,7 @@ export default class NestedMultiselect extends Component {
             </li>
             {(() => {
               return property.nestedProperties.map((prop, index) => {
-                let options = this.getOptions(prop);
+                let options = this.getOptions(prop, aggregations);
                 if (!options.length) {
                   return false;
                 }

@@ -2,6 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {fromJS} from 'immutable';
 import {store} from 'app/store';
+import t from 'app/I18N/t';
 
 import {LibraryCharts, mapStateToProps} from '../LibraryCharts';
 import LibraryChart from '../LibraryChart';
@@ -16,6 +17,7 @@ describe('LibraryCharts', () => {
   };
 
   beforeEach(() => {
+    t.resetCachedTranslation();
     state = {
       locale: 'es',
       translations: fromJS([

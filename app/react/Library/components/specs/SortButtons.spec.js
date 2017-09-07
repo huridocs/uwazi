@@ -75,7 +75,9 @@ describe('SortButtons', () => {
         render();
         component.setState({active: true});
         component.find('li').last().children().at(0).simulate('click');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true}, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith(
+          {search: {sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true}}, 'library'
+        );
 
         const templates = props.templates.toJS();
         templates[0].properties[1].name = 'different_name';
@@ -86,7 +88,9 @@ describe('SortButtons', () => {
         component.setState({active: true});
 
         component.find('li').last().children().at(0).simulate('click');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true}, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith(
+          {search: {sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true}}, 'library'
+        );
       });
     });
   });
@@ -95,14 +99,14 @@ describe('SortButtons', () => {
     it('should merge with searchTerm and filtersForm and NOT toggle between asc/desc', () => {
       render();
       instance.sort('title', 'asc', 'number');
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc', userSelectedSorting: true}, 'library');
+      expect(props.sortCallback).toHaveBeenCalledWith({search: {sort: 'title', order: 'asc', userSelectedSorting: true}}, 'library');
 
       props.search.order = 'asc';
       props.search.treatAs = 'number';
       render();
       instance.sort('title', 'asc', 'string');
       expect(props.merge).toHaveBeenCalledWith('search', {sort: 'title', order: 'asc', treatAs: 'number'});
-      expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc', userSelectedSorting: true}, 'library');
+      expect(props.sortCallback).toHaveBeenCalledWith({search: {sort: 'title', order: 'asc', userSelectedSorting: true}}, 'library');
     });
 
     it('should not fail if no sortCallback', () => {
@@ -122,19 +126,19 @@ describe('SortButtons', () => {
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('title');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'title', order: 'asc', userSelectedSorting: true}, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith({search: {sort: 'title', order: 'asc', userSelectedSorting: true}}, 'library');
 
         props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'desc');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'desc', userSelectedSorting: true}, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith({search: {sort: 'creationDate', order: 'desc', userSelectedSorting: true}}, 'library');
 
         props.sortCallback.calls.reset();
         props.search = {order: 'desc', sort: 'title'};
         render();
         instance.sort('creationDate', 'asc');
-        expect(props.sortCallback).toHaveBeenCalledWith({sort: 'creationDate', order: 'asc', userSelectedSorting: true}, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith({search: {sort: 'creationDate', order: 'asc', userSelectedSorting: true}}, 'library');
       });
     });
 

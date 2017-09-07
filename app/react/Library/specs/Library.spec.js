@@ -6,8 +6,6 @@ import searchAPI from 'app/Search/SearchAPI';
 import libraryHelpers from '../helpers/libraryFilters';
 import Library from 'app/Library/Library';
 import DocumentsList from 'app/Library/components/DocumentsList';
-// import LibraryCharts from 'app/Charts/components/LibraryCharts';
-// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes';
 import * as libraryActions from '../actions/libraryActions';
@@ -30,10 +28,14 @@ describe('Library', () => {
   let instance;
   let context;
   let props = {location: {query: {q: '(a:1)'}}};
+  let dispatchCallsOrder = [];
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    dispatchCallsOrder = [];
+    context = {store: {dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
+      dispatchCallsOrder.push(action.type);
+    })}};
     component = shallow(<Library {...props}/>, {context});
     instance = component.instance();
 
@@ -99,9 +101,17 @@ describe('Library', () => {
       instance.setReduxState({library: {documents, aggregations, filters: {documentTypes: 'types', properties: 'properties'}}});
     });
 
-    it('should call set the documents and aggregations', () => {
+    it('should set the documents and aggregations and Unset the documents as first action', () => {
+      expect(dispatchCallsOrder[1]).toBe(actionTypes.UNSET_DOCUMENTS);
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.UNSET_DOCUMENTS, __reducerKey: 'library'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'aggregations/SET', value: aggregations, __reducerKey: 'library'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: actionTypes.INITIALIZE_FILTERS_FORM,
+        documentTypes: 'types',
+        libraryFilters: 'properties',
+        aggregations,
+        __reducerKey: 'library'
+      });
     });
   });
 

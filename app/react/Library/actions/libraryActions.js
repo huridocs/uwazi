@@ -15,6 +15,10 @@ export function enterLibrary() {
   return {type: types.ENTER_LIBRARY};
 }
 
+export function initializeFiltersForm(values = {}) {
+  return Object.assign(values, {type: types.INITIALIZE_FILTERS_FORM});
+}
+
 export function selectDocument(doc) {
   let document = doc;
   if (doc.toJS) {
@@ -55,6 +59,10 @@ export function setDocuments(docs) {
   return {type: types.SET_DOCUMENTS, documents: docs};
 }
 
+export function unsetDocuments() {
+  return {type: types.UNSET_DOCUMENTS};
+}
+
 export function setTemplates(templates, thesauris) {
   return function (dispatch) {
     dispatch({type: types.SET_LIBRARY_TEMPLATES, templates, thesauris});
@@ -81,11 +89,32 @@ export function setOverSuggestions(boolean) {
   return {type: types.OVER_SUGGESTIONS, hover: boolean};
 }
 
+export function filterIsEmpty(value) {
+  if (value && value.values && !value.values.length) {
+    return true;
+  }
+
+  if (Array.isArray(value) && !value.length) {
+    return true;
+  }
+
+  if (typeof value === 'string' && !value) {
+    return true;
+  }
+
+  if (typeof value === 'object' && !Object.keys(value).length) {
+    return true;
+  }
+
+  return false;
+}
+
 export function processFilters(readOnlySearch, filters, limit) {
   const search = Object.assign({filters: {}}, readOnlySearch);
   search.filters = {};
+
   filters.properties.forEach((property) => {
-    if (property.active) {
+    if (!filterIsEmpty(readOnlySearch.filters[property.name])) {
       search.filters[property.name] = readOnlySearch.filters[property.name];
     }
   });
@@ -112,21 +141,29 @@ export function encodeSearch(search, appendQ = true) {
   return appendQ ? '?q=' + rison.encode(search) : rison.encode(search);
 }
 
-export function searchDocuments(readOnlySearch, storeKey, limit) {
+export function searchDocuments({search, filters}, storeKey, limit) {
   return function (dispatch, getState) {
-    const filters = getState()[storeKey].filters.toJS();
-    const search = processFilters(readOnlySearch, filters, limit);
-    dispatch(hideSuggestions());
+    let currentFilters;
+    if (filters) {
+      currentFilters = filters;
+    }
+    if (filters && filters.toJS) {
+      currentFilters = filters.toJS();
+    }
+    if (!currentFilters) {
+      currentFilters = getState()[storeKey].filters.toJS();
+    }
+    const finalSearchParams = processFilters(search, currentFilters, limit);
 
-    if (readOnlySearch.userSelectedSorting) {
-      dispatch(actions.set(storeKey + '.selectedSorting', readOnlySearch));
+    if (search.userSelectedSorting) {
+      dispatch(actions.set(storeKey + '.selectedSorting', search));
     }
 
     const pathname = browserHistory.getCurrentLocation().pathname;
     const path = (pathname + '/').replace(/\/\//g, '/');
     const query = browserHistory.getCurrentLocation().query || {};
 
-    query.q = encodeSearch(search, false);
+    query.q = encodeSearch(finalSearchParams, false);
     browserHistory.push(path + toUrlParams(query));
   };
 }
@@ -235,7 +272,7 @@ export function deleteEntity(entity) {
 
 export function loadMoreDocuments(storeKey, amount) {
   return function (dispatch, getState) {
-    searchDocuments(getState()[storeKey].search, storeKey, amount)(dispatch, getState);
+    searchDocuments({search: getState()[storeKey].search}, storeKey, amount)(dispatch, getState);
   };
 }
 

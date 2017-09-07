@@ -5,14 +5,20 @@ import React, {Component} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 //import 'font-awesome/css/font-awesome.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
-import './scss/styles.scss';
 import 'nprogress/nprogress.css';
+import './scss/styles.scss';
 
 import Notifications from 'app/Notifications';
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
+import {isClient} from 'app/utils';
+import {loadCSS} from 'fg-loadcss';
+
+if (isClient) {
+  loadCSS('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+}
 
 class App extends Component {
 

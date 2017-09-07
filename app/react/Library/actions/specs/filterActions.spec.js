@@ -50,13 +50,6 @@ describe('filterActions', () => {
       spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'metadata.date', order: 'desc'});
     });
 
-    it('should dispatch an action SET_LIBRARY_FILTERS with the given types', () => {
-      actions.filterDocumentTypes(['a'], 'library')(dispatch, getState);
-      expect(comonPropertiesHelper.comonProperties).toHaveBeenCalledWith(templates, ['a']);
-      expect(libraryHelper.populateOptions).toHaveBeenCalledWith(libraryFilters, thesauris);
-      expect(dispatch).toHaveBeenCalledWith({type: types.SET_LIBRARY_FILTERS, libraryFilters, documentTypes: ['a']});
-    });
-
     it('should perform a search with the filters and prioritySortingCriteria', () => {
       store.library.search.sort = 'metadata.date';
       store.library.search.order = 'desc';
@@ -76,8 +69,11 @@ describe('filterActions', () => {
         selectedSorting: 'selectedSorting'
       });
 
-      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].sort).toBe('metadata.date');
-      expect(libraryActions.searchDocuments.calls.argsFor(0)[0].order).toBe('desc');
+      const searchParam = libraryActions.searchDocuments.calls.argsFor(0)[0];
+
+      expect(searchParam.search.sort).toBe('metadata.date');
+      expect(searchParam.search.order).toBe('desc');
+      expect(searchParam.filters).toEqual({documentTypes: ['a'], properties: libraryFilters});
     });
   });
 
@@ -97,7 +93,7 @@ describe('filterActions', () => {
       spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
       actions.resetFilters(storeKey)(dispatch, getState);
 
-      expect(libraryActions.searchDocuments).toHaveBeenCalledWith(search, storeKey);
+      expect(libraryActions.searchDocuments).toHaveBeenCalledWith({search}, storeKey);
       expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);
     });
   });
@@ -125,17 +121,6 @@ describe('filterActions', () => {
           libraryFilters: [{name: 'author', filter: true, active: false},
           {name: 'country', filter: true}]
         });
-      });
-    });
-  });
-
-  describe('activateFilter', () => {
-    it('should activate the filter', () => {
-      actions.activateFilter('author', true, libraryFilters)(dispatch, getState);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: types.UPDATE_LIBRARY_FILTERS,
-        libraryFilters: [{name: 'author', filter: true, active: true},
-        {name: 'country', filter: true}]
       });
     });
   });

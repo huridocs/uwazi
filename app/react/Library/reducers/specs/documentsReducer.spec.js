@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
 import documentsReducer from 'app/Library/reducers/documentsReducer';
+import * as actions from 'app/Library/actions/libraryActions';
 import 'jasmine-immutablejs-matchers';
 
 describe('documentsReducer', () => {
@@ -20,6 +21,13 @@ describe('documentsReducer', () => {
       let newState = documentsReducer(initialState, {type: types.SET_DOCUMENTS, documents});
 
       expect(newState).toEqualImmutable(Immutable.fromJS(documents));
+    });
+  });
+
+  describe('UNSET_DOCUMENTS', () => {
+    it('should set the initial state', () => {
+      let newState = documentsReducer(Immutable.fromJS({rows: [{}]}), actions.unsetDocuments());
+      expect(newState).toEqual(initialState);
     });
   });
 
