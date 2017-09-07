@@ -21,7 +21,7 @@ export class FiltersForm extends Component {
     super(props);
     this.search = debounce((search) => {
       this.props.searchDocuments({search}, this.props.storeKey);
-    }, 400);
+    }, 300);
 
     this.submit = this.submit.bind(this);
     this.onChange = this.onChange.bind(this);
