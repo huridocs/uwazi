@@ -2,6 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {Icon} from '../Icon';
 import Flag from 'react-flags';
+import Immutable from 'immutable';
 
 describe('Icon', () => {
   let component;
@@ -63,6 +64,16 @@ describe('Icon', () => {
       props.size = 'sm';
       render();
       expect(component.find(Flag).props().pngSize).toBe(24);
+    });
+
+    describe('when data is immutable', () => {
+      it('should render a Flag icon', () => {
+        props.data = Immutable.fromJS({_id: 'flagid', type: 'Flags', label: 'flaglabel'});
+        render();
+        expect(component.find('span').props().className).toBe('passed-flag-classname');
+        expect(component.find(Flag).props().name).toBe('flagid');
+        expect(component.find(Flag).props().basePath).toBe('/flag-images');
+      });
     });
   });
 });

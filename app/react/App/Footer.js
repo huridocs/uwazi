@@ -11,13 +11,14 @@ class Footer extends Component {
       <footer>
           <ul className="footer-nav">
 
-            <li className="footer-nav_item footer-powered">
-              <div className="footer-powered_tooltip">
-                <p>Uwazi is developed by HURIDOCS</p>
+            <li className="footer-nav_item">
+              <div className="footer-tooltip">
+                <p>Uwazi is developed by <img src="/public/huridocs-logo.svg" title="uwazi" alt="uwazi"/></p>
                 <p>in Kenya, Ecuador, Spain, Germany and USA.</p>
               </div>
-              <p className="footer-powered_title">Powered by</p>
-              <a href="http://www.uwazidocs.org/" className="footer-powered_logo">Uwazi</a>
+              <a href="https://www.uwazi.io/" target="_blank" className="footer-logo">
+                <img src="/public/logo.svg" title="uwazi" alt="uwazi"/>
+              </a>
             </li>
 
             <li className="footer-nav_separator">&nbsp;</li>

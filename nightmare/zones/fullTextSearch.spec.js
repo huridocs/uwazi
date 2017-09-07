@@ -52,7 +52,7 @@ describe('FullTextSearch zone', () => {
     .waitToClick(selectors.documentView.searchTextTab)
     .write(selectors.documentView.searchTextInput, 'joker')
     .typeEnter(selectors.documentView.searchTextInput)
-    .wait(200)
+    .wait(2000)
     .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
     .then(snippet => {
       expect(snippet.toLowerCase()).toContain('joker');

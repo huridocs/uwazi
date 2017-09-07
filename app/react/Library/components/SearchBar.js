@@ -41,11 +41,11 @@ export class SearchBar extends Component {
     this.props.change('search.searchTerm', '');
     let search = Object.assign({}, this.props.search);
     search.searchTerm = '';
-    this.props.searchDocuments(search, this.props.storeKey);
+    this.props.searchDocuments({search}, this.props.storeKey);
   }
 
-  search(values) {
-    this.props.searchDocuments(values, this.props.storeKey);
+  search(search) {
+    this.props.searchDocuments({search}, this.props.storeKey);
   }
 
   render() {
@@ -55,7 +55,7 @@ export class SearchBar extends Component {
       <div className={'search-box' + (this.props.open ? ' is-active' : '')}>
         <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
           <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
-            <Field model={'.searchTerm'}>
+            <Field model={'.searchTerm'} updateOn='submit'>
               <i className="fa fa-search"></i>
               <input
                 type="text"

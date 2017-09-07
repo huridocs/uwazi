@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './scss/sidepanel.scss';
 
 export class SidePanel extends Component {
   render() {

@@ -1,11 +1,18 @@
 import {store} from 'app/store';
 
 let t = (contextId, key, _text) => {
+  //return translations[contextId][key];
+  //return 'text';
   let text = _text || key;
-  let state = store.getState();
-  let translations = state.translations.toJS();
-  let translation = translations.find((d) => d.locale === state.locale) || {contexts: []};
-  let context = translation.contexts.find((ctx) => ctx.id === contextId) || {values: {}};
+
+  if (!t.translation) {
+    let state = store.getState();
+    let translations = state.translations.toJS();
+    t.translation = translations.find((d) => d.locale === state.locale) || {contexts: []};
+    //console.log(t.translation);
+  }
+
+  let context = t.translation.contexts.find((ctx) => ctx.id === contextId) || {values: {}};
 
   if (!context.values) {
     console.log(contextId); // eslint-disable-line no-console
@@ -20,5 +27,10 @@ let t = (contextId, key, _text) => {
 
   return context.values[key] || text;
 };
+
+t.resetCachedTranslation = () => {
+  t.translation = null;
+};
+
 
 export default t;

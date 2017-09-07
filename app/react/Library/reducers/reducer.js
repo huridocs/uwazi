@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import documents from './documentsReducer';
 import libraryUI from './uiReducer';
 import libraryFilters from './filtersReducer';
+import aggregationsReducer from './aggregationsReducer';
 import createReducer from 'app/BasicReducer';
 import {multireducer} from 'app/Multireducer';
 import {isClient} from 'app/utils';
@@ -22,7 +23,7 @@ defaultSearch.filters = {};
 
 export default (storeKey) => {
   return combineReducers({
-    aggregations: multireducer(createReducer('aggregations', {}), storeKey),
+    aggregations: multireducer(aggregationsReducer, storeKey),
     documents: multireducer(documents, storeKey),
     ui: multireducer(manageAttachmentsReducer(libraryUI, {useDefaults: false, setInArray: ['selectedDocuments', 0]}), storeKey),
     filters: multireducer(libraryFilters, storeKey),

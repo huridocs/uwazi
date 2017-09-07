@@ -11,9 +11,20 @@ webpackConfig.externals = {
   'react/lib/ExecutionEnvironment': true,
   'react/lib/ReactContext': true
 }
+
+// configure webpack with null-loaders for css
 webpackConfig.devtool = 'inline-source-map';
 delete webpackConfig.entry;
 delete webpackConfig.output;
+
+webpackConfig.module.rules = [
+  webpackConfig.module.rules[0],
+  webpackConfig.module.rules[1],
+  { test: /\.scss$/, loader: 'null-loader' },
+  { test: /\.css$/, loader: 'null-loader' }
+];
+
+webpackConfig.plugins = [];
 
 karmaConfig = {
   browsers: ['PhantomJS'],
@@ -31,22 +42,23 @@ karmaConfig = {
     'karma-jasmine-diff-reporter',
     'karma-sourcemap-loader',
     'karma-webpack',
-    'karma-coverage'
+    //'karma-coverage'
   ],
   browserNoActivityTimeout: 100000,
   browserDisconnectTimeout: 10000,
   preprocessors: {
     'tests.webpack.js': [ 'webpack', 'sourcemap' ]
   },
+  //reporters: [ 'jasmine-diff', 'dots' ],
   reporters: [ 'jasmine-diff', 'dots' ],
-  jasmineDiffReporter: {
-    color: {
-      expectedBg: '',        // default 'bgRed'
-      expectedFg: 'green',   // default 'white'
-      actualBg: '',          // default 'bgGreen'
-      actualFg: 'red',       // default 'white',
-    }
-  },
+  //jasmineDiffReporter: {
+    //color: {
+      //expectedBg: '',        // default 'bgRed'
+      //expectedFg: 'green',   // default 'white'
+      //actualBg: '',          // default 'bgGreen'
+      //actualFg: 'red',       // default 'white',
+    //}
+  //},
   webpack: webpackConfig,
   webpackServer: {
     noInfo: true

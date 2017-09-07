@@ -87,7 +87,7 @@ export class DocumentTypesList extends Component {
   }
 
   aggregations(item) {
-    let aggregations = this.props.aggregations.toJS();
+    let aggregations = this.aggs;
     let buckets = aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
     let found = buckets.find((agg) => agg.key === item.id);
     if (found) {
@@ -179,6 +179,7 @@ export class DocumentTypesList extends Component {
   }
 
   render() {
+    this.aggs = this.props.aggregations.toJS();
     return (
       <ul className="multiselect is-active">
         {this.state.items.map((item, index) => {

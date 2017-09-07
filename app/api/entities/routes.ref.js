@@ -6,7 +6,7 @@
 *       - entities
 *     description: Creates an entity
 *     parameters:
-*       - name: _id
+*       - name: entity
 *         description: sharedId of the entity
 *         in:  body
 *         required: true

@@ -68,7 +68,7 @@
   li {
     display: -webkit-flex;
     display: flex;
-    padding: 7px 0;
+    padding: 7px 15px;
     -webkit-justify-content: space-between;
     justify-content: space-between;
   }
@@ -87,7 +87,7 @@
   .item-type {
     width: auto;
     max-width: 75px;
-    margin-left: 5px;
+    margin-left: 15px;
   }
 }
 

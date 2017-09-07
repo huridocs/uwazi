@@ -146,7 +146,7 @@ mark, .mark {
   margin: 0 -15px;
   color: $c-grey-dark;
   border-bottom: 1px solid $c-grey-lighten;
-  overflow-y: scroll;
+  overflow-y: auto;
   max-height: 150px;
 
   li {
@@ -197,8 +197,7 @@ mark, .mark {
     -webkit-flex-direction: row;
     flex-direction: row;
     min-height: auto;
-    padding: 5px 0 5px 25px;
-    margin: 0 15px !important;
+    padding: 5px 15px 5px 35px;
     border-color: $c-grey-light !important;
 
     .item-name {
@@ -213,7 +212,7 @@ mark, .mark {
       -webkit-font-smoothing: antialiased;
       position: absolute;
       top: 50%;
-      left: 0;
+      left: 15px;
       font-size: $f-size-lg;
       color: $c-grey-light;
       transform: translateY(-50%);
@@ -230,6 +229,10 @@ mark, .mark {
       .item-name {
         color: $c-black;
       }
+    }
+    
+    .search-form {
+      margin: 0 -15px;
     }
   }
   .item-info {

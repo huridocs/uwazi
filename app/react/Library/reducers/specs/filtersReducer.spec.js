@@ -24,4 +24,13 @@ describe('filtersReducer', () => {
       expect(newState.get('properties').toJS()).toEqual(libraryFilters);
     });
   });
+
+  describe('INITIALIZE_FILTERS_FORM', () => {
+    it('should set the properties', () => {
+      const state = Immutable.fromJS({properties: []});
+
+      let newState = filtersReducer(state, {type: types.INITIALIZE_FILTERS_FORM, libraryFilters});
+      expect(newState.get('properties').toJS()).toEqual(libraryFilters);
+    });
+  });
 });

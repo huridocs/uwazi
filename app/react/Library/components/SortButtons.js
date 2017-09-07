@@ -41,7 +41,7 @@ export class SortButtons extends Component {
     delete filters.treatAs;
 
     if (this.props.sortCallback) {
-      this.props.sortCallback(filters, this.props.storeKey);
+      this.props.sortCallback({search: filters}, this.props.storeKey);
     }
   }
 

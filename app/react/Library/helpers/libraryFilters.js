@@ -28,30 +28,19 @@ export function URLQueryToState(query, templates, thesauris) {
   .filter((prop) => prop.filter);
 
   let {searchTerm = '', filters = {}, sort = prioritySortingCriteria.get().sort, order = prioritySortingCriteria.get().order} = query;
-
   properties = populateOptions(properties, thesauris).map((property) => {
-    if (filters[property.name]) {
-      property.active = true;
-    }
+    //if (filters[property.name]) {
+      //property.active = true;
+    //}
     let defaultValue = {};
 
-    if (property.type === 'select' || property.type === 'multiselect') {
-      defaultValue = {};
-    }
-
-    if (property.type === 'nested'
-      || property.type === 'date'
-      || property.type === 'daterange'
-      || property.type === 'multidate'
-      || property.type === 'multidaterange'
-      || property.type === 'numeric') {
-      defaultValue = {};
+    if (property.type === 'text') {
+      defaultValue = '';
     }
 
     filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
     return property;
   });
-
   return {properties, search: {searchTerm, filters, order, sort}};
 }
 

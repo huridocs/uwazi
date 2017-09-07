@@ -171,7 +171,6 @@ EntityViewer.propTypes = {
   entityBeingEdited: PropTypes.bool,
   sidepanelOpen: PropTypes.bool,
   connectionsGroups: PropTypes.object,
-  templates: PropTypes.array,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
   connectionsChanged: PropTypes.func,
@@ -191,8 +190,8 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const selectTemplates = createSelector(s => s.templates, template => template.toJS());
-const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri.toJS());
+const selectTemplates = createSelector(s => s.templates, template => template);
+const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri);
 const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
 const prepareMetadata = createSelector(
   selectEntity,
@@ -204,7 +203,6 @@ const prepareMetadata = createSelector(
 const mapStateToProps = (state) => {
   return {
     rawEntity: state.entityView.entity,
-    templates: selectTemplates(state),
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
     connectionsGroups: state.connectionsList.connectionsGroups,

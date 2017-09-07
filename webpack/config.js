@@ -21,10 +21,13 @@ module.exports = function(production) {
   }
 
   const CoreCss = new ExtractTextPlugin(stylesName);
+  const VendorCSS = new ExtractTextPlugin('vendor.' + stylesName);
+
   return {
     context: rootPath,
     devtool: '#eval-source-map',
     entry: {
+      performance: path.join(rootPath, 'app/react/utils/measure_performance.js'),
       main: path.join(rootPath, 'app/react/index.js'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
       'pdf.worker': path.join(rootPath, 'node_modules/pdfjs-dist/build/pdf.worker.entry'),
@@ -69,12 +72,21 @@ module.exports = function(production) {
             use: 'css-loader?sourceMap'
           }),
           include: [
-            path.join(rootPath, 'app'),
+            path.join(rootPath, 'app')
+          ]
+        },
+        {
+          test: /\.css$/,
+          loader: VendorCSS.extract({
+            fallback: 'style-loader',
+            use: 'css-loader?sourceMap'
+          }),
+          include: [
             path.join(rootPath, 'node_modules/react-datepicker/dist/'),
             path.join(rootPath, 'node_modules/bootstrap/dist/'),
             path.join(rootPath, 'node_modules/nprogress/'),
             path.join(rootPath, 'node_modules/font-awesome/css/'),
-            path.join(rootPath, 'node_modules/pdfjs-dist/web'),
+            path.join(rootPath, 'node_modules/pdfjs-dist/web')
           ]
         },
         {
@@ -102,6 +114,8 @@ module.exports = function(production) {
     },
     plugins: [
       new CleanPlugin(__dirname + '/../dist/'),
+      VendorCSS,
+      CoreCss,
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         chunks: ["main"],
@@ -120,7 +134,6 @@ module.exports = function(production) {
         chunks: ["main", "vendor", "nprogress", "pdf.worker"],
         minChunks: Infinity
       }),
-      CoreCss,
       new webpack.optimize.ModuleConcatenationPlugin(),
       assetsPluginInstance
     ]

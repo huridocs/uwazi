@@ -5,7 +5,6 @@ import formater from '../Metadata/helpers/formater';
 import marked from 'app/utils/marked';
 
 import t from '../I18N/t';
-import ShowIf from 'app/App/ShowIf';
 
 import {RowList, ItemFooter} from './Lists';
 import Icon from './Icon';
@@ -20,7 +19,7 @@ export class Item extends Component {
     let sortPropertyInMetadata = false;
 
     const metadata = populatedMetadata
-    .filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
+    //.filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
     .map((property, index) => {
       let isSortingProperty = false;
 
@@ -93,7 +92,7 @@ export class Item extends Component {
 
   getMetadata(doc) {
     doc.metadata = doc.metadata || {};
-    const populatedMetadata = formater.prepareMetadata(doc, this.props.templates.toJS(), this.props.thesauris.toJS()).metadata;
+    const populatedMetadata = formater.prepareMetadataForCard(doc, this.props.templates, this.props.thesauris, this.props.search.sort).metadata;
 
     if (this.props.additionalMetadata && this.props.additionalMetadata.length) {
       this.props.additionalMetadata.reverse().forEach(metadata => {
@@ -116,9 +115,20 @@ export class Item extends Component {
     return false;
   }
 
+  //componentWillReceiveProps(newProps) {
+    //Object.keys(newProps).forEach((key) => {
+      //if (this.props[key] !== newProps[key]) {
+        ////console.log(newProps[key]);
+        ////console.log(this.props[key]);
+        //console.log(key);
+        //console.log('----------------');
+      //}
+    //});
+  //}
+
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
-           templateClassName, buttons, evalPublished} = this.props;
+      templateClassName, buttons, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
@@ -134,9 +144,7 @@ export class Item extends Component {
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
-            <ShowIf if={evalPublished && !doc.published}>
-              <i className="item-private-icon fa fa-lock"></i>
-            </ShowIf>
+            {evalPublished && !doc.published ? <i className="item-private-icon fa fa-lock"></i> : false }
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc.title}</span>
@@ -150,9 +158,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
-            <ShowIf if={!!doc.template}>
-              <TemplateLabel template={doc.template}/>
-            </ShowIf>
+            {doc.template ? <TemplateLabel template={doc.template}/> : false}
             {this.props.labels}
           </div>
           {buttons}

@@ -33,20 +33,25 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link
-            href={this.props.assets.main.css}
+            href={this.props.assets.main.css[0]}
             rel="stylesheet"
             type="text/css"
           />
-          <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900" //eslint-disable-line
-                rel="stylesheet"
-                type="text/css"/>
+          <link
+            href={this.props.assets.main.css[1]}
+            rel="stylesheet"
+            type="text/css"
+          />
+          <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
+          />
           <link rel="shortcut icon" href="/public/favicon.ico"/>
         </head>
         <body>
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <link rel='stylesheet' href='https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css'/>
+          <script defer src={this.props.assets.performance.js}></script>
           <script defer src={this.props.assets.manifest.js}></script>
           <script defer src={this.props.assets.nprogress.js}></script>
           <script defer src={this.props.assets.vendor.js}></script>

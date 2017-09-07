@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import ReactModal from 'react-modal';
-import './scss/modal.scss';
 
 export default class Modal extends Component {
   render() {

@@ -2,38 +2,48 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import t from '../I18N/t';
+import {createSelector} from 'reselect';
 
-export class TemplateLabel extends Component {
-  //shouldComponentUpdate(nextProps) {
-    //return this.props.template !== nextProps.template;
-  //}
-
-  render() {
-    const templates = this.props.templates.toJS();
+const getTemplateInfo = createSelector(
+  (s) => s.templates,
+  (s, p) => p.template,
+  (templates, currentTemplate) => {
     let typeIndex;
     let name = templates.reduce((result, template, index) => {
-      if (template._id === this.props.template) {
+      if (template.get('_id') === currentTemplate) {
         typeIndex = 'item-type item-type-' + index;
-        return template.name;
+        return template.get('name');
       }
       return result;
     }, '');
 
+    return {name, typeIndex};
+  }
+);
+
+export class TemplateLabel extends Component {
+  render() {
     return (
-      <span className={typeIndex}>
-        <span className="item-type__name">{t(this.props.template, name)}</span>
+      <span className={this.props.typeIndex}>
+        <span className="item-type__name">{t(this.props.template, this.props.name)}</span>
       </span>
     );
   }
 }
 
 TemplateLabel.propTypes = {
-  templates: PropTypes.object,
-  template: PropTypes.string
+  template: PropTypes.string,
+  name: PropTypes.string,
+  typeIndex: PropTypes.string
 };
 
-const mapStateToProps = ({templates}) => {
-  return {templates};
+const mapStateToProps = (state, props) => {
+  const template = getTemplateInfo(state, props);
+  return {
+    name: template.name,
+    typeIndex: template.typeIndex,
+    template: props.template
+  };
 };
 
 export default connect(mapStateToProps)(TemplateLabel);
