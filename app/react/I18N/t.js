@@ -5,10 +5,11 @@ let t = (contextId, key, _text) => {
   //return 'text';
   let text = _text || key;
 
-  let state = store.getState();
   if (!t.translation) {
+    let state = store.getState();
     let translations = state.translations.toJS();
     t.translation = translations.find((d) => d.locale === state.locale) || {contexts: []};
+    //console.log(t.translation);
   }
 
   let context = t.translation.contexts.find((ctx) => ctx.id === contextId) || {values: {}};
