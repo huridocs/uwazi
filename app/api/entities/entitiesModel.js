@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 import instanceModel from 'api/odm';
 
 const entitySchema = new mongoose.Schema({
-  language: String,
+  language: {type: String, index: true},
   sharedId: {type: String, index: true},
   type: String,
   title: String,
-  template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
+  template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true},
   file: {
     originalname: String,
     filename: String,
