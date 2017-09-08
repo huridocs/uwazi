@@ -20,7 +20,12 @@ function migrate(offset, totalRows) {
     }
 
     return search.bulkIndex(docsResponse, 'index')
-    .then(() => {
+    .then((res) => {
+      res.items.forEach((f) => {
+        if (f.index.error) {
+          process.stdout.write(`Failed to process ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}\r`);
+        }
+      });
       process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
       pos += 1;
       if (pos > 3) {
@@ -28,6 +33,9 @@ function migrate(offset, totalRows) {
       }
       docsIndexed += docsResponse.length;
       return migrate(offset + limit, totalRows);
+    })
+    .catch((err) => {
+      console.log('ERR:', err);
     });
   });
 }
