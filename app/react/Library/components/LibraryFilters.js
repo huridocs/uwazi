@@ -47,9 +47,9 @@ LibraryFilters.propTypes = {
   storeKey: PropTypes.string
 };
 
-export function mapStateToProps() {
+export function mapStateToProps(state, props) {
   return {
-    open: true
+    open: state[props.storeKey].ui.get('filtersPanel') !== false && !state[props.storeKey].ui.get('selectedDocuments').size > 0
   };
 }
 
