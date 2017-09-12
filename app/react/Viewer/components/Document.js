@@ -70,7 +70,7 @@ export class Document extends Component {
     this.text.activate(this.props.activeReference);
 
     if (this.props.searchTerm) {
-      this.props.highlightSnippets(this.props.snippets);
+      this.props.highlightSnippets(this.props.snippets, this.text.charRange.pages);
     }
   }
 

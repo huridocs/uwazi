@@ -70,7 +70,8 @@ export class PDF extends Component {
       const end = this.props.pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))] || {chars: 0};
       this.props.onLoad({
         start: start.chars,
-        end: end.chars
+        end: end.chars,
+        pages
       });
 
       if (!this.initialized) {

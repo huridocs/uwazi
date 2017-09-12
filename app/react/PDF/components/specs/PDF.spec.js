@@ -131,7 +131,7 @@ describe('PDF', () => {
       instance.pageLoaded(3);
       expect(props.onLoad).not.toHaveBeenCalled();
       instance.pageLoaded(2);
-      expect(props.onLoad).toHaveBeenCalledWith({start: 0, end: 30});
+      expect(props.onLoad).toHaveBeenCalledWith({start: 0, end: 30, pages: [1, 2, 3]});
     });
 
     it('should be called when a pages is unloaded', () => {
@@ -151,7 +151,7 @@ describe('PDF', () => {
       props.onLoad.calls.reset();
       instance.pageUnloaded(3);
 
-      expect(props.onLoad).toHaveBeenCalledWith({start: 0, end: 20});
+      expect(props.onLoad).toHaveBeenCalledWith({start: 0, end: 20, pages: [1, 2]});
     });
   });
 });
