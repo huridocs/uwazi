@@ -17,6 +17,7 @@ export default class DatePicker extends Component {
   componentWillReceiveProps(newProps) {
     if (newProps.value) {
       this.setState({value: moment.utc(newProps.value, 'X')});
+      return;
     }
   }
 
