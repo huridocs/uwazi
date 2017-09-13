@@ -102,8 +102,9 @@ export function filterIsEmpty(value) {
     return true;
   }
 
-  if (typeof value === 'object' && !Object.keys(value).length) {
-    return true;
+  if (typeof value === 'object') {
+    const hasValue = Object.keys(value).reduce((result, key) => result || Boolean(value[key]), false);
+    return !hasValue;
   }
 
   return false;
