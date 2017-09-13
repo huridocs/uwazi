@@ -132,25 +132,34 @@ describe('Viewer uiActions', () => {
   });
 
   describe('highlightSnippets', () => {
-    it('should unmark all and mark snippets passed only once', () => {
+    it('should unmark all and mark snippets passed only once (only the ones for the pages being rendered)', () => {
       let container = document.createElement('div');
       let innerHTML = '<div class="main-wrapper">unique ';
       innerHTML += 'snippet <span>marked</span> (with)  multiple spaces';
       innerHTML += 'snippet marked </br>new line';
+      innerHTML += 'page not in range 5';
+      innerHTML += 'page not in range 6';
+      innerHTML += 'page not in range 7';
       innerHTML += '</div>';
       container.innerHTML = innerHTML;
       document.body.appendChild(container);
       Marker.init('div.main-wrapper');
 
       let snippets = Immutable.fromJS([
-        {text: 'unique'},
-        {text: 'unique'},
-        {text: 'snippet <b>marked</b> (with) multiple spaces'},
-        {text: 'snippet <b>marked</b>\nnew line'}
+        {text: 'unique', page: 1},
+        {text: 'unique', page: 2},
+        {text: 'snippet <b>marked</b> (with) multiple spaces', page: 3},
+        {text: 'snippet <b>marked</b>\nnew line', page: 4},
+        {text: 'page not in range 5', page: 5},
+        {text: 'page not in range 6', page: 6},
+        {text: 'page not in range 7', page: 7}
       ]);
 
-      actions.highlightSnippets(snippets);
+      const pages = [1, 2, 3, 4];
+
+      actions.highlightSnippets(snippets, pages);
       let marks = document.querySelectorAll('mark');
+      expect(marks.length).toBe(6);
       expect(marks[0].innerHTML).toBe('unique');
       expect(marks[1].innerHTML).toBe('snippet ');
       expect(marks[2].innerHTML).toBe('marked');
