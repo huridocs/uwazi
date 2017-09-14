@@ -6,6 +6,7 @@ import marked from 'marked';
 import rison from 'rison';
 import extendedMarked from 'app/utils/marked';
 import markdownEscapedValues from 'app/utils/markdownEscapedValues';
+import Footer from 'app/App/Footer';
 
 import {ItemList} from './ItemList';
 import CustomHookComponents from 'app/CustomHooks';
@@ -102,14 +103,15 @@ export class PageViewer extends Component {
     }, []);
 
     return (
-      <div className="row">
-        <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
-        <main className="document-viewer page-viewer">
-          <div className="main-wrapper">
-            {this.prepareHtml(sections, lists, customHookValues, htmlSplits)}
-          </div>
-        </main>
-      </div>
+        <div className="row">
+          <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
+          <main className="document-viewer page-viewer">
+            <div className="main-wrapper">
+              {this.prepareHtml(sections, lists, customHookValues, htmlSplits)}
+              <Footer/>
+            </div>
+          </main>
+        </div>
     );
   }
 }
