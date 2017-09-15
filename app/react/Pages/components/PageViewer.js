@@ -105,7 +105,7 @@ export class PageViewer extends Component {
     return (
         <div className="row">
           <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
-          <main className="document-viewer page-viewer">
+          <main className="page-viewer document-viewer">
             <div className="main-wrapper">
               {this.prepareHtml(sections, lists, customHookValues, htmlSplits)}
               <Footer/>
