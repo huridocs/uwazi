@@ -1,6 +1,6 @@
 /**
 * @swagger
-* definition:
+* definitions:
 *   Entity:
 *     properties:
 *       _id:
