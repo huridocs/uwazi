@@ -19,13 +19,17 @@ export class Item extends Component {
     let sortPropertyInMetadata = false;
 
     const metadata = populatedMetadata
-    //.filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
     .map((property, index) => {
       let isSortingProperty = false;
 
       if ('metadata.' + property.name === this.props.search.sort) {
         sortPropertyInMetadata = true;
         isSortingProperty = true;
+      }
+
+      const hasNoValue = !property.value && !property.markdown || !String(property.value).length;
+      if (isSortingProperty && hasNoValue) {
+        property.value = '-';
       }
 
       if (property.value && String(property.value).length || property.markdown) {
@@ -56,15 +60,6 @@ export class Item extends Component {
           </dl>
         );
       }
-
-      if (!property.value && 'metadata.' + property.name === this.props.search.sort) {
-        return (
-          <dl key={index}>
-            <dd className="item-metadata-empty">{t('System', 'No')} {property.label}</dd>
-          </dl>
-        );
-      }
-
       return null;
     });
 
@@ -114,17 +109,6 @@ export class Item extends Component {
     }
     return false;
   }
-
-  //componentWillReceiveProps(newProps) {
-    //Object.keys(newProps).forEach((key) => {
-      //if (this.props[key] !== newProps[key]) {
-        ////console.log(newProps[key]);
-        ////console.log(this.props[key]);
-        //console.log(key);
-        //console.log('----------------');
-      //}
-    //});
-  //}
 
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
