@@ -1,6 +1,6 @@
 /**
 * @swagger
-* definition:
+* definitions:
 *   Attachment:
 *     properties:
 *       _id:

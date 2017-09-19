@@ -53,7 +53,7 @@ SearchButton.contextTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    open: state[props.storeKey].ui.get('filtersPanel'),
+    open: state[props.storeKey].ui.get('filtersPanel') !== false,
     metadataPanelIsOpen: state[props.storeKey].ui.get('selectedDocuments').size > 0
   };
 }

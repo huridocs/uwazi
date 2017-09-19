@@ -6,7 +6,7 @@ import * as actions from 'app/Library/actions/libraryActions';
 import 'jasmine-immutablejs-matchers';
 
 describe('uiReducer', () => {
-  const initialState = Immutable.fromJS({searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: []});
+  const initialState = Immutable.fromJS({searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: [], filtersPanel: false});
 
   describe('when state is undefined', () => {
     it('returns initial', () => {

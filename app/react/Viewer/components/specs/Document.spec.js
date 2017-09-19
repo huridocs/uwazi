@@ -238,8 +238,9 @@ describe('Document', () => {
 
       describe('when there is a searchTerm', () => {
         it('should highlightSnippets', () => {
+          instance.text.charRange = {pages: 'pages'};
           instance.componentDidUpdate();
-          expect(props.highlightSnippets).toHaveBeenCalledWith(props.snippets);
+          expect(props.highlightSnippets).toHaveBeenCalledWith(props.snippets, 'pages');
         });
       });
     });

@@ -54,8 +54,10 @@ export function goToActive(value = true) {
   };
 }
 
-export function highlightSnippets(snippets) {
-  let highlights = snippets.map((snippet) => {
+export function highlightSnippets(snippets, pagesBeingRendered = []) {
+  let highlights = snippets
+  .filter((s) => pagesBeingRendered.includes(s.get('page')))
+  .map((snippet) => {
     return snippet.get('text')
     .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
     .replace(/<[^>]*>/g, '')
