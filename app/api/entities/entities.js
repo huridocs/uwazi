@@ -178,7 +178,7 @@ export default {
       }
 
       return model.db.updateMany({template}, actions)
-      .then(() => search.indexEntities({template: template._id}));
+      .then(() => search.indexEntities({template: template._id}, null, 1000));
     });
   },
 
@@ -281,7 +281,7 @@ export default {
       ])
       .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
         let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
       });
     });
   },
