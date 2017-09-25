@@ -21,13 +21,6 @@ function migrate(offset, totalRows) {
 
     return search.bulkIndex(docsResponse, 'index')
     .then((res) => {
-      if (res.items) {
-        res.items.forEach((f) => {
-          if (f.index.error) {
-            process.stdout.write(`Failed to process ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}\r`);
-          }
-        });
-      }
       process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
       pos += 1;
       if (pos > 3) {
