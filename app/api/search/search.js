@@ -168,9 +168,6 @@ export default {
     const type = 'entity';
     let body = [];
     docs.forEach((doc, index) => {
-      if (index === 10 && doc.file) {
-        doc.file.fullText = doc.fullText;
-      }
       let _doc = doc;
       const id = doc._id.toString();
       delete doc._id;
@@ -201,11 +198,13 @@ export default {
 
     return elastic.bulk({body})
     .then((res) => {
-      res.items.forEach((f) => {
-        if (f.index.error) {
-          console.log(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
-        }
-      });
+      if (res.items) {
+        res.items.forEach((f) => {
+          if (f.index.error) {
+            console.log(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
+          }
+        });
+      }
     });
   },
 
