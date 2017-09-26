@@ -60,7 +60,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh') {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
       if (term) {
         let should = [];
 
@@ -90,7 +90,7 @@ export default function () {
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      'fullText_*': {number_of_fragments, type}
+                      'fullText_*': {number_of_fragments, type, fragment_size}
                     }
                   }
                 },
