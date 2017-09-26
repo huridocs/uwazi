@@ -100,14 +100,26 @@ export class Item extends Component {
   }
 
   getSearchSnipett(doc) {
-    if (doc.snippets && doc.snippets[0]) {
+    if (!doc.snippets || !doc.snippets.length) {
+      return false;
+    }
+
+    if (doc.snippets.length === 1) {
       return (
         <div className="item-snippet-wrapper">
           <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
         </div>
       );
     }
-    return false;
+
+    return (
+      <div className="item-snippet-wrapper">
+        <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
+        <div>
+          <a onClick={this.props.onSnippetClick}>{t('System', 'Show more')}</a>
+        </div>
+      </div>
+    );
   }
 
   render() {

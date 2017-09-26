@@ -336,7 +336,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
     });
 
     if (found) {
-      found.querySelector('a').click();
+      found.querySelector('a.item-shortcut').click();
     }
   }, itemName)
   .wait(elementToSelect => {

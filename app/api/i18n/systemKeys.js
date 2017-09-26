@@ -122,6 +122,7 @@ export default [
 {key: 'Separator', label: 'Separator'},
 {key: 'Settings updated', label: 'Settings updated'},
 {key: 'Settings', label: 'Settings'},
+{key: 'Show more', label: 'Show more'},
 {key: 'Size', label: 'Size'},
 {key: 'Size', label: 'Size'},
 {key: 'Sort by', label: 'Sort by'},
