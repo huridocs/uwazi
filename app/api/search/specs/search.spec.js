@@ -441,7 +441,7 @@ describe('search', () => {
       }, 'es')
       .then(() => {
         let expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm')
+        .fullTextSearch('searchTerm', ['title', 'fullText'], 2)
         .includeUnpublished()
         .language('es')
         .query();

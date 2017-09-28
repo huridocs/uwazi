@@ -33,7 +33,7 @@ function processFiltes(filters, properties) {
 export default {
   search(query, language, user) {
     let documentsQuery = queryBuilder()
-    .fullTextSearch(query.searchTerm, query.fields)
+    .fullTextSearch(query.searchTerm, query.fields, 2)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
