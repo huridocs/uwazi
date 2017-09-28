@@ -452,7 +452,7 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).toBe('value3');
 
         expect(docDiferentTemplate.metadata.property1).toBe('value1');
-        expect(search.indexEntities).toHaveBeenCalledWith({template: template._id});
+        expect(search.indexEntities).toHaveBeenCalledWith({template: template._id}, null, 1000);
         done();
       })
       .catch(catchErrors(done));

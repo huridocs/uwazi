@@ -167,7 +167,7 @@ export default {
   bulkIndex(docs, _action = 'index') {
     const type = 'entity';
     let body = [];
-    docs.forEach((doc) => {
+    docs.forEach((doc, index) => {
       let _doc = doc;
       const id = doc._id.toString();
       delete doc._id;
@@ -196,7 +196,17 @@ export default {
       }
     });
 
-    return elastic.bulk({body});
+    return elastic.bulk({body})
+    .then((res) => {
+      if (res.items) {
+        res.items.forEach((f) => {
+          if (f.index.error) {
+            console.log(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
+          }
+        });
+      }
+      return res;
+    });
   },
 
   indexEntities(query, select, limit = 200) {
