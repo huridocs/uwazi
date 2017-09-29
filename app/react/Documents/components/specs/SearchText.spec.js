@@ -35,10 +35,10 @@ describe('SearchText', () => {
     render();
     let snippets = component.find('li span');
     expect(snippets.length).toBe(3);
-    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0].text + ' ...'});
+    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[0].text});
     expect(component.find(I18NLink).at(0).props().to).toMatch(/page=1&searchTerm=/);
-    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1].text + ' ...'});
-    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2].text + ' ...'});
+    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[1].text});
+    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({__html: props.snippets.toJS()[2].text});
   });
 
   it('should scrollToPage when click on a snippet link', () => {
