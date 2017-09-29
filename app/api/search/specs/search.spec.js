@@ -538,7 +538,7 @@ describe('search', () => {
 
   describe('bulkIndex', () => {
     it('should update docs using the bulk functionality', (done) => {
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
       const toIndexDocs = [
         {_id: 'id1', title: 'test1', pdfInfo: 'Should not be included'},
         {_id: 'id2', title: 'test2', pdfInfo: 'Should not be included'}
@@ -553,12 +553,13 @@ describe('search', () => {
           {title: 'test2'}
         ]});
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
     describe('when docs have fullText', () => {
       it('should be indexed separatedly as a child of the doc', (done) => {
-        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve());
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         spyOn(languages, 'detect').and.returnValue('english');
         const toIndexDocs = [
           {_id: 'id1', title: 'test1', fullText: 'text1'},
@@ -578,7 +579,8 @@ describe('search', () => {
             {fullText_english: 'text2'}
           ]});
           done();
-        });
+        })
+        .catch(catchErrors(done));
       });
     });
   });
@@ -596,7 +598,8 @@ describe('search', () => {
         expect(documentsToIndex[2].title).toBeDefined();
         expect(documentsToIndex[2].metadata).not.toBeDefined();
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
   });
 
@@ -618,7 +621,7 @@ describe('search', () => {
         .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: id.toString()});
         done();
       })
-      .catch(done.fail);
+      .catch(catchErrors(done));
     });
   });
 });

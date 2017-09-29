@@ -6,6 +6,7 @@ import documents from 'api/documents';
 import references from 'api/references';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
+import elastic from 'api/search/elastic';
 
 import db from 'api/utils/testing_db';
 import fixtures, {entityId} from './fixtures.js';
@@ -71,6 +72,7 @@ describe('upload routes', () => {
 
     describe('Language detection', () => {
       it('should detect English documents and store the result', (done) => {
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         file.filename = 'eng.pdf';
         file.path = __dirname + '/uploads/eng.pdf';
 
@@ -93,6 +95,7 @@ describe('upload routes', () => {
       });
 
       it('should detect Spanish documents and store the result', (done) => {
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         file.filename = 'spn.pdf';
         file.path = __dirname + '/uploads/spn.pdf';
 
@@ -119,6 +122,7 @@ describe('upload routes', () => {
 
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'conversionFailed') {
             setTimeout(() => {
