@@ -6,11 +6,15 @@ import {I18NLink} from 'app/I18N';
 import {Field, Form, actions as formActions} from 'react-redux-form';
 import {wrapDispatch} from 'app/Multireducer';
 
-import {searchDocuments, setSearchTerm, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
+import {searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
 import {t} from 'app/I18N';
 
 export class SearchBar extends Component {
+
+  onChange(e) {
+    this.getSuggestions(e);
+  }
 
   getSuggestions(e) {
     this.props.getSuggestions(e.target.value);
@@ -38,7 +42,7 @@ export class SearchBar extends Component {
   }
 
   resetSearch() {
-    this.props.change('search.searchTerm', '');
+    this.props.change(this.props.storeKey + '.search.searchTerm', '');
     let search = Object.assign({}, this.props.search);
     search.searchTerm = '';
     this.props.searchDocuments({search}, this.props.storeKey);
@@ -61,7 +65,7 @@ export class SearchBar extends Component {
                 type="text"
                 placeholder={t('System', 'Search')}
                 className="form-control"
-                onChange={this.getSuggestions.bind(this)}
+                onChange={this.onChange.bind(this)}
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
@@ -121,7 +125,6 @@ export function mapStateToProps(state, props) {
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     searchDocuments,
-    setSearchTerm,
     getSuggestions,
     hideSuggestions,
     setOverSuggestions,

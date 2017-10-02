@@ -110,6 +110,7 @@ export default [
 {key: 'Recently', label: 'Recently'},
 {key: 'References', label: 'References'},
 {key: 'RelationType saved', label: 'RelationType saved'},
+{key: 'Relevance', label: 'Relevance'},
 {key: 'Reset', label: 'Reset'},
 {key: 'Reset', label: 'Reset'},
 {key: 'Role', label: 'Role'},

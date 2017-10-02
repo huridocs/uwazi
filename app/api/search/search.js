@@ -38,7 +38,7 @@ export default {
     .filterById(query.ids)
     .language(language);
 
-    if (query.sort) {
+    if (query.sort && query.sort !== 'search_score') {
       documentsQuery.sort(query.sort, query.order);
     }
 

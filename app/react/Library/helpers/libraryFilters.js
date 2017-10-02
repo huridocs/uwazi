@@ -27,11 +27,14 @@ export function URLQueryToState(query, templates, thesauris) {
   let properties = comonProperties(templates, query.types)
   .filter((prop) => prop.filter);
 
-  let {searchTerm = '', filters = {}, sort = prioritySortingCriteria.get().sort, order = prioritySortingCriteria.get().order} = query;
+  let {
+    searchTerm = '',
+    filters = {},
+    sort = prioritySortingCriteria.get().sort,
+    order = prioritySortingCriteria.get().order,
+    userSelectedSorting
+  } = query;
   properties = populateOptions(properties, thesauris).map((property) => {
-    //if (filters[property.name]) {
-      //property.active = true;
-    //}
     let defaultValue = {};
 
     if (property.type === 'text') {
@@ -41,7 +44,7 @@ export function URLQueryToState(query, templates, thesauris) {
     filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
     return property;
   });
-  return {properties, search: {searchTerm, filters, order, sort}};
+  return {properties, search: {searchTerm, filters, order, sort, userSelectedSorting}};
 }
 
 export function parseWithAggregations(filters, aggregations) {
