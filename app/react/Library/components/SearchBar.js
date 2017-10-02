@@ -13,6 +13,7 @@ import {t} from 'app/I18N';
 export class SearchBar extends Component {
 
   onChange(e) {
+    this.props.change(this.props.storeKey + '.search.searchTerm', e.target.value);
     this.getSuggestions(e);
   }
 

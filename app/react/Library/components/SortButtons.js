@@ -119,7 +119,13 @@ export class SortButtons extends Component {
           <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
             {this.createSortItem(0, 'title', 'System', 'Title', {isActive: search.sort === 'title', search, treatAs: 'string'})}
             {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
-            {this.createSortItem(2, 'search_score', 'System', 'Relevance', {isActive: search.sort === 'search_score', search, treatAs: 'string'})}
+            <li key={2}
+                className={'Dropdown-option ' + (search.sort === '_score' ? 'is-active' : '')}>
+              <a className={'Dropdown-option__item ' + (search.sort === '_score' ? 'is-active' : '')}
+                 onClick={() => this.handleClick('_score')}>
+                 <span>{t('System', 'Relevance')}</span>
+              </a>
+            </li>
             {additionalSorts}
           </ul>
         </div>

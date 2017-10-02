@@ -38,7 +38,7 @@ export default {
     .filterById(query.ids)
     .language(language);
 
-    if (query.sort && query.sort !== 'search_score') {
+    if (query.sort) {
       documentsQuery.sort(query.sort, query.order);
     }
 
@@ -76,6 +76,7 @@ export default {
       documentsQuery.filterMetadata(filters)
       .aggregations(aggregations);
 
+      console.log(JSON.stringify(documentsQuery.query(), null, ' '));
       return elastic.search({index: elasticIndex, body: documentsQuery.query()})
       .then((response) => {
         let rows = response.hits.hits.map((hit) => {
