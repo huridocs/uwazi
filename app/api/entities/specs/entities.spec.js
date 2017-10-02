@@ -10,7 +10,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
 import db from 'api/utils/testing_db';
 
-describe('entities', () => {
+fdescribe('entities', () => {
   beforeEach((done) => {
     spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
