@@ -23,7 +23,7 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
                  `${user.username}\n\n` +
                  'To complete this process, please create a strong password by clicking on the following link:\n' +
                  `${domain}/setpassword/${key}\n\n` +
-                 'For more information about the Uwazi platform, visit https://www.uwazi.io.\n\nThanks!\nUwazi team';
+                 'For more information about the Uwazi platform, visit https://www.uwazi.io.\n\nThank you!\nUwazi team';
 
     const htmlLink = `<a href="${domain}/setpassword/${key}">${domain}/setpassword/${key}</a>`;
 
