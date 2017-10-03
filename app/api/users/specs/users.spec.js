@@ -20,6 +20,7 @@ describe('Users', () => {
 
   describe('save', () => {
     let currentUser = {_id: userId};
+
     it('should save user matching id', (done) => {
       return users.save({_id: userId.toString(), password: 'new_password'}, currentUser)
       .then(() => users.get({_id: userId}, '+password'))
@@ -68,12 +69,12 @@ describe('Users', () => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
       });
 
-      it('should do the recover password process', (done) => {
+      it('should do the recover password process (as a new user)', (done) => {
         return users.newUser({username: 'spidey', email: 'peter@parker.com', role: 'editor'}, domain)
         .then(() => users.get({username: 'spidey'}))
         .then(([user]) => {
           expect(user.username).toBe('spidey');
-          expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain);
+          expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {newUser: true});
           done();
         })
         .catch(catchErrors(done));
@@ -149,6 +150,52 @@ describe('Users', () => {
       .catch(catchErrors(done));
     });
 
+    it('should personalize the mail if recover password process is part of a newly created user', (done) => {
+      spyOn(mailer, 'send').and.returnValue(Promise.resolve('OK'));
+      spyOn(Date, 'now').and.returnValue(1000);
+
+      const key = SHA256('peter@parker.com' + 1000).toString();
+      let newUserId;
+
+      users.newUser({username: 'spidey', email: 'peter@parker.com', role: 'editor'}, 'http://localhost')
+      .then(newUser => {
+        newUserId = newUser._id.toString();
+        return users.recoverPassword('peter@parker.com', 'http://localhost', {newUser: true});
+      })
+      .then(response => {
+        expect(response).toBe('OK');
+        return passwordRecoveriesModel.get({key});
+      })
+      .then(recoverPasswordDb => {
+        expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
+        let expectedMailOptions = {
+          from: '"Uwazi" <no-reply@uwazi.io>',
+          to: 'peter@parker.com',
+          subject: 'Welcome to Uwazi instance',
+          text: 'To set your password click on the following link:\n' +
+          `domain/setpassword/${key}`
+        };
+        expect(mailer.send.calls.mostRecent().args[0].from).toBe(expectedMailOptions.from);
+        expect(mailer.send.calls.mostRecent().args[0].to).toBe(expectedMailOptions.to);
+        expect(mailer.send.calls.mostRecent().args[0].subject).toBe(expectedMailOptions.subject);
+
+        expect(mailer.send.calls.mostRecent().args[0].text).toContain('administrators');
+        expect(mailer.send.calls.mostRecent().args[0].text).toContain('Uwazi instance');
+        expect(mailer.send.calls.mostRecent().args[0].text).toContain('spidey');
+        expect(mailer.send.calls.mostRecent().args[0].text).toContain(`http://localhost/setpassword/${key}`);
+
+        expect(mailer.send.calls.mostRecent().args[0].html).toContain('administrators');
+        expect(mailer.send.calls.mostRecent().args[0].html).toContain('Uwazi instance');
+        expect(mailer.send.calls.mostRecent().args[0].html).toContain('<b>spidey</b></p>');
+        expect(mailer.send.calls.mostRecent().args[0].html).toContain('<a href="https://www.uwazi.io">https://www.uwazi.io</a>');
+
+        expect(mailer.send.calls.mostRecent().args[0].html)
+        .toContain(`<a href="http://localhost/setpassword/${key}">http://localhost/setpassword/${key}</a>`);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     describe('when something fails with the mailer', () => {
       it('should reject the promise and return the error', (done) => {
         spyOn(mailer, 'send').and.callFake(() => Promise.reject({Error: 'some error'}));
@@ -194,7 +241,11 @@ describe('Users', () => {
     });
 
     it('should delete the resetPassword', (done) => {
-      users.resetPassword({key: expectedKey, password: '1234'})
+      passwordRecoveriesModel.get({key: expectedKey})
+      .then(response => {
+        expect(response.length).toBe(1);
+        return users.resetPassword({key: expectedKey, password: '1234'});
+      })
       .then(() => passwordRecoveriesModel.get({key: expectedKey}))
       .then(response => {
         expect(response.length).toBe(0);
