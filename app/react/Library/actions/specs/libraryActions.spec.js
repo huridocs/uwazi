@@ -43,7 +43,7 @@ describe('libraryActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters)}});
+      getState = jasmine.createSpy('getState').and.returnValue({library: {filters: Immutable.fromJS(filters), search: {}}});
     });
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
@@ -135,7 +135,8 @@ describe('libraryActions', () => {
           {name: 'multiselect', type: 'multiselect', active: true},
           {name: 'nested', type: 'nested', active: true, nestedProperties: [{key: 'prop1', label: 'prop one'}]}
         ], documentTypes: ['decision']};
-        store = {library: {filters: Immutable.fromJS(state)}};
+        store = {library: {filters: Immutable.fromJS(state), search: {searchTerm: 'batman'}}};
+        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library', query: {view: 'chart'}, search: '?q=()'});
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
 
@@ -153,10 +154,8 @@ describe('libraryActions', () => {
 
         const limit = 'limit';
         spyOn(browserHistory, 'push');
-        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library', query: {view: 'chart'}});
         actions.searchDocuments({search}, storeKey, limit)(dispatch, getState);
-
-        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
+        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,date:dateValue,multiselect:multiValue,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))`); //eslint-disable-line
       });
 
       it('should use passed filters when passed', () => {
@@ -176,11 +175,9 @@ describe('libraryActions', () => {
 
         const limit = 'limit';
         spyOn(browserHistory, 'push');
-        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/library', query: {view: 'chart'}});
         actions.searchDocuments({search, filters}, storeKey, limit)(dispatch, getState);
 
-        expect(getState).not.toHaveBeenCalled();
-        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,types:!(decision))`); //eslint-disable-line
+        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))`); //eslint-disable-line
       });
 
       it('should set the storeKey selectedSorting if user has selected a custom sorting', () => {

@@ -76,7 +76,6 @@ export default {
       documentsQuery.filterMetadata(filters)
       .aggregations(aggregations);
 
-      console.log(JSON.stringify(documentsQuery.query(), null, ' '));
       return elastic.search({index: elasticIndex, body: documentsQuery.query()})
       .then((response) => {
         let rows = response.hits.hits.map((hit) => {

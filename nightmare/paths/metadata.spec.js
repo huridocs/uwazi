@@ -96,7 +96,6 @@ describe('metadata path', () => {
     });
 
     it('should create a new document template with no properties added', (done) => {
-      //DRAG PROPERTIES AND DROP INTO TEMPLATE TO BE ADDED TO THIS TEST.
       nightmare
       .wait(selectors.settingsView.documentTemplateNameForm)
       .write(selectors.settingsView.documentTemplateNameForm, 'new document')
