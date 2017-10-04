@@ -42,7 +42,8 @@ export default {
       {type: 'multiselect', name: 'multiselect'},
       {type: 'date', name: 'date'},
       {type: 'multidate', name: 'multidate'},
-      {type: 'multidaterange', name: 'multidaterange'}
+      {type: 'multidaterange', name: 'multidaterange'},
+      {type: 'daterange', name: 'daterange'}
     ]},
     {_id: templateWithOnlyMultiselect, name: 'templateWithOnlyMultiSelectSelect', properties: [
       {type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString()}

@@ -339,6 +339,32 @@ describe('entities', () => {
         .catch(catchErrors(done));
       });
 
+      it('should sanitize daterange, removing non valid dates', (done) => {
+        let doc1 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: 1, to: 2}}, template: templateId};
+        let doc2 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: null, to: 2}}, template: templateId};
+        let doc3 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: 2, to: null}}, template: templateId};
+        let doc4 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: null, to: null}}, template: templateId};
+
+        entities.save(doc1, {language: 'en'}).then(() => entities.getById('shared', 'en'))
+        .then((doc) => {
+          expect(doc.metadata.daterange).toEqual(doc1.metadata.daterange);
+          return entities.save(doc2, {language: 'en'}).then(() => entities.getById('shared', 'en'));
+        })
+        .then((doc) => {
+          expect(doc.metadata.daterange).toEqual(doc2.metadata.daterange);
+          return entities.save(doc3, {language: 'en'}).then(() => entities.getById('shared', 'en'));
+        })
+        .then((doc) => {
+          expect(doc.metadata.daterange).toEqual(doc3.metadata.daterange);
+          return entities.save(doc4, {language: 'en'}).then(() => entities.getById('shared', 'en'));
+        })
+        .then((doc) => {
+          expect(doc.metadata.daterange).not.toBeDefined();
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
       it('should sanitize multidaterange, removing non valid dates', (done) => {
         let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidaterange: [
           {from: 1, to: 2},

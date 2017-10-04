@@ -100,6 +100,12 @@ function sanitize(doc, template) {
     if (property.type === 'multidaterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value.from || value.to);
     }
+    if (property.type === 'daterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+      const value = sanitizedDoc.metadata[property.name];
+      if (!value.to && !value.from) {
+        delete sanitizedDoc.metadata[property.name];
+      }
+    }
     return sanitizedDoc;
   }, doc);
 }
