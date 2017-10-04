@@ -251,7 +251,7 @@ describe('entities', () => {
           multiselect: 'multiselect',
           date: 'date',
           multidate: [1234],
-          multidaterange: 'multidaterange'
+          multidaterange: [{from: 1, to: 2}]
         }
       };
 
@@ -270,21 +270,21 @@ describe('entities', () => {
         expect(docEN.metadata.multiselect).toBe('multiselect');
         expect(docEN.metadata.date).toBe('date');
         expect(docEN.metadata.multidate).toEqual([1234]);
-        expect(docEN.metadata.multidaterange).toBe('multidaterange');
+        expect(docEN.metadata.multidaterange).toEqual([{from: 1, to: 2}]);
 
         expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
         expect(docES.metadata.multiselect).toBe('multiselect');
         expect(docES.metadata.date).toBe('date');
         expect(docES.metadata.multidate).toEqual([1234]);
-        expect(docES.metadata.multidaterange).toBe('multidaterange');
+        expect(docES.metadata.multidaterange).toEqual([{from: 1, to: 2}]);
 
         expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
         expect(docPT.metadata.multiselect).toBe('multiselect');
         expect(docPT.metadata.date).toBe('date');
         expect(docPT.metadata.multidate).toEqual([1234]);
-        expect(docPT.metadata.multidaterange).toBe('multidaterange');
+        expect(docPT.metadata.multidaterange).toEqual([{from: 1, to: 2}]);
         done();
       })
       .catch(catchErrors(done));
@@ -321,7 +321,7 @@ describe('entities', () => {
 
     describe('Sanitize', () => {
       it('should sanitize multidates, removing non valid dates', (done) => {
-        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidate: [1234, null]}, published: false, template: templateId};
+        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidate: [null, 1234, null, 5678]}, published: false, template: templateId};
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {
@@ -332,8 +332,33 @@ describe('entities', () => {
           ]);
         })
         .then(([docES, docEN]) => {
-          expect(docES.metadata.multidate).toEqual([1234]);
-          expect(docEN.metadata.multidate).toEqual([1234]);
+          expect(docES.metadata.multidate).toEqual([1234, 5678]);
+          expect(docEN.metadata.multidate).toEqual([1234, 5678]);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should sanitize multidaterange, removing non valid dates', (done) => {
+        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidaterange: [
+          {from: 1, to: 2},
+          {from: null, to: null},
+          {from: null, to: 2},
+          {from: 2, to: null},
+          {from: null, to: null}
+        ]}, published: false, template: templateId};
+
+        entities.save(doc, {language: 'en'})
+        .then((updatedDoc) => {
+          expect(updatedDoc.language).toBe('en');
+          return Promise.all([
+            entities.getById('shared', 'es'),
+            entities.getById('shared', 'en')
+          ]);
+        })
+        .then(([docES, docEN]) => {
+          expect(docES.metadata.multidaterange).toEqual([{from: 1, to: 2}, {from: null, to: 2}, {from: 2, to: null}]);
+          expect(docEN.metadata.multidaterange).toEqual([{from: 1, to: 2}, {from: null, to: 2}, {from: 2, to: null}]);
           done();
         })
         .catch(catchErrors(done));

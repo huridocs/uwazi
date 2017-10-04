@@ -97,6 +97,9 @@ function sanitize(doc, template) {
     if (property.type === 'multidate' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value);
     }
+    if (property.type === 'multidaterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value.from || value.to);
+    }
     return sanitizedDoc;
   }, doc);
 }
