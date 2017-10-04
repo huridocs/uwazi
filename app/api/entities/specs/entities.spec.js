@@ -27,7 +27,7 @@ describe('entities', () => {
     it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
       const universalTime = 1;
       spyOn(date, 'currentUTC').and.returnValue(universalTime);
-      let doc = {title: 'Batman begins'};
+      let doc = {title: 'Batman begins', template: templateId};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'es'})
@@ -55,7 +55,7 @@ describe('entities', () => {
     });
 
     it('should return the newly created document for the passed language', (done) => {
-      let doc = {title: 'the dark knight', fullText: 'the full text!'};
+      let doc = {title: 'the dark knight', fullText: 'the full text!', template: templateId};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
@@ -71,7 +71,7 @@ describe('entities', () => {
     });
 
     it('should index the newly created documents', (done) => {
-      let doc = {title: 'the dark knight'};
+      let doc = {title: 'the dark knight', template: templateId};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
@@ -250,7 +250,7 @@ describe('entities', () => {
           select: 'select',
           multiselect: 'multiselect',
           date: 'date',
-          multidate: 'multidate',
+          multidate: [1234],
           multidaterange: 'multidaterange'
         }
       };
@@ -269,21 +269,21 @@ describe('entities', () => {
         expect(docEN.metadata.select).toBe('select');
         expect(docEN.metadata.multiselect).toBe('multiselect');
         expect(docEN.metadata.date).toBe('date');
-        expect(docEN.metadata.multidate).toBe('multidate');
+        expect(docEN.metadata.multidate).toEqual([1234]);
         expect(docEN.metadata.multidaterange).toBe('multidaterange');
 
         expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
         expect(docES.metadata.multiselect).toBe('multiselect');
         expect(docES.metadata.date).toBe('date');
-        expect(docES.metadata.multidate).toBe('multidate');
+        expect(docES.metadata.multidate).toEqual([1234]);
         expect(docES.metadata.multidaterange).toBe('multidaterange');
 
         expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
         expect(docPT.metadata.multiselect).toBe('multiselect');
         expect(docPT.metadata.date).toBe('date');
-        expect(docPT.metadata.multidate).toBe('multidate');
+        expect(docPT.metadata.multidate).toEqual([1234]);
         expect(docPT.metadata.multidaterange).toBe('multidaterange');
         done();
       })
@@ -292,7 +292,7 @@ describe('entities', () => {
 
     it('should saveEntityBasedReferences', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
-      let doc = {title: 'Batman begins'};
+      let doc = {title: 'Batman begins', template: templateId};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'es'})
@@ -313,6 +313,27 @@ describe('entities', () => {
         .then((doc) => {
           expect(doc.user).not.toBe('another_user');
           expect(doc.creationDate).not.toBe(10);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('Sanitize', () => {
+      it('should sanitize multidates, removing non valid dates', (done) => {
+        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidate: [1234, null]}, published: false, template: templateId};
+
+        entities.save(doc, {language: 'en'})
+        .then((updatedDoc) => {
+          expect(updatedDoc.language).toBe('en');
+          return Promise.all([
+            entities.getById('shared', 'es'),
+            entities.getById('shared', 'en')
+          ]);
+        })
+        .then(([docES, docEN]) => {
+          expect(docES.metadata.multidate).toEqual([1234]);
+          expect(docEN.metadata.multidate).toEqual([1234]);
           done();
         })
         .catch(catchErrors(done));
