@@ -55,7 +55,7 @@ describe('entities', () => {
     });
 
     it('should return the newly created document for the passed language', (done) => {
-      let doc = {title: 'the dark knight', fullText: 'the full text!', template: templateId};
+      let doc = {title: 'the dark knight', fullText: 'the full text!', metadata: {data: 'should not be here'}};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
@@ -65,6 +65,7 @@ describe('entities', () => {
         expect(createdDocument.user.equals(user._id)).toBe(true);
         expect(createdDocument.language).toEqual('en');
         expect(createdDocument.fullText).not.toBeDefined();
+        expect(createdDocument.metadata).not.toBeDefined();
         done();
       })
       .catch(catchErrors(done));
@@ -321,7 +322,11 @@ describe('entities', () => {
 
     describe('Sanitize', () => {
       it('should sanitize multidates, removing non valid dates', (done) => {
-        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidate: [null, 1234, null, 5678]}, published: false, template: templateId};
+        let doc = {
+          _id: batmanFinishesId, sharedId: 'shared',
+          metadata: {multidate: [null, 1234, null, 5678]},
+          published: false, template: templateId
+        };
 
         entities.save(doc, {language: 'en'})
         .then((updatedDoc) => {

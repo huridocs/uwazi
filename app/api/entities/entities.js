@@ -6,7 +6,6 @@ import references from '../references/references';
 import templates from '../templates';
 import ID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
-import {createError} from 'api/utils';
 
 import model from './entitiesModel';
 
@@ -87,12 +86,20 @@ function getEntityTemplate(doc, language) {
 
     this.getById(doc.sharedId, language)
     .then((storedDoc) => {
+      if (!storedDoc) {
+        return null;
+      }
       return templates.getById(storedDoc.template).then(resolve);
     });
   });
 }
 
 function sanitize(doc, template) {
+  if (!template) {
+    delete doc.metadata;
+    return doc;
+  }
+
   return template.properties.reduce((sanitizedDoc, property) => {
     if (property.type === 'multidate' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value);
@@ -132,10 +139,6 @@ export default {
       this.getEntityTemplate(doc, language)
     ])
     .then(([{languages}, template]) => {
-      if (!template) {
-        return Promise.reject(createError('An entity should have a template properly configured', 400));
-      }
-
       if (doc.sharedId) {
         return this.updateEntity(this.sanitize(doc, template));
       }
