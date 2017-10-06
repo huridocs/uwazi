@@ -4,7 +4,7 @@ import {browserHistory} from 'react-router';
 
 import {ResetPassword} from '../ResetPassword';
 
-fdescribe('ResetPassword', () => {
+describe('ResetPassword', () => {
   let component;
   let props;
   let context;
