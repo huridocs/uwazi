@@ -3,16 +3,34 @@ import {shallow} from 'enzyme';
 
 import {ResetPassword} from '../ResetPassword';
 
-describe('ResetPassword', () => {
+fdescribe('ResetPassword', () => {
   let component;
   let props;
+  let context;
 
   beforeEach(() => {
     props = {
       resetPassword: jasmine.createSpy('resetPassword'),
       params: {key: 'asd'}
     };
-    component = shallow(<ResetPassword {...props} />);
+
+    context = {router: {location: ''}};
+
+    component = shallow(<ResetPassword {...props} />, {context});
+  });
+
+  describe('When not creating an account', () => {
+    it('should render a normal form without any additional information', () => {
+      expect(component.find('.alert.alert-info').length).toBe(0);
+    });
+  });
+
+  describe('When creating an account', () => {
+    it('should render an additional information box', () => {
+      context = {router: {location: {search: '?createAcount=true'}}};
+      component = shallow(<ResetPassword {...props} />, {context});
+      expect(component.find('.alert.alert-info').length).toBe(1);
+    });
   });
 
   describe('submit', () => {
