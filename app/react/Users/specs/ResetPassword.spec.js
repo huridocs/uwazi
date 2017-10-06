@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {ResetPassword} from '../ResetPassword';
 
-fdescribe('ResetPassword', () => {
+describe('ResetPassword', () => {
   let component;
   let props;
   let context;
@@ -27,7 +27,7 @@ fdescribe('ResetPassword', () => {
 
   describe('When creating an account', () => {
     it('should render an additional information box', () => {
-      context = {router: {location: {search: '?createAcount=true'}}};
+      context = {router: {location: {search: '?createAccount=true'}}};
       component = shallow(<ResetPassword {...props} />, {context});
       expect(component.find('.alert.alert-info').length).toBe(1);
     });

@@ -23,7 +23,7 @@ export class ResetPassword extends RouteHandler {
 
   conformHelperText(searchString) {
     const search = queryString.parse(searchString);
-    return search.createAcount !== 'true' ? null :
+    return search.createAccount !== 'true' ? null :
       <div className="alert alert-info">
         <i className="fa fa-info-circle"></i>
         <div>To complete the account creation process, please create a password for your account</div>

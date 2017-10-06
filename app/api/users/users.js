@@ -22,17 +22,17 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
                  `The administrators of ${siteName} have created an account for you under the user name:\n` +
                  `${user.username}\n\n` +
                  'To complete this process, please create a strong password by clicking on the following link:\n' +
-                 `${domain}/setpassword/${key}?createAcount=true\n\n` +
+                 `${domain}/setpassword/${key}?createAccount=true\n\n` +
                  'For more information about the Uwazi platform, visit https://www.uwazi.io.\n\nThank you!\nUwazi team';
 
-    const htmlLink = `<a href="${domain}/setpassword/${key}?createAcount=true">${domain}/setpassword/${key}?createAcount=true</a>`;
+    const htmlLink = `<a href="${domain}/setpassword/${key}?createAccount=true">${domain}/setpassword/${key}?createAccount=true</a>`;
 
     response.subject = `Welcome to ${siteName}`;
     response.text = text;
     response.html = '<p>' +
                     response.text
                     .replace(new RegExp(user.username, 'g'), `<b>${user.username}</b>`)
-                    .replace(new RegExp(`${domain}/setpassword/${key}\\?createAcount=true`, 'g'), htmlLink)
+                    .replace(new RegExp(`${domain}/setpassword/${key}\\?createAccount=true`, 'g'), htmlLink)
                     .replace(new RegExp('https://www.uwazi.io', 'g'), '<a href="https://www.uwazi.io">https://www.uwazi.io</a>')
                     .replace(/\n{2,}/g, '</p><p>')
                     .replace(/\n/g, '<br />') +
