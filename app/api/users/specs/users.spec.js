@@ -182,7 +182,7 @@ describe('Users', () => {
         expect(mailer.send.calls.mostRecent().args[0].text).toContain('administrators');
         expect(mailer.send.calls.mostRecent().args[0].text).toContain('Uwazi instance');
         expect(mailer.send.calls.mostRecent().args[0].text).toContain('spidey');
-        expect(mailer.send.calls.mostRecent().args[0].text).toContain(`http://localhost/setpassword/${key}`);
+        expect(mailer.send.calls.mostRecent().args[0].text).toContain(`http://localhost/setpassword/${key}?createAcount=true`);
 
         expect(mailer.send.calls.mostRecent().args[0].html).toContain('administrators');
         expect(mailer.send.calls.mostRecent().args[0].html).toContain('Uwazi instance');
@@ -190,7 +190,7 @@ describe('Users', () => {
         expect(mailer.send.calls.mostRecent().args[0].html).toContain('<a href="https://www.uwazi.io">https://www.uwazi.io</a>');
 
         expect(mailer.send.calls.mostRecent().args[0].html)
-        .toContain(`<a href="http://localhost/setpassword/${key}">http://localhost/setpassword/${key}</a>`);
+        .toContain(`<a href="http://localhost/setpassword/${key}?createAcount=true">http://localhost/setpassword/${key}?createAcount=true</a>`);
         done();
       })
       .catch(catchErrors(done));
