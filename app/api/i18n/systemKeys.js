@@ -77,6 +77,7 @@ export default [
 {key: 'Label date "From"', label: 'Form: '},
 {key: 'Label date "to"', label: 'To: '},
 {key: 'Landing page', label: 'Landing page'},
+{key: 'Language', label: 'Language'},
 {key: 'Least recently', label: 'Least recently'},
 {key: 'Library', label: 'Library'},
 {key: 'Login button', label: 'Login'},

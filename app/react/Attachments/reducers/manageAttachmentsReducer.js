@@ -31,7 +31,7 @@ export default function manageAttachmentsReducer(originalReducer, {useDefaults =
 
     if (action.type === attachmentsTypes.ATTACHMENT_RENAMED && getId(state, setInArray) === action.entity) {
       if (getId(state, setInArray) === action.file._id) {
-        return state.setIn(setInArray.concat(['file', 'originalname']), action.file.originalname);
+        return state.setIn(setInArray.concat(['file']), Immutable(action.file));
       }
 
       const attachments = getAttachments(state, setInArray);

@@ -95,7 +95,11 @@ export class Attachment extends Component {
       name = <div className="attachment-link">
               {this.conformThumbnail(file, item)}
               <span className="attachment-name">
-                <AttachmentForm model={this.props.model} onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}/>
+                <AttachmentForm
+                  model={this.props.model}
+                  isSourceDocument={isSourceDocument}
+                  onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}
+                />
               </span>
              </div>;
 

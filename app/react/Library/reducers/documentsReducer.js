@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 import * as uploadTypes from 'app/Uploads/actions/actionTypes';
+import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 
 const initialState = {rows: []};
 
@@ -15,6 +16,20 @@ export default function documents(state = initialState, action = {}) {
       return doc.get('_id') === action.doc._id;
     });
     return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
+  }
+
+  if (action.type === types.UPDATE_DOCUMENT) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('_id') === action.doc._id;
+    });
+    return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
+  }
+
+  if (action.type === attachmentsTypes.UPDATE_DOCUMENT_FILE) {
+    const docIndex = state.get('rows').findIndex(doc => {
+      return doc.get('_id') === action.entity;
+    });
+    return state.setIn(['rows', docIndex, 'file'], Immutable.fromJS(action.file));
   }
 
   if (action.type === types.UPDATE_DOCUMENTS) {
