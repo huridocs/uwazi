@@ -1,16 +1,18 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import {browserHistory} from 'react-router';
 
 import {ResetPassword} from '../ResetPassword';
 
-describe('ResetPassword', () => {
+fdescribe('ResetPassword', () => {
   let component;
   let props;
   let context;
 
   beforeEach(() => {
+    spyOn(browserHistory, 'push');
     props = {
-      resetPassword: jasmine.createSpy('resetPassword'),
+      resetPassword: jasmine.createSpy('resetPassword').and.returnValue({then: (cb) => cb()}),
       params: {key: 'asd'}
     };
 
@@ -38,6 +40,12 @@ describe('ResetPassword', () => {
       component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
       component.find('form').simulate('submit', {preventDefault: () => {}});
       expect(props.resetPassword).toHaveBeenCalledWith('ultraSecret', 'asd');
+    });
+
+    it('should redirect to login upon success', () => {
+      component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
+      component.find('form').simulate('submit', {preventDefault: () => {}});
+      expect(browserHistory.push).toHaveBeenCalledWith('/login');
     });
 
     it('should empty the passwords values', () => {

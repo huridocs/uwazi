@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import RouteHandler from 'app/App/RouteHandler';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {browserHistory} from 'react-router';
+import RouteHandler from 'app/App/RouteHandler';
 import queryString from 'query-string';
 
 import auth from 'app/Auth';
@@ -49,7 +50,11 @@ export class ResetPassword extends RouteHandler {
       return;
     }
 
-    this.props.resetPassword(this.state.password, this.props.params.key);
+    this.props.resetPassword(this.state.password, this.props.params.key)
+    .then(() => {
+      browserHistory.push('/login');
+    });
+
     this.setState({password: '', repeatPassword: ''});
   }
 
