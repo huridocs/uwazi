@@ -29,7 +29,7 @@ export class Item extends Component {
 
       const hasNoValue = !property.value && !property.markdown || !String(property.value).length;
       if (isSortingProperty && hasNoValue) {
-        property.value = '-';
+        property.value = t('System', 'No value');
       }
 
       if (property.value && String(property.value).length || property.markdown) {
@@ -66,9 +66,20 @@ export class Item extends Component {
     const isTitleOrCreationDate = this.props.search.sort === 'title' || this.props.search.sort === 'creationDate';
 
     if (!isTitleOrCreationDate && !sortPropertyInMetadata) {
+      const sortingProperty = this.props.templates.reduce((_property, template) => {
+        let matchProp = template.get('properties').find(prop => {
+          return `metadata.${prop.get('name')}` === this.props.search.sort;
+        });
+        if (matchProp) {
+          matchProp.set('context', template.get('_id'));
+        }
+
+        return _property || matchProp;
+      }, false);
       metadata.push(
         <dl key={metadata.length}>
-          <dd className="item-metadata-empty">Item does not have the sorting property</dd>
+          <dt>{t(sortingProperty.get('context'), sortingProperty.get('label'))}</dt>
+          <dd className="item-metadata-empty">{t('System', 'No property')}</dd>
         </dl>
       );
     }
@@ -76,7 +87,7 @@ export class Item extends Component {
     if (!metadata.length && !populatedMetadata.filter(p => p.showInCard).length || this.props.search.sort === 'creationDate') {
       metadata.push(
         <dl key={metadata.length}>
-          <dt>Date added</dt>
+          <dt>{t('System', 'Date added')}</dt>
           <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}><PrintDate utc={creationDate} toLocal={true} /></dd>
         </dl>
       );
