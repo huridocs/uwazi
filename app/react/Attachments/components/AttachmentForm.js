@@ -23,7 +23,7 @@ export class AttachmentForm extends Component {
           </Field>
         </FormGroup>
         <ShowIf if={this.props.isSourceDocument}>
-          <FormGroup>
+          <FormGroup className="set-language">
               <label>{t('System', 'Language')}</label>
               <Select
                 model={'.language'}
