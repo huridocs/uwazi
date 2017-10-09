@@ -67,6 +67,7 @@ export default [
 {key: 'Entity types', label: 'Entity types'},
 {key: 'Filename label', label: 'filename'},
 {key: 'Filters', label: 'Filters'},
+{key: 'Filters configuration', label: 'Filters'},
 {key: 'Filters AND operator', label: 'AND'},
 {key: 'Filters OR operator', label: 'OR'},
 {key: 'Flag', label: 'Flag'},
