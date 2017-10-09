@@ -167,7 +167,7 @@ export default {
   bulkIndex(docs, _action = 'index') {
     const type = 'entity';
     let body = [];
-    docs.forEach((doc, index) => {
+    docs.forEach((doc) => {
       let _doc = doc;
       const id = doc._id.toString();
       delete doc._id;
@@ -212,7 +212,7 @@ export default {
   indexEntities(query, select, limit = 200) {
     const index = (offset, totalRows) => {
       if (offset >= totalRows) {
-        return;
+        return Promise.resolve();
       }
 
       return entities.get(query, select, {skip: offset, limit})
