@@ -190,6 +190,17 @@ describe('libraryActions', () => {
         )(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith(expectedDispatch);
       });
+
+      it('should set sort by relevance when the search term has changed and has value', () => {
+        browserHistory
+        .getCurrentLocation
+        .and.returnValue({pathname: '/library', query: {view: 'chart'}, search: '?q=(searchTerm:%27batman%20begings%27)'});
+        spyOn(browserHistory, 'push');
+        actions.searchDocuments(
+          {search: {searchTerm: 'batman'}, filters: {properties: []}}, storeKey
+        )(dispatch, getState);
+        expect(browserHistory.push).toHaveBeenCalledWith('/library/?view=chart&q=(searchTerm:batman,sort:_score)');
+      });
     });
 
     describe('saveDocument', () => {

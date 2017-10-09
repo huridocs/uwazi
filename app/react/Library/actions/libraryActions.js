@@ -162,8 +162,8 @@ export function searchDocuments({search, filters}, storeKey, limit) {
 
 
     const currentSearch = browserHistory.getCurrentLocation().search.substring(3) || '()';
-    const currentSearchParams = rison.decode(currentSearch);
-    if ((finalSearchParams.searchTerm || '') !== (currentSearchParams.searchTerm || '')) {
+    const currentSearchParams = rison.decode(decodeURIComponent(currentSearch));
+    if (finalSearchParams.searchTerm && finalSearchParams.searchTerm !== currentSearchParams.searchTerm) {
       finalSearchParams.sort = '_score';
     }
 
