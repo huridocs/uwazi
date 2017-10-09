@@ -14,6 +14,7 @@ import {NeedAuthorization} from 'app/Auth';
 import ShowToc from './ShowToc';
 import {MetadataFormButtons} from 'app/Metadata';
 import SearchText from './SearchText';
+import SnippetsTab from './SnippetsTab';
 
 import {fromJS} from 'immutable';
 import {createSelector} from 'reselect';
@@ -37,6 +38,16 @@ const selectConnections = createSelector(
 );
 
 export class DocumentSidePanel extends Component {
+
+  constructor(props) {
+    super(props);
+    this.selectTab = this.selectTab.bind(this);
+  }
+
+  selectTab(tabSelected) {
+    this.props.showTab(tabSelected);
+  }
+
   deleteDocument() {
     this.context.confirm({
       accept: () => {
@@ -96,17 +107,13 @@ export class DocumentSidePanel extends Component {
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
-          <Tabs selectedTab={tab}
-            handleSelect={(selectedTab) => {
-              this.props.showTab(selectedTab);
-            }}>
+          <Tabs selectedTab={tab} renderActiveTabContentOnly={true} handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
               {(() => {
                 if (docType !== 'entity') {
                   return <li>
                     <TabLink to="text-search">
-                      <i className="fa fa-search"></i>
-                      <span className="tab-link-tooltip">{t('System', 'Search text')}</span>
+                      <SnippetsTab storeKey={this.props.storeKey} />
                     </TabLink>
                   </li>;
                 }
