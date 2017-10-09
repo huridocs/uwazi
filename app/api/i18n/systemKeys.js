@@ -100,6 +100,8 @@ export default [
 {key: 'No common filters', label: 'No common filters'},
 {key: 'No type', label: 'No type'},
 {key: 'No type', label: 'No type'},
+{key: 'No property', label: 'Item does not have this property'},
+{key: 'No value', label: 'No value'},
 {key: 'No', label: 'No'},
 {key: 'Order', label: 'Order'},
 {key: 'Other', label: 'Other'},
