@@ -16,7 +16,6 @@ export class DocumentLanguage extends Component {
 
     if (doc.get('file')) {
       let fileLanguage = doc.getIn(['file', 'language']);
-
       if (fileLanguage && fileLanguage !== 'other') {
         if (this.props.locale === getLanguage(fileLanguage, 'ISO639_1')) {
           return null;

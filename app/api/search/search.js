@@ -5,7 +5,7 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
-import languages from 'shared/languages';
+import languages from 'shared/languagesList';
 
 function processFiltes(filters, properties) {
   let result = {};
@@ -153,7 +153,7 @@ export default {
     let fullTextIndex = Promise.resolve();
     if (entity.fullText) {
       const fullText = {};
-      const language = languages.detect(entity.fullText);
+      const language = languages(entity.file.language);
       fullText['fullText_' + language] = entity.fullText;
       fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
       delete entity.fullText;
@@ -189,7 +189,7 @@ export default {
         body.push(action);
 
         const fullText = {};
-        const language = languages.detect(doc.fullText);
+        const language = languages(doc.file.language);
         fullText['fullText_' + language] = doc.fullText;
         body.push(fullText);
         delete doc.fullText;

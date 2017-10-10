@@ -78,7 +78,7 @@ describe('Attachments actions', () => {
     });
 
     it('should call on attachments/rename, with entity, file id and originalname', () => {
-      store.dispatch(actions.renameAttachment('id', 'form', 'storeKey', {_id: 'fid', originalname: 'originalname'}));
+      store.dispatch(actions.renameAttachment('id', 'form', 'storeKey', {_id: 'fid', originalname: 'originalname', language: 'spa'}));
 
       const expectedActions = [
         {type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file', __reducerKey: 'storeKey'},
@@ -86,7 +86,7 @@ describe('Attachments actions', () => {
         {type: 'NOTIFY', notification: {message: 'Attachment renamed', type: 'success', id: 'unique_id'}}
       ];
 
-      expect(api.post).toHaveBeenCalledWith('attachments/rename', {entityId: 'id', _id: 'fid', originalname: 'originalname'});
+      expect(api.post).toHaveBeenCalledWith('attachments/rename', {entityId: 'id', _id: 'fid', originalname: 'originalname', language: 'spa'});
       expect(store.getActions()).toEqual(expectedActions);
     });
   });

@@ -100,6 +100,22 @@
   }
 }
 
+.set-language {
+  display: flex;
+  align-items: center;
+  margin-top: 5px !important;
+
+  label {
+    margin-right: 5px;
+  }
+
+  .form-control {
+    -webkit-appearance: menulist-button;
+    height: 20px;
+    padding: 0px;
+  }
+}
+
 .entity-viewer {
   @media(min-width: 1024px) {
     .attachments-list {

@@ -34,6 +34,7 @@ export class MetadataForm extends Component {
 
   render() {
     const {model, template, templateOptions} = this.props;
+
     if (!template) {
       return <div />;
     }
@@ -59,7 +60,7 @@ export class MetadataForm extends Component {
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
-                options={templateOptions.toJS()}
+                options={templateOptions}
                 onChange={(e) => {
                   this.props.changeTemplate(model, e.target.value);
                 }}
@@ -77,7 +78,6 @@ export class MetadataForm extends Component {
             </li>
           </ul>
         </FormGroup>
-
         <MetadataFormFields thesauris={this.props.thesauris} model={model} template={template} />
       </Form>
     );
