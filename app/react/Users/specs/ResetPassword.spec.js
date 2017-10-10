@@ -1,18 +1,38 @@
 import React from 'react';
 import {shallow} from 'enzyme';
+import {browserHistory} from 'react-router';
 
 import {ResetPassword} from '../ResetPassword';
 
 describe('ResetPassword', () => {
   let component;
   let props;
+  let context;
 
   beforeEach(() => {
+    spyOn(browserHistory, 'push');
     props = {
-      resetPassword: jasmine.createSpy('resetPassword'),
+      resetPassword: jasmine.createSpy('resetPassword').and.returnValue({then: (cb) => cb()}),
       params: {key: 'asd'}
     };
-    component = shallow(<ResetPassword {...props} />);
+
+    context = {router: {location: ''}};
+
+    component = shallow(<ResetPassword {...props} />, {context});
+  });
+
+  describe('When not creating an account', () => {
+    it('should render a normal form without any additional information', () => {
+      expect(component.find('.alert.alert-info').length).toBe(0);
+    });
+  });
+
+  describe('When creating an account', () => {
+    it('should render an additional information box', () => {
+      context = {router: {location: {search: '?createAccount=true'}}};
+      component = shallow(<ResetPassword {...props} />, {context});
+      expect(component.find('.alert.alert-info').length).toBe(1);
+    });
   });
 
   describe('submit', () => {
@@ -20,6 +40,12 @@ describe('ResetPassword', () => {
       component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
       component.find('form').simulate('submit', {preventDefault: () => {}});
       expect(props.resetPassword).toHaveBeenCalledWith('ultraSecret', 'asd');
+    });
+
+    it('should redirect to login upon success', () => {
+      component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
+      component.find('form').simulate('submit', {preventDefault: () => {}});
+      expect(browserHistory.push).toHaveBeenCalledWith('/login');
     });
 
     it('should empty the passwords values', () => {
