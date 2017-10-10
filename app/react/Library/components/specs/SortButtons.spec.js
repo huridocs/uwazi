@@ -30,7 +30,7 @@ describe('SortButtons', () => {
   describe('Sort options', () => {
     it('should use templates sortable properties as options (with asc and desc for each)', () => {
       render();
-      expect(component.find('li').length).toBe(3);
+      expect(component.find('li').length).toBe(4);
 
       expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (A-Z)');
       expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Z-A)');
@@ -41,7 +41,7 @@ describe('SortButtons', () => {
         {properties: [{}, {filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'date'}]}
       ]);
       render();
-      expect(component.find('li').length).toBe(3);
+      expect(component.find('li').length).toBe(4);
 
       expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (Recently)');
       expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Least recently)');
@@ -55,7 +55,7 @@ describe('SortButtons', () => {
         ]);
         render();
 
-        expect(component.find('li').length).toBe(3);
+        expect(component.find('li').length).toBe(4);
 
         expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (A-Z)');
         expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Z-A)');
