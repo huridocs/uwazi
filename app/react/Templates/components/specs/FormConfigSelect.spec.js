@@ -43,7 +43,7 @@ describe('FormConfigSelect', () => {
   it('should render the select with the dictionaries and entities', () => {
     component = shallow(<FormConfigSelect {...props}/>);
     let expectedOptions = [
-      {label: 'Dictionaries', options: [thesauris[0], thesauris[1]]},
+      {label: 'Thesaurus', options: [thesauris[0], thesauris[1]]},
       {label: 'Entities', options: [thesauris[2]]}
     ];
     expect(component.find(Select).props().options).toEqual(expectedOptions);
