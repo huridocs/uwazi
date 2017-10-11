@@ -40,7 +40,6 @@ export function toUrlParams(_data) {
         encodedValue = encodeURIComponent(data[key]);
       }
     }
-
     return encodeURIComponent(key) + '=' + encodedValue;
   }).filter((param) => param).join('&');
 }
