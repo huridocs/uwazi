@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {I18NLink, t} from 'app/I18N';
 import {createSelector} from 'reselect';
+import {NeedAuthorization} from 'app/Auth';
 
 class Footer extends Component {
 
@@ -32,9 +33,11 @@ class Footer extends Component {
             <li className="footer-nav_item">
               <I18NLink to="/">{t('System', 'Library')}</I18NLink>
             </li>
-            <li className="footer-nav_item">
-              <I18NLink to="/uploads">{t('System', 'Uploads')}</I18NLink>
-            </li>
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <li className="footer-nav_item">
+                <I18NLink to="/uploads">{t('System', 'Uploads')}</I18NLink>
+              </li>
+            </NeedAuthorization>
             {(() => {
               if (!this.props.user._id) {
                 return <li className="footer-nav_item">

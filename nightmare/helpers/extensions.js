@@ -27,7 +27,11 @@ Nightmare.action('librarySearch', function (searchTerm, done) {
 Nightmare.action('write', function (selector, text, done) {
   this.wait(selector)
   .insert(selector, text)
-  .then(done);
+  .wait(5)
+  .then(done)
+  .catch((error) => {
+    console.error(error);
+  });
 });
 
 Nightmare.action('gotoLibrary', function (done) {
@@ -336,7 +340,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
     });
 
     if (found) {
-      found.querySelector('a').click();
+      found.querySelector('a.item-shortcut').click();
     }
   }, itemName)
   .wait(elementToSelect => {

@@ -95,7 +95,7 @@ export class SortButtons extends Component {
 
           sorts.push({
             property: property.name,
-            html: this.createSortItem(sorts.length + 2, sortString, template._id, property.label, sortOptions)
+            html: this.createSortItem(sorts.length + 3, sortString, template._id, property.label, sortOptions)
           });
         }
       });
@@ -119,6 +119,13 @@ export class SortButtons extends Component {
           <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
             {this.createSortItem(0, 'title', 'System', 'Title', {isActive: search.sort === 'title', search, treatAs: 'string'})}
             {this.createSortItem(1, 'creationDate', 'System', 'Date added', {isActive: search.sort === 'creationDate', search, treatAs: 'number'})}
+            <li key={2}
+                className={'Dropdown-option ' + (search.sort === '_score' ? 'is-active' : '')}>
+              <a className={'Dropdown-option__item ' + (search.sort === '_score' ? 'is-active' : '')}
+                 onClick={() => this.handleClick('_score')}>
+                 <span>{t('System', 'Relevance')}</span>
+              </a>
+            </li>
             {additionalSorts}
           </ul>
         </div>

@@ -19,13 +19,17 @@ export class Item extends Component {
     let sortPropertyInMetadata = false;
 
     const metadata = populatedMetadata
-    //.filter(p => p.showInCard || 'metadata.' + p.name === this.props.search.sort)
     .map((property, index) => {
       let isSortingProperty = false;
 
       if ('metadata.' + property.name === this.props.search.sort) {
         sortPropertyInMetadata = true;
         isSortingProperty = true;
+      }
+
+      const hasNoValue = !property.value && !property.markdown || !String(property.value).length;
+      if (isSortingProperty && hasNoValue) {
+        property.value = t('System', 'No value');
       }
 
       if (property.value && String(property.value).length || property.markdown) {
@@ -56,24 +60,28 @@ export class Item extends Component {
           </dl>
         );
       }
-
-      if (!property.value && 'metadata.' + property.name === this.props.search.sort) {
-        return (
-          <dl key={index}>
-            <dd className="item-metadata-empty">{t('System', 'No')} {property.label}</dd>
-          </dl>
-        );
-      }
-
       return null;
     });
 
-    const isTitleOrCreationDate = this.props.search.sort === 'title' || this.props.search.sort === 'creationDate';
+    const propertiesToAvoid = this.props.search.sort === 'title'
+    || this.props.search.sort === 'creationDate'
+    || this.props.search.sort === '_score';
 
-    if (!isTitleOrCreationDate && !sortPropertyInMetadata) {
+    if (!propertiesToAvoid && !sortPropertyInMetadata) {
+      const sortingProperty = this.props.templates.reduce((_property, template) => {
+        let matchProp = template.get('properties').find(prop => {
+          return `metadata.${prop.get('name')}` === this.props.search.sort;
+        });
+        if (matchProp) {
+          matchProp.set('context', template.get('_id'));
+        }
+
+        return _property || matchProp;
+      }, false);
       metadata.push(
         <dl key={metadata.length}>
-          <dd className="item-metadata-empty">Item does not have the sorting property</dd>
+          <dt>{t(sortingProperty.get('context'), sortingProperty.get('label'))}</dt>
+          <dd className="item-metadata-empty">{t('System', 'No property')}</dd>
         </dl>
       );
     }
@@ -81,7 +89,7 @@ export class Item extends Component {
     if (!metadata.length && !populatedMetadata.filter(p => p.showInCard).length || this.props.search.sort === 'creationDate') {
       metadata.push(
         <dl key={metadata.length}>
-          <dt>Date added</dt>
+          <dt>{t('System', 'Date added')}</dt>
           <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}><PrintDate utc={creationDate} toLocal={true} /></dd>
         </dl>
       );
@@ -105,26 +113,27 @@ export class Item extends Component {
   }
 
   getSearchSnipett(doc) {
-    if (doc.snippets && doc.snippets[0]) {
+    if (!doc.snippets || !doc.snippets.length) {
+      return false;
+    }
+
+    if (doc.snippets.length === 1) {
       return (
         <div className="item-snippet-wrapper">
           <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
         </div>
       );
     }
-    return false;
-  }
 
-  //componentWillReceiveProps(newProps) {
-    //Object.keys(newProps).forEach((key) => {
-      //if (this.props[key] !== newProps[key]) {
-        ////console.log(newProps[key]);
-        ////console.log(this.props[key]);
-        //console.log(key);
-        //console.log('----------------');
-      //}
-    //});
-  //}
+    return (
+      <div className="item-snippet-wrapper">
+        <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
+        <div>
+          <a onClick={this.props.onSnippetClick}>{t('System', 'Show more')}</a>
+        </div>
+      </div>
+    );
+  }
 
   render() {
     const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,

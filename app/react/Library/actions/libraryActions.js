@@ -119,6 +119,7 @@ export function processFilters(readOnlySearch, filters, limit) {
       search.filters[property.name] = readOnlySearch.filters[property.name];
     }
   });
+
   search.types = filters.documentTypes;
   search.limit = limit;
   return search;
@@ -144,6 +145,7 @@ export function encodeSearch(search, appendQ = true) {
 
 export function searchDocuments({search, filters}, storeKey, limit) {
   return function (dispatch, getState) {
+    let state = getState()[storeKey];
     let currentFilters;
     if (filters) {
       currentFilters = filters;
@@ -152,9 +154,18 @@ export function searchDocuments({search, filters}, storeKey, limit) {
       currentFilters = filters.toJS();
     }
     if (!currentFilters) {
-      currentFilters = getState()[storeKey].filters.toJS();
+      currentFilters = state.filters.toJS();
     }
+
     const finalSearchParams = processFilters(search, currentFilters, limit);
+    finalSearchParams.searchTerm = state.search.searchTerm;
+
+
+    const currentSearch = browserHistory.getCurrentLocation().search.substring(3) || '()';
+    const currentSearchParams = rison.decode(decodeURIComponent(currentSearch));
+    if (finalSearchParams.searchTerm && finalSearchParams.searchTerm !== currentSearchParams.searchTerm) {
+      finalSearchParams.sort = '_score';
+    }
 
     if (search.userSelectedSorting) {
       dispatch(actions.set(storeKey + '.selectedSorting', search));

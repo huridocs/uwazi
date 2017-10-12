@@ -72,4 +72,3 @@ describe('FullTextSearch zone', () => {
     });
   });
 });
-

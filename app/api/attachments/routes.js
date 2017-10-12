@@ -81,6 +81,7 @@ export default (app) => {
     .then(entity => {
       if (entity._id.toString() === req.body._id) {
         entity.file.originalname = req.body.originalname;
+        entity.file.language = req.body.language;
         renamedAttachment = Object.assign({_id: entity._id.toString()}, entity.file);
       } else {
         entity.attachments = (entity.attachments || []).map(attachment => {

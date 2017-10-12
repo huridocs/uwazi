@@ -10,7 +10,7 @@ export function saveThesauri(thesauri) {
   return function (dispatch) {
     return api.save(thesauri).then((_thesauri) => {
       dispatch({type: types.THESAURI_SAVED});
-      notifications.notify(t('System', 'Thesauri saved'), 'success')(dispatch);
+      notifications.notify(t('System', 'Thesaurus saved'), 'success')(dispatch);
       dispatch(formActions.change('thesauri.data', _thesauri));
     });
   };

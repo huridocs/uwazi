@@ -26,8 +26,11 @@ export function uploadAttachment(entityId, file, __reducerKey, options = {}) {
 
 export function renameAttachment(entityId, form, __reducerKey, file) {
   return function (dispatch) {
-    return api.post('attachments/rename', {entityId, _id: file._id, originalname: file.originalname})
+    return api.post('attachments/rename', {entityId, _id: file._id, originalname: file.originalname, language: file.language})
     .then(renamedFile => {
+      if (entityId === file._id) {
+        dispatch({type: types.UPDATE_DOCUMENT_FILE, entity: entityId, file: renamedFile.json, __reducerKey});
+      }
       dispatch({type: types.ATTACHMENT_RENAMED, entity: entityId, file: renamedFile.json, __reducerKey});
       dispatch(formActions.reset(form));
       dispatch(notify('Attachment renamed', 'success'));

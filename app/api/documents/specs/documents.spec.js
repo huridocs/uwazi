@@ -7,7 +7,7 @@ import entities from 'api/entities';
 import search from 'api/search/search';
 
 import documents from '../documents.js';
-import fixtures from './fixtures.js';
+import fixtures, {templateId} from './fixtures.js';
 import db from 'api/utils/testing_db';
 
 describe('documents', () => {
@@ -57,7 +57,7 @@ describe('documents', () => {
 
     it('should assign unique ids to toc entries', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);
-      let doc = {title: 'Batman begins', toc: [{}, {}]};
+      let doc = {title: 'Batman begins', toc: [{}, {}], template: templateId};
       let user = {_id: db.id()};
 
       documents.save(doc, {user, language: 'es'})

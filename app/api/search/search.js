@@ -5,7 +5,8 @@ import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import {comonProperties} from 'shared/comonProperties';
-import languages from 'shared/languages';
+import languages from 'shared/languagesList';
+import {detect as detectLanguage} from 'shared/languages';
 
 function processFiltes(filters, properties) {
   let result = {};
@@ -33,7 +34,7 @@ function processFiltes(filters, properties) {
 export default {
   search(query, language, user) {
     let documentsQuery = queryBuilder()
-    .fullTextSearch(query.searchTerm, query.fields)
+    .fullTextSearch(query.searchTerm, query.fields, 2)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
@@ -153,7 +154,13 @@ export default {
     let fullTextIndex = Promise.resolve();
     if (entity.fullText) {
       const fullText = {};
-      const language = languages.detect(entity.fullText);
+      let language;
+      if (!entity.file || entity.file && !entity.file.language) {
+        language = detectLanguage(entity.fullText);
+      }
+      if (entity.file && entity.file.language) {
+        language = languages(entity.file.language);
+      }
       fullText['fullText_' + language] = entity.fullText;
       fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
       delete entity.fullText;
@@ -189,20 +196,36 @@ export default {
         body.push(action);
 
         const fullText = {};
-        const language = languages.detect(doc.fullText);
+        let language;
+        if (!doc.file || doc.file && !doc.file.language) {
+          language = detectLanguage(doc.fullText);
+        }
+        if (doc.file && doc.file.language) {
+          language = languages(doc.file.language);
+        }
         fullText['fullText_' + language] = doc.fullText;
         body.push(fullText);
         delete doc.fullText;
       }
     });
 
-    return elastic.bulk({body});
+    return elastic.bulk({body})
+    .then((res) => {
+      if (res.items) {
+        res.items.forEach((f) => {
+          if (f.index.error) {
+            console.log(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
+          }
+        });
+      }
+      return res;
+    });
   },
 
   indexEntities(query, select, limit = 200) {
     const index = (offset, totalRows) => {
       if (offset >= totalRows) {
-        return;
+        return Promise.resolve();
       }
 
       return entities.get(query, select, {skip: offset, limit})

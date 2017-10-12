@@ -16,23 +16,23 @@ export class ThesaurisList extends Component {
         accept: () => {
           this.props.deleteThesauri(thesauri);
         },
-        title: 'Confirm delete dictionary: ' + thesauri.name,
-        message: 'Are you sure you want to delete this dictionary?'
+        title: 'Confirm delete thesaurus: ' + thesauri.name,
+        message: 'Are you sure you want to delete this thesaurus?'
       });
     })
     .catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: 'Cannot delete dictionary: ' + thesauri.name,
-        message: 'This dictionary is being used in document types and cannot be deleted.'
+        title: 'Cannot delete thesaurus: ' + thesauri.name,
+        message: 'This thesaurus is being used in document types and cannot be deleted.'
       });
     });
   }
 
   render() {
     return <div className="panel panel-default">
-      <div className="panel-heading">{t('System', 'Dictionaries')}</div>
+      <div className="panel-heading">{t('System', 'Thesauri')}</div>
       <ul className="list-group">
         {this.props.dictionaries.toJS().map((dictionary, index) => {
           return <li key={index} className="list-group-item">
@@ -53,7 +53,7 @@ export class ThesaurisList extends Component {
       <div className="settings-footer">
         <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
           <i className="fa fa-plus"></i>
-          <span className="btn-label">{t('System', 'Add dictionary')}</span>
+          <span className="btn-label">{t('System', 'Add thesaurus')}</span>
         </I18NLink>
       </div>
     </div>;

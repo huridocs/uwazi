@@ -9,7 +9,119 @@ import {deleteFiles} from '../utils/files.js';
 
 import model from './entitiesModel';
 
+function updateEntity(doc) {
+  return Promise.all([
+    this.getAllLanguages(doc.sharedId),
+    templates.getById(doc.template)
+  ])
+  .then(([docLanguages, templateResult]) => {
+    if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
+      return Promise.all([
+        this.deleteEntityFromMetadata(docLanguages[0]),
+        references.delete({sourceType: 'metadata', $or: [{targetDocument: doc.sharedId}, {sourceDocument: doc.sharedId}]})
+      ])
+      .then(() => [docLanguages, templateResult]);
+    }
+    return [docLanguages, templateResult];
+  })
+  .then(([docLanguages, templateResult]) => {
+    const template = templateResult || {properties: []};
+    const toSyncProperties = template.properties
+    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
+    .map(p => p.name);
+    const docs = docLanguages.map((d) => {
+      if (d._id.equals(doc._id)) {
+        return doc;
+      }
+      if (!d.metadata) {
+        d.metadata = doc.metadata;
+      }
+      toSyncProperties.forEach((p) => {
+        d.metadata[p] = doc.metadata[p];
+      });
+
+      if (typeof doc.published !== 'undefined') {
+        d.published = doc.published;
+      }
+
+      if (doc.toc && doc.file && d.file.filename === doc.file.filename) {
+        d.toc = doc.toc;
+      }
+
+      if (typeof doc.template !== 'undefined') {
+        d.template = doc.template;
+      }
+      return d;
+    });
+
+    return Promise.all(docs.map(d => {
+      return model.save(d)
+      .then((_d) => {
+        return search.index(_d);
+      });
+    }));
+  });
+}
+
+function createEntity(doc, languages, sharedId) {
+  const docs = languages.map((lang) => {
+    let langDoc = Object.assign({}, doc);
+    langDoc.language = lang.key;
+    langDoc.sharedId = sharedId;
+    return langDoc;
+  });
+
+  return model.save(docs).then((savedDocs) => Promise.all(savedDocs.map((d) => search.index(d))));
+}
+
+function getEntityTemplate(doc, language) {
+  return new Promise((resolve) => {
+    if (!doc.sharedId && !doc.template) {
+      resolve(null);
+    }
+
+    if (doc.template) {
+      return templates.getById(doc.template).then(resolve);
+    }
+
+    this.getById(doc.sharedId, language)
+    .then((storedDoc) => {
+      if (!storedDoc) {
+        return null;
+      }
+      return templates.getById(storedDoc.template).then(resolve);
+    });
+  });
+}
+
+function sanitize(doc, template) {
+  if (!template) {
+    delete doc.metadata;
+    return doc;
+  }
+
+  return template.properties.reduce((sanitizedDoc, property) => {
+    if (property.type === 'multidate' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value);
+    }
+    if (property.type === 'multidaterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value.from || value.to);
+    }
+    if (property.type === 'daterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+      const value = sanitizedDoc.metadata[property.name];
+      if (!value.to && !value.from) {
+        delete sanitizedDoc.metadata[property.name];
+      }
+    }
+    return sanitizedDoc;
+  }, doc);
+}
+
 export default {
+  sanitize,
+  updateEntity,
+  createEntity,
+  getEntityTemplate,
   save(doc, {user, language}) {
     if (!doc.sharedId) {
       doc.user = user._id;
@@ -22,70 +134,16 @@ export default {
     }
 
     const sharedId = doc.sharedId || ID();
-    return settings.get()
-    .then(({languages}) => {
+    return Promise.all([
+      settings.get(),
+      this.getEntityTemplate(doc, language)
+    ])
+    .then(([{languages}, template]) => {
       if (doc.sharedId) {
-        return Promise.all([
-          this.getAllLanguages(doc.sharedId),
-          templates.getById(doc.template)
-        ])
-        .then(([docLanguages, templateResult]) => {
-          if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
-            return Promise.all([
-              this.deleteEntityFromMetadata(docLanguages[0]),
-              references.delete({sourceType: 'metadata', $or: [{targetDocument: doc.sharedId}, {sourceDocument: doc.sharedId}]})
-            ])
-            .then(() => [docLanguages, templateResult]);
-          }
-          return [docLanguages, templateResult];
-        })
-        .then(([docLanguages, templateResult]) => {
-          const template = templateResult || {properties: []};
-          const toSyncProperties = template.properties
-          .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
-          .map(p => p.name);
-          const docs = docLanguages.map((d) => {
-            if (d._id.equals(doc._id)) {
-              return doc;
-            }
-            if (!d.metadata) {
-              d.metadata = doc.metadata;
-            }
-            toSyncProperties.forEach((p) => {
-              d.metadata[p] = doc.metadata[p];
-            });
-
-            if (typeof doc.published !== 'undefined') {
-              d.published = doc.published;
-            }
-
-            if (doc.toc && doc.file && d.file.filename === doc.file.filename) {
-              d.toc = doc.toc;
-            }
-
-            if (typeof doc.template !== 'undefined') {
-              d.template = doc.template;
-            }
-            return d;
-          });
-
-          return Promise.all(docs.map(d => {
-            return model.save(d)
-            .then((_d) => {
-              return search.index(_d);
-            });
-          }));
-        });
+        return this.updateEntity(this.sanitize(doc, template));
       }
 
-      const docs = languages.map((lang) => {
-        let langDoc = Object.assign({}, doc);
-        langDoc.language = lang.key;
-        langDoc.sharedId = sharedId;
-        return langDoc;
-      });
-
-      return model.save(docs).then((savedDocs) => Promise.all(savedDocs.map((d) => search.index(d))));
+      return this.createEntity(this.sanitize(doc, template), languages, sharedId);
     })
     .then(() => this.getById(sharedId, language))
     .then(response => {
@@ -178,7 +236,7 @@ export default {
       }
 
       return model.db.updateMany({template}, actions)
-      .then(() => search.indexEntities({template: template._id}));
+      .then(() => search.indexEntities({template: template._id}, null, 1000));
     });
   },
 
@@ -281,7 +339,7 @@ export default {
       ])
       .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
         let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
       });
     });
   },

@@ -11,6 +11,7 @@ let config = {
           replacement: ''
         }
       },
+      filter: {},
       analyzer: {
         other: {
           type: 'custom',
@@ -169,10 +170,20 @@ let config = {
 
 
 languages.getAll().forEach((language) => {
+  config.settings.analysis.filter[language + '_stop'] = {
+    type: 'stop',
+    stopwords: `_${language}_`
+  };
+
+  config.settings.analysis.filter[language + '_stemmer'] = {
+    type: 'stemmer',
+    language
+  };
+
   config.settings.analysis.analyzer[language] = {
-    type: language,
+    type: 'custom',
     tokenizer: 'standard',
-    filter: ['lowercase', 'asciifolding'],
+    filter: ['lowercase', 'asciifolding', `${language}_stop`, `${language}_stemmer`],
     char_filter: ['remove_annotation']
   };
 

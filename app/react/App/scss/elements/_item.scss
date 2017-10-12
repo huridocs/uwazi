@@ -288,13 +288,17 @@ $item-padding: 15px;
     box-shadow: 0 -6px 9px -4px $c-white, 0 -15px 10px -3px $c-white;
   }
 
-  .item-snippet-wrapper:hover & {
+  &:hover {
     border-bottom: 1px solid $c-grey;
   }
 }
 
 .item-snippet-wrapper {
   margin-top: 15px;
+
+  a {
+    font-size: $f-size-xs;
+  }
 }
 
 .item-metadata {

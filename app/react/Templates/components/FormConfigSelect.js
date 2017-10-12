@@ -4,6 +4,7 @@ import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import {Select} from 'app/ReactReduxForms';
 import {connect} from 'react-redux';
 import {Field} from 'react-redux-form';
+import {t} from 'app/I18N';
 
 export class FormConfigSelect extends Component {
 
@@ -17,7 +18,7 @@ export class FormConfigSelect extends Component {
     const ptoperty = data.properties[index];
 
     let optionGroups = [
-      {label: 'Dictionaries', options: []},
+      {label: 'Thesaurus', options: []},
       {label: 'Entities', options: []}
     ];
 
@@ -49,7 +50,7 @@ export class FormConfigSelect extends Component {
         </div>
 
         <div className="form-group">
-          <label>Thesauri</label>
+          <label>{t('System', 'Select list')}</label>
           <Select model={`template.data.properties[${index}].content`}
                   options={optionGroups}
                   optionsLabel="name"

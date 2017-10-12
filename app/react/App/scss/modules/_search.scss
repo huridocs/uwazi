@@ -786,19 +786,21 @@
   list-style: none;
 
   li {
-    padding: 10px 15px 10px 0;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    padding: 0 15px;
     font-size: $f-size-sm;
     line-height: 1.8em;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 
   li:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
   a {
-    padding: 15px;
+    min-width: 30px;
+    line-height: 50px;
   }
 
   b {

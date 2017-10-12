@@ -5,7 +5,7 @@ import {isClient} from 'app/utils';
 let PDFJS;
 if (isClient) {
   PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
-  PDFJS.workerSrc = '/pdf.worker.bundle.js';
+  PDFJS.workerSrc = window.pdfWorkerPath;
 }
 
 export class PDFPage extends Component {

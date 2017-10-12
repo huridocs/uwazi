@@ -60,7 +60,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh') {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
       if (term) {
         let should = [];
 
@@ -72,7 +72,8 @@ export default function () {
             multi_match: {
               query: term,
               type: 'phrase_prefix',
-              fields
+              fields,
+              boost: 2
             }
           });
         }
@@ -90,7 +91,7 @@ export default function () {
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      'fullText_*': {number_of_fragments, type}
+                      'fullText_*': {number_of_fragments, type, fragment_size, fragmenter: 'span'}
                     }
                   }
                 },
@@ -144,6 +145,9 @@ export default function () {
     },
 
     sort(property, order = 'desc') {
+      if (property === '_score') {
+        return baseQuery.sort.push('_score');
+      }
       let sort = {};
       sort[`${property}.sort`] = {order, unmapped_type: 'boolean'};
       baseQuery.sort.push(sort);

@@ -34,6 +34,7 @@ export class MetadataForm extends Component {
 
   render() {
     const {model, template, templateOptions} = this.props;
+
     if (!template) {
       return <div />;
     }
@@ -77,7 +78,6 @@ export class MetadataForm extends Component {
             </li>
           </ul>
         </FormGroup>
-
         <MetadataFormFields thesauris={this.props.thesauris} model={model} template={template} />
       </Form>
     );
