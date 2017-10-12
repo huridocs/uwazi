@@ -5,9 +5,10 @@ import rison from 'rison';
 import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
+import Welcome from 'app/Library/components/Welcome';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
+// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import {enterLibrary, setDocuments, unsetDocuments, initializeFiltersForm} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
@@ -16,6 +17,7 @@ import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultipleP
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {wrapDispatch} from 'app/Multireducer';
+import {store} from 'app/store';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
@@ -79,6 +81,12 @@ export default class Library extends RouteHandler {
   }
 
   render() {
+
+    let state = store.getState();
+    if (!state.templates.size) {
+      return <Welcome/>;
+    }
+
     let query = rison.decode(this.props.location.query.q || '()');
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? <DocumentsList storeKey="library"/> : <LibraryCharts storeKey="library" />;
@@ -87,13 +95,7 @@ export default class Library extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="library-viewer document-viewer with-panel">
-          <ListChartToggleButtons active={chartView ? 'chart' : 'list'} />
-          <div className="blank-state">
-            <i className="fa fa-search"></i>
-            <h4>No Results</h4>
-            <p>We have look everywhere, but couldn’t find any result to show here.</p>
-            <a href="#" target="_blank">Learn more</a>
-          </div>
+          {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
         <LibraryFilters storeKey="library"/>

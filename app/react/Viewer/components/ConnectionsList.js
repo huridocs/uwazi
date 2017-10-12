@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
 import {I18NLink} from 'app/I18N';
 import {NeedAuthorization} from 'app/Auth';
+import {t} from 'app/I18N';
 
 import ShowIf from 'app/App/ShowIf';
 import {deleteReference} from 'app/Viewer/actions/referencesActions';
@@ -63,6 +64,27 @@ export class ConnectionsList extends Component {
 
     if (this.props.loading) {
       return false;
+    }
+
+    if (!this.props.references.size && this.props.referencesSection === 'references') {
+      return (
+        <div className="blank-state">
+          <i className="fa fa-sitemap"></i>
+          <h4>{t('System', 'No References')}</h4>
+          <p>{t('System', 'No References description')}</p>
+        </div>
+      );
+    }
+
+    console.log(this.props.referencesSection);
+    if (!this.props.references.size) {
+      return (
+        <div className="blank-state">
+          <i className="fa fa-sitemap"></i>
+          <h4>{t('System', 'No Connections')}</h4>
+          <p>{t('System', 'No Connections description')}</p>
+        </div>
+      );
     }
 
     return (
