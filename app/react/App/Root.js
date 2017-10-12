@@ -25,6 +25,8 @@ class Root extends Component {
     //const isDeveloping = process.env.NODE_ENV !== 'production';
     const head = this.props.head;
 
+    var pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
+
     return (
       <html>
         <head>
@@ -51,7 +53,7 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script defer src={this.props.assets.performance.js}></script>
+          <script dangerouslySetInnerHTML={{__html: pdfWorkerPathScript}} />
           <script defer src={this.props.assets.manifest.js}></script>
           <script defer src={this.props.assets.nprogress.js}></script>
           <script defer src={this.props.assets.vendor.js}></script>
