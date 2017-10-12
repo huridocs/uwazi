@@ -25,7 +25,7 @@ class Root extends Component {
     //const isDeveloping = process.env.NODE_ENV !== 'production';
     const head = this.props.head;
 
-    var pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
+    const pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
 
     return (
       <html>
