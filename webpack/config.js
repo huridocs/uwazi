@@ -131,7 +131,7 @@ module.exports = function(production) {
       }),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'manifest',
-        chunks: ["main", "vendor", "nprogress", "pdf.worker"],
+        chunks: ["main", "vendor", "nprogress"],
         minChunks: Infinity
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
