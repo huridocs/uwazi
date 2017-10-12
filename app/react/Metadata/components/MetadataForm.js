@@ -60,7 +60,7 @@ export class MetadataForm extends Component {
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
-                options={templateOptions}
+                options={templateOptions.toJS()}
                 onChange={(e) => {
                   this.props.changeTemplate(model, e.target.value);
                 }}

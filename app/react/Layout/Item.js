@@ -63,9 +63,11 @@ export class Item extends Component {
       return null;
     });
 
-    const isTitleOrCreationDate = this.props.search.sort === 'title' || this.props.search.sort === 'creationDate';
+    const propertiesToAvoid = this.props.search.sort === 'title'
+    || this.props.search.sort === 'creationDate'
+    || this.props.search.sort === '_score';
 
-    if (!isTitleOrCreationDate && !sortPropertyInMetadata) {
+    if (!propertiesToAvoid && !sortPropertyInMetadata) {
       const sortingProperty = this.props.templates.reduce((_property, template) => {
         let matchProp = template.get('properties').find(prop => {
           return `metadata.${prop.get('name')}` === this.props.search.sort;
