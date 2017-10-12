@@ -102,14 +102,14 @@ export default function () {
                         query: term,
                         type: 'best_fields',
                         fuzziness: 0,
-                        fields: ['fullText*', 'fullText_spanish^3']
+                        fields: ['fullText*']
                       }
                     },
                     should: {
                       multi_match: {
                         query: term,
                         type: 'phrase',
-                        fields: ['fullText*', 'fullText_spanish^3']
+                        fields: ['fullText*']
                       }
                     }
                   }
