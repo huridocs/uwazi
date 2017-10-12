@@ -26,8 +26,12 @@ translationsModel.get()
       return templates.getById({_id: context.id});
     })
     .then((result) => {
-      if (result) {
+      if (result && result.isEntity) {
         context.type = 'Entity';
+        return;
+      }
+      if (result) {
+        context.type = 'Document';
         return;
       }
     });
