@@ -121,12 +121,12 @@ $breakpoint: 768px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0 15px 15px;
+    padding-left: 15px;
     padding-right: 0;
     position: relative;
 
-    &:last-child {
-      padding-bottom: 0;
+    &:not(:first-child) {
+      padding-top: 15px;
     }
 
     @media(min-width: $breakpoint) {
@@ -148,8 +148,6 @@ $breakpoint: 768px;
     padding: 5px 15px;
     font-size: 12px;
     margin: 0;
-    //border: 1px solid #d7d7dc;
-    //border-radius: 5px;
     color: #777;
 
     .fa {
@@ -222,8 +220,11 @@ $breakpoint: 768px;
       display: none;
     }
 
-    .connection-data.as-previous {
-      display: none;
+    .as-previous {
+      padding-top: 5px;
+      .connection-data {
+        display: none;
+      }
     }
 
     .connection-type {
@@ -309,22 +310,29 @@ $breakpoint: 768px;
       background: #fcfcfc;
       position: absolute;
       bottom: 0;
-      top: 15px;
+      top: 30px;
       left: 0px;
       margin-left: -2px;
     }
   }
 
-  .group.group-collapse .target-connections .connection.last-of-type:after {
-    content: '';
-    display: block;
-    width: 14px;
-    background: #fcfcfc;
-    position: absolute;
-    bottom: -15px;
-    top: 15px;
-    left: 0px;
-    margin-left: -2px;
+  .group.group-collapse .target-connections .connection {
+    &.last-of-type:after,
+    &.last-of-type.as-previous:after {
+      content: '';
+      display: block;
+      width: 14px;
+      background: #fcfcfc;
+      position: absolute;
+      bottom: -15px;
+      top: 30px;
+      left: 0px;
+      margin-left: -2px;
+    }
+
+    &.last-of-type.as-previous:after {
+      top: 15px;
+    }
   }
 
   .target-connections-multiple:before {
@@ -352,23 +360,23 @@ $breakpoint: 768px;
   $c-type-18:           #607D8B;
 
   .connection-type-0 { color: $c-type-0; }
-  .connection-type-1 { color: $c-type-1; }
-  .connection-type-2 { color: $c-type-10; }
-  .connection-type-3 { color: $c-type-3; }
+  .connection-type-1 { color: $c-type-9; }
+  .connection-type-2 { color: $c-type-2; }
+  .connection-type-3 { color: $c-type-15; }
   .connection-type-4 { color: $c-type-4; }
-  .connection-type-5 { color: $c-type-5; }
+  .connection-type-5 { color: $c-type-13; }
   .connection-type-6 { color: $c-type-6; }
-  .connection-type-7 { color: $c-type-7; }
+  .connection-type-7 { color: $c-type-11; }
   .connection-type-8 { color: $c-type-8; }
-  .connection-type-9 { color: $c-type-9; }
+  .connection-type-9 { color: $c-type-1; }
   .connection-type-10 { color: $c-type-10; }
-  .connection-type-11 { color: $c-type-11; }
+  .connection-type-11 { color: $c-type-7; }
   .connection-type-12 { color: $c-type-12; }
-  .connection-type-13 { color: $c-type-13; }
+  .connection-type-13 { color: $c-type-5; }
   .connection-type-14 { color: $c-type-14; }
-  .connection-type-15 { color: $c-type-15; }
+  .connection-type-15 { color: $c-type-3; }
   .connection-type-16 { color: $c-type-16; }
-  .connection-type-17 { color: $c-type-17; }
+  .connection-type-17 { color: $c-type-1; }
   .connection-type-18 { color: $c-type-18; }
 
 }

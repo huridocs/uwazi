@@ -12,10 +12,30 @@ import {fromJS} from 'immutable';
 export class RelationshipsGraph extends Component {
   constructor(props) {
     super(props);
+    this.state = {collapsed: true};
+    this.toggleCollapsed = this.toggleCollapsed.bind(this);
+  }
+
+  getRelationshipPosition(type) {
+    const posIndex = this.props.relationTypes.findIndex(r => r.get('_id') === type);
+    const numberOfConnectionColors = 19;
+    return posIndex % (numberOfConnectionColors - 1);
   }
 
   prepareData() {
     const {connections} = this.props;
+
+    let previousConnectionType = '';
+    const amountOfTypes = connections.get('rows').reduce((_amount, _connection) => {
+      return _connection.get('connections').reduce((_innerAmount, relationship) => {
+        const newType = previousConnectionType !== relationship.get('context');
+        previousConnectionType = relationship.get('context');
+        return newType ? _innerAmount + 1 : _innerAmount;
+      }, _amount);
+    }, 0);
+
+    previousConnectionType = '';
+    let currentType = 0;
 
     const relationships = connections.get('rows').reduce((results, _connection) => {
       const connection = _connection.toJS();
@@ -24,9 +44,17 @@ export class RelationshipsGraph extends Component {
       delete entity.connections;
 
       entityConnections.forEach(relationship => {
+        const asPrevious = previousConnectionType === relationship.context;
+        if (!asPrevious) {
+          currentType += 1;
+        }
+
         results.push(Object.assign({
-          relationship
+          relationship: Object.assign(relationship, {typePostition: this.getRelationshipPosition(relationship.context)}),
+          lastOfType: currentType === amountOfTypes,
+          asPrevious
         }, entity));
+        previousConnectionType = relationship.context;
       });
 
       return results;
@@ -35,22 +63,31 @@ export class RelationshipsGraph extends Component {
     return relationships;
   }
 
+  toggleCollapsed() {
+    this.setState({collapsed: !this.state.collapsed});
+  }
+
   render() {
-    const {search} = this.props;
+    const {parentEntity, search, relationTypes} = this.props;
     const relationships = this.prepareData();
+    console.log('relationships:', relationships);
+    console.log('relationTypes:', relationTypes.toJS());
 
     return (
       <div className="relationships-graph">
+        <div>
+          <button onClick={this.toggleCollapsed} className="btn btn-default">{this.state.collapsed ? 'Expand' : 'Collapse'}</button>
+        </div>
         <div className="group-wrapper">
-          <div className="group group-collapse">
+          <div className={`group ${this.state.collapsed ? 'group-collapse' : ''}`}>
             <div className="group-row">
 
               <div className="source">
-                <div>Item</div>
+                <Doc doc={parentEntity} searchParams={search} />
                 <div className="item-connection">
                   <figure className="hub"></figure>
                   <div className="connection-data">
-                    <p className="connection-type connection-type-0"><span>Relationships</span></p>
+                    <p className="connection-type connection-type-18"><span>Relationships</span></p>
                   </div>
                 </div>
               </div>
@@ -58,9 +95,12 @@ export class RelationshipsGraph extends Component {
               <div className="target-connections">
                 {relationships.map((entity, index) => {
                   return (
-                    <div className="connection" key={index}>
-                      <div className="connection-data ">
-                        <p className="connection-type"><span>{entity.relationship.label}</span></p>
+                    <div className={`connection ${entity.asPrevious ? 'as-previous' : ''} ${entity.lastOfType ? 'last-of-type' : ''}`}
+                         key={index}>
+                      <div className="connection-data">
+                        <p className={`connection-type connection-type-${entity.relationship.typePostition}`}>
+                          <span>{entity.relationship.label}</span>
+                        </p>
                       </div>
                       <Doc doc={fromJS(entity)} searchParams={search} />
                     </div>
@@ -76,14 +116,18 @@ export class RelationshipsGraph extends Component {
 }
 
 RelationshipsGraph.propTypes = {
+  parentEntity: PropTypes.object,
   connections: PropTypes.object,
-  search: PropTypes.object
+  search: PropTypes.object,
+  relationTypes: PropTypes.object
 };
 
-export function mapStateToProps({connectionsList}) {
+export function mapStateToProps({entityView, connectionsList, relationTypes}) {
   return {
+    parentEntity: entityView.entity,
     connections: connectionsList.searchResults,
-    search: connectionsList.sort
+    search: connectionsList.sort,
+    relationTypes
   };
 }
 
