@@ -10,5 +10,6 @@ export default combineReducers({
   searchResults: createReducer('connectionsList/searchResults', {totalRows: 0, rows: []}),
   sort: modelReducer('connectionsList.sort', prioritySortingCriteria.get()),
   filters: createReducer('connectionsList/filters', {}),
-  search: formReducer('connectionsList/search')
+  search: formReducer('connectionsList/search'),
+  view: createReducer('connectionsList/view', 'list')
 });

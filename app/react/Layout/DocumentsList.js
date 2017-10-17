@@ -18,6 +18,8 @@ export default class DocumentsList extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {loading: false};
+    this.clickOnDocument = this.clickOnDocument.bind(this);
+    this.loadMoreDocuments = this.loadMoreDocuments.bind(this);
   }
 
   loadMoreDocuments() {
@@ -36,7 +38,7 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections} = this.props;
+    const {documents, connections, GraphView, view} = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
       counter = <span>
@@ -45,11 +47,14 @@ export default class DocumentsList extends Component {
     }
 
     const Search = this.props.SearchBar;
+    // TEST!!!
+    const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
 
     return (
       <div className="documents-list">
         <div className="main-wrapper">
           <div className="search-list">
+            {ActionButtons}
             <Search storeKey={this.props.storeKey}/>
           </div>
           <div className="sort-by">
@@ -63,17 +68,25 @@ export default class DocumentsList extends Component {
                            storeKey={this.props.storeKey}
               />
           </div>
-          <RowList>
-            {documents.get('rows').map((doc, index) =>
-              <Doc doc={doc}
-                   storeKey={this.props.storeKey}
-                   key={index}
-                   onClick={this.clickOnDocument.bind(this)}
-                   onSnippetClick={this.props.onSnippetClick}
-                   deleteConnection={this.props.deleteConnection}
-                   searchParams={this.props.search} />
-            )}
-          </RowList>
+          {(() => {
+            if (view !== 'graph') {
+              return <RowList>
+                      {documents.get('rows').map((doc, index) =>
+                        <Doc doc={doc}
+                             storeKey={this.props.storeKey}
+                             key={index}
+                             onClick={this.clickOnDocument}
+                             onSnippetClick={this.props.onSnippetClick}
+                             deleteConnection={this.props.deleteConnection}
+                             searchParams={this.props.search} />
+                      )}
+                     </RowList>;
+            }
+
+            if (view === 'graph') {
+              return <GraphView />;
+            }
+          })()}
           <div className="row">
             <p className="col-sm-12 text-center documents-counter">
                 <b>{documents.get('rows').size}</b>
@@ -82,16 +95,22 @@ export default class DocumentsList extends Component {
                 {` ${t('System', 'documents')}`}
             </p>
             {(() => {
-              if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
-                return <div className="col-sm-12 text-center">
-                <button onClick={this.loadMoreDocuments.bind(this)} className="btn btn-default btn-load-more">
-                  {loadMoreAmmount + ' ' + t('System', 'x more')}
-                </button>
-                </div>;
+              if (view !== 'graph') {
+                if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
+                  return (
+                    <div className="col-sm-12 text-center">
+                      <button onClick={this.loadMoreDocuments} className="btn btn-default btn-load-more">
+                        {loadMoreAmmount + ' ' + t('System', 'x more')}
+                      </button>
+                    </div>
+                  );
+                }
+                if (this.state.loading) {
+                  return <Loader/>;
+                }
               }
-              if (this.state.loading) {
-                return <Loader/>;
-              }
+
+              return null;
             })()}
             <NeedAuthorization>
               <div className="col-sm-12 text-center protip">
@@ -119,6 +138,8 @@ DocumentsList.propTypes = {
   filters: PropTypes.object,
   selectedDocument: PropTypes.object,
   SearchBar: PropTypes.func,
+  ActionButtons: PropTypes.func,
+  GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
   searchDocuments: PropTypes.func,
@@ -126,5 +147,6 @@ DocumentsList.propTypes = {
   sortButtonsStateProperty: PropTypes.string,
   storeKey: PropTypes.string,
   onSnippetClick: PropTypes.func,
-  clickOnDocument: PropTypes.func
+  clickOnDocument: PropTypes.func,
+  view: PropTypes.string
 };

@@ -55,6 +55,15 @@ export function deleteConnection(connection) {
   };
 }
 
+// TEST!!!
+export function loadAllReferences() {
+  return function (dispatch, getState) {
+    const connectionsList = getState().connectionsList;
+    dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('limit', 9999)));
+    return searchReferences()(dispatch, getState);
+  };
+}
+
 export function loadMoreReferences(storeKey, limit) {
   return function (dispatch, getState) {
     const connectionsList = getState().connectionsList;
@@ -78,5 +87,15 @@ export function resetSearch() {
     dispatch(formActions.change('connectionsList/search.searchTerm', ''));
     dispatch(actions.set('connectionsList/filters', Immutable({})));
     return searchReferences()(dispatch, getState);
+  };
+}
+
+// TEST!!!
+export function switchView(type) {
+  return function (dispatch, getState) {
+    dispatch(actions.set('connectionsList/view', type));
+    if (type === 'graph') {
+      loadAllReferences()(dispatch, getState);
+    }
   };
 }
