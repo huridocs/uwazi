@@ -1,7 +1,8 @@
 $breakpoint: 768px;
+$c-background: #fcfcfc;
 
 .entity-viewer {
-  background-color: #fcfcfc;
+  background-color: $c-background;
 }
 
 .relationships-graph {
@@ -77,6 +78,13 @@ $breakpoint: 768px;
     @media(min-width: $breakpoint) {
       display: flex;
       align-items: flex-start;
+      & > div {
+        flex: 1;
+        z-index: 2;
+      }
+      .target-connections {
+        z-index: 1;
+      }
     }
   }
   .source {
@@ -88,9 +96,9 @@ $breakpoint: 768px;
     }
     @media(min-width: $breakpoint) {
       position: absolute;
-      width: 50%;
-      padding-right: 50px;
-      z-index: 1;
+      width: 100%;
+      padding-right: 51px;
+      // z-index: 1;
     }
   }
   .source-row,
@@ -103,8 +111,7 @@ $breakpoint: 768px;
     flex-direction: column;
     margin-left: 15px;
     @media(min-width: $breakpoint) {
-      width: 50%;
-      margin-left: 50%;
+      margin-left: 0;
     }
   }
 
@@ -236,8 +243,8 @@ $breakpoint: 768px;
   .hub {
     width: $hub-size;
     height: $hub-size;
-    background: #eee;
-    border: 1px solid #ccc;
+    background: $c-grey-lighten;
+    border: 1px solid $c-grey-light;
     position: absolute;
     top: (28px - $hub-size)/2;
     right: -50px - $hub-size/2;
@@ -249,7 +256,7 @@ $breakpoint: 768px;
     &:after {
       content: '';
       display: block;
-      background: #ccc;
+      background: $c-grey-light;
       position: absolute;
       height: 1px;
       width: 50px;
@@ -262,7 +269,7 @@ $breakpoint: 768px;
     .connection-data:before, .item.no-connection:before {
       content: '';
       display: block;
-      background: #ccc;
+      background: $c-grey-light;
       position: absolute;
       height: 1px;
       width: 16px;
@@ -281,38 +288,42 @@ $breakpoint: 768px;
       width: 1px;
       top: -100vh;
       bottom: $hub-size - 1px;
-      background: blue;
-      background: #ccc;
+      background: $c-grey-light;
       position: absolute;
       left: 50%;
     }
   }
 
   .target-connections {
-    border-left: 1px solid red;
-    border-left: 1px solid #ccc;
+    border-left: 1px solid $c-grey-light;
+
+    .connection:last-child:after {
+      content: '';
+      display: block;
+      width: 14px;
+      background: $c-grey-light;
+      position: absolute;
+      bottom: 0;
+      top: 30px;
+      left: 0px;
+      margin-left: -2px;
+    }
+  }
+
+  .group-row {
     @media(min-width: $breakpoint) {
       &:before {
         content: '';
         display: block;
         width: 14px;
         height: 44px;
-        background: #fcfcfc;
+        background: $c-background;
         position: absolute;
         z-index: 2;
         margin-left: -2px;
+        left: 50%;
+        z-index: 3;
       }
-    }
-    .connection:last-child:after {
-      content: '';
-      display: block;
-      width: 14px;
-      background: #fcfcfc;
-      position: absolute;
-      bottom: 0;
-      top: 30px;
-      left: 0px;
-      margin-left: -2px;
     }
   }
 
@@ -322,7 +333,7 @@ $breakpoint: 768px;
       content: '';
       display: block;
       width: 14px;
-      background: #fcfcfc;
+      background: $c-background;
       position: absolute;
       bottom: -15px;
       top: 30px;
