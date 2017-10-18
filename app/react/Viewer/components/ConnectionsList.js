@@ -76,7 +76,6 @@ export class ConnectionsList extends Component {
       );
     }
 
-    console.log(this.props.referencesSection);
     if (!this.props.references.size) {
       return (
         <div className="blank-state">
