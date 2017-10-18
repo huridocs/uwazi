@@ -7,6 +7,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
+import Welcome from 'app/Library/components/Welcome';
 // import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
@@ -17,6 +18,7 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {wrapDispatch} from 'app/Multireducer';
+import {store} from 'app/store';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
@@ -82,6 +84,11 @@ export default class Uploads extends RouteHandler {
   }
 
   render() {
+    let state = store.getState();
+    if (!state.templates.size) {
+      return <Welcome/>;
+    }
+
     let query = rison.decode(this.props.location.query.q || '()');
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? <DocumentsList storeKey="uploads"/> : <LibraryCharts storeKey="uploads" />;

@@ -69,9 +69,11 @@ export class FiltersForm extends Component {
         {(() => {
           let activeTypes = templates.filter((template) => documentTypes.includes(template.get('_id')));
           if (activeTypes.size > 0 && fields.length === 0) {
-            return <div className="empty-state no-filters">
+            return <div className="blank-state">
               <i className="fa fa-close"></i>
-              <span>{t('System', 'No common filters')}</span>
+              <h4>{t('System', 'No common filters')}</h4>
+              <p>The combination of document and entity types doesn't have any filters in common.</p>
+              <a href="#" target="_blank">Learn more</a>
             </div>;
           }
         })()}

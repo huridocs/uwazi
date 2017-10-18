@@ -7,9 +7,7 @@ import {actions as formActions, Field, LocalForm} from 'react-redux-form';
 import {searchSnippets} from 'app/Library/actions/libraryActions';
 import {highlightSearch} from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
-//import {Link} from 'react-router';
 import {browserHistory} from 'react-router';
-//import {isClient} from '../../utils';
 import {scrollToPage} from 'app/Viewer/actions/uiActions';
 import {toUrlParams} from '../../../shared/JSONRequest';
 
@@ -78,6 +76,14 @@ export class SearchText extends Component {
             </div>
           </ShowIf>
         </LocalForm>
+
+        <ShowIf if={!this.props.snippets.size} >
+          <div className="blank-state">
+            <i className="fa fa-search"></i>
+            <h4>{t('System', 'No text match')}</h4>
+            <p>{t('System', 'No text match description')}</p>
+          </div>
+        </ShowIf>
 
         <ul className="snippet-list">
           {snippets.map((snippet, index) => {
