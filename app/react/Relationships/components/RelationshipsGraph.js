@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 // import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import Sticky from 'react-sticky-el';
 import Doc from 'app/Library/components/Doc';
 
 import {fromJS} from 'immutable';
@@ -82,15 +83,17 @@ export class RelationshipsGraph extends Component {
           <div className={`group ${this.state.collapsed ? 'group-collapse' : ''}`}>
             <div className="group-row">
 
-              <div className="source">
-                <Doc doc={parentEntity} searchParams={search} />
-                <div className="item-connection">
-                  <figure className="hub"></figure>
-                  <div className="connection-data">
-                    <p className="connection-type connection-type-18"><span>Relationships</span></p>
+              <Sticky scrollElement=".entity-viewer" boundaryElement=".group-row">
+                <div className="source">
+                  <Doc doc={parentEntity} searchParams={search} />
+                  <div className="item-connection">
+                    <figure className="hub"></figure>
+                    <div className="connection-data">
+                      <p className="connection-type connection-type-18"><span>Relationships</span></p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Sticky>
 
               <div className="target-connections">
                 {relationships.map((entity, index) => {
