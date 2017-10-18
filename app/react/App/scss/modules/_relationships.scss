@@ -97,7 +97,7 @@ $c-background: #fcfcfc;
     @media(min-width: $breakpoint) {
       position: absolute;
       width: 100%;
-      padding-right: 51px;
+      padding-right: 50px;
       // z-index: 1;
     }
   }
@@ -301,7 +301,7 @@ $c-background: #fcfcfc;
       content: '';
       display: block;
       width: 14px;
-      background: $c-grey-light;
+      background: $c-background;
       position: absolute;
       bottom: 0;
       top: 30px;

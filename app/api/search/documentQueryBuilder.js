@@ -9,7 +9,7 @@ export default function () {
       ]
     },
     from: 0,
-    size: 30,
+    size: 5,
     query: {
       bool: {
         must: [],
