@@ -112,13 +112,6 @@ export class EntityViewer extends Component {
                   }
                   return <div>
                     <ShowMetadata entity={entity} showTitle={false} showType={false} />
-                    <div className="blank-state">
-                      <i className="fa fa-info-circle"></i>
-                      <h4>No Information</h4>
-                      <p>Properties are relevant information that allow users search and learn
-                      basic information about your entities.</p>
-                      <a href="#" target="_blank">Learn more</a>
-                    </div>
                     <AttachmentsList files={Immutable(attachments)}
                                       parentId={entity._id} />
                   </div>;
@@ -126,12 +119,6 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="connections">
-              <div className="blank-state">
-                <i className="fa fa-sitemap"></i>
-                <h4>No Connections</h4>
-                <p>Connections are the direct relationships between this document and other documents and entities.</p>
-                <a href="#" target="_blank">Learn more</a>
-              </div>
               <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
             </TabContent>
           </Tabs>
@@ -151,25 +138,21 @@ export class EntityViewer extends Component {
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
-              <NeedAuthorization roles={['admin', 'editor']}>
-                <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
-                        className="create-connection btn btn-success">
-                  <i className="fa fa-plus"></i>
-                  <span className="btn-label">New</span>
-                </button>
-              </NeedAuthorization>
+              <ShowIf if={this.props.relationTypes.length}>
+                <NeedAuthorization roles={['admin', 'editor']}>
+                  <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
+                          className="create-connection btn btn-success">
+                    <i className="fa fa-plus"></i>
+                    <span className="btn-label">New</span>
+                  </button>
+                </NeedAuthorization>
+              </ShowIf>
             </div>
           </ShowIf>
 
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
-                <div className="blank-state">
-                  <i className="fa fa-sitemap"></i>
-                  <h4>No Connections</h4>
-                  <p>Connections are the direct relationships between this document and other documents and entities.</p>
-                  <a href="#" target="_blank">Learn more</a>
-                </div>
                 <ConnectionsGroups />
               </TabContent>
             </Tabs>
@@ -229,7 +212,7 @@ const mapStateToProps = (state) => {
     tab: state.entityView.uiState.get('tab'),
     library: state.library,
     sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
-    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
+    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections',
   };
 };
 

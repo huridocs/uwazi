@@ -130,13 +130,17 @@ describe('DocumentSidePanel', () => {
         ])
       };
 
-      const references = mapStateToProps(null, ownProps).references;
-      const connections = mapStateToProps(null, ownProps).connections;
+      const state = {
+        relationTypes: Immutable.fromJS([])
+      };
+
+      const references = mapStateToProps(state, ownProps).references;
+      const connections = mapStateToProps(state, ownProps).connections;
 
       expect(references.toJS()).toEqual([{_id: 1, range: {start: 5}}, {_id: 4, range: {start: 10}}]);
-      expect(mapStateToProps(null, ownProps).references).toBe(references);
+      expect(mapStateToProps(state, ownProps).references).toBe(references);
       expect(connections.toJS()).toEqual([{_id: 2, range: {}}, {_id: 3, range: {}}]);
-      expect(mapStateToProps(null, ownProps).connections).toBe(connections);
+      expect(mapStateToProps(state, ownProps).connections).toBe(connections);
     });
   });
 });

@@ -14,7 +14,10 @@ export default app => {
     }
 
     relationtypes.get()
-    .then(response => res.json({rows: response}));
+    .then(response => {
+      console.log(response);
+      res.json({rows: response})
+    });
   });
 
   app.delete('/api/relationtypes', needsAuthorization(), (req, res) => {

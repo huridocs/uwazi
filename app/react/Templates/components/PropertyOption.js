@@ -11,11 +11,11 @@ export class PropertyOption extends Component {
   render() {
     const {connectDragSource} = this.props;
     const {label} = this.props;
-    let iconClass = Icons[this.props.type] || 'fa fa-font';
-
+    const iconClass = Icons[this.props.type] || 'fa fa-font';
+    const liClass = 'list-group-item' + (this.props.disabled ? ' disabled' : '');
     return (
       connectDragSource(
-        <li className="list-group-item">
+        <li className={liClass}>
           <span>
             <i className="fa fa-clone"></i>
             <i className={iconClass}></i>&nbsp;{label}
@@ -29,12 +29,17 @@ export class PropertyOption extends Component {
 PropertyOption.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
+  disabled: PropTypes.bool
 };
 
 const optionSource = {
   beginDrag(props) {
     return Object.assign({}, props);
+  },
+
+  canDrag(props) {
+    return !props.disabled;
   },
 
   endDrag(props, monitor) {

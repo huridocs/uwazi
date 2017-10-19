@@ -17,7 +17,7 @@ export function addProperty(property = {}, index = 0) {
   property.localID = ID();
   return function (dispatch, getState) {
     if (property.type === 'select' || property.type === 'multiselect') {
-      property.content = getState().thesauris.toJS()[0]._id;
+      property.content = getState().thesauris.get(0).get('_id');
     }
 
     if (property.type === 'nested') {

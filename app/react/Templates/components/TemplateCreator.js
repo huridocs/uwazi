@@ -10,6 +10,7 @@ import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
 import ShowIf from 'app/App/ShowIf';
+import {t} from 'app/I18N';
 
 export class TemplateCreator extends Component {
 
@@ -42,8 +43,8 @@ export class TemplateCreator extends Component {
                   <ul className="list-group">
                     <PropertyOption label='Text' type='text'/>
                     <PropertyOption label='Numeric' type='numeric'/>
-                    <PropertyOption label='Select' type='select'/>
-                    <PropertyOption label='Multi Select' type='multiselect'/>
+                    <PropertyOption label='Select' type='select' disabled={this.props.noThesauris} />
+                    <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noThesauris} />
                     <PropertyOption label='Date' type='date'/>
                     <PropertyOption label='Date Range' type='daterange'/>
                     <PropertyOption label='Multi Date' type='multidate'/>
@@ -53,6 +54,11 @@ export class TemplateCreator extends Component {
                       <PropertyOption label='Violated articles' type='nested'/>
                     </ShowIf>
                   </ul>
+                  <ShowIf if={this.props.noThesauris}>
+                    <div className="alert alert-warning">
+                      Selects and Multiselects can not be added untill you have at least one thesauri to select.
+                    </div>
+                  </ShowIf>
                 </div>
               </aside>
             </div>
@@ -68,6 +74,7 @@ TemplateCreator.propTypes = {
   saveTemplate: PropTypes.func,
   saveEntity: PropTypes.func,
   entity: PropTypes.bool,
+  noThesauris: PropTypes.bool,
   settings: PropTypes.object
 };
 
@@ -79,9 +86,10 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({resetTemplate, saveTemplate, saveEntity}, dispatch);
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({settings, thesauris}) => {
   return {
-    settings: state.settings
+    settings,
+    noThesauris: !thesauris.size
   };
 };
 
