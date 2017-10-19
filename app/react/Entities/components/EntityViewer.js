@@ -212,7 +212,7 @@ const mapStateToProps = (state) => {
     tab: state.entityView.uiState.get('tab'),
     library: state.library,
     sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
-    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections',
+    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
   };
 };
 

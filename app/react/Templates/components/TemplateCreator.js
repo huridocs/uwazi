@@ -10,7 +10,6 @@ import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
 import ShowIf from 'app/App/ShowIf';
-import {t} from 'app/I18N';
 
 export class TemplateCreator extends Component {
 
