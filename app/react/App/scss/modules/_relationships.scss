@@ -91,14 +91,8 @@ $c-background: #fcfcfc;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    @media(max-width: $breakpoint - 1px) {
-      position: relative !important;
-    }
     @media(min-width: $breakpoint) {
-      position: absolute;
-      width: 100%;
       padding-right: 50px;
-      // z-index: 1;
     }
   }
   .source-row,
@@ -216,7 +210,7 @@ $c-background: #fcfcfc;
       }
 
       .item-info {
-        padding: 5px;
+        padding: 5px 15px;
       }
       .item-metadata {
         display: none;
@@ -235,7 +229,7 @@ $c-background: #fcfcfc;
     }
 
     .connection-type {
-      padding: 5px;
+      padding: 5px 15px;
     }
   }
 
@@ -341,13 +335,21 @@ $c-background: #fcfcfc;
       margin-left: -2px;
     }
 
-    &.last-of-type.as-previous:after {
+    &.last-of-type.as-previous:after,
+    &.last-of-type:first-child:after {
       top: 15px;
     }
   }
 
   .target-connections-multiple:before {
     height: 44px - $hub-size/2;
+  }
+
+  @media(max-width: $breakpoint - 1) {
+    .sticky {
+      position: relative!important;
+      top: 0!important;
+    }
   }
 
   $c-type-0:            #C03B22;

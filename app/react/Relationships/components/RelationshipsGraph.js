@@ -83,13 +83,13 @@ export class RelationshipsGraph extends Component {
           <div className={`group ${this.state.collapsed ? 'group-collapse' : ''}`}>
             <div className="group-row">
 
-              <Sticky scrollElement=".entity-viewer" boundaryElement=".group-row">
+              <Sticky scrollElement=".entity-viewer" boundaryElement=".group-row" hideOnBoundaryHit={false}>
                 <div className="source">
                   <Doc doc={parentEntity} searchParams={search} />
                   <div className="item-connection">
                     <figure className="hub"></figure>
                     <div className="connection-data">
-                      <p className="connection-type connection-type-18"><span>Relationships</span></p>
+                      <p className="connection-type connection-type-18">Relationships</p>
                     </div>
                   </div>
                 </div>
