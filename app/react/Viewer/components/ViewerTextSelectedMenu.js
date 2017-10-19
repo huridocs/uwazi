@@ -6,6 +6,7 @@ import {addToToc} from '../actions/documentActions';
 
 import {actions as connectionsActions} from 'app/Connections';
 import {openPanel} from 'app/Viewer/actions/uiActions';
+import ShowIf from 'app/App/ShowIf';
 
 export class ViewerTextSelectedMenu extends Component {
   showPanel(type) {
@@ -16,16 +17,20 @@ export class ViewerTextSelectedMenu extends Component {
   render() {
     return (
       <div className={this.props.active ? 'active' : ''}>
-        <div className="btn btn-primary"
-             onClick={this.showPanel.bind(this, 'targetRanged')}>
-          <span className="ContextMenu-tooltip">Connect to a paragraph</span>
-          <i className="fa fa-paragraph"></i>
-        </div>
-        <div className="btn btn-primary"
-             onClick={this.showPanel.bind(this, 'ranged')} >
-          <span className="ContextMenu-tooltip">Connect to a document</span>
-          <i className="fa fa-file-o"></i>
-        </div>
+        <ShowIf if={this.props.hasRelationTypes}>
+          <div className="btn btn-primary"
+               onClick={this.showPanel.bind(this, 'targetRanged')}>
+            <span className="ContextMenu-tooltip">Connect to a paragraph</span>
+            <i className="fa fa-paragraph"></i>
+          </div>
+        </ShowIf>
+        <ShowIf if={this.props.hasRelationTypes}>
+          <div className="btn btn-primary"
+               onClick={this.showPanel.bind(this, 'ranged')} >
+            <span className="ContextMenu-tooltip">Connect to a document</span>
+            <i className="fa fa-file-o"></i>
+          </div>
+        </ShowIf>
         <div className="btn btn-primary"
              onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}>
           <span className="ContextMenu-tooltip">Add to table of contents</span>
@@ -42,13 +47,15 @@ ViewerTextSelectedMenu.propTypes = {
   startNewConnection: PropTypes.func,
   openPanel: PropTypes.func,
   addToToc: PropTypes.func,
-  active: PropTypes.bool
+  active: PropTypes.bool,
+  hasRelationTypes: PropTypes.bool
 };
 
-function mapStateToProps({documentViewer}) {
+function mapStateToProps({documentViewer, relationTypes}) {
   return {
     doc: documentViewer.doc,
-    reference: documentViewer.uiState.get('reference')
+    reference: documentViewer.uiState.get('reference'),
+    hasRelationTypes: !!relationTypes.size
   };
 }
 

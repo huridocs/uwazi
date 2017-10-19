@@ -22,7 +22,8 @@ import {TemplateLabel, SidePanel} from 'app/Layout';
 const sortedTemplates = createSelector(
   s => s.templates,
   (templates) => {
-    return advancedSort(templates.toJS(), {property: 'name'});
+    const _templates = templates ? templates.toJS() : [];
+    return advancedSort(_templates, {property: 'name'});
   }
 );
 
@@ -123,6 +124,9 @@ export class SelectMultiplePanel extends Component {
   }
 
   validation(template) {
+    if (!template) {
+      return {};
+    }
     let validation = validator.generate(template.toJS());
     delete validation.title;
     Object.keys(this.props.state.metadata || {}).forEach((key) => {
@@ -137,6 +141,7 @@ export class SelectMultiplePanel extends Component {
   render() {
     const {entitiesSelected, open, editing, templates, template} = this.props;
     const validation = this.validation(template);
+    const templateId = template ? template.get('_id') : null;
 
     const typesSelected = this.props.entitiesSelected.map((entity) => entity.get('type'))
     .filter((type, index, _types) => _types.indexOf(type) === index);
@@ -187,7 +192,7 @@ export class SelectMultiplePanel extends Component {
                       <li className="wide">
                         <SimpleSelect
                           className="form-control template-selector"
-                          value={template.get('_id')}
+                          value={templateId}
                           options={templateOptions}
                           onChange={(e) => this.changeTemplate(e.target.value)}
                         >

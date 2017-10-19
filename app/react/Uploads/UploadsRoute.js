@@ -19,6 +19,7 @@ import {actions as formActions} from 'react-redux-form';
 import {t} from 'app/I18N';
 import {wrapDispatch} from 'app/Multireducer';
 import {store} from 'app/store';
+import ShowIf from 'app/App/ShowIf';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
@@ -92,13 +93,14 @@ export default class Uploads extends RouteHandler {
     let query = rison.decode(this.props.location.query.q || '()');
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? <DocumentsList storeKey="uploads"/> : <LibraryCharts storeKey="uploads" />;
+    const hasDocumentTemplates = state.templates.reduce((result, template) => result || !template.get('isEntity'), false);
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Uploads')} />
         <UploadsHeader/>
         <main className="uploads-viewer document-viewer with-panel">
-          <UploadBox />
+          <ShowIf if={hasDocumentTemplates}><UploadBox /></ShowIf>
           {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
