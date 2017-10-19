@@ -265,16 +265,23 @@ export default {
   delete(sharedId) {
     return this.get({sharedId})
     .then((docs) => {
-      let deletions = docs.map(doc => search.delete(doc))
-      .concat([
-        model.delete({sharedId}),
+      return Promise.all(docs.map((doc) => search.delete(doc))).then(() => docs);
+    })
+    .then((docs) => {
+      return model.delete({sharedId})
+      .then(() => docs)
+      .catch((e) => {
+        return search.indexEntities({sharedId}, '+fullText').then(() => Promise.reject(e));
+      });
+    })
+    .then((docs) => {
+      return Promise.all([
         references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
         this.deleteFiles(docs),
         this.deleteEntityFromMetadata(docs[0])
-      ]);
-      return Promise.all(deletions)
+      ])
       .then(() => docs);
-    })
+    });
   },
 
   removeValuesFromEntities(properties, template) {
