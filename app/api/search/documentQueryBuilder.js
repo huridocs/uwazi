@@ -109,7 +109,8 @@ export default function () {
                       multi_match: {
                         query: term,
                         type: 'phrase',
-                        fields: ['fullText*']
+                        fields: ['fullText*'],
+                        boost: 2
                       }
                     }
                   }
