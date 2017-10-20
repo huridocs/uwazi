@@ -606,6 +606,19 @@ describe('entities', () => {
       });
     });
 
+    describe('when database deletion throws an error', () => {
+      it('should reindex the documents', (done) => {
+        spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject('error'));
+        spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+
+        entities.delete('shared')
+        .catch(() => {
+          expect(search.indexEntities).toHaveBeenCalledWith({sharedId: 'shared'}, '+fullText');
+          done();
+        });
+      });
+    });
+
     it('should delete the document in the database', (done) => {
       entities.delete('shared')
       .then(() => entities.get({sharedId: 'shared'}))
