@@ -85,7 +85,7 @@ header {
       @if $theme == light {
         border-top: 1px solid $c-grey-light;
       } @else {
-        border-top: 1px solid $c-theme-dark;
+        border-top: 1px solid $c-theme;
       }
     }
   }
@@ -167,14 +167,14 @@ header {
     @if $theme == light {
       border-bottom: 1px solid $c-grey-light;
     } @else {
-      border-bottom: 1px solid $c-theme-dark;
+      border-bottom: 1px solid $c-theme;
     }
   }
   .menuActions .menuNav-item:not(:last-child) {
     @if $theme == light {
       border-right: 1px solid $c-grey-light;
     } @else {
-      border-right: 1px solid $c-theme-dark;
+      border-right: 1px solid $c-theme;
     }
   }
 }
@@ -211,11 +211,11 @@ header {
 .menuNav-I18NMenu {
   display: flex;
   text-transform: uppercase;
-  border-top: 1px solid $c-theme-dark;
+  border-top: 1px solid $c-theme;
   @media(min-width: 1024px) {
     float: left;
     border-top: 0;
-    border-right: 1px solid $c-theme-dark;
+    border-right: 1px solid $c-theme;
   }
   
   .menuNav-btn {

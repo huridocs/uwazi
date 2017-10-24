@@ -5,36 +5,3 @@
 .create-reference {
   z-index: 6;
 }
-/*
-.create-reference {
-  .item {
-    &:after {
-      content: '\f00c';
-      font-family: FontAwesome;
-      position: absolute;
-      top: 100%;
-      left: 42%;
-      font-size: 40px;
-      color: $c-success;
-      opacity: 0;
-      transition: 225ms all;
-    }
-    &.is-selected {
-      background: $c-theme-lighten;
-      color: $c-theme-light;
-      border-color: transparent;
-      box-shadow: inset 0 0 0 1px $c-theme-light;
-      &:after {
-        top: 50%;
-        transform: translateY(-50%);
-      }
-      &:before {
-        display: none;
-      }
-    }
-    .item-name {
-      font-size: $f-size;
-    }
-  }
-}
-*/

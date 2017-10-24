@@ -72,13 +72,13 @@
     font-size: 12px;
     margin-right: 4px;
     color: $c-theme;
-    background-color: $c-theme-lighten;
+    background-color: $c-grey-lighten;
   }
   p a,
   td a {
     display: inline;
     color: $c-theme;
-    border-bottom: 1px dotted $c-theme-light;
+    border-bottom: 1px dotted $c-theme;
     text-decoration: none !important;
     padding: 0 2px;
     &:hover {
@@ -106,9 +106,8 @@
     padding: 7px 10px;
   }
   th {
-    font-family: $f-special;
-    font-weight: 300;
-    background-color: $c-theme-lighten;
+    background-color: $c-grey-lighten;
+    border-bottom: 1px solid $c-grey-light;
   }
   th:not(:last-of-type) {
     border-right: 1px solid $c-white;
