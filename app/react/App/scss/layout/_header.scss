@@ -8,6 +8,7 @@ header {
   /* Removed for language selector. Check for side-effects!
   /*overflow: hidden;*/
   background: $c-theme;
+  border-bottom: 1px solid $c-grey-light;
 
   h1 {
     float: left;
