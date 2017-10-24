@@ -222,7 +222,7 @@ $item-padding: 15px;
 }
 
 .item-type-empty .item-type__icon  { color: $c-grey; }
-.item-type-primary .item-type__icon  { color: $c-theme; }
+.item-type-primary .item-type__icon  { color: $c-primary; }
 .item-type-0 .item-type__icon  { color: $c-type-0; }
 .item-type-1 .item-type__icon  { color: $c-type-1; }
 .item-type-2 .item-type__icon  { color: $c-type-2; }
@@ -244,7 +244,7 @@ $item-padding: 15px;
 .item-type-18 .item-type__icon { color: $c-type-18; }
 
 .item-type-empty .item-type__name  { background-color: $c-grey-light; color: $c-grey-dark; }
-.item-type-primary .item-type__name  { background-color: $c-theme; }
+.item-type-primary .item-type__name  { background-color: $c-primary; }
 .item-type-0 .item-type__name  { background-color: $c-type-0; }
 .item-type-1 .item-type__name  { background-color: $c-type-1; }
 .item-type-2 .item-type__name  { background-color: $c-type-2; }
@@ -578,7 +578,7 @@ $item-padding: 15px;
 
 .documents-counter {
   b {
-    color: $c-theme;
+    color: $c-primary;
   }
 
   &-sort {

@@ -25,9 +25,9 @@
       border-bottom: 1px dotted $c-black;
     }
     &.tab-link-active {
-      color: $c-theme;
+      color: $c-primary;
       font-weight: bold;
-      border-bottom: 1px solid $c-theme;
+      border-bottom: 1px solid $c-primary;
     }
   }
   .tab-content {
@@ -71,19 +71,19 @@
     top: -2px;
     font-size: 12px;
     margin-right: 4px;
-    color: $c-theme;
+    color: $c-primary;
     background-color: $c-grey-lighten;
   }
   p a,
   td a {
     display: inline;
-    color: $c-theme;
-    border-bottom: 1px dotted $c-theme;
+    color: $c-primary;
+    border-bottom: 1px dotted $c-primary;
     text-decoration: none !important;
     padding: 0 2px;
     &:hover {
-      color: $c-theme;
-      border-bottom: 1px solid $c-theme;
+      color: $c-primary;
+      border-bottom: 1px solid $c-primary;
     }
   }
   img {
