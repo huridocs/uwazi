@@ -30,7 +30,7 @@ export class LibraryFilters extends Component {
           </button>
         </div>
         <div className="sidepanel-body">
-          <p className="sidepanel-title">{t('System', 'Filters')}</p>
+          <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
           <div className="documentTypes-selector nested-selector">
             <DocumentTypesList storeKey={this.props.storeKey}/>
           </div>

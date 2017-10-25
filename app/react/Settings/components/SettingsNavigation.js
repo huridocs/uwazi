@@ -26,7 +26,7 @@ export class SettingsNavigation extends Component {
             <I18NLink to='settings/translations' activeClassName="active" className="list-group-item">{t('System', 'Translations')}</I18NLink>
           </NeedAuthorization>
           <NeedAuthorization>
-            <I18NLink to='settings/filters' activeClassName="active" className="list-group-item">{t('System', 'Filters')}</I18NLink>
+            <I18NLink to='settings/filters' activeClassName="active" className="list-group-item">{t('System', 'Filters configuration')}</I18NLink>
           </NeedAuthorization>
         </div>
       </div>
