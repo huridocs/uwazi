@@ -138,13 +138,15 @@ export class EntityViewer extends Component {
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
-              <NeedAuthorization roles={['admin', 'editor']}>
-                <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
-                        className="create-connection btn btn-success">
-                  <i className="fa fa-plus"></i>
-                  <span className="btn-label">New</span>
-                </button>
-              </NeedAuthorization>
+              <ShowIf if={!!this.props.relationTypes.length}>
+                <NeedAuthorization roles={['admin', 'editor']}>
+                  <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
+                          className="create-connection btn btn-success">
+                    <i className="fa fa-plus"></i>
+                    <span className="btn-label">New</span>
+                  </button>
+                </NeedAuthorization>
+              </ShowIf>
             </div>
           </ShowIf>
 

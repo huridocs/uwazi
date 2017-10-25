@@ -199,7 +199,7 @@ export class DocumentSidePanel extends Component {
         </NeedAuthorization>
 
         <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc && !readOnly}>
+          <ShowIf if={this.props.tab === 'connections' && !this.props.isTargetDoc && !readOnly && this.props.hasRelationTypes}>
             <div className="sidepanel-footer">
               <button onClick={startNewConnection}
                 className="create-connection btn btn-success">
@@ -305,6 +305,7 @@ DocumentSidePanel.propTypes = {
   searchSnippets: PropTypes.func,
   isTargetDoc: PropTypes.bool,
   readOnly: PropTypes.bool,
+  hasRelationTypes: PropTypes.bool,
   storeKey: PropTypes.string
 };
 
@@ -320,7 +321,8 @@ DocumentSidePanel.defaultProps = {
 export const mapStateToProps = (state, ownProps) => {
   return {
     references: selectReferences(ownProps),
-    connections: selectConnections(ownProps)
+    connections: selectConnections(ownProps),
+    hasRelationTypes: !!state.relationTypes.size
   };
 };
 
