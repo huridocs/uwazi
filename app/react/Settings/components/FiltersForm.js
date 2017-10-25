@@ -140,7 +140,9 @@ export class FiltersForm extends Component {
                       <div className="alert alert-info">
                         <i className="fa fa-info-circle"></i>
                         <div>
-                          <p>By default, users can filter the documents or entities in the library based on the types of documents/entities you have defined. However, you can configure how these document/entity types will be displayed:</p>
+                          <p>By default, users can filter the documents
+                           or entities in the library based on the types of documents/entities you have defined.
+                           However, you can configure how these document/entity types will be displayed:</p>
                           <ul>
                             <li>drag and drop each document/entity type into the window in order to configure their order</li>
                             <li>select "Create group" below to group filters under a label (e.g. "Documents" or "People")</li>
