@@ -68,19 +68,6 @@ mark, .mark {
   }
 }
 
-.relation-dialog {
-  position: absolute;
-  right: -30px;
-  transform: translateX(100%) translateY(-30%);
-  background: $c-theme-lighten !important;
-  border: 1px solid $c-grey !important;
-  color: $c-black !important;
-  padding: 5px 10px;
-  opacity: 0;
-  transition: right 500ms, opacity 0ms;
-  width: 33%;
-}
-
 .side-panel {
   .item {
     &.relationship-selected {

@@ -1,18 +1,13 @@
 $theme:               dark;
 $hero:                dark;
+$c-theme:             #60748b;
 
-$c-grey: 				      #aeaeb8;
-$c-white: 				    lighten($c-grey, 100%);
+$c-grey: 			  #AEAEB8;
+$c-white: 			  lighten($c-grey, 100%);
 $c-grey-lighten:      lighten($c-grey, 25%);
 $c-grey-light:        lighten($c-grey, 15%);
-$c-grey-dark: 				darken($c-grey, 25%);
-$c-black: 				    #444444;
-
-$c-theme:             #607d8b;
-$c-theme-lighten:     lighten($c-theme, 50%);
-$c-theme-light:       lighten($c-theme, 35%);
-$c-theme-dark:        darken($c-theme, 20%);
-
+$c-grey-dark: 		  darken($c-grey, 25%);
+$c-black: 		      #444444;
 $c-type-0:            #C03B22;
 $c-type-1:            #D9534F;
 $c-type-2:            #E91E63;
@@ -51,6 +46,6 @@ $c-warning:           $c-type-13;
 $c-warning-light:     lighten($c-type-14, 30%);
 $c-warning-dark:      darken($c-type-14, 10%);
 
-$c-shadow: 			      transparentize($c-black, .9);
-$c-shadow-dark: 			transparentize($c-black, .8);
-$c-shadow-darker: 		transparentize($c-black, .5);
+$c-shadow:            transparentize($c-black, .9);
+$c-shadow-dark:       transparentize($c-black, .8);
+$c-shadow-darker:     transparentize($c-black, .5);

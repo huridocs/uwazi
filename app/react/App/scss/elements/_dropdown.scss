@@ -25,7 +25,7 @@
   .fa {
     position: relative;
     left: 4px;
-    color: $c-theme;
+    color: $c-primary;
   }
   
   .fa-caret-down {
@@ -67,7 +67,7 @@
   cursor: pointer;
   order: 1;
   font-weight: normal;
-  color: $c-theme !important;
+  color: $c-primary !important;
   z-index: 1;
   
   &.is-active {

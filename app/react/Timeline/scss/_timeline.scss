@@ -28,7 +28,7 @@ $timeline-item-size: 18px;
   }
 
   &-year-active {
-    border-bottom: 1px solid $c-theme;
+    border-bottom: 1px solid $c-primary;
     padding-bottom: 5px;
 
     &.type-1  { border-bottom-color: $c-type-1;  }
@@ -52,7 +52,7 @@ $timeline-item-size: 18px;
   }
   &-track-label {
     z-index: 1;
-    background: $c-theme;
+    background: $c-primary;
     position: absolute;
     top: 100%;
     left: 0;
