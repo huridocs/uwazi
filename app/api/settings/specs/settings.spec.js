@@ -21,10 +21,14 @@ describe('settings', () => {
       let config = {site_name: 'My collection'};
       settings.save(config)
       .then(() => {
+        return settings.save({custom: {customNested: 'data'}});
+      })
+      .then(() => {
         return settings.get();
       })
       .then((result) => {
         expect(result.site_name).toBe('My collection');
+        expect(result.custom.customNested).toBe('data');
         done();
       })
       .catch(catchErrors(done));
