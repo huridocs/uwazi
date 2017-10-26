@@ -55,7 +55,6 @@ export function deleteConnection(connection) {
   };
 }
 
-// TEST!!!
 export function loadAllReferences() {
   return function (dispatch, getState) {
     const connectionsList = getState().connectionsList;
@@ -90,12 +89,11 @@ export function resetSearch() {
   };
 }
 
-// TEST!!!
 export function switchView(type) {
   return function (dispatch, getState) {
     dispatch(actions.set('connectionsList/view', type));
     if (type === 'graph') {
-      loadAllReferences()(dispatch, getState);
+      return loadAllReferences()(dispatch, getState);
     }
   };
 }
