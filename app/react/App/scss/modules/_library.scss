@@ -1,5 +1,5 @@
 .order-by-arrow {
-  color: $c-theme;
+  color: $c-primary;
   font-size: 20px;
   width: 15px;
   height: 13px;
@@ -12,7 +12,7 @@
   top: -1px;
 
   &:hover {
-    color: $c-theme-dark;
+    color: $c-black;
   }
   
   &.fa-long-arrow-down:before {

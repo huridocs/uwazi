@@ -109,8 +109,8 @@
       border-color: $c-white;
     } @else {
       color: $c-white;
-      background-color: $c-theme;
-      border-color: $c-theme;
+      background-color: $c-primary;
+      border-color: $c-primary;
     }
     @media(min-width: 454px) {
       right: 400px;
@@ -126,7 +126,7 @@
         background-color: $c-white;
       } @else {
         color: $c-white;
-        background-color: $c-theme-dark;
+        background-color: $c-black;
       }
     }
   }

@@ -96,7 +96,7 @@ $c-sidebar: $c-white;
 
     &.is-expanded {
       border-bottom: 1px solid $c-grey-light;
-      color: $c-theme;
+      color: $c-primary;
     }
 
     .itemGroup-title {
@@ -108,7 +108,7 @@ $c-sidebar: $c-white;
     }
 
     &:hover .multiselectItem-action {
-      border-color: $c-theme;
+      border-color: $c-primary;
     }
 
     .multiselectItem-results {

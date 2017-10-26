@@ -9,8 +9,6 @@ var CompressionPlugin = require('compression-webpack-plugin');
 var production = true;
 var config = require('./webpack/config')(production);
 
-
-
 config.devtool = 'cheap-module-source-map';
 config.context = __dirname;
 config.plugins = config.plugins.concat([
@@ -19,7 +17,8 @@ config.plugins = config.plugins.concat([
   new webpack.optimize.UglifyJsPlugin({
     compressor: {
       warnings: false,
-      screw_ie8: true
+      screw_ie8: true,
+      comparisons: false
     }
   }),
   new webpack.optimize.AggressiveMergingPlugin(),

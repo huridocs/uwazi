@@ -7,11 +7,8 @@ header {
   justify-content: space-between;
   /* Removed for language selector. Check for side-effects!
   /*overflow: hidden;*/
-  @if $theme == light {
-    background: $c-white;
-  } @else {
-    background: $c-theme;
-  }
+  background: $c-theme;
+  border-bottom: 1px solid $c-grey-light;
 
   h1 {
     float: left;
@@ -82,11 +79,7 @@ header {
     &.is-active {
       display: table;
       width: 100%;
-      @if $theme == light {
-        border-top: 1px solid $c-grey-light;
-      } @else {
-        border-top: 1px solid $c-theme-dark;
-      }
+      border-top: 1px solid transparentize($c-black, .6);
     }
   }
   @media(min-width: 1024px) {
@@ -133,24 +126,23 @@ header {
   height: $header-height;
   line-height: $header-height + 2px;
   padding: 0 15px;
+  background-color: transparent;
   @if $theme == light {
     color: $c-black;
-    background: $c-white;
   } @else {
     color: $c-white;
-    background: $c-theme;
   }
   &:hover,
   &:active,
   &:focus,
   .menuNav-item.is-active & {
+    background-color: transparent;
     @if $theme == light {
-      background: $c-white;
-      border-color: $c-theme;
+      color: $c-black;
+      border-color: $c-black;
     } @else {
-      color: $c-white;
-      background: $c-theme;
       border-color: $c-white;
+      color: $c-white;
     }
   }
 }
@@ -164,18 +156,10 @@ header {
 
 @media(max-width: 1023px) {
   .menuItems .menuNav-item {
-    @if $theme == light {
-      border-bottom: 1px solid $c-grey-light;
-    } @else {
-      border-bottom: 1px solid $c-theme-dark;
-    }
+    border-bottom: 1px solid transparentize($c-black, .6);
   }
   .menuActions .menuNav-item:not(:last-child) {
-    @if $theme == light {
-      border-right: 1px solid $c-grey-light;
-    } @else {
-      border-right: 1px solid $c-theme-dark;
-    }
+    border-right: 1px solid transparentize($c-black, .6);
   }
 }
 
@@ -211,11 +195,11 @@ header {
 .menuNav-I18NMenu {
   display: flex;
   text-transform: uppercase;
-  border-top: 1px solid $c-theme-dark;
+  border-top: 1px solid transparentize($c-black, .6);
   @media(min-width: 1024px) {
     float: left;
     border-top: 0;
-    border-right: 1px solid $c-theme-dark;
+    border-right: 1px solid transparentize($c-black, .6);
   }
   
   .menuNav-btn {
