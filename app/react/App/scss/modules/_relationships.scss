@@ -11,6 +11,24 @@ $c-background: #fcfcfc;
   padding: 0;
   margin: auto;
 
+  .expand-section {
+    position: relative;
+    min-height: 45px;
+
+    > button {
+      position: absolute;
+      right: 0;
+      z-index: 2;
+      > .fa {
+        padding-right: 10px;
+      }
+    }
+
+    @media(min-width: $breakpoint) {
+      min-height: 15px;
+    }
+  }
+
   .metadata-swtich {
     float: right;
     margin-top: -47px;
