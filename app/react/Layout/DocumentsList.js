@@ -47,7 +47,6 @@ export default class DocumentsList extends Component {
     }
 
     const Search = this.props.SearchBar;
-    // TEST!!!
     const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
 
     return (
