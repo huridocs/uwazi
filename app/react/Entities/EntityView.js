@@ -39,7 +39,8 @@ export default class Entity extends RouteHandler {
           connectionsGroups,
           searchResults,
           sort,
-          filters: {}
+          filters: {},
+          view: 'list'
         },
         relationTypes
       };
@@ -62,6 +63,7 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.unset('connectionsList/searchResults'));
     this.context.store.dispatch(actions.unset('connectionsList/filters'));
     this.context.store.dispatch(actions.unset('connectionsList.sort'));
+    this.context.store.dispatch(actions.unset('connectionsList/view'));
   }
 
   setReduxState(state) {
@@ -73,6 +75,7 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
     this.context.store.dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));
     this.context.store.dispatch(formActions.merge('connectionsList.sort', state.connectionsList.sort));
+    this.context.store.dispatch(actions.set('connectionsList/view', state.connectionsList.view));
   }
 
   static renderTools() {
