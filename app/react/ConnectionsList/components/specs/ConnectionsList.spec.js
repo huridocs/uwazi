@@ -4,7 +4,7 @@ import {mapStateToProps} from '../ConnectionsList';
 import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraph';
 
-fdescribe('ConnectionsList', () => {
+describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
     let state;
     let props;
