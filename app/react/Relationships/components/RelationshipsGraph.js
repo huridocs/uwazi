@@ -1,14 +1,11 @@
-// TEST!!!
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-// import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import Sticky from 'react-sticky-el';
 import Doc from 'app/Library/components/Doc';
+import {t} from 'app/I18N';
 
 import {fromJS} from 'immutable';
-
-// import {switchView as switchViewAction} from '../actions/actions';
 
 export class RelationshipsGraph extends Component {
   constructor(props) {
@@ -23,19 +20,23 @@ export class RelationshipsGraph extends Component {
     return posIndex % (numberOfConnectionColors - 1);
   }
 
-  prepareData() {
-    const {connections} = this.props;
-
+  getAmountOfTypes(connections) {
     let previousConnectionType = '';
-    const amountOfTypes = connections.get('rows').reduce((_amount, _connection) => {
+    return connections.get('rows').reduce((_amount, _connection) => {
       return _connection.get('connections').reduce((_innerAmount, relationship) => {
         const newType = previousConnectionType !== relationship.get('context');
         previousConnectionType = relationship.get('context');
         return newType ? _innerAmount + 1 : _innerAmount;
       }, _amount);
     }, 0);
+  }
 
-    previousConnectionType = '';
+  prepareData() {
+    const {connections} = this.props;
+
+    const getAmountOfTypes = this.getAmountOfTypes(connections);
+
+    let previousConnectionType = '';
     let currentType = 0;
 
     const relationships = connections.get('rows').reduce((results, _connection) => {
@@ -52,7 +53,7 @@ export class RelationshipsGraph extends Component {
 
         results.push(Object.assign({
           relationship: Object.assign(relationship, {typePostition: this.getRelationshipPosition(relationship.context)}),
-          lastOfType: currentType === amountOfTypes,
+          lastOfType: currentType === getAmountOfTypes,
           asPrevious
         }, entity));
         previousConnectionType = relationship.context;
@@ -69,36 +70,44 @@ export class RelationshipsGraph extends Component {
   }
 
   render() {
-    const {parentEntity, search, relationTypes} = this.props;
+    const {collapsed} = this.state;
+    const {parentEntity, search} = this.props;
     const relationships = this.prepareData();
-    console.log('relationships:', relationships);
-    console.log('relationTypes:', relationTypes.toJS());
+
+    let itemConnection = null;
+
+    if (relationships.length) {
+      itemConnection = <div className="item-connection">
+                        <figure className="hub"></figure>
+                        <div className="connection-data">
+                          <p className="connection-type connection-type-18">{t('System', 'Relationships')}</p>
+                        </div>
+                       </div>;
+    }
 
     return (
       <div className="relationships-graph">
-        <div>
-          <button onClick={this.toggleCollapsed} className="btn btn-default">{this.state.collapsed ? 'Expand' : 'Collapse'}</button>
+        <div className="expand-section">
+          <button onClick={this.toggleCollapsed} className="btn btn-default">
+            <i className={`fa fa-${collapsed ? 'expand' : 'compress'}`}></i>
+            {collapsed ? 'Expand' : 'Collapse'}
+          </button>
         </div>
         <div className="group-wrapper">
-          <div className={`group ${this.state.collapsed ? 'group-collapse' : ''}`}>
+          <div className={`group ${collapsed ? 'group-collapse' : ''}`}>
             <div className="group-row">
 
               <Sticky scrollElement=".entity-viewer" boundaryElement=".group-row" hideOnBoundaryHit={false}>
                 <div className="source">
                   <Doc doc={parentEntity} searchParams={search} />
-                  <div className="item-connection">
-                    <figure className="hub"></figure>
-                    <div className="connection-data">
-                      <p className="connection-type connection-type-18">Relationships</p>
-                    </div>
-                  </div>
+                  {itemConnection}
                 </div>
               </Sticky>
 
               <div className="target-connections">
                 {relationships.map((entity, index) => {
                   return (
-                    <div className={`connection ${entity.asPrevious ? 'as-previous' : ''} ${entity.lastOfType ? 'last-of-type' : ''}`}
+                    <div className={`connection${entity.asPrevious ? ' as-previous' : ''}${entity.lastOfType ? ' last-of-type' : ''}`}
                          key={index}>
                       <div className="connection-data">
                         <p className={`connection-type connection-type-${entity.relationship.typePostition}`}>
@@ -133,11 +142,5 @@ export function mapStateToProps({entityView, connectionsList, relationTypes}) {
     relationTypes
   };
 }
-
-// function mapDispatchToProps(dispatch) {
-//   return bindActionCreators({
-//     switchView: switchViewAction
-//   }, dispatch);
-// }
 
 export default connect(mapStateToProps)(RelationshipsGraph);
