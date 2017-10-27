@@ -434,6 +434,14 @@ $item-padding: 15px;
   width: 100%;
   max-width: 960px;
   margin: 0 auto 15px;
+
+  &-actions {
+    float: right;
+
+    & button:not(:first-child) {
+      margin-left: 3px;
+    }
+  }
 }
 
 /* sort-by controller */

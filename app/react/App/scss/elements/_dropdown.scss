@@ -4,10 +4,10 @@
   display: flex;
   -webkit-align-items: center;
   align-items: center;
-  z-index: 1;
+  z-index: 3;
   margin-top: -6px;
   border: 1px solid transparent;
-  
+
   &:hover {
     background: $c-grey-lighten;
   }
@@ -27,7 +27,7 @@
     left: 4px;
     color: $c-primary;
   }
-  
+
   .fa-caret-down {
     top: 4px;
   }
@@ -69,7 +69,7 @@
   font-weight: normal;
   color: $c-primary !important;
   z-index: 1;
-  
+
   &.is-active {
     order: 0;
     display: -webkit-flex;
@@ -92,7 +92,7 @@
 
 .Dropdown:hover,
 .Dropdown.is-active {
-  
+
   span {
     opacity: 1;
   }
@@ -103,7 +103,7 @@
   }
 }
 
-.Dropdown.is-active {  
+.Dropdown.is-active {
   .Dropdown-option,
   .Dropdown-option__item {
     display: -webkit-flex;

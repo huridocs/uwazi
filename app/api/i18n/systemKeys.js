@@ -122,6 +122,7 @@ export default [
 {key: 'Publish', label: 'Publish'},
 {key: 'Recently', label: 'Recently'},
 {key: 'References', label: 'References'},
+{key: 'Relationships', label: 'Relationships'},
 {key: 'RelationType saved', label: 'RelationType saved'},
 {key: 'Relevance', label: 'Relevance'},
 {key: 'Reset', label: 'Reset'},
