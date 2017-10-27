@@ -36,6 +36,15 @@ describe('ConnectionsList actions', () => {
     spyOn(formActions, 'change').and.callFake((scope, sort) => 'change: ' + scope + ' with: ' + (sort || 'empty'));
   });
 
+  function checkLoadAllReferences(done, argPos = 0) {
+    expect(dispatch.calls.argsFor(argPos)[0].type).toBe('connectionsList/filters/SET');
+    expect(dispatch.calls.argsFor(argPos)[0].value.toJS()).toEqual({filter: 'filter', limit: 9999});
+
+    expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
+    expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+    done();
+  }
+
   describe('searchReferences', () => {
     it('should fetch the connections with the current state filters, sorting and empty text by default', (done) => {
       actions.searchReferences()(dispatch, getState)
@@ -90,6 +99,15 @@ describe('ConnectionsList actions', () => {
         done();
       })
       .catch(done.fail);
+    });
+  });
+
+  describe('loadAllReferences', () => {
+    it('should set the limit 9999', (done) => {
+      actions.loadAllReferences()(dispatch, getState)
+      .then(() => {
+        checkLoadAllReferences(done);
+      });
     });
   });
 
@@ -148,6 +166,23 @@ describe('ConnectionsList actions', () => {
         expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
 
         done();
+      });
+    });
+  });
+
+  describe('switchView', () => {
+    it('should set view to passed type', () => {
+      actions.switchView('specificType')(dispatch, getState);
+      expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/view/SET');
+      expect(dispatch.calls.argsFor(0)[0].value).toBe('specificType');
+    });
+
+    describe('When type is grpah', () => {
+      it('should load all references', (done) => {
+        actions.switchView('graph')(dispatch, getState)
+        .then(() => {
+          checkLoadAllReferences(done, 1);
+        });
       });
     });
   });

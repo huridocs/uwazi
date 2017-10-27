@@ -12,16 +12,19 @@
   background: $c-white;
   overflow-x: hidden;
   overflow-y: scroll;
-  
+
   @media(min-width: 1024px) {
     height: calc(100% - 51px);
     width: calc(100% - 400px) !important;
   }
-  
-  
+
   .item {
     border-color: $c-grey-light !important;
     cursor: default !important;
+  }
+
+  .protip {
+    display: none;
   }
 }
 
@@ -75,7 +78,7 @@
   li:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
-  
+
   .fa {
     position: relative;
     top: 1px;

@@ -36,6 +36,7 @@ describe('EntityView', () => {
         expect(state.connectionsList.searchResults).toBe(searchedReferences);
         expect(state.connectionsList.sort).toEqual({sort: 'priorized'});
         expect(state.connectionsList.filters).toEqual({});
+        expect(state.connectionsList.view).toBe('list');
         expect(state.relationTypes).toEqual(relationTypes);
         done();
       });
@@ -51,6 +52,7 @@ describe('EntityView', () => {
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/UNSET'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/UNSET'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/filters/UNSET'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/view/UNSET'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList.sort/UNSET'});
       });
     });
@@ -73,7 +75,8 @@ describe('EntityView', () => {
             connectionsGroups: 'connectionsList/connectionsGroups',
             searchResults: 'connectionsList/searchResults',
             filters: 'connectionsList/filters',
-            sort: 'connectionsList.sort'
+            sort: 'connectionsList.sort',
+            view: 'specificView'
           }
         };
 
@@ -86,6 +89,7 @@ describe('EntityView', () => {
         );
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'connectionsList/searchResults'});
         expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/filters/SET', value: 'connectionsList/filters'});
+        expect(context.store.dispatch).toHaveBeenCalledWith({type: 'connectionsList/view/SET', value: 'specificView'});
         expect(formActions.merge).toHaveBeenCalledWith('connectionsList.sort', 'connectionsList.sort');
         expect(context.store.dispatch).toHaveBeenCalledWith('fromActions/merge');
       });

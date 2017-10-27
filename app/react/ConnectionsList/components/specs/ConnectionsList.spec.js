@@ -1,6 +1,9 @@
 import {fromJS as Immutable} from 'immutable';
 import {mapStateToProps} from '../ConnectionsList';
 
+import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
+import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraph';
+
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
     let state;
@@ -10,7 +13,8 @@ describe('ConnectionsList', () => {
       state = {
         connectionsList: {
           searchResults: Immutable({rows: [{connections: ['a', 'b']}, {connections: ['c']}]}),
-          sort: 'sort'
+          sort: 'sort',
+          view: 'passedView'
         }
       };
 
@@ -27,8 +31,17 @@ describe('ConnectionsList', () => {
       expect(props.sortButtonsStateProperty).toBe('connectionsList.sort');
     });
 
+    it('should pass action buttons and graph view elements', () => {
+      expect(props.ActionButtons).toBe(ToggleStyleButtons);
+      expect(props.GraphView).toBe(RelationshipsGraph);
+    });
+
     it('should calculate the number of connections', () => {
       expect(props.connections.totalRows).toBe(3);
+    });
+
+    it('should pass the view type', () => {
+      expect(props.view).toBe('passedView');
     });
   });
 });

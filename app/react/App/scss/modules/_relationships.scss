@@ -1,0 +1,413 @@
+$breakpoint: 768px;
+$c-background: #fcfcfc;
+
+.entity-viewer {
+  background-color: $c-background;
+}
+
+.relationships-graph {
+  max-width: 960px;
+  list-style-type: none;
+  padding: 0;
+  margin: auto;
+
+  .expand-section {
+    position: relative;
+    min-height: 45px;
+
+    > button {
+      position: absolute;
+      right: 0;
+      z-index: 2;
+      > .fa {
+        padding-right: 10px;
+      }
+    }
+
+    @media(min-width: $breakpoint) {
+      min-height: 15px;
+    }
+  }
+
+  .metadata-swtich {
+    float: right;
+    margin-top: -47px;
+  }
+
+
+  .item {
+    /*padding-bottom: 0;*/
+    margin-bottom: 0;
+    margin-right: 0 !important;
+    width: 100%;
+  }
+
+  .item-connection {
+    position: relative;
+    border: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    background: transparent;
+
+    dl {
+      margin: 0;
+    }
+  }
+
+  /*.item-type {
+    margin: 0 15px 15px;
+  }*/
+
+  .item-connection,
+  .connection-data {
+    .item-metadata {
+      border: 1px dashed #ccc;
+      border-top: 1px dashed #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% + 2px);
+      margin: -1px;
+      padding: 2px 15px 7px;
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius: 5px;
+      background: #fefefe;
+    }
+  }
+
+  .group {
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    &:not(:last-child) {
+      border-bottom: 2px dotted #ccc;
+    }
+
+    > div {
+      margin-bottom: 15px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .group-row {
+    position: relative;
+    overflow: hidden;
+    @media(min-width: $breakpoint) {
+      display: flex;
+      align-items: flex-start;
+      & > div {
+        flex: 1;
+        z-index: 2;
+      }
+      .target-connections {
+        z-index: 1;
+      }
+    }
+  }
+  .source {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    @media(min-width: $breakpoint) {
+      padding-right: 50px;
+    }
+  }
+  .source-row,
+  .source-connections-1 {
+    position: relative;
+  }
+
+  .target-connections {
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    @media(min-width: $breakpoint) {
+      margin-left: 0;
+    }
+  }
+
+  .source-connections-1 + .target-connections,
+  .source-row + .target-connections {
+    margin-left: 0;
+  }
+
+  .source-row + .target-connections {
+    opacity: 0;
+  }
+
+  .connection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 15px;
+    padding-right: 0;
+    position: relative;
+
+    &:not(:first-child) {
+      padding-top: 15px;
+    }
+
+    @media(min-width: $breakpoint) {
+      padding-left: 50px;
+    }
+  }
+
+  .connection-data {
+    position: relative;
+    margin: 0 0 5px;
+    border: 1px solid #d7d7dc;
+    border-radius: 5px;
+    background: #eee;
+    width: 100%;
+  }
+
+  .connection-type {
+    width: 100%;
+    padding: 5px 15px;
+    font-size: 12px;
+    margin: 0;
+    color: #777;
+
+    .fa {
+      margin-right: 5px;
+    }
+  }
+
+  .item-connection {
+    .connection-data {
+      margin: 0;
+      width: 100%;
+    }
+  }
+
+  .item + .item-connection {
+    margin-top: 15px;
+  }
+
+  .connection-type:has(> .fa-exchange) {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .target-connections > div:first-child {
+    margin-top: 15px;
+  }
+
+  @media(min-width: $breakpoint) {
+    .source > div:first-child,
+    .target-connections > div:first-child {
+      margin-top: 30px;
+    }
+  }
+
+  .group-collapse {
+    .item {
+      display: flex;
+      flex-direction: row;
+      padding-bottom: 0;
+      min-height: 0;
+
+      .item-actions {
+        margin: 5px;
+        padding: 0;
+        flex: 0;
+        display: -webkit-flex;
+        -webkit-align-items: center;
+        align-items: center;
+        height: auto;
+        position: relative;
+
+        .item-label-group {
+          width: auto;
+        }
+
+        .item-shortcut {
+          display: none;
+        }
+      }
+
+      .item-info {
+        padding: 5px 15px;
+      }
+      .item-metadata {
+        display: none;
+      }
+    }
+
+    .item-metadata {
+      display: none;
+    }
+
+    .as-previous {
+      padding-top: 5px;
+      .connection-data {
+        display: none;
+      }
+    }
+
+    .connection-type {
+      padding: 5px 15px;
+    }
+  }
+
+  $hub-size: 16px;
+  .hub {
+    width: $hub-size;
+    height: $hub-size;
+    background: $c-grey-lighten;
+    border: 1px solid $c-grey-light;
+    position: absolute;
+    top: (28px - $hub-size)/2;
+    right: -50px - $hub-size/2;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  .item-connection {
+    &:after {
+      content: '';
+      display: block;
+      background: $c-grey-light;
+      position: absolute;
+      height: 1px;
+      width: 50px;
+      top: 13px;
+      right: -50px;
+    }
+  }
+
+  .target-connections {
+    .connection-data:before, .item.no-connection:before {
+      content: '';
+      display: block;
+      background: $c-grey-light;
+      position: absolute;
+      height: 1px;
+      width: 16px;
+      top: 13px;
+      right: 100%;
+      @media(min-width: $breakpoint) {
+        width: 51px;
+      }
+    }
+  }
+
+  .source:not(.source-row) {
+    & .hub:after {
+      content: '';
+      display: block;
+      width: 1px;
+      top: -100vh;
+      bottom: $hub-size - 1px;
+      background: $c-grey-light;
+      position: absolute;
+      left: 50%;
+    }
+  }
+
+  .target-connections {
+    border-left: 1px solid $c-grey-light;
+
+    .connection:last-child:after {
+      content: '';
+      display: block;
+      width: 14px;
+      background: $c-background;
+      position: absolute;
+      bottom: 0;
+      top: 30px;
+      left: 0px;
+      margin-left: -2px;
+    }
+  }
+
+  .group-row {
+    @media(min-width: $breakpoint) {
+      &:before {
+        content: '';
+        display: block;
+        width: 14px;
+        height: 44px;
+        background: $c-background;
+        position: absolute;
+        z-index: 2;
+        margin-left: -2px;
+        left: 50%;
+        z-index: 3;
+      }
+    }
+  }
+
+  .group.group-collapse .target-connections .connection {
+    &.last-of-type:after,
+    &.last-of-type.as-previous:after {
+      content: '';
+      display: block;
+      width: 14px;
+      background: $c-background;
+      position: absolute;
+      bottom: -15px;
+      top: 30px;
+      left: 0px;
+      margin-left: -2px;
+    }
+
+    &.last-of-type.as-previous:after,
+    &.last-of-type:first-child:after {
+      top: 15px;
+    }
+  }
+
+  .target-connections-multiple:before {
+    height: 44px - $hub-size/2;
+  }
+
+  @media(max-width: $breakpoint - 1) {
+    .sticky {
+      position: relative!important;
+      top: 0!important;
+    }
+  }
+
+  $c-type-0:            #C03B22;
+  $c-type-1:            #D9534F;
+  $c-type-2:            #E91E63;
+  $c-type-3:            #A03AB1;
+  $c-type-4:            #6F46B8;
+  $c-type-5:            #3F51B5;
+  $c-type-6:            #2196F3;
+  $c-type-7:            #37BDCf;
+  $c-type-8:            #359990;
+  $c-type-9:            #5CB85C;
+  $c-type-10:           #8BC34A;
+  $c-type-11:           #CDDC39;
+  $c-type-12:           #F7E64E;
+  $c-type-13:           #F0AD4E;
+  $c-type-14:           #EC9920;
+  $c-type-15:           #E46841;
+  $c-type-16:           #795548;
+  $c-type-17:           #9E9E9E;
+  $c-type-18:           #607D8B;
+
+  .connection-type-0 { color: $c-type-0; }
+  .connection-type-1 { color: $c-type-9; }
+  .connection-type-2 { color: $c-type-2; }
+  .connection-type-3 { color: $c-type-15; }
+  .connection-type-4 { color: $c-type-4; }
+  .connection-type-5 { color: $c-type-13; }
+  .connection-type-6 { color: $c-type-6; }
+  .connection-type-7 { color: $c-type-11; }
+  .connection-type-8 { color: $c-type-8; }
+  .connection-type-9 { color: $c-type-1; }
+  .connection-type-10 { color: $c-type-10; }
+  .connection-type-11 { color: $c-type-7; }
+  .connection-type-12 { color: $c-type-12; }
+  .connection-type-13 { color: $c-type-5; }
+  .connection-type-14 { color: $c-type-14; }
+  .connection-type-15 { color: $c-type-3; }
+  .connection-type-16 { color: $c-type-16; }
+  .connection-type-17 { color: $c-type-1; }
+  .connection-type-18 { color: $c-type-18; }
+
+}
