@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import {resetTemplate, saveTemplate, saveEntity} from 'app/Templates/actions/templateActions';
+import {saveRelationType} from 'app/RelationTypes/actions/relationTypeActions';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
@@ -25,6 +26,11 @@ export class TemplateCreator extends Component {
       backUrl = '/settings/entities';
     }
 
+    if (this.props.relationType) {
+      save = this.props.saveRelationType;
+      backUrl = '/settings/connections';
+    }
+
     return (
       <div className="metadata">
         <div className="panel panel-default">
@@ -42,8 +48,12 @@ export class TemplateCreator extends Component {
                   <ul className="list-group">
                     <PropertyOption label='Text' type='text'/>
                     <PropertyOption label='Numeric' type='numeric'/>
-                    <PropertyOption label='Select' type='select' disabled={this.props.noThesauris} />
-                    <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noThesauris} />
+                    <ShowIf if={!this.props.relationType}>
+                      <PropertyOption label='Select' type='select' disabled={this.props.noThesauris} />
+                    </ShowIf>
+                    <ShowIf if={!this.props.relationType}>
+                      <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noThesauris} />
+                    </ShowIf>
                     <PropertyOption label='Date' type='date'/>
                     <PropertyOption label='Date Range' type='daterange'/>
                     <PropertyOption label='Multi Date' type='multidate'/>
@@ -72,7 +82,9 @@ TemplateCreator.propTypes = {
   resetTemplate: PropTypes.func,
   saveTemplate: PropTypes.func,
   saveEntity: PropTypes.func,
+  saveRelationType: PropTypes.func,
   entity: PropTypes.bool,
+  relationType: PropTypes.bool,
   noThesauris: PropTypes.bool,
   settings: PropTypes.object
 };
@@ -82,7 +94,7 @@ TemplateCreator.contextTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({resetTemplate, saveTemplate, saveEntity}, dispatch);
+  return bindActionCreators({resetTemplate, saveTemplate, saveEntity, saveRelationType}, dispatch);
 }
 
 const mapStateToProps = ({settings, thesauris}) => {

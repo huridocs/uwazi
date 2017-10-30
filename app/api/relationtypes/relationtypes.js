@@ -1,10 +1,7 @@
-import {db_url as dbUrl} from 'api/config/database';
-import request from 'shared/JSONRequest';
-import sanitizeResponse from 'api/utils/sanitizeResponse';
 import references from 'api/references/references';
 import translations from 'api/i18n/translations';
 import model from './relationTypesModel';
-
+import {getUpdatedNames, getDeletedProperties} from '../templates/utils';
 let checkDuplicated = (relationtype) => {
   return model.get()
   .then((response) => {
@@ -23,6 +20,9 @@ let checkDuplicated = (relationtype) => {
 function _save(relationtype) {
   let values = {};
   values[relationtype.name] = relationtype.name;
+  relationtype.properties.forEach((property) => {
+    values[property.label] = property.label;
+  });
   return model.save(relationtype)
   .then((response) => {
     return translations.addContext(response._id, relationtype.name, values, 'Connection')
@@ -32,18 +32,29 @@ function _save(relationtype) {
   });
 }
 
-function updateTranslation(id, oldName, newName) {
-  let updatedNames = {};
-  updatedNames[oldName] = newName;
-  let values = {};
-  values[newName] = newName;
-  return translations.updateContext(id, newName, updatedNames, [], values);
-}
+let updateTranslation = (currentTemplate, template) => {
+  let currentProperties = currentTemplate.properties;
+  let newProperties = template.properties;
+
+  let updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  if (currentTemplate.name !== template.name) {
+    updatedLabels[currentTemplate.name] = template.name;
+  }
+  let deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  let context = template.properties.reduce((ctx, prop) => {
+    ctx[prop.label] = prop.label;
+    return ctx;
+  }, {});
+
+  context[template.name] = template.name;
+
+  return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
+};
 
 function _update(relationtype) {
   return model.getById({_id: relationtype._id})
-  .then((response) => {
-    updateTranslation(relationtype._id, response.name, relationtype.name);
+  .then((currentTemplate) => {
+    updateTranslation(currentTemplate, relationtype);
     return model.save(relationtype);
   });
 }
@@ -65,7 +76,7 @@ export default {
         return _save(relationtype);
       }
       return _update(relationtype);
-    })
+    });
   },
 
   delete(id) {

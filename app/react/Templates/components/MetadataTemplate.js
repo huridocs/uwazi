@@ -18,6 +18,8 @@ export class MetadataTemplate extends Component {
 
   render() {
     const {connectDropTarget} = this.props;
+    const commonProperties = this.props.commonProperties || [];
+
     return (
       <div>
         <RemovePropertyConfirm />
@@ -37,7 +39,7 @@ export class MetadataTemplate extends Component {
 
           {connectDropTarget(
             <ul className="metadataTemplate-list list-group">
-              {this.props.commonProperties.map((config, index) => {
+              {commonProperties.map((config, index) => {
                 const localID = config.localID || config._id;
                 return <MetadataProperty {...config} key={localID} localID={localID} index={index - this.props.commonProperties.length} />;
               })}

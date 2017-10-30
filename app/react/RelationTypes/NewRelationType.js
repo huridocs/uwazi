@@ -1,9 +1,10 @@
 import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
-import RelationTypeForm from 'app/RelationTypes/components/RelationTypeForm';
 import {actions} from 'app/BasicReducer';
+import {editRelationType} from 'app/RelationTypes/actions/relationTypesActions';
 import api from 'app/RelationTypes/RelationTypesAPI';
+import TemplateCreator from '../Templates/components/TemplateCreator';
 
 export default class NewRelationType extends RouteHandler {
 
@@ -16,9 +17,10 @@ export default class NewRelationType extends RouteHandler {
 
   setReduxState({relationTypes}) {
     this.context.store.dispatch(actions.set('relationTypes', relationTypes));
+    this.context.store.dispatch(editRelationType({name: '', properties: []}));
   }
 
   render() {
-    return <RelationTypeForm />;
+    return <TemplateCreator relationType={true} />;
   }
 }

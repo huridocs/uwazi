@@ -1,7 +1,4 @@
-import {db_url as dbURL} from 'api/config/database.js';
 import relationtypes from '../relationtypes.js';
-import database from 'api/utils/database.js';
-import request from 'shared/JSONRequest';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
@@ -9,7 +6,6 @@ import db from 'api/utils/testing_db';
 import fixtures, {canNotBeDeleted, against} from './fixtures.js';
 
 describe('relationtypes', () => {
-
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
@@ -50,7 +46,7 @@ describe('relationtypes', () => {
 
     describe('when the relation type did not exist', () => {
       it('should create a new one and return it', (done) => {
-        relationtypes.save({name: 'Indiferent'})
+        relationtypes.save({name: 'Indiferent', properties: []})
         .then((result) => {
           expect(result.name).toBe('Indiferent');
           done();
@@ -59,7 +55,7 @@ describe('relationtypes', () => {
       });
 
       it('should create a new translation for it', (done) => {
-        relationtypes.save({name: 'Indiferent'})
+        relationtypes.save({name: 'Indiferent', properties: []})
         .then((response) => {
           expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'}, 'Connection');
           done();
@@ -97,7 +93,7 @@ describe('relationtypes', () => {
 
     describe('when its duplicated', () => {
       it('should return an error', (done) => {
-        let relationtype = {name: 'Against'};
+        let relationtype = {name: 'Against', properties: []};
         return relationtypes.save(relationtype)
         .then(catchErrors(done))
         .catch((error) => {
@@ -136,7 +132,7 @@ describe('relationtypes', () => {
         relationtypes.delete(canNotBeDeleted)
         .then((result) => {
           expect(result).toBe(false);
-          return relationtypes.getById(canNotBeDeleted)
+          return relationtypes.getById(canNotBeDeleted);
         })
         .then((result) => {
           expect(result._id.equals(canNotBeDeleted)).toBe(true);
