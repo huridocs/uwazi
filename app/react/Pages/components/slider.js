@@ -51,17 +51,14 @@ export default class VictimSlider extends Component {
     const {currentIndex} = this.state;
     const items = this.getVisibleItems(children, currentIndex, visibleCount);
     return (
-      <div>
-        <h2>
-          <span>{ title }</span>
-          <div>
-            <i className="slider-btn fa fa-angle-left"
-              onClick={() => this.slide(-1)}></i>
-            <i className="slider-btn fa fa-angle-right"
-              onClick={() => this.slide(1)}></i>
-          </div>
-        </h2>
-        <div className='videos'>
+      <div className="slider">
+        <div className="slider-buttons">
+          <i className="slider-btn fa fa-angle-left"
+            onClick={() => this.slide(-1)}></i>
+          <i className="slider-btn fa fa-angle-right"
+            onClick={() => this.slide(1)}></i>
+        </div>
+        <div className="slider-items">
           { items }
         </div>
       </div>
