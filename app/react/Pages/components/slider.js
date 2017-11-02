@@ -67,8 +67,8 @@ export default class VictimSlider extends Component {
 
 }
 VictimSlider.propTypes = {
-  visibleCount: PropTypes.integer,
-  initialIndex: PropTypes.integer,
+  visibleCount: PropTypes.number,
+  initialIndex: PropTypes.number,
   title: PropTypes.string,
   children: PropTypes.object
 };
