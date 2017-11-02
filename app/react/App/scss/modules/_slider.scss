@@ -1,0 +1,32 @@
+.slider {
+    position: relative;
+    width: 100%;
+}
+
+.slider-buttons {
+    position: absolute;
+    top: -70px;
+    right: 0;
+}
+
+.slider-btn.fa {
+    width: 30px;
+    height: 30px;
+    line-height: 26px;
+    text-align: center;
+    border: 1px solid #ccc;
+    font-size: 20px;
+
+    &:hover {
+        background: #eee;
+        cursor: pointer;
+    }
+
+    &:not(:last-child) {
+        margin-right: 5px;
+    }
+}
+
+.slider-items {
+    display: flex;
+}

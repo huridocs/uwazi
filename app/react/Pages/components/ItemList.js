@@ -20,7 +20,7 @@ export class ItemList extends Component {
     let list = <RowList>{toRenderItems}</RowList>;
 
     if (this.props.options.slider) {
-      list = <RowList><Slider visibleCount={5}>{toRenderItems}</Slider></RowList>;
+      list = <RowList><Slider visibleCount={3}>{toRenderItems}</Slider></RowList>;
     }
 
     return (
