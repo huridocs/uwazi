@@ -71,7 +71,7 @@ export class PageViewer extends Component {
       if (type === 'list' && lists.length) {
         const listData = lists.shift();
         return <div key={index} className="pageSection markdownViewer">
-                 <ItemList link={`/library/${listData.params}`} items={listData.items}/>
+                 <ItemList link={`/library/${listData.params}`} items={listData.items} options={listData.options}/>
                </div>;
       }
       if (type === 'customhook' && customHookValues.length) {

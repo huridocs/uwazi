@@ -54,7 +54,7 @@ describe('PageViewer', () => {
 
     it('should render the separated containers', () => {
       props.itemLists = Immutable([
-        {params: 'param1', items: ['items1']},
+        {params: 'param1', items: ['items1'], options: {option1: 'optionValue'}},
         {params: 'param2', items: ['items2']},
         {params: 'param3', items: ['items3']}
       ]);
@@ -65,6 +65,7 @@ describe('PageViewer', () => {
 
       expect(component.find('.pageSection').at(1).find(ItemList).props().link).toBe('/library/param1');
       expect(component.find('.pageSection').at(1).find(ItemList).props().items).toEqual(props.itemLists.getIn([0, 'items']).toJS());
+      expect(component.find('.pageSection').at(1).find(ItemList).props().options).toEqual(props.itemLists.getIn([0, 'options']).toJS());
 
       expect(component.find('.pageSection').at(2).props().dangerouslySetInnerHTML.__html).toContain('should be in its own line');
       expect(component.find('.pageSection').at(2).props().dangerouslySetInnerHTML.__html).toContain('should allow multiple lists');

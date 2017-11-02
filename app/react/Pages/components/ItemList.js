@@ -7,6 +7,7 @@ import queryString from 'query-string';
 import {RowList} from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import {t, I18NLink} from 'app/I18N';
+import Slider from './slider';
 
 export class ItemList extends Component {
   render() {
@@ -14,11 +15,17 @@ export class ItemList extends Component {
     const sort = queryString.parse(link.substring(link.indexOf('?'))).sort;
     const searchParams = sort ? {sort} : {sort: 'title'};
 
+    const toRenderItems = items.map((item, index) => <Doc doc={Immutable(item)} key={index} searchParams={searchParams} />);
+
+    let list = <RowList>{toRenderItems}</RowList>;
+
+    if (this.props.options.slider) {
+      list = <RowList><Slider visibleCount={5}>{toRenderItems}</Slider></RowList>;
+    }
+
     return (
       <div>
-        <RowList>
-          {items.map((item, index) => <Doc doc={Immutable(item)} key={index} searchParams={searchParams} />)}
-        </RowList>
+        {list}
         <div className="row">
           <div className="col-sm-12 text-center">
             <I18NLink to={`${link}`}>
