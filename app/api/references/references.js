@@ -1,5 +1,6 @@
 import templatesAPI from 'api/templates';
 import relationTypesAPI from 'api/relationtypes/relationtypes';
+import {generateNamesAndIds} from '../templates/utils';
 import entities from '../entities';
 
 import model from './connectionsModel.js';
@@ -176,6 +177,40 @@ export default {
 
   deleteTextReferences(sharedId, language) {
     return model.delete({sourceDocument: sharedId, language});
+  },
+
+  updateMetadataProperties(template, currentTemplate) {
+    let actions = {};
+    actions.$rename = {};
+    actions.$unset = {};
+    template.properties = generateNamesAndIds(template.properties);
+    template.properties.forEach((property) => {
+      let currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+      if (currentProperty && currentProperty.name !== property.name) {
+        actions.$rename['metadata.' + currentProperty.name] = 'metadata.' + property.name;
+      }
+    });
+    currentTemplate.properties.forEach((property) => {
+      if (!template.properties.find(p => p.id === property.id)) {
+        actions.$unset['metadata.' + property.name] = '';
+      }
+    });
+
+    let noneToUnset = !Object.keys(actions.$unset).length;
+    let noneToRename = !Object.keys(actions.$rename).length;
+
+    if (noneToUnset) {
+      delete actions.$unset;
+    }
+    if (noneToRename) {
+      delete actions.$rename;
+    }
+
+    if (noneToRename && noneToUnset) {
+      return Promise.resolve();
+    }
+
+    return model.db.updateMany({template}, actions);
   },
 
   updateMetadataConnections(changedTemplate) {

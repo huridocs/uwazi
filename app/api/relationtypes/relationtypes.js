@@ -51,11 +51,12 @@ let updateTranslation = (currentTemplate, template) => {
   return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
-function _update(relationtype) {
-  return model.getById({_id: relationtype._id})
+function _update(newTemplate) {
+  return model.getById({_id: newTemplate._id})
   .then((currentTemplate) => {
-    updateTranslation(currentTemplate, relationtype);
-    return model.save(relationtype);
+    updateTranslation(currentTemplate, newTemplate);
+    references.updateMetadataProperties(newTemplate, currentTemplate);
+    return model.save(newTemplate);
   });
 }
 
