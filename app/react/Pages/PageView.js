@@ -39,13 +39,14 @@ export class PageView extends RouteHandler {
       const listsData = prepareLists(page);
       page.metadata.content = listsData.content;
 
-      return Promise.all([page, listsData.params].concat(listsData.searchs));
+      return Promise.all([page, listsData.params, listsData.options].concat(listsData.searchs));
     })
     .then(results => {
       const pageView = results.shift();
       const searchParams = results.shift();
+      const searchOptions = results.shift();
       const itemLists = searchParams.map((params, index) => {
-        return {params, items: results[index].rows};
+        return {params, items: results[index].rows, options: searchOptions[index]};
       });
 
       return {

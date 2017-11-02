@@ -69,6 +69,7 @@ describe('PageView', () => {
         expect(response.page.itemLists[2].items).toEqual(['resultsFor:2']);
         expect(response.page.itemLists[3].params).toBe('?order=metadata.form&treatAs=number');
         expect(response.page.itemLists[3].items).toEqual(['resultsFor:3']);
+        expect(response.page.itemLists[3].options).toEqual({limit: 12});
         done();
       })
       .catch(done.fail);
