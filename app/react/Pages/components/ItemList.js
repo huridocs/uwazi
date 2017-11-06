@@ -40,6 +40,7 @@ export class ItemList extends Component {
 
 ItemList.propTypes = {
   items: PropTypes.array,
+  options: PropTypes.object,
   link: PropTypes.string
 };
 

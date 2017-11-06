@@ -47,7 +47,7 @@ export default class VictimSlider extends Component {
   }
 
   render() {
-    const {children, visibleCount, title} = this.props;
+    const {children, visibleCount} = this.props;
     const {currentIndex} = this.state;
     const items = this.getVisibleItems(children, currentIndex, visibleCount);
     return (
@@ -70,5 +70,5 @@ VictimSlider.propTypes = {
   visibleCount: PropTypes.number,
   initialIndex: PropTypes.number,
   title: PropTypes.string,
-  children: PropTypes.object
+  children: PropTypes.array
 };
