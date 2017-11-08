@@ -132,7 +132,7 @@ describe('EntitiesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {sharedId: 'id'};
+      let document = {sharedId: 'id', test: 'test'};
       entitiesAPI.delete(document)
       .then((response) => {
         expect(response).toEqual({backednResponse: 'testdelete'});

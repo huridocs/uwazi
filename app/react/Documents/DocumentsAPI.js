@@ -61,7 +61,7 @@ export default {
   },
 
   delete(doc) {
-    return api.delete('documents', doc)
+    return api.delete('documents', {sharedId: doc.sharedId})
     .then((response) => {
       return response.json;
     });
