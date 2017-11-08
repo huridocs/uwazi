@@ -60,7 +60,7 @@ export default {
   },
 
   delete(entity) {
-    return api.delete('entities', entity)
+    return api.delete('entities', {sharedId: entity.sharedId})
     .then((response) => {
       return response.json;
     });
