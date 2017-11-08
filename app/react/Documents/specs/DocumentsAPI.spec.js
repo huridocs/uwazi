@@ -20,7 +20,7 @@ describe('DocumentsAPI', () => {
     .get(APIURL + 'documents/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
     .get(APIURL + 'documents/search?searchTerm=Batman&joker=true', {body: JSON.stringify(filteredSearchResult)})
     .get(APIURL + 'documents?_id=documentId', {body: JSON.stringify({rows: singleResponse})})
-    .delete(APIURL + 'documents?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
+    .delete(APIURL + 'documents?sharedId=shared', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .post(APIURL + 'documents', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -129,7 +129,7 @@ describe('DocumentsAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {_id: 'id'};
+      let document = {sharedId: 'shared', _id: 'id'};
       documentsAPI.delete(document)
       .then((response) => {
         expect(response).toEqual({backednResponse: 'testdelete'});
