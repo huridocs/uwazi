@@ -29,6 +29,7 @@ function updateEntity(doc) {
     const toSyncProperties = template.properties
     .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
     .map(p => p.name);
+    const currentDoc = docLanguages.find((d) => d._id.toString() === doc._id.toString());
     const docs = docLanguages.map((d) => {
       if (d._id.equals(doc._id)) {
         return doc;
@@ -44,7 +45,7 @@ function updateEntity(doc) {
         d.published = doc.published;
       }
 
-      if (doc.toc && doc.file && d.file.filename === doc.file.filename) {
+      if (doc.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
         d.toc = doc.toc;
       }
 

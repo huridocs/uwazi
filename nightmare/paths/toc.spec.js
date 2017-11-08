@@ -8,7 +8,7 @@ let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
 
-describe('references path', () => {
+fdescribe('toc path', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
@@ -72,6 +72,23 @@ describe('references path', () => {
       })
       .catch(catchErrors(done));
     });
+
+    it('should save the toc for other languages too as fallback', (done) => {
+      nightmare
+      .waitToClick(selectors.navigation.spanish)
+      .waitToClick(selectors.documentView.tocPannelLink)
+      .getInnerText(selectors.documentView.tocPannel)
+      .then(text => {
+        expect(text).toContain('Frank Miller');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  it('should go back to english', () => {
+    nightmare
+    .waitToClick(selectors.navigation.english);
   });
 
   describe('closing browser', () => {
