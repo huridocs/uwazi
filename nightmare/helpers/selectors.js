@@ -113,7 +113,9 @@ export default {
     sidePanelFirstAttachmentEditTitleButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div.attachments-list > div > div > div > a',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > a.item-shortcut.btn.btn-success',
-    attachmentFormCancel: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > a.item-shortcut.btn.btn-primary'
+    attachmentFormCancel: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > a.item-shortcut.btn.btn-primary',
+    tocPannelLink: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(2) > div',
+    tocPannel: '.toc'
   },
   entityView: {
     contentHeader: '#app > div.content > div > div > div.content-header.content-header-entity',
