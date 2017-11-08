@@ -8,7 +8,7 @@ let getInnerText = (selector) => {
   return document.querySelector(selector).innerText;
 };
 
-fdescribe('toc path', () => {
+describe('toc path', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
@@ -86,9 +86,11 @@ fdescribe('toc path', () => {
     });
   });
 
-  it('should go back to english', () => {
+  it('should go back to english', (done) => {
     nightmare
-    .waitToClick(selectors.navigation.english);
+    .waitToClick(selectors.navigation.english)
+    .then(done)
+    .catch(catchErrors(done));
   });
 
   describe('closing browser', () => {
