@@ -6,7 +6,6 @@ import {t} from 'app/I18N';
 
 export function saveRelationType(relationType) {
   return function (dispatch) {
-    dispatch({type: types.RELATION_TYPE_SAVED});
     return api.save(relationType)
     .then(() => {
       dispatch({type: types.RELATION_TYPE_SAVED});

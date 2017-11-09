@@ -88,6 +88,13 @@ describe('Item', () => {
     expect(component.find('.item-name').find(DocumentLanguage).props().doc).toBe(props.doc);
   });
 
+  it('should accept a different property name for the title', () => {
+    props.doc = props.doc.set('label', 'label as title');
+    props.titleProperty = 'label';
+    render();
+    expect(component.find('.item-name').text()).toContain('label as title');
+  });
+
   it('should include a template label and custom buttons inside the footer', () => {
     render();
     expect(component.find(ItemFooter).find(TemplateLabel).props().template).toBe('templateId');
@@ -111,6 +118,13 @@ describe('Item', () => {
       expect(component.find('.item-metadata').find(PrintDate).props().utc).toBe(123);
     });
 
+    it('should not render upload date if there is no creationDate', () => {
+      props.search = {sort: 'title'};
+      props.doc = props.doc.delete('creationDate');
+      render();
+      expect(component.find('.item-metadata').length).toBe(0);
+    });
+
     it('should render metadata if configured in template', () => {
       props.templates = Immutable([{
         _id: 'templateId',
@@ -126,6 +140,17 @@ describe('Item', () => {
       expect(component.find('.item-metadata').text()).toContain('female');
       expect(component.find('.item-metadata').html()).toContain('<p>SomeMarkdown</p>');
       expect(component.find('.item-metadata').text()).not.toContain('ageLabel');
+    });
+
+    it('should not render metadata container when there is no metadata', () => {
+      props.templates = Immutable([{
+        _id: 'templateId',
+        properties: []
+      }]);
+      props.doc = props.doc.delete('creationDate');
+
+      render();
+      expect(component.find('.item-metadata').length).toBe(0);
     });
 
     it('should render metadata if selected in search.sort', () => {

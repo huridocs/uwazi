@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Sticky from 'react-sticky-el';
 import Doc from 'app/Library/components/Doc';
+import Item from 'app/Layout/Item';
 import {t} from 'app/I18N';
 
 import {fromJS} from 'immutable';
@@ -109,11 +110,7 @@ export class RelationshipsGraph extends Component {
                   return (
                     <div className={`connection${entity.asPrevious ? ' as-previous' : ''}${entity.lastOfType ? ' last-of-type' : ''}`}
                          key={index}>
-                      <div className="connection-data">
-                        <p className={`connection-type connection-type-${entity.relationship.typePostition}`}>
-                          <span>{entity.relationship.label}</span>
-                        </p>
-                      </div>
+                      <Item className='connection-data' doc={fromJS(entity.relationship)} templates={this.props.relationTypes} titleProperty={'label'}/>
                       <Doc doc={fromJS(entity)} searchParams={search} />
                     </div>
                   );

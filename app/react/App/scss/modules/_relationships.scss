@@ -40,6 +40,12 @@ $c-background: #fcfcfc;
     margin-bottom: 0;
     margin-right: 0 !important;
     width: 100%;
+    min-height: 0;
+    padding-bottom: 0;
+
+    .item-info {
+      padding: 5px 15px;
+    }
   }
 
   .item-connection {

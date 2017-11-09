@@ -4,7 +4,7 @@ import {shallow} from 'enzyme';
 
 import {APIURL} from 'app/config.js';
 import EditRelationType from 'app/RelationTypes/EditRelationType';
-import RelationTypeForm from 'app/RelationTypes/components/RelationTypeForm';
+import TemplateCreator from '../../Templates/components/TemplateCreator';
 import RouteHandler from 'app/App/RouteHandler';
 import * as relationTypesActions from 'app/RelationTypes/actions/relationTypesActions';
 
@@ -27,14 +27,14 @@ describe('EditRelationType', () => {
   afterEach(() => backend.restore());
 
   it('should render a RelationTypeForm', () => {
-    expect(component.find(RelationTypeForm).length).toBe(1);
+    expect(component.find(TemplateCreator).length).toBe(1);
   });
 
   describe('static requestState()', () => {
     it('should request the relationTypes using the param relationTypeId', (done) => {
       EditRelationType.requestState({relationTypeId: 'relationTypeId'})
       .then((state) => {
-        expect(state).toEqual({relationType});
+        expect(state).toEqual({relationType: {name: 'Against', properties: []}});
         done();
       })
       .catch(done.fail);
