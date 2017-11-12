@@ -15,7 +15,7 @@ export class AttachmentForm extends Component {
     const languageOptions = Object.keys(languages).map((key) => {
       return {value: languages[key].franc, label: languages[key].elastic};
     });
-    languageOptions.push({value: 'other', label: 'Other'});
+    languageOptions.push({value: 'other', label: 'other'});
 
     return (
       <Form id='attachmentForm' model={model} onSubmit={this.props.onSubmit} validators={validators}>

@@ -36,7 +36,8 @@ let languages = {
 };
 
 export default (key, purpose = 'elastic') => {
-  return languages[key] ? languages[key][purpose] : null;
+  const defaultValue = purpose !== 'ISO639_1' ? 'other' : null;
+  return languages[key] ? languages[key][purpose] : defaultValue;
 };
 
 export {languages};
