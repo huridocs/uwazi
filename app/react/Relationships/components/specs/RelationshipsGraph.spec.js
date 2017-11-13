@@ -6,6 +6,7 @@ import Sticky from 'react-sticky-el';
 import {RelationshipsGraph, mapStateToProps} from '../RelationshipsGraph';
 
 import Doc from 'app/Library/components/Doc';
+import Item from 'app/Layout/Item';
 
 describe('RelationshipsGraph', () => {
   let component;
@@ -95,8 +96,12 @@ describe('RelationshipsGraph', () => {
     function checkConnection({pos, type, asPrevious, lastOfType, _id}) {
       const connection = component.find('.target-connections .connection').at(pos);
       expect(connection.props().className).toBe(`connection${asPrevious ? ' as-previous' : ''}${lastOfType ? ' last-of-type' : ''}`);
-      // expect(connection.find('.connection-data > p').props().className).toBe(`connection-type connection-type-${type}`);
-      // expect(connection.find('.connection-data > p > span').text()).toBe(`type${type}Label`);
+
+      expect(connection.find(Item).props().className).toEqual('connection-data');
+      expect(connection.find(Item).props().templates.toJS()).toEqual(props.relationTypes.toJS());
+      expect(connection.find(Item).props().doc.toJS().label).toEqual(`type${type}Label`);
+      expect(connection.find(Item).props().titleProperty).toEqual('label');
+
       expect(connection.find(Doc).props().doc.toJS())
       .toEqual({relationship: {label: `type${type}Label`, context: `type${type}`, typePostition: type}, lastOfType, asPrevious, _id});
     }

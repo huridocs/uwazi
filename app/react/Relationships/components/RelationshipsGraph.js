@@ -79,11 +79,11 @@ export class RelationshipsGraph extends Component {
 
     if (relationships.length) {
       itemConnection = <div className="item-connection">
-                        <figure className="hub"></figure>
-                        <div className="connection-data">
-                          <p className="connection-type connection-type-18">{t('System', 'Relationships')}</p>
-                        </div>
-                       </div>;
+        <figure className="hub"></figure>
+        <div className="connection-data">
+          <p className="connection-type connection-type-18">{t('System', 'Relationships')}</p>
+        </div>
+      </div>;
     }
 
     return (
@@ -108,7 +108,8 @@ export class RelationshipsGraph extends Component {
               <div className="target-connections">
                 {relationships.map((entity, index) => {
                   return (
-                    <div className={`connection${entity.asPrevious ? ' as-previous' : ''}${entity.lastOfType ? ' last-of-type' : ''}`} key={index}>
+                    <div className={`connection${entity.asPrevious ? ' as-previous' : ''}${entity.lastOfType ? ' last-of-type' : ''}`}
+                      key={index}>
                       <Item
                         className='connection-data'
                         doc={fromJS(entity.relationship)}
