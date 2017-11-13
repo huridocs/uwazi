@@ -26,8 +26,11 @@ describe('languages', () => {
       expect(languages.get('lav', 'ISO639_1')).toBe('lv');
     });
 
-    it('should return null for a key in a non supported lang', () => {
-      expect(languages.get('und')).toBe(null);
+    it('should return other for a key in a non supported lang', () => {
+      expect(languages.get('und')).toBe('other');
+    });
+
+    it('should return null for a key in a non supported lang when asking for ISO639_1', () => {
       expect(languages.get('und', 'ISO639_1')).toBe(null);
     });
   });

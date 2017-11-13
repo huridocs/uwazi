@@ -498,7 +498,7 @@ describe('search', () => {
           expect(elastic.index)
           .toHaveBeenCalledWith({index: elasticIndex, type: 'entity', id: 'asd1', body: {type: 'document', title: 'Batman indexes'}});
           expect(elastic.index)
-          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {fullText_english: 'text'}});
+          .toHaveBeenCalledWith({index: elasticIndex, type: 'fullText', parent: 'asd1', body: {fullText_english: 'text'}, id: 'asd1_fullText'});
           done();
         })
         .catch(done.fail);
@@ -530,7 +530,10 @@ describe('search', () => {
             expect(snippets.length).toBe(0);
             done();
           })
-          .catch(done.fail);
+          .catch((e) => {
+            console.log(e);
+            done.fail(e);
+          });
         });
       });
     });
@@ -571,11 +574,11 @@ describe('search', () => {
           expect(elastic.bulk).toHaveBeenCalledWith({body: [
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id1'}},
             {title: 'test1'},
-            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1'}},
+            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id1', _id: 'id1_fullText'}},
             {fullText_english: 'text1'},
             {index: {_index: elasticIndex, _type: 'entity', _id: 'id2'}},
             {title: 'test2'},
-            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2'}},
+            {index: {_index: elasticIndex, _type: 'fullText', parent: 'id2', _id: 'id2_fullText'}},
             {fullText_english: 'text2'}
           ]});
           done();
