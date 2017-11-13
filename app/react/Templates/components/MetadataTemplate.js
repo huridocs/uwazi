@@ -13,6 +13,7 @@ import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfir
 import validator from './ValidateTemplate';
 import {FormGroup} from 'app/Forms';
 import {Field} from 'react-redux-form';
+import ShowIf from 'app/App/ShowIf';
 
 export class MetadataTemplate extends Component {
 
@@ -37,21 +38,23 @@ export class MetadataTemplate extends Component {
           </FormGroup>
           </div>
 
-          {connectDropTarget(
-            <ul className="metadataTemplate-list list-group">
-              {commonProperties.map((config, index) => {
-                const localID = config.localID || config._id;
-                return <MetadataProperty {...config} key={localID} localID={localID} index={index - this.props.commonProperties.length} />;
-              })}
-              {this.props.properties.map((config, index) => {
-                const localID = config.localID || config._id;
-                return <MetadataProperty {...config} key={localID} localID={localID} index={index}/>;
-              })}
-              <div className="no-properties">
-                <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
-              </div>
-            </ul>
-          )}
+          <ShowIf if={!this.props.relationType}>
+            {connectDropTarget(
+              <ul className="metadataTemplate-list list-group">
+                {commonProperties.map((config, index) => {
+                  const localID = config.localID || config._id;
+                  return <MetadataProperty {...config} key={localID} localID={localID} index={index - this.props.commonProperties.length} />;
+                })}
+                {this.props.properties.map((config, index) => {
+                  const localID = config.localID || config._id;
+                  return <MetadataProperty {...config} key={localID} localID={localID} index={index}/>;
+                })}
+                <div className="no-properties">
+                  <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
+                </div>
+              </ul>
+            )}
+          </ShowIf>
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
               <i className="fa fa-arrow-left"></i>
@@ -75,6 +78,7 @@ MetadataTemplate.propTypes = {
   _id: PropTypes.string,
   saveTemplate: PropTypes.func,
   savingTemplate: PropTypes.bool,
+  relationType: PropTypes.bool,
   setErrors: PropTypes.func,
   properties: PropTypes.array,
   commonProperties: PropTypes.array,

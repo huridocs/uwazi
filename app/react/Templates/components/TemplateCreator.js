@@ -40,36 +40,38 @@ export class TemplateCreator extends Component {
           <div className="panel-body">
             <div className="row">
               <main className="col-xs-12 col-sm-9">
-                <MetadataTemplate saveTemplate={save} backUrl={backUrl} />
+                <MetadataTemplate saveTemplate={save} backUrl={backUrl} relationType={this.props.relationType}/>
               </main>
-              <aside className="col-xs-12 col-sm-3">
-                <div className="metadataTemplate-constructor">
-                  <div><i>Properties</i></div>
-                  <ul className="list-group">
-                    <PropertyOption label='Text' type='text'/>
-                    <PropertyOption label='Numeric' type='numeric'/>
-                    <ShowIf if={!this.props.relationType}>
-                      <PropertyOption label='Select' type='select' disabled={this.props.noThesauris} />
+              <ShowIf if={!this.props.relationType}>
+                <aside className="col-xs-12 col-sm-3">
+                  <div className="metadataTemplate-constructor">
+                    <div><i>Properties</i></div>
+                    <ul className="list-group">
+                      <PropertyOption label='Text' type='text'/>
+                      <PropertyOption label='Numeric' type='numeric'/>
+                      <ShowIf if={!this.props.relationType}>
+                        <PropertyOption label='Select' type='select' disabled={this.props.noThesauris} />
+                      </ShowIf>
+                      <ShowIf if={!this.props.relationType}>
+                        <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noThesauris} />
+                      </ShowIf>
+                      <PropertyOption label='Date' type='date'/>
+                      <PropertyOption label='Date Range' type='daterange'/>
+                      <PropertyOption label='Multi Date' type='multidate'/>
+                      <PropertyOption label='Multi Date Range' type='multidaterange'/>
+                      <PropertyOption label='Rich Text' type='markdown'/>
+                      <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
+                        <PropertyOption label='Violated articles' type='nested'/>
+                      </ShowIf>
+                    </ul>
+                    <ShowIf if={this.props.noThesauris}>
+                      <div className="alert alert-warning">
+                        Selects and Multiselects can not be added untill you have at least one thesauri to select.
+                      </div>
                     </ShowIf>
-                    <ShowIf if={!this.props.relationType}>
-                      <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noThesauris} />
-                    </ShowIf>
-                    <PropertyOption label='Date' type='date'/>
-                    <PropertyOption label='Date Range' type='daterange'/>
-                    <PropertyOption label='Multi Date' type='multidate'/>
-                    <PropertyOption label='Multi Date Range' type='multidaterange'/>
-                    <PropertyOption label='Rich Text' type='markdown'/>
-                    <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                      <PropertyOption label='Violated articles' type='nested'/>
-                    </ShowIf>
-                  </ul>
-                  <ShowIf if={this.props.noThesauris}>
-                    <div className="alert alert-warning">
-                      Selects and Multiselects can not be added untill you have at least one thesauri to select.
-                    </div>
-                  </ShowIf>
-                </div>
-              </aside>
+                  </div>
+                </aside>
+              </ShowIf>
             </div>
           </div>
         </div>
