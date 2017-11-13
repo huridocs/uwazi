@@ -108,9 +108,13 @@ export class RelationshipsGraph extends Component {
               <div className="target-connections">
                 {relationships.map((entity, index) => {
                   return (
-                    <div className={`connection${entity.asPrevious ? ' as-previous' : ''}${entity.lastOfType ? ' last-of-type' : ''}`}
-                         key={index}>
-                      <Item className='connection-data' doc={fromJS(entity.relationship)} templates={this.props.relationTypes} titleProperty={'label'}/>
+                    <div className={`connection${entity.asPrevious ? ' as-previous' : ''}${entity.lastOfType ? ' last-of-type' : ''}`} key={index}>
+                      <Item
+                        className='connection-data'
+                        doc={fromJS(entity.relationship)}
+                        templates={this.props.relationTypes}
+                        titleProperty={'label'}
+                      />
                       <Doc doc={fromJS(entity)} searchParams={search} />
                     </div>
                   );
