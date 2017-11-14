@@ -51,6 +51,7 @@ describe('ConnectionsList zone', () => {
     nightmare
     .openEntityFromLibrary('Daneryl')
     .waitToClick(selectors.entityView.conectionsTabLink)
+    .waitToClick(selectors.entityView.connectionsListView)
     .waitForTheEntityToBeIndexed()
     .getResultsAsJson()
     .then((results) => {
@@ -78,6 +79,7 @@ describe('ConnectionsList zone', () => {
       .gotoLibrary()
       .openEntityFromLibrary('Daneryl')
       .waitToClick(selectors.entityView.conectionsTabLink)
+      .waitToClick(selectors.entityView.connectionsListView)
       .waitForTheEntityToBeIndexed()
       .getResultsAsJson()
       .then((results) => {

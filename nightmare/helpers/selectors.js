@@ -129,7 +129,8 @@ export default {
     firstAttachmentEditTitleButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div > div > a:nth-child(1)',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > a.item-shortcut.btn.btn-success',
-    conectionsTabLink: '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div'
+    conectionsTabLink: '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div',
+    connectionsListView: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list > div.search-list-actions > div > button.btn.btn-default'
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div.upload-box',
