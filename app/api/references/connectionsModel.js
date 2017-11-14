@@ -8,6 +8,8 @@ const connectionSchema = new mongoose.Schema({
   sourceType: String,
   relationType: String,
   targetDocument: {type: String, index: true},
+  template: {type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes', index: true},
+  metadata: mongoose.Schema.Types.Mixed,
   sourceRange: {
     start: Number,
     end: Number,

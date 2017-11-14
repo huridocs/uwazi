@@ -86,11 +86,13 @@ export class Item extends Component {
       );
     }
 
-    if (!metadata.length && !populatedMetadata.filter(p => p.showInCard).length || this.props.search.sort === 'creationDate') {
+    if (creationDate && (!metadata.length && !populatedMetadata.filter(p => p.showInCard).length || this.props.search.sort === 'creationDate')) {
       metadata.push(
         <dl key={metadata.length}>
           <dt>{t('System', 'Date added')}</dt>
-          <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}><PrintDate utc={creationDate} toLocal={true} /></dd>
+          <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}>
+            <PrintDate utc={creationDate} toLocal={true} />
+          </dd>
         </dl>
       );
     }
@@ -141,7 +143,8 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
-    const metadata = this.getMetadata(doc);
+    const metadataElements = this.getMetadata(doc);
+    const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
 
     return (
       <RowList.Item
@@ -156,15 +159,13 @@ export class Item extends Component {
             {evalPublished && !doc.published ? <i className="item-private-icon fa fa-lock"></i> : false }
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
-            <span>{doc.title}</span>
+            <span>{doc[this.props.titleProperty]}</span>
             <DocumentLanguage doc={this.props.doc} />
             {snippet}
           </div>
           {this.getSearchSnipett(doc)}
         </div>
-        <div className="item-metadata">
-          {metadata}
-        </div>
+        {metadata}
         <ItemFooter>
           <div className={`item-label-group ${templateClassName || ''}`}>
             {doc.template ? <TemplateLabel template={doc.template}/> : false}
@@ -194,17 +195,20 @@ Item.propTypes = {
   buttons: PropTypes.object,
   labels: PropTypes.object,
   className: PropTypes.string,
+  titleProperty: PropTypes.string,
   templateClassName: PropTypes.string,
   evalPublished: PropTypes.bool
 };
 
 Item.defaultProps = {
-  search: prioritySortingCriteria()
+  search: prioritySortingCriteria(),
+  titleProperty: 'title'
 };
 
 export const mapStateToProps = ({templates, thesauris}, ownProps) => {
   const search = ownProps.searchParams;
-  return {templates, thesauris, search};
+  const _templates = ownProps.templates || templates;
+  return {templates: _templates, thesauris, search};
 };
 
 export default connect(mapStateToProps)(Item);

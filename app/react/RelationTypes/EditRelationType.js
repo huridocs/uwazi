@@ -1,15 +1,18 @@
 import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
-import RelationTypeForm from 'app/RelationTypes/components/RelationTypeForm';
 import {editRelationType} from 'app/RelationTypes/actions/relationTypesActions';
 import api from 'app/RelationTypes/RelationTypesAPI';
+import TemplateCreator from '../Templates/components/TemplateCreator';
 
 export default class EditRelationType extends RouteHandler {
 
   static requestState({relationTypeId}) {
     return api.get(relationTypeId)
     .then(([relationType]) => {
+      if (!relationType.properties) {
+        relationType.properties = [];
+      }
       return {relationType: relationType};
     });
   }
@@ -19,6 +22,6 @@ export default class EditRelationType extends RouteHandler {
   }
 
   render() {
-    return <RelationTypeForm />;
+    return <TemplateCreator relationType={true} />;
   }
 }

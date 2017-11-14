@@ -15,7 +15,7 @@ describe('relationTypesActions', () => {
       let dispatch = jasmine.createSpy('dispatch');
       actions.editRelationType(relationType)(dispatch);
 
-      expect(formActions.load).toHaveBeenCalledWith('relationType', relationType);
+      expect(formActions.load).toHaveBeenCalledWith('template.data', relationType);
       expect(dispatch).toHaveBeenCalledWith('RELATION_TYPE_LOADED');
     });
   });

@@ -83,7 +83,7 @@ describe('references routes', () => {
         templates: [
           {_id: 't1', refs: [
             {connectedDocument: 'id1'},
-            {_id: 'r2', connectedDocument: 'id2', sourceType: 'other'}
+            {_id: 'r2', connectedDocument: 'id2', sourceType: 'other', template: '123', metadata: {numeric: 1}}
           ]}
         ]
       }, {
@@ -93,7 +93,7 @@ describe('references routes', () => {
         connectionType: 'Connection Type 2',
         templates: [
           {_id: 't2', refs: [
-            {_id: 'r1', connectedDocument: 'id2', sourceType: 'metadata'},
+            {_id: 'r1', connectedDocument: 'id2', sourceType: 'metadata', template: '456', metadata: {numeric: 7}},
             {connectedDocument: 'id3'}
           ]}
         ]
@@ -113,7 +113,9 @@ describe('references routes', () => {
           label: 'Connection Label 1',
           type: 'Connection Type 1',
           _id: 'r2',
-          sourceType: 'other'
+          sourceType: 'other',
+          template: '123',
+          metadata: {numeric: 1}
         };
 
         const expectedParsedConnection2 = {
@@ -121,7 +123,9 @@ describe('references routes', () => {
           label: 'Connection Label 2',
           type: 'Connection Type 2',
           _id: 'r1',
-          sourceType: 'metadata'
+          sourceType: 'metadata',
+          template: '456',
+          metadata: {numeric: 7}
         };
 
         expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
@@ -144,7 +148,15 @@ describe('references routes', () => {
       .then((response) => {
         const expectedResponse = {rows: [
           {sharedId: 'id2', connections: [
-            {context: 'Context 2', label: 'Connection Label 2', type: 'Connection Type 2', _id: 'r1', sourceType: 'metadata'}
+            {
+              context: 'Context 2',
+              label: 'Connection Label 2',
+              type: 'Connection Type 2',
+              _id: 'r1',
+              sourceType: 'metadata',
+              template: '456',
+              metadata: {numeric: 7}
+            }
           ]}
         ]};
 
