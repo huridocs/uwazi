@@ -40,7 +40,7 @@ export default class Entity extends RouteHandler {
           searchResults,
           sort,
           filters: {},
-          view: 'list'
+          view: 'graph'
         },
         relationTypes
       };
