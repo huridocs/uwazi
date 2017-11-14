@@ -5,7 +5,7 @@ import {actions} from 'app/BasicReducer';
 
 export function editRelationType(relationType) {
   return function (dispatch) {
-    dispatch(formActions.load('relationType', relationType));
+    dispatch(formActions.load('template.data', relationType));
   };
 }
 

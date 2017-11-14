@@ -1,14 +1,15 @@
 import * as types from 'app/RelationTypes/actions/actionTypes';
 import api from 'app/RelationTypes/RelationTypesAPI';
-import * as notifications from 'app/Notifications/actions/notificationsActions';
+import {notify} from 'app/Notifications';
 import {t} from 'app/I18N';
 
 
 export function saveRelationType(relationType) {
   return function (dispatch) {
-    return api.save(relationType).then(() => {
+    return api.save(relationType)
+    .then(() => {
       dispatch({type: types.RELATION_TYPE_SAVED});
-      notifications.notify(t('System', 'RelationType saved'), 'success')(dispatch);
+      dispatch(notify(t('System', 'RelationType saved'), 'success'));
     });
   };
 }

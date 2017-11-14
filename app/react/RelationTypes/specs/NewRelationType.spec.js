@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import NewRelationType from 'app/RelationTypes/NewRelationType';
-import RelationTypeForm from 'app/RelationTypes/components/RelationTypeForm';
+import TemplateCreator from '../../Templates/components/TemplateCreator';
 
 describe('NewRelationType', () => {
   let component;
@@ -12,6 +12,6 @@ describe('NewRelationType', () => {
   });
 
   it('should render a RelationTypeForm', () => {
-    expect(component.find(RelationTypeForm).length).toBe(1);
+    expect(component.find(TemplateCreator).length).toBe(1);
   });
 });

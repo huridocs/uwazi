@@ -161,8 +161,9 @@ export default {
       if (entity.file && entity.file.language) {
         language = languages(entity.file.language);
       }
+
       fullText['fullText_' + language] = entity.fullText;
-      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText});
+      fullTextIndex = elastic.index({index: elasticIndex, type: 'fullText', parent: id, body: fullText, id: `${id}_fullText`});
       delete entity.fullText;
     }
     return Promise.all([
@@ -192,7 +193,7 @@ export default {
 
       if (doc.fullText) {
         action = {};
-        action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id};
+        action[_action] = {_index: elasticIndex, _type: 'fullText', parent: id, _id: `${id}_fullText`};
         body.push(action);
 
         const fullText = {};

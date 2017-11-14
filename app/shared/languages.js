@@ -14,6 +14,6 @@ export default {
   },
 
   detect: (text, purpose = 'elastic') => {
-    return languages[franc(text)] ? languages[franc(text)][purpose] : 'other';
+    return get(franc(text), purpose);
   }
 };

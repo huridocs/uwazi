@@ -29,7 +29,7 @@ describe('relationTypesActions', () => {
       ];
       const store = mockStore({});
 
-      store.dispatch(actions.saveRelationType(relationType))
+      actions.saveRelationType(relationType)(store.dispatch)
       .then(() => {
         expect(store.getActions()).toEqual(expectedActions);
       })

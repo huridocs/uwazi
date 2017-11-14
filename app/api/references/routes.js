@@ -56,6 +56,8 @@ export default app => {
 
             entityGroupMap[ref.connectedDocument].push({
               context: group.context,
+              template: ref.template,
+              metadata: ref.metadata,
               label: group.connectionLabel,
               type: group.connectionType,
               _id: ref._id,
