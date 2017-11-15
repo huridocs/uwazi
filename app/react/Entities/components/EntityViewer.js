@@ -54,7 +54,6 @@ export class EntityViewer extends Component {
       });
     }
   }
-  // --
 
   render() {
     const {entity, entityBeingEdited, tab, connectionsGroups} = this.props;

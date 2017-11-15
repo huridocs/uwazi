@@ -36,7 +36,7 @@ describe('EntityView', () => {
         expect(state.connectionsList.searchResults).toBe(searchedReferences);
         expect(state.connectionsList.sort).toEqual({sort: 'priorized'});
         expect(state.connectionsList.filters).toEqual({});
-        expect(state.connectionsList.view).toBe('list');
+        expect(state.connectionsList.view).toBe('graph');
         expect(state.relationTypes).toEqual(relationTypes);
         done();
       });

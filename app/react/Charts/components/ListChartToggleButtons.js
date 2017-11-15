@@ -11,7 +11,7 @@ export class ListChartToggleButtons extends Component {
     const path = browserHistory.getCurrentLocation().pathname;
     const query = browserHistory.getCurrentLocation().query;
     query.view = type;
-
+    
     browserHistory.push(path + toUrlParams(query));
   }
 
