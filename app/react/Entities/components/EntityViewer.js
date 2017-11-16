@@ -1,6 +1,4 @@
 import PropTypes from 'prop-types';
-// ENTIRE COMPONENT IS UNTESTED!!!!
-// There is partial testing of added functionality, but this requires a full test.
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
@@ -12,7 +10,7 @@ import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
-import {deleteEntity} from '../actions/actions';
+import {deleteEntity, selectConnection, unselectConnection} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
@@ -31,6 +29,12 @@ import {AttachmentsList} from 'app/Attachments';
 
 export class EntityViewer extends Component {
 
+  constructor(props, context) {
+    super(props, context);
+    this.selectConnection = this.selectConnection.bind(this);
+    this.deleteEntity = this.deleteEntity.bind(this);
+  }
+
   deleteEntity() {
     this.context.confirm({
       accept: () => {
@@ -44,7 +48,6 @@ export class EntityViewer extends Component {
     });
   }
 
-  // TESTED -----
   deleteConnection(reference) {
     if (reference.sourceType !== 'metadata') {
       this.context.confirm({
@@ -56,6 +59,11 @@ export class EntityViewer extends Component {
       });
     }
   }
+
+  selectConnection(e, connection) {
+    this.props.selectConnection(connection);
+  }
+
 
   render() {
     const {entity, entityBeingEdited, tab, connectionsGroups} = this.props;
@@ -120,7 +128,7 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
+              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} clickOnDocument={this.selectConnection.bind(this)}/>
             </TabContent>
           </Tabs>
         </main>
@@ -164,11 +172,17 @@ export class EntityViewer extends Component {
               </TabContent>
             </Tabs>
           </div>
-
         </SidePanel>
 
-        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
+        <CreateConnectionPanel className="entity-create-connection-panel" containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
         <AddEntitiesPanel />
+
+        <SidePanel open={Boolean(this.props.selectedConnection.get('_id'))} className="connections-metadata">
+          <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.unselectConnection}></i>
+          <div className="sidepanel-body">
+            <ShowMetadata entity={this.props.selectedConnectionMetadata} showTitle={true} showType={true} />
+          </div>
+        </SidePanel>
 
       </div>
     );
@@ -177,6 +191,8 @@ export class EntityViewer extends Component {
 
 EntityViewer.propTypes = {
   entity: PropTypes.object,
+  selectedConnection: PropTypes.object,
+  selectedConnectionMetadata: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
   sidepanelOpen: PropTypes.bool,
@@ -184,6 +200,8 @@ EntityViewer.propTypes = {
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
   connectionsChanged: PropTypes.func,
+  selectConnection: PropTypes.func,
+  unselectConnection: PropTypes.func,
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
@@ -200,6 +218,11 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
+const connectionSelector = createSelector(
+  state => state.entityView.connection,
+  entity => entity.toJS()
+);
+
 const selectTemplates = createSelector(s => s.templates, template => template);
 const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri);
 const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
@@ -210,17 +233,24 @@ const prepareMetadata = createSelector(
   (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
 );
 
+const prepareConnectionMetadata = createSelector(
+  connectionSelector,
+  selectTemplates,
+  selectThesauris,
+  (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
+);
+
 const mapStateToProps = (state) => {
   return {
     rawEntity: state.entityView.entity,
+    selectedConnection: state.entityView.connection,
+    selectedConnectionMetadata: prepareConnectionMetadata(state),
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
     connectionsGroups: state.connectionsList.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
-    library: state.library,
-    sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
-    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
+    library: state.library
   };
 };
 
@@ -230,6 +260,8 @@ function mapDispatchToProps(dispatch) {
     connectionsChanged,
     deleteConnection,
     showTab,
+    selectConnection,
+    unselectConnection,
     startNewConnection: connectionsActions.startNewConnection
   }, dispatch);
 }
