@@ -1,7 +1,7 @@
 import references from 'api/references/references';
 import translations from 'api/i18n/translations';
 import model from './relationTypesModel';
-import {getUpdatedNames, getDeletedProperties} from '../templates/utils';
+import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from '../templates/utils';
 let checkDuplicated = (relationtype) => {
   return model.get()
   .then((response) => {
@@ -70,7 +70,8 @@ export default {
   },
 
   save(relationtype) {
-    relationtype.type = 'relationtype';
+    relationtype.properties = generateNamesAndIds(relationtype.properties || []);
+
     return checkDuplicated(relationtype)
     .then(() => {
       if (!relationtype._id) {
