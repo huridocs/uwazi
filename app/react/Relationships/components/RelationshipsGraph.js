@@ -182,7 +182,7 @@ export class RelationshipsGraph extends Component {
                         templates={this.props.relationTypes}
                         titleProperty={'label'}
                       />
-                      <Doc doc={fromJS(entity)} searchParams={search} />
+                      <Doc doc={fromJS(entity)} searchParams={search} onClick={this.props.clickOnDocument} />
                     </div>
                   );
                 })}
@@ -201,7 +201,8 @@ RelationshipsGraph.propTypes = {
   parentEntity: PropTypes.object,
   connections: PropTypes.object,
   search: PropTypes.object,
-  relationTypes: PropTypes.object
+  relationTypes: PropTypes.object,
+  clickOnDocument: PropTypes.func
 };
 
 export function mapStateToProps({entityView, connectionsList, relationTypes}) {

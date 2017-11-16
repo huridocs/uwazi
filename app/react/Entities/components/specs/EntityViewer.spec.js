@@ -16,6 +16,7 @@ describe('EntityViewer', () => {
     context = {confirm: jasmine.createSpy('confirm')};
     props = {
       entity: {title: 'Title'},
+      selectedConnection: Immutable({}),
       templates: [
         {_id: 'template1', properties: [{name: 'source_property', label: 'label1'}], name: 'template1Name'},
         {_id: 'template2', properties: [{name: 'source_property', label: 'label2'}], name: 'template2Name'}

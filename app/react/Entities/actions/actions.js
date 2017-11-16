@@ -36,3 +36,11 @@ export function deleteEntities(entities) {
     });
   };
 }
+
+export function selectConnection(connection) {
+  return actions.set('entityView/connection', connection);
+}
+
+export function unselectConnection() {
+  return actions.set('entityView/connection', {});
+}

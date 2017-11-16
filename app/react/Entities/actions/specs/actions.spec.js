@@ -27,6 +27,18 @@ describe('Entities actions', () => {
     });
   });
 
+  describe('selectConnection', () => {
+    it('should set the connection in the state', () => {
+      expect(actions.selectConnection('connection')).toEqual({type: 'entityView/connection/SET', value: 'connection'});
+    });
+  });
+
+  describe('unselectConnection', () => {
+    it('should set the connection in the state', () => {
+      expect(actions.unselectConnection()).toEqual({type: 'entityView/connection/SET', value: {}});
+    });
+  });
+
   describe('deleteEntity', () => {
     it('should delete the entity and notify', (done) => {
       actions.deleteEntity('data')(dispatch)

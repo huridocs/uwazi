@@ -34,7 +34,7 @@
   padding-bottom: 120px;
 }
 
-.entity-connections {
+.entity-connections, .connections-metadata, .entity-create-connection-panel {
   z-index: 6;
   top: 0;
   @media (min-width: 1024px) {
