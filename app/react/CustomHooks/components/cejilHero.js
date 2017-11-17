@@ -19,9 +19,12 @@ export class cejilChart001 extends Component {
     });
   }
 
-  conformLibraryLink(types, sort) {
+  conformLibraryLink(types, link) {
     const escapedValues = types.map(t => '%27' + t + '%27');
-    return `/library/?q=(order:desc,sort:${sort},types:!(${escapedValues.join(',')}),userSelectedSorting:!t)`;
+    if (link && link.indexOf('/library/') !== -1) {
+      return link.substring(link.indexOf('/library/'), link.length);
+    }
+    return `/library/?q=(order:desc,sort:creationDate,types:!(${escapedValues.join(',')}),userSelectedSorting:!t)`;
   }
 
   getCount(ids) {
@@ -36,7 +39,7 @@ export class cejilChart001 extends Component {
   }
 
   render() {
-    const {title = '', buttons = []} = this.props;
+    const {title = '', buttons = [], links = []} = this.props;
     const Loader = <i className="fa fa-spinner fa-pulse fa-fw"></i>;
 
     let processesCount = Loader;
@@ -53,15 +56,15 @@ export class cejilChart001 extends Component {
       <div className="hero">
         <h1>{title}</h1>
         <div className="hero-stats">
-          <I18NLink to={this.conformLibraryLink(processesIds, 'metadata._ltima_actualizaci_n')}>
+          <I18NLink to={this.conformLibraryLink(processesIds, links.length && links[0] ? links[0] : null)}>
             <h2>{processesCount}</h2>
             <span>{buttons[0]}</span>
           </I18NLink>
-          <I18NLink to={this.conformLibraryLink(provisionalMeasuresIds, 'metadata._ltima_actualizaci_n')}>
+          <I18NLink to={this.conformLibraryLink(provisionalMeasuresIds, links.length && links[1] ? links[1] : null)}>
             <h2>{provisionalMeasuresCount}</h2>
             <span>{buttons[1]}</span>
           </I18NLink>
-          <I18NLink to={this.conformLibraryLink(documentsIds, 'metadata.fecha')}>
+          <I18NLink to={this.conformLibraryLink(documentsIds, links.length && links[2] ? links[2] : null)}>
             <h2>{documentsCount}</h2>
             <span>{buttons[2]}</span>
           </I18NLink>
@@ -74,7 +77,8 @@ export class cejilChart001 extends Component {
 cejilChart001.propTypes = {
   title: PropTypes.string,
   subtitle: PropTypes.string,
-  buttons: PropTypes.array
+  buttons: PropTypes.array,
+  links: PropTypes.array
 };
 
 export function mapStateToProps({templates, thesauris}) {
