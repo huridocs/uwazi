@@ -39,8 +39,8 @@ describe('EditTranslationForm', () => {
     it('should render fields alphabetically', () => {
       render();
       let fields = component.find(Field);
-      expect(fields.at(0).props().model).toBe('translationsForm[0].contexts[0].values[Password]');
-      expect(fields.at(2).props().model).toBe('translationsForm[0].contexts[0].values[User]');
+      expect(fields.at(0).props().model).toBe('translationsForm[0].contexts[0].values["Password"]');
+      expect(fields.at(2).props().model).toBe('translationsForm[0].contexts[0].values["User"]');
     });
   });
 
