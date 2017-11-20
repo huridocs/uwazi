@@ -54,7 +54,9 @@ export class PageViewer extends Component {
   conformCustomHook(index, customHookValues) {
     let output = <p key={index}>Custom hook</p>;
     try {
-      const props = rison.decode(`(${customHookValues.shift()})`);
+      const props = rison.decode(`(${customHookValues.shift().replace(/'[^']+'/g, (match) => {
+        return match.replace(/:!/g, ':!!');
+      })})`);
       if (!CustomHookComponents[props.component]) {
         throw new Error('Invalid  component');
       }

@@ -42,7 +42,7 @@ describe('PageViewer', () => {
         '\n\n{---UWAZILIST---}' +
         '\n\nWhich should be in its own line, separated with TWO line breaks (to create a new <p> Element)' +
         '\n\nAnd should allow multiple lists with different values' +
-        '\n\n{customhook}(component:validcomponent,prop:\'a prop\')' +
+        '\n\n{customhook}(component:validcomponent,prop:\'a prop\',array:!(\'(child:!(a),bool:!t)\',\'(child:!(b))\'))' +
         '\n\nShould allow markdown between hooks' +
         '\n\n{---UWAZILIST---}' +
         '\n\n{customhook}(component:validcomponent)' +
@@ -52,7 +52,7 @@ describe('PageViewer', () => {
       );
     });
 
-    it('should render the separated containers', () => {
+    it('should render the separated containers (escaping child rison objects)', () => {
       props.itemLists = Immutable([
         {params: 'param1', items: ['items1'], options: {option1: 'optionValue'}},
         {params: 'param2', items: ['items2']},
@@ -86,14 +86,15 @@ describe('PageViewer', () => {
 
       expect(component.find('.pageSection').at(9).props().dangerouslySetInnerHTML.__html).toContain('code');
 
-      expect(component.find(CustomHookComponents.validcomponent).at(0).props()).toEqual({component: 'validcomponent', prop: 'a prop'});
+      expect(component.find(CustomHookComponents.validcomponent).at(0).props())
+      .toEqual({component: 'validcomponent', prop: 'a prop', array: ['(child:!(a),bool:!t)', '(child:!(b))']});
 
       expect(component.find(CustomHookComponents.validcomponent).at(1).props()).toEqual({component: 'validcomponent'});
 
       expect(component.find('.customHook.error').at(0).text()).toContain('Custom Hook markup error');
     });
 
-    it('should not fail if itemLists lenght is less (because of rendering empty or with props not loaded)', () => {
+    it('should not fail if itemLists length is less (because of rendering empty or with props not loaded)', () => {
       props.itemLists = Immutable([
         {params: 'param1', items: ['items1']},
         {params: 'param3', items: ['items3']}
