@@ -18,9 +18,8 @@
     width: calc(100% - 400px) !important;
   }
 
-  .item {
-    border-color: $c-grey-light !important;
-    cursor: default !important;
+  .connection-data {
+    cursor: default;
   }
 
   .protip {
