@@ -44,6 +44,16 @@ describe('relationtypes', () => {
       spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
     });
 
+    it('should generate names and ids for the properties', (done) => {
+      relationtypes.save({name: 'Indiferent', properties: [{label: 'Property one'}]})
+      .then((result) => {
+        expect(result.properties[0].name).toBe('property_one');
+        expect(result.properties[0]._id).toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     describe('when the relation type did not exist', () => {
       it('should create a new one and return it', (done) => {
         relationtypes.save({name: 'Indiferent', properties: []})

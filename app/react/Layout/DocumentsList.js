@@ -94,19 +94,17 @@ export default class DocumentsList extends Component {
                 {` ${t('System', 'documents')}`}
             </p>
             {(() => {
-              if (view !== 'graph') {
-                if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
-                  return (
-                    <div className="col-sm-12 text-center">
-                      <button onClick={this.loadMoreDocuments} className="btn btn-default btn-load-more">
-                        {loadMoreAmmount + ' ' + t('System', 'x more')}
-                      </button>
-                    </div>
-                  );
-                }
-                if (this.state.loading) {
-                  return <Loader/>;
-                }
+              if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
+                return (
+                  <div className="col-sm-12 text-center">
+                    <button onClick={this.loadMoreDocuments} className="btn btn-default btn-load-more">
+                      {loadMoreAmmount + ' ' + t('System', 'x more')}
+                    </button>
+                  </div>
+                );
+              }
+              if (this.state.loading) {
+                return <Loader/>;
               }
 
               return null;
