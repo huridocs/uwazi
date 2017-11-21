@@ -74,12 +74,19 @@ header {
   padding: 0;
   margin: 0;
   list-style: none;
-  display: none;
   @media(max-width: 1023px) {
+    position: fixed;
+    left: -400px;
+    width: 400px;
+    top: 50px;
+    height: calc(100% - 50px);
+    background: $c-theme;
+    max-width: 90%;
+    border-top: 1px solid transparentize($c-black, .6);
+    overflow: auto;
+    transition: all 225ms;
     &.is-active {
-      display: table;
-      width: 100%;
-      border-top: 1px solid transparentize($c-black, .6);
+      left: 0px;
     }
   }
   @media(min-width: 1024px) {
@@ -127,6 +134,15 @@ header {
   line-height: $header-height + 2px;
   padding: 0 15px;
   background-color: transparent;
+
+  @media(max-width: 1023px) {
+    padding-left: $header-height + 15px;
+    text-align: left;
+  }
+  @media(max-width: 453px) {
+    padding-left: $header-height;
+  }
+
   @if $theme == light {
     color: $c-black;
   } @else {
@@ -147,19 +163,13 @@ header {
   }
 }
 
+
 .menuActions {
   .menuNav-list {
-    overflow: visible;
-    display: flex;
-  }
-}
-
-@media(max-width: 1023px) {
-  .menuItems .menuNav-item {
-    border-bottom: 1px solid transparentize($c-black, .6);
-  }
-  .menuActions .menuNav-item:not(:last-child) {
-    border-right: 1px solid transparentize($c-black, .6);
+    @media (min-width: 1024px) {
+      overflow: visible;
+      display: flex;
+    }
   }
 }
 
