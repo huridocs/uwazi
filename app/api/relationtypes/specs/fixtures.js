@@ -10,7 +10,7 @@ export default {
     {_id: canNotBeDeleted, name: 'Related', properties: []}
   ],
   connections: [
-    {_id: db.id(), title: 'reference1', sourceDocument: 'source1', relationType: canNotBeDeleted.toString()}
+    {_id: db.id(), title: 'reference1', sourceDocument: 'source1', template: canNotBeDeleted}
   ]
 };
 

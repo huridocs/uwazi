@@ -25,9 +25,9 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 
   if (reference.sourceType !== 'metadata') {
     return conformGroupData('connection', groupedReferences, {
-      key: reference.relationType.toString(),
-      context: reference.relationType.toString(),
-      connectionLabel: relationTypes.find(r => r._id.toString() === reference.relationType.toString()).name
+      key: reference.template.toString(),
+      context: reference.template.toString(),
+      connectionLabel: relationTypes.find(r => r._id.toString() === reference.template.toString()).name
     });
   }
 }

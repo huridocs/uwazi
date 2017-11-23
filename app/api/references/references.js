@@ -85,7 +85,7 @@ export default {
   },
 
   countByRelationType(typeId) {
-    return model.count({relationType: typeId});
+    return model.count({template: typeId});
   },
 
   save(connection, language) {
