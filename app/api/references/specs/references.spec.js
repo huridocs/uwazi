@@ -5,7 +5,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument} from './fixtures.js';
-import {inbound, templateChangingNames, templateWithoutProperties} from './fixtures.js';
+import {inbound, templateChangingNames, templateWithoutProperties, relation3, relation4} from './fixtures.js';
 import fixturesForGroup, {template1Id, template2Id, template3Id, relation1, relation2} from './fixturesForGroup';
 
 describe('references', () => {
@@ -45,7 +45,7 @@ describe('references', () => {
     });
 
     it('should create references for each option on selects/multiselects using entities ' +
-       '(not affecting document references or inbound refences)', (done) => {
+    '(not affecting document references or inbound refences)', (done) => {
       const entity = {
         _id: 'id_testing',
         sharedId: 'entity_id',
@@ -293,7 +293,7 @@ describe('references', () => {
 
   describe('countByRelationType()', () => {
     it('should return number of references using a relationType', (done) => {
-      references.countByRelationType('relation2')
+      references.countByRelationType(relation4.toString())
       .then((result) => {
         expect(result).toBe(2);
         done();
@@ -301,7 +301,8 @@ describe('references', () => {
     });
 
     it('should return zero when none is using it', (done) => {
-      references.countByRelationType('not_used_relation')
+      const not_used_relation = db.id().toString();
+      references.countByRelationType(not_used_relation)
       .then((result) => {
         expect(result).toBe(0);
         done();

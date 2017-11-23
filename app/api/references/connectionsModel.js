@@ -6,7 +6,7 @@ const connectionSchema = new mongoose.Schema({
   sourceTemplate: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
   sourceProperty: String,
   sourceType: String,
-  relationType: String,
+  template: {type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes'},
   targetDocument: {type: String, index: true},
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes', index: true},
   metadata: mongoose.Schema.Types.Mixed,

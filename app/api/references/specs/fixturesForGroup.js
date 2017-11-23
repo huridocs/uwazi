@@ -11,18 +11,18 @@ const relation2 = db.id();
 
 export default {
   connections: [
-    {title: 'reference1', sourceDocument: 'source1', targetDocument: 'source2', language: 'es', targetRange: {text: ''}, sourceRange: {text: 'sourceRange'}, relationType: relation1},
-    {title: 'reference2', sourceDocument: 'source2', targetDocument: 'doc3', language: 'en', sourceRange: {text: 'range2'}, targetRange: {text: 'targetRange'}, relationType: relation2},
-    {title: 'reference3', sourceDocument: 'source2', targetDocument: 'doc4', language: 'es', sourceRange: {text: 'range3'}, relationType: relation2},
-    {title: 'reference4', sourceDocument: 'doc5', targetDocument: 'source2', targetRange: 'range1', relationType: relation1},
+    {title: 'reference1', sourceDocument: 'source1', targetDocument: 'source2', language: 'es', targetRange: {text: ''}, sourceRange: {text: 'sourceRange'}, template: relation1},
+    {title: 'reference2', sourceDocument: 'source2', targetDocument: 'doc3', language: 'en', sourceRange: {text: 'range2'}, targetRange: {text: 'targetRange'}, template: relation2},
+    {title: 'reference3', sourceDocument: 'source2', targetDocument: 'doc4', language: 'es', sourceRange: {text: 'range3'}, template: relation2},
+    {title: 'reference4', sourceDocument: 'doc5', targetDocument: 'source2', targetRange: 'range1', template: relation1},
     {title: 'targetDocument', targetDocument: 'target'},
     {title: 'targetDocument', targetDocument: 'target'},
     {title: 'targetDocument1', targetDocument: 'target1'},
-    {title: 'reference5', sourceDocument: 'source2', targetDocument: 'doc4', language: 'es', sourceRange: {text: 'range3'}, relationType: relation2},
-    {title: 'reference5', sourceDocument: 'source2', targetDocument: 'doc6', language: 'es', sourceRange: {text: 'range3'}, relationType: relation2},
+    {title: 'reference5', sourceDocument: 'source2', targetDocument: 'doc4', language: 'es', sourceRange: {text: 'range3'}, template: relation2},
+    {title: 'reference5', sourceDocument: 'source2', targetDocument: 'doc6', language: 'es', sourceRange: {text: 'range3'}, template: relation2},
     //document-based existing reference
-    {title: 'reference1', sourceDocument: 'entity_id', targetDocument: 'value2ID', targetRange: 'range1', sourceRange: {text: 'sourceRange'}, relationType: relation1},
-    {title: 'reference5', sourceDocument: 'doc3', targetDocument: 'source2', targetRange: 'range1', sourceRange: {text: 'sourceRange'}, relationType: relation1},
+    {title: 'reference1', sourceDocument: 'entity_id', targetDocument: 'value2ID', targetRange: 'range1', sourceRange: {text: 'sourceRange'}, template: relation1},
+    {title: 'reference5', sourceDocument: 'doc3', targetDocument: 'source2', targetRange: 'range1', sourceRange: {text: 'sourceRange'}, template: relation1},
     //inbound existing reference
     {title: 'indound_reference_1', sourceDocument: 'value2ID', targetDocument: 'entity_id', sourceType: 'metadata', sourceProperty: 'selectName'},
     //outbound existing reference
