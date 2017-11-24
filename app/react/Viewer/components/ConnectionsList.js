@@ -132,7 +132,7 @@ export class ConnectionsList extends Component {
                                 </ShowIf>}
                 additionalText={reference.text}
                 additionalMetadata={[
-                  {label: 'Connection type', value: this.relationType(reference.relationType, relationTypes)}
+                  {label: 'Connection type', value: this.relationType(reference.template, relationTypes)}
                 ]}
                 evalPublished={true}
                 buttons={

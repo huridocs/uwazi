@@ -83,7 +83,7 @@ describe('Connections actions', () => {
 
   describe('setRelationType', () => {
     it('should broadcast the new connection type', () => {
-      expect(actions.setRelationType('newType')).toEqual({type: 'SET_RELATION_TYPE', relationType: 'newType'});
+      expect(actions.setRelationType('newType')).toEqual({type: 'SET_RELATION_TYPE', template: 'newType'});
     });
   });
 
