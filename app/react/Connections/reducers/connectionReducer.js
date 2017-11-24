@@ -2,10 +2,10 @@ import * as types from '../actions/actionTypes';
 import * as viewerTypes from 'app/Viewer/actions/actionTypes';
 import {fromJS} from 'immutable';
 
-const initialState = {relationType: '', targetDocument: '', sourceDocument: ''};
+const initialState = {template: '', targetDocument: '', sourceDocument: ''};
 
 const resetState = (state) => {
-  const propertiesToReset = ['relationType', 'targetDocument', 'sourceDocument'];
+  const propertiesToReset = ['template', 'targetDocument', 'sourceDocument'];
   const newState = state.toJS();
   propertiesToReset.forEach(key => {
     newState[key] = '';
@@ -22,7 +22,7 @@ export default function (state = initialState, action = {}) {
     return newState.set('sourceDocument', action.sourceDocument);
 
   case types.SET_RELATION_TYPE:
-    return state.set('relationType', action.relationType);
+    return state.set('template', action.template);
 
   case types.SET_TARGET_DOCUMENT:
     return state.set('targetDocument', action.id);

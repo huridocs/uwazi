@@ -66,11 +66,11 @@ export default {
     ]}
   ],
   connections: [
-    {_id: referenceId, title: 'reference1', sourceDocument: 'shared', relationtype: 'relation1'},
-    {_id: db.id(), title: 'reference2', sourceDocument: 'source2', relationtype: 'relation2', targetDocument: 'shared'},
-    {_id: db.id(), title: 'reference3', sourceDocument: 'another', relationtype: 'relation3', targetDocument: 'document'},
-    {_id: db.id(), title: 'reference4', sourceDocument: 'shared', relationtype: 'relation2', targetDocument: 'shared1', sourceType: 'metadata'},
-    {_id: db.id(), title: 'reference5', sourceDocument: 'shared1', relationtype: 'relation2', targetDocument: 'shared', sourceType: 'metadata'}
+    {_id: referenceId, title: 'reference1', sourceDocument: 'shared', template: 'relation1'},
+    {_id: db.id(), title: 'reference2', sourceDocument: 'source2', template: 'relation2', targetDocument: 'shared'},
+    {_id: db.id(), title: 'reference3', sourceDocument: 'another', template: 'relation3', targetDocument: 'document'},
+    {_id: db.id(), title: 'reference4', sourceDocument: 'shared', template: 'relation2', targetDocument: 'shared1', sourceType: 'metadata'},
+    {_id: db.id(), title: 'reference5', sourceDocument: 'shared1', template: 'relation2', targetDocument: 'shared', sourceType: 'metadata'}
   ]
 };
 

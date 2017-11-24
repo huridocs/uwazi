@@ -13,8 +13,8 @@ import ActionButton from './ActionButton';
 import ShowIf from 'app/App/ShowIf';
 
 export class CreateConnectionPanel extends Component {
-  renderCheckType(relationType) {
-    if (this.props.connection.get('relationType') === relationType.get('_id')) {
+  renderCheckType(template) {
+    if (this.props.connection.get('template') === template.get('_id')) {
       return <i className="fa fa-check"></i>;
     }
 
@@ -35,10 +35,10 @@ export class CreateConnectionPanel extends Component {
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
 
           <ul className="connections-list">
-            {this.props.relationTypes.map((relationType) => {
-              return <li onClick={() => this.props.setRelationType(relationType.get('_id'))} key={relationType.get('_id')}>
-                {this.renderCheckType(relationType)}
-                {relationType.get('name')}
+            {this.props.relationTypes.map((template) => {
+              return <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
+                {this.renderCheckType(template)}
+                {template.get('name')}
               </li>;
             })}
           </ul>
