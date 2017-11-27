@@ -2,21 +2,14 @@ import mongoose from 'mongoose';
 import instanceModel from 'api/odm';
 
 const connectionSchema = new mongoose.Schema({
-  sourceDocument: {type: String, index: true},
-  sourceTemplate: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
-  sourceProperty: String,
-  sourceType: String,
-  template: {type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes'},
-  targetDocument: {type: String, index: true},
+  entity: {type: String, index: true},
+  entityTemplate: {type: mongoose.Schema.Types.ObjectId, ref: 'templates'},
+  entityProperty: String,
+  entityType: String,
+  hub: {type: mongoose.Schema.Types.ObjectId, index: true},
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes', index: true},
   metadata: mongoose.Schema.Types.Mixed,
-  sourceRange: {
-    start: Number,
-    end: Number,
-    text: String
-  },
-
-  targetRange: {
+  range: {
     start: Number,
     end: Number,
     text: String

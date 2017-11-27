@@ -4,11 +4,11 @@ import connectionsModel from '../connectionsModel.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {template, selectValueID, value1ID, value2ID, sourceDocument} from './fixtures.js';
-import {inbound, templateChangingNames, templateWithoutProperties, relation3, relation4} from './fixtures.js';
+import fixtures, {template, selectValueID, value1ID, value2ID, connectionID1, hub1} from './fixtures.js';
+import {inbound, templateChangingNames, templateWithoutProperties, relation4} from './fixtures.js';
 import fixturesForGroup, {template1Id, template2Id, template3Id, relation1, relation2} from './fixturesForGroup';
 
-describe('references', () => {
+fdescribe('references', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
@@ -22,8 +22,7 @@ describe('references', () => {
     it('should return all the references', (done) => {
       references.get()
       .then((result) => {
-        expect(result.length).toBe(9);
-        expect(result[0].title).toBe('reference1');
+        expect(result.length).toBe(15);
         done();
       }).catch(catchErrors(done));
     });
@@ -61,14 +60,14 @@ describe('references', () => {
         return references.getByDocument(entity.sharedId, 'es');
       })
       .then((refs) => {
-        expect(refs.length).toBe(5);
+        expect(refs.length).toBe(8);
 
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceType).toBe('metadata');
         expect(refs.find((ref) => ref.targetDocument === selectValueID).sourceTemplate.toString()).toBe(template.toString());
         expect(refs.find((ref) => ref.targetDocument === value1ID).sourceDocument).toBe('entity_id');
         expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
-        expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
+        expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(connectionID1.toString());
         expect(refs.find((ref) => ref.sourceDocument === value2ID)._id.toString()).toBe(inbound.toString());
 
         done();
@@ -129,7 +128,7 @@ describe('references', () => {
           expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata')._id.toString())
           .toBe(generatedIds[1].toString());
           expect(refs.find((ref) => ref.targetDocument === value2ID && ref.sourceType === 'metadata').sourceDocument).toBe('entity_id');
-          expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(sourceDocument.toString());
+          expect(refs.find((ref) => ref.targetDocument === value2ID && !ref.sourceType)._id.toString()).toBe(connectionID1.toString());
 
           done();
         })
@@ -142,53 +141,30 @@ describe('references', () => {
     it('should return all the references of a document', (done) => {
       references.getByDocument('source2', 'es')
       .then((result) => {
-        expect(result.length).toBe(4);
+        expect(result.length).toBe(8);
 
-        expect(result[0].inbound).toBe(true);
-        expect(result[0].targetDocument).toBe('source2');
-        expect(result[0].range).toEqual({for: 'range1', text: ''});
-        expect(result[0].text).toBe('sourceRange');
-        expect(result[0].connectedDocument).toBe('source1');
-        expect(result[0].connectedDocumentTitle).toBe('source1 title');
-        expect(result[0].connectedDocumentIcon).toBe('icon1');
-        expect(result[0].connectedDocumentType).toBe('document');
-        expect(result[0].connectedDocumentTemplate).toBe('template3_id');
-        expect(result[0].connectedDocumentPublished).toBe(false);
-        expect(result[0].connectedDocumentMetadata).toEqual({data: 'data1'});
-        expect(result[0].connectedDocumentCreationDate).toEqual(123);
-        expect(result[0].connectedDocumentFile).toEqual({language: 'spa'});
+        const source1Connection = result.find((connection) => connection.entity === 'source1');
+        expect(source1Connection.range).toEqual({text: 'sourceRange'});
+        expect(source1Connection.connectedDocumentTitle).toBe('source1 title');
+        expect(source1Connection.connectedDocumentIcon).toBe('icon1');
+        expect(source1Connection.connectedDocumentType).toBe('document');
+        expect(source1Connection.connectedDocumentTemplate).toBe('template3_id');
+        expect(source1Connection.connectedDocumentPublished).toBe(false);
+        expect(source1Connection.connectedDocumentMetadata).toEqual({data: 'data1'});
+        expect(source1Connection.connectedDocumentCreationDate).toEqual(123);
+        expect(source1Connection.connectedDocumentFile).toEqual({language: 'spa'});
 
-        expect(result[1].inbound).toBe(false);
-        expect(result[1].sourceDocument).toBe('source2');
-        expect(result[1].range).toEqual({for: 'range2', text: 'range2'});
-        expect(result[1].text).toBe('targetRange');
-        expect(result[1].connectedDocument).toBe('doc3');
-        expect(result[1].connectedDocumentTitle).toBe('doc3 title');
-        expect(result[1].connectedDocumentIcon).toBe('icon3');
-        expect(result[1].connectedDocumentType).toBe('entity');
-        expect(result[1].connectedDocumentTemplate).toBe('template1_id');
-        expect(result[1].connectedDocumentPublished).toBe(true);
-        expect(result[1].connectedDocumentMetadata).toEqual({data: 'data2'});
-        expect(result[1].connectedDocumentCreationDate).toEqual(456);
-        expect(result[1].connectedDocumentFile).toBeUndefined();
+        const doc3Connection = result.find((connection) => connection.entity === 'doc3');
+        expect(doc3Connection.range).toEqual({text: 'targetRange'});
+        expect(doc3Connection.connectedDocumentTitle).toBe('doc3 title');
+        expect(doc3Connection.connectedDocumentIcon).toBe('icon3');
+        expect(doc3Connection.connectedDocumentType).toBe('entity');
+        expect(doc3Connection.connectedDocumentTemplate).toBe('template1_id');
+        expect(doc3Connection.connectedDocumentPublished).toBe(true);
+        expect(doc3Connection.connectedDocumentMetadata).toEqual({data: 'data2'});
+        expect(doc3Connection.connectedDocumentCreationDate).toEqual(456);
+        expect(doc3Connection.connectedDocumentFile).toBeUndefined();
 
-        expect(result[2].inbound).toBe(false);
-        expect(result[2].sourceDocument).toBe('source2');
-        expect(result[2].range).toEqual({for: 'range3', text: 'range3'});
-        expect(result[2].text).toBe('');
-        expect(result[2].connectedDocument).toBe('doc4');
-        expect(result[2].connectedDocumentTitle).toBe('doc4 title');
-        expect(result[2].connectedDocumentType).toBe('document');
-        expect(result[2].connectedDocumentTemplate).toBe('template1_id');
-        expect(result[2].connectedDocumentPublished).toBe(false);
-        expect(result[2].connectedDocumentMetadata).toEqual({data: 'data3'});
-        expect(result[2].connectedDocumentCreationDate).toEqual(789);
-        expect(result[2].connectedDocumentFile).toEqual({language: 'eng'});
-
-        expect(result[3].text).toBe('');
-        expect(result[3].connectedDocumentMetadata).toEqual({});
-        expect(result[3].connectedDocumentCreationDate).toBeUndefined();
-        expect(result[3].connectedDocumentFile).toBeUndefined();
         done();
       })
       .catch(catchErrors(done));
@@ -310,20 +286,17 @@ describe('references', () => {
     });
   });
 
-  describe('save()', () => {
-    describe('when the reference did not exist', () => {
-      it('should create a new outbound connection and return it normalized by sourceDocument', (done) => {
-        references.save({sourceDocument: 'sourceDoc', targetDocument: 'doc3', sourceRange: {text: 'range'}, targetRange: {text: 'text'}}, 'es')
-        .then((result) => {
-          expect(result.sourceDocument).toBe('sourceDoc');
-          expect(result.connectedDocument).toBe('doc3');
-          expect(result.connectedDocumentTemplate).toBe('template1_id');
-          expect(result.connectedDocumentType).toBe('entity');
-          expect(result.connectedDocumentTitle).toBe('doc3 title');
-          expect(result.connectedDocumentPublished).toBe(true);
+  fdescribe('save()', () => {
+    describe('When creating a new reference to a hub', () => {
+      it('should save it and return it with the entity data', (done) => {
+        references.save({entity: 'doc3', range: {text: 'range'}, hub: hub1}, 'es')
+        .then(([result]) => {
+          expect(result.entity).toBe('doc3');
+          expect(result.entityData.template).toBe('template1_id');
+          expect(result.entityData.type).toBe('entity');
+          expect(result.entityData.title).toBe('doc3 title');
+          expect(result.entityData.published).toBe(true);
           expect(result.range).toEqual({text: 'range'});
-          expect(result.text).toBe('text');
-          expect(result.inbound).toBe(false);
 
           expect(result._id).toBeDefined();
           done();
@@ -332,28 +305,69 @@ describe('references', () => {
       });
     });
 
-    describe('when the reference exists', () => {
-      it('should update it', (done) => {
-        references.getById(sourceDocument)
-        .then((reference) => {
-          reference.sourceDocument = 'source1';
-          return references.save(reference, 'es');
-        })
-        .then((result) => {
-          expect(result.sourceDocument).toBe('source1');
-          expect(result._id.equals(sourceDocument)).toBe(true);
+    describe('When creating new references', () => {
+      it('should assign them a hub and return them with the entity data', (done) => {
+        references.save([{entity: 'doc3'}, {entity: 'doc4'}], 'es')
+        .then(([doc3Connection, doc4Connection]) => {
+          expect(doc3Connection.entity).toBe('doc3');
+          expect(doc3Connection.entityData.template).toBe('template1_id');
+          expect(doc3Connection.entityData.type).toBe('entity');
+          expect(doc3Connection.entityData.title).toBe('doc3 title');
+          expect(doc3Connection.entityData.published).toBe(true);
+
+          expect(doc3Connection._id).toBeDefined();
+          expect(doc3Connection.hub).toBeDefined();
+
+          expect(doc4Connection.entity).toBe('doc4');
+          expect(doc4Connection.entityData.template).toBe('template1_id');
+          expect(doc4Connection.entityData.type).toBe('document');
+          expect(doc4Connection.entityData.title).toBe('doc4 title');
+          expect(doc4Connection.entityData.published).not.toBeDefined();
+
+          expect(doc4Connection._id).toBeDefined();
+          expect(doc4Connection.hub).toBeDefined();
+          expect(doc4Connection.hub.toString()).toBe(doc3Connection.hub.toString());
           done();
         })
         .catch(catchErrors(done));
+      });
+    });
+
+    describe('when the reference exists', () => {
+      it('should update it', (done) => {
+        references.getById(connectionID1)
+        .then((reference) => {
+          reference.entity = 'source1';
+          return references.save(reference, 'es');
+        })
+        .then(([result]) => {
+          expect(result.entity).toBe('source1');
+          expect(result._id.equals(connectionID1)).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('when saving one reference without hub', () => {
+      it('should throw an error', (done) => {
+        references.save({entity: 'doc3', range: {text: 'range'}}, 'es')
+        .then(() => {
+          done.fail('Should throw an error');
+        })
+        .catch((error) => {
+          expect(error.code).toBe(500);
+          done();
+        });
       });
     });
   });
 
   describe('delete()', () => {
     it('should delete the reference', (done) => {
-      return references.delete(sourceDocument)
+      return references.delete(connectionID1)
       .then(() => {
-        return references.getById(sourceDocument);
+        return references.getById(connectionID1);
       })
       .then((result) => {
         expect(result).toBe(null);

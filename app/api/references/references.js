@@ -4,34 +4,38 @@ import {generateNamesAndIds} from '../templates/utils';
 import entities from '../entities';
 
 import model from './connectionsModel.js';
+import {generateID} from 'api/odm';
+import {createError} from 'api/utils';
 
 import {filterRelevantReferences, groupReferences} from './groupByConnection';
 
-let normalizeConnection = (connection, docId) => {
-  connection.targetRange = connection.targetRange || {text: ''};
-  connection.sourceRange = connection.sourceRange || {text: ''};
-  connection.inbound = connection.targetDocument === docId;
-  connection.range = connection.inbound ? connection.targetRange : connection.sourceRange;
-  connection.text = connection.inbound ? connection.sourceRange.text : connection.targetRange.text;
-  connection.connectedDocument = connection.inbound ? connection.sourceDocument : connection.targetDocument;
+let normalizeConnection = (connection) => {
+  connection.range = connection.range || {text: ''};
   return connection;
 };
 
 let normalizeConnectedDocumentData = (connection, connectedDocument) => {
-  connection.connectedDocumentTemplate = connectedDocument.template;
-  connection.connectedDocumentType = connectedDocument.type;
-  connection.connectedDocumentTitle = connectedDocument.title;
-  connection.connectedDocumentIcon = connectedDocument.icon;
-  connection.connectedDocumentPublished = Boolean(connectedDocument.published);
-  connection.connectedDocumentMetadata = connectedDocument.metadata || {};
-  connection.connectedDocumentCreationDate = connectedDocument.creationDate;
-  connection.connectedDocumentFile = connectedDocument.file;
+  connection.entityData = connectedDocument;
   return connection;
 };
 
 function excludeRefs(template) {
   delete template.refs;
   return template;
+}
+
+function getPropertiesToBeConnections(template) {
+  const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
+  const entitySelects = [];
+  return Promise.all(selects.map((select) => {
+    return templatesAPI.getById(select.content)
+    .then((result) => {
+      if (result) {
+        entitySelects.push(select.name);
+      }
+    });
+  }))
+  .then(() => entitySelects);
 }
 
 export default {
@@ -44,18 +48,25 @@ export default {
   },
 
   getByDocument(id, language) {
-    return model.get({$or: [{targetDocument: id}, {sourceDocument: id}]})
+    return model.get({entity: id})
+    .then((ownConnections) => {
+      const hubs = ownConnections.map(connection => connection.hub);
+      return model.get({hub: {$in: hubs}});
+    })
     .then((response) => {
       let connections = response.map((connection) => normalizeConnection(connection, id));
-      let documentIds = connections.map((connection) => connection.connectedDocument);
-      return entities.get({sharedId: {$in: documentIds}, language})
+      let connectedEntityiesSharedId = connections.filter((connection) => connection.entity !== id).map((connection) => connection.entity);
+      return entities.get({sharedId: {$in: connectedEntityiesSharedId}, language})
       .then((_connectedDocuments) => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
         }, {});
         return connections.map((connection) => {
-          return normalizeConnectedDocumentData(connection, connectedDocuments[connection.connectedDocument]);
+          if (connection.entity === id) {
+            return connection;
+          }
+          return normalizeConnectedDocumentData(connection, connectedDocuments[connection.entity]);
         });
       });
     });
@@ -88,17 +99,27 @@ export default {
     return model.count({template: typeId});
   },
 
-  save(connection, language) {
-    return model.save(connection)
-    .then((result) => {
-      return normalizeConnection(result, connection.sourceDocument);
-    })
-    .then((result) => {
-      return Promise.all([result, entities.getById(result.connectedDocument, language)]);
-    })
-    .then(([result, connectedDocument]) => {
-      return normalizeConnectedDocumentData(result, connectedDocument);
-    });
+  save(_connections, language) {
+    let connections = _connections;
+    if (!Array.isArray(connections)) {
+      connections = [connections];
+    }
+    if (connections.length === 1 && !connections[0].hub) {
+      return Promise.reject(createError('Single connections must have a hub'));
+    }
+    const hub = connections[0].hub || generateID();
+    return Promise.all(
+      connections.map((connection) => {
+        connection.hub = hub;
+        return model.save(connection)
+        .then(normalizeConnection)
+        .then((savedConnection) => {
+          return Promise.all([savedConnection, entities.getById(savedConnection.entity, language)]);
+        })
+        .then(([result, connectedEntity]) => {
+          return normalizeConnectedDocumentData(result, connectedEntity);
+        });
+      }));
   },
 
   saveEntityBasedReferences(entity, language) {
@@ -107,24 +128,9 @@ export default {
     }
 
     return templatesAPI.getById(entity.template)
-    .then((template) => {
-      const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
-      const entitySelects = [];
-      return Promise.all(selects.map((select) => {
-        return templatesAPI.getById(select.content)
-        .then((result) => {
-          if (result) {
-            entitySelects.push(select.name);
-          }
-        });
-      }))
-      .then(() => entitySelects);
-    })
+    .then(getPropertiesToBeConnections)
     .then((properties) => {
-      return Promise.all([
-        properties,
-        this.getByDocument(entity.sharedId, language)
-      ]);
+      return Promise.all([properties, this.getByDocument(entity.sharedId, language)]);
     })
     .then(([properties, references]) => {
       let values = properties.reduce((memo, property) => {
@@ -140,17 +146,17 @@ export default {
       const toDelete = references.filter((ref) => {
         let isInValues = false;
         values.forEach((item) => {
-          if (item.property === ref.sourceProperty && ref.targetDocument === item.value) {
+          if (item.property === ref.entityProperty && ref.targetDocument === item.value) {
             isInValues = true;
           }
         });
-        return !ref.inbound && !isInValues && ref.sourceType === 'metadata';
+        return !ref.inbound && !isInValues && ref.entityType === 'metadata';
       });
 
       const toCreate = values.filter((item) => {
         let isInReferences = false;
         references.forEach((ref) => {
-          if (item.property === ref.sourceProperty && ref.targetDocument === item.value) {
+          if (item.property === ref.entityProperty && ref.targetDocument === item.value) {
             isInReferences = true;
           }
         });
@@ -159,11 +165,11 @@ export default {
 
       const deletes = toDelete.map((ref) => this.delete(ref._id));
       const creates = toCreate.map((item) => this.save({
-        sourceType: 'metadata',
-        sourceDocument: entity.sharedId,
+        entityType: 'metadata',
+        entityDocument: entity.sharedId,
         targetDocument: item.value,
-        sourceProperty: item.property,
-        sourceTemplate: entity.template
+        entityProperty: item.property,
+        entityTemplate: entity.template
       }, language));
 
 
