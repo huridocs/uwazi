@@ -8,6 +8,11 @@ import {t} from 'app/I18N';
 
 import {fromJS} from 'immutable';
 
+// -------------------
+import DropdownList from 'app/Forms/components/DropdownList';
+import RelationshipsGraphEdit from './RelationshipsGraphEdit';
+// -------------------
+
 export class RelationshipsGraph extends Component {
   constructor(props) {
     super(props);
@@ -71,6 +76,12 @@ export class RelationshipsGraph extends Component {
   }
 
   render() {
+    // TEMP
+    const a = 1;
+    if (a === 1) {
+      return <RelationshipsGraphEdit />;
+    }
+
     const {collapsed} = this.state;
     const {parentEntity, search} = this.props;
     const relationships = this.prepareData();
@@ -85,6 +96,63 @@ export class RelationshipsGraph extends Component {
         </div>
       </div>;
     }
+
+    // TEST!!!
+    // newSimpleRelationship
+    const relationshipTypes = [
+      {_id: null, label: 'Simple relationship'},
+      {_id: 'abc123', label: 'New relationship type'}
+    ];
+
+    const newSimpleRelationship = <div className="group-row">
+
+                    <Sticky scrollElement=".entity-viewer" boundaryElement=".group-row" hideOnBoundaryHit={false}>
+                      <div className="source">
+                        <div className="item-connection">
+                          <figure className="hub"></figure>
+                          <div className="connection-data">
+                            <DropdownList valueField="_id"
+                                          textField="label"
+                                          data={relationshipTypes}
+                                          defaultValue={relationshipTypes[0]}
+                                          filter="contains" />
+                          </div>
+                        </div>
+                      </div>
+                    </Sticky>
+
+                    <div className="target-connections">
+                      <div className={`connection last-of-type`}>
+                        <div className="item-document connection-data item item-status item-default">
+                          <DropdownList valueField="_id"
+                                        textField="label"
+                                        data={relationshipTypes}
+                                        defaultValue={relationshipTypes[1]}
+                                        filter="contains" />
+                        </div>
+                      </div>
+                    </div>
+                   </div>;
+    // New Hub
+    const newHub = <div className="group-row">
+
+                    <Sticky scrollElement=".entity-viewer" boundaryElement=".group-row" hideOnBoundaryHit={false}>
+                      <div className="source">
+                        <div className="item-connection">
+                          <figure className="hub"></figure>
+                          <div className="connection-data">
+                            <p className="connection-type connection-type-18">New relationships group</p>
+                          </div>
+                        </div>
+                      </div>
+                    </Sticky>
+
+                    <div className="target-connections">
+                      <div className={`connection last-of-type`}>
+                      </div>
+                    </div>
+                   </div>;
+    // -------
 
     return (
       <div className="relationships-graph">
@@ -122,6 +190,8 @@ export class RelationshipsGraph extends Component {
                 })}
               </div>
             </div>
+            {newSimpleRelationship}
+            {newHub}
           </div>
         </div>
       </div>
