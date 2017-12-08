@@ -2,6 +2,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+
+import * as actions from '../actions/actions';
 
 import Doc from 'app/Library/components/Doc';
 
@@ -11,97 +14,47 @@ export class RelationshipsGraphEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      hubs: [],
       relationshipTypes: [{_id: null, name: 'Simple relationship'}].concat(props.relationTypes.toJS())
     };
 
-    this.addHub = this.addHub.bind(this);
     this.updateLeftRelationshipType = this.updateLeftRelationshipType.bind(this);
+    this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
     this.removeHub = this.removeHub.bind(this);
     this.removeRightRelationshipGroup = this.removeRightRelationshipGroup.bind(this);
   }
 
   componentWillMount() {
     if (!this.state.hubs.length) {
-      this.addHub();
+      this.props.addHub();
     }
   }
 
-  addHub() {
-    this.setState({hubs: this.state.hubs.concat([{
-      leftRelationship: {_id: this.state.relationshipTypes[0]._id},
-      rightRelationships: this.addRightRelationship([])
-    }])});
-  }
-
-  addRightRelationship(rightRelationships) {
-    return [].concat(rightRelationships.concat([{entities: []}]));
-  }
-
-  updateLeftRelationshipType(hub) {
+  updateLeftRelationshipType(hubIndex) {
     return (value) => {
-      this.setState({hubs: this.state.hubs.map(h => {
-        if (h === hub) {
-          return Object.assign({}, h, {leftRelationship: {_id: value._id}});
-        }
-        return h;
-      })});
+      this.props.updateLeftRelationshipType(hubIndex, value._id);
     };
   }
 
-  addRightRelationshipType(hub) {
+  updateRightRelationshipType(hubIndex, rightRelationshipIndex) {
     return (value) => {
-      this.setState({hubs: this.state.hubs.map(h => {
-        if (h === hub) {
-          return Object.assign({}, h, {rightRelationships: h.rightRelationships.concat({_id: value._id, entities: []})});
-        }
-        return h;
-      })});
+      this.props.updateRightRelationshipType(hubIndex, rightRelationshipIndex, value._id);
     };
   }
 
-  updateRightRelationshipType(hub, rightRelationship) {
-    return (value) => {
-      this.setState({hubs: this.state.hubs.map(h => {
-        if (h === hub) {
-          let rightRelationships = [].concat(h.rightRelationships);
-          if (typeof rightRelationship._id === 'undefined') {
-            rightRelationships = this.addRightRelationship(rightRelationships);
-          }
-
-          return Object.assign({}, h, {rightRelationships: rightRelationships.map(r => {
-            if (r === rightRelationship) {
-              return Object.assign({}, r, {_id: value._id});
-            }
-            return r;
-          })});
-        }
-        return h;
-      })});
-    };
-  }
-
-  removeHub(hub) {
+  removeHub(hubIndex) {
     return () => {
-      this.setState({hubs: this.state.hubs.filter(h => h !== hub)});
+      this.props.removeHub(hubIndex);
     };
   }
 
-  removeRightRelationshipGroup(hub, rightRelationship) {
+  removeRightRelationshipGroup(hubIndex, rightRelationshipIndex) {
     return () => {
-      this.setState({hubs: this.state.hubs.map(h => {
-        if (h === hub) {
-          const rightRelationships = h.rightRelationships.filter(r => r !== rightRelationship);
-          return Object.assign({}, h, {rightRelationships});
-        }
-
-        return h;
-      })});
+      this.props.removeRightRelationshipGroup(hubIndex, rightRelationshipIndex);
     };
   }
 
   render() {
-    const {parentEntity, search} = this.props;
+    const {parentEntity, hubs, search, addHub} = this.props;
 
     return (
       <div className="relationships-graph">
@@ -112,48 +65,48 @@ export class RelationshipsGraphEdit extends Component {
 
         <div>
 
-          {this.state.hubs.map((hub, index) =>
+          {hubs.map((hub, index) =>
             <div className="relationshipsHub" key={index}>
               <div className="removeHub" style={{width: '4%', float: 'left'}}>
-                <i onClick={this.removeHub(hub)} className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>
+                <i onClick={this.removeHub(index)} className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>
               </div>
               <div className="leftRelationshipType" style={{width: '46%', float: 'left'}}>
                 <DropdownList valueField="_id"
                               textField="name"
                               data={this.state.relationshipTypes}
-                              value={hub.leftRelationship._id}
+                              value={hub.getIn(['leftRelationship', '_id'])}
                               filter="contains"
-                              onChange={this.updateLeftRelationshipType(hub)} />
+                              onChange={this.updateLeftRelationshipType(index)} />
               </div>
               <div className="rightRelationships" style={{width: '50%', float: 'left'}}>
-                {hub.rightRelationships.map((rightRelationship, typeIndex) =>
-                  <div className="rightRelationshipsTypeGroup" key={typeIndex}>
+                {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
+                  <div className="rightRelationshipsTypeGroup" key={rightRelationshipIndex}>
                     <div className="rightRelationshipType" style={{width: '92%', float: 'left'}}>
                       <DropdownList valueField="_id"
                                     textField="name"
                                     data={this.state.relationshipTypes}
-                                    value={rightRelationship._id}
+                                    value={rightRelationship.get('_id')}
                                     placeholder="New connection type"
                                     filter="contains"
-                                    onChange={this.updateRightRelationshipType(hub, rightRelationship)}/>
+                                    onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
                     </div>
                     <div className="removeRightRelationshipGroup text-right" style={{width: '8%', float: 'left'}}>
                       {(() => {
-                        if (typeof rightRelationship._id !== 'undefined') {
-                          return <i onClick={this.removeRightRelationshipGroup(hub, rightRelationship)}
+                        if (rightRelationship.has('_id')) {
+                          return <i onClick={this.removeRightRelationshipGroup(index, rightRelationshipIndex)}
                                     className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>;
                         }
 
                         return <span>&nbsp;</span>;
                       })()}
                     </div>
-                    {rightRelationship.entities.map((entity, entityIndex) =>
+                    {rightRelationship.get('entities').map((entity, entityIndex) =>
                       <div className="rightRelationshipType" style={{width: '92%', float: 'left'}} key={entityIndex}>
                         <Doc doc={parentEntity} searchParams={search} />
                       </div>
                     )}
                     {(() => {
-                      if (typeof rightRelationship._id !== 'undefined') {
+                      if (rightRelationship.has('_id')) {
                         return <div className="rightRelationshipAdd" style={{width: '92%', float: 'left'}}>
                                 <button className="btn btn-success" style={{width: '100%'}}>Add entities / documents</button>
                                </div>;
@@ -175,7 +128,7 @@ export class RelationshipsGraphEdit extends Component {
           <div>
             <div className="removeHub" style={{width: '4%', float: 'left'}}>&nbsp;</div>
             <div className="leftRelationshipType" style={{width: '48%', float: 'left'}}>
-              <button className="btn btn-success" onClick={this.addHub}>New relationships group&nbsp;&nbsp;+</button>
+              <button className="btn btn-success" onClick={addHub}>New relationships group&nbsp;&nbsp;+</button>
             </div>
             <div style={{float: 'none', clear: 'both', height: '1px'}}></div>
           </div>
@@ -191,18 +144,33 @@ export class RelationshipsGraphEdit extends Component {
 
 RelationshipsGraphEdit.propTypes = {
   parentEntity: PropTypes.object,
-  connections: PropTypes.object,
+  hubs: PropTypes.object,
   search: PropTypes.object,
-  relationTypes: PropTypes.object
+  relationTypes: PropTypes.object,
+  addHub: PropTypes.func,
+  updateLeftRelationshipType: PropTypes.func,
+  updateRightRelationshipType: PropTypes.func,
+  removeHub: PropTypes.func,
+  removeRightRelationshipGroup: PropTypes.func
 };
 
-export function mapStateToProps({entityView, connectionsList, relationTypes}) {
+export function mapStateToProps({entityView, connectionsList, relationships, relationTypes}) {
   return {
     parentEntity: entityView.entity,
-    connections: connectionsList.searchResults,
     search: connectionsList.sort,
+    hubs: relationships.hubs,
     relationTypes
   };
 }
 
-export default connect(mapStateToProps)(RelationshipsGraphEdit);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    addHub: actions.addHub,
+    updateLeftRelationshipType: actions.updateLeftRelationshipType,
+    updateRightRelationshipType: actions.updateRightRelationshipType,
+    removeHub: actions.removeHub,
+    removeRightRelationshipGroup: actions.removeRightRelationshipGroup
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RelationshipsGraphEdit);
