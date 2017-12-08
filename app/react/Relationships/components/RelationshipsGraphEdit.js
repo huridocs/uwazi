@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as actions from '../actions/actions';
+import * as uiActions from '../actions/uiActions';
 
 import Doc from 'app/Library/components/Doc';
 
@@ -21,6 +22,7 @@ export class RelationshipsGraphEdit extends Component {
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
     this.removeHub = this.removeHub.bind(this);
     this.removeRightRelationshipGroup = this.removeRightRelationshipGroup.bind(this);
+    this.addEntities = this.addEntities.bind(this);
   }
 
   componentWillMount() {
@@ -50,6 +52,14 @@ export class RelationshipsGraphEdit extends Component {
   removeRightRelationshipGroup(hubIndex, rightRelationshipIndex) {
     return () => {
       this.props.removeRightRelationshipGroup(hubIndex, rightRelationshipIndex);
+    };
+  }
+
+  addEntities(hubIndex, rightRelationshipIndex) {
+    return () => {
+      console.log('Add entity en GRAPH EDIT:', hubIndex, rightRelationshipIndex);
+      this.props.edit(hubIndex, rightRelationshipIndex);
+      this.props.openAddEntitiesPanel();
     };
   }
 
@@ -108,7 +118,9 @@ export class RelationshipsGraphEdit extends Component {
                     {(() => {
                       if (rightRelationship.has('_id')) {
                         return <div className="rightRelationshipAdd" style={{width: '92%', float: 'left'}}>
-                                <button className="btn btn-success" style={{width: '100%'}}>Add entities / documents</button>
+                                <button className="btn btn-success"
+                                        style={{width: '100%'}}
+                                        onClick={this.addEntities(index, rightRelationshipIndex)}>Add entities / documents</button>
                                </div>;
                       }
 
@@ -151,7 +163,9 @@ RelationshipsGraphEdit.propTypes = {
   updateLeftRelationshipType: PropTypes.func,
   updateRightRelationshipType: PropTypes.func,
   removeHub: PropTypes.func,
-  removeRightRelationshipGroup: PropTypes.func
+  removeRightRelationshipGroup: PropTypes.func,
+  edit: PropTypes.func,
+  openAddEntitiesPanel: PropTypes.func
 };
 
 export function mapStateToProps({entityView, connectionsList, relationships, relationTypes}) {
@@ -169,7 +183,9 @@ function mapDispatchToProps(dispatch) {
     updateLeftRelationshipType: actions.updateLeftRelationshipType,
     updateRightRelationshipType: actions.updateRightRelationshipType,
     removeHub: actions.removeHub,
-    removeRightRelationshipGroup: actions.removeRightRelationshipGroup
+    removeRightRelationshipGroup: actions.removeRightRelationshipGroup,
+    edit: actions.edit,
+    openAddEntitiesPanel: uiActions.openPanel
   }, dispatch);
 }
 
