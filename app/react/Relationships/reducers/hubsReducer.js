@@ -39,6 +39,10 @@ export default function (state = initialState, action = {}) {
 
     return updatedHubs;
 
+  case types.ADD_RELATIONSHIPS_ENTITY:
+    console.log('En add:', action);
+    return state;
+
   default:
     return fromJS(state);
   }
