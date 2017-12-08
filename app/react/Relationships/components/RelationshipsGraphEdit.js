@@ -24,7 +24,7 @@ export class RelationshipsGraphEdit extends Component {
   }
 
   componentWillMount() {
-    if (!this.state.hubs.length) {
+    if (!this.props.hubs.size) {
       this.props.addHub();
     }
   }
