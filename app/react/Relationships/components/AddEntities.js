@@ -17,9 +17,8 @@ export class AddEntities extends Component {
     this.addEntity = this.addEntity.bind(this);
   }
 
-  addEntity(entity) {
-    console.log('ENTITY:', entity);
-    this.props.addEntity(this.props.hubIndex, this.props.rightRelationshipIndex);
+  addEntity(sharedId, entity) {
+    this.props.addEntity(this.props.hubIndex, this.props.rightRelationshipIndex, entity);
   }
 
   render() {

@@ -57,9 +57,14 @@ export class RelationshipsGraphEdit extends Component {
 
   addEntities(hubIndex, rightRelationshipIndex) {
     return () => {
-      console.log('Add entity en GRAPH EDIT:', hubIndex, rightRelationshipIndex);
       this.props.edit(hubIndex, rightRelationshipIndex);
       this.props.openAddEntitiesPanel();
+    };
+  }
+
+  removeEntity(hubIndex, rightRelationshipIndex, entityIndex) {
+    return () => {
+      this.props.removeEntity(hubIndex, rightRelationshipIndex, entityIndex);
     };
   }
 
@@ -111,8 +116,14 @@ export class RelationshipsGraphEdit extends Component {
                       })()}
                     </div>
                     {rightRelationship.get('entities').map((entity, entityIndex) =>
-                      <div className="rightRelationshipType" style={{width: '92%', float: 'left'}} key={entityIndex}>
-                        <Doc doc={parentEntity} searchParams={search} />
+                      <div key={entityIndex}>
+                        <div className="rightRelationshipType" style={{width: '92%', float: 'left'}}>
+                          <Doc doc={entity} searchParams={search} />
+                        </div>
+                        <div className="removeEntity text-right" style={{width: '8%', float: 'left'}}>
+                          <i onClick={this.removeEntity(index, rightRelationshipIndex, entityIndex)}
+                             className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>
+                        </div>
                       </div>
                     )}
                     {(() => {
@@ -165,6 +176,7 @@ RelationshipsGraphEdit.propTypes = {
   removeHub: PropTypes.func,
   removeRightRelationshipGroup: PropTypes.func,
   edit: PropTypes.func,
+  removeEntity: PropTypes.func,
   openAddEntitiesPanel: PropTypes.func
 };
 
@@ -185,6 +197,7 @@ function mapDispatchToProps(dispatch) {
     removeHub: actions.removeHub,
     removeRightRelationshipGroup: actions.removeRightRelationshipGroup,
     edit: actions.edit,
+    removeEntity: actions.removeEntity,
     openAddEntitiesPanel: uiActions.openPanel
   }, dispatch);
 }

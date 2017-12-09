@@ -10,7 +10,7 @@ export class SearchResults extends Component {
       return (
         <div className={'item ' + (this.props.selected === result.sharedId ? 'is-selected' : '')}
              key={index}
-             onClick={() => this.props.onClick(result.sharedId)}>
+             onClick={() => this.props.onClick(result.sharedId, result)}>
           <div className="item-info">
             <div className="item-name">
               <Icon className="item-icon item-icon-center" data={result.icon} />
