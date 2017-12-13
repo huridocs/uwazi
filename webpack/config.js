@@ -5,6 +5,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CleanPlugin = require('./CleanPlugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var rootPath = __dirname + '/../';
 
@@ -113,6 +114,9 @@ module.exports = function(production) {
       ]
     },
     plugins: [
+      new CopyWebpackPlugin([
+        {from: 'node_modules/react-flags/vendor/flags', to: 'flags'},
+      ]),
       new CleanPlugin(__dirname + '/../dist/'),
       VendorCSS,
       CoreCss,

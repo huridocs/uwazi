@@ -27,7 +27,7 @@ if (app.get('env') === 'production') {
 app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: maxage}));
 app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/public', express.static(path.resolve(__dirname, 'public')));
-app.use('/flag-images', express.static(path.resolve(__dirname, 'node_modules/react-flags/vendor/flags')));
+app.use('/flag-images', express.static(path.resolve(__dirname, 'dist/flags')));
 
 require('./app/api/api.js')(app, http);
 require('./app/react/server.js')(app);
