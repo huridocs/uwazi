@@ -74,7 +74,7 @@ export class RelationshipsGraphEdit extends Component {
     return (
       <div className="relationships-graph">
 
-        <div style={{width: '50%', marginBottom: '15px'}}>
+		<div className="relationshipsParent">
           <Doc doc={parentEntity} searchParams={search} />
         </div>
 
@@ -82,10 +82,11 @@ export class RelationshipsGraphEdit extends Component {
 
           {hubs.map((hub, index) =>
             <div className="relationshipsHub" key={index}>
-              <div className="removeHub" style={{width: '4%', float: 'left'}}>
-                <i onClick={this.removeHub(index)} className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>
+              <div className="removeHub">
+                <i onClick={this.removeHub(index)}
+			  	   className="relationships-removeIcon fa fa-times"></i>
               </div>
-              <div className="leftRelationshipType" style={{width: '46%', float: 'left'}}>
+              <div className="leftRelationshipType">
                 <DropdownList valueField="_id"
                               textField="name"
                               data={this.state.relationshipTypes}
@@ -93,10 +94,13 @@ export class RelationshipsGraphEdit extends Component {
                               filter="contains"
                               onChange={this.updateLeftRelationshipType(index)} />
               </div>
-              <div className="rightRelationships" style={{width: '50%', float: 'left'}}>
+			  <div className="hubRelationship">
+				  <figure></figure>
+			  </div>
+			  <div className="rightRelationships">
                 {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
                   <div className="rightRelationshipsTypeGroup" key={rightRelationshipIndex}>
-                    <div className="rightRelationshipType" style={{width: '92%', float: 'left'}}>
+                    <div className="rightRelationshipType">
                       <DropdownList valueField="_id"
                                     textField="name"
                                     data={this.state.relationshipTypes}
@@ -105,58 +109,52 @@ export class RelationshipsGraphEdit extends Component {
                                     filter="contains"
                                     onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
                     </div>
-                    <div className="removeRightRelationshipGroup text-right" style={{width: '8%', float: 'left'}}>
+                    <div className="removeRightRelationshipGroup">
                       {(() => {
                         if (rightRelationship.has('_id')) {
                           return <i onClick={this.removeRightRelationshipGroup(index, rightRelationshipIndex)}
-                                    className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>;
+                                    className="relationships-removeIcon fa fa-times"></i>;
                         }
 
                         return <span>&nbsp;</span>;
                       })()}
                     </div>
                     {rightRelationship.get('entities').map((entity, entityIndex) =>
-                      <div key={entityIndex}>
-                        <div className="rightRelationshipType" style={{width: '92%', float: 'left'}}>
+                      <div className="rightRelationship"  key={entityIndex}>
+						<div className="rightRelationshipType">
                           <Doc doc={entity} searchParams={search} />
                         </div>
-                        <div className="removeEntity text-right" style={{width: '8%', float: 'left'}}>
+                        <div className="removeEntity">
                           <i onClick={this.removeEntity(index, rightRelationshipIndex, entityIndex)}
-                             className="fa fa-times-circle-o" style={{fontSize: '20px', cursor: 'pointer'}}></i>
+                             className="relationships-removeIcon fa fa-times"></i>
                         </div>
                       </div>
                     )}
                     {(() => {
                       if (rightRelationship.has('_id')) {
-                        return <div className="rightRelationshipAdd" style={{width: '92%', float: 'left'}}>
-                                <button className="btn btn-success"
-                                        style={{width: '100%'}}
-                                        onClick={this.addEntities(index, rightRelationshipIndex)}>Add entities / documents</button>
+							return <div className="rightRelationshipAdd">
+									<button className="relationships-new btn btn-success"	
+											onClick={this.addEntities(index, rightRelationshipIndex)}>Add entities / documents</button>
                                </div>;
                       }
 
                       return null;
                     })()}
-                    <div style={{float: 'none', clear: 'both', height: '5px'}}></div>
                   </div>
                 )}
-
-                <div style={{float: 'none', clear: 'both', height: '1px'}}></div>
               </div>
-
-              <div style={{float: 'none', clear: 'both', height: '1px'}}></div>
             </div>
           )}
 
           <div>
-            <div className="removeHub" style={{width: '4%', float: 'left'}}>&nbsp;</div>
-            <div className="leftRelationshipType" style={{width: '48%', float: 'left'}}>
-              <button className="btn btn-success" onClick={addHub}>New relationships group&nbsp;&nbsp;+</button>
+            <div className="leftRelationshipType">
+				<button className="relationships-new btn btn-success" onClick={addHub}>
+					New relationships group
+				</button>
             </div>
-            <div style={{float: 'none', clear: 'both', height: '1px'}}></div>
           </div>
 
-          <div style={{float: 'none', clear: 'both', height: '15px'}}></div>
+
 
         </div>
 

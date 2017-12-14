@@ -36,9 +36,6 @@ $c-background: #fcfcfc;
 
 
   .item {
-    /*padding-bottom: 0;*/
-    margin-bottom: 0;
-    margin-right: 0 !important;
     width: 100%;
   }
 
@@ -419,4 +416,169 @@ $c-background: #fcfcfc;
   .connection-type-17 { color: $c-type-1; }
   .connection-type-18 { color: $c-type-18; }
 
+}
+
+.relationshipsHub {
+	display: flex;	
+	position: relative;
+	margin-bottom: 30px;	
+	
+	@media(max-width: 1023px) {
+		flex-direction: column;
+	}
+
+	.rw-widget-input {
+		background: #EEEEEE; 
+		border-radius: 0;
+		padding: 0 5px;
+		box-shadow: none;
+		height: $header-height;
+		cursor: pointer;
+	}
+}
+
+.relationships-removeIcon {
+	position: absolute;
+	border: 1px solid $c-grey;
+	color: $c-grey;
+	margin: 18px 0px;
+	width: 16px;
+	height: 16px;
+	text-align: center;
+	line-height: 13px !important;
+	font-size: $f-size-xs !important;
+	border-radius: 50%;
+	cursor: pointer;
+
+	.removeHub & {
+		left: -26px;
+	}
+
+	.rightRelationship &,
+	.removeRightRelationshipGroup & {
+		right: -26px;
+	}
+}
+
+.relationshipsParent,
+.leftRelationshipType,
+.rightRelationships {
+	position: relative;
+
+	@media(min-width: 1024px) {
+		width: 50%;
+	}
+}
+
+.relationshipsParent,
+.leftRelationshipType {
+	@media(min-width: 1024px) {
+		padding-right: 50px;
+	}
+}
+
+.rightRelationships {
+	padding-left: 50px;
+	border-left: 1px solid $c-grey-light;
+
+	&:before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -1px;
+		width: 50px;
+		height: $header-height / 2;
+		background: $c-background;
+	}
+
+	&:after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: -1px;
+		width: 50px;
+		height: $header-height / 2;
+		background: $c-background;
+	}
+
+	
+}
+
+.leftRelationshipType .rw-dropdown-list:after {
+	content: '';
+	display: block;
+	width: 50px;
+	height: 1px;
+	background: $c-grey-light;
+	position: absolute;
+	top: calc(50% - 1px);
+	left: 100%;
+}
+@media(min-width: 1024px) {
+	.leftRelationshipType .rw-dropdown-list:after {
+		content: '';
+		display: block;
+		width: 50px;
+		height: 1px;
+		background: $c-grey-light;
+		position: absolute;
+		top: calc(50% - 1px);
+		left: 100%;
+	}
+}
+.rightRelationships .rw-dropdown-list:after {
+	content: '';
+	display: block;
+	width: 50px;
+	height: 1px;
+	background: $c-grey-light;
+	position: absolute;
+	top: calc(50% - 1px);
+	right: 100%;
+}
+
+.hubRelationship {
+	z-index: 1;
+}
+
+.hubRelationship figure {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	background-color: $c-grey-light;
+	border-radius: 50%;
+	transform: translateX(-50%) translateY(18px);
+}
+
+.rightRelationshipsTypeGroup {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+
+.rightRelationshipsTypeGroup:not(:last-of-type) {
+	margin-bottom: 30px;
+}
+
+.rightRelationship {
+	width: 100%;
+	display: flex;
+	margin: 10px 0 0;
+}
+
+.rightRelationship .item {
+	margin: 0 !important;
+}
+
+.rightRelationshipType {
+	flex: 1;
+}
+
+.rightRelationshipAdd {
+	width: 100%;
+	margin-top: 10px;
+}
+
+.relationships-new {
+	width: 100%;
 }
