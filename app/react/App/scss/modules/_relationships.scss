@@ -477,6 +477,10 @@ $c-background: #fcfcfc;
 .rightRelationships {
 	padding-left: 50px;
 	border-left: 1px solid $c-grey-light;
+	
+	@media(max-width: 1023px) {
+		margin-left: 10px;
+	}
 
 	&:before {
 		content: '';
@@ -501,16 +505,26 @@ $c-background: #fcfcfc;
 	
 }
 
-.leftRelationshipType .rw-dropdown-list:after {
-	content: '';
-	display: block;
-	width: 50px;
-	height: 1px;
-	background: $c-grey-light;
-	position: absolute;
-	top: calc(50% - 1px);
-	left: 100%;
+.leftRelationshipType .rw-dropdown-list {
+	@media(max-width: 1023px) {
+		margin-bottom: 10px;
+	}
 }
+
+@media(max-width: 1023px) {
+	.leftRelationshipType .rw-dropdown-list:after {
+		content: '';
+		display: block;
+		width: 1px;
+		height: 35px;
+		background: #d7d7dc;
+		position: absolute;
+		top: 100%;
+		left: 10px;
+		z-index: 1;
+	}
+}
+
 @media(min-width: 1024px) {
 	.leftRelationshipType .rw-dropdown-list:after {
 		content: '';
@@ -523,6 +537,7 @@ $c-background: #fcfcfc;
 		left: 100%;
 	}
 }
+
 .rightRelationships .rw-dropdown-list:after {
 	content: '';
 	display: block;
@@ -536,6 +551,10 @@ $c-background: #fcfcfc;
 
 .hubRelationship {
 	z-index: 1;
+
+	@media(max-width: 1023px) {
+		display: none;
+	}
 }
 
 .hubRelationship figure {
