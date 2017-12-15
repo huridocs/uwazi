@@ -133,8 +133,11 @@ export class RelationshipsGraphEdit extends Component {
                     {(() => {
                       if (rightRelationship.has('_id')) {
 							return <div className="rightRelationshipAdd">
-									<button className="relationships-new btn btn-success"	
-											onClick={this.addEntities(index, rightRelationshipIndex)}>Add entities / documents</button>
+									<button className="relationships-new" 
+                                            onClick={this.addEntities(index, rightRelationshipIndex)}>
+                                        <span>Add entities / documents</span>
+                                        <i className="fa fa-plus"></i>
+                                    </button>
                                </div>;
                       }
 
@@ -148,8 +151,9 @@ export class RelationshipsGraphEdit extends Component {
 
           <div>
             <div className="leftRelationshipType">
-				<button className="relationships-new btn btn-success" onClick={addHub}>
-					New relationships group
+				<button className="relationships-new" onClick={addHub}>
+                    <span>New relationships group</span>
+                    <i className="fa fa-plus"></i>
 				</button>
             </div>
           </div>
