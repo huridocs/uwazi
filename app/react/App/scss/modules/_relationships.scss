@@ -9,7 +9,7 @@ $c-background: #fcfcfc;
   width: 100%;
   max-width: 960px;
   list-style-type: none;
-  padding: 0;
+  padding: 0 25px;
   margin: auto;
 
   .expand-section {
@@ -448,12 +448,12 @@ $c-background: #fcfcfc;
 	cursor: pointer;
 
 	.removeHub & {
-		left: -26px;
+		left: -25px;
 	}
 
 	.rightRelationship &,
 	.removeRightRelationshipGroup & {
-		right: -26px;
+		right: -25px;
 	}
 }
 
