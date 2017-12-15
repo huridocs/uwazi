@@ -153,7 +153,7 @@ export class RelationshipsGraphEdit extends Component {
             </div>
           )}
 
-          <div>
+          <div className="relationshipsHub">
             <div className="leftRelationshipType">
 				<button className="relationships-new" onClick={addHub}>
                     <span>New relationships group</span>
