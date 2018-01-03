@@ -3,6 +3,15 @@ import search from '../search/search';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
+  app.post('/api/relationships/bulk', needsAuthorization(['admin', 'editor']), (req, res) => {
+    const saveActions = req.body.save.map(references.save);
+    const deleteActions = req.body.delete.map(references.delete);
+
+    Promise.all(saveActions.concat(deleteActions))
+    .then(response => res.json(response))
+    .catch(error => res.json({error}));
+  });
+
   app.post('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
     references.save(req.body, req.language)
     .then(response => res.json(response))
