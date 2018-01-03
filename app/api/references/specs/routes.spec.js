@@ -26,6 +26,24 @@ describe('references routes', () => {
     });
   });
 
+  describe('POST bulk', () => {
+    it('should save and delete the relationships', (done) => {
+      let req = {body: {
+        save: [{_id: 1}, {_id: 2}],
+        delete: [{_id: 3}]
+      }, language: 'es'};
+
+      routes.post('/api/relationships/bulk', req)
+      .then(() => {
+        expect(references.save).toHaveBeenCalledWith({_id: 1}, req.language);
+        expect(references.save).toHaveBeenCalledWith({_id: 2}, req.language);
+        expect(references.delete).toHaveBeenCalledWith({_id: 3}, req.language);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('DELETE', () => {
     it('should delete the reference', (done) => {
       let req = {query: {_id: 'to_delete_id'}};
