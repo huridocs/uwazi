@@ -28,10 +28,10 @@ describe('SearchResults', () => {
     expect(component.find(Loader).length).toBe(0);
 
     component.find('.item').at(0).simulate('click');
-    expect(props.onClick).toHaveBeenCalledWith('r1');
+    expect(props.onClick).toHaveBeenCalledWith('r1', {sharedId: 'r1'});
 
     component.find('.item').at(1).simulate('click');
-    expect(props.onClick).toHaveBeenCalledWith('r2');
+    expect(props.onClick).toHaveBeenCalledWith('r2', {sharedId: 'r2'});
   });
 
   it('should mark the selected item', () => {

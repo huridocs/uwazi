@@ -15,6 +15,7 @@ import {browserHistory} from 'react-router';
 import {deleteEntity} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
+import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import {actions as connectionsActions} from 'app/Connections';
 import {ConnectionsGroups, ConnectionsList, ResetSearch} from 'app/ConnectionsList';
 import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/actions';
@@ -160,6 +161,7 @@ export class EntityViewer extends Component {
         </SidePanel>
 
         <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
+        <AddEntitiesPanel />
 
       </div>
     );
