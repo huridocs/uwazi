@@ -11,6 +11,8 @@ const emptyRigthRelationship = () => {
 };
 
 export default function (state = initialState, action = {}) {
+  let relationships;
+
   switch (action.type) {
 
   case types.ADD_RELATIONSHIPS_HUB:
@@ -35,6 +37,12 @@ export default function (state = initialState, action = {}) {
     console.log('En action update right:', action);
     let updatedHubs = state.setIn([action.index, 'rightRelationships', action.rightIndex, 'template'], action._id);
 
+    relationships = state
+    .getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'])
+    .map(relationship => relationship.set('template', action._id));
+
+    updatedHubs = updatedHubs.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
+
     if (action.rightIndex === state.getIn([action.index, 'rightRelationships']).size - 1) {
       const updatedRightRelationships = updatedHubs.getIn([action.index, 'rightRelationships']).push(fromJS(emptyRigthRelationship()));
       updatedHubs = updatedHubs.setIn([action.index, 'rightRelationships'], updatedRightRelationships);
@@ -45,7 +53,7 @@ export default function (state = initialState, action = {}) {
   case types.ADD_RELATIONSHIPS_ENTITY:
     console.log('En add:', action);
     const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
-    const relationships = relationship.get('relationships').push(fromJS({template: relationship.get('template'), entity: action.entity}));
+    relationships = relationship.get('relationships').push(fromJS({template: relationship.get('template'), entity: action.entity}));
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
