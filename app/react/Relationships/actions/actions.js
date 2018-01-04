@@ -35,8 +35,8 @@ export function addEntity(index, rightIndex, entity) {
   return {type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity};
 }
 
-export function removeEntity(index, rightIndex, entityIndex) {
-  return {type: types.REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, entityIndex};
+export function removeEntity(index, rightIndex, relationshipIndex) {
+  return {type: types.REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex};
 }
 
 

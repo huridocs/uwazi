@@ -44,15 +44,14 @@ export default function (state = initialState, action = {}) {
 
   case types.ADD_RELATIONSHIPS_ENTITY:
     console.log('En add:', action);
-    const relationships = state
-    .getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'])
-    .push(fromJS(action.entity));
+    const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
+    const relationships = relationship.get('relationships').push(fromJS({template: relationship.get('template'), entity: action.entity}));
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
   case types.REMOVE_RELATIONSHIPS_ENTITY:
     console.log('En remove:', action);
-    return state.deleteIn([action.index, 'rightRelationships', action.rightIndex, 'entities', action.entityIndex]);
+    return state.deleteIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex]);
 
   default:
     return fromJS(state);

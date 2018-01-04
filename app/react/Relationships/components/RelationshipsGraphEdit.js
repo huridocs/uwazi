@@ -63,9 +63,9 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeEntity(hubIndex, rightRelationshipIndex, entityIndex) {
+  removeEntity(hubIndex, rightRelationshipIndex, relationshipIndex) {
     return () => {
-      this.props.removeEntity(hubIndex, rightRelationshipIndex, entityIndex);
+      this.props.removeEntity(hubIndex, rightRelationshipIndex, relationshipIndex);
     };
   }
 
@@ -135,13 +135,13 @@ export class RelationshipsGraphEdit extends Component {
                       </div>
                     )}
                     {(() => {
-                      if (rightRelationship.has('_id')) {
-							return <div className="rightRelationshipAdd">
-									<button className="relationships-new" 
-                                            onClick={this.addEntities(index, rightRelationshipIndex)}>
-                                        <span>Add entities / documents</span>
-                                        <i className="fa fa-plus"></i>
-                                    </button>
+                      if (rightRelationship.has('template')) {
+                        return <div className="rightRelationshipAdd">
+                                <button className="relationships-new"
+                                         onClick={this.addEntities(index, rightRelationshipIndex)}>
+                                  <span>Add entities / documents</span>
+                                  <i className="fa fa-plus"></i>
+                                </button>
                                </div>;
                       }
 
@@ -155,10 +155,10 @@ export class RelationshipsGraphEdit extends Component {
 
           <div className="relationshipsHub">
             <div className="leftRelationshipType">
-				<button className="relationships-new" onClick={addHub}>
-                    <span>New relationships group</span>
-                    <i className="fa fa-plus"></i>
-				</button>
+              <button className="relationships-new" onClick={addHub}>
+                <span>New relationships group</span>
+                <i className="fa fa-plus"></i>
+              </button>
             </div>
           </div>
 
