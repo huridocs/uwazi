@@ -137,7 +137,7 @@ export default {
         let isInValues = false;
         const isOwnReference = reference.entity === entity.sharedId;
         values.forEach((item) => {
-          if (item.property.name === reference.entityProperty && reference.entity === item.value) {
+          if (reference.entity === item.value) {
             isInValues = true;
           }
         });
@@ -148,7 +148,7 @@ export default {
       const toCreate = values.filter((item) => {
         let isInReferences = false;
         references.forEach((ref) => {
-          if (item.property.name === ref.entityProperty && ref.entity === item.value) {
+          if (ref.entity === item.value) {
             isInReferences = true;
           }
         });
@@ -159,7 +159,7 @@ export default {
         entity: entity.sharedId,
         hub: generateID()
       };
-      let metadataReference = references.find((ref) => ref.entity === entity.sharedId && ref.entityType === 'metadata') || defaultMetadataReference;
+      let metadataReference = references.find((ref) => ref.entity === entity.sharedId) || defaultMetadataReference;
       const deletes = toDelete.map((ref) => this.delete({_id: ref._id}));
       let toCreateReferences = toCreate.map((item) => {
         return {
@@ -181,18 +181,23 @@ export default {
 
   delete(condition) {
     return model.get(condition)
-    .then((response) => {
-      const hub = response[0].hub;
-      return this.getHub(hub);
+    .then((relationships) => {
+      return Promise.all(relationships.map((relationship) => {
+        return this.getHub(relationship.hub)
+        .then((hub) => [relationship, hub]);
+      }));
     })
-    .then((connectionsInHub) => {
-      const shouldDeleteTheLoneConnectionToo = connectionsInHub.length === 2;
-      if (shouldDeleteTheLoneConnectionToo) {
-        return model.delete({hub: connectionsInHub[0].hub});
-      }
+    .then((hubs) => {
+      return Promise.all(hubs.map(([relationship, hub]) => {
+        const shouldDeleteTheLoneConnectionToo = hub.length === 2;
+        if (shouldDeleteTheLoneConnectionToo) {
+          return model.delete({hub: hub[0].hub});
+        }
 
-      return model.delete(condition);
-    });
+        return model.delete({_id: relationship._id});
+      }));
+    })
+    .catch(console.log);
   },
 
   deleteTextReferences(sharedId, language) {

@@ -4,9 +4,9 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
-import {inbound, templateChangingNames, templateWithoutProperties, relation3, relation4, template} from './fixtures.js';
+import {relation3, relation4, template} from './fixtures.js';
 
-fdescribe('references', () => {
+describe('references', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
@@ -242,8 +242,8 @@ fdescribe('references', () => {
       })
       .then((connections) => {
         expect(connections.length).toBe(2);
-        expect(connections[0].entity).toBe('source1');
-        expect(connections[1].entity).toBe('saveEntityBasedReferencesTestEntity');
+        expect(connections.find((connection) => connection.entity === 'source1')).toBeDefined();
+        expect(connections.find((connection) => connection.entity === 'saveEntityBasedReferencesTestEntity')).toBeDefined();
         expect(connections[0].hub).toEqual(connections[1].hub);
         done();
       });
@@ -301,6 +301,17 @@ fdescribe('references', () => {
       return references.delete(connectionID1)
       .then(() => {
         return references.getHub(hub7);
+      })
+      .then((result) => {
+        expect(result).toEqual([]);
+        done();
+      });
+    });
+
+    it('should delete all the ereferences for complex conditions', (done) => {
+      return references.delete({entity: 'source2'})
+      .then(() => {
+        return references.getByDocument('source2');
       })
       .then((result) => {
         expect(result).toEqual([]);

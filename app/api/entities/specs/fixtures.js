@@ -11,6 +11,12 @@ const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
 
+const hub1 = db.id();
+const hub2 = db.id();
+const hub3 = db.id();
+const hub4 = db.id();
+const hub5 = db.id();
+
 export default {
   entities: [
     {_id: batmanFinishesId, sharedId: 'shared', type: 'entity', template: templateId, language: 'en', title: 'Batman finishes', published: true, metadata: {property1: 'value1'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
@@ -66,11 +72,16 @@ export default {
     ]}
   ],
   connections: [
-    {_id: referenceId, title: 'reference1', sourceDocument: 'shared', template: 'relation1'},
-    {_id: db.id(), title: 'reference2', sourceDocument: 'source2', template: 'relation2', targetDocument: 'shared'},
-    {_id: db.id(), title: 'reference3', sourceDocument: 'another', template: 'relation3', targetDocument: 'document'},
-    {_id: db.id(), title: 'reference4', sourceDocument: 'shared', template: 'relation2', targetDocument: 'shared1', sourceType: 'metadata'},
-    {_id: db.id(), title: 'reference5', sourceDocument: 'shared1', template: 'relation2', targetDocument: 'shared', sourceType: 'metadata'}
+    {_id: referenceId, entity: 'shared', template: 'relation1', hub: hub1},
+    {entity: 'shared2', template: 'relation1', hub: hub1},
+    {entity: 'shared', template: 'relation1', hub: hub2},
+    {entity: 'source2', template: 'relation2', hub: hub2},
+    {entity: 'another', template: 'relation3', hub: hub3},
+    {entity: 'document', template: 'relation3', hub: hub3},
+    {entity: 'shared', template: 'relation2', hub: hub4},
+    {entity: 'shared1', template: 'relation2', hub: hub4},
+    {entity: 'shared1', template: 'relation2', hub: hub5},
+    {entity: 'shared', template: 'relation2', hub: hub5}
   ]
 };
 
