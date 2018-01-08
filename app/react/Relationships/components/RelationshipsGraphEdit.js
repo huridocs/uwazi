@@ -11,6 +11,7 @@ import Doc from 'app/Library/components/Doc';
 
 import DropdownList from 'app/Forms/components/DropdownList';
 
+
 export class RelationshipsGraphEdit extends Component {
   constructor(props) {
     super(props);
@@ -62,10 +63,14 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeEntity(hubIndex, rightRelationshipIndex, entityIndex) {
+  removeEntity(hubIndex, rightRelationshipIndex, relationshipIndex) {
     return () => {
-      this.props.removeEntity(hubIndex, rightRelationshipIndex, entityIndex);
+      this.props.removeEntity(hubIndex, rightRelationshipIndex, relationshipIndex);
     };
+  }
+
+  printCurrentHubs() {
+    console.log(this.props.hubs.toJS());
   }
 
   render() {
@@ -74,44 +79,43 @@ export class RelationshipsGraphEdit extends Component {
     return (
       <div className="relationships-graph">
 
-		<div className="relationshipsParent">
+        <div className="relationshipsParent">
           <Doc doc={parentEntity} searchParams={search} />
         </div>
 
         <div>
-
           {hubs.map((hub, index) =>
             <div className="relationshipsHub" key={index}>
               <div className="removeHub">
                 <i onClick={this.removeHub(index)}
-			  	   className="relationships-removeIcon fa fa-times"></i>
+                   className="relationships-removeIcon fa fa-times"></i>
               </div>
               <div className="leftRelationshipType">
                 <DropdownList valueField="_id"
                               textField="name"
                               data={this.state.relationshipTypes}
-                              value={hub.getIn(['leftRelationship', '_id'])}
+                              value={hub.getIn(['leftRelationship', 'template'])}
                               filter="contains"
                               onChange={this.updateLeftRelationshipType(index)} />
               </div>
-			  <div className="hubRelationship">
-				  <figure></figure>
-			  </div>
-			  <div className="rightRelationships">
+              <div className="hubRelationship">
+                <figure></figure>
+              </div>
+              <div className="rightRelationships">
                 {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
                   <div className="rightRelationshipsTypeGroup" key={rightRelationshipIndex}>
                     <div className="rightRelationshipType">
                       <DropdownList valueField="_id"
                                     textField="name"
                                     data={this.state.relationshipTypes}
-                                    value={rightRelationship.get('_id')}
+                                    value={rightRelationship.get('template')}
                                     placeholder="New connection type"
                                     filter="contains"
                                     onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
                     </div>
                     <div className="removeRightRelationshipGroup">
                       {(() => {
-                        if (rightRelationship.has('_id')) {
+                        if (rightRelationship.has('template')) {
                           return <i onClick={this.removeRightRelationshipGroup(index, rightRelationshipIndex)}
                                     className="relationships-removeIcon fa fa-times"></i>;
                         }
@@ -119,25 +123,25 @@ export class RelationshipsGraphEdit extends Component {
                         return <span>&nbsp;</span>;
                       })()}
                     </div>
-                    {rightRelationship.get('entities').map((entity, entityIndex) =>
-                      <div className="rightRelationship"  key={entityIndex}>
-						<div className="rightRelationshipType">
-                          <Doc doc={entity} searchParams={search} />
+                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) =>
+                      <div className="rightRelationship" key={relationshipIndex}>
+                        <div className="rightRelationshipType">
+                          <Doc doc={relationship.get('entity')} searchParams={search} />
                         </div>
                         <div className="removeEntity">
-                          <i onClick={this.removeEntity(index, rightRelationshipIndex, entityIndex)}
+                          <i onClick={this.removeEntity(index, rightRelationshipIndex, relationshipIndex)}
                              className="relationships-removeIcon fa fa-times"></i>
                         </div>
                       </div>
                     )}
                     {(() => {
-                      if (rightRelationship.has('_id')) {
-							return <div className="rightRelationshipAdd">
-									<button className="relationships-new" 
-                                            onClick={this.addEntities(index, rightRelationshipIndex)}>
-                                        <span>Add entities / documents</span>
-                                        <i className="fa fa-plus"></i>
-                                    </button>
+                      if (rightRelationship.has('template')) {
+                        return <div className="rightRelationshipAdd">
+                                <button className="relationships-new"
+                                         onClick={this.addEntities(index, rightRelationshipIndex)}>
+                                  <span>Add entities / documents</span>
+                                  <i className="fa fa-plus"></i>
+                                </button>
                                </div>;
                       }
 
@@ -151,15 +155,20 @@ export class RelationshipsGraphEdit extends Component {
 
           <div className="relationshipsHub">
             <div className="leftRelationshipType">
-				<button className="relationships-new" onClick={addHub}>
-                    <span>New relationships group</span>
-                    <i className="fa fa-plus"></i>
-				</button>
+              <button className="relationships-new" onClick={addHub}>
+                <span>New relationships group</span>
+                <i className="fa fa-plus"></i>
+              </button>
             </div>
           </div>
 
-
-
+          <div>
+            <div className="leftRelationshipType">
+              <button className="relationships-new btn btn-success" onClick={() => {this.printCurrentHubs();}}>
+                Print current hubs
+              </button>
+            </div>
+          </div>
         </div>
 
       </div>
