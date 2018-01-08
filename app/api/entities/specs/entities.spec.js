@@ -198,50 +198,6 @@ describe('entities', () => {
         })
         .catch(catchErrors(done));
       });
-
-      describe('when entity its being used as thesauri', () => {
-        it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
-          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateChangingNames};
-          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
-          entities.save(doc, {language: 'en'})
-          .then(() => {
-            const docToDeleteFromMetadata = entities.deleteEntityFromMetadata.calls.argsFor(0)[0];
-            expect(docToDeleteFromMetadata.template.toString()).toBe(templateId.toString());
-            done();
-          })
-          .catch(catchErrors(done));
-        });
-
-        it('should delete all metadata connections created automatically', (done) => {
-          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateChangingNames};
-          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
-          entities.save(doc, {language: 'en'})
-          .then(() => {
-            return references.get();
-          })
-          .then((connections) => {
-            let batmanFinishesConnections = connections.filter(c => c.targetDocument === 'shared' || c.sourceDocument === 'shared');
-            expect(batmanFinishesConnections.length).toBe(2);
-            expect(batmanFinishesConnections[0].title).toBe('reference1');
-            expect(batmanFinishesConnections[1].title).toBe('reference2');
-            done();
-          })
-          .catch(catchErrors(done));
-        });
-      });
-
-      describe('when entity its being used as thesauri and template do not change', () => {
-        it('should not deleteEntityFromMetadata', (done) => {
-          let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {}, published: false, template: templateId};
-          spyOn(entities, 'deleteEntityFromMetadata').and.returnValue(Promise.resolve());
-          entities.save(doc, {language: 'en'})
-          .then(() => {
-            expect(entities.deleteEntityFromMetadata).not.toHaveBeenCalled();
-            done();
-          })
-          .catch(catchErrors(done));
-        });
-      });
     });
 
     it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
@@ -642,10 +598,9 @@ describe('entities', () => {
 
     it('should delete the document references', (done) => {
       return entities.delete('shared')
-      .then(() => references.get())
+      .then(() => references.getByDocument('shared'))
       .then((refs) => {
-        expect(refs.length).toBe(1);
-        expect(refs[0].title).toBe('reference3');
+        expect(refs.length).toBe(0);
         done();
       })
       .catch(catchErrors(done));

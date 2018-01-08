@@ -65,33 +65,6 @@ describe('templates', () => {
         })
         .catch(catchErrors(done));
       });
-
-      it('should update metadata connections', (done) => {
-        spyOn(translations, 'updateContext');
-        spyOn(entities, 'removeValuesFromEntities');
-        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
-        spyOn(references, 'updateMetadataConnections').and.returnValue(Promise.resolve());
-        const changedTemplate = {
-          _id: templateWithContents, name: 'changed', properties: [
-            {id: '1', type: 'select', content: 'new_thesauri', label: 'the select'},
-            {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'the multiselect'}
-          ]
-        };
-
-        const sanitizedTemplate = {
-          _id: templateWithContents, name: 'changed', properties: [
-            {id: '1', type: 'select', content: 'new_thesauri', label: 'the select', name: 'the_select'},
-            {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'the multiselect', name: 'the_multiselect'}
-          ]
-        };
-
-        templates.save(changedTemplate)
-        .then(() => {
-          expect(references.updateMetadataConnections).toHaveBeenCalledWith(sanitizedTemplate);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
     });
 
     it('should validate properties not having repeated names and return an error', (done) => {

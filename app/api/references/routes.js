@@ -4,8 +4,8 @@ import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
   app.post('/api/relationships/bulk', needsAuthorization(['admin', 'editor']), (req, res) => {
-    const saveActions = req.body.save.map(references.save);
-    const deleteActions = req.body.delete.map(references.delete);
+    const saveActions = req.body.save.map((reference) => references.save(reference, req.language));
+    const deleteActions = req.body.delete.map((reference) => references.delete(reference, req.language));
 
     Promise.all(saveActions.concat(deleteActions))
     .then(response => res.json(response))
