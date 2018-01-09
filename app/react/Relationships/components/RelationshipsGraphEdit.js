@@ -32,27 +32,27 @@ export class RelationshipsGraphEdit extends Component {
     }
   }
 
-  updateLeftRelationshipType(hub, index) {
+  updateLeftRelationshipType(index) {
     return (value) => {
-      this.props.updateLeftRelationshipType(hub, index, value._id);
+      this.props.updateLeftRelationshipType(index, value._id);
     };
   }
 
-  updateRightRelationshipType(hub, index, rightRelationshipIndex) {
+  updateRightRelationshipType(index, rightRelationshipIndex) {
     return (value) => {
-      this.props.updateRightRelationshipType(hub, index, rightRelationshipIndex, value._id);
+      this.props.updateRightRelationshipType(index, rightRelationshipIndex, value._id);
     };
   }
 
-  removeLeftRelationship(hub, index) {
+  removeLeftRelationship(index) {
     return () => {
-      this.props.removeLeftRelationship(hub, index);
+      this.props.removeLeftRelationship(index);
     };
   }
 
-  removeRightRelationshipGroup(hub, index, rightRelationshipIndex) {
+  removeRightRelationshipGroup(index, rightRelationshipIndex) {
     return () => {
-      this.props.removeRightRelationshipGroup(hub, index, rightRelationshipIndex);
+      this.props.removeRightRelationshipGroup(index, rightRelationshipIndex);
     };
   }
 
@@ -63,9 +63,9 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeEntity(hub, index, rightRelationshipIndex, relationshipIndex) {
+  removeEntity(index, rightRelationshipIndex, relationshipIndex) {
     return () => {
-      this.props.removeEntity(hub, index, rightRelationshipIndex, relationshipIndex);
+      this.props.removeEntity(index, rightRelationshipIndex, relationshipIndex);
     };
   }
 
@@ -90,7 +90,7 @@ export class RelationshipsGraphEdit extends Component {
               return (
                 <div className="relationshipsHub" key={index}>
                   <div className="removeHub">
-                    <i onClick={this.removeLeftRelationship(hub, index)}
+                    <i onClick={this.removeLeftRelationship(index)}
                        className="relationships-removeIcon fa fa-times"></i>
                   </div>
                   <div className="leftRelationshipType">
@@ -99,7 +99,7 @@ export class RelationshipsGraphEdit extends Component {
                                   data={this.state.relationshipTypes}
                                   value={hub.getIn(['leftRelationship', 'template'])}
                                   filter="contains"
-                                  onChange={this.updateLeftRelationshipType(hub, index)} />
+                                  onChange={this.updateLeftRelationshipType(index)} />
                   </div>
                   <div className="hubRelationship">
                     <figure></figure>
@@ -116,12 +116,12 @@ export class RelationshipsGraphEdit extends Component {
                                             value={rightRelationship.get('template')}
                                             placeholder="New connection type"
                                             filter="contains"
-                                            onChange={this.updateRightRelationshipType(hub, index, rightRelationshipIndex)}/>
+                                            onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
                             </div>
                             <div className="removeRightRelationshipGroup">
                               {(() => {
                                 if (rightRelationship.has('template')) {
-                                  return <i onClick={this.removeRightRelationshipGroup(hub, index, rightRelationshipIndex)}
+                                  return <i onClick={this.removeRightRelationshipGroup(index, rightRelationshipIndex)}
                                             className="relationships-removeIcon fa fa-times"></i>;
                                 }
 
@@ -136,7 +136,7 @@ export class RelationshipsGraphEdit extends Component {
                                       <Doc doc={relationship.get('entity')} searchParams={search} />
                                     </div>
                                     <div className="removeEntity">
-                                      <i onClick={this.removeEntity(hub, index, rightRelationshipIndex, relationshipIndex)}
+                                      <i onClick={this.removeEntity(index, rightRelationshipIndex, relationshipIndex)}
                                          className="relationships-removeIcon fa fa-times"></i>
                                     </div>
                                   </div>
