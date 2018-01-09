@@ -36,7 +36,7 @@ export default [{
   rightRelationships: [{
     template: '58ada34d299e826748545115',
     relationships: [{
-      _id: 'relationshipB',
+      _id: 'relationshipD',
       template: '58ada34d299e826748545115',
       entity: {
         _id: '58ada350299e826748545791',
@@ -71,7 +71,7 @@ export default [{
         uploaded: true
       }
     }, {
-      _id: 'relationshipC',
+      _id: 'relationshipE',
       template: '58ada34d299e826748545115',
       entity: {
         _id: '58ada34f299e82674854561a',
@@ -102,7 +102,7 @@ export default [{
         uploaded: true
       }
     }, {
-      _id: 'relationshipD',
+      _id: 'relationshipF',
       template: '58ada34d299e826748545115',
       entity: {
         _id: '58ada34e299e82674854557f',
@@ -140,7 +140,7 @@ export default [{
   }, {
     template: '58ada34d299e826748545116',
     relationships: [{
-      _id: 'relationshipE',
+      _id: 'relationshipG',
       template: '58ada34d299e826748545116',
       entity: {
         _id: '58ada34f299e826748545645',
@@ -174,7 +174,7 @@ export default [{
         uploaded: true
       }
     }, {
-      _id: 'relationshipF',
+      _id: 'relationshipH',
       template: '58ada34d299e826748545116',
       entity: {
         _id: '58ada350299e8267485457a8',

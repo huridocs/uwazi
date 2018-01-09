@@ -21,8 +21,8 @@ export default function (state = initialState, action = {}) {
       rightRelationships: [emptyRigthRelationship()]
     }));
 
-  case types.REMOVE_RELATIONSHIPS_HUB:
-    console.log('En action delete:', action);
+  case types.REMOVE_RELATIONSHIPS_LEFT:
+    console.log('En hub action delete:', action);
     return state.delete(action.index);
 
   case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:

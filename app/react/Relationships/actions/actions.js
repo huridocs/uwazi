@@ -11,16 +11,16 @@ export function addHub() {
   return {type: types.ADD_RELATIONSHIPS_HUB};
 }
 
-export function removeHub(index) {
-  return {type: types.REMOVE_RELATIONSHIPS_HUB, index};
+export function removeLeftRelationship(hub, index) {
+  return {type: types.REMOVE_RELATIONSHIPS_LEFT, hub, index};
 }
 
-export function removeRightRelationshipGroup(index, rightIndex) {
-  return {type: types.REMOVE_RELATIONSHIPS_RIGHT_GROUP, index, rightIndex};
+export function removeRightRelationshipGroup(hub, index, rightIndex) {
+  return {type: types.REMOVE_RELATIONSHIPS_RIGHT_GROUP, hub, index, rightIndex};
 }
 
-export function updateLeftRelationshipType(index, _id) {
-  return {type: types.UPDATE_RELATIONSHIPS_LEFT_TYPE, index, _id};
+export function updateLeftRelationshipType(hub, index, _id) {
+  return {type: types.UPDATE_RELATIONSHIPS_LEFT_TYPE, hub, index, _id};
 }
 
 export function updateRightRelationshipType(index, rightIndex, _id) {
@@ -35,8 +35,8 @@ export function addEntity(index, rightIndex, entity) {
   return {type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity};
 }
 
-export function removeEntity(index, rightIndex, relationshipIndex) {
-  return {type: types.REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex};
+export function removeEntity(hub, index, rightIndex, relationshipIndex) {
+  return {type: types.REMOVE_RELATIONSHIPS_ENTITY, hub, index, rightIndex, relationshipIndex};
 }
 
 
