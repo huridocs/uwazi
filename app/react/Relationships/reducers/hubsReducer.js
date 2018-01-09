@@ -21,17 +21,18 @@ export default function (state = initialState, action = {}) {
       rightRelationships: [emptyRigthRelationship()]
     }));
 
+  case types.UPDATE_RELATIONSHIPS_LEFT_TYPE:
+    return state
+    .setIn([action.index, 'leftRelationship', 'template'], action._id)
+    .setIn([action.index, 'modified'], true);
+
   case types.REMOVE_RELATIONSHIPS_LEFT:
     return state.setIn([action.index, 'deleted'], true);
 
-  case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:
-    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], true);
-
-  case types.UPDATE_RELATIONSHIPS_LEFT_TYPE:
-    return state.setIn([action.index, 'leftRelationship', 'template'], action._id);
-
   case types.UPDATE_RELATIONSHIPS_RIGHT_TYPE:
-    let updatedHubs = state.setIn([action.index, 'rightRelationships', action.rightIndex, 'template'], action._id);
+    let updatedHubs = state
+    .setIn([action.index, 'rightRelationships', action.rightIndex, 'template'], action._id)
+    .setIn([action.index, 'rightRelationships', action.rightIndex, 'modified'], true);
 
     relationships = state
     .getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'])
@@ -45,6 +46,9 @@ export default function (state = initialState, action = {}) {
     }
 
     return updatedHubs;
+
+  case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], true);
 
   case types.ADD_RELATIONSHIPS_ENTITY:
     const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
