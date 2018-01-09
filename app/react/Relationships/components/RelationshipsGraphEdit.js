@@ -21,7 +21,7 @@ export class RelationshipsGraphEdit extends Component {
 
     this.updateLeftRelationshipType = this.updateLeftRelationshipType.bind(this);
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
-    this.removeHub = this.removeHub.bind(this);
+    this.removeLeftRelationship = this.removeLeftRelationship.bind(this);
     this.removeRightRelationshipGroup = this.removeRightRelationshipGroup.bind(this);
     this.addEntities = this.addEntities.bind(this);
   }
@@ -32,9 +32,9 @@ export class RelationshipsGraphEdit extends Component {
     }
   }
 
-  updateLeftRelationshipType(hubIndex) {
+  updateLeftRelationshipType(hub, index) {
     return (value) => {
-      this.props.updateLeftRelationshipType(hubIndex, value._id);
+      this.props.updateLeftRelationshipType(hub, index, value._id);
     };
   }
 
@@ -44,15 +44,15 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeHub(hubIndex) {
+  removeLeftRelationship(hub, index) {
     return () => {
-      this.props.removeHub(hubIndex);
+      this.props.removeLeftRelationship(hub, index);
     };
   }
 
-  removeRightRelationshipGroup(hubIndex, rightRelationshipIndex) {
+  removeRightRelationshipGroup(hub, index, rightRelationshipIndex) {
     return () => {
-      this.props.removeRightRelationshipGroup(hubIndex, rightRelationshipIndex);
+      this.props.removeRightRelationshipGroup(hub, index, rightRelationshipIndex);
     };
   }
 
@@ -63,14 +63,14 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeEntity(hubIndex, rightRelationshipIndex, relationshipIndex) {
+  removeEntity(hub, index, rightRelationshipIndex, relationshipIndex) {
     return () => {
-      this.props.removeEntity(hubIndex, rightRelationshipIndex, relationshipIndex);
+      this.props.removeEntity(hub, index, rightRelationshipIndex, relationshipIndex);
     };
   }
 
-  printCurrentHubs() {
-    console.log(this.props.hubs.toJS());
+  printStoreData() {
+    console.log({hubs: this.props.hubs.toJS(), apiCalls: this.props.apiCalls.toJS()});
   }
 
   render() {
@@ -87,7 +87,7 @@ export class RelationshipsGraphEdit extends Component {
           {hubs.map((hub, index) =>
             <div className="relationshipsHub" key={index}>
               <div className="removeHub">
-                <i onClick={this.removeHub(index)}
+                <i onClick={this.removeLeftRelationship(hub, index)}
                    className="relationships-removeIcon fa fa-times"></i>
               </div>
               <div className="leftRelationshipType">
@@ -96,7 +96,7 @@ export class RelationshipsGraphEdit extends Component {
                               data={this.state.relationshipTypes}
                               value={hub.getIn(['leftRelationship', 'template'])}
                               filter="contains"
-                              onChange={this.updateLeftRelationshipType(index)} />
+                              onChange={this.updateLeftRelationshipType(hub, index)} />
               </div>
               <div className="hubRelationship">
                 <figure></figure>
@@ -116,7 +116,7 @@ export class RelationshipsGraphEdit extends Component {
                     <div className="removeRightRelationshipGroup">
                       {(() => {
                         if (rightRelationship.has('template')) {
-                          return <i onClick={this.removeRightRelationshipGroup(index, rightRelationshipIndex)}
+                          return <i onClick={this.removeRightRelationshipGroup(hub, index, rightRelationshipIndex)}
                                     className="relationships-removeIcon fa fa-times"></i>;
                         }
 
@@ -129,7 +129,7 @@ export class RelationshipsGraphEdit extends Component {
                           <Doc doc={relationship.get('entity')} searchParams={search} />
                         </div>
                         <div className="removeEntity">
-                          <i onClick={this.removeEntity(index, rightRelationshipIndex, relationshipIndex)}
+                          <i onClick={this.removeEntity(hub, index, rightRelationshipIndex, relationshipIndex)}
                              className="relationships-removeIcon fa fa-times"></i>
                         </div>
                       </div>
@@ -164,8 +164,8 @@ export class RelationshipsGraphEdit extends Component {
 
           <div>
             <div className="leftRelationshipType">
-              <button className="relationships-new btn btn-success" onClick={() => {this.printCurrentHubs();}}>
-                Print current hubs
+              <button className="relationships-new btn btn-success" onClick={() => {this.printStoreData();}}>
+                Print store data
               </button>
             </div>
           </div>
@@ -179,12 +179,13 @@ export class RelationshipsGraphEdit extends Component {
 RelationshipsGraphEdit.propTypes = {
   parentEntity: PropTypes.object,
   hubs: PropTypes.object,
+  apiCalls: PropTypes.object,
   search: PropTypes.object,
   relationTypes: PropTypes.object,
   addHub: PropTypes.func,
   updateLeftRelationshipType: PropTypes.func,
   updateRightRelationshipType: PropTypes.func,
-  removeHub: PropTypes.func,
+  removeLeftRelationship: PropTypes.func,
   removeRightRelationshipGroup: PropTypes.func,
   edit: PropTypes.func,
   removeEntity: PropTypes.func,
@@ -196,6 +197,7 @@ export function mapStateToProps({entityView, connectionsList, relationships, rel
     parentEntity: entityView.entity,
     search: connectionsList.sort,
     hubs: relationships.hubs,
+    apiCalls: relationships.apiCalls,
     relationTypes
   };
 }
@@ -205,7 +207,7 @@ function mapDispatchToProps(dispatch) {
     addHub: actions.addHub,
     updateLeftRelationshipType: actions.updateLeftRelationshipType,
     updateRightRelationshipType: actions.updateRightRelationshipType,
-    removeHub: actions.removeHub,
+    removeLeftRelationship: actions.removeLeftRelationship,
     removeRightRelationshipGroup: actions.removeRightRelationshipGroup,
     edit: actions.edit,
     removeEntity: actions.removeEntity,
