@@ -22,19 +22,15 @@ export default function (state = initialState, action = {}) {
     }));
 
   case types.REMOVE_RELATIONSHIPS_LEFT:
-    console.log('En hub action delete:', action);
-    return state.delete(action.index);
+    return state.setIn([action.index, 'deleted'], true);
 
   case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:
-    console.log('En action delete right:', action);
-    return state.deleteIn([action.index, 'rightRelationships', action.rightIndex]);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], true);
 
   case types.UPDATE_RELATIONSHIPS_LEFT_TYPE:
-    console.log('En action update left:', action);
     return state.setIn([action.index, 'leftRelationship', 'template'], action._id);
 
   case types.UPDATE_RELATIONSHIPS_RIGHT_TYPE:
-    console.log('En action update right:', action);
     let updatedHubs = state.setIn([action.index, 'rightRelationships', action.rightIndex, 'template'], action._id);
 
     relationships = state
@@ -51,15 +47,13 @@ export default function (state = initialState, action = {}) {
     return updatedHubs;
 
   case types.ADD_RELATIONSHIPS_ENTITY:
-    console.log('En add:', action);
     const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
     relationships = relationship.get('relationships').push(fromJS({template: relationship.get('template'), entity: action.entity}));
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
   case types.REMOVE_RELATIONSHIPS_ENTITY:
-    console.log('En remove:', action);
-    return state.deleteIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex]);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], true);
 
   default:
     return fromJS(state);

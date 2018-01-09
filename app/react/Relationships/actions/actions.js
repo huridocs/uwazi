@@ -23,8 +23,8 @@ export function updateLeftRelationshipType(hub, index, _id) {
   return {type: types.UPDATE_RELATIONSHIPS_LEFT_TYPE, hub, index, _id};
 }
 
-export function updateRightRelationshipType(index, rightIndex, _id) {
-  return {type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE, index, rightIndex, _id};
+export function updateRightRelationshipType(hub, index, rightIndex, _id) {
+  return {type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE, hub, index, rightIndex, _id};
 }
 
 export function edit(index, rightIndex) {
@@ -37,6 +37,56 @@ export function addEntity(index, rightIndex, entity) {
 
 export function removeEntity(hub, index, rightIndex, relationshipIndex) {
   return {type: types.REMOVE_RELATIONSHIPS_ENTITY, hub, index, rightIndex, relationshipIndex};
+}
+
+export function saveRelationships() {
+  return function (dispatch, getState) {
+    dispatch({type: types.SAVING_RELATIONSHIPS});
+    const parentEntityId = getState().entityView.entity.get('sharedId');
+    const hubs = getState().relationships.hubs.toJS();
+    const hubActions = getState().relationships.hubActions.toJS();
+
+    const apiCall = hubs.reduce((apiActions, hubData) => {
+      if (!hubData.hub) {
+        const leftRelationship = Object.assign({entity: parentEntityId}, hubData.leftRelationship);
+        const rightRelationships = hubData.rightRelationships.reduce((relationships, rightGroup) => {
+          return relationships.concat(rightGroup.relationships.map(r => Object.assign(r, {entity: r.entity._id})));
+        }, []);
+        const fullHubData = [leftRelationship].concat(rightRelationships);
+        apiActions.save.push(fullHubData);
+      }
+
+      if (hubData.hub) {
+        if (hubActions.changed.indexOf(hubData.leftRelationship._id) !== -1 && !hubData.deleted) {
+          apiActions.save.push(Object.assign({entity: parentEntityId, hub: hubData.hub}, hubData.leftRelationship));
+        }
+
+        if (hubActions.deleted.indexOf(hubData.leftRelationship._id) !== -1) {
+          apiActions.delete.push({_id: hubData.leftRelationship._id});
+        }
+
+        hubData.rightRelationships.forEach(rightGroup => {
+          rightGroup.relationships.forEach(r => {
+            if (hubActions.changed.indexOf(r._id) !== -1 && !rightGroup.deleted && !r.deleted) {
+              apiActions.save.push(Object.assign(r, {entity: r.entity._id, hub: hubData.hub}));
+            }
+
+            if (hubActions.deleted.indexOf(r._id) !== -1) {
+              apiActions.delete.push(Object.assign({_id: r._id}));
+            }
+
+            if (!r._id && !rightGroup.deleted) {
+              apiActions.save.push(Object.assign(r, {entity: r.entity._id, hub: hubData.hub}));
+            }
+          });
+        });
+      }
+
+      return apiActions;
+    }, {save: [], delete: []});
+
+    console.log('apiCall:', apiCall);
+  };
 }
 
 

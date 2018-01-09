@@ -1,11 +1,12 @@
 import * as types from '../actions/actionTypes';
 import {fromJS} from 'immutable';
 
-const initialState = {changed: [], deleted: []};
+const initialState = {changed: [], deleted: [], saving: false};
 
 export default function (state = initialState, action = {}) {
   let changed;
   let deleted;
+  let afectedRelationships;
 
   switch (action.type) {
 
@@ -17,7 +18,7 @@ export default function (state = initialState, action = {}) {
     return state.set('deleted', deleted);
 
   case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:
-    const afectedRelationships = action.hub
+    afectedRelationships = action.hub
     .getIn(['rightRelationships', action.rightIndex, 'relationships'])
     .map(relationship => relationship.get('_id'))
     .filter(v => Boolean(v));
@@ -40,6 +41,22 @@ export default function (state = initialState, action = {}) {
     .filter(v => Boolean(v));
 
     return state.set('changed', changed);
+
+  case types.UPDATE_RELATIONSHIPS_RIGHT_TYPE:
+
+    afectedRelationships = action.hub
+    .getIn(['rightRelationships', action.rightIndex, 'relationships'])
+    .map(relationship => relationship.get('_id'))
+    .filter(v => Boolean(v));
+
+    changed = state.get('changed')
+    .concat(afectedRelationships);
+
+    return state.set('changed', changed);
+
+  case types.SAVING_RELATIONSHIPS:
+    console.log('Saving...');
+    return state.set('saving', true);
 
   default:
     return fromJS(state);
