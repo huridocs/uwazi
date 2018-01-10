@@ -11,8 +11,8 @@ export function addHub() {
   return {type: types.ADD_RELATIONSHIPS_HUB};
 }
 
-export function removeHub(index) {
-  return {type: types.REMOVE_RELATIONSHIPS_HUB, index};
+export function removeLeftRelationship(index) {
+  return {type: types.REMOVE_RELATIONSHIPS_LEFT, index};
 }
 
 export function removeRightRelationshipGroup(index, rightIndex) {
@@ -37,6 +37,63 @@ export function addEntity(index, rightIndex, entity) {
 
 export function removeEntity(index, rightIndex, relationshipIndex) {
   return {type: types.REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex};
+}
+
+export function saveRelationships() {
+  return function (dispatch, getState) {
+    dispatch({type: types.SAVING_RELATIONSHIPS});
+    const parentEntityId = getState().entityView.entity.get('sharedId');
+    const hubs = getState().relationships.hubs.toJS();
+
+    const apiCall = hubs.reduce((apiActions, hubData) => {
+      if (!hubData.hub && !hubData.deleted) {
+        const leftRelationship = Object.assign({entity: parentEntityId}, hubData.leftRelationship);
+        const rightRelationships = hubData.rightRelationships.reduce((relationships, rightGroup) => {
+          if (!rightGroup.deleted) {
+            const newRelationships = rightGroup.relationships
+            .filter(r => !r.deleted)
+            .map(r => Object.assign(r, {entity: r.entity.sharedId}));
+
+            return relationships.concat(newRelationships);
+          }
+
+          return relationships;
+        }, []);
+        const fullHubData = [leftRelationship].concat(rightRelationships);
+        apiActions.save.push(fullHubData);
+      }
+
+      if (hubData.hub) {
+        if (hubData.deleted) {
+          apiActions.delete.push({_id: hubData.leftRelationship._id});
+        }
+
+        if (hubData.modified && !hubData.deleted) {
+          apiActions.save.push(Object.assign({entity: parentEntityId, hub: hubData.hub}, hubData.leftRelationship));
+        }
+
+        hubData.rightRelationships.forEach(rightGroup => {
+          rightGroup.relationships.forEach(r => {
+            const deleted = rightGroup.deleted || r.deleted;
+
+            if (deleted && r._id) {
+              apiActions.delete.push(Object.assign({_id: r._id}));
+            }
+
+            const toSave = rightGroup.modified || !r._id;
+
+            if (toSave && !deleted) {
+              apiActions.save.push(Object.assign(r, {entity: r.entity.sharedId, hub: hubData.hub}));
+            }
+          });
+        });
+      }
+
+      return apiActions;
+    }, {save: [], delete: []});
+
+    console.log('apiCall:', apiCall);
+  };
 }
 
 
