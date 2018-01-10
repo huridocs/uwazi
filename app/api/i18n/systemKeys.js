@@ -36,6 +36,7 @@ export default [
 {key: 'Connection type', label: 'Confirm delete document type:'},
 {key: 'Connection type', label: 'Connection type'},
 {key: 'Connections', label: 'Connections'},
+{key: 'Relationship types', label: 'Relationship types'},
 {key: 'Create a table of contents', label: 'Create a table of contents'},
 {key: 'Create connections and references', label: 'Create connections and references'},
 {key: 'Create dictionaries', label: 'Create dictionaries'},

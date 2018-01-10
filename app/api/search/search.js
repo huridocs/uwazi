@@ -169,7 +169,11 @@ export default {
     return Promise.all([
       elastic.index({index: elasticIndex, type: 'entity', id, body}),
       fullTextIndex
-    ]);
+    ])
+    .catch((error) => {
+      console.log(entity);
+      console.log(`ERROR Failed to index entity`);
+    });
   },
 
   bulkIndex(docs, _action = 'index') {

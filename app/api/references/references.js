@@ -25,7 +25,7 @@ function excludeRefs(template) {
 }
 
 function getPropertiesToBeConnections(template) {
-  return template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
+  return template.properties.filter((prop) => prop.type === 'relationship');
 }
 
 export default {
@@ -164,8 +164,8 @@ export default {
       let toCreateReferences = toCreate.map((item) => {
         return {
           entity: item.value,
-          entityProperty: item.property.name,
-          hub: metadataReference.hub
+          hub: metadataReference.hub,
+          template: item.property.template
         };
       });
 

@@ -20,7 +20,7 @@ export class MetadataProperty extends Component {
     if (this.props.isCommonProperty) {
       return <FormConfigCommon formKey={this.props.localID} index={this.props.index} />;
     }
-    if (this.props.type === 'select' || this.props.type === 'multiselect') {
+    if (this.props.type === 'relationship') {
       return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
     }
     if (this.props.type === 'nested') {

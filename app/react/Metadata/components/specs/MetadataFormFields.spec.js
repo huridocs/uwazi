@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import {MetadataFormFields} from '../MetadataFormFields';
-import {Select, MultiSelect, DatePicker, FormGroup} from 'app/ReactReduxForms';
+import {MultiSelect, DatePicker, FormGroup} from 'app/ReactReduxForms';
 import {fromJS} from 'immutable';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 
@@ -15,9 +15,8 @@ describe('MetadataFormFields', () => {
   beforeEach(() => {
     fieldsTemplate = [
       {name: 'field1', label: 'label1'},
-      {name: 'field2', label: 'label2', type: 'select', content: '2'},
-      {name: 'field3', label: 'label3', type: 'multiselect', content: '2'},
-      {name: 'field4', label: 'label4', type: 'date'}
+      {name: 'field2', label: 'label2', type: 'relationship', content: '2'},
+      {name: 'field3', label: 'label3', type: 'date'}
     ];
 
     props = {
@@ -39,14 +38,12 @@ describe('MetadataFormFields', () => {
     expect(formGroups.at(0).props().model).toBe('.metadata.field1');
     expect(formGroups.at(1).props().model).toBe('.metadata.field2');
     expect(formGroups.at(2).props().model).toBe('.metadata.field3');
-    expect(formGroups.at(3).props().model).toBe('.metadata.field4');
 
     let warnings = component.find(MultipleEditionFieldWarning);
     expect(warnings.at(0).props().model).toBe('metadata');
     expect(warnings.at(0).props().field).toBe('metadata.field1');
     expect(warnings.at(1).props().field).toBe('metadata.field2');
     expect(warnings.at(2).props().field).toBe('metadata.field3');
-    expect(warnings.at(3).props().field).toBe('metadata.field4');
   });
 
   it('should render dynamic fields based on the template selected', () => {
@@ -54,11 +51,6 @@ describe('MetadataFormFields', () => {
     let inputField = component.findWhere((node) => node.props().model === '.metadata.field1');
     let input = inputField.find('input');
     expect(input).toBeDefined();
-
-    let selectField = component.findWhere((node) => node.props().model === '.metadata.field2');
-    let select = selectField.find(Select);
-    expect(select.props().options).toEqual(props.thesauris.toJS()[0].values);
-    expect(select.props().optionsValue).toEqual('id');
 
     let multiselect = component.find(MultiSelect);
     expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);

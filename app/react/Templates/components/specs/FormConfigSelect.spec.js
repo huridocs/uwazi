@@ -9,12 +9,15 @@ import {Select} from 'app/ReactReduxForms';
 describe('FormConfigSelect', () => {
   let component;
   let thesauris;
+  let relationTypes;
   let props;
 
   beforeEach(() => {
     thesauris = [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}, {_id: 3, name: 'Judge', type: 'template'}];
+    relationTypes = [{_id: 1, name: 'relationType1'}, {_id: 2, name: 'relationType2'}];
     props = {
       thesauris: Immutable.fromJS(thesauris),
+      relationTypes: Immutable.fromJS(relationTypes),
       index: 0,
       data: {properties: []},
       formState: {
