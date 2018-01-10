@@ -37,7 +37,7 @@ export class SettingsNavigation extends Component {
             <I18NLink to='settings/documents' activeClassName="active" className="list-group-item">{t('System', 'Document types')}</I18NLink>
             <I18NLink to='settings/entities' activeClassName="active" className="list-group-item">{t('System', 'Entity types')}</I18NLink>
             <I18NLink to='settings/dictionaries' activeClassName="active" className="list-group-item">{t('System', 'Thesauri')}</I18NLink>
-            <I18NLink to='settings/connections' activeClassName="active" className="list-group-item">{t('System', 'Connections')}</I18NLink>
+            <I18NLink to='settings/connections' activeClassName="active" className="list-group-item">{t('System', 'Relationship types')}</I18NLink>
           </div>
         </div>
       </NeedAuthorization>

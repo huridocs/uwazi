@@ -8,10 +8,8 @@ import {t} from 'app/I18N';
 
 import {fromJS} from 'immutable';
 
-// -------------------
 import DropdownList from 'app/Forms/components/DropdownList';
 import RelationshipsGraphEdit from './RelationshipsGraphEdit';
-// -------------------
 
 export class RelationshipsGraph extends Component {
   constructor(props) {

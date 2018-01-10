@@ -50,10 +50,7 @@ export class TemplateCreator extends Component {
                       <PropertyOption label='Text' type='text'/>
                       <PropertyOption label='Numeric' type='numeric'/>
                       <ShowIf if={!this.props.relationType}>
-                        <PropertyOption label='Select' type='select' disabled={this.props.noThesauris} />
-                      </ShowIf>
-                      <ShowIf if={!this.props.relationType}>
-                        <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noThesauris} />
+                        <PropertyOption label='Relationship' type='relationship' disabled={this.props.noRelationtypes} />
                       </ShowIf>
                       <PropertyOption label='Date' type='date'/>
                       <PropertyOption label='Date Range' type='daterange'/>
@@ -66,7 +63,7 @@ export class TemplateCreator extends Component {
                     </ul>
                     <ShowIf if={this.props.noThesauris}>
                       <div className="alert alert-warning">
-                        Selects and Multiselects can not be added untill you have at least one thesauri to select.
+                        Relationship fields can not be added untill you have at least one relationship type to select.
                       </div>
                     </ShowIf>
                   </div>
@@ -87,7 +84,7 @@ TemplateCreator.propTypes = {
   saveRelationType: PropTypes.func,
   entity: PropTypes.bool,
   relationType: PropTypes.bool,
-  noThesauris: PropTypes.bool,
+  noRelationtypes: PropTypes.bool,
   settings: PropTypes.object
 };
 
@@ -99,10 +96,10 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({resetTemplate, saveTemplate, saveEntity, saveRelationType}, dispatch);
 }
 
-const mapStateToProps = ({settings, thesauris}) => {
+const mapStateToProps = ({settings, relationTypes}) => {
   return {
     settings,
-    noThesauris: !thesauris.size
+    noRelationtypes: !relationTypes.size
   };
 };
 

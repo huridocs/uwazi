@@ -17,6 +17,7 @@ export class FormConfigSelect extends Component {
     const {index, data, formState} = this.props;
     const thesauris = this.props.thesauris.toJS();
     const property = data.properties[index];
+    const relationTypes = this.props.relationTypes.toJS();
 
     let optionGroups = [
       {label: 'Thesaurus', options: []},
@@ -54,6 +55,14 @@ export class FormConfigSelect extends Component {
           <label>{t('System', 'Select list')}</label>
           <Select model={`template.data.properties[${index}].content`}
                   options={optionGroups}
+                  optionsLabel="name"
+                  optionsValue="_id" />
+        </div>
+
+        <div className="form-group">
+          <label>{t('System', 'Relationship')}</label>
+          <Select model={`template.data.properties[${index}].relationship`}
+                  options={relationTypes}
                   optionsLabel="name"
                   optionsValue="_id" />
         </div>
@@ -123,6 +132,7 @@ export class FormConfigSelect extends Component {
 
 FormConfigSelect.propTypes = {
   thesauris: PropTypes.object,
+  relationTypes: PropTypes.object,
   data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
@@ -131,9 +141,10 @@ FormConfigSelect.propTypes = {
 
 export function mapStateToProps({template, thesauris}) {
   return {
-    data: template.data,
-    thesauris,
-    formState: template.formState
+    data: state.template.data,
+    thesauris: state.thesauris,
+    relationTypes: state.relationTypes,
+    formState: state.template.formState
   };
 }
 
