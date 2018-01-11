@@ -27,8 +27,16 @@ export class RelationshipsGraphEdit extends Component {
   }
 
   componentWillMount() {
+    this.props.parseResults(this.props.searchResults, this.props.parentEntity);
     if (!this.props.hubs.size) {
-      this.props.addHub();
+      // this.props.addHub();
+    }
+  }
+
+  componentWillUpdate(nextProps) {
+    if (this.props.searchResults !== nextProps.searchResults) {
+      console.log('Props changed');
+      this.props.parseResults(nextProps.searchResults, nextProps.parentEntity);
     }
   }
 
@@ -195,8 +203,10 @@ RelationshipsGraphEdit.propTypes = {
   parentEntity: PropTypes.object,
   hubs: PropTypes.object,
   hubActions: PropTypes.object,
+  searchResults: PropTypes.object,
   search: PropTypes.object,
   relationTypes: PropTypes.object,
+  parseResults: PropTypes.func,
   addHub: PropTypes.func,
   updateLeftRelationshipType: PropTypes.func,
   updateRightRelationshipType: PropTypes.func,
@@ -211,6 +221,7 @@ RelationshipsGraphEdit.propTypes = {
 export function mapStateToProps({entityView, connectionsList, relationships, relationTypes}) {
   return {
     parentEntity: entityView.entity,
+    searchResults: connectionsList.searchResults,
     search: connectionsList.sort,
     hubs: relationships.hubs,
     hubActions: relationships.hubActions,
@@ -220,6 +231,7 @@ export function mapStateToProps({entityView, connectionsList, relationships, rel
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    parseResults: actions.parseResults,
     addHub: actions.addHub,
     updateLeftRelationshipType: actions.updateLeftRelationshipType,
     updateRightRelationshipType: actions.updateRightRelationshipType,

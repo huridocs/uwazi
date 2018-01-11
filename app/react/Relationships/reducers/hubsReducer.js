@@ -1,10 +1,10 @@
 import * as types from '../actions/actionTypes';
 import {fromJS} from 'immutable';
 // TEMP FIXTURES!
-import tempFixtures from '../components/tempFixtures';
+// import tempFixtures from '../components/tempFixtures';
 
-// const initialState = [];
-const initialState = fromJS(tempFixtures);
+const initialState = [];
+// const initialState = fromJS(tempFixtures);
 
 const emptyRigthRelationship = () => {
   return {relationships: []};
@@ -14,6 +14,52 @@ export default function (state = initialState, action = {}) {
   let relationships;
 
   switch (action.type) {
+
+  case types.PARSE_RELATIONSHIPS_RESULTS:
+    console.log('RESULTS:', action.results.toJS());
+    const hubsObject = action.results.get('rows')
+    .reduce((hubs, row) => {
+      let hubsImmutable = hubs;
+      row.get('connections').forEach(connection => {
+        const hubId = connection.get('hub');
+        if (!hubsImmutable.has(hubId)) {
+          hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, leftRelationship: {}, rightRelationships: {}}));
+        }
+
+        if (row.get('sharedId') === action.parentEntity.get('sharedId')) {
+          hubsImmutable = hubsImmutable.setIn([hubId, 'leftRelationship'], connection);
+        } else {
+          const templateId = connection.get('template');
+          if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
+            hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId], fromJS([]));
+          }
+          const newConnection = connection.set('entity', row.delete('connections'));
+          hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
+                                              hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
+        }
+      });
+
+      return hubsImmutable;
+    }, fromJS({}));
+
+    console.log('PARSED OBJ: ', hubsObject.toJS());
+
+    const hubsArray = hubsObject.reduce((hubs, hub) => {
+      let index = 0;
+      const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
+        let newMemo = memo.push(fromJS({}).set('template', template).set('relationships', relationshipsArray));
+        index += 1;
+        if (index === hub.get('rightRelationships').size) {
+          newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
+        }
+        return newMemo;
+      }, fromJS([]));
+      return hubs.push(hub.set('rightRelationships', rightRelationships));
+    }, fromJS([]));
+
+    console.log('PARSED ARR: ', hubsArray.toJS());
+    // const hubs = action.results.
+    return hubsArray;
 
   case types.ADD_RELATIONSHIPS_HUB:
     return state.push(fromJS({
