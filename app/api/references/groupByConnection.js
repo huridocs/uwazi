@@ -24,11 +24,11 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
   }
   if (reference.sourceType !== 'metadata') {
     return conformGroupData('connection', groupedReferences, {
-      key: reference.template.toString(),
-      context: reference.template.toString(),
-      connectionLabel: relationTypes.find((r) => {
+      key: reference.template ? reference.template.toString() : null,
+      context: reference.template ? reference.template.toString() : null,
+      connectionLabel: reference.template ? relationTypes.find((r) => {
         return r._id.toString() === reference.template.toString();
-      }).name
+      }).name : null
     });
   }
 }

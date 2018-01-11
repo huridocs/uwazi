@@ -59,11 +59,12 @@ export default app => {
           }
 
           usefulRefs.forEach(ref => {
-            if (!entityGroupMap[ref.connectedDocument]) {
-              entityGroupMap[ref.connectedDocument] = [];
+            if (!entityGroupMap[ref.entityData.sharedId]) {
+              entityGroupMap[ref.entityData.sharedId] = [];
             }
 
-            entityGroupMap[ref.connectedDocument].push({
+            entityGroupMap[ref.entityData.sharedId].push({
+              hub: ref.hub,
               context: group.context,
               template: ref.template,
               metadata: ref.metadata,
@@ -73,7 +74,7 @@ export default app => {
               sourceType: ref.sourceType
             });
 
-            referenceIds.push(ref.connectedDocument);
+            referenceIds.push(ref.entityData.sharedId);
           });
 
           return referenceIds;
