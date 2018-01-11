@@ -2,10 +2,15 @@
 import api from 'app/utils/api';
 import {actions} from 'app/BasicReducer';
 import debounce from 'app/utils/debounce';
+import {notify} from 'app/Notifications';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 
+
+export function parseResults(results, parentEntity) {
+  return {type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity};
+}
 
 export function addHub() {
   return {type: types.ADD_RELATIONSHIPS_HUB};
@@ -93,6 +98,12 @@ export function saveRelationships() {
     }, {save: [], delete: []});
 
     console.log('apiCall:', apiCall);
+
+    return api.post('relationships/bulk', apiCall)
+    .then((response) => {
+      dispatch(notify('Relationships saved', 'success'));
+      dispatch({type: types.SAVED_RELATIONSHIPS, response});
+    });
   };
 }
 
