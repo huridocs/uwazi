@@ -1,36 +1,20 @@
-function conformGroupData(connectionType, groupedReferences, options) {
-  let {key, connectionLabel, context} = options;
+function getGroupData(reference, groupedReferences, templates, relationTypes) {
+  let key = reference.template.toString();
   let groupData = groupedReferences.find(ref => ref.key === key);
 
   if (!groupData) {
-    groupData = {key, connectionType, connectionLabel, templates: [], context};
+    groupData = {
+      key: reference.template.toString(),
+      context: reference.template.toString(),
+      connectionLabel: relationTypes.find((r) => {
+        return r._id.toString() === reference.template.toString();
+      }).name,
+      templates: []
+    };
     groupedReferences.push(groupData);
   }
 
   return groupData;
-}
-
-function getGroupData(reference, groupedReferences, templates, relationTypes) {
-  const referenceTemplate = templates.find(template => template._id.toString() === reference.entityData.template.toString());
-  if (reference.sourceType === 'metadata') {
-    return conformGroupData('metadata', groupedReferences, {
-      key: reference.entityProperty,
-      context: reference.entityData.template.toString(),
-      connectionLabel: referenceTemplate
-                       .properties
-                       .find(p => p.name === reference.entityProperty)
-                       .label
-    });
-  }
-  if (reference.sourceType !== 'metadata') {
-    return conformGroupData('connection', groupedReferences, {
-      key: reference.template ? reference.template.toString() : null,
-      context: reference.template ? reference.template.toString() : null,
-      connectionLabel: reference.template ? relationTypes.find((r) => {
-        return r._id.toString() === reference.template.toString();
-      }).name : null
-    });
-  }
 }
 
 export default {
@@ -44,7 +28,6 @@ export default {
     const groupedReferences = [];
     references.forEach((reference) => {
       const groupData = getGroupData(reference, groupedReferences, templates, relationTypes);
-
       let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.entityData.template.toString());
 
       if (!groupDataTemplate) {
