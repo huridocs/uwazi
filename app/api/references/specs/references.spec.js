@@ -4,7 +4,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
-import {relation3, relation4, template} from './fixtures.js';
+import {relation1, relation2, template} from './fixtures.js';
 
 describe('references', () => {
   beforeEach((done) => {
@@ -64,19 +64,17 @@ describe('references', () => {
       .then(results => {
         expect(results.length).toBe(2);
 
-        expect(results[0].key).toBe(relation4.toString());
-        expect(results[0].connectionType).toBe('connection');
+        expect(results[0].key).toBe(relation2.toString());
         expect(results[0].connectionLabel).toBe('relation 2');
-        expect(results[0].context).toBe(relation4.toString());
+        expect(results[0].context).toBe(relation2.toString());
         expect(results[0].templates.length).toBe(1);
 
         expect(results[0].templates[0]._id.toString()).toBe(template.toString());
         expect(results[0].templates[0].label).toBe('template');
 
-        expect(results[1].key).toBe(relation3.toString());
-        expect(results[1].connectionType).toBe('connection');
+        expect(results[1].key).toBe(relation1.toString());
         expect(results[1].connectionLabel).toBe('relation 1');
-        expect(results[1].context).toBe(relation3.toString());
+        expect(results[1].context).toBe(relation1.toString());
         expect(results[1].templates.length).toBe(1);
 
         expect(results[1].templates[0].count).toBe(1);
@@ -89,16 +87,13 @@ describe('references', () => {
     it('should return groups of connection including unpublished docs if user is found', (done) => {
       references.getGroupsByConnection('source2', 'es', {user: 'found'})
       .then(results => {
-        expect(results.length).toBe(3);
+        expect(results.length).toBe(2);
 
-        expect(results[0].key).toBe(relation3.toString());
+        expect(results[0].key).toBe(relation1.toString());
         expect(results[0].templates[0]._id.toString()).toBe(template.toString());
 
-        expect(results[1].key).toBe(relation4.toString());
+        expect(results[1].key).toBe(relation2.toString());
         expect(results[1].templates[0].count).toBe(4);
-
-        expect(results[2].key).toBe('selectName');
-        expect(results[2].templates[0]._id.toString()).toBe(template.toString());
 
         done();
       })
@@ -132,7 +127,7 @@ describe('references', () => {
 
   describe('countByRelationType()', () => {
     it('should return number of references using a relationType', (done) => {
-      references.countByRelationType(relation4.toString())
+      references.countByRelationType(relation2.toString())
       .then((result) => {
         expect(result).toBe(4);
         done();
@@ -232,7 +227,7 @@ describe('references', () => {
         template: template.toString(),
         sharedId: 'saveEntityBasedReferencesTestEntity',
         metadata: {
-          selectName: 'source1'
+          relationshipName: 'source1'
         }
       };
 
@@ -254,7 +249,7 @@ describe('references', () => {
         template: template.toString(),
         sharedId: 'source1',
         metadata: {
-          selectName: 'source2'
+          relationshipName: 'source2'
         }
       };
 
@@ -273,7 +268,7 @@ describe('references', () => {
         template: template.toString(),
         sharedId: 'saveEntityBasedReferencesTestEntity',
         metadata: {
-          selectName: 'source1'
+          relationshipName: 'source1'
         }
       };
 

@@ -8,8 +8,8 @@ const selectValueID = db.id().toString();
 const value1ID = db.id().toString();
 const value2ID = db.id().toString();
 const templateChangingNames = db.id();
-const relation3 = db.id();
-const relation4 = db.id();
+const relation1 = db.id();
+const relation2 = db.id();
 
 
 const hub1 = db.id();
@@ -23,66 +23,52 @@ const hub8 = db.id();
 
 export default {
   connections: [
-    {entity: 'source1', hub: hub1, range: {text: 'sourceRange'}, template: relation3},
-    {entity: 'source2', hub: hub1, range: {text: ''}, template: relation3, language: 'es'},
-    // {sourceDocument: 'source1', targetDocument: 'source2', targetRange: {for: 'range1', text: ''}, sourceRange: {text: 'sourceRange'}, template: relation3},
+    {entity: 'source1', hub: hub1, range: {text: 'sourceRange'}, template: relation1},
+    {entity: 'source2', hub: hub1, range: {text: ''}, template: relation1, language: 'es'},
 
-    {entity: 'source2', hub: hub2, range: {text: 'range2'}, template: relation4, language: 'en'},
-    {entity: 'doc3', hub: hub2, range: {text: 'targetRange'}, template: relation4},
-    // {sourceDocument: 'source2', targetDocument: 'doc3', sourceRange: {for: 'range2', text: 'range2'}, targetRange: {text: 'targetRange'}, template: relation4},
+    {entity: 'source2', hub: hub2, range: {text: 'range2'}, template: relation2, language: 'en'},
+    {entity: 'doc3', hub: hub2, range: {text: 'targetRange'}, template: relation2},
 
-    {entity: 'source2', hub: hub3, range: {text: 'range3'}, template: relation4},
-    {entity: 'doc4', hub: hub3, range: {text: ''}, template: relation4},
-    // {sourceDocument: 'source2', targetDocument: 'doc4', sourceRange: {for: 'range3', text: 'range3'}, template: relation4},
+    {entity: 'source2', hub: hub3, range: {text: 'range3'}, template: relation2},
+    {entity: 'doc4', hub: hub3, range: {text: ''}, template: relation2},
 
-    {entity: 'doc5', hub: hub4, template: relation3},
-    {entity: 'source2', hub: hub4, template: relation3, sourceType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'selectName'},
-    // {sourceDocument: 'doc5', targetDocument: 'source2', targetRange: 'range1', template: relation3, entityType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'property3'},
+    {entity: 'doc5', hub: hub4, template: relation1},
+    {entity: 'source2', hub: hub4, template: relation1, sourceType: 'metadata', entityTemplate: templateChangingNames},
 
-    {entity: 'target', hub: hub5, entityType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'property1'},
-    {entity: 'target', hub: hub5, entityType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'property1'},
-    // {targetDocument: 'target', entityType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'property1'},
+    {entity: 'target', hub: hub5, entityType: 'metadata', entityTemplate: templateChangingNames},
+    {entity: 'target', hub: hub5, entityType: 'metadata', entityTemplate: templateChangingNames},
 
-    {entity: 'target1', hub: hub6, entityType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'property2'},
-    // {targetDocument: 'target1', entityType: 'metadata', entityTemplate: templateChangingNames, entityProperty: 'property2'},
+    {entity: 'target1', hub: hub6, entityType: 'metadata', entityTemplate: templateChangingNames},
 
-    {_id: connectionID1, entity: 'entity_id', hub: hub7, range: {text: 'sourceRange'}, template: relation3},
-    {entity: value2ID, hub: hub7, range: 'range1', template: relation3},
-    // {_id: sourceDocument, entityDocument: 'entity_id', targetDocument: value2ID, targetRange: 'range1', entityRange: {text: 'sourceRange'}, template: relation3},
-
-    ////inbound existing reference
-    {_id: inbound, entity: value2ID, hub: hub8, entityType: 'metadata', entityProperty: 'selectName'},
-    {entity: 'entity_id', entityType: 'metadata', hub: hub8, entityProperty: 'selectName'}
-    // {_id: inbound, type: 'reference', entityDocument: value2ID, targetDocument: 'entity_id', entityType: 'metadata', entityProperty: 'selectName'}
+    {_id: connectionID1, entity: 'entity_id', hub: hub7, range: {text: 'sourceRange'}, template: relation1},
+    {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
+    {_id: inbound, entity: value2ID, hub: hub8, entityType: 'metadata'},
+    {entity: 'entity_id', entityType: 'metadata', hub: hub8}
   ],
   templates: [
     {_id: templateWithoutProperties},
-    {_id: template, name: 'template', properties: [{
-      name: 'selectName',
-      type: 'select',
-      label: 'select name',
-      content: templateWithoutProperties
-    },
-    {
-      name: 'multiSelectName',
-      type: 'multiselect',
-      label: 'multiselect name',
-      content: templateWithoutProperties
-    },
-    {
-      name: 'dictionarySelect',
-      type: 'select',
-      content: thesauri
-    },
-    {
-      name: 'dictionaryMultiSelect',
-      type: 'multiselect',
-      content: thesauri
-    },
-    {
-      name: 'otherName',
-      type: 'other'
-    }]},
+    {_id: template, name: 'template', properties: [
+      {
+        name: 'relationshipName',
+        type: 'relationship',
+        label: 'relationship name',
+        content: templateWithoutProperties
+      },
+      {
+        name: 'dictionarySelect',
+        type: 'select',
+        content: thesauri
+      },
+      {
+        name: 'dictionaryMultiSelect',
+        type: 'multiselect',
+        content: thesauri
+      },
+      {
+        name: 'otherName',
+        type: 'other'
+      }
+    ]},
     {_id: templateChangingNames, name: 'template_changing_names', properties: [
       {id: '1', type: 'text', name: 'property1'},
       {id: '2', type: 'text', name: 'property2'},
@@ -103,8 +89,8 @@ export default {
     {_id: thesauri}
   ],
   relationtypes: [
-    {_id: relation3, name: 'relation 1', type: 'relationtype'},
-    {_id: relation4, name: 'relation 2', type: 'relationtype'}
+    {_id: relation1, name: 'relation 1', type: 'relationtype'},
+    {_id: relation2, name: 'relation 2', type: 'relationtype'}
   ]
 };
 
@@ -117,8 +103,8 @@ export {
   value2ID,
   templateChangingNames,
   templateWithoutProperties,
-  relation3,
-  relation4,
+  relation1,
+  relation2,
   hub1,
   hub2,
   hub3,
