@@ -28,8 +28,10 @@ export default class Entity extends RouteHandler {
       const sortOptions = prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: globalResources.templates});
 
       return Promise.all([entities[0], relationTypes, connectionsGroups, referencesAPI.search(entityId, sortOptions), sortOptions]);
+      // return Promise.all([entities[0], relationTypes, connectionsGroups, [], sortOptions]);
     })
     .then(([entity, relationTypes, connectionsGroups, searchResults, sort]) => {
+      console.log('EN ENTITY VIEW:', searchResults);
       return {
         entityView: {
           entity
