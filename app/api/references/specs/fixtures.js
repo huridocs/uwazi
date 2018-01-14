@@ -11,6 +11,12 @@ const value2ID = db.id().toString();
 const templateChangingNames = db.id();
 const relation1 = db.id();
 const relation2 = db.id();
+const friend = db.id();
+const family = db.id();
+const bruceWayne = db.id();
+const thomasWayne = db.id();
+const alfred = db.id();
+const robin = db.id();
 
 
 const hub1 = db.id();
@@ -21,6 +27,8 @@ const hub5 = db.id();
 const hub6 = db.id();
 const hub7 = db.id();
 const hub8 = db.id();
+const hub9 = db.id();
+const hub10 = db.id();
 
 export default {
   connections: [
@@ -34,26 +42,35 @@ export default {
     {entity: 'doc4', hub: hub3, range: {text: ''}, template: relation2},
 
     {entity: 'doc5', hub: hub4, template: relation1},
-    {entity: 'source2', hub: hub4, template: relation1, sourceType: 'metadata', entityTemplate: templateChangingNames},
+    {entity: 'source2', hub: hub4, template: relation1},
 
-    {entity: 'target', hub: hub5, entityType: 'metadata', entityTemplate: templateChangingNames},
-    {entity: 'target', hub: hub5, entityType: 'metadata', entityTemplate: templateChangingNames},
+    {entity: 'target', hub: hub5},
+    {entity: 'target', hub: hub5},
 
-    {entity: 'target1', hub: hub6, entityType: 'metadata', entityTemplate: templateChangingNames},
+    {entity: 'target1', hub: hub6},
 
     {_id: connectionID1, entity: 'entity_id', hub: hub7, range: {text: 'sourceRange'}, template: relation1},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
-    {_id: inbound, entity: value2ID, hub: hub8, entityType: 'metadata'},
-    {entity: 'entity_id', entityType: 'metadata', hub: hub8}
+    {_id: inbound, entity: value2ID, hub: hub8},
+    {entity: 'entity_id', hub: hub8},
+    {entity: 'entity_id', hub: hub8},
+    {entity: 'bruceWayne', hub: hub9},
+    {entity: 'thomasWayne', hub: hub9, template: family}
   ],
   templates: [
     {_id: templateWithoutProperties},
     {_id: template, name: 'template', properties: [
       {
-        name: 'relationshipName',
+        name: 'friend',
         type: 'relationship',
-        label: 'relationship name',
-        content: templateWithoutProperties
+        label: 'friend',
+        relationType: friend
+      },
+      {
+        name: 'family',
+        type: 'relationship',
+        label: 'family',
+        relationType: family
       },
       {
         name: 'dictionarySelect',
@@ -84,14 +101,20 @@ export default {
     {sharedId: 'doc5', language: 'es', title: 'doc5 title', type: 'document', template: template, published: true},
     {sharedId: selectValueID, language: 'es', title: 'selectValue', type: 'entity'},
     {sharedId: value1ID, language: 'es', title: 'value1', type: 'entity'},
-    {sharedId: value2ID, language: 'es', title: 'value2', type: 'entity', template}
+    {sharedId: value2ID, language: 'es', title: 'value2', type: 'entity', template},
+    {sharedId: 'bruceWayne', language: 'es', title: 'bruceWayne', type: 'entity', template},
+    {sharedId: 'thomasWayne', language: 'es', title: 'thomasWayne', type: 'entity', template},
+    {sharedId: 'alfred', language: 'es', title: 'alfred', type: 'entity', template},
+    {sharedId: 'robin', language: 'es', title: 'robin', type: 'entity', template}
   ],
   dictionaries: [
     {_id: thesauri}
   ],
   relationtypes: [
     {_id: relation1, name: 'relation 1', type: 'relationtype'},
-    {_id: relation2, name: 'relation 2', type: 'relationtype'}
+    {_id: relation2, name: 'relation 2', type: 'relationtype'},
+    {_id: friend, name: 'relation 1', type: 'friend'},
+    {_id: family, name: 'relation 1', type: 'family'}
   ]
 };
 
@@ -112,5 +135,10 @@ export {
   hub4,
   hub5,
   hub6,
-  hub7
+  hub7,
+  hub8,
+  hub9,
+  hub10,
+  family,
+  friend
 };

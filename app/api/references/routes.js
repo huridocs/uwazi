@@ -70,8 +70,7 @@ export default app => {
               metadata: ref.metadata,
               label: group.connectionLabel,
               type: group.connectionType,
-              _id: ref._id,
-              sourceType: ref.sourceType
+              _id: ref._id
             });
 
             referenceIds.push(ref.entityData.sharedId);

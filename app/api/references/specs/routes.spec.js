@@ -100,8 +100,8 @@ describe('references routes', () => {
         connectionType: 'Connection Type 1',
         templates: [
           {_id: 't1', refs: [
-            {connectedDocument: 'id1'},
-            {_id: 'r2', connectedDocument: 'id2', sourceType: 'other', template: '123', metadata: {numeric: 1}}
+            {entityData: {sharedId: 'id1'}, hub: 2},
+            {_id: 'r2', entityData: {sharedId: 'id2'}, template: '123', metadata: {numeric: 1}, hub: 1}
           ]}
         ]
       }, {
@@ -111,8 +111,8 @@ describe('references routes', () => {
         connectionType: 'Connection Type 2',
         templates: [
           {_id: 't2', refs: [
-            {_id: 'r1', connectedDocument: 'id2', sourceType: 'metadata', template: '456', metadata: {numeric: 7}},
-            {connectedDocument: 'id3'}
+            {_id: 'r1', entityData: {sharedId: 'id2'}, template: '456', metadata: {numeric: 7}, hub: 1},
+            {entityData: {sharedId: 'id3'}, hub: 2}
           ]}
         ]
       }];
@@ -131,9 +131,9 @@ describe('references routes', () => {
           label: 'Connection Label 1',
           type: 'Connection Type 1',
           _id: 'r2',
-          sourceType: 'other',
           template: '123',
-          metadata: {numeric: 1}
+          metadata: {numeric: 1},
+          hub: 1
         };
 
         const expectedParsedConnection2 = {
@@ -141,9 +141,9 @@ describe('references routes', () => {
           label: 'Connection Label 2',
           type: 'Connection Type 2',
           _id: 'r1',
-          sourceType: 'metadata',
           template: '456',
-          metadata: {numeric: 7}
+          metadata: {numeric: 7},
+          hub: 1
         };
 
         expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
@@ -171,9 +171,9 @@ describe('references routes', () => {
               label: 'Connection Label 2',
               type: 'Connection Type 2',
               _id: 'r1',
-              sourceType: 'metadata',
               template: '456',
-              metadata: {numeric: 7}
+              metadata: {numeric: 7},
+              hub: 1
             }
           ]}
         ]};

@@ -3,7 +3,7 @@ import references from '../references.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
+import fixtures, {connectionID1, hub1, hub7, bruceWayne, robin, thomasWayne, alfred} from './fixtures.js';
 import {relation1, relation2, template} from './fixtures.js';
 
 describe('references', () => {
@@ -20,7 +20,7 @@ describe('references', () => {
     it('should return all the references', (done) => {
       references.get()
       .then((result) => {
-        expect(result.length).toBe(15);
+        expect(result.length).toBe(18);
         done();
       }).catch(catchErrors(done));
     });
@@ -225,20 +225,20 @@ describe('references', () => {
     it('should create connections based on properties', (done) => {
       const entity = {
         template: template.toString(),
-        sharedId: 'saveEntityBasedReferencesTestEntity',
+        sharedId: 'bruceWayne',
         metadata: {
-          relationshipName: 'source1'
+          friend: ['robin']
         }
       };
 
       references.saveEntityBasedReferences(entity, 'es')
       .then(() => {
-        return references.getByDocument('saveEntityBasedReferencesTestEntity');
+        return references.getByDocument('bruceWayne');
       })
       .then((connections) => {
         expect(connections.length).toBe(2);
-        expect(connections.find((connection) => connection.entity === 'source1')).toBeDefined();
-        expect(connections.find((connection) => connection.entity === 'saveEntityBasedReferencesTestEntity')).toBeDefined();
+        expect(connections.find((connection) => connection.entity === 'bruceWayne')).toBeDefined();
+        expect(connections.find((connection) => connection.entity === 'robin')).toBeDefined();
         expect(connections[0].hub).toEqual(connections[1].hub);
         done();
       });
@@ -247,18 +247,18 @@ describe('references', () => {
     it('should not create existing connections based on properties', (done) => {
       const entity = {
         template: template.toString(),
-        sharedId: 'source1',
+        sharedId: 'bruceWayne',
         metadata: {
-          relationshipName: 'source2'
+          family: ['thomasWayne'],
+          friend: ['robin']
         }
       };
 
       references.saveEntityBasedReferences(entity, 'es')
-      .then(() => {
-        return references.getByDocument('source1');
-      })
+      .then(() => references.saveEntityBasedReferences(entity, 'es'))
+      .then(() => references.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
-        expect(connections.length).toBe(2);
+        expect(connections.length).toBe(4);
         done();
       });
     });
@@ -266,26 +266,35 @@ describe('references', () => {
     it('should delete connections based on properties', (done) => {
       const entity = {
         template: template.toString(),
-        sharedId: 'saveEntityBasedReferencesTestEntity',
+        sharedId: 'bruceWayne',
         metadata: {
-          relationshipName: 'source1'
+          family: ['thomasWayne'],
+          friend: ['robin', 'alfred']
         }
       };
 
       references.saveEntityBasedReferences(entity, 'es')
-      .then(() => {
-        return references.getByDocument('saveEntityBasedReferencesTestEntity');
-      })
+      .then(() => references.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
-        expect(connections.length).toBe(2);
-        entity.metadata = {};
+        expect(connections.length).toBe(5);
+        entity.metadata = {
+          family: ['thomasWayne'],
+          friend: ['alfred']
+        };
         return references.saveEntityBasedReferences(entity, 'es');
       })
-      .then(() => {
-        return references.getByDocument('saveEntityBasedReferencesTestEntity');
-      })
+      .then(() => references.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
-        expect(connections.length).toBe(0);
+        expect(connections.length).toBe(4);
+        entity.metadata = {
+          family: ['alfred'],
+          friend: ['robin']
+        };
+        return references.saveEntityBasedReferences(entity, 'es');
+      })
+      .then(() => references.getByDocument('bruceWayne', 'es'))
+      .then((connections) => {
+        expect(connections.length).toBe(4);
         done();
       });
     });
@@ -304,6 +313,17 @@ describe('references', () => {
     });
 
     it('should delete all the ereferences for complex conditions', (done) => {
+      return references.delete({entity: 'source2'})
+      .then(() => {
+        return references.getByDocument('source2');
+      })
+      .then((result) => {
+        expect(result).toEqual([]);
+        done();
+      });
+    });
+
+    it('should delete an entire hub when passing 2 of its elements', (done) => {
       return references.delete({entity: 'source2'})
       .then(() => {
         return references.getByDocument('source2');
