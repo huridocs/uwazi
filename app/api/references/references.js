@@ -28,6 +28,26 @@ function getPropertiesToBeConnections(template) {
   return template.properties.filter((prop) => prop.type === 'relationship');
 }
 
+function groupByHubs(references) {
+  let hubs = references.reduce((_hubs, reference) => {
+    if (!_hubs[reference.hub]) {
+      _hubs[reference.hub] = [];
+    }
+    _hubs[reference.hub].push(reference);
+    return _hubs;
+  }, []);
+  return Object.keys(hubs).map((key) => hubs[key]);
+}
+
+function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
+  hubs.reduce((result, hub) => {
+    const allReferencesAreOfTheType = hub.every((reference) => reference.entity === entitySharedId || reference.template === propertyRelationType);
+    if (allReferencesAreOfTheType) {
+      return hub;
+    }
+  }, null);
+}
+
 export default {
   get(query) {
     return model.get(query);
@@ -123,78 +143,61 @@ export default {
       return Promise.all([properties, this.getByDocument(entity.sharedId, language)]);
     })
     .then(([properties, references]) => {
-      let values = properties.reduce((memo, property) => {
+      return Promise.all(properties.map((property) => {
         let propertyValues = entity.metadata[property.name] || [];
         if (typeof propertyValues === 'string') {
           propertyValues = [propertyValues];
         }
-        return memo.concat(propertyValues.map(value => {
-          return {property, value};
-        }));
-      }, []);
-
-      const toDelete = references.filter((reference) => {
-        let isInValues = false;
-        const isOwnReference = reference.entity === entity.sharedId;
-        values.forEach((item) => {
-          if (reference.entity === item.value) {
-            isInValues = true;
+        let hubs = groupByHubs(references);
+        let propertyRelationType = property.relationType;
+        let propertyHub = findPropertyHub(propertyRelationType, hubs, entity.sharedId);
+        if (!propertyHub) {
+          propertyHub = [{entity: entity.sharedId, hub: generateID()}];
+        }
+        let referencesOfThisType = references.filter((reference) =>
+          reference.template &&
+          reference.template.toString() === propertyRelationType.toString()
+        );
+        propertyValues.forEach((entitySharedId) => {
+          let relationshipDoesNotExists = !referencesOfThisType.find((reference) => reference.entity === entitySharedId);
+          if (relationshipDoesNotExists) {
+            propertyHub.push({entity: entitySharedId, hub: propertyHub[0].hub, template: propertyRelationType});
           }
         });
 
-        return !isInValues && !isOwnReference;
-      });
+        propertyHub = propertyHub.filter((reference) => reference.entity === entity.sharedId || propertyValues.includes(reference.entity));
 
-      const toCreate = values.filter((item) => {
-        let isInReferences = false;
-        references.forEach((ref) => {
-          if (ref.entity === item.value) {
-            isInReferences = true;
-          }
+        const referencesToBeDeleted = references.filter((reference) => {
+          return !(reference.entity === entity.sharedId) &&
+          reference.template.toString() === propertyRelationType.toString() &&
+          !propertyValues.includes(reference.entity);
         });
-        return !isInReferences;
-      });
 
-      let defaultMetadataReference = {
-        entity: entity.sharedId,
-        hub: generateID()
-      };
-      let metadataReference = references.find((ref) => ref.entity === entity.sharedId) || defaultMetadataReference;
-      const deletes = toDelete.map((ref) => this.delete({_id: ref._id}));
-      let toCreateReferences = toCreate.map((item) => {
-        return {
-          entity: item.value,
-          hub: metadataReference.hub,
-          template: item.property.template
-        };
-      });
-
-      let saves = [];
-      if (toCreateReferences.length) {
-        toCreateReferences = toCreateReferences.concat(metadataReference);
-        saves = this.save(toCreateReferences, language);
-      }
-
-      return Promise.all(deletes.concat(saves));
+        let actions = referencesToBeDeleted.map((reference) => this.delete({_id: reference._id}));
+        if (propertyHub.length > 1) {
+          actions = actions.concat(this.save(propertyHub, language));
+        }
+        return Promise.all(actions);
+      })).catch(console.log);
     });
   },
 
   delete(condition) {
     return model.get(condition)
     .then((relationships) => {
-      return Promise.all(relationships.map((relationship) => {
-        return this.getHub(relationship.hub)
-        .then((hub) => [relationship, hub]);
-      }));
+      return Promise.all(relationships.map((relation) => model.delete({_id: relation._id})))
+      .then(() => {
+        return Promise.all(relationships.map((relation) => model.get({hub: relation.hub})));
+      });
     })
     .then((hubs) => {
-      return Promise.all(hubs.map(([relationship, hub]) => {
-        const shouldDeleteTheLoneConnectionToo = hub.length === 2;
+      return Promise.all(hubs.map((hub) => {
+        const shouldDeleteTheLoneConnectionToo = hub.length === 1;
         if (shouldDeleteTheLoneConnectionToo) {
           return model.delete({hub: hub[0].hub});
         }
 
-        return model.delete({_id: relationship._id});
+        return Promise.resolve();
       }));
     })
     .catch(console.log);
