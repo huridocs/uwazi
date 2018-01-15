@@ -4,11 +4,7 @@
   list-style-type: none;
   padding: 0;
   margin: auto;
-
-  .document-viewer & {
-    justify-content: flex-start;
-    margin: 0 auto;
-  }
+  justify-content: space-between;
 }
 
 .item {
