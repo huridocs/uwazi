@@ -1,19 +1,17 @@
 function getGroupData(reference, groupedReferences, templates, relationTypes) {
-  let key = reference.template.toString();
+  let key = reference.template ? reference.template.toString() : null;
   let groupData = groupedReferences.find(ref => ref.key === key);
-
   if (!groupData) {
     groupData = {
-      key: reference.template.toString(),
-      context: reference.template.toString(),
-      connectionLabel: relationTypes.find((r) => {
+      key: key,
+      context: reference.template ? reference.template.toString() : null,
+      connectionLabel: reference.template ? relationTypes.find((r) => {
         return r._id.toString() === reference.template.toString();
       }).name,
       templates: []
     };
     groupedReferences.push(groupData);
   }
-
   return groupData;
 }
 

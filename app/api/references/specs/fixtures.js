@@ -13,10 +13,6 @@ const relation1 = db.id();
 const relation2 = db.id();
 const friend = db.id();
 const family = db.id();
-const bruceWayne = db.id();
-const thomasWayne = db.id();
-const alfred = db.id();
-const robin = db.id();
 
 
 const hub1 = db.id();
