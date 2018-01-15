@@ -1,7 +1,6 @@
 .item-group {
   display: flex;
   flex-wrap: wrap;
-  max-width: 960px;
   list-style-type: none;
   padding: 0;
   margin: auto;
@@ -27,21 +26,6 @@
   box-shadow: $box-shadow;
   zoom: 1;
   cursor: pointer;
-
-  @media (min-width: 640px) and (max-width: 1023px) {
-    width: 48%;
-    margin: 0 0 15px;
-    &:not(:nth-child(2n)) {
-      margin-right: 4%;
-    }
-  }
-  @media (min-width: 1024px) {
-    width: 32.5%;
-    margin: 0 0 15px;
-    &:not(:nth-child(3n)) {
-      margin-right: 1.25%;
-    }
-  }
 
   &:hover{
     cursor: pointer;
@@ -432,7 +416,6 @@ $item-padding: 15px;
 
 .search-list {
   width: 100%;
-  max-width: 960px;
   margin: 0 auto 15px;
 
   &-actions {
@@ -450,7 +433,6 @@ $item-padding: 15px;
   position: relative;
   display: flex;
   width: 100%;
-  max-width: 960px;
   margin: 0 auto 15px;
   padding: 0 15px;
   .sort-buttons {
