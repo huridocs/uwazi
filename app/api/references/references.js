@@ -94,7 +94,6 @@ export default {
           g.templates = g.templates.map(excludeRefs);
         });
       }
-      console.log('4');
       return groupedReferences;
     });
   },
