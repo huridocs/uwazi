@@ -28,14 +28,10 @@ export class RelationshipsGraphEdit extends Component {
 
   componentWillMount() {
     this.props.parseResults(this.props.searchResults, this.props.parentEntity);
-    if (!this.props.hubs.size) {
-      // this.props.addHub();
-    }
   }
 
   componentWillUpdate(nextProps) {
     if (this.props.searchResults !== nextProps.searchResults) {
-      console.log('Props changed');
       this.props.parseResults(nextProps.searchResults, nextProps.parentEntity);
     }
   }
