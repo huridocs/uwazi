@@ -416,16 +416,16 @@ $c-background: #fcfcfc;
 }
 
 .relationshipsHub {
-	display: flex;	
+	display: flex;
 	position: relative;
-	margin-bottom: 30px;	
-	
+	margin-bottom: 30px;
+
 	@media(max-width: 1023px) {
 		flex-direction: column;
 	}
 
 	.rw-widget-input {
-		background: #EEEEEE; 
+		background: #EEEEEE;
 		border-radius: 0;
 		padding: 0 5px;
 		box-shadow: none;
@@ -462,6 +462,10 @@ $c-background: #fcfcfc;
 .rightRelationships {
 	position: relative;
 
+  &.deleted {
+    opacity: 0.3;
+  }
+
 	@media(min-width: 1024px) {
 		width: 50%;
 	}
@@ -477,7 +481,7 @@ $c-background: #fcfcfc;
 .rightRelationships {
 	padding-left: 50px;
 	border-left: 1px solid $c-grey-light;
-	
+
 	@media(max-width: 1023px) {
 		margin-left: 10px;
 	}
@@ -502,7 +506,7 @@ $c-background: #fcfcfc;
 		background: $c-background;
 	}
 
-	
+
 }
 
 .leftRelationshipType .rw-dropdown-list {
@@ -569,6 +573,10 @@ $c-background: #fcfcfc;
 .rightRelationshipsTypeGroup {
 	display: flex;
 	flex-wrap: wrap;
+
+  &.deleted {
+    opacity: 0.3;
+  }
 }
 
 
@@ -580,6 +588,10 @@ $c-background: #fcfcfc;
 	width: 100%;
 	display: flex;
 	margin: 10px 0 0;
+
+  &.deleted {
+    opacity: 0.3;
+  }
 }
 
 .rightRelationship .item {
