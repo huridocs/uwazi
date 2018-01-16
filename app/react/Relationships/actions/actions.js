@@ -16,12 +16,12 @@ export function addHub() {
   return {type: types.ADD_RELATIONSHIPS_HUB};
 }
 
-export function removeLeftRelationship(index) {
-  return {type: types.REMOVE_RELATIONSHIPS_LEFT, index};
+export function toggelRemoveLeftRelationship(index) {
+  return {type: types.TOGGLE_REMOVE_RELATIONSHIPS_LEFT, index};
 }
 
-export function removeRightRelationshipGroup(index, rightIndex) {
-  return {type: types.REMOVE_RELATIONSHIPS_RIGHT_GROUP, index, rightIndex};
+export function toggleRemoveRightRelationshipGroup(index, rightIndex) {
+  return {type: types.TOGGLE_REMOVE_RELATIONSHIPS_RIGHT_GROUP, index, rightIndex};
 }
 
 export function updateLeftRelationshipType(index, _id) {
@@ -40,8 +40,8 @@ export function addEntity(index, rightIndex, entity) {
   return {type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity};
 }
 
-export function removeEntity(index, rightIndex, relationshipIndex) {
-  return {type: types.REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex};
+export function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
+  return {type: types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex};
 }
 
 export function saveRelationships() {
@@ -99,11 +99,11 @@ export function saveRelationships() {
 
     console.log('apiCall:', apiCall);
 
-    return api.post('relationships/bulk', apiCall)
-    .then((response) => {
-      dispatch(notify('Relationships saved', 'success'));
-      dispatch({type: types.SAVED_RELATIONSHIPS, response});
-    });
+    // return api.post('relationships/bulk', apiCall)
+    // .then((response) => {
+    //   dispatch(notify('Relationships saved', 'success'));
+    //   dispatch({type: types.SAVED_RELATIONSHIPS, response});
+    // });
   };
 }
 

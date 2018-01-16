@@ -9,6 +9,7 @@ const emptyRigthRelationship = () => {
 
 export default function (state = initialState, action = {}) {
   let relationships;
+  let value;
 
   switch (action.type) {
 
@@ -64,8 +65,9 @@ export default function (state = initialState, action = {}) {
     .setIn([action.index, 'leftRelationship', 'template'], action._id)
     .setIn([action.index, 'modified'], true);
 
-  case types.REMOVE_RELATIONSHIPS_LEFT:
-    return state.setIn([action.index, 'deleted'], true);
+  case types.TOGGLE_REMOVE_RELATIONSHIPS_LEFT:
+    value = state.getIn([action.index, 'deleted']);
+    return state.setIn([action.index, 'deleted'], !value);
 
   case types.UPDATE_RELATIONSHIPS_RIGHT_TYPE:
     let updatedHubs = state
@@ -85,8 +87,9 @@ export default function (state = initialState, action = {}) {
 
     return updatedHubs;
 
-  case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:
-    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], true);
+  case types.TOGGLE_REMOVE_RELATIONSHIPS_RIGHT_GROUP:
+    value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'deleted']);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], !value);
 
   case types.ADD_RELATIONSHIPS_ENTITY:
     const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
@@ -94,8 +97,9 @@ export default function (state = initialState, action = {}) {
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
-  case types.REMOVE_RELATIONSHIPS_ENTITY:
-    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], true);
+  case types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY:
+    value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted']);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], !value);
 
   default:
     return fromJS(state);
