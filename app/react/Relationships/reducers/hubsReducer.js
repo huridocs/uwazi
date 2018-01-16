@@ -13,7 +13,6 @@ export default function (state = initialState, action = {}) {
   switch (action.type) {
 
   case types.PARSE_RELATIONSHIPS_RESULTS:
-    console.log('RESULTS:', action.results.toJS());
     const hubsObject = action.results.get('rows')
     .reduce((hubs, row) => {
       let hubsImmutable = hubs;
@@ -39,8 +38,6 @@ export default function (state = initialState, action = {}) {
       return hubsImmutable;
     }, fromJS({}));
 
-    console.log('PARSED OBJ: ', hubsObject.toJS());
-
     const hubsArray = hubsObject.reduce((hubs, hub) => {
       let index = 0;
       const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
@@ -54,8 +51,6 @@ export default function (state = initialState, action = {}) {
       return hubs.push(hub.set('rightRelationships', rightRelationships));
     }, fromJS([]));
 
-    console.log('PARSED ARR: ', hubsArray.toJS());
-    // const hubs = action.results.
     return hubsArray;
 
   case types.ADD_RELATIONSHIPS_HUB:
