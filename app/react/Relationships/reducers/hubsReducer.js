@@ -1,10 +1,7 @@
 import * as types from '../actions/actionTypes';
 import {fromJS} from 'immutable';
-// TEMP FIXTURES!
-// import tempFixtures from '../components/tempFixtures';
 
 const initialState = [];
-// const initialState = fromJS(tempFixtures);
 
 const emptyRigthRelationship = () => {
   return {relationships: []};
