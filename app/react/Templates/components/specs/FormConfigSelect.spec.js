@@ -21,11 +21,11 @@ describe('FormConfigSelect', () => {
       index: 0,
       data: {properties: [{}]},
       formState: {
-        'properties.0.label': {valid: true, dirty: false, errors: {}},
         $form: {
           errors: {
             'properties.0.label.required': false,
-            'properties.0.label.duplicated': false
+            'properties.0.label.duplicated': false,
+            'properties.0.content.required': false
           }
         }
       }
@@ -43,12 +43,9 @@ describe('FormConfigSelect', () => {
     expect(component.find(Select).props().model).toBe('template.data.properties[0].content');
   });
 
-  it('should render the select with the dictionaries and entities', () => {
+  it('should render the select with the dictionaries', () => {
     component = shallow(<FormConfigSelect {...props}/>);
-    let expectedOptions = [
-      {label: 'Thesaurus', options: [thesauris[0], thesauris[1]]},
-      {label: 'Entities', options: [thesauris[2]]}
-    ];
+    let expectedOptions = [thesauris[0], thesauris[1]];
     expect(component.find(Select).props().options).toEqual(expectedOptions);
   });
 
@@ -62,14 +59,19 @@ describe('FormConfigSelect', () => {
   describe('when the fields are invalid and dirty or the form is submited', () => {
     it('should render the label with errors', () => {
       props.formState.$form.errors['properties.0.label.required'] = true;
-      props.formState['properties.0.label'].touched = true;
       component = shallow(<FormConfigSelect {...props}/>);
       expect(component.find('.has-error').length).toBe(1);
     });
 
     it('should render the label with errors', () => {
       props.formState.$form.errors['properties.0.label.required'] = true;
-      props.formState.submitFailed = true;
+      component = shallow(<FormConfigSelect {...props}/>);
+      expect(component.find('.has-error').length).toBe(1);
+    });
+
+    it('should render the list select with errors', () => {
+      props.formState.$form.errors['properties.0.content.required'] = true;
+      props.formState.$form.submitFailed = true;
       component = shallow(<FormConfigSelect {...props}/>);
       expect(component.find('.has-error').length).toBe(1);
     });

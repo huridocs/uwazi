@@ -31,7 +31,6 @@ export default class Entity extends RouteHandler {
       // return Promise.all([entities[0], relationTypes, connectionsGroups, [], sortOptions]);
     })
     .then(([entity, relationTypes, connectionsGroups, searchResults, sort]) => {
-      console.log('EN ENTITY VIEW:', searchResults);
       return {
         entityView: {
           entity

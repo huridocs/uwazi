@@ -22,6 +22,9 @@ export class MetadataFormFields extends Component {
     case 'select':
       thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
       return <Select model={_model} optionsValue='id' options={translateOptions(thesauri)}/>;
+    case 'multiselect':
+      thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
+      return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} prefix={_model} />;
     case 'relationship':
       if (property.content) {
         thesauri = translateOptions(thesauris.find((opt) => opt._id.toString() === property.content.toString()));

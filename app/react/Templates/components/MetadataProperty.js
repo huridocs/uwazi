@@ -9,6 +9,7 @@ import {showModal} from 'app/Modals/actions/modalActions';
 import {reorderProperty, addProperty} from 'app/Templates/actions/templateActions';
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
+import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
 import ShowIf from 'app/App/ShowIf';
@@ -21,6 +22,9 @@ export class MetadataProperty extends Component {
       return <FormConfigCommon formKey={this.props.localID} index={this.props.index} />;
     }
     if (this.props.type === 'relationship') {
+      return <FormConfigRelationship formKey={this.props.localID} index={this.props.index} />;
+    }
+    if (this.props.type === 'select' || this.props.type === 'multiselect') {
       return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
     }
     if (this.props.type === 'nested') {
@@ -43,7 +47,10 @@ export class MetadataProperty extends Component {
       propertyClass += ' dragging';
     }
 
-    if (formState.$form.errors[`properties.${index}.label.required`] || formState.$form.errors[`properties.${index}.label.duplicated`]) {
+    const hasErrors = Object.keys(formState.$form.errors).reduce((result, error) => {
+      return result || error.split('.')[1] === index.toString() && formState.$form.errors[error];
+    }, false);
+    if (hasErrors && formState.$form.submitFailed) {
       propertyClass += ' error';
     }
 

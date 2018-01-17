@@ -5,34 +5,28 @@ import {Select} from 'app/ReactReduxForms';
 import {connect} from 'react-redux';
 import {Field} from 'react-redux-form';
 import {t} from 'app/I18N';
-import ShowIf from 'app/App/ShowIf';
 
-export class FormConfigSelect extends Component {
+export class FormConfigRelationship extends Component {
 
   contentValidation() {
-    return {required: (val) => val.trim() !== ''};
+    return {required: (val) => val && val.trim() !== ''};
   }
 
   render() {
     const {index, data, formState} = this.props;
     const thesauris = this.props.thesauris.toJS();
-    const property = data.properties[index];
+    const ptoperty = data.properties[index];
     const relationTypes = this.props.relationTypes.toJS();
 
-    let optionGroups = [
-      {label: 'Thesaurus', options: []},
-      {label: 'Entities', options: []}
-    ];
-
     const options = thesauris.filter((thesauri) => {
-      return thesauri._id !== data._id && thesauri.type !== 'template';
+      return thesauri._id !== data._id && thesauri.type === 'template';
     });
 
     let labelClass = 'form-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
-    let contentRequiredError = formState.$form.errors[`properties.${index}.content.required`] && formState.$form.submitFailed;
+    let relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -46,11 +40,20 @@ export class FormConfigSelect extends Component {
           </Field>
         </div>
 
-        <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
-          <label>{t('System', 'Select list')}<span className="required">*</span></label>
+        <div className="form-group">
+          <label>{t('System', 'Select list')}</label>
           <Select model={`template.data.properties[${index}].content`}
                   options={options}
                   optionsLabel="name"
+                  optionsValue="_id" />
+        </div>
+
+        <div className={relationTypeError ? 'form-group has-error' : 'form-group'}>
+          <label>{t('System', 'Relationship')}<span className="required">*</span></label>
+          <Select model={`template.data.properties[${index}].relationType`}
+                  options={relationTypes}
+                  optionsLabel="name"
+                  validators={this.contentValidation()}
                   optionsValue="_id" />
         </div>
 
@@ -77,7 +80,7 @@ export class FormConfigSelect extends Component {
         </Field>
 
         <div>
-          <Field className="filter" model={`template.data.properties[${index}].filter`}>
+          <Field model={`template.data.properties[${index}].filter`}>
             <input id={'filter' + this.props.index} type="checkbox"/>
             &nbsp;
             <label className="property-label" htmlFor={'filter' + this.props.index}>
@@ -90,26 +93,7 @@ export class FormConfigSelect extends Component {
               </i>
             </label>
           </Field>
-          <ShowIf if={property.filter}>
-            <Field className="filter" model={`template.data.properties[${index}].defaultfilter`}>
-              <input
-                id={'defaultfilter' + this.props.index}
-                type="checkbox"
-                disabled={!property.filter}
-              />
-              &nbsp;
-              <label className="property-label" htmlFor={'defaultfilter' + this.props.index}>
-                Default filter
-                <i className="property-help fa fa-question-circle">
-                  <div className="property-description">
-                    Use this property as a default filter in the library.
-                    When there are no document types selected, this property will show as a default filter for your collection.
-                  </div>
-                </i>
-              </label>
-            </Field>
-          </ShowIf>
-          <FilterSuggestions {...property} />
+          <FilterSuggestions {...ptoperty} />
         </div>
 
       </div>
@@ -117,7 +101,7 @@ export class FormConfigSelect extends Component {
   }
 }
 
-FormConfigSelect.propTypes = {
+FormConfigRelationship.propTypes = {
   thesauris: PropTypes.object,
   relationTypes: PropTypes.object,
   data: PropTypes.object,
@@ -126,7 +110,7 @@ FormConfigSelect.propTypes = {
   formKey: PropTypes.string
 };
 
-export function mapStateToProps({template, thesauris}) {
+export function mapStateToProps(state) {
   return {
     data: state.template.data,
     thesauris: state.thesauris,
@@ -135,4 +119,4 @@ export function mapStateToProps({template, thesauris}) {
   };
 }
 
-export default connect(mapStateToProps)(FormConfigSelect);
+export default connect(mapStateToProps)(FormConfigRelationship);

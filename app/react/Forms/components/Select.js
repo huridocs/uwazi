@@ -21,7 +21,7 @@ export default class Select extends Component {
         <select className="form-control" onChange={this.props.onChange} value={this.props.value}>
         {(() => {
           if (placeholder) {
-            return <option value='' disabled>{placeholder}</option>;
+            return <option value='' disabled selected>{placeholder}</option>;
           }
         })()}
         {sortedOptions.map((option, index) => {
@@ -46,7 +46,9 @@ Select.propTypes = {
   label: PropTypes.string,
   options: PropTypes.array,
   value: PropTypes.string,
+  defaultValue: PropTypes.string,
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
-  optionsLabel: PropTypes.string
+  optionsLabel: PropTypes.string,
+  autoAssign: PropTypes.bool
 };
