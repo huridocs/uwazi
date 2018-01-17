@@ -1,10 +1,7 @@
 import * as types from '../actions/actionTypes';
 import {fromJS} from 'immutable';
-// TEMP FIXTURES!
-// import tempFixtures from '../components/tempFixtures';
 
 const initialState = [];
-// const initialState = fromJS(tempFixtures);
 
 const emptyRigthRelationship = () => {
   return {relationships: []};
@@ -12,11 +9,11 @@ const emptyRigthRelationship = () => {
 
 export default function (state = initialState, action = {}) {
   let relationships;
+  let value;
 
   switch (action.type) {
 
   case types.PARSE_RELATIONSHIPS_RESULTS:
-    console.log('RESULTS:', action.results.toJS());
     const hubsObject = action.results.get('rows')
     .reduce((hubs, row) => {
       let hubsImmutable = hubs;
@@ -42,8 +39,6 @@ export default function (state = initialState, action = {}) {
       return hubsImmutable;
     }, fromJS({}));
 
-    console.log('PARSED OBJ: ', hubsObject.toJS());
-
     const hubsArray = hubsObject.reduce((hubs, hub) => {
       let index = 0;
       const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
@@ -57,8 +52,6 @@ export default function (state = initialState, action = {}) {
       return hubs.push(hub.set('rightRelationships', rightRelationships));
     }, fromJS([]));
 
-    console.log('PARSED ARR: ', hubsArray.toJS());
-    // const hubs = action.results.
     return hubsArray;
 
   case types.ADD_RELATIONSHIPS_HUB:
@@ -72,8 +65,9 @@ export default function (state = initialState, action = {}) {
     .setIn([action.index, 'leftRelationship', 'template'], action._id)
     .setIn([action.index, 'modified'], true);
 
-  case types.REMOVE_RELATIONSHIPS_LEFT:
-    return state.setIn([action.index, 'deleted'], true);
+  case types.TOGGLE_REMOVE_RELATIONSHIPS_LEFT:
+    value = state.getIn([action.index, 'deleted']);
+    return state.setIn([action.index, 'deleted'], !value);
 
   case types.UPDATE_RELATIONSHIPS_RIGHT_TYPE:
     let updatedHubs = state
@@ -93,8 +87,9 @@ export default function (state = initialState, action = {}) {
 
     return updatedHubs;
 
-  case types.REMOVE_RELATIONSHIPS_RIGHT_GROUP:
-    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], true);
+  case types.TOGGLE_REMOVE_RELATIONSHIPS_RIGHT_GROUP:
+    value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'deleted']);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], !value);
 
   case types.ADD_RELATIONSHIPS_ENTITY:
     const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
@@ -102,8 +97,9 @@ export default function (state = initialState, action = {}) {
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
-  case types.REMOVE_RELATIONSHIPS_ENTITY:
-    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], true);
+  case types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY:
+    value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted']);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], !value);
 
   default:
     return fromJS(state);

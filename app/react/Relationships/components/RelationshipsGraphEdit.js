@@ -21,21 +21,17 @@ export class RelationshipsGraphEdit extends Component {
 
     this.updateLeftRelationshipType = this.updateLeftRelationshipType.bind(this);
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
-    this.removeLeftRelationship = this.removeLeftRelationship.bind(this);
-    this.removeRightRelationshipGroup = this.removeRightRelationshipGroup.bind(this);
+    this.toggelRemoveLeftRelationship = this.toggelRemoveLeftRelationship.bind(this);
+    this.toggleRemoveRightRelationshipGroup = this.toggleRemoveRightRelationshipGroup.bind(this);
     this.addEntities = this.addEntities.bind(this);
   }
 
   componentWillMount() {
     this.props.parseResults(this.props.searchResults, this.props.parentEntity);
-    if (!this.props.hubs.size) {
-      // this.props.addHub();
-    }
   }
 
   componentWillUpdate(nextProps) {
     if (this.props.searchResults !== nextProps.searchResults) {
-      console.log('Props changed');
       this.props.parseResults(nextProps.searchResults, nextProps.parentEntity);
     }
   }
@@ -52,15 +48,15 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeLeftRelationship(index) {
+  toggelRemoveLeftRelationship(index) {
     return () => {
-      this.props.removeLeftRelationship(index);
+      this.props.toggelRemoveLeftRelationship(index);
     };
   }
 
-  removeRightRelationshipGroup(index, rightRelationshipIndex) {
+  toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex) {
     return () => {
-      this.props.removeRightRelationshipGroup(index, rightRelationshipIndex);
+      this.props.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex);
     };
   }
 
@@ -71,9 +67,9 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  removeEntity(index, rightRelationshipIndex, relationshipIndex) {
+  toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex) {
     return () => {
-      this.props.removeEntity(index, rightRelationshipIndex, relationshipIndex);
+      this.props.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex);
     };
   }
 
@@ -93,91 +89,79 @@ export class RelationshipsGraphEdit extends Component {
         </div>
 
         <div>
-          {hubs.map((hub, index) => {
-            if (!hub.get('deleted')) {
-              return (
-                <div className="relationshipsHub" key={index}>
-                  <div className="removeHub">
-                    <i onClick={this.removeLeftRelationship(index)}
-                       className="relationships-removeIcon fa fa-times"></i>
-                  </div>
-                  <div className="leftRelationshipType">
-                    <DropdownList valueField="_id"
-                                  textField="name"
-                                  data={this.state.relationshipTypes}
-                                  value={hub.getIn(['leftRelationship', 'template'])}
-                                  filter="contains"
-                                  onChange={this.updateLeftRelationshipType(index)} />
-                  </div>
-                  <div className="hubRelationship">
-                    <figure></figure>
-                  </div>
-                  <div className="rightRelationships">
-                    {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) => {
-                      if (!rightRelationship.get('deleted')) {
-                        return (
-                          <div className="rightRelationshipsTypeGroup" key={rightRelationshipIndex}>
-                            <div className="rightRelationshipType">
-                              <DropdownList valueField="_id"
-                                            textField="name"
-                                            data={this.state.relationshipTypes}
-                                            value={rightRelationship.get('template')}
-                                            placeholder="New connection type"
-                                            filter="contains"
-                                            onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
-                            </div>
-                            <div className="removeRightRelationshipGroup">
-                              {(() => {
-                                if (rightRelationship.has('template')) {
-                                  return <i onClick={this.removeRightRelationshipGroup(index, rightRelationshipIndex)}
-                                            className="relationships-removeIcon fa fa-times"></i>;
-                                }
+          {hubs.map((hub, index) =>
+            <div className="relationshipsHub" key={index}>
+              <div className="removeHub">
+                <i onClick={this.toggelRemoveLeftRelationship(index)}
+                   className={`relationships-removeIcon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
+              </div>
+              <div className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
+                <DropdownList valueField="_id"
+                              textField="name"
+                              data={this.state.relationshipTypes}
+                              value={hub.getIn(['leftRelationship', 'template'])}
+                              filter="contains"
+                              onChange={this.updateLeftRelationshipType(index)} />
+              </div>
+              <div className="hubRelationship">
+                <figure></figure>
+              </div>
+              <div className="rightRelationships">
+                {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
+                  <div className={`rightRelationshipsTypeGroup ${rightRelationship.get('deleted') ? 'deleted' : ''}`}
+                       key={rightRelationshipIndex}>
+                    <div className="rightRelationshipType">
+                      <DropdownList valueField="_id"
+                                    textField="name"
+                                    data={this.state.relationshipTypes}
+                                    value={rightRelationship.get('template')}
+                                    placeholder="New connection type"
+                                    filter="contains"
+                                    onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
+                    </div>
+                    <div className="removeRightRelationshipGroup">
+                      {(() => {
+                        if (rightRelationship.has('template')) {
+                          return <i onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                                    className={`relationships-removeIcon fa ${!rightRelationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>;
+                        }
 
-                                return <span>&nbsp;</span>;
-                              })()}
-                            </div>
-                            {rightRelationship.get('relationships').map((relationship, relationshipIndex) => {
-                              if (!relationship.get('deleted')) {
-                                return (
-                                  <div className="rightRelationship" key={relationshipIndex}>
-                                    <div className="rightRelationshipType">
-                                      <Doc doc={relationship.get('entity')} searchParams={search} />
-                                    </div>
-                                    <div className="removeEntity">
-                                      <i onClick={this.removeEntity(index, rightRelationshipIndex, relationshipIndex)}
-                                         className="relationships-removeIcon fa fa-times"></i>
-                                    </div>
-                                  </div>
-                                );
-                              }
-                            })}
-                            {(() => {
-                              if (rightRelationship.has('template')) {
-                                return <div className="rightRelationshipAdd">
-                                        <button className="relationships-new"
-                                                 onClick={this.addEntities(index, rightRelationshipIndex)}>
-                                          <span>Add entities / documents</span>
-                                          <i className="fa fa-plus"></i>
-                                        </button>
-                                       </div>;
-                              }
-
-                              return null;
-                            })()}
-                          </div>
-                        );
+                        return <span>&nbsp;</span>;
+                      })()}
+                    </div>
+                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) =>
+                      <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
+                           key={relationshipIndex}>
+                        <div className="rightRelationshipType">
+                          <Doc doc={relationship.get('entity')} searchParams={search} />
+                        </div>
+                        <div className="removeEntity">
+                          <i onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                             className={`relationships-removeIcon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
+                        </div>
+                      </div>
+                    )}
+                    {(() => {
+                      if (rightRelationship.has('template')) {
+                        return <div className="rightRelationshipAdd">
+                                <button className="relationships-new"
+                                         onClick={this.addEntities(index, rightRelationshipIndex)}>
+                                  <span>Add entities / documents</span>
+                                  <i className="fa fa-plus"></i>
+                                </button>
+                               </div>;
                       }
-                    })}
-                  </div>
-                </div>
-              );
-            }
 
-            return null;
-          })}
+                      return null;
+                    })()}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="relationshipsHub">
-            <div className="leftRelationshipType">
+            <div className="leftRelationshipType ">
               <button className="relationships-new" onClick={addHub}>
                 <span>New relationships group</span>
                 <i className="fa fa-plus"></i>
@@ -210,11 +194,11 @@ RelationshipsGraphEdit.propTypes = {
   addHub: PropTypes.func,
   updateLeftRelationshipType: PropTypes.func,
   updateRightRelationshipType: PropTypes.func,
-  removeLeftRelationship: PropTypes.func,
-  removeRightRelationshipGroup: PropTypes.func,
+  toggelRemoveLeftRelationship: PropTypes.func,
+  toggleRemoveRightRelationshipGroup: PropTypes.func,
   save: PropTypes.func,
   edit: PropTypes.func,
-  removeEntity: PropTypes.func,
+  toggleRemoveEntity: PropTypes.func,
   openAddEntitiesPanel: PropTypes.func
 };
 
@@ -235,11 +219,11 @@ function mapDispatchToProps(dispatch) {
     addHub: actions.addHub,
     updateLeftRelationshipType: actions.updateLeftRelationshipType,
     updateRightRelationshipType: actions.updateRightRelationshipType,
-    removeLeftRelationship: actions.removeLeftRelationship,
-    removeRightRelationshipGroup: actions.removeRightRelationshipGroup,
+    toggelRemoveLeftRelationship: actions.toggelRemoveLeftRelationship,
+    toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
     save: actions.saveRelationships,
     edit: actions.edit,
-    removeEntity: actions.removeEntity,
+    toggleRemoveEntity: actions.toggleRemoveEntity,
     openAddEntitiesPanel: uiActions.openPanel
   }, dispatch);
 }
