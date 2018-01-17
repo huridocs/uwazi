@@ -31,6 +31,12 @@ export default app => {
     .catch((error) => res.json({error}));
   });
 
+  app.get('/api/thesauris/entities', (req, res) => {
+    thesauris.entities(req.language)
+    .then((response) => res.json({rows: response}))
+    .catch((error) => res.json({error}));
+  });
+
   app.delete('/api/thesauris', needsAuthorization(), (req, res) => {
     thesauris.delete(req.query._id, req.query._rev)
     .then((response) => {

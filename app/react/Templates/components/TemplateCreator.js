@@ -49,6 +49,8 @@ export class TemplateCreator extends Component {
                     <ul className="list-group">
                       <PropertyOption label='Text' type='text'/>
                       <PropertyOption label='Numeric' type='numeric'/>
+                      <PropertyOption label='Select' type='select' disabled={this.props.noDictionaries} />
+                      <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noDictionaries} />
                       <ShowIf if={!this.props.relationType}>
                         <PropertyOption label='Relationship' type='relationship' disabled={this.props.noRelationtypes} />
                       </ShowIf>
@@ -61,7 +63,7 @@ export class TemplateCreator extends Component {
                         <PropertyOption label='Violated articles' type='nested'/>
                       </ShowIf>
                     </ul>
-                    <ShowIf if={this.props.noThesauris}>
+                    <ShowIf if={this.props.noRelationtypes}>
                       <div className="alert alert-warning">
                         Relationship fields can not be added untill you have at least one relationship type to select.
                       </div>
@@ -85,6 +87,7 @@ TemplateCreator.propTypes = {
   entity: PropTypes.bool,
   relationType: PropTypes.bool,
   noRelationtypes: PropTypes.bool,
+  noDictionaries: PropTypes.bool,
   settings: PropTypes.object
 };
 
@@ -96,10 +99,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({resetTemplate, saveTemplate, saveEntity, saveRelationType}, dispatch);
 }
 
-const mapStateToProps = ({settings, relationTypes}) => {
+const mapStateToProps = ({settings, relationTypes, thesauris}) => {
   return {
     settings,
-    noRelationtypes: !relationTypes.size
+    noRelationtypes: !relationTypes.size,
+    noDictionaries: !thesauris.size
   };
 };
 

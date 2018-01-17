@@ -44,6 +44,7 @@ mongoose.connect(dbConfig[app.get('env')], {useMongoClient: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
+  console.info('==> Processing system keys...')
   translations.processSystemKeys(systemKeys)
   .then(function() {
     http.listen(port, '0.0.0.0', function onStart(err) {

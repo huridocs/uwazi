@@ -128,6 +128,15 @@ export default {
     return model.get(query);
   },
 
+  entities(language) {
+    return templates.get({isEntity: true})
+    .then((_templates) => {
+      return _templates.map((template) => {
+        return this.templateToThesauri(template, language);
+      });
+    });
+  },
+
   delete(id) {
     return templates.countByThesauri(id)
     .then((count) => {
