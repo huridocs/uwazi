@@ -8,8 +8,12 @@ import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 
 
-export function parseResults(results, parentEntity) {
-  return {type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity};
+export function parseResults(results, parentEntity, editing) {
+  return {type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing};
+}
+
+export function edit() {
+  return {type: types.EDIT_RELATIONSHIPS};
 }
 
 export function addHub() {
@@ -28,12 +32,22 @@ export function updateLeftRelationshipType(index, _id) {
   return {type: types.UPDATE_RELATIONSHIPS_LEFT_TYPE, index, _id};
 }
 
-export function updateRightRelationshipType(index, rightIndex, _id) {
-  return {type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE, index, rightIndex, _id};
+export function setAddToData(index, rightIndex) {
+  return {type: types.SET_RELATIONSHIPS_ADD_TO_DATA, index, rightIndex};
 }
 
-export function edit(index, rightIndex) {
-  return {type: types.EDIT_RELATIONSHIPS_GROUP, index, rightIndex};
+export function updateRightRelationshipType(index, rightIndex, _id) {
+  return function (dispatch, getState) {
+    const hubs = getState().relationships.hubs;
+    let newRightRelationshipType = rightIndex === hubs.getIn([index, 'rightRelationships']).size - 1;
+
+    dispatch({type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE, index, rightIndex, _id, newRightRelationshipType});
+
+    if (newRightRelationshipType) {
+      dispatch(setAddToData(index, rightIndex));
+      dispatch(uiActions.openPanel());
+    }
+  };
 }
 
 export function addEntity(index, rightIndex, entity) {
@@ -97,13 +111,11 @@ export function saveRelationships() {
       return apiActions;
     }, {save: [], delete: []});
 
-    console.log('apiCall:', apiCall);
-
-    // return api.post('relationships/bulk', apiCall)
-    // .then((response) => {
-    //   dispatch(notify('Relationships saved', 'success'));
-    //   dispatch({type: types.SAVED_RELATIONSHIPS, response});
-    // });
+    return api.post('relationships/bulk', apiCall)
+    .then((response) => {
+      dispatch(notify('Relationships saved', 'success'));
+      dispatch({type: types.SAVED_RELATIONSHIPS, response});
+    });
   };
 }
 
