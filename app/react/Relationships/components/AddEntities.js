@@ -60,8 +60,8 @@ export const mapStateToProps = ({relationships}) => {
   return {
     uiState: relationships.uiState,
     searchResults: relationships.searchResults,
-    hubIndex: relationships.edit.get('hubIndex'),
-    rightRelationshipIndex: relationships.edit.get('rightRelationshipIndex')
+    hubIndex: relationships.hubActions.getIn(['addTo', 'hubIndex']),
+    rightRelationshipIndex: relationships.hubActions.getIn(['addTo', 'rightRelationshipIndex'])
   };
 };
 

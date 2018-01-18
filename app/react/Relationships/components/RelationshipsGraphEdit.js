@@ -23,16 +23,17 @@ export class RelationshipsGraphEdit extends Component {
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
     this.toggelRemoveLeftRelationship = this.toggelRemoveLeftRelationship.bind(this);
     this.toggleRemoveRightRelationshipGroup = this.toggleRemoveRightRelationshipGroup.bind(this);
-    this.addEntities = this.addEntities.bind(this);
+    this.setAddToData = this.setAddToData.bind(this);
+    this.editingSelector = this.editingSelector.bind(this);
   }
 
   componentWillMount() {
-    this.props.parseResults(this.props.searchResults, this.props.parentEntity);
+    this.props.parseResults(this.props.searchResults, this.props.parentEntity, this.props.hubActions.get('editing'));
   }
 
   componentWillUpdate(nextProps) {
     if (this.props.searchResults !== nextProps.searchResults) {
-      this.props.parseResults(nextProps.searchResults, nextProps.parentEntity);
+      this.props.parseResults(nextProps.searchResults, nextProps.parentEntity, this.props.hubActions.get('editing'));
     }
   }
 
@@ -60,9 +61,9 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  addEntities(hubIndex, rightRelationshipIndex) {
+  setAddToData(hubIndex, rightRelationshipIndex) {
     return () => {
-      this.props.edit(hubIndex, rightRelationshipIndex);
+      this.props.setAddToData(hubIndex, rightRelationshipIndex);
       this.props.openAddEntitiesPanel();
     };
   }
@@ -78,8 +79,17 @@ export class RelationshipsGraphEdit extends Component {
     this.props.save();
   }
 
+  editingSelector(defaultElement, editingElement) {
+    console.log('EDITING:', this.props.hubActions.get('editing'));
+    if (this.props.hubActions.get('editing')) {
+      return editingElement;
+    }
+    return defaultElement;
+  }
+
   render() {
-    const {parentEntity, hubs, search, addHub} = this.props;
+    const {parentEntity, hubs, search, addHub, hubActions} = this.props;
+    const editing = hubActions.get('editing');
 
     return (
       <div className="relationships-graph">
@@ -91,17 +101,27 @@ export class RelationshipsGraphEdit extends Component {
         <div>
           {hubs.map((hub, index) =>
             <div className="relationshipsHub" key={index}>
-              <div className="removeHub">
-                <i onClick={this.toggelRemoveLeftRelationship(index)}
-                   className={`relationships-removeIcon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
-              </div>
+              {this.editingSelector(null,
+                <div className="removeHub">
+                  <i onClick={this.toggelRemoveLeftRelationship(index)}
+                     className={`relationships-removeIcon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
+                </div>)}
               <div className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
-                <DropdownList valueField="_id"
-                              textField="name"
-                              data={this.state.relationshipTypes}
-                              value={hub.getIn(['leftRelationship', 'template'])}
-                              filter="contains"
-                              onChange={this.updateLeftRelationshipType(index)} />
+                {this.editingSelector(
+                  <div className="rw-dropdown-list rw-widget">
+                    <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+                      <div className="rw-input rw-dropdown-list-input no-edit">
+                        {this.state.relationshipTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
+                      </div>
+                    </div>
+                  </div>,
+                  <DropdownList valueField="_id"
+                                textField="name"
+                                data={this.state.relationshipTypes}
+                                value={hub.getIn(['leftRelationship', 'template'])}
+                                filter="contains"
+                                onChange={this.updateLeftRelationshipType(index)} />
+                )}
               </div>
               <div className="hubRelationship">
                 <figure></figure>
@@ -110,42 +130,59 @@ export class RelationshipsGraphEdit extends Component {
                 {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
                   <div className={`rightRelationshipsTypeGroup ${rightRelationship.get('deleted') ? 'deleted' : ''}`}
                        key={rightRelationshipIndex}>
-                    <div className="rightRelationshipType">
-                      <DropdownList valueField="_id"
-                                    textField="name"
-                                    data={this.state.relationshipTypes}
-                                    value={rightRelationship.get('template')}
-                                    placeholder="New connection type"
-                                    filter="contains"
-                                    onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
+                    <div className={`rightRelationshipType
+                                     ${rightRelationshipIndex === hub.get('rightRelationships').size - 1 ? 'last-of-type' : ''}`}>
+                      {this.editingSelector(
+                        <div className="rw-dropdown-list rw-widget">
+                          <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+                            <div className="rw-input rw-dropdown-list-input no-edit">
+                              {this.state.relationshipTypes.find(r => r._id === rightRelationship.get('template')) ?
+                               this.state.relationshipTypes.find(r => r._id === rightRelationship.get('template')).name : null}
+                            </div>
+                          </div>
+                        </div>,
+                        <DropdownList valueField="_id"
+                                      textField="name"
+                                      data={this.state.relationshipTypes}
+                                      value={rightRelationship.get('template')}
+                                      placeholder="New connection type"
+                                      filter="contains"
+                                      onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
+                      )}
                     </div>
-                    <div className="removeRightRelationshipGroup">
-                      {(() => {
-                        if (rightRelationship.has('template')) {
-                          return <i onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
-                                    className={`relationships-removeIcon fa ${!rightRelationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>;
-                        }
+                    {this.editingSelector(null,
+                      <div className="removeRightRelationshipGroup">
+                        {(() => {
+                          if (rightRelationship.has('template')) {
+                            return <i onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                                      className={`relationships-removeIcon fa ${!rightRelationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>;
+                          }
 
-                        return <span>&nbsp;</span>;
-                      })()}
-                    </div>
+                          return <span>&nbsp;</span>;
+                        })()}
+                      </div>
+                    )}
                     {rightRelationship.get('relationships').map((relationship, relationshipIndex) =>
                       <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
                            key={relationshipIndex}>
                         <div className="rightRelationshipType">
                           <Doc doc={relationship.get('entity')} searchParams={search} />
                         </div>
-                        <div className="removeEntity">
-                          <i onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                             className={`relationships-removeIcon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
-                        </div>
+                        {this.editingSelector(null,
+                          <div className="removeEntity">
+                            <i onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                               className={`relationships-removeIcon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
+                          </div>
+                        )}
                       </div>
                     )}
                     {(() => {
-                      if (rightRelationship.has('template')) {
+                      if (editing && rightRelationship.has('template')) {
+                        const isActive = hubActions.getIn(['addTo', 'hubIndex']) === index &&
+                                         hubActions.getIn(['addTo', 'rightRelationshipIndex']) === rightRelationshipIndex;
                         return <div className="rightRelationshipAdd">
-                                <button className="relationships-new"
-                                         onClick={this.addEntities(index, rightRelationshipIndex)}>
+                                <button className={`relationships-new ${isActive ? 'is-active' : ''}`}
+                                        onClick={this.setAddToData(index, rightRelationshipIndex)}>
                                   <span>Add entities / documents</span>
                                   <i className="fa fa-plus"></i>
                                 </button>
@@ -160,14 +197,16 @@ export class RelationshipsGraphEdit extends Component {
             </div>
           )}
 
-          <div className="relationshipsHub">
-            <div className="leftRelationshipType ">
-              <button className="relationships-new" onClick={addHub}>
-                <span>New relationships group</span>
-                <i className="fa fa-plus"></i>
-              </button>
+          {this.editingSelector(null,
+            <div className="relationshipsHub">
+              <div className="leftRelationshipType ">
+                <button className="relationships-new" onClick={addHub}>
+                  <span>New relationships group</span>
+                  <i className="fa fa-plus"></i>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <div className="leftRelationshipType">
@@ -196,8 +235,8 @@ RelationshipsGraphEdit.propTypes = {
   updateRightRelationshipType: PropTypes.func,
   toggelRemoveLeftRelationship: PropTypes.func,
   toggleRemoveRightRelationshipGroup: PropTypes.func,
+  setAddToData: PropTypes.func,
   save: PropTypes.func,
-  edit: PropTypes.func,
   toggleRemoveEntity: PropTypes.func,
   openAddEntitiesPanel: PropTypes.func
 };
@@ -221,8 +260,8 @@ function mapDispatchToProps(dispatch) {
     updateRightRelationshipType: actions.updateRightRelationshipType,
     toggelRemoveLeftRelationship: actions.toggelRemoveLeftRelationship,
     toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
+    setAddToData: actions.setAddToData,
     save: actions.saveRelationships,
-    edit: actions.edit,
     toggleRemoveEntity: actions.toggleRemoveEntity,
     openAddEntitiesPanel: uiActions.openPanel
   }, dispatch);

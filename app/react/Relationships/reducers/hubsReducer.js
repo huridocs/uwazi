@@ -7,6 +7,46 @@ const emptyRigthRelationship = () => {
   return {relationships: []};
 };
 
+const conformRelationships = (action) => {
+  const hubsObject = action.results.get('rows')
+  .reduce((hubs, row) => {
+    let hubsImmutable = hubs;
+    row.get('connections').forEach(connection => {
+      const hubId = connection.get('hub');
+      if (!hubsImmutable.has(hubId)) {
+        hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, leftRelationship: {}, rightRelationships: {}}));
+      }
+
+      if (row.get('sharedId') === action.parentEntity.get('sharedId')) {
+        hubsImmutable = hubsImmutable.setIn([hubId, 'leftRelationship'], connection);
+      } else {
+        const templateId = connection.get('template');
+        if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
+          hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId], fromJS([]));
+        }
+        const newConnection = connection.set('entity', row.delete('connections'));
+        hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
+                                            hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
+      }
+    });
+
+    return hubsImmutable;
+  }, fromJS({}));
+
+  return hubsObject.reduce((hubs, hub) => {
+    let index = 0;
+    const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
+      let newMemo = memo.push(fromJS({}).set('template', template).set('relationships', relationshipsArray));
+      index += 1;
+      if (action.editing && index === hub.get('rightRelationships').size) {
+        newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
+      }
+      return newMemo;
+    }, fromJS([]));
+    return hubs.push(hub.set('rightRelationships', rightRelationships));
+  }, fromJS([]));
+};
+
 export default function (state = initialState, action = {}) {
   let relationships;
   let value;
@@ -14,45 +54,7 @@ export default function (state = initialState, action = {}) {
   switch (action.type) {
 
   case types.PARSE_RELATIONSHIPS_RESULTS:
-    const hubsObject = action.results.get('rows')
-    .reduce((hubs, row) => {
-      let hubsImmutable = hubs;
-      row.get('connections').forEach(connection => {
-        const hubId = connection.get('hub');
-        if (!hubsImmutable.has(hubId)) {
-          hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, leftRelationship: {}, rightRelationships: {}}));
-        }
-
-        if (row.get('sharedId') === action.parentEntity.get('sharedId')) {
-          hubsImmutable = hubsImmutable.setIn([hubId, 'leftRelationship'], connection);
-        } else {
-          const templateId = connection.get('template');
-          if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
-            hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId], fromJS([]));
-          }
-          const newConnection = connection.set('entity', row.delete('connections'));
-          hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
-                                              hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
-        }
-      });
-
-      return hubsImmutable;
-    }, fromJS({}));
-
-    const hubsArray = hubsObject.reduce((hubs, hub) => {
-      let index = 0;
-      const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
-        let newMemo = memo.push(fromJS({}).set('template', template).set('relationships', relationshipsArray));
-        index += 1;
-        if (index === hub.get('rightRelationships').size) {
-          newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
-        }
-        return newMemo;
-      }, fromJS([]));
-      return hubs.push(hub.set('rightRelationships', rightRelationships));
-    }, fromJS([]));
-
-    return hubsArray;
+    return conformRelationships(action);
 
   case types.ADD_RELATIONSHIPS_HUB:
     return state.push(fromJS({
@@ -80,7 +82,7 @@ export default function (state = initialState, action = {}) {
 
     updatedHubs = updatedHubs.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
-    if (action.rightIndex === state.getIn([action.index, 'rightRelationships']).size - 1) {
+    if (action.newRightRelationshipType) {
       const updatedRightRelationships = updatedHubs.getIn([action.index, 'rightRelationships']).push(fromJS(emptyRigthRelationship()));
       updatedHubs = updatedHubs.setIn([action.index, 'rightRelationships'], updatedRightRelationships);
     }
@@ -100,6 +102,10 @@ export default function (state = initialState, action = {}) {
   case types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY:
     value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted']);
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], !value);
+
+  case types.SAVED_RELATIONSHIPS:
+    console.log('SAVED en hubsReducer');
+    return state;
 
   default:
     return fromJS(state);
