@@ -2,8 +2,8 @@ import {generateNamesAndIds} from 'api/templates/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
-import references from '../references/references';
-import templates from '../templates';
+import references from 'api/references/references';
+import templates from 'api/templates/templates';
 import ID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
 
