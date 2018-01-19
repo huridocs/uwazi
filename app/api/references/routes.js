@@ -62,7 +62,6 @@ export default app => {
             if (!entityGroupMap[ref.entityData.sharedId]) {
               entityGroupMap[ref.entityData.sharedId] = [];
             }
-
             entityGroupMap[ref.entityData.sharedId].push({
               hub: ref.hub,
               context: group.context,

@@ -61,8 +61,8 @@ function _update(newTemplate) {
 }
 
 export default {
-  get() {
-    return model.get();
+  get(query) {
+    return model.get(query);
   },
 
   getById(id) {
