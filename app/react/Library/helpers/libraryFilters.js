@@ -17,6 +17,10 @@ export function populateOptions(filters, thesauris) {
       property.options = getOptions(property, thesauris);
     }
 
+    if (!property.content && property.type === 'relationship') {
+      property.options = Array.prototype.concat(...thesauris.filter((thesauri) => thesauri.type === 'template'));
+    }
+
     return property;
   });
 
@@ -54,7 +58,7 @@ export function URLQueryToState(query, templates, thesauris) {
 export function parseWithAggregations(filters, aggregations) {
   return filters.map((_property) => {
     let property = Object.assign({}, _property);
-    if (property.content) {
+    if (property.options && property.options.length) {
       property.options = property.options.map((option) => {
         option.results = 0;
         let aggregation;

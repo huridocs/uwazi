@@ -367,8 +367,8 @@ export default function () {
           match = this.rangeFilter(filter);
         }
 
-        if (filter.type === 'multiselect') {
-          match = this.multiselectFilter(filter);
+        if (filter.type === 'multiselect' || filters.type === 'relationship') {
+          match = this.multiselectFilter(filters);
         }
 
         if (filter.type === 'nested' && filter.value.strict) {

@@ -15,7 +15,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
-    if (property.type === 'select' || property.type === 'multiselect') {
+    if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
     }
     if (property.type === 'nested') {
@@ -43,7 +43,10 @@ function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionari
 
 function agregationProperties(properties) {
   return properties
-  .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+  .filter((property) => property.type === 'select' ||
+    property.type === 'multiselect' ||
+    property.type === 'relationship' ||
+    property.type === 'nested')
   .map((property) => {
     if (property.type === 'nested') {
       return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
