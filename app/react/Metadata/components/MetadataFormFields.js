@@ -31,7 +31,7 @@ export class MetadataFormFields extends Component {
       }
 
       if (!property.content) {
-        thesauri = Array.prototype.concat(...thesauris.map(translateOptions));
+        thesauri = Array.prototype.concat(...thesauris.filter((thesauri) => thesauri.type === 'template').map(translateOptions));
       }
       return <MultiSelect model={_model} optionsValue='id' options={thesauri} prefix={_model} />;
     case 'date':

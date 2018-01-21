@@ -3,7 +3,8 @@ import P from 'bluebird';
 import relationShipsmodel from '../references/connectionsModel';
 import templatesModel from '../templates/templates';
 import relationtypes from '../relationtypes/relationtypes';
-import entitiesModel from '../entities/entitiesModel';
+import entities from '../entities/entities';
+import entitiesmodel from '../entities/entitiesModel';
 import mongoose from 'mongoose';
 import {generateID} from 'api/odm';
 
@@ -91,9 +92,42 @@ function migrateRelationships() {
   });
 }
 
-migrateTemplates().then(migrateRelationships)
+let entitiesProcessed = 0;
+let totalEntities;
+
+function migrateEntities() {
+  process.stdout.write(`Relations processed: ${relationsProcessed} of ${relationsProcessed}\r\n`);
+  return Promise.all([entities.get({}, {_id: 1}), templatesModel.get()])
+  .then(([_entities, _templates]) => {
+    totalEntities = _entities.length;
+    let keyTemplates = _templates.reduce((response, template) => {
+      response[template._id] = template;
+      return response;
+    }, {});
+    return P.resolve(_entities).map(({_id}) => {
+      return entities.getById(_id)
+      .then((entity) => {
+        let template = keyTemplates[entity.template];
+        template.properties.forEach((property) => {
+          if (property.type === 'relationship' && entity.metadata[property.name] && typeof entity.metadata[property.name] === 'string') {
+            entity.metadata[property.name] = [entity.metadata[property.name]];
+          }
+        });
+        entitiesProcessed += 1;
+        process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r`);
+        return entitiesmodel.save(entity);
+      });
+    }, {concurrency: 10});
+  });
+}
+
+migrateTemplates()
+.then(migrateRelationships)
+.then(migrateEntities)
 .then(() => {
-  console.log('done');
+  process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r\n`);
   mongoose.disconnect();
+  console.log('Reindexing changes...')
+  require('../../../database/reindex_elastic.js');
 })
 .catch(console.log);
