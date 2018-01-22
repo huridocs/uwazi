@@ -21,6 +21,7 @@ import {ConnectionsGroups, ConnectionsList, ResetSearch} from 'app/ConnectionsLi
 import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/actions';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
+import {RelationshipsFormButtons} from 'app/Relationships';
 import {TemplateLabel, Icon} from 'app/Layout';
 import SidePanel from 'app/Layout/SidePanel';
 
@@ -131,6 +132,12 @@ export class EntityViewer extends Component {
               data={this.props.rawEntity}
               formStatePath='entityView.entityForm'
               entityBeingEdited={entityBeingEdited} />
+          </div>
+        </ShowIf>
+
+        <ShowIf if={selectedTab === 'connections'}>
+          <div className="sidepanel-footer">
+            <RelationshipsFormButtons />
           </div>
         </ShowIf>
 
