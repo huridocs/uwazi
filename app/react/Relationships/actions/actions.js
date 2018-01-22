@@ -12,8 +12,8 @@ export function parseResults(results, parentEntity, editing) {
   return {type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing};
 }
 
-export function edit() {
-  return {type: types.EDIT_RELATIONSHIPS};
+export function edit(value) {
+  return {type: types.EDIT_RELATIONSHIPS, value};
 }
 
 export function addHub() {
