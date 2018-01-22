@@ -1,10 +1,11 @@
 import db from 'api/utils/testing_db';
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
+const englishTranslation = db.id();
 export default {
   translations: [
     {
-      _id: db.id(),
+      _id: englishTranslation,
       locale: 'en',
       contexts: [
         {
@@ -89,5 +90,6 @@ export default {
 
 export {
   entityTemplateId,
+  englishTranslation,
   documentTemplateId
 };

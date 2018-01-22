@@ -22,6 +22,33 @@ function prepareContexts(contexts) {
   });
 }
 
+function processContextValues(context) {
+  if (context.values && !Array.isArray(context.values)) {
+    let values = [];
+    Object.keys(context.values).forEach((key) => {
+      values.push({key, value: context.values[key]});
+    });
+    context.values = values;
+  }
+
+  return context;
+}
+
+function update(translation) {
+  return model.get(translation._id)
+  .then(([currentTranslationData]) => {
+    currentTranslationData.contexts.forEach((context) => {
+      let isPresentInTheComingData = translation.contexts.find((_context) => _context.id === context.id);
+      if (!isPresentInTheComingData) {
+        translation.contexts.push(context);
+      }
+    });
+
+    translation.contexts = translation.contexts.map(processContextValues);
+    return model.save(translation);
+  });
+}
+
 export default {
   prepareContexts,
   get() {
@@ -35,17 +62,12 @@ export default {
   },
 
   save(translation) {
-    if (translation.contexts) {
-      translation.contexts.forEach((context) => {
-        if (context.values && !Array.isArray(context.values)) {
-          let values = [];
-          Object.keys(context.values).forEach((key) => {
-            values.push({key, value: context.values[key]});
-          });
-          context.values = values;
-        }
-      });
+    translation.contexts = translation.contexts || [];
+    if (translation._id) {
+      return update(translation);
     }
+
+    translation.contexts = translation.contexts.map(processContextValues);
     return model.save(translation);
   },
 
@@ -86,7 +108,7 @@ export default {
     .then((result) => {
       return Promise.all(result.map((translation) => {
         translation.contexts = translation.contexts.filter((tr) => tr.id !== id);
-        return this.save(translation);
+        return model.save(translation);
       }));
     })
     .then(() => {
