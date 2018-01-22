@@ -14,6 +14,7 @@ const app = express();
 
 var http = require('http').Server(app);
 var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
+var bodyParser = require('body-parser');
 
 app.use(error_handling_middleware);
 app.use(compression());
@@ -25,8 +26,20 @@ if (app.get('env') === 'production') {
 }
 
 app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: maxage}));
-app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/public', express.static(path.resolve(__dirname, 'public')));
+
+app.use(bodyParser.json());
+require('./app/api/auth/routes.js')(app);
+
+app.use((req, res, next) => {
+  if (req.user || req.url.match('login')) {
+    return next();
+  }
+  res.status(401);
+  res.json({error: 'Unauthorized'});
+});
+
+app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/flag-images', express.static(path.resolve(__dirname, 'dist/flags')));
 
 require('./app/api/api.js')(app, http);

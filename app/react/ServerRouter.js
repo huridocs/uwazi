@@ -100,6 +100,7 @@ function handleRoute(res, renderProps, req) {
       locale = I18NUtils.getLocale(path, languages, req.cookies);
       api.locale(locale);
     })
+    //return Promise.resolve()
     .then(() => {
       return Promise.all([
         api.get('user'),
@@ -108,6 +109,13 @@ function handleRoute(res, renderProps, req) {
         api.get('templates'),
         api.get('thesauris')
       ])
+      //return Promise.all([
+        //Promise.resolve({json: {}}),
+        //Promise.resolve({json: {languages: []}}),
+        //Promise.resolve({json: {rows: []}}),
+        //Promise.resolve({json: {rows: []}}),
+        //Promise.resolve({json: {rows: []}})
+      //])
       .then(([user, settings, translations, templates, thesauris]) => {
         const globalResources = {
           user: user.json,
@@ -202,24 +210,39 @@ function ServerRouter(req, res) {
   const PORT = process.env.PORT;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
 
-  api.get('settings')
-  .then((response) => {
-    let location = req.url;
-    if (location === '/' && response.json.home_page) {
-      location = response.json.home_page;
+  let location = req.url;
+  if (location === '/') {
+    return settings.get()
+    .then((response) => {
+      if (response.json.home_page) {
+        location = response.json.home_page;
+      }
+    })
+    .then(() => {
+      match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
+        if (error) {
+          return handleError(error);
+        } else if (redirectLocation) {
+          return handleRedirect(res, redirectLocation);
+        } else if (renderProps) {
+          return handleRoute(res, renderProps, req);
+        }
+
+        return handle404(res);
+      });
+    });
+  }
+
+  match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
+    if (error) {
+      return handleError(error);
+    } else if (redirectLocation) {
+      return handleRedirect(res, redirectLocation);
+    } else if (renderProps) {
+      return handleRoute(res, renderProps, req);
     }
 
-    match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
-      if (error) {
-        return handleError(error);
-      } else if (redirectLocation) {
-        return handleRedirect(res, redirectLocation);
-      } else if (renderProps) {
-        return handleRoute(res, renderProps, req);
-      }
-
-      return handle404(res);
-    });
+    return handle404(res);
   });
 }
 
