@@ -22,6 +22,7 @@ const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
   home_page: String,
+  private: Boolean,
   languages: [languagesSchema],
   links: [linksSchema],
   filters: [filtersSchema],

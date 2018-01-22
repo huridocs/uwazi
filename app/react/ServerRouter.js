@@ -212,7 +212,7 @@ function ServerRouter(req, res) {
 
   let location = req.url;
   if (location === '/') {
-    return settings.get()
+    return api.get('settings')
     .then((response) => {
       if (response.json.home_page) {
         location = response.json.home_page;
