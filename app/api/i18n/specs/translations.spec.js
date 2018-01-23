@@ -2,7 +2,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from '../translations.js';
 
 import db from 'api/utils/testing_db';
-import fixtures, {entityTemplateId, documentTemplateId} from './fixtures.js';
+import fixtures, {entityTemplateId, documentTemplateId, englishTranslation} from './fixtures.js';
 
 
 describe('translations', () => {
@@ -113,6 +113,20 @@ describe('translations', () => {
         expect(fr.contexts[1].values.test2).toEqual('value2');
         done();
       }).catch(catchErrors(done));
+    });
+
+    it('should save partial translations', (done) => {
+      translations.save({_id: englishTranslation, locale: 'en', contexts: [{
+        id: 'Filters',
+        label: 'Filters',
+        values: {something: 'new'}
+      }]})
+      .then(() => translations.get({_id: englishTranslation}))
+      .then(([translation]) => {
+        expect(translation.contexts.length).toBe(5);
+        expect(translation.contexts.find((context) => context.id === 'Filters').values).toEqual({something: 'new'});
+        done();
+      });
     });
   });
 
