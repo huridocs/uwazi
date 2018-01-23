@@ -103,23 +103,18 @@ export default {
     }
     return Promise.all([
       model.get(query),
-      templates.get(query || {isEntity: true})
+      templates.get(query)
     ])
     .then(([dictionaries, allTemplates]) => {
-      let thesauris = dictionaries.concat(allTemplates);
-      let requests = thesauris.map((result, index) => {
-        if (result.isEntity === true) {
-          return this.templateToThesauri(result, language)
-          .then((templateTransformedInThesauri) => {
-            thesauris[index] = templateTransformedInThesauri;
-          });
-        }
-        return Promise.resolve(result);
-      });
+      let processTemplates = Promise.all(allTemplates.map((result) => {
+        return this.templateToThesauri(result, language)
+        .then((templateTransformedInThesauri) => {
+          return templateTransformedInThesauri;
+        });
+      }));
 
-      return Promise.all(requests)
-      .then(() => {
-        return thesauris;
+      return processTemplates.then((processedTemplates) => {
+        return dictionaries.concat(processedTemplates);
       });
     });
   },

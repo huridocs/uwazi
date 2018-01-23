@@ -13,10 +13,7 @@ referencesModel.delete({sourceType: 'metadata'})
     return P.resolve(documents).map(({_id}) => {
       return entities.get({_id})
       .then(([doc]) => {
-        return references.saveEntityBasedReferences(doc, doc.language)
-        .then(() => {
-          console.log(doc.title);
-        });
+        return references.saveEntityBasedReferences(doc, doc.language);
       });
     }, {concurrency: 1});
   });
