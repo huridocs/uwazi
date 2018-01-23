@@ -40,11 +40,15 @@ function groupByHubs(references) {
 }
 
 function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
-  hubs.reduce((result, hub) => {
-    const allReferencesAreOfTheType = hub.every((reference) => reference.entity === entitySharedId || reference.template === propertyRelationType);
+  return hubs.reduce((result, hub) => {
+    const allReferencesAreOfTheType = hub.every((reference) => {
+      return reference.entity === entitySharedId || reference.template.toString() === propertyRelationType;
+    });
     if (allReferencesAreOfTheType) {
       return hub;
     }
+
+    return result;
   }, null);
 }
 
