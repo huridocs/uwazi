@@ -62,6 +62,24 @@ describe('Login', () => {
         })
         .catch(done.fail);
       });
+
+      describe('when the instance is private', () => {
+        it('should reload to "/"', (done) => {
+          spyOn(browserHistory, 'push');
+          spyOn(window.location, 'replace');
+
+          props.private = true;
+          render();
+
+          instance.submit('credentials')
+          .then(() => {
+            expect(browserHistory.push).not.toHaveBeenCalledWith();
+            expect(window.location.replace).toHaveBeenCalledWith(window.location.host);
+            done();
+          })
+          .catch(done.fail);
+        });
+      });
     });
 
     describe('on response failure', () => {
