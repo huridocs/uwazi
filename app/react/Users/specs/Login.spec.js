@@ -64,17 +64,17 @@ describe('Login', () => {
       });
 
       describe('when the instance is private', () => {
-        it('should reload to "/"', (done) => {
-          spyOn(browserHistory, 'push');
-          spyOn(window.location, 'replace');
-
+        it('should call reloadHome', (done) => {
           props.private = true;
           render();
 
+          spyOn(browserHistory, 'push');
+          spyOn(instance, 'reloadHome');
+
           instance.submit('credentials')
           .then(() => {
-            expect(browserHistory.push).not.toHaveBeenCalledWith();
-            expect(window.location.replace).toHaveBeenCalledWith(window.location.host);
+            expect(browserHistory.push).toHaveBeenCalledWith('/');
+            expect(instance.reloadHome).toHaveBeenCalled();
             done();
           })
           .catch(done.fail);

@@ -1,13 +1,13 @@
 import middleWare from '../privateInstanceMiddleware';
 import settings from '../../settings';
 
-describe('privateInstanceMiddleware', () => {
+fdescribe('privateInstanceMiddleware', () => {
   let req;
   let res;
   let next;
 
   beforeEach(() => {
-    req = {};
+    req = {url: ''};
     res = {
       status: jasmine.createSpy('status'),
       json: jasmine.createSpy('json')
@@ -40,7 +40,18 @@ describe('privateInstanceMiddleware', () => {
 
   it('should call next when instance is not private', (done) => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({private: false}));
-    middleWare(req, res, next);
+    middleWare(req, res, next)
+    .then(() => {
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('should call next when instance is private and the url matches login', (done) => {
+    spyOn(settings, 'get').and.returnValue(Promise.resolve({private: true}));
+    req.url = 'url/login';
     middleWare(req, res, next)
     .then(() => {
       expect(res.status).not.toHaveBeenCalled();

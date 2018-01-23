@@ -37,11 +37,16 @@ export class Login extends RouteHandler {
     return this.props.recoverPassword(email);
   }
 
+  reloadHome() {
+    window.location.reload();
+  }
+
   login(credentials) {
     return this.props.login(credentials)
     .then(() => {
       if (this.props.private) {
-        window.location.replace(window.location.host);
+        browserHistory.push('/');
+        this.reloadHome();
         return;
       }
       reconnectSocket();
@@ -118,7 +123,7 @@ Login.propTypes = {
 
 export function mapStateToProps({settings}) {
   return {
-    private: settings.private
+    private: true
   };
 }
 

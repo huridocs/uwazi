@@ -107,9 +107,16 @@ function handleRoute(res, renderProps, req) {
 
       return settings;
     })
-    //return Promise.resolve()
     .then(settingsData => {
-      console.log('DB Settings:', settingsData);
+      if (settingsData.private && !req.user) {
+        return Promise.all([
+          Promise.resolve({json: {}}),
+          Promise.resolve({json: {languages: [], private: settingsData.private}}),
+          Promise.resolve({json: {rows: []}}),
+          Promise.resolve({json: {rows: []}}),
+          Promise.resolve({json: {rows: []}})
+        ]);
+      }
 
       return Promise.all([
         api.get('user'),
@@ -117,58 +124,51 @@ function handleRoute(res, renderProps, req) {
         api.get('translations'),
         api.get('templates'),
         api.get('thesauris')
-      ])
-      //return Promise.all([
-        //Promise.resolve({json: {}}),
-        //Promise.resolve({json: {languages: []}}),
-        //Promise.resolve({json: {rows: []}}),
-        //Promise.resolve({json: {rows: []}}),
-        //Promise.resolve({json: {rows: []}})
-      //])
-      .then(([user, settings, translations, templates, thesauris]) => {
-        const globalResources = {
-          user: user.json,
-          settings: {collection: settings.json},
-          translations: translations.json.rows,
-          templates: templates.json.rows,
-          thesauris: thesauris.json.rows
-        };
+      ]);
+    })
+    .then(([user, settings, translations, templates, thesauris]) => {
+      const globalResources = {
+        user: user.json,
+        settings: {collection: settings.json},
+        translations: translations.json.rows,
+        templates: templates.json.rows,
+        thesauris: thesauris.json.rows
+      };
 
-        globalResources.settings.collection.links = globalResources.settings.collection.links || [];
+      globalResources.settings.collection.links = globalResources.settings.collection.links || [];
 
-        return Promise.all([routeProps.requestState(renderProps.params, query, {
-          templates: Immutable(globalResources.templates),
-          thesauris: Immutable(globalResources.thesauris)
-        }), globalResources]);
-      })
-      .catch((error) => {
-        if (error.status === 401) {
-          res.redirect(302, '/login');
-          return Promise.reject(error);
-        }
+      return Promise.all([routeProps.requestState(renderProps.params, query, {
+        templates: Immutable(globalResources.templates),
+        thesauris: Immutable(globalResources.thesauris)
+      }), globalResources]);
+    })
+    .catch((error) => {
+      if (error.status === 401) {
+        res.redirect(302, '/login');
+        return Promise.reject(error);
+      }
 
-        if (error.status === 404) {
-          res.redirect(302, '/404');
-          return Promise.reject(error);
-        }
+      if (error.status === 404) {
+        res.redirect(302, '/404');
+        return Promise.reject(error);
+      }
 
-        if (error.status === 500) {
-          handleError(res, error);
-          return Promise.reject(error);
-        }
-      })
-      .then(([initialData, globalResources]) => {
-        initialData.user = globalResources.user;
-        initialData.settings = globalResources.settings;
-        initialData.translations = globalResources.translations;
-        initialData.templates = globalResources.templates;
-        initialData.thesauris = globalResources.thesauris;
-        initialData.locale = locale;
-        renderPage(initialData, true);
-      })
-      .catch((error) => {
-        console.trace(error); // eslint-disable-line
-      });
+      if (error.status === 500) {
+        handleError(res, error);
+        return Promise.reject(error);
+      }
+    })
+    .then(([initialData, globalResources]) => {
+      initialData.user = globalResources.user;
+      initialData.settings = globalResources.settings;
+      initialData.translations = globalResources.translations;
+      initialData.templates = globalResources.templates;
+      initialData.thesauris = globalResources.thesauris;
+      initialData.locale = locale;
+      renderPage(initialData, true);
+    })
+    .catch((error) => {
+      console.trace(error); // eslint-disable-line
     });
   }
 
