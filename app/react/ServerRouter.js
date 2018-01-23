@@ -15,7 +15,7 @@ import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import {fromJS as Immutable} from 'immutable';
 import {getPropsFromRoute} from './utils';
-
+import translationsApi from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
 
 import assets from '../../dist/webpack-assets.json';
@@ -73,6 +73,16 @@ function handleRedirect(res, redirectLocation) {
   res.redirect(302, redirectLocation.pathname + redirectLocation.search);
 }
 
+function onlySystemTranslations(AllTranslations) {
+  const rows = AllTranslations.map((translation) => {
+    const systemTranslation = translation.contexts.find((c) => c.id === 'System');
+    translation.contexts = [systemTranslation];
+    return translation;
+  });
+
+  return {json: {rows}};
+}
+
 function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
@@ -112,7 +122,7 @@ function handleRoute(res, renderProps, req) {
         return Promise.all([
           Promise.resolve({json: {}}),
           Promise.resolve({json: {languages: [], private: settingsData.private}}),
-          Promise.resolve({json: {rows: []}}),
+          translationsApi.get().then(onlySystemTranslations),
           Promise.resolve({json: {rows: []}}),
           Promise.resolve({json: {rows: []}})
         ]);
