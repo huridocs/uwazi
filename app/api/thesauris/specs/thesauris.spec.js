@@ -24,7 +24,7 @@ describe('thesauris', () => {
     it('should return all thesauris including entity templates as options', (done) => {
       thesauris.get(null, 'es')
       .then((dictionaties) => {
-        expect(dictionaties.length).toBe(4);
+        expect(dictionaties.length).toBe(5);
         expect(dictionaties[0].name).toBe('dictionary');
         expect(dictionaties[1].name).toBe('dictionary 2');
         expect(dictionaties[3].name).toBe('entityTemplate');
