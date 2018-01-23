@@ -15,6 +15,9 @@ import {I18NUtils} from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import {fromJS as Immutable} from 'immutable';
 import {getPropsFromRoute} from './utils';
+
+import settingsApi from '../api/settings/settings';
+
 import assets from '../../dist/webpack-assets.json';
 
 
@@ -87,6 +90,7 @@ function handleRoute(res, renderProps, req) {
     if (req.cookies) {
       api.cookie('connect.sid=' + req.cookies['connect.sid']);
     }
+
     RouteHandler.renderedFromServer = true;
     let query;
     if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
@@ -94,14 +98,19 @@ function handleRoute(res, renderProps, req) {
     }
 
     let locale;
-    return api.get('settings').then((response) => {
-      let languages = response.json.languages;
+    return settingsApi.get()
+    .then(settings => {
+      let languages = settings.languages;
       let path = req.url;
       locale = I18NUtils.getLocale(path, languages, req.cookies);
       api.locale(locale);
+
+      return settings;
     })
     //return Promise.resolve()
-    .then(() => {
+    .then(settingsData => {
+      console.log('DB Settings:', settingsData);
+
       return Promise.all([
         api.get('user'),
         api.get('settings'),
@@ -200,6 +209,20 @@ let allowedRoute = (user = {}, url) => {
     !isAdminRoute && !isAuthRoute;
 };
 
+function routeMatch(req, res, location) {
+  match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
+    if (error) {
+      return handleError(error);
+    } else if (redirectLocation) {
+      return handleRedirect(res, redirectLocation);
+    } else if (renderProps) {
+      return handleRoute(res, renderProps, req);
+    }
+
+    return handle404(res);
+  });
+}
+
 function ServerRouter(req, res) {
   if (!allowedRoute(req.user, req.url)) {
     const url = req.user ? '/' : '/login';
@@ -212,38 +235,18 @@ function ServerRouter(req, res) {
 
   let location = req.url;
   if (location === '/') {
-    return api.get('settings')
-    .then((response) => {
-      if (response.json.home_page) {
-        location = response.json.home_page;
+    return settingsApi.get()
+    .then((settingsData) => {
+      if (settingsData.home_page) {
+        location = settingsData.home_page;
       }
     })
     .then(() => {
-      match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
-        if (error) {
-          return handleError(error);
-        } else if (redirectLocation) {
-          return handleRedirect(res, redirectLocation);
-        } else if (renderProps) {
-          return handleRoute(res, renderProps, req);
-        }
-
-        return handle404(res);
-      });
+      routeMatch(req, res, location);
     });
   }
 
-  match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
-    if (error) {
-      return handleError(error);
-    } else if (redirectLocation) {
-      return handleRedirect(res, redirectLocation);
-    } else if (renderProps) {
-      return handleRoute(res, renderProps, req);
-    }
-
-    return handle404(res);
-  });
+  routeMatch(req, res, location);
 }
 
 export default ServerRouter;
