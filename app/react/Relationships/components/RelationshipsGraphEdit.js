@@ -74,13 +74,7 @@ export class RelationshipsGraphEdit extends Component {
     };
   }
 
-  saveRelationships() {
-    console.log({hubs: this.props.hubs.toJS(), hubActions: this.props.hubActions.toJS()});
-    this.props.save();
-  }
-
   editingSelector(defaultElement, editingElement) {
-    console.log('EDITING:', this.props.hubActions.get('editing'));
     if (this.props.hubActions.get('editing')) {
       return editingElement;
     }
@@ -208,13 +202,6 @@ export class RelationshipsGraphEdit extends Component {
             </div>
           )}
 
-          <div>
-            <div className="leftRelationshipType">
-              <button className="relationships-new btn btn-success" onClick={() => {this.saveRelationships();}}>
-                Save Relationships
-              </button>
-            </div>
-          </div>
         </div>
 
       </div>
@@ -236,7 +223,6 @@ RelationshipsGraphEdit.propTypes = {
   toggelRemoveLeftRelationship: PropTypes.func,
   toggleRemoveRightRelationshipGroup: PropTypes.func,
   setAddToData: PropTypes.func,
-  save: PropTypes.func,
   toggleRemoveEntity: PropTypes.func,
   openAddEntitiesPanel: PropTypes.func
 };
@@ -261,7 +247,6 @@ function mapDispatchToProps(dispatch) {
     toggelRemoveLeftRelationship: actions.toggelRemoveLeftRelationship,
     toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
     setAddToData: actions.setAddToData,
-    save: actions.saveRelationships,
     toggleRemoveEntity: actions.toggleRemoveEntity,
     openAddEntitiesPanel: uiActions.openPanel
   }, dispatch);
