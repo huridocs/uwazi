@@ -123,7 +123,7 @@ Login.propTypes = {
 
 export function mapStateToProps({settings}) {
   return {
-    private: true
+    private: settings.collection.get('private')
   };
 }
 

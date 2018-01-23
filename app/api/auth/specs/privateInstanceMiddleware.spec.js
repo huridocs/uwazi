@@ -1,7 +1,7 @@
 import middleWare from '../privateInstanceMiddleware';
 import settings from '../../settings';
 
-fdescribe('privateInstanceMiddleware', () => {
+describe('privateInstanceMiddleware', () => {
   let req;
   let res;
   let next;
@@ -10,13 +10,25 @@ fdescribe('privateInstanceMiddleware', () => {
     req = {url: ''};
     res = {
       status: jasmine.createSpy('status'),
-      json: jasmine.createSpy('json')
+      json: jasmine.createSpy('json'),
+      redirect: jasmine.createSpy('redirect')
     };
     next = jasmine.createSpy('next');
   });
 
-  it('should return an error when there is no user in the request and the instance is configured as private', (done) => {
+  it('should redirect to "/login" when there is no user in the request and the instance is configured as private', (done) => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({private: true}));
+    middleWare(req, res, next)
+    .then(() => {
+      expect(res.redirect).toHaveBeenCalledWith('/login');
+      expect(next).not.toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('should return an unauthorized error when there is no user, the instance is configured as private and the call is to the api', (done) => {
+    spyOn(settings, 'get').and.returnValue(Promise.resolve({private: true}));
+    req.url = 'host:port/api/someendpoint';
     middleWare(req, res, next)
     .then(() => {
       expect(res.status).toHaveBeenCalledWith(401);
@@ -31,8 +43,7 @@ fdescribe('privateInstanceMiddleware', () => {
     req.user = {username: 'test'};
     middleWare(req, res, next)
     .then(() => {
-      expect(res.status).not.toHaveBeenCalled();
-      expect(res.json).not.toHaveBeenCalled();
+      expect(res.redirect).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalled();
       done();
     });
@@ -42,8 +53,7 @@ fdescribe('privateInstanceMiddleware', () => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({private: false}));
     middleWare(req, res, next)
     .then(() => {
-      expect(res.status).not.toHaveBeenCalled();
-      expect(res.json).not.toHaveBeenCalled();
+      expect(res.redirect).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalled();
       done();
     });
@@ -54,8 +64,7 @@ fdescribe('privateInstanceMiddleware', () => {
     req.url = 'url/login';
     middleWare(req, res, next)
     .then(() => {
-      expect(res.status).not.toHaveBeenCalled();
-      expect(res.json).not.toHaveBeenCalled();
+      expect(res.redirect).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalled();
       done();
     });
