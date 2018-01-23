@@ -72,6 +72,14 @@ describe('Doc', () => {
       });
     });
 
+    fit('should pass the className to the item', () => {
+      render();
+      expect(component.find(Item).props().className).toBeUndefined();
+      props.className = 'passed-classname';
+      render();
+      expect(component.find(Item).props().className).toContain('passed-classname');
+    });
+
     it('should pass the searchParams to the item', () => {
       render();
       expect(component.find(Item).props().searchParams.sort).toBe('sortProperty');
