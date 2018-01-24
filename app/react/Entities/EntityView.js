@@ -36,6 +36,9 @@ export default class Entity extends RouteHandler {
         },
         connectionsList: {
           entityId: entity.sharedId,
+          // TEST!!!
+          entity,
+          // ---------
           connectionsGroups,
           searchResults,
           sort,
@@ -71,6 +74,9 @@ export default class Entity extends RouteHandler {
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
 
     this.context.store.dispatch(actions.set('connectionsList/entityId', state.connectionsList.entityId));
+    // TEST!!!
+    this.context.store.dispatch(actions.set('connectionsList/entity', state.connectionsList.entity));
+    // -------
     this.context.store.dispatch(actions.set('connectionsList/connectionsGroups', state.connectionsList.connectionsGroups));
     this.context.store.dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
     this.context.store.dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));

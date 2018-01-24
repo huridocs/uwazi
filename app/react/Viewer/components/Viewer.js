@@ -22,6 +22,8 @@ import ShowIf from 'app/App/ShowIf';
 import {TemplateLabel, Icon} from 'app/Layout';
 import Marker from 'app/Viewer/utils/Marker';
 
+import {ConnectionsList} from 'app/ConnectionsList';
+
 export class Viewer extends Component {
 
   componentWillMount() {
@@ -34,7 +36,7 @@ export class Viewer extends Component {
   }
 
   render() {
-    const {doc} = this.props;
+    const {doc, sidepanelTab} = this.props;
 
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
@@ -61,8 +63,11 @@ export class Viewer extends Component {
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
-            <ShowIf if={!this.props.targetDoc}>
+            <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
+            </ShowIf>
+            <ShowIf if={sidepanelTab === 'connections'}>
+              <ConnectionsList deleteConnection={() => {}} />
             </ShowIf>
             <TargetDocument />
             <Footer/>
@@ -93,6 +98,8 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
+  // TEST!!!
+  sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
   showTextSelectMenu: PropTypes.bool
@@ -108,6 +115,8 @@ const mapStateToProps = ({documentViewer}) => {
     doc: documentViewer.doc,
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
+    // TEST!!!
+    sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
   };
