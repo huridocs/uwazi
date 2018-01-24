@@ -55,6 +55,7 @@ function migrateTemplates() {
 
 let relationsProcessed = 0;
 let totalRelations;
+let relationsProcessedInAdifferentHub = [];
 
 function migrateRelationships() {
   return relationShipsmodel.get()
@@ -67,6 +68,9 @@ function migrateRelationships() {
       }
       relationsProcessed += 1;
       process.stdout.write(`Relations processed: ${relationsProcessed} of ${totalRelations}\r`);
+      if (relationsProcessedInAdifferentHub.includes(relationship._id)) {
+        return Promise.resolve();
+      }
       const hub = generateID();
       if (relationship.sourceType === 'metadata') {
         return templatesModel.get({_id: relationship.sourceTemplate})
@@ -75,10 +79,22 @@ function migrateRelationships() {
           return relationtypes.get({name: property.label});
         })
         .then(([relationType]) => {
+          return Promise.all([Promise.resolve(relationType), relationShipsmodel.get({
+            sourceDocument: relationship.sourceDocument,
+            sourceType: 'metadata',
+            sourceProperty: relationship.sourceProperty
+          })]);
+        }).then(([relationType, relationshipsOfTheSameHub]) => {
+          let relationsHub = [
+            {entity: relationship.sourceDocument, hub, template: null}
+          ];
+          relationshipsOfTheSameHub.forEach((relation) => {
+            relationsProcessedInAdifferentHub.push(relation._id);
+            relationsHub.push({entity: relation.targetDocument, hub, template: relationType._id});
+          });
           return Promise.all([
             relationShipsmodel.delete(relationship),
-            relationShipsmodel.save({entity: relationship.sourceDocument, hub, template: null}),
-            relationShipsmodel.save({entity: relationship.targetDocument, hub, template: relationType._id})
+            relationShipsmodel.save(relationsHub)
           ]);
         });
       }
