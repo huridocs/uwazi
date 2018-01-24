@@ -84,7 +84,6 @@ export class RelationshipsGraphEdit extends Component {
   render() {
     const {parentEntity, hubs, search, addHub, hubActions} = this.props;
     const editing = hubActions.get('editing');
-
     return (
       <div className="relationships-graph">
 
@@ -227,9 +226,10 @@ RelationshipsGraphEdit.propTypes = {
   openAddEntitiesPanel: PropTypes.func
 };
 
-export function mapStateToProps({entityView, connectionsList, relationships, relationTypes}) {
+export function mapStateToProps({connectionsList, relationships, relationTypes}) {
+  console.log('EN MAP:', connectionsList);
   return {
-    parentEntity: entityView.entity,
+    parentEntity: connectionsList.entity,
     searchResults: connectionsList.searchResults,
     search: connectionsList.sort,
     hubs: relationships.hubs,

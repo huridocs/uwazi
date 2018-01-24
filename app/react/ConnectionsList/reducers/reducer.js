@@ -6,6 +6,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default combineReducers({
   entityId: createReducer('connectionsList/entityId', ''),
+  entity: createReducer('connectionsList/entity', {}),
   connectionsGroups: createReducer('connectionsList/connectionsGroups', []),
   searchResults: createReducer('connectionsList/searchResults', {totalRows: 0, rows: []}),
   sort: modelReducer('connectionsList.sort', prioritySortingCriteria.get()),
