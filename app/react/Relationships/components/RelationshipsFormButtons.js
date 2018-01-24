@@ -17,7 +17,7 @@ export class RelationshipsFormButtons extends Component {
 
   edit(value) {
     return () => {
-      this.props.edit(value);
+      this.props.edit(value, this.props.searchResults, this.props.parentEntity);
     };
   }
 
@@ -63,13 +63,17 @@ RelationshipsFormButtons.propTypes = {
   editing: PropTypes.bool,
   saving: PropTypes.bool,
   edit: PropTypes.func,
-  save: PropTypes.func
+  save: PropTypes.func,
+  parentEntity: PropTypes.object,
+  searchResults: PropTypes.object
 };
 
-const mapStateToProps = ({relationships}) => {
+const mapStateToProps = ({relationships, entityView, connectionsList}) => {
   return {
     editing: relationships.hubActions.get('editing'),
-    saving: relationships.hubActions.get('saving')
+    saving: relationships.hubActions.get('saving'),
+    parentEntity: entityView.entity,
+    searchResults: connectionsList.searchResults
   };
 };
 
