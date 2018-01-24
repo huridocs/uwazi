@@ -38,15 +38,14 @@ describe('privateInstanceMiddleware', () => {
     });
   });
 
-  it('should call next if the instance is private and there is an user logged', (done) => {
+  it('should call next if the instance is private and there is a user logged', () => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({private: true}));
     req.user = {username: 'test'};
-    middleWare(req, res, next)
-    .then(() => {
-      expect(res.redirect).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalled();
-      done();
-    });
+
+    middleWare(req, res, next);
+
+    expect(res.redirect).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
   });
 
   it('should call next when instance is not private', (done) => {
@@ -59,14 +58,13 @@ describe('privateInstanceMiddleware', () => {
     });
   });
 
-  it('should call next when instance is private and the url matches login', (done) => {
+  it('should call next when instance is private and the url matches login', () => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({private: true}));
     req.url = 'url/login';
-    middleWare(req, res, next)
-    .then(() => {
-      expect(res.redirect).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalled();
-      done();
-    });
+
+    middleWare(req, res, next);
+
+    expect(res.redirect).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
   });
 });
