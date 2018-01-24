@@ -56,6 +56,9 @@ export default function (state = initialState, action = {}) {
   case types.PARSE_RELATIONSHIPS_RESULTS:
     return conformRelationships(action);
 
+  case types.EDIT_RELATIONSHIPS:
+    return conformRelationships(action);
+
   case types.ADD_RELATIONSHIPS_HUB:
     return state.push(fromJS({
       leftRelationship: {template: null},

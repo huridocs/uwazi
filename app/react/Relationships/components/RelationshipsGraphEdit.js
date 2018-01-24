@@ -160,7 +160,7 @@ export class RelationshipsGraphEdit extends Component {
                       <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
                            key={relationshipIndex}>
                         <div className="rightRelationshipType">
-                          <Doc doc={relationship.get('entity')} searchParams={search} />
+                          <Doc className="item-collapsed" doc={relationship.get('entity')} searchParams={search} />
                         </div>
                         {this.editingSelector(null,
                           <div className="removeEntity">
