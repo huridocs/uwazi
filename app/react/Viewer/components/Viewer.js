@@ -23,6 +23,7 @@ import {TemplateLabel, Icon} from 'app/Layout';
 import Marker from 'app/Viewer/utils/Marker';
 
 import {ConnectionsList} from 'app/ConnectionsList';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 
 export class Viewer extends Component {
 
@@ -79,6 +80,9 @@ export class Viewer extends Component {
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <RelationshipMetadata />
+        </ShowIf>
 
         <ContextMenu align="bottom" overrideShow={true} show={!this.props.panelIsOpen}>
           <ViewerDefaultMenu/>
@@ -102,14 +106,17 @@ Viewer.propTypes = {
   sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
-  showTextSelectMenu: PropTypes.bool
+  showTextSelectMenu: PropTypes.bool,
+  selectedConnection: PropTypes.bool,
+  selectedConnectionMetadata: PropTypes.object
 };
 
 Viewer.contextTypes = {
   store: PropTypes.object
 };
 
-const mapStateToProps = ({documentViewer}) => {
+const mapStateToProps = (state) => {
+  let documentViewer = state.documentViewer;
   let uiState = documentViewer.uiState.toJS();
   return {
     doc: documentViewer.doc,

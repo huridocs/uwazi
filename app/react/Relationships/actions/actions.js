@@ -140,3 +140,11 @@ export function search(searchTerm) {
     return debouncedSearch(dispatch, searchTerm);
   };
 }
+
+export function selectConnection(connection) {
+  return actions.set('relationships/connection', connection);
+}
+
+export function unselectConnection() {
+  return actions.set('relationships/connection', {});
+}

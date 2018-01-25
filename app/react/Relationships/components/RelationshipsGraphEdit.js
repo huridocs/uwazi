@@ -81,6 +81,10 @@ export class RelationshipsGraphEdit extends Component {
     return defaultElement;
   }
 
+  onClick(e, entity) {
+    this.props.selectConnection(entity);
+  }
+
   render() {
     const {parentEntity, hubs, search, addHub, hubActions} = this.props;
     const editing = hubActions.get('editing');
@@ -159,7 +163,7 @@ export class RelationshipsGraphEdit extends Component {
                       <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
                            key={relationshipIndex}>
                         <div className="rightRelationshipType">
-                          <Doc className="item-collapsed" doc={relationship.get('entity')} searchParams={search} />
+                          <Doc className="item-collapsed" doc={relationship.get('entity')} searchParams={search} onClick={this.onClick.bind(this)}/>
                         </div>
                         {this.editingSelector(null,
                           <div className="removeEntity">
@@ -223,11 +227,11 @@ RelationshipsGraphEdit.propTypes = {
   toggleRemoveRightRelationshipGroup: PropTypes.func,
   setAddToData: PropTypes.func,
   toggleRemoveEntity: PropTypes.func,
-  openAddEntitiesPanel: PropTypes.func
+  openAddEntitiesPanel: PropTypes.func,
+  selectConnection: PropTypes.func
 };
 
 export function mapStateToProps({connectionsList, relationships, relationTypes}) {
-  console.log('EN MAP:', connectionsList);
   return {
     parentEntity: connectionsList.entity,
     searchResults: connectionsList.searchResults,
@@ -243,6 +247,7 @@ function mapDispatchToProps(dispatch) {
     parseResults: actions.parseResults,
     addHub: actions.addHub,
     updateLeftRelationshipType: actions.updateLeftRelationshipType,
+    selectConnection: actions.selectConnection,
     updateRightRelationshipType: actions.updateRightRelationshipType,
     toggelRemoveLeftRelationship: actions.toggelRemoveLeftRelationship,
     toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,

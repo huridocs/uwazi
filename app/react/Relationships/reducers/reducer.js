@@ -11,5 +11,6 @@ export default combineReducers({
   hubActions,
   searchResults: createReducer('relationships/searchResults', []),
   searchTerm: createReducer('relationships/searchTerm', ''),
+  connection: createReducer('relationships/connection', {}),
   uiState
 });
