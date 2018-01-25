@@ -37,7 +37,7 @@
   z-index: 6;
   top: 0;
   @media (min-width: 1024px) {
-    right: 0 !important;
+    top: $header-height * 2 + 1 !important;
   }
 }
 
