@@ -1,4 +1,4 @@
-import references from 'api/references/references';
+import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
 import model from './relationTypesModel';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from '../templates/utils';
@@ -55,7 +55,7 @@ function _update(newTemplate) {
   return model.getById({_id: newTemplate._id})
   .then((currentTemplate) => {
     updateTranslation(currentTemplate, newTemplate);
-    references.updateMetadataProperties(newTemplate, currentTemplate);
+    relationships.updateMetadataProperties(newTemplate, currentTemplate);
     return model.save(newTemplate);
   });
 }
@@ -82,9 +82,9 @@ export default {
   },
 
   delete(id) {
-    return references.countByRelationType(id)
-    .then((referencesUsingIt) => {
-      if (referencesUsingIt === 0) {
+    return relationships.countByRelationType(id)
+    .then((relationshipsUsingIt) => {
+      if (relationshipsUsingIt === 0) {
         return translations.deleteContext(id)
         .then(() => model.delete(id))
         .then(() => true);

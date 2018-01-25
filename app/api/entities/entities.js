@@ -2,7 +2,7 @@ import {generateNamesAndIds} from 'api/templates/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
-import references from 'api/references/references';
+import relationships from 'api/relationships/relationships';
 import templates from 'api/templates/templates';
 import ID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
@@ -18,7 +18,7 @@ function updateEntity(doc) {
     if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
       return Promise.all([
         this.deleteEntityFromMetadata(docLanguages[0]),
-        references.delete({entity: doc.sharedId})
+        relationships.delete({entity: doc.sharedId})
       ])
       .then(() => [docLanguages, templateResult]);
     }
@@ -148,7 +148,7 @@ export default {
     })
     .then(() => this.getById(sharedId, language))
     .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response, language)]);
+      return Promise.all([response, relationships.saveEntityBasedReferences(response, language)]);
     })
     .then(([entity]) => {
       return entity;
@@ -277,7 +277,7 @@ export default {
     })
     .then((docs) => {
       return Promise.all([
-        references.delete({entity: sharedId}),
+        relationships.delete({entity: sharedId}),
         this.deleteFiles(docs),
         this.deleteEntityFromMetadata(docs[0])
       ])

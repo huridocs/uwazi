@@ -2,7 +2,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import fs from 'fs';
 import {mockID} from 'shared/uniqueID';
-import references from 'api/references';
+import relationships from 'api/relationships';
 import entities from 'api/entities';
 import search from 'api/search/search';
 
@@ -12,7 +12,7 @@ import db from 'api/utils/testing_db';
 
 describe('documents', () => {
   beforeEach((done) => {
-    spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
+    spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     mockID();

@@ -3,7 +3,7 @@ import uploadRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from 'api/entities';
 import documents from 'api/documents';
-import references from 'api/references';
+import relationships from 'api/relationships';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
 import elastic from 'api/search/elastic';
@@ -162,14 +162,14 @@ describe('upload routes', () => {
 
   describe('POST/reupload', () => {
     beforeEach(() => {
-      spyOn(references, 'deleteTextReferences').and.returnValue(Promise.resolve());
+      spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
     it('should reupload a document', (done) => {
       req.body.document = entityId;
       routes.post('/api/reupload', req)
       .then(response => {
-        expect(references.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
+        expect(relationships.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
         expect(response).toEqual(file);
 
         return documents.getById('id', 'es');

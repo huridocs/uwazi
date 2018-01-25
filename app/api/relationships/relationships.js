@@ -3,20 +3,20 @@ import relationTypesAPI from 'api/relationtypes/relationtypes';
 import {generateNamesAndIds} from '../templates/utils';
 import entities from '../entities';
 
-import model from './connectionsModel.js';
+import model from './relationshipsModel.js';
 import {generateID} from 'api/odm';
 import {createError} from 'api/utils';
 
-import {filterRelevantReferences, groupReferences} from './groupByConnection';
+import {filterRelevantRelationships, groupRelationships} from './groupByRelationships';
 
-let normalizeConnection = (connection) => {
-  connection.range = connection.range || {text: ''};
-  return connection;
+let normalizeConnection = (relationship) => {
+  relationship.range = relationship.range || {text: ''};
+  return relationship;
 };
 
-let normalizeConnectedDocumentData = (connection, connectedDocument) => {
-  connection.entityData = connectedDocument;
-  return connection;
+let normalizeConnectedDocumentData = (relationship, connectedDocument) => {
+  relationship.entityData = connectedDocument;
+  return relationship;
 };
 
 function excludeRefs(template) {
@@ -63,21 +63,21 @@ export default {
 
   getByDocument(id, language) {
     return model.get({entity: id})
-    .then((ownConnections) => {
-      const hubs = ownConnections.map(connection => connection.hub);
+    .then((ownRelations) => {
+      const hubs = ownRelations.map(relationship => relationship.hub);
       return model.get({hub: {$in: hubs}});
     })
     .then((response) => {
-      let connections = response.map((connection) => normalizeConnection(connection, id));
-      let connectedEntityiesSharedId = connections.map((connection) => connection.entity);
+      let relationships = response.map((relationship) => normalizeConnection(relationship, id));
+      let connectedEntityiesSharedId = relationships.map((relationship) => relationship.entity);
       return entities.get({sharedId: {$in: connectedEntityiesSharedId}, language})
       .then((_connectedDocuments) => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return connections.map((connection) => {
-          return normalizeConnectedDocumentData(connection, connectedDocuments[connection.entity]);
+        return relationships.map((relationship) => {
+          return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
         });
       });
     });
@@ -90,8 +90,8 @@ export default {
       relationTypesAPI.get()
     ])
     .then(([references, templates, relationTypes]) => {
-      const relevantReferences = filterRelevantReferences(references, language, options.user);
-      const groupedReferences = groupReferences(relevantReferences, templates, relationTypes);
+      const relevantReferences = filterRelevantRelationships(references, language, options.user);
+      const groupedReferences = groupRelationships(relevantReferences, templates, relationTypes);
 
       if (options.excludeRefs) {
         groupedReferences.forEach(g => {
@@ -110,20 +110,20 @@ export default {
     return model.count({template: typeId});
   },
 
-  save(_connections, language) {
-    let connections = _connections;
-    if (!Array.isArray(connections)) {
-      connections = [connections];
+  save(_relationships, language) {
+    let relationships = _relationships;
+    if (!Array.isArray(relationships)) {
+      relationships = [relationships];
     }
 
-    if (connections.length === 1 && !connections[0].hub) {
-      return Promise.reject(createError('Single connections must have a hub'));
+    if (relationships.length === 1 && !relationships[0].hub) {
+      return Promise.reject(createError('Single relationships must have a hub'));
     }
-    const hub = connections[0].hub || generateID();
+    const hub = relationships[0].hub || generateID();
     return Promise.all(
-      connections.map((connection) => {
-        connection.hub = hub;
-        return model.save(connection)
+      relationships.map((relationship) => {
+        relationship.hub = hub;
+        return model.save(relationship)
         .then((r) => {
           return normalizeConnection(r);
         })

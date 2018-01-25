@@ -4,7 +4,7 @@ import entities from '../entities.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
-import references from 'api/references';
+import relationships from 'api/relationships';
 import entitiesModel from 'api/entities/entitiesModel';
 
 import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
@@ -12,7 +12,7 @@ import db from 'api/utils/testing_db';
 
 describe('entities', () => {
   beforeEach((done) => {
-    spyOn(references, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
+    spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures, (err) => {
@@ -254,8 +254,8 @@ describe('entities', () => {
 
       entities.save(doc, {user, language: 'es'})
       .then(() => {
-        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
-        expect(references.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
+        expect(relationships.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe('Batman begins');
+        expect(relationships.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
         done();
       })
       .catch(catchErrors(done));
@@ -596,9 +596,9 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    it('should delete the document references', (done) => {
+    it('should delete the document relationships', (done) => {
       return entities.delete('shared')
-      .then(() => references.getByDocument('shared'))
+      .then(() => relationships.getByDocument('shared'))
       .then((refs) => {
         expect(refs.length).toBe(0);
         done();

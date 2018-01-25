@@ -1,16 +1,16 @@
-import referencesRroutes from '../routes.js';
+import relationshipsRroutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import search from '../../search/search';
-import references from 'api/references/references';
+import relationships from 'api/relationships/relationships';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-describe('references routes', () => {
+describe('relationships routes', () => {
   let routes;
 
   beforeEach(() => {
-    routes = instrumentRoutes(referencesRroutes);
-    spyOn(references, 'save').and.returnValue(Promise.resolve());
-    spyOn(references, 'delete').and.returnValue(Promise.resolve());
+    routes = instrumentRoutes(relationshipsRroutes);
+    spyOn(relationships, 'save').and.returnValue(Promise.resolve());
+    spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
   });
 
   describe('POST', () => {
@@ -19,7 +19,7 @@ describe('references routes', () => {
 
       routes.post('/api/references', req)
       .then(() => {
-        expect(references.save).toHaveBeenCalledWith(req.body, req.language);
+        expect(relationships.save).toHaveBeenCalledWith(req.body, req.language);
         done();
       })
       .catch(catchErrors(done));
@@ -35,9 +35,9 @@ describe('references routes', () => {
 
       routes.post('/api/relationships/bulk', req)
       .then(() => {
-        expect(references.save).toHaveBeenCalledWith({_id: 1}, req.language);
-        expect(references.save).toHaveBeenCalledWith({_id: 2}, req.language);
-        expect(references.delete).toHaveBeenCalledWith({_id: 3}, req.language);
+        expect(relationships.save).toHaveBeenCalledWith({_id: 1}, req.language);
+        expect(relationships.save).toHaveBeenCalledWith({_id: 2}, req.language);
+        expect(relationships.delete).toHaveBeenCalledWith({_id: 3}, req.language);
         done();
       })
       .catch(catchErrors(done));
@@ -50,7 +50,7 @@ describe('references routes', () => {
 
       routes.delete('/api/references', req)
       .then(() => {
-        expect(references.delete).toHaveBeenCalledWith(req.query._id);
+        expect(relationships.delete).toHaveBeenCalledWith(req.query._id);
         done();
       })
       .catch(catchErrors(done));
@@ -58,14 +58,14 @@ describe('references routes', () => {
   });
 
   describe('GET by_document', () => {
-    it('should return references.getByDocument', (done) => {
+    it('should return relationships.getByDocument', (done) => {
       let req = {params: {id: 'documentId'}, language: 'es'};
 
-      spyOn(references, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
+      spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
 
       routes.get('/api/references/by_document/:id', req)
       .then((response) => {
-        expect(references.getByDocument).toHaveBeenCalledWith('documentId', 'es');
+        expect(relationships.getByDocument).toHaveBeenCalledWith('documentId', 'es');
         expect(response).toBe('byDocument');
         done();
       })
@@ -77,11 +77,11 @@ describe('references routes', () => {
     it('should return grouped refernces by connection', (done) => {
       let req = {params: {id: 'documentId'}, language: 'es', user: 'user'};
 
-      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve('groupedByConnection'));
+      spyOn(relationships, 'getGroupsByConnection').and.returnValue(Promise.resolve('groupedByConnection'));
 
       routes.get('/api/references/group_by_connection/:id', req)
       .then((response) => {
-        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: true, user: 'user'});
+        expect(relationships.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: true, user: 'user'});
         expect(response).toBe('groupedByConnection');
         done();
       })
@@ -118,11 +118,11 @@ describe('references routes', () => {
       }];
     });
 
-    it('should return references limited by the entity they belong to with connection data added', (done) => {
+    it('should return relationships limited by the entity they belong to with connection data added', (done) => {
       spyOn(search, 'search').and.returnValue(Promise.resolve({rows: [{sharedId: 'id2'}]}));
-      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
+      spyOn(relationships, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
 
-      const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {sort: 'sort'}};
+      const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {sort: 'sort', limit: 9999}};
 
       routes.get('/api/references/search/:id', req)
       .then((response) => {
@@ -146,8 +146,8 @@ describe('references routes', () => {
           hub: 1
         };
 
-        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
-        expect(search.search).toHaveBeenCalledWith({sort: 'sort', ids: ['id1', 'id2', 'id2', 'id3'], includeUnpublished: true}, 'es');
+        expect(relationships.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
+        expect(search.search).toHaveBeenCalledWith({sort: 'sort', ids: ['id1', 'id2', 'id2', 'id3'], includeUnpublished: true, limit: 9999}, 'es');
         expect(response.rows[0].connections[0]).toEqual(expectedParsedConnection1);
         expect(response.rows[0].connections[1]).toEqual(expectedParsedConnection2);
         done();
@@ -155,9 +155,9 @@ describe('references routes', () => {
       .catch(catchErrors(done));
     });
 
-    it('should return references limited by the entity they belong to and selected filter', (done) => {
+    it('should return relationships limited by the entity they belong to and selected filter', (done) => {
       spyOn(search, 'search').and.returnValue(Promise.resolve({rows: [{sharedId: 'id2'}]}));
-      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
+      spyOn(relationships, 'getGroupsByConnection').and.returnValue(Promise.resolve(groupsResult));
 
       const filter = '{"k1": [], "k2": ["k2t2"]}';
       const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {filter}};
@@ -178,24 +178,24 @@ describe('references routes', () => {
           ]}
         ]};
 
-        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
-        expect(search.search).toHaveBeenCalledWith({filter, ids: ['id2', 'id3'], includeUnpublished: true}, 'es');
+        expect(relationships.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
+        expect(search.search).toHaveBeenCalledWith({filter, ids: ['id2', 'id3'], includeUnpublished: true, limit: 9999}, 'es');
         expect(response).toEqual(expectedResponse);
         done();
       })
       .catch(catchErrors(done));
     });
 
-    it('should return no results if grouped references is empty', (done) => {
+    it('should return no results if grouped relationships is empty', (done) => {
       spyOn(search, 'search').and.returnValue(Promise.resolve({rows: []}));
-      spyOn(references, 'getGroupsByConnection').and.returnValue(Promise.resolve([]));
+      spyOn(relationships, 'getGroupsByConnection').and.returnValue(Promise.resolve([]));
 
       const req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {}};
 
       routes.get('/api/references/search/:id', req)
       .then((response) => {
-        expect(references.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
-        expect(search.search).toHaveBeenCalledWith({ids: [ 'no_results' ], includeUnpublished: true}, 'es');
+        expect(relationships.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {excludeRefs: false, user: 'user'});
+        expect(search.search).toHaveBeenCalledWith({ids: [ 'no_results' ], includeUnpublished: true, limit: 9999}, 'es');
         expect(response).toEqual({rows: []});
         done();
       })
@@ -204,13 +204,13 @@ describe('references routes', () => {
   });
 
   describe('/references/count_by_relationtype', () => {
-    it('should return the number of references using a relationtype', (done) => {
-      spyOn(references, 'countByRelationType').and.returnValue(Promise.resolve(2));
+    it('should return the number of relationships using a relationtype', (done) => {
+      spyOn(relationships, 'countByRelationType').and.returnValue(Promise.resolve(2));
       let req = {query: {relationtypeId: 'abc1'}};
       routes.get('/api/references/count_by_relationtype', req)
       .then((result) => {
         expect(result).toBe(2);
-        expect(references.countByRelationType).toHaveBeenCalledWith('abc1');
+        expect(relationships.countByRelationType).toHaveBeenCalledWith('abc1');
         done();
       })
       .catch(catchErrors(done));

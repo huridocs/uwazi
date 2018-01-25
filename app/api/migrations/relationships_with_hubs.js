@@ -1,6 +1,6 @@
 import P from 'bluebird';
 
-import relationShipsmodel from '../references/connectionsModel';
+import relationshipsModel from '../relationships/relationshipsModel';
 import templatesModel from '../templates/templates';
 import relationtypes from '../relationtypes/relationtypes';
 import entities from '../entities/entities';
@@ -14,7 +14,7 @@ function createRelationType(property) {
   return relationtypes.get({name: property.label})
   .then((result) => {
     if (!result.length) {
-      console.log('Creating relation type:', property.label)
+      console.log('Creating relation type:', property.label);
       return relationtypes.save({name: property.label})
       .then((newRelationType) => {
         connectionsRelationTypes[property.name] = newRelationType._id;
@@ -58,7 +58,7 @@ let totalRelations;
 let relationsProcessedInAdifferentHub = [];
 
 function migrateRelationships() {
-  return relationShipsmodel.get()
+  return relationshipsModel.get()
   .then((relations) => {
     totalRelations = relations.length;
     return P.resolve(relations).map((relationship) => {
@@ -79,7 +79,7 @@ function migrateRelationships() {
           return relationtypes.get({name: property.label});
         })
         .then(([relationType]) => {
-          return Promise.all([Promise.resolve(relationType), relationShipsmodel.get({
+          return Promise.all([Promise.resolve(relationType), relationshipsModel.get({
             sourceDocument: relationship.sourceDocument,
             sourceType: 'metadata',
             sourceProperty: relationship.sourceProperty
@@ -93,16 +93,16 @@ function migrateRelationships() {
             relationsHub.push({entity: relation.targetDocument, hub, template: relationType._id});
           });
           return Promise.all([
-            relationShipsmodel.delete(relationship),
-            relationShipsmodel.save(relationsHub)
+            relationshipsModel.delete(relationship),
+            relationshipsModel.save(relationsHub)
           ]);
         });
       }
 
       return Promise.all([
-        relationShipsmodel.delete(relationship),
-        relationShipsmodel.save({entity: relationship.sourceDocument, hub, template: null}),
-        relationShipsmodel.save({entity: relationship.targetDocument, hub, template: relationship.relationType})
+        relationshipsModel.delete(relationship),
+        relationshipsModel.save({entity: relationship.sourceDocument, hub, template: null}),
+        relationshipsModel.save({entity: relationship.targetDocument, hub, template: relationship.relationType})
       ]);
     }, {concurrency: 1});
   });
@@ -143,7 +143,7 @@ migrateTemplates()
 .then(() => {
   process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r\n`);
   mongoose.disconnect();
-  console.log('Reindexing changes...')
+  console.log('Reindexing changes...');
   require('../../../database/reindex_elastic.js');
 })
 .catch(console.log);

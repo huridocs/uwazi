@@ -16,15 +16,15 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 }
 
 export default {
-  filterRelevantReferences: (references, locale, user) => {
-    return references.filter(ref => {
+  filterRelevantRelationships: (relationships, locale, user) => {
+    return relationships.filter(ref => {
       return Boolean(ref.entityData && ref.entityData.published || user);
     });
   },
 
-  groupReferences: (references, templates, relationTypes) => {
+  groupRelationships: (relationships, templates, relationTypes) => {
     const groupedReferences = [];
-    references.forEach((reference) => {
+    relationships.forEach((reference) => {
       const groupData = getGroupData(reference, groupedReferences, templates, relationTypes);
       let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.entityData.template.toString());
 

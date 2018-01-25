@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import instanceModel from 'api/odm';
 
-const connectionSchema = new mongoose.Schema({
+const relationshipsSchema = new mongoose.Schema({
   entity: {type: String, index: true},
   hub: {type: mongoose.Schema.Types.ObjectId, index: true},
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes', index: true},
@@ -13,5 +13,5 @@ const connectionSchema = new mongoose.Schema({
   }
 });
 
-let Model = mongoose.model('connections', connectionSchema);
+let Model = mongoose.model('connections', relationshipsSchema);
 export default instanceModel(Model);

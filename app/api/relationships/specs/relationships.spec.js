@@ -1,12 +1,12 @@
 /* eslint-disable max-nested-callbacks */
-import references from '../references.js';
+import relationships from '../relationships.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {connectionID1, hub1, hub7, bruceWayne, robin, thomasWayne, alfred} from './fixtures.js';
+import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
 import {relation1, relation2, template} from './fixtures.js';
 
-describe('references', () => {
+describe('relationships', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
@@ -17,8 +17,8 @@ describe('references', () => {
   });
 
   describe('get()', () => {
-    it('should return all the references', (done) => {
-      references.get()
+    it('should return all the relationships', (done) => {
+      relationships.get()
       .then((result) => {
         expect(result.length).toBe(18);
         done();
@@ -27,8 +27,8 @@ describe('references', () => {
   });
 
   describe('getByDocument()', () => {
-    it('should return all the references of a document', (done) => {
-      references.getByDocument('source2', 'es')
+    it('should return all the relationships of a document', (done) => {
+      relationships.getByDocument('source2', 'es')
       .then((result) => {
         expect(result.length).toBe(8);
         const source1Connection = result.find((connection) => connection.entity === 'source1');
@@ -59,8 +59,8 @@ describe('references', () => {
   });
 
   describe('getGroupsByConnection()', () => {
-    it('should return groups of connection types and templates of all the references of a document', (done) => {
-      references.getGroupsByConnection('source2', 'es')
+    it('should return groups of connection types and templates of all the relationships of a document', (done) => {
+      relationships.getGroupsByConnection('source2', 'es')
       .then(results => {
         expect(results.length).toBe(2);
 
@@ -85,7 +85,7 @@ describe('references', () => {
     });
 
     it('should return groups of connection including unpublished docs if user is found', (done) => {
-      references.getGroupsByConnection('source2', 'es', {user: 'found'})
+      relationships.getGroupsByConnection('source2', 'es', {user: 'found'})
       .then(results => {
         expect(results.length).toBe(2);
 
@@ -101,7 +101,7 @@ describe('references', () => {
     });
 
     it('should return groups of connection wihtout refs if excluded', (done) => {
-      references.getGroupsByConnection('source2', 'es', {excludeRefs: true})
+      relationships.getGroupsByConnection('source2', 'es', {excludeRefs: true})
       .then(results => {
         expect(results.length).toBe(2);
         expect(results[0].templates[0].refs).toBeUndefined();
@@ -115,7 +115,7 @@ describe('references', () => {
 
   describe('getHub()', () => {
     it('should return all the connections of the smae hub', (done) => {
-      references.getHub(hub1)
+      relationships.getHub(hub1)
       .then((result) => {
         expect(result.length).toBe(2);
         expect(result[0].entity).toBe('source1');
@@ -126,8 +126,8 @@ describe('references', () => {
   });
 
   describe('countByRelationType()', () => {
-    it('should return number of references using a relationType', (done) => {
-      references.countByRelationType(relation2.toString())
+    it('should return number of relationships using a relationType', (done) => {
+      relationships.countByRelationType(relation2.toString())
       .then((result) => {
         expect(result).toBe(4);
         done();
@@ -136,7 +136,7 @@ describe('references', () => {
 
     it('should return zero when none is using it', (done) => {
       const notUsedRelation = db.id().toString();
-      references.countByRelationType(notUsedRelation)
+      relationships.countByRelationType(notUsedRelation)
       .then((result) => {
         expect(result).toBe(0);
         done();
@@ -147,7 +147,7 @@ describe('references', () => {
   describe('save()', () => {
     describe('When creating a new reference to a hub', () => {
       it('should save it and return it with the entity data', (done) => {
-        references.save({entity: 'doc3', range: {text: 'range'}, hub: hub1}, 'es')
+        relationships.save({entity: 'doc3', range: {text: 'range'}, hub: hub1}, 'es')
         .then(([result]) => {
           expect(result.entity).toBe('doc3');
           expect(result.entityData.template).toEqual(template);
@@ -163,9 +163,9 @@ describe('references', () => {
       });
     });
 
-    describe('When creating new references', () => {
+    describe('When creating new relationships', () => {
       it('should assign them a hub and return them with the entity data', (done) => {
-        references.save([{entity: 'doc3'}, {entity: 'doc4'}], 'es')
+        relationships.save([{entity: 'doc3'}, {entity: 'doc4'}], 'es')
         .then(([doc3Connection, doc4Connection]) => {
           expect(doc3Connection.entity).toBe('doc3');
           expect(doc3Connection.entityData.template).toEqual(template);
@@ -193,10 +193,10 @@ describe('references', () => {
 
     describe('when the reference exists', () => {
       it('should update it', (done) => {
-        references.getById(connectionID1)
+        relationships.getById(connectionID1)
         .then((reference) => {
           reference.entity = 'source1';
-          return references.save(reference, 'es');
+          return relationships.save(reference, 'es');
         })
         .then(([result]) => {
           expect(result.entity).toBe('source1');
@@ -209,7 +209,7 @@ describe('references', () => {
 
     describe('when saving one reference without hub', () => {
       it('should throw an error', (done) => {
-        references.save({entity: 'doc3', range: {text: 'range'}}, 'es')
+        relationships.save({entity: 'doc3', range: {text: 'range'}}, 'es')
         .then(() => {
           done.fail('Should throw an error');
         })
@@ -231,9 +231,9 @@ describe('references', () => {
         }
       };
 
-      references.saveEntityBasedReferences(entity, 'es')
+      relationships.saveEntityBasedReferences(entity, 'es')
       .then(() => {
-        return references.getByDocument('bruceWayne');
+        return relationships.getByDocument('bruceWayne');
       })
       .then((connections) => {
         expect(connections.length).toBe(2);
@@ -254,9 +254,9 @@ describe('references', () => {
         }
       };
 
-      references.saveEntityBasedReferences(entity, 'es')
-      .then(() => references.saveEntityBasedReferences(entity, 'es'))
-      .then(() => references.getByDocument('bruceWayne', 'es'))
+      relationships.saveEntityBasedReferences(entity, 'es')
+      .then(() => relationships.saveEntityBasedReferences(entity, 'es'))
+      .then(() => relationships.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
         expect(connections.length).toBe(4);
         done();
@@ -273,26 +273,26 @@ describe('references', () => {
         }
       };
 
-      references.saveEntityBasedReferences(entity, 'es')
-      .then(() => references.getByDocument('bruceWayne', 'es'))
+      relationships.saveEntityBasedReferences(entity, 'es')
+      .then(() => relationships.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
         expect(connections.length).toBe(5);
         entity.metadata = {
           family: ['thomasWayne'],
           friend: ['alfred']
         };
-        return references.saveEntityBasedReferences(entity, 'es');
+        return relationships.saveEntityBasedReferences(entity, 'es');
       })
-      .then(() => references.getByDocument('bruceWayne', 'es'))
+      .then(() => relationships.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
         expect(connections.length).toBe(4);
         entity.metadata = {
           family: ['alfred'],
           friend: ['robin']
         };
-        return references.saveEntityBasedReferences(entity, 'es');
+        return relationships.saveEntityBasedReferences(entity, 'es');
       })
-      .then(() => references.getByDocument('bruceWayne', 'es'))
+      .then(() => relationships.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
         expect(connections.length).toBe(4);
         done();
@@ -302,9 +302,9 @@ describe('references', () => {
 
   describe('delete()', () => {
     it('should delete the reference and dont leave lone connection in the hub', (done) => {
-      return references.delete(connectionID1)
+      return relationships.delete(connectionID1)
       .then(() => {
-        return references.getHub(hub7);
+        return relationships.getHub(hub7);
       })
       .then((result) => {
         expect(result).toEqual([]);
@@ -312,10 +312,10 @@ describe('references', () => {
       });
     });
 
-    it('should delete all the ereferences for complex conditions', (done) => {
-      return references.delete({entity: 'source2'})
+    it('should delete all the relationships for complex conditions', (done) => {
+      return relationships.delete({entity: 'source2'})
       .then(() => {
-        return references.getByDocument('source2');
+        return relationships.getByDocument('source2');
       })
       .then((result) => {
         expect(result).toEqual([]);
@@ -324,9 +324,9 @@ describe('references', () => {
     });
 
     it('should delete an entire hub when passing 2 of its elements', (done) => {
-      return references.delete({entity: 'source2'})
+      return relationships.delete({entity: 'source2'})
       .then(() => {
-        return references.getByDocument('source2');
+        return relationships.getByDocument('source2');
       })
       .then((result) => {
         expect(result).toEqual([]);
@@ -336,10 +336,10 @@ describe('references', () => {
   });
 
   describe('deleteTextReferences()', () => {
-    it('should delete the entity text references (that match language)', (done) => {
-      references.deleteTextReferences('source2', 'es')
+    it('should delete the entity text relationships (that match language)', (done) => {
+      relationships.deleteTextReferences('source2', 'es')
       .then(() => {
-        return references.getByDocument('source2', 'es');
+        return relationships.getByDocument('source2', 'es');
       })
       .then(results => {
         expect(results.length).toBe(6);

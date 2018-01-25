@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import templates from 'api/templates/templates.js';
 import entities from 'api/entities/entities.js';
-import references from 'api/references/references';
 import documents from 'api/documents/documents.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';

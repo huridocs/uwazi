@@ -6,7 +6,7 @@ import {uploadDocumentsPath} from '../config/paths';
 import languages from 'shared/languages';
 
 import entities from 'api/entities';
-import references from 'api/references';
+import relationships from 'api/relationships';
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -90,7 +90,7 @@ export default (app) => {
 
   app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
     return entities.getById(req.body.document)
-    .then(doc => Promise.all([doc, references.deleteTextReferences(doc.sharedId, doc.language)]))
+    .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
     .then(([doc]) => entities.saveMultiple([{_id: doc._id, toc: []}]))
     .then(() => uploadProcess(req, res, false));
   });
