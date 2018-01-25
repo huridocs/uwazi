@@ -44,7 +44,6 @@ export default app => {
     references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
     .then(groups => {
       const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
-
       const anyFilteredGroups = Object.keys(filter).reduce((filteredGroups, key) => {
         return Boolean(filter[key].length) || filteredGroups;
       }, false);
@@ -82,6 +81,7 @@ export default app => {
       req.query.ids = entityIds.length ? entityIds : ['no_results'];
       req.query.includeUnpublished = true;
 
+      req.query.limit = 9999;
       search.search(req.query, req.language)
       .then(results => {
         results.rows.forEach(item => {
