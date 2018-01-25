@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {createSelector} from 'reselect';
 
 import * as actions from '../actions/actions';
 import * as uiActions from '../actions/uiActions';
@@ -15,9 +16,6 @@ import DropdownList from 'app/Forms/components/DropdownList';
 export class RelationshipsGraphEdit extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      relationshipTypes: [{_id: null, name: 'Simple relationship'}].concat(props.relationTypes.toJS())
-    };
 
     this.updateLeftRelationshipType = this.updateLeftRelationshipType.bind(this);
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
@@ -86,8 +84,9 @@ export class RelationshipsGraphEdit extends Component {
   }
 
   render() {
-    const {parentEntity, hubs, search, addHub, hubActions} = this.props;
+    const {parentEntity, hubs, search, addHub, hubActions, relationTypes} = this.props;
     const editing = hubActions.get('editing');
+
     return (
       <div className="relationships-graph">
 
@@ -108,13 +107,13 @@ export class RelationshipsGraphEdit extends Component {
                   <div className="rw-dropdown-list rw-widget">
                     <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
                       <div className="rw-input rw-dropdown-list-input no-edit">
-                        {this.state.relationshipTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
+                        {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
                       </div>
                     </div>
                   </div>,
                   <DropdownList valueField="_id"
                                 textField="name"
-                                data={this.state.relationshipTypes}
+                                data={relationTypes}
                                 value={hub.getIn(['leftRelationship', 'template'])}
                                 filter="contains"
                                 onChange={this.updateLeftRelationshipType(index)} />
@@ -133,14 +132,14 @@ export class RelationshipsGraphEdit extends Component {
                         <div className="rw-dropdown-list rw-widget">
                           <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
                             <div className="rw-input rw-dropdown-list-input no-edit">
-                              {this.state.relationshipTypes.find(r => r._id === rightRelationship.get('template')) ?
-                               this.state.relationshipTypes.find(r => r._id === rightRelationship.get('template')).name : null}
+                              {relationTypes.find(r => r._id === rightRelationship.get('template')) ?
+                               relationTypes.find(r => r._id === rightRelationship.get('template')).name : null}
                             </div>
                           </div>
                         </div>,
                         <DropdownList valueField="_id"
                                       textField="name"
-                                      data={this.state.relationshipTypes}
+                                      data={relationTypes}
                                       value={rightRelationship.get('template')}
                                       placeholder="New connection type"
                                       filter="contains"
@@ -218,7 +217,7 @@ RelationshipsGraphEdit.propTypes = {
   hubActions: PropTypes.object,
   searchResults: PropTypes.object,
   search: PropTypes.object,
-  relationTypes: PropTypes.object,
+  relationTypes: PropTypes.array,
   parseResults: PropTypes.func,
   addHub: PropTypes.func,
   updateLeftRelationshipType: PropTypes.func,
@@ -231,14 +230,20 @@ RelationshipsGraphEdit.propTypes = {
   selectConnection: PropTypes.func
 };
 
-export function mapStateToProps({connectionsList, relationships, relationTypes}) {
+const selectRelationTypes = createSelector(
+  state => state.relationTypes,
+  relationTypes => [{_id: null, name: 'Simple relationship'}].concat(relationTypes.toJS())
+);
+
+export function mapStateToProps(state) {
+  const {relationships} = state;
   return {
-    parentEntity: connectionsList.entity,
-    searchResults: connectionsList.searchResults,
-    search: connectionsList.sort,
+    parentEntity: relationships.list.entity,
+    searchResults: relationships.list.searchResults,
+    search: relationships.list.sort,
     hubs: relationships.hubs,
     hubActions: relationships.hubActions,
-    relationTypes
+    relationTypes: selectRelationTypes(state)
   };
 }
 

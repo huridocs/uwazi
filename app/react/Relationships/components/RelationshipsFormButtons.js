@@ -68,12 +68,12 @@ RelationshipsFormButtons.propTypes = {
   searchResults: PropTypes.object
 };
 
-const mapStateToProps = ({relationships, entityView, connectionsList}) => {
+const mapStateToProps = ({relationships, entityView}) => {
   return {
     editing: relationships.hubActions.get('editing'),
     saving: relationships.hubActions.get('saving'),
     parentEntity: entityView.entity,
-    searchResults: connectionsList.searchResults
+    searchResults: relationships.list.searchResults
   };
 };
 
