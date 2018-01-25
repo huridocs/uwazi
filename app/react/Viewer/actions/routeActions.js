@@ -37,7 +37,6 @@ export function requestViewerState(documentId, lang, globalResources) {
       // TEST!!!
       connectionsList: {
         entityId: doc.sharedId,
-        entityMierda: doc.sharedId,
         entity: doc,
         connectionsGroups,
         searchResults,
