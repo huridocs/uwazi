@@ -68,7 +68,7 @@ function migrateRelationships() {
       }
       relationsProcessed += 1;
       process.stdout.write(`Relations processed: ${relationsProcessed} of ${totalRelations}\r`);
-      if (relationsProcessedInAdifferentHub.includes(relationship._id)) {
+      if (relationsProcessedInAdifferentHub.includes(relationship._id.toString())) {
         return Promise.resolve();
       }
       const hub = generateID();
@@ -89,7 +89,7 @@ function migrateRelationships() {
             {entity: relationship.sourceDocument, hub, template: null}
           ];
           relationshipsOfTheSameHub.forEach((relation) => {
-            relationsProcessedInAdifferentHub.push(relation._id);
+            relationsProcessedInAdifferentHub.push(relation._id.toString());
             relationsHub.push({entity: relation.targetDocument, hub, template: relationType._id});
           });
           return Promise.all([
