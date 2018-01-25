@@ -37,9 +37,18 @@ export class Login extends RouteHandler {
     return this.props.recoverPassword(email);
   }
 
+  reloadHome() {
+    window.location.reload();
+  }
+
   login(credentials) {
     return this.props.login(credentials)
     .then(() => {
+      if (this.props.private) {
+        browserHistory.push('/');
+        this.reloadHome();
+        return;
+      }
       reconnectSocket();
       browserHistory.push('/');
     })
@@ -112,6 +121,12 @@ Login.propTypes = {
   recoverPassword: PropTypes.func
 };
 
+export function mapStateToProps({settings}) {
+  return {
+    private: settings.collection.get('private')
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     login: auth.actions.login,
@@ -120,4 +135,4 @@ function mapDispatchToProps(dispatch) {
   }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

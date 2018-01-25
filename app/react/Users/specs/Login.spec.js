@@ -62,6 +62,24 @@ describe('Login', () => {
         })
         .catch(done.fail);
       });
+
+      describe('when the instance is private', () => {
+        it('should call reloadHome', (done) => {
+          props.private = true;
+          render();
+
+          spyOn(browserHistory, 'push');
+          spyOn(instance, 'reloadHome');
+
+          instance.submit('credentials')
+          .then(() => {
+            expect(browserHistory.push).toHaveBeenCalledWith('/');
+            expect(instance.reloadHome).toHaveBeenCalled();
+            done();
+          })
+          .catch(done.fail);
+        });
+      });
     });
 
     describe('on response failure', () => {
