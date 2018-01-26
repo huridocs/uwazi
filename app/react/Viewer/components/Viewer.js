@@ -24,6 +24,8 @@ import Marker from 'app/Viewer/utils/Marker';
 
 import {ConnectionsList} from 'app/ConnectionsList';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+import {RelationshipsFormButtons} from 'app/Relationships';
+import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 
 export class Viewer extends Component {
 
@@ -80,8 +82,19 @@ export class Viewer extends Component {
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
+
         <ShowIf if={sidepanelTab === 'connections'}>
           <RelationshipMetadata />
+        </ShowIf>
+
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <AddEntitiesPanel />
+        </ShowIf>
+
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <div className="sidepanel-footer">
+            <RelationshipsFormButtons />
+          </div>
         </ShowIf>
 
         <ContextMenu align="bottom" overrideShow={true} show={!this.props.panelIsOpen}>
