@@ -49,6 +49,7 @@ export default class DocumentsList extends Component {
     const Search = this.props.SearchBar;
     const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
 
+    console.log('STOREKEY:', this.props.storeKey);
     return (
       <div className="documents-list">
         <div className="main-wrapper">

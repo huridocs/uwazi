@@ -5,21 +5,27 @@ import {searchReferences, loadMoreReferences} from '../actions/actions';
 
 import DocumentsList from 'app/Layout/DocumentsList';
 import SearchBar from 'app/ConnectionsList/components/SearchBar';
-import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
-import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraph';
+// import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
+import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
 
-export function mapStateToProps({connectionsList}) {
-  const documents = connectionsList.searchResults;
+export function mapStateToProps({relationships}) {
+  const documents = relationships.list.searchResults;
+
   return {
     documents,
-    connections: {totalRows: documents.get('rows').reduce((total, r) => total + r.get('connections').size, 0)},
+    connections: {
+      // TEST!!!
+      totalRows: documents.get('rows')
+                 .filter(r => r.get('sharedId') !== relationships.list.entityId)
+                 .reduce((total, r) => total + r.get('connections').size, 0)
+    },
     filters: Immutable({documentTypes: []}),
-    search: connectionsList.sort,
-    sortButtonsStateProperty: 'connectionsList.sort',
+    search: relationships.list.sort,
+    sortButtonsStateProperty: 'relationships.list.sort',
     SearchBar,
-    ActionButtons: ToggleStyleButtons,
+    // ActionButtons: ToggleStyleButtons,
     GraphView: RelationshipsGraph,
-    view: connectionsList.view
+    view: 'graph'
   };
 }
 

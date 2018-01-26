@@ -17,14 +17,16 @@ function requestState(entityId, templates) {
   });
 }
 
-function emptyState(dispatch) {
-  dispatch(actions.unset('relationships/list/entityId'));
-  dispatch(actions.unset('relationships/list/entity'));
-  dispatch(actions.unset('relationships/list/connectionsGroups'));
-  dispatch(actions.unset('relationships/list/searchResults'));
-  dispatch(actions.unset('relationships/list/filters'));
-  dispatch(actions.unset('relationships/list.sort'));
-  dispatch(actions.unset('relationships/list/view'));
+function emptyState() {
+  return (dispatch) => {
+    dispatch(actions.unset('relationships/list/entityId'));
+    dispatch(actions.unset('relationships/list/entity'));
+    dispatch(actions.unset('relationships/list/connectionsGroups'));
+    dispatch(actions.unset('relationships/list/searchResults'));
+    dispatch(actions.unset('relationships/list/filters'));
+    dispatch(actions.unset('relationships/list.sort'));
+    dispatch(actions.unset('relationships/list/view'));
+  };
 }
 
 function setReduxState(state) {
