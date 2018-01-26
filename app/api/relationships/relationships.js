@@ -4,6 +4,7 @@ import {generateNamesAndIds} from '../templates/utils';
 import entities from '../entities';
 
 import model from './relationshipsModel.js';
+import search from '../search/search';
 import {generateID} from 'api/odm';
 import {createError} from 'api/utils';
 
@@ -90,7 +91,7 @@ export default {
       relationTypesAPI.get()
     ])
     .then(([references, templates, relationTypes]) => {
-      const relevantReferences = filterRelevantRelationships(references, language, options.user);
+      const relevantReferences = filterRelevantRelationships(references, id, language, options.user);
       const groupedReferences = groupRelationships(relevantReferences, templates, relationTypes);
 
       if (options.excludeRefs) {
@@ -183,6 +184,48 @@ export default {
         }
         return Promise.all(actions);
       })).catch(console.log);
+    });
+  },
+
+  search(entitySharedId, query, language) {
+
+    return Promise.all([this.getByDocument(entitySharedId, language), entities.getById(entitySharedId, language)])
+    .then(([relationships, entity]) => {
+      let filter = Object.keys(query.filter).reduce((result, filterGroupKey) => {
+        return result.concat(query.filter[filterGroupKey]);
+      }, []);
+      let filteredRelationships = relationships.filter((relationship) => {
+        return !filter.length || filter.includes(relationship.template + relationship.entityData.template);
+      });
+
+      let ids = filteredRelationships
+      .map((relationship) => relationship.entity)
+      .reduce((result, id) => {
+        if (!result.includes(id) && id !== entitySharedId) {
+          result.push(id);
+        }
+        return result;
+      }, []);
+      query.ids = ids.length ? ids : ['no_results'];
+      query.includeUnpublished = true;
+      query.limit = 9999;
+      delete query.filter;
+
+      return search.search(query, language)
+      .then(results => {
+        results.rows.forEach(item => {
+          item.connections = filteredRelationships.filter((relationship) => relationship.entity === item.sharedId);
+        });
+        if (results.rows.length) {
+          let filteredRelationshipsHubs = results.rows.map((item) => item.connections.map((relationship) => relationship.hub.toString()));
+          filteredRelationshipsHubs = Array.prototype.concat(...filteredRelationshipsHubs);
+          entity.connections = relationships.filter((relationship) => {
+            return relationship.entity === entitySharedId && filteredRelationshipsHubs.includes(relationship.hub.toString());
+          });
+          results.rows.push(entity);
+        }
+        return results;
+      });
     });
   },
 

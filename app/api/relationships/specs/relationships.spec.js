@@ -5,6 +5,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
 import {relation1, relation2, template} from './fixtures.js';
+import search from '../../search/search';
 
 describe('relationships', () => {
   beforeEach((done) => {
@@ -93,7 +94,7 @@ describe('relationships', () => {
         expect(results[0].templates[0]._id.toString()).toBe(template.toString());
 
         expect(results[1].key).toBe(relation2.toString());
-        expect(results[1].templates[0].count).toBe(4);
+        expect(results[1].templates[0].count).toBe(2);
 
         done();
       })
@@ -295,6 +296,47 @@ describe('relationships', () => {
       .then(() => relationships.getByDocument('bruceWayne', 'es'))
       .then((connections) => {
         expect(connections.length).toBe(4);
+        done();
+      });
+    });
+  });
+
+  describe('search()', () => {
+    it('should prepare a query with ids based on an entity id and a searchTerm', (done) => {
+      const searchResponse = Promise.resolve({rows: []});
+      spyOn(search, 'search').and.returnValue(searchResponse);
+      relationships.search('source2', {filter: {}, searchTerm: 'something'}, 'es')
+      .then(() => {
+        let expectedQuery = {searchTerm: 'something', ids: ['source1', 'doc3', 'doc4', 'doc5'], includeUnpublished: true, limit: 9999};
+        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'es');
+        done();
+      });
+    });
+
+    it('should filter out ids based on filtered relation types and templates', (done) => {
+      const searchResponse = Promise.resolve({rows: []});
+      spyOn(search, 'search').and.returnValue(searchResponse);
+      let query = {filter: {}, searchTerm: 'something'};
+      query.filter[relation2] = [relation2 + template];
+      relationships.search('source2', query, 'es')
+      .then(() => {
+        let expectedQuery = {searchTerm: 'something', ids: ['doc3', 'doc4'], includeUnpublished: true, limit: 9999};
+        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'es');
+        done();
+      });
+    });
+
+    it('should return the matching entities with their relationships and the current entity with the respective relationships', (done) => {
+      const searchResponse = Promise.resolve({rows: [{sharedId: 'source1'}, {sharedId: 'doc3'}, {sharedId: 'doc4'}, {sharedId: 'doc5'}]});
+      spyOn(search, 'search').and.returnValue(searchResponse);
+      relationships.search('source2', {filter: {}, searchTerm: 'something'}, 'es')
+      .then((result) => {
+        expect(result.rows.length).toBe(5);
+        expect(result.rows[0].connections.length).toEqual(1);
+        expect(result.rows[1].connections.length).toEqual(1);
+        expect(result.rows[2].connections.length).toEqual(1);
+        expect(result.rows[3].connections.length).toEqual(1);
+        expect(result.rows[4].connections.length).toEqual(4);
         done();
       });
     });

@@ -94,7 +94,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {2
       if (term) {
         let should = [];
 

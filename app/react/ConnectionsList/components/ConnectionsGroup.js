@@ -87,9 +87,8 @@ export class ConnectionsGroup extends Component {
             <i className="multiselectItem-icon fa fa-square-o"></i>
             <i className="multiselectItem-icon fa fa-check"></i>
             <span className="multiselectItem-name">
-              <b>{connectionType === 'metadata' ?
-                  t(group.context, connectionLabel) + ' ' + t('System', 'in') + '...' :
-                  t(group.context, connectionLabel)}</b>
+              <b>{group.key ?
+                  t(group.context, connectionLabel) : t('System', 'No Label')}</b>
             </span>
           </label>
           <span className="multiselectItem-results">

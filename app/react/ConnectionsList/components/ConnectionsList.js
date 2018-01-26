@@ -10,7 +10,6 @@ import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraph'
 
 export function mapStateToProps({connectionsList}) {
   const documents = connectionsList.searchResults;
-
   return {
     documents,
     connections: {totalRows: documents.get('rows').reduce((total, r) => total + r.get('connections').size, 0)},

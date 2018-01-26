@@ -16,9 +16,9 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 }
 
 export default {
-  filterRelevantRelationships: (relationships, locale, user) => {
+  filterRelevantRelationships: (relationships, id, locale, user) => {
     return relationships.filter(ref => {
-      return Boolean(ref.entityData && ref.entityData.published || user);
+      return Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user));
     });
   },
 

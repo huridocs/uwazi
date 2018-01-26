@@ -41,54 +41,10 @@ export default app => {
   });
 
   app.get('/api/references/search/:id', (req, res) => {
-    relationships.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
-    .then(groups => {
-      const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
-      const anyFilteredGroups = Object.keys(filter).reduce((filteredGroups, key) => {
-        return Boolean(filter[key].length) || filteredGroups;
-      }, false);
-
-      const entityGroupMap = {};
-      const entityIds = groups.reduce((ids, group) => {
-        return group.templates.reduce((referenceIds, template) => {
-          let usefulRefs = template.refs;
-
-          if (anyFilteredGroups) {
-            usefulRefs = usefulRefs.filter(() => filter[group.key] && filter[group.key].includes(group.key + template._id));
-          }
-
-          usefulRefs.forEach(ref => {
-            if (!entityGroupMap[ref.entityData.sharedId]) {
-              entityGroupMap[ref.entityData.sharedId] = [];
-            }
-            entityGroupMap[ref.entityData.sharedId].push({
-              hub: ref.hub,
-              context: group.context,
-              template: ref.template,
-              metadata: ref.metadata,
-              label: group.connectionLabel,
-              type: group.connectionType,
-              _id: ref._id
-            });
-
-            referenceIds.push(ref.entityData.sharedId);
-          });
-
-          return referenceIds;
-        }, ids);
-      }, []);
-
-      req.query.ids = entityIds.length ? entityIds : ['no_results'];
-      req.query.includeUnpublished = true;
-
-      req.query.limit = 9999;
-      search.search(req.query, req.language)
-      .then(results => {
-        results.rows.forEach(item => {
-          item.connections = entityGroupMap[item.sharedId];
-        });
-        return res.json(results);
-      });
+    req.query.filter = JSON.parse(req.query.filter || '{}');
+    relationships.search(req.params.id, req.query, req.language)
+    .then(results => {
+      return res.json(results);
     })
     .catch((error) => {
       res.status(500).json({error: error.json});
