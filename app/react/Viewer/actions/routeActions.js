@@ -2,11 +2,10 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import {getDocument} from 'app/Viewer/actions/documentActions';
-import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 import {actions} from 'app/BasicReducer';
 import {setReferences} from './referencesActions';
-import {actions as formActions} from 'react-redux-form';
+import * as relationships from 'app/Relationships/utils/routeUtils';
 
 export function requestViewerState(documentId, lang, globalResources) {
   return Promise.all([
@@ -14,20 +13,10 @@ export function requestViewerState(documentId, lang, globalResources) {
     referencesAPI.get(documentId),
     relationTypesAPI.get(),
     // TEST!!!
-    referencesAPI.getGroupedByConnection(documentId)
+    relationships.requestState(documentId, globalResources.templates)
+    // ---------
   ])
-  .then(([doc, references, relationTypes, connectionsGroups]) => {
-    // TEST!!!
-    const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
-      return templateIds.concat(group.templates.map(t => t._id.toString()));
-    }, []);
-
-    const sortOptions = prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: globalResources.templates});
-
-    return Promise.all([doc, references, relationTypes, connectionsGroups, referencesAPI.search(documentId, sortOptions), sortOptions]);
-    // ---
-  })
-  .then(([doc, references, relationTypes, connectionsGroups, searchResults, sort]) => {
+  .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort]]) => {
     return {
       documentViewer: {
         doc,
@@ -35,14 +24,16 @@ export function requestViewerState(documentId, lang, globalResources) {
         relationTypes
       },
       // TEST!!!
-      connectionsList: {
-        entityId: doc.sharedId,
-        entity: doc,
-        connectionsGroups,
-        searchResults,
-        sort,
-        filters: {},
-        view: 'graph'
+      relationships: {
+        list: {
+          entityId: doc.sharedId,
+          entity: doc,
+          connectionsGroups,
+          searchResults,
+          sort,
+          filters: {},
+          view: 'graph'
+        }
       },
       // ----------
       relationTypes
@@ -59,12 +50,7 @@ export function setViewerState(state) {
     dispatch(setReferences(documentViewer.references));
 
     // TEST!!!
-    dispatch(actions.set('connectionsList/entityId', state.connectionsList.entityId));
-    dispatch(actions.set('connectionsList/entity', state.connectionsList.entity));
-    dispatch(actions.set('connectionsList/connectionsGroups', state.connectionsList.connectionsGroups));
-    dispatch(actions.set('connectionsList/searchResults', state.connectionsList.searchResults));
-    dispatch(actions.set('connectionsList/filters', state.connectionsList.filters));
-    dispatch(formActions.merge('connectionsList.sort', state.connectionsList.sort));
-    dispatch(actions.set('connectionsList/view', state.connectionsList.view));
+    dispatch(relationships.setReduxState(state));
+    // -------
   };
 }
