@@ -232,7 +232,7 @@ RelationshipsGraphEdit.propTypes = {
 
 const selectRelationTypes = createSelector(
   state => state.relationTypes,
-  relationTypes => [{_id: null, name: 'Simple relationship'}].concat(relationTypes.toJS())
+  relationTypes => [{_id: null, name: 'No label'}].concat(relationTypes.toJS())
 );
 
 export function mapStateToProps(state) {
