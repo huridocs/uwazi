@@ -5,7 +5,6 @@ import {searchReferences, loadMoreReferences} from '../actions/actions';
 
 import DocumentsList from 'app/Layout/DocumentsList';
 import SearchBar from 'app/ConnectionsList/components/SearchBar';
-// import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
 
 export function mapStateToProps({relationships}) {
@@ -21,9 +20,8 @@ export function mapStateToProps({relationships}) {
     },
     filters: Immutable({documentTypes: []}),
     search: relationships.list.sort,
-    sortButtonsStateProperty: 'relationships.list.sort',
+    sortButtonsStateProperty: 'relationships/list.sort',
     SearchBar,
-    // ActionButtons: ToggleStyleButtons,
     GraphView: RelationshipsGraph,
     view: 'graph'
   };

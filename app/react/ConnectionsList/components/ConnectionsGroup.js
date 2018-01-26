@@ -70,7 +70,7 @@ export class ConnectionsGroup extends Component {
 
   render() {
     const group = this.props.group.toJS();
-    const {connectionType, connectionLabel, templates} = group;
+    const {connectionLabel, templates} = group;
 
     return (
       <li>
@@ -136,8 +136,8 @@ ConnectionsGroup.propTypes = {
   filters: PropTypes.object
 };
 
-export const mapStateToProps = ({connectionsList}) => {
-  return {filters: connectionsList.filters};
+export const mapStateToProps = ({relationships}) => {
+  return {filters: relationships.list.filters};
 };
 
 export const mapDispatchToProps = (dispatch) => {

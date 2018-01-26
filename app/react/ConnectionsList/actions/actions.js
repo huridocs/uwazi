@@ -1,3 +1,4 @@
+// TEST!! all changes to relationships/list instead of connectionsList
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {notify} from 'app/Notifications';
@@ -10,14 +11,14 @@ import * as uiActions from 'app/Entities/actions/uiActions';
 
 export function searchReferences() {
   return function (dispatch, getState) {
-    const connectionsList = getState().connectionsList;
-    const {entityId, sort, filters} = connectionsList;
-    const searchTerm = connectionsList.search && connectionsList.search.searchTerm ? connectionsList.search.searchTerm.value : '';
+    const relationshipsList = getState().relationships.list;
+    const {entityId, sort, filters} = relationshipsList;
+    const searchTerm = relationshipsList.search && relationshipsList.search.searchTerm ? relationshipsList.search.searchTerm.value : '';
     const options = filters.merge(sort).merge({searchTerm});
 
     return referencesAPI.search(entityId, options.toJS())
     .then(results => {
-      dispatch(actions.set('connectionsList/searchResults', results));
+      dispatch(actions.set('relationships/list/searchResults', results));
       dispatch(uiActions.showTab('connections'));
     });
   };
@@ -25,8 +26,8 @@ export function searchReferences() {
 
 export function connectionsChanged() {
   return function (dispatch, getState) {
-    const connectionsList = getState().connectionsList;
-    const {entityId} = connectionsList;
+    const relationshipsList = getState().relationships.list;
+    const {entityId} = relationshipsList;
 
     return referencesAPI.getGroupedByConnection(entityId)
     .then(connectionsGroups => {
@@ -34,12 +35,12 @@ export function connectionsChanged() {
         return templateIds.concat(group.templates.map(t => t._id.toString()));
       }, []);
 
-      const sortOptions = prioritySortingCriteria({currentCriteria: connectionsList.sort, filteredTemplates, templates: getState().templates});
+      const sortOptions = prioritySortingCriteria({currentCriteria: relationshipsList.sort, filteredTemplates, templates: getState().templates});
       return Promise.all([connectionsGroups, sortOptions]);
     })
     .then(([connectionsGroups, sort]) => {
-      dispatch(actions.set('connectionsList/connectionsGroups', connectionsGroups));
-      dispatch(formActions.merge('connectionsList.sort', sort));
+      dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
+      dispatch(formActions.merge('relationships/list.sort', sort));
       return searchReferences()(dispatch, getState);
     });
   };
@@ -57,41 +58,41 @@ export function deleteConnection(connection) {
 
 export function loadAllReferences() {
   return function (dispatch, getState) {
-    const connectionsList = getState().connectionsList;
-    dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('limit', 9999)));
+    const relationshipsList = getState().relationships.list;
+    dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('limit', 9999)));
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function loadMoreReferences(storeKey, limit) {
   return function (dispatch, getState) {
-    const connectionsList = getState().connectionsList;
-    dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('limit', limit)));
+    const relationshipsList = getState().relationships.list;
+    dispatch(actions.set('relationships.list/filters', relationshipsList.filters.set('limit', limit)));
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function setFilter(groupFilterValues) {
   return function (dispatch, getState) {
-    const connectionsList = getState().connectionsList;
-    const currentFilter = connectionsList.filters.get('filter') || Immutable({});
+    const relationshipsList = getState().relationships.list;
+    const currentFilter = relationshipsList.filters.get('filter') || Immutable({});
     const newFilter = currentFilter.merge(groupFilterValues);
-    dispatch(actions.set('connectionsList/filters', connectionsList.filters.set('filter', newFilter)));
+    dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('filter', newFilter)));
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function resetSearch() {
   return function (dispatch, getState) {
-    dispatch(formActions.change('connectionsList/search.searchTerm', ''));
-    dispatch(actions.set('connectionsList/filters', Immutable({})));
+    dispatch(formActions.change('relationships/list/search.searchTerm', ''));
+    dispatch(actions.set('relationships/list/filters', Immutable({})));
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function switchView(type) {
   return function (dispatch, getState) {
-    dispatch(actions.set('connectionsList/view', type));
+    dispatch(actions.set('relationships/list/view', type));
     if (type === 'graph') {
       return loadAllReferences()(dispatch, getState);
     }
