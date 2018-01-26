@@ -72,7 +72,7 @@ describe('Doc', () => {
       });
     });
 
-    fit('should pass the className to the item', () => {
+    it('should pass the className to the item', () => {
       render();
       expect(component.find(Item).props().className).toBeUndefined();
       props.className = 'passed-classname';
