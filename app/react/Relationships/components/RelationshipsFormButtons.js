@@ -1,3 +1,4 @@
+// TEST!!!
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
@@ -68,11 +69,11 @@ RelationshipsFormButtons.propTypes = {
   searchResults: PropTypes.object
 };
 
-const mapStateToProps = ({relationships, entityView}) => {
+const mapStateToProps = ({relationships}) => {
   return {
     editing: relationships.hubActions.get('editing'),
     saving: relationships.hubActions.get('saving'),
-    parentEntity: entityView.entity,
+    parentEntity: relationships.list.entity,
     searchResults: relationships.list.searchResults
   };
 };
