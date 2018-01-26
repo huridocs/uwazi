@@ -49,7 +49,6 @@ export default class DocumentsList extends Component {
     const Search = this.props.SearchBar;
     const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
 
-    console.log('STOREKEY:', this.props.storeKey);
     return (
       <div className="documents-list">
         <div className="main-wrapper">
@@ -88,12 +87,16 @@ export default class DocumentsList extends Component {
             }
           })()}
           <div className="row">
-            <p className="col-sm-12 text-center documents-counter">
-                <b>{documents.get('rows').size}</b>
-                {` ${t('System', 'of')} `}
-                <b>{documents.get('totalRows')}</b>
-                {` ${t('System', 'documents')}`}
-            </p>
+            {(() => {
+              if (view !== 'graph') {
+                return <p className="col-sm-12 text-center documents-counter">
+                        <b>{documents.get('rows').size}</b>
+                        {` ${t('System', 'of')} `}
+                        <b>{documents.get('totalRows')}</b>
+                        {` ${t('System', 'documents')}`}
+                       </p>;
+              }
+            })()}
             {(() => {
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
