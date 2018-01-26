@@ -8,7 +8,6 @@ import {t} from 'app/I18N';
 
 import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
-import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
@@ -149,15 +148,6 @@ export class EntityViewer extends Component {
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
-              <ShowIf if={!!this.props.relationTypes.length}>
-                <NeedAuthorization roles={['admin', 'editor']}>
-                  <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
-                          className="create-connection btn btn-success">
-                    <i className="fa fa-plus"></i>
-                    <span className="btn-label">New</span>
-                  </button>
-                </NeedAuthorization>
-              </ShowIf>
             </div>
           </ShowIf>
 
@@ -220,7 +210,7 @@ const mapStateToProps = (state) => {
     rawEntity: state.entityView.entity,
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
-    connectionsGroups: state.connectionsList.connectionsGroups,
+    connectionsGroups: state.relationships.list.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
     library: state.library
