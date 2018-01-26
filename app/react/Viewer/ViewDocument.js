@@ -7,6 +7,7 @@ import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 
 import {requestViewerState, setViewerState} from './actions/routeActions';
+import * as relationships from 'app/Relationships/utils/routeUtils';
 
 export default class ViewDocument extends RouteHandler {
 
@@ -48,6 +49,9 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
+    // TEST!!!
+    this.context.store.dispatch(relationships.emptyState());
+    // -------
   }
 
   setReduxState(state) {
