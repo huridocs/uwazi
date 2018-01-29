@@ -65,12 +65,6 @@ describe('Viewer referencesActions', () => {
         actions.addReference(reference, {}, true)(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
       });
-
-      it('should open the connections tab if sourceRange text is empty', () => {
-        reference.sourceRange.text = '';
-        actions.addReference(reference, {})(store.dispatch, getState);
-        expect(store.getActions()).toContain({type: 'viewer.sidepanel.tab/SET', value: 'connections'});
-      });
     });
 
     describe('saveTargetRangedReference', () => {

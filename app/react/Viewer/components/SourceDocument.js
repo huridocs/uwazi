@@ -6,10 +6,18 @@ import {resetReferenceCreation, highlightReference, activateReference, scrollToA
 import Document from 'app/Viewer/components/Document';
 import {createSelector} from 'reselect';
 
-const selectConnections = createSelector(s => s.references, r => r.toJS());
 const selectSourceRange = createSelector(s => s.uiState, u => u.toJS().reference.sourceRange);
 const selectHighlightedRef = createSelector(s => s.uiState, u => u.toJS().highlightedReference);
 const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeReference);
+
+const selectReferences = createSelector(
+  documentViewer => [documentViewer.doc, documentViewer.references],
+  ([doc, refs]) => refs
+  .filter(r => {
+    return r.get('entity') === doc.get('sharedId');
+  })
+  .toJS()
+);
 
 const mapStateToProps = ({user, documentViewer}) => {
   return {
@@ -17,7 +25,7 @@ const mapStateToProps = ({user, documentViewer}) => {
     selection: selectSourceRange(documentViewer),
     doScrollToActive: documentViewer.uiState.get('goToActive'),
     doc: documentViewer.doc,
-    references: selectConnections(documentViewer),
+    references: selectReferences(documentViewer),
     className: 'sourceDocument',
     highlightedReference: selectHighlightedRef(documentViewer),
     activeReference: selectActiveRef(documentViewer),

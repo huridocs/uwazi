@@ -22,7 +22,7 @@ describe('Connections actions', () => {
     spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: [{type: 'entity'}, {type: 'doc'}]}}));
     spyOn(api, 'post').and.callFake((url, data) => {
       if (url === 'relationships/bulk') {
-        return Promise.resolve({status: 200, json: data});
+        return Promise.resolve({status: 200, json: 'bulkResponse(ArrayOfTwo)'});
       }
 
       return Promise.reject('Unexpected url');
@@ -112,7 +112,7 @@ describe('Connections actions', () => {
       };
     });
 
-    it('should set the creating flag to true and attempt to save the connection (using the new hub format)', () => {
+    fit('should set the creating flag to true and attempt to save the connection (using the new hub format)', () => {
       const expectedCall = {delete: [], save: [[
         {entity: 'sourceId', template: null, range: {start: 397, end: 422, text: 'source text'}},
         {entity: 'targetId', template: 'relationTypeId'}
@@ -123,6 +123,19 @@ describe('Connections actions', () => {
       expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedCall);
     });
 
+    fit('should allow for targetted range connections (using the new hub format)', () => {
+      connection.targetRange = {start: 79, end: 125, text: 'target text'};
+
+      const expectedCall = {delete: [], save: [[
+        {entity: 'sourceId', template: null, range: {start: 397, end: 422, text: 'source text'}},
+        {entity: 'targetId', template: 'relationTypeId', range: {start: 79, end: 125, text: 'target text'}}
+      ]]};
+
+      actions.saveConnection(connection)(store.dispatch, getState);
+      expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedCall);
+    });
+
+    // ??? Still required?
     it('should attempt to save the connection with language if not basic', () => {
       connection.type = 'ranged';
       actions.saveConnection(connection)(store.dispatch, getState);
@@ -130,12 +143,12 @@ describe('Connections actions', () => {
       expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId', language: 'es'});
     });
 
-    it('should broadcast the created connection, execute the callback and broadcast success', (done) => {
+    fit('should broadcast CONNECTION_CREATED, execute the callback and broadcast success', (done) => {
       const callback = jasmine.createSpy('callback');
       actions.saveConnection(connection, callback)(store.dispatch, getState)
       .then(() => {
-        expect(store.getActions()).toContain({type: 'CONNECTION_CREATED', connection: 'newReference'});
-        expect(callback).toHaveBeenCalledWith('newReference');
+        expect(store.getActions()).toContain({type: 'CONNECTION_CREATED'});
+        expect(callback).toHaveBeenCalledWith('bulkResponse(ArrayOfTwo)');
         expect(store.getActions()).toContain({
           type: notificationsTypes.NOTIFY,
           notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}

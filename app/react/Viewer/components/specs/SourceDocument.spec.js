@@ -20,9 +20,12 @@ describe('SourceDocument', function () {
         reference: {sourceRange: {selection: 'selection'}},
         highlightedReference: 'highlightedReference'
       }),
-      doc: {name: 'document'},
+      doc: Immutable.fromJS({sharedId: 'docSharedId', name: 'document'}),
       targetDoc: Immutable.fromJS({}),
-      references: Immutable.fromJS([{reference: 'reference'}])
+      references: Immutable.fromJS([
+        {entity: 'docSharedId', reference: 'reference'},
+        {entity: 'anotherId', reference: 'should be excluded'}
+      ])
     }
   };
 
@@ -31,12 +34,12 @@ describe('SourceDocument', function () {
     component = shallow(<SourceDocument />, {context: {store}});
   };
 
-  it('should map props', () => {
+  fit('should map props', () => {
     render();
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});
-    expect(props.doc.name).toBe('document');
-    expect(props.references).toEqual([{reference: 'reference'}]);
+    expect(props.doc.get('name')).toBe('document');
+    expect(props.references).toEqual([{entity: 'docSharedId', reference: 'reference'}]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);
     expect(props.highlightedReference).toBe('highlightedReference');

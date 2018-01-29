@@ -19,14 +19,8 @@ import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 
-const selectReferences = createSelector(
-  s => s.references,
-  (refs) => {
-    return refs.filter(r => {
-      return typeof r.get('range').get('start') !== 'undefined';
-    });
-  }
-);
+import {fromJS} from 'immutable';
+import {createSelector} from 'reselect';
 
 export class DocumentSidePanel extends Component {
 
@@ -302,9 +296,27 @@ DocumentSidePanel.defaultProps = {
   EntityForm: () => false
 };
 
+// TEST!!!
+const selectRangedReferences = createSelector(
+  ownProps => [ownProps.doc, ownProps.references],
+  ([doc, refs]) => {
+    return refs
+    .filter(r => {
+      return typeof r.get('range').get('start') !== 'undefined' && r.get('entity') === doc.get('sharedId');
+    })
+    .map(r => {
+      if (!r.get('associatedRelationship')) {
+        return r.set('associatedRelationship', refs.find(ref => ref.get('hub') === r.get('hub') && ref.get('_id') !== r.get('_id')));
+      }
+      return r;
+    });
+  }
+);
+
 export const mapStateToProps = (state, ownProps) => {
   return {
-    references: selectReferences(ownProps),
+    // TEST!!!!
+    references: selectRangedReferences(ownProps),
     // TEST!!!!
     connectionsGroups: state.relationships.list.connectionsGroups,
     hasRelationTypes: !!state.relationTypes.size
