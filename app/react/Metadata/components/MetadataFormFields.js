@@ -25,6 +25,15 @@ export class MetadataFormFields extends Component {
     case 'multiselect':
       thesauri = thesauris.find((opt) => opt._id.toString() === property.content.toString());
       return <MultiSelect model={_model} optionsValue='id' options={translateOptions(thesauri)} prefix={_model} />;
+    case 'relationship':
+      if (property.content) {
+        thesauri = translateOptions(thesauris.find((opt) => opt._id.toString() === property.content.toString()));
+      }
+
+      if (!property.content) {
+        thesauri = Array.prototype.concat(...thesauris.filter((thesauri) => thesauri.type === 'template').map(translateOptions));
+      }
+      return <MultiSelect model={_model} optionsValue='id' options={thesauri} prefix={_model} />;
     case 'date':
       return <DatePicker model={_model} format={this.props.dateFormat}/>;
     case 'daterange':
@@ -47,6 +56,7 @@ export class MetadataFormFields extends Component {
   render() {
     const thesauris = this.props.thesauris.toJS();
     const template = this.props.template.toJS();
+
     return (
       <div>
         {template.properties.map((property) => {
@@ -64,7 +74,7 @@ export class MetadataFormFields extends Component {
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>
-                <li className="wide">{this.getField(property, `.metadata.${property.name}`, thesauris, property)}</li>
+                <li className="wide">{this.getField(property, `.metadata.${property.name}`, thesauris)}</li>
               </ul>
             </FormGroup>
           );

@@ -83,7 +83,7 @@ export default class DocumentsList extends Component {
             }
 
             if (view === 'graph') {
-              return <GraphView />;
+              return <GraphView clickOnDocument={this.clickOnDocument}/>;
             }
           })()}
           <div className="row">

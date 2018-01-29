@@ -81,14 +81,14 @@ export class FiltersForm extends Component {
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           {fields.map((property) => {
             let propertyClass = 'search__filter is-active';
-            if (property.type === 'select' || property.type === 'multiselect') {
+            if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
               return (
                 <FormGroup key={property.name}>
                   <ul className={propertyClass}>
                     <li>
                       {t(translationContext, property.label)}
                       {property.required ? <span className="required">*</span> : ''}
-                      <ShowIf if={property.type === 'multiselect'}>
+                      <ShowIf if={property.type === 'multiselect' || property.type === 'relationship'}>
                         <Switcher model={`.filters.${property.name}.and`} prefix={property.name} onChange={() => {
                           this.autoSearch = true;
                         }}/>

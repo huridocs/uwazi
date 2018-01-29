@@ -21,11 +21,10 @@ export class ActionButton extends Component {
 
   render() {
     const connection = this.props.connection.toJS();
-
     const validator = {
       sourceDocument: {presence: true},
       targetDocument: {presence: true},
-      relationType: {presence: true}
+      template: {presence: true}
     };
 
     if (this.props.type === 'basic') {

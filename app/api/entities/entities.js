@@ -2,8 +2,8 @@ import {generateNamesAndIds} from 'api/templates/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
-import references from '../references/references';
-import templates from '../templates';
+import references from 'api/references/references';
+import templates from 'api/templates/templates';
 import ID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
 
@@ -18,7 +18,7 @@ function updateEntity(doc) {
     if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
       return Promise.all([
         this.deleteEntityFromMetadata(docLanguages[0]),
-        references.delete({sourceType: 'metadata', $or: [{targetDocument: doc.sharedId}, {sourceDocument: doc.sharedId}]})
+        references.delete({entity: doc.sharedId})
       ])
       .then(() => [docLanguages, templateResult]);
     }
@@ -277,7 +277,7 @@ export default {
     })
     .then((docs) => {
       return Promise.all([
-        references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
+        references.delete({entity: sharedId}),
         this.deleteFiles(docs),
         this.deleteEntityFromMetadata(docs[0])
       ])

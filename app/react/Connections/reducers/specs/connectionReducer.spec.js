@@ -7,17 +7,17 @@ describe('Connections connection reducer', () => {
   describe('when state is undefined', () => {
     it('should return a default state', () => {
       let newState = reducer();
-      expect(newState.toJS()).toEqual({relationType: '', targetDocument: '', sourceDocument: ''});
+      expect(newState.toJS()).toEqual({template: '', targetDocument: '', sourceDocument: ''});
     });
   });
 
   describe('OPEN_CONNECTION_PANEL', () => {
     it('should reset most properties and set type and source', () => {
-      const previousState = {relationType: 'r1', targetDocument: 't1', sourceDocument: 's1'};
+      const previousState = {template: 'r1', targetDocument: 't1', sourceDocument: 's1'};
       const action = {type: 'OPEN_CONNECTION_PANEL', connectionType: 'connectionType', sourceDocument: 'sourceId'};
       const newState = reducer(Immutable(previousState), action);
       const expectedState = {
-        relationType: '',
+        template: '',
         targetDocument: '',
         sourceDocument: 'sourceId',
         type: 'connectionType'
@@ -28,8 +28,8 @@ describe('Connections connection reducer', () => {
 
   describe('SET_RELATION_TYPE', () => {
     it('should set relation type', () => {
-      const newState = reducer(Immutable({}), {type: 'SET_RELATION_TYPE', relationType: 'relationType'});
-      expect(newState.toJS()).toEqual({relationType: 'relationType'});
+      const newState = reducer(Immutable({}), {type: 'SET_RELATION_TYPE', template: 'template_id1'});
+      expect(newState.toJS()).toEqual({template: 'template_id1'});
     });
   });
 

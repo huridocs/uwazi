@@ -3,6 +3,15 @@ import search from '../search/search';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
+  app.post('/api/relationships/bulk', needsAuthorization(['admin', 'editor']), (req, res) => {
+    const saveActions = req.body.save.map((reference) => references.save(reference, req.language));
+    const deleteActions = req.body.delete.map((reference) => references.delete(reference, req.language));
+
+    Promise.all(saveActions.concat(deleteActions))
+    .then(response => res.json(response))
+    .catch(error => res.json({error}));
+  });
+
   app.post('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
     references.save(req.body, req.language)
     .then(response => res.json(response))
@@ -35,7 +44,6 @@ export default app => {
     references.getGroupsByConnection(req.params.id, req.language, {excludeRefs: false, user: req.user})
     .then(groups => {
       const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
-
       const anyFilteredGroups = Object.keys(filter).reduce((filteredGroups, key) => {
         return Boolean(filter[key].length) || filteredGroups;
       }, false);
@@ -50,21 +58,20 @@ export default app => {
           }
 
           usefulRefs.forEach(ref => {
-            if (!entityGroupMap[ref.connectedDocument]) {
-              entityGroupMap[ref.connectedDocument] = [];
+            if (!entityGroupMap[ref.entityData.sharedId]) {
+              entityGroupMap[ref.entityData.sharedId] = [];
             }
-
-            entityGroupMap[ref.connectedDocument].push({
+            entityGroupMap[ref.entityData.sharedId].push({
+              hub: ref.hub,
               context: group.context,
               template: ref.template,
               metadata: ref.metadata,
               label: group.connectionLabel,
               type: group.connectionType,
-              _id: ref._id,
-              sourceType: ref.sourceType
+              _id: ref._id
             });
 
-            referenceIds.push(ref.connectedDocument);
+            referenceIds.push(ref.entityData.sharedId);
           });
 
           return referenceIds;
@@ -74,6 +81,7 @@ export default app => {
       req.query.ids = entityIds.length ? entityIds : ['no_results'];
       req.query.includeUnpublished = true;
 
+      req.query.limit = 9999;
       search.search(req.query, req.language)
       .then(results => {
         results.rows.forEach(item => {

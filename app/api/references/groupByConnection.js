@@ -1,44 +1,24 @@
-function conformGroupData(connectionType, groupedReferences, options) {
-  let {key, connectionLabel, context} = options;
+function getGroupData(reference, groupedReferences, templates, relationTypes) {
+  let key = reference.template ? reference.template.toString() : null;
   let groupData = groupedReferences.find(ref => ref.key === key);
-
   if (!groupData) {
-    groupData = {key, connectionType, connectionLabel, templates: [], context};
+    groupData = {
+      key: key,
+      context: reference.template ? reference.template.toString() : null,
+      connectionLabel: reference.template ? relationTypes.find((r) => {
+        return r._id.toString() === reference.template.toString();
+      }).name : null,
+      templates: []
+    };
     groupedReferences.push(groupData);
   }
-
   return groupData;
-}
-
-function getGroupData(reference, groupedReferences, templates, relationTypes) {
-  const referenceTemplate = templates.find(template => template._id.toString() === reference.connectedDocumentTemplate.toString());
-  if (reference.sourceType === 'metadata') {
-    return conformGroupData('metadata', groupedReferences, {
-      key: reference.sourceProperty,
-      context: reference.connectedDocumentTemplate.toString(),
-      connectionLabel: referenceTemplate
-                       .properties
-                       .find(p => p.name === reference.sourceProperty)
-                       .label
-    });
-  }
-
-  if (reference.sourceType !== 'metadata') {
-    return conformGroupData('connection', groupedReferences, {
-      key: reference.relationType.toString(),
-      context: reference.relationType.toString(),
-      connectionLabel: relationTypes.find(r => r._id.toString() === reference.relationType.toString()).name
-    });
-  }
 }
 
 export default {
   filterRelevantReferences: (references, locale, user) => {
     return references.filter(ref => {
-      const isOutboundMetadata = !ref.inbound && ref.sourceType === 'metadata';
-      const isOtherLocale = ref.language && ref.language !== locale;
-      const publishedOrLoggedIn = Boolean(ref.connectedDocumentPublished || user);
-      return !(isOtherLocale || isOutboundMetadata) && publishedOrLoggedIn;
+      return Boolean(ref.entityData && ref.entityData.published || user);
     });
   },
 
@@ -46,14 +26,12 @@ export default {
     const groupedReferences = [];
     references.forEach((reference) => {
       const groupData = getGroupData(reference, groupedReferences, templates, relationTypes);
-
-      let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.connectedDocumentTemplate.toString());
+      let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.entityData.template.toString());
 
       if (!groupDataTemplate) {
-        const referenceTemplate = templates.find(template => template._id.toString() === reference.connectedDocumentTemplate.toString());
-
+        const referenceTemplate = templates.find(template => template._id.toString() === reference.entityData.template.toString());
         groupDataTemplate = {
-          _id: reference.connectedDocumentTemplate,
+          _id: reference.entityData.template.toString(),
           label: referenceTemplate.name,
           count: 0,
           refs: []

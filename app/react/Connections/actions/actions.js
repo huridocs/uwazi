@@ -41,10 +41,10 @@ export function startNewConnection(connectionType, sourceDocument) {
   };
 }
 
-export function setRelationType(relationType) {
+export function setRelationType(template) {
   return {
     type: types.SET_RELATION_TYPE,
-    relationType
+    template
   };
 }
 

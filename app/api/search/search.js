@@ -16,7 +16,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
-    if (property.type === 'select' || property.type === 'multiselect') {
+    if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
     }
     if (property.type === 'nested') {
@@ -65,7 +65,10 @@ export default {
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
       const properties = comonProperties(templates, filteringTypes);
       let aggregations = properties
-      .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+      .filter((property) => property.type === 'select' ||
+      property.type === 'multiselect' ||
+      property.type === 'relationship' ||
+      property.type === 'nested')
       .map((property) => {
         if (property.type === 'nested') {
           return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
@@ -169,7 +172,11 @@ export default {
     return Promise.all([
       elastic.index({index: elasticIndex, type: 'entity', id, body}),
       fullTextIndex
-    ]);
+    ])
+    .catch((error) => {
+      console.log(entity);
+      console.log(`ERROR Failed to index entity`);
+    });
   },
 
   bulkIndex(docs, _action = 'index') {

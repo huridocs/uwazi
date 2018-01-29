@@ -22,6 +22,9 @@ import ShowIf from 'app/App/ShowIf';
 import {TemplateLabel, Icon} from 'app/Layout';
 import Marker from 'app/Viewer/utils/Marker';
 
+import {ConnectionsList} from 'app/ConnectionsList';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+
 export class Viewer extends Component {
 
   componentWillMount() {
@@ -34,7 +37,7 @@ export class Viewer extends Component {
   }
 
   render() {
-    const {doc} = this.props;
+    const {doc, sidepanelTab} = this.props;
 
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
@@ -61,8 +64,11 @@ export class Viewer extends Component {
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
-            <ShowIf if={!this.props.targetDoc}>
+            <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
+            </ShowIf>
+            <ShowIf if={sidepanelTab === 'connections'}>
+              <ConnectionsList deleteConnection={() => {}} />
             </ShowIf>
             <TargetDocument />
             <Footer/>
@@ -74,6 +80,9 @@ export class Viewer extends Component {
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <RelationshipMetadata />
+        </ShowIf>
 
         <ContextMenu align="bottom" overrideShow={true} show={!this.props.panelIsOpen}>
           <ViewerDefaultMenu/>
@@ -93,21 +102,28 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
+  // TEST!!!
+  sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
-  showTextSelectMenu: PropTypes.bool
+  showTextSelectMenu: PropTypes.bool,
+  selectedConnection: PropTypes.bool,
+  selectedConnectionMetadata: PropTypes.object
 };
 
 Viewer.contextTypes = {
   store: PropTypes.object
 };
 
-const mapStateToProps = ({documentViewer}) => {
+const mapStateToProps = (state) => {
+  let documentViewer = state.documentViewer;
   let uiState = documentViewer.uiState.toJS();
   return {
     doc: documentViewer.doc,
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
+    // TEST!!!
+    sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
   };

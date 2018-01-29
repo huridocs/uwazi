@@ -17,8 +17,9 @@ export default class ViewDocument extends RouteHandler {
     super(props, context);
   }
 
-  static requestState({documentId, lang}) {
-    return requestViewerState(documentId, lang);
+  static requestState({documentId, lang}, query, globalResources) {
+    // TEST!!! sending globalResources
+    return requestViewerState(documentId, lang, globalResources);
   }
 
   componentWillUnmount() {

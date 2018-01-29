@@ -20,6 +20,7 @@ describe('RelationshipsGraph', () => {
         {_id: '1', connections: []}
       ], totalRows: 1}),
       search: {sort: 'sort'},
+      clickOnDocument: jasmine.createSpy('clickOnDocument'),
       relationTypes: Immutable.fromJS([])
     };
   });
@@ -115,6 +116,14 @@ describe('RelationshipsGraph', () => {
       checkConnection({pos: 3, type: 2, asPrevious: true, lastOfType: false, _id: '3'});
       checkConnection({pos: 4, type: 4, asPrevious: false, lastOfType: true, _id: '4'});
       checkConnection({pos: 5, type: 4, asPrevious: true, lastOfType: true, _id: '5'});
+    });
+
+    describe('Clicking on a document', () => {
+      it('should call on props.clickOnDocument if present', () => {
+        component.find(Doc).at(1).simulate('click', 'e', 'other args');
+        expect(props.clickOnDocument.calls.mostRecent().args[0]).toBe('e');
+        expect(props.clickOnDocument.calls.mostRecent().args[1]).toBe('other args');
+      });
     });
   });
 

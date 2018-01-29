@@ -313,7 +313,7 @@ export default function () {
           match = this.rangeFilter(filters, property);
         }
 
-        if (filters[property].type === 'multiselect') {
+        if (filters[property].type === 'multiselect' || filters[property].type === 'relationship') {
           match = this.multiselectFilter(filters, property);
         }
 

@@ -97,7 +97,7 @@ export default {
     createReferenceSidePanelSelectFirstType: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > ul > li:nth-child(1)',
     createReferenceSidePanelInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
     createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div',
-    createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button',
+    createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.undefined.create-reference.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-success',
     targetDocument: '.document-viewer.show-target-document',
     saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div:nth-child(1) > div.ContextMenu.ContextMenu-center > button',
     activeConnection: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div',
