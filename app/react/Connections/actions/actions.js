@@ -64,12 +64,28 @@ export function saveConnection(connection, callback) {
 
     delete connection.type;
 
-    return referencesAPI.save(connection)
-    .then((referenceCreated) => {
-      dispatch({type: types.CONNECTION_CREATED, connection: referenceCreated});
-      callback(referenceCreated);
+    const apiCall = {
+      delete: [],
+      save: [[
+        {entity: connection.sourceDocument, template: null, range: connection.sourceRange},
+        {entity: connection.targetDocument, template: connection.template}
+      ]]
+    };
+
+    return api.post('relationships/bulk', apiCall)
+    .then((response) => {
+      console.log('Success:', response);
+      dispatch({type: types.CONNECTION_CREATED, connection: connection});
+      callback(connection);
       dispatch(notify('saved successfully !', 'success'));
     });
+
+    // return referencesAPI.save(connection)
+    // .then((referenceCreated) => {
+    //   dispatch({type: types.CONNECTION_CREATED, connection: referenceCreated});
+    //   callback(referenceCreated);
+    //   dispatch(notify('saved successfully !', 'success'));
+    // });
   };
 }
 

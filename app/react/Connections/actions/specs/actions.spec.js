@@ -20,7 +20,13 @@ describe('Connections actions', () => {
     mockID();
     store = mockStore({});
     spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: [{type: 'entity'}, {type: 'doc'}]}}));
-    spyOn(referencesAPI, 'save').and.returnValue(Promise.resolve('newReference'));
+    spyOn(api, 'post').and.callFake((url, data) => {
+      if (url === 'relationships/bulk') {
+        return Promise.resolve({status: 200, json: data});
+      }
+
+      return Promise.reject('Unexpected url');
+    });
   });
 
   describe('Search-related actions', () => {
@@ -93,17 +99,28 @@ describe('Connections actions', () => {
     });
   });
 
-  describe('saveConnection', () => {
+  fdescribe('saveConnection', () => {
     let connection;
 
     beforeEach(() => {
-      connection = {sourceDocument: 'sourceId', type: 'basic'};
+      connection = {
+        sourceDocument: 'sourceId',
+        type: 'basic',
+        sourceRange: {start: 397, end: 422, text: 'source text'},
+        targetDocument: 'targetId',
+        template: 'relationTypeId'
+      };
     });
 
-    it('should set the creating flag to true and attempt to save the connection', () => {
+    it('should set the creating flag to true and attempt to save the connection (using the new hub format)', () => {
+      const expectedCall = {delete: [], save: [[
+        {entity: 'sourceId', template: null, range: {start: 397, end: 422, text: 'source text'}},
+        {entity: 'targetId', template: 'relationTypeId'}
+      ]]};
+
       actions.saveConnection(connection)(store.dispatch, getState);
       expect(store.getActions()).toEqual([{type: 'CREATING_CONNECTION'}]);
-      expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId'});
+      expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedCall);
     });
 
     it('should attempt to save the connection with language if not basic', () => {

@@ -1,5 +1,4 @@
 import relationships from './relationships.js';
-import search from '../search/search';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
