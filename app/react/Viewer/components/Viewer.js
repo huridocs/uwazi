@@ -9,6 +9,7 @@ import ContextMenu from 'app/ContextMenu';
 import {loadDefaultViewerMenu, loadTargetDocument} from '../actions/documentActions';
 import {openPanel} from '../actions/uiActions';
 import {addReference} from '../actions/referencesActions';
+import {selectDoc} from '../selectors';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import {CreateConnectionPanel} from 'app/Connections';
@@ -128,11 +129,12 @@ Viewer.contextTypes = {
   store: PropTypes.object
 };
 
+
 const mapStateToProps = (state) => {
-  let documentViewer = state.documentViewer;
+  const {documentViewer} = state;
   let uiState = documentViewer.uiState.toJS();
   return {
-    doc: documentViewer.doc,
+    doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     // TEST!!!

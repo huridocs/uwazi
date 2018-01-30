@@ -25,10 +25,12 @@ export class Document extends Component {
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
+      // TEST!!!
+      const references = this.props.references.toJS();
       return this.props.activateReference(
-        this.props.references.find(r => r._id === e.target.getAttribute('data-id')),
+        references.find(r => r._id === e.target.getAttribute('data-id')),
         this.props.doc.get('pdfInfo').toJS(),
-        this.props.references
+        references
       );
     }
     if (this.props.executeOnClickHandler) {
@@ -63,7 +65,7 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
-    this.text.renderReferences(this.props.references);
+    this.text.renderReferences(this.props.references.toJS());
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
@@ -76,10 +78,11 @@ export class Document extends Component {
 
   pdfLoaded(range) {
     if (this.props.doScrollToActive) {
+      const references = this.props.references.toJS();
       this.props.scrollToActive(
-        this.props.references.find(r => r._id === this.props.activeReference),
+        references.find(r => r._id === this.props.activeReference),
         this.props.doc.get('pdfInfo').toJS(),
-        this.props.references,
+        references,
         this.props.doScrollToActive
       );
     }
@@ -102,11 +105,11 @@ export class Document extends Component {
         <div className={'_' + doc._id + ' document ' + this.props.className} >
           <Header/>
           <div className="pages"
-            ref={(ref) => this.pagesContainer = ref}
-            onMouseUp={this.handleMouseUp.bind(this)}
-            onTouchEnd={this.handleMouseUp.bind(this)}
-            onClick={this.handleClick.bind(this)}
-            onMouseOver={this.handleOver.bind(this)}
+               ref={(ref) => this.pagesContainer = ref}
+               onMouseUp={this.handleMouseUp.bind(this)}
+               onTouchEnd={this.handleMouseUp.bind(this)}
+               onClick={this.handleClick.bind(this)}
+               onMouseOver={this.handleOver.bind(this)}
           >
             <ShowIf if={!doc._id || !doc.pdfInfo}>
               <Loader />
@@ -147,7 +150,7 @@ Document.propTypes = {
   highlightedReference: PropTypes.string,
   activeReference: PropTypes.string,
   selection: PropTypes.object,
-  references: PropTypes.array,
+  references: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
   executeOnClickHandler: PropTypes.bool,
