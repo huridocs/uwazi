@@ -124,6 +124,7 @@ export default {
     return Promise.all(
       relationships.map((relationship) => {
         relationship.hub = hub;
+        relationship.language = language;
         return model.save(relationship)
         .then((r) => {
           return normalizeConnection(r);
