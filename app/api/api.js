@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import languageMiddleware from './utils/languageMiddleware';
 import elasticConfig from './config/elasticIndexes';
 
@@ -7,11 +6,11 @@ export default (app, server) => {
   elasticConfig.index = elasticConfig[app.get('env')];
 
   //common middlewares
-  app.use(bodyParser.json());
   app.use(languageMiddleware);
 
   //module routes
-  require('./auth/routes.js')(app);
+  //require('./auth/routes.js')(app);
+
   require('./socketio/middleware.js')(server, app);
   require('./references/routes.js')(app);
   require('./users/routes.js')(app);

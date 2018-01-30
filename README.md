@@ -9,8 +9,8 @@
       $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
       $ sudo apt-get install -y nodejs
       ```
-- **Elasticsearch** (5.4)
-   - https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html
+- **Elasticsearch** (5.5.x)
+   - https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html
     
 - **MongoDB**
     - Ubuntu

@@ -21,6 +21,7 @@ export class CollectionSettings extends Component {
       homePage: props.settings.home_page || '',
       mailerConfig: props.settings.mailerConfig || '',
       analyticsTrackingId: props.settings.analyticsTrackingId || '',
+      private: props.settings.private || false,
       customLandingpage: !!props.settings.home_page,
       dateFormat: props.settings.dateFormat,
       dateSeparator
@@ -71,6 +72,13 @@ export class CollectionSettings extends Component {
     this.props.setSettings(settings);
   }
 
+  changePrivate() {
+    const privateInstance = this.state.private ? false : true;
+    this.setState({private: privateInstance});
+    let settings = Object.assign(this.props.settings, {private: privateInstance});
+    this.props.setSettings(settings);
+  }
+
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
     let settings = Object.assign(this.props.settings, {home_page: e.target.value});  // eslint-disable-line camelcase
@@ -91,7 +99,7 @@ export class CollectionSettings extends Component {
     }, null);
 
     const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition] ?
-                       this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value : '';
+      this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value : '';
 
     this.setState({dateSeparator, dateFormat});
     let settings = Object.assign(this.props.settings, {dateFormat});
@@ -105,6 +113,7 @@ export class CollectionSettings extends Component {
     settings.site_name = this.state.siteName;  // eslint-disable-line camelcase
     settings.mailerConfig = this.state.mailerConfig;
     settings.analyticsTrackingId = this.state.analyticsTrackingId;
+    settings.private = this.state.private;
     SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated'), 'success');
@@ -123,6 +132,20 @@ export class CollectionSettings extends Component {
             <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
+            </div>
+            <div className='form-group'>
+              <label className="form-group-label" htmlFor="collection_name">{t('System', 'Private instance')}</label>
+              <div className="checkbox">
+                <label>
+                  <input
+                    onChange={this.changePrivate.bind(this)}
+                    name="private"
+                    type="checkbox"
+                    checked={this.state.private}
+                  />
+                  {t('System', 'check as private instance')}
+                </label>
+              </div>
             </div>
             <div className="form-group">
               <label className="form-group-label">{t('System', 'Date format')}</label>
@@ -184,32 +207,32 @@ export class CollectionSettings extends Component {
               <i className="fa fa-home"></i>
               <div>
                 The landing page is the first thing users will see when visiting your Uwazi instance.<br />
-              You can use any URL from your Uwazi instance as a landing page, examples:
-              <ul>
-                <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
-                <li>Library results: /library/?searchTerm=test</li>
-                <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
-                <li>A document: /document/4y9i99fadjp833di</li>
-              </ul>
-              Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.
+                You can use any URL from your Uwazi instance as a landing page, examples:
+                <ul>
+                  <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
+                  <li>Library results: /library/?searchTerm=test</li>
+                  <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
+                  <li>A document: /document/4y9i99fadjp833di</li>
+                </ul>
+                Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.
+              </div>
             </div>
-          </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Google Analytics ID')}</label>
               <input name="analyticsTrackingId"
-                        onChange={this.changeAnalyticsTrackingId.bind(this)}
-                        value={this.state.analyticsTrackingId}
-                        type="text"
-                        className="form-control"/>
+                onChange={this.changeAnalyticsTrackingId.bind(this)}
+                value={this.state.analyticsTrackingId}
+                type="text"
+                className="form-control"/>
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
               <textarea name="collectionMailerConfig"
-                        onChange={this.changeMailerConfig.bind(this)}
-                        value={this.state.mailerConfig}
-                        type="text"
-                        className="form-control"
-                        rows="5"/>
+                onChange={this.changeMailerConfig.bind(this)}
+                value={this.state.mailerConfig}
+                type="text"
+                className="form-control"
+                rows="5"/>
             </div>
             <div className="alert alert-info">
               <i className="fa fa-envelope"></i>

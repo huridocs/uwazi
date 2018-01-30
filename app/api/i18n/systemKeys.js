@@ -171,5 +171,7 @@ export default [
 {key: 'selected', label: 'selected'},
 {key: 'sorted by', label: 'sorted by'},
 {key: 'x less', label: ' less'},
-{key: 'x more', label: ' more'}
+{key: 'x more', label: ' more'},
+{key: 'Private instance', label: 'Private instance'},
+{key: 'check as private instance', label: 'Check to make this instance private (only logged users access the data)'}
 ];

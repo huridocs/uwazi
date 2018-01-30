@@ -24,7 +24,7 @@ describe('CollectionSettings', () => {
     it('should save the settings with defaults', () => {
       component.find('form').simulate('submit', {preventDefault: () => {}});
       expect(SettingsAPI.save)
-      .toHaveBeenCalledWith(Object.assign({home_page: '', site_name: '', mailerConfig: '', analyticsTrackingId: ''}, props.settings));
+      .toHaveBeenCalledWith(Object.assign({home_page: '', site_name: '', mailerConfig: '', analyticsTrackingId: '', private: false}, props.settings));
     });
 
     it('should save the updated settings', () => {
@@ -35,7 +35,8 @@ describe('CollectionSettings', () => {
         home_page: '123',
         mailerConfig: 'some config',
         links: ['123'],
-        analyticsTrackingId: 'X-123-Y'
+        analyticsTrackingId: 'X-123-Y',
+        private: 'X-123-Y'
       };
       component = shallow(<CollectionSettings {...props} />);
       component.find('form').simulate('submit', {preventDefault: () => {}});
